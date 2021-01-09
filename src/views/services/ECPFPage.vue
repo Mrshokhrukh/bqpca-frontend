@@ -1,7 +1,6 @@
 <!-- src/views/services/ECPFPage.vue -->
 <template>
   <div class="min-h-screen bg-gray-50">
-    <Header />
 
     <!-- Hero Section -->
     <div class="relative pt-20 pb-16 bg-gradient-to-br from-purple-500 to-purple-600">
@@ -195,15 +194,12 @@
       </div>
     </div>
 
-    <Footer />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive } from 'vue'
 import { CheckCircle2, ShieldCheck, Globe } from 'lucide-vue-next'
-import Header from '@/components/common/Header.vue'
-import Footer from '@/components/common/Footer.vue'
 
 const activeTab = ref('login')
 

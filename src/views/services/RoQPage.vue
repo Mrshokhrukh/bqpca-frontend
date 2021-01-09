@@ -1,8 +1,6 @@
 <!-- src/views/services/RoQPage.vue -->
 <template>
   <div class="min-h-screen bg-slate-50">
-    <Header />
-
     <!-- Hero Section -->
     <div class="bg-slate-900 relative">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -170,15 +168,12 @@
       </div>
     </div>
 
-    <Footer />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive } from 'vue'
 import { Clock, FileText, ShieldCheck } from 'lucide-vue-next'
-import Header from '@/components/common/Header.vue'
-import Footer from '@/components/common/Footer.vue'
 
 const loginForm = reactive({
   email: '',

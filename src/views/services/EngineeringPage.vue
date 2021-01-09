@@ -1,8 +1,6 @@
 <!-- src/views/services/EngineeringPage.vue -->
 <template>
   <div class="min-h-screen bg-gray-50">
-    <Header />
-
     <!-- Hero Section -->
     <div class="relative pt-20 pb-16 bg-gradient-to-br from-orange-500 to-orange-600">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -96,13 +94,10 @@
       </div>
     </div>
 
-    <Footer />
   </div>
 </template>
 
 <script setup>
 import { CheckCircle2, ShieldCheck, Globe } from 'lucide-vue-next'
-import Header from '@/components/common/Header.vue'
-import Footer from '@/components/common/Footer.vue'
 import AuthSection from '@/components/AuthSection.vue'
 </script>

@@ -1,7 +1,6 @@
 <!-- src/views/services/BMHCPage.vue -->
 <template>
   <div class="min-h-screen bg-gray-50">
-    <Header />
 
     <!-- Hero Section -->
     <div class="relative pt-20 pb-16 bg-gradient-to-br from-red-500 to-red-600">
@@ -96,13 +95,10 @@
       </div>
     </div>
 
-    <Footer />
   </div>
 </template>
 
 <script setup>
 import { CheckCircle2, ShieldCheck, Globe } from 'lucide-vue-next'
-import Header from '@/components/common/Header.vue'
-import Footer from '@/components/common/Footer.vue'
 import AuthSection from '@/components/AuthSection.vue'
 </script>
