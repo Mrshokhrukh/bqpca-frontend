@@ -5,16 +5,26 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
         <!-- Logo and Description -->
         <div class="col-span-1 md:col-span-2">
-          <div class="flex items-center space-x-2">
-            <img src="#" alt="BQPCA Logo" class="h-8 w-auto" />
-            <span class="text-lg font-semibold">BQPCA</span>
-          </div>
+          <router-link to="/" class="flex items-center group">
+            <div class="relative h-14 w-14 mr-3">
+              <img src="@/assets/rgob.png" alt="BQPCA Crest"
+                class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" />
+            </div>
+            <div class="flex flex-col">
+              <span class="text-sm font-dzongkha leading-tight text-gray-300">
+                འབྲུག་ཤེས་ཚད་དང་ཁྱད་རིག་ངོ་སྦྱོར་དབང་འཛིན།
+              </span>
+              <span class="text-xs font-medium tracking-wide text-gray-400">
+                Bhutan Qualifications and Professionals Certification Authority
+              </span>
+            </div>
+          </router-link>
           <p class="mt-4 text-gray-400 max-w-md">
-            Bhutan Qualifications and Professionals Certification Authority - Ensuring quality and standards in
-            education and professional certification.
+            Ensuring quality and standards in education and professional certification.
           </p>
         </div>
 
+        <!-- Rest of the footer content remains the same -->
         <!-- Quick Links -->
         <div>
           <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Services</h3>
@@ -51,7 +61,7 @@
       <div class="mt-12 pt-8 border-t border-gray-800">
         <div class="flex flex-col md:flex-row justify-between items-center">
           <p class="text-gray-400 text-sm">
-            © 2024 BQPCA. All rights reserved.
+            © {{ currentYear }} BQPCA. All rights reserved.
           </p>
           <div class="flex space-x-6 mt-4 md:mt-0">
             <a href="#" class="text-gray-400 hover:text-white">
@@ -72,6 +82,10 @@
 
 <script setup>
 import { MapPin, Mail, Phone, Facebook, Twitter, Instagram } from 'lucide-vue-next'
+import { ref } from 'vue'
+
+// Get the current year dynamically
+const currentYear = ref(new Date().getFullYear())
 
 const services = [
   { name: 'Recognition of Qualifications', route: '/roq' },
@@ -81,3 +95,14 @@ const services = [
   { name: 'Medical & Health Council', route: '/bmhc' }
 ]
 </script>
+
+<style scoped>
+@font-face {
+  font-family: 'Dzongkha';
+  src: url('@/assets/fonts/dzongkha.woff2') format('woff2');
+}
+
+.font-dzongkha {
+  font-family: 'Dzongkha', sans-serif;
+}
+</style>

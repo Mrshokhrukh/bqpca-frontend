@@ -1,104 +1,144 @@
 <!-- src/views/services/AccreditationPage.vue -->
 <template>
-  <div class="min-h-screen bg-gray-50">
-
+  <div class="min-h-screen bg-slate-50">
     <!-- Hero Section -->
-    <div class="relative pt-20 pb-16 bg-gradient-to-br from-green-500 to-green-600">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="text-center text-white py-12">
-          <h1 class="text-4xl font-bold sm:text-5xl">Accreditation</h1>
-          <p class="mt-4 text-xl text-green-100">
+    <div class="bg-slate-900 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center mt-20">
+          <h1 class="text-3xl font-serif font-bold text-white sm:text-4xl lg:text-5xl">
+            Accreditation
+          </h1>
+          <p class="mt-4 text-xl text-slate-300 max-w-3xl mx-auto">
             Streamline the accreditation process for educational institutions in Bhutan.
           </p>
         </div>
       </div>
-      <!-- Wave decoration -->
-      <div class="absolute bottom-0 left-0 right-0">
-        <svg class="fill-current text-gray-50" viewBox="0 0 1440 120">
-          <path
-            d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z">
-          </path>
-        </svg>
-      </div>
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <!-- Info Section -->
-        <div class="space-y-8">
-          <div class="bg-white rounded-xl p-8 shadow-sm">
-            <h2 class="text-2xl font-semibold text-gray-900 mb-4">Why Choose Our Service?</h2>
-            <div class="space-y-4">
-              <div class="flex items-start">
-                <CheckCircle2 class="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
-                <div class="ml-4">
-                  <h3 class="font-medium">Efficient Process</h3>
-                  <p class="text-gray-600">Accreditation made simple with our digital platform</p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Information Section -->
+        <div class="lg:col-span-2 space-y-8">
+          <!-- Official Notice -->
+          <div class="bg-white border-l-4 border-green-600 rounded p-6 shadow-sm">
+            <h2 class="text-xl font-serif font-bold text-slate-900 mb-4">
+              Official Notice
+            </h2>
+            <p class="text-slate-600">
+              This is the official portal for accreditation services provided by the Bhutan Qualifications &
+              Professional Certification Authority (BQPCA). All accreditation processes are conducted
+              in accordance with the Royal Government of Bhutan's regulations.
+            </p>
+          </div>
+
+          <!-- Process Overview -->
+          <div class="bg-white rounded-lg shadow-sm">
+            <div class="p-6 border-b border-slate-200">
+              <h2 class="text-xl font-serif font-bold text-slate-900">Accreditation Process</h2>
+            </div>
+            <div class="p-6">
+              <div class="space-y-6">
+                <div class="flex items-start">
+                  <div
+                    class="flex-shrink-0 h-8 w-8 rounded-full bg-green-600 text-white flex items-center justify-center font-medium">
+                    1
+                  </div>
+                  <div class="ml-4">
+                    <h3 class="text-lg font-medium text-slate-900">Submit Application</h3>
+                    <p class="mt-2 text-slate-600">Complete the online application form with your institution's details</p>
+                  </div>
                 </div>
-              </div>
-              <div class="flex items-start">
-                <ShieldCheck class="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
-                <div class="ml-4">
-                  <h3 class="font-medium">Quality Assurance</h3>
-                  <p class="text-gray-600">Ensure compliance with national standards</p>
+
+                <div class="flex items-start">
+                  <div
+                    class="flex-shrink-0 h-8 w-8 rounded-full bg-green-600 text-white flex items-center justify-center font-medium">
+                    2
+                  </div>
+                  <div class="ml-4">
+                    <h3 class="text-lg font-medium text-slate-900">Document Review</h3>
+                    <p class="mt-2 text-slate-600">Our team reviews your institution's credentials and supporting documents</p>
+                  </div>
                 </div>
-              </div>
-              <div class="flex items-start">
-                <Globe class="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
-                <div class="ml-4">
-                  <h3 class="font-medium">National Recognition</h3>
-                  <p class="text-gray-600">Get recognized across Bhutan</p>
+
+                <div class="flex items-start">
+                  <div
+                    class="flex-shrink-0 h-8 w-8 rounded-full bg-green-600 text-white flex items-center justify-center font-medium">
+                    3
+                  </div>
+                  <div class="ml-4">
+                    <h3 class="text-lg font-medium text-slate-900">Validation</h3>
+                    <p class="mt-2 text-slate-600">Your credentials are validated through official channels</p>
+                  </div>
+                </div>
+
+                <div class="flex items-start">
+                  <div
+                    class="flex-shrink-0 h-8 w-8 rounded-full bg-green-600 text-white flex items-center justify-center font-medium">
+                    4
+                  </div>
+                  <div class="ml-4">
+                    <h3 class="text-lg font-medium text-slate-900">Accreditation</h3>
+                    <p class="mt-2 text-slate-600">Receive your official accreditation certificate with digital signature</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="bg-white rounded-xl p-8 shadow-sm">
-            <h2 class="text-2xl font-semibold text-gray-900 mb-4">How It Works</h2>
-            <div class="space-y-6">
-              <div class="flex">
-                <div
-                  class="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-semibold">
-                  1</div>
-                <div class="ml-4">
-                  <h3 class="font-medium">Submit Application</h3>
-                  <p class="text-gray-600">Complete the online application form</p>
+          <!-- Important Information -->
+          <div class="bg-white rounded-lg shadow-sm">
+            <div class="p-6 border-b border-slate-200">
+              <h2 class="text-xl font-serif font-bold text-slate-900">Important Information</h2>
+            </div>
+            <div class="p-6">
+              <div class="space-y-4">
+                <div class="flex items-start">
+                  <Clock class="w-6 h-6 text-green-600 mt-1" />
+                  <div class="ml-4">
+                    <h3 class="font-medium text-slate-900">Processing Time</h3>
+                    <p class="text-slate-600">Standard processing time is 10-14 working days</p>
+                  </div>
                 </div>
-              </div>
-              <div class="flex">
-                <div
-                  class="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-semibold">
-                  2</div>
-                <div class="ml-4">
-                  <h3 class="font-medium">Document Review</h3>
-                  <p class="text-gray-600">Our team reviews your documents</p>
+                <div class="flex items-start">
+                  <FileText class="w-6 h-6 text-green-600 mt-1" />
+                  <div class="ml-4">
+                    <h3 class="font-medium text-slate-900">Required Documents</h3>
+                    <p class="text-slate-600">Institutional credentials, curriculum details, and valid identification</p>
+                  </div>
                 </div>
-              </div>
-              <div class="flex">
-                <div
-                  class="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-semibold">
-                  3</div>
-                <div class="ml-4">
-                  <h3 class="font-medium">Get Accredited</h3>
-                  <p class="text-gray-600">Receive your accreditation certificate</p>
+                <div class="flex items-start">
+                  <ShieldCheck class="w-6 h-6 text-green-600 mt-1" />
+                  <div class="ml-4">
+                    <h3 class="font-medium text-slate-900">Security</h3>
+                    <p class="text-slate-600">All documents are processed through secure government channels</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Auth Section -->
-        <div class="lg:mt-8">
-          <AuthSection />
+        <!-- Authentication Section -->
+        <div>
+          <AuthSection @ndi-login="handleNDILogin" @form-login="handleFormLogin" />
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { CheckCircle2, ShieldCheck, Globe } from 'lucide-vue-next'
+import { Clock, FileText, ShieldCheck } from 'lucide-vue-next'
 import AuthSection from '@/components/AuthSection.vue'
+
+const handleNDILogin = () => {
+  // Implement NDI login logic
+  console.log('NDI login clicked')
+}
+
+const handleFormLogin = (formData) => {
+  // Implement login logic
+  console.log('Login submitted:', formData)
+}
 </script>

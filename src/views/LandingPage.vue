@@ -3,12 +3,12 @@
   <div class="min-h-screen bg-slate-50">
 
     <!-- Hero Section -->
-    <div class="relative bg-gradient-to-r from-slate-900 to-slate-800">
+    <div class="relative bg-gradient-to-r mt-20 from-slate-900 to-slate-800">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div class="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
           <div class="text-white">
             <h1 class="text-4xl font-serif font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Bhutan Qualifications & Professional Certification Authority
+              Bhutan Qualifications &amp; Professional Certification Authority
             </h1>
             <p class="mt-6 text-lg text-slate-300">
               Upholding excellence in education and professional standards through rigorous certification and accreditation processes.
