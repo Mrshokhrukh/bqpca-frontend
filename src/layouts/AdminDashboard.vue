@@ -142,7 +142,7 @@ const filteredNavigationItems = computed(() => {
   if (props.userRole === 'superAdmin') {
     return navigationItems.superAdmin
   }
-  return navigationItems[`${props.userModule.toLowerCase()}Admin`] || []
+  return navigationItems[`roqAdmin`]
 })
 
 // Methods

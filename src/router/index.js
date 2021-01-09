@@ -79,11 +79,11 @@ const router = createRouter({
           path: 'roq',
           props: { userRole: 'admin', userModule: 'RoQ' },
           children: [
-            // {
-            //   path: 'dashboard',
-            //   name: 'roq-dashboard',
-            //   component: () => import('@/views/roq/Dashboard.vue')
-            // },
+            {
+              path: '',
+              name: 'roq-dashboard',
+              component: () => import('@/views/admin/Dashboard.vue')
+            },
             // {
             //   path: 'applications',
             //   name: 'roq-applications',
