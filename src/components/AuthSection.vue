@@ -123,17 +123,17 @@
           <div class="grid grid-cols-3 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700">First Name</label>
-              <input type="text" v-model="registerForm.firstName" required
+              <input type="text" v-model="registerForm.first_name" required
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Middle Name</label>
-              <input type="text" v-model="registerForm.middleName"
+              <input type="text" v-model="registerForm.middle_name"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Last Name</label>
-              <input type="text" v-model="registerForm.lastName" required
+              <input type="text" v-model="registerForm.last_name" required
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
             </div>
           </div>
@@ -213,7 +213,7 @@
           <!-- Contact Number -->
           <div>
             <label class="block text-sm font-medium text-gray-700">Contact Number</label>
-            <input type="tel" v-model="registerForm.contactNumber" required
+            <input type="tel" v-model="registerForm.contact_number" required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
           </div>
 
@@ -233,7 +233,7 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
-              <input type="password" v-model="registerForm.confirmPassword" required
+              <input type="password" v-model="registerForm.confirm_password" required
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
             </div>
           </div>
@@ -255,7 +255,7 @@
         </form>
       </div>
     </div>
-    </div>
+  </div>
 </template>
 
 <script setup>
@@ -291,22 +291,22 @@ const loginForm = reactive({
   email: '',
   password: '',
   remember: false,
-  service_type: props.serviceType // Set service_type from props
+  service_type: props.serviceType
 })
 
 const registerForm = reactive({
-  firstName: '',
-  middleName: '',
-  lastName: '',
+  first_name: '',
+  middle_name: '',
+  last_name: '',
   gender: '',
-  dateOfBirth: null,
-  contactNumber: '',
+  date_of_birth: null,
+  contact_number: '',
   email: '',
   password: '',
-  confirmPassword: '',
+  confirm_password: '',
   terms: false,
-  service_type: props.serviceType // Set service_type from props
-})
+  service_type: props.serviceType,
+});
 
 // Date picker computed properties and methods
 const calendarDates = computed(() => {
@@ -336,7 +336,7 @@ const calendarDates = computed(() => {
   }
 
   // Add next month's days
-  const endPadding = 42 - dates.length // 6 rows * 7 days = 42
+  const endPadding = 42 - dates.length
   for (let i = 1; i <= endPadding; i++) {
     const date = new Date(datePickerYear.value, datePickerMonth.value + 1, i)
     dates.push({
@@ -351,11 +351,7 @@ const calendarDates = computed(() => {
 
 const formattedDOB = computed(() => {
   if (!selectedDate.value) return ''
-  return selectedDate.value.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
+  return selectedDate.value.toISOString().split('T')[0];
 })
 
 const adjustDate = (amount, unit) => {
@@ -367,10 +363,10 @@ const adjustDate = (amount, unit) => {
 }
 
 const selectDate = (dateObj) => {
-  selectedDate.value = dateObj.date
-  registerForm.dateOfBirth = dateObj.date
-  showDatePicker.value = false
-}
+  selectedDate.value = dateObj.date;
+  registerForm.date_of_birth = dateObj.date.toISOString().split('T')[0];
+  showDatePicker.value = false;
+};
 
 const isSelectedDate = (dateObj) => {
   if (!selectedDate.value) return false
@@ -390,37 +386,35 @@ const handleLogin = async () => {
     })
 
     console.log('Login successful:', response.data)
-    // Handle successful login (e.g., store tokens, redirect)
   } catch (error) {
     console.error('Login failed:', error.response?.data || error.message)
-    // Handle login error (e.g., show error message)
   }
 }
 
 const handleRegister = async () => {
-  if (registerForm.password !== registerForm.confirmPassword) {
-    alert('Passwords do not match')
-    return
+  if (registerForm.password !== registerForm.confirm_password) {
+    alert('Passwords do not match');
+    return;
   }
 
   try {
-    const response = await apiService.register({
-      firstName: registerForm.firstName,
-      middleName: registerForm.middleName,
-      lastName: registerForm.lastName,
+    const payload = {
+      first_name: registerForm.first_name,
+      middle_name: registerForm.middle_name,
+      last_name: registerForm.last_name,
       gender: registerForm.gender,
-      dateOfBirth: registerForm.dateOfBirth,
-      contactNumber: registerForm.contactNumber,
+      date_of_birth: registerForm.date_of_birth,
+      contact_number: registerForm.contact_number,
       email: registerForm.email,
       password: registerForm.password,
-      service_type: registerForm.service_type
-    })
+      confirm_password: registerForm.confirm_password,
+      service_type: registerForm.service_type,
+    };
 
-    console.log('Registration successful:', response.data)
-    // Handle successful registration (e.g., redirect to login)
+    const response = await apiService.register(payload);
+    console.log('Registration successful:', response.data);
   } catch (error) {
-    console.error('Registration failed:', error.response?.data || error.message)
-    // Handle registration error (e.g., show error message)
+    console.error('Registration failed:', error.response?.data || error.message);
   }
-}
+};
 </script>
