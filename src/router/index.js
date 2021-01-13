@@ -172,6 +172,21 @@ const router = createRouter({
       ]
     }
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      // Scroll to the hash element
+      return {
+        el: to.hash,
+        behavior: 'smooth', // Optional: Add smooth scrolling
+      }
+    } else if (savedPosition) {
+      // Restore saved position (e.g., when using the browser back button)
+      return savedPosition
+    } else {
+      // Scroll to the top of the page
+      return { top: 0 }
+    }
+  },
 });
 
 export default router;

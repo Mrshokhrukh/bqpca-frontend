@@ -21,3 +21,9 @@ const isAdminRoute = computed(() => {
   return path.includes('dashboard') || path.includes('admin')
 })
 </script>
+
+<style scoped>
+html {
+  scroll-behavior: smooth;
+}
+</style>

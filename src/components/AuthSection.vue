@@ -259,8 +259,16 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, defineProps } from 'vue'
 import { QrCode as QrCodeIcon, AlertTriangle as AlertTriangleIcon, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import apiService from '@/services/services'
+
+const props = defineProps({
+  serviceType: {
+    type: String,
+    required: true
+  }
+})
 
 const activeTab = ref('login')
 const showQRCode = ref(false)
@@ -282,7 +290,8 @@ const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 9
 const loginForm = reactive({
   email: '',
   password: '',
-  remember: false
+  remember: false,
+  service_type: props.serviceType // Set service_type from props
 })
 
 const registerForm = reactive({
@@ -295,7 +304,8 @@ const registerForm = reactive({
   email: '',
   password: '',
   confirmPassword: '',
-  terms: false
+  terms: false,
+  service_type: props.serviceType // Set service_type from props
 })
 
 // Date picker computed properties and methods
@@ -371,11 +381,46 @@ const isToday = (dateObj) => {
   return dateObj.date.toDateString() === new Date().toDateString()
 }
 
-const handleLogin = () => {
-  console.log('Login submitted:', loginForm)
+const handleLogin = async () => {
+  try {
+    const response = await apiService.login({
+      email: loginForm.email,
+      password: loginForm.password,
+      service_type: loginForm.service_type
+    })
+
+    console.log('Login successful:', response.data)
+    // Handle successful login (e.g., store tokens, redirect)
+  } catch (error) {
+    console.error('Login failed:', error.response?.data || error.message)
+    // Handle login error (e.g., show error message)
+  }
 }
 
-const handleRegister = () => {
-  console.log('Registration submitted:', registerForm)
+const handleRegister = async () => {
+  if (registerForm.password !== registerForm.confirmPassword) {
+    alert('Passwords do not match')
+    return
+  }
+
+  try {
+    const response = await apiService.register({
+      firstName: registerForm.firstName,
+      middleName: registerForm.middleName,
+      lastName: registerForm.lastName,
+      gender: registerForm.gender,
+      dateOfBirth: registerForm.dateOfBirth,
+      contactNumber: registerForm.contactNumber,
+      email: registerForm.email,
+      password: registerForm.password,
+      service_type: registerForm.service_type
+    })
+
+    console.log('Registration successful:', response.data)
+    // Handle successful registration (e.g., redirect to login)
+  } catch (error) {
+    console.error('Registration failed:', error.response?.data || error.message)
+    // Handle registration error (e.g., show error message)
+  }
 }
 </script>

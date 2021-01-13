@@ -125,7 +125,7 @@
 
         <!-- Authentication Section -->
         <div>
-          <AuthSection @ndi-login="handleNDILogin" @form-login="handleFormLogin" />
+          <AuthSection :serviceType="serviceType" @ndi-login="handleNDILogin" @form-login="handleFormLogin" />
         </div>
       </div>
     </div>
@@ -134,8 +134,11 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { Clock, FileText, ShieldCheck } from 'lucide-vue-next'
 import AuthSection from '@/components/AuthSection.vue'
+
+const serviceType = ref('roq') // Set the service type for this page
 
 const handleNDILogin = () => {
   // Implement NDI login logic

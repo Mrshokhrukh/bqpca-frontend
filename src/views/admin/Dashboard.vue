@@ -2,7 +2,7 @@
 <template>
   <div>
     <h1 class="text-2xl font-bold">Super Admin Dashboard</h1>
-    <!-- Add your dashboard content here -->
+    <div>TEST SUPER ADMIN DASHABORD</div>
   </div>
 </template>
 

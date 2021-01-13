@@ -74,7 +74,7 @@
     </div>
 
     <!-- Admin Access Section -->
-    <div class="bg-slate-100 py-16">
+    <div id="about" class="bg-slate-100 py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white rounded-xl shadow-lg p-8">
           <div class="text-center">
@@ -126,7 +126,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import {
   ChevronRight,
   ArrowRight,
@@ -141,38 +140,39 @@ import {
   BookOpen,
   Users
 } from 'lucide-vue-next'
+
 const services = [
   {
-    name: "Qualification Recognition",
+    name: "Recognition of Qualification",
     description: "Official verification and recognition of educational qualifications through our standardized system.",
     icon: GraduationCap,
     route: "/roq"
   },
   {
-    name: "Professional Certification",
+    name: "Education Consultancy & Placement Firms (ECPF)",
     description: "Comprehensive certification framework for educators and professionals in Bhutan.",
     icon: Award,
     route: "/ecpf"
   },
   {
-    name: "Institution Accreditation",
+    name: "Accreditation",
     description: "Systematic evaluation and accreditation of educational institutions.",
     icon: Building2,
     route: "/accreditation"
   },
   {
-    name: "Engineering Standards",
+    name: "Engineering Certification",
     description: "Professional certification and validation for engineering practitioners.",
     icon: BookOpen,
     route: "/engineering"
   },
   {
-    name: "Medical Certification",
+    name: "Bhutan Medical & Health Certification (BMHC)",
     description: "Official registration and certification for healthcare professionals.",
     icon: Users,
     route: "/bmhc"
   }
-]
+];
 
 const stats = [
   { label: "Certified Professionals", value: "10,000+" },
