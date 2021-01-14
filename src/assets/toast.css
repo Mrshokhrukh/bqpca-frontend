@@ -1,0 +1,42 @@
+.custom-toast-container {
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .custom-toast {
+    background-color: #ffffff;
+    color: #333333;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 12px 16px;
+  }
+  
+  .custom-toast-body {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .custom-toast-icon {
+    margin-right: 10px;
+    font-size: 18px;
+  }
+  
+  /* Custom styles for specific toast types */
+  .Vue-Toastification__toast--success {
+    background-color: #4caf50;
+    color: #ffffff;
+  }
+  
+  .Vue-Toastification__toast--error {
+    background-color: #f44336;
+    color: #ffffff;
+  }
+  
+  .Vue-Toastification__toast--info {
+    background-color: #2196f3;
+    color: #ffffff;
+  }
+  
+  .Vue-Toastification__toast--warning {
+    background-color: #ff9800;
+    color: #ffffff;
+  }

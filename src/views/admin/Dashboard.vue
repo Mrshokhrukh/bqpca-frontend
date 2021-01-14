@@ -1,4 +1,4 @@
-<!-- src/views/admin/Dashboard.vue -->
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div>
     <h1 class="text-2xl font-bold">Super Admin Dashboard</h1>

@@ -259,40 +259,45 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, defineProps } from 'vue'
-import { QrCode as QrCodeIcon, AlertTriangle as AlertTriangleIcon, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { ref, reactive, computed } from 'vue';
+import { useToast } from 'vue-toastification';
+import { QrCode as QrCodeIcon, AlertTriangle as AlertTriangleIcon, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { useAuthStore } from '@/stores/authStore';
 import apiService from '@/services/services'
 
 const props = defineProps({
   serviceType: {
     type: String,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const activeTab = ref('login')
-const showQRCode = ref(false)
-const showRegisterQRCode = ref(false)
-const showDatePicker = ref(false)
+const toast = useToast();
+const authStore = useAuthStore(); // Use the auth store
+
+const activeTab = ref('login');
+const showQRCode = ref(false);
+const showRegisterQRCode = ref(false);
+const showDatePicker = ref(false);
 
 // Date picker state
-const datePickerMonth = ref(new Date().getMonth())
-const datePickerYear = ref(new Date().getFullYear())
-const selectedDate = ref(null)
+const datePickerMonth = ref(new Date().getMonth());
+const datePickerYear = ref(new Date().getFullYear());
+const selectedDate = ref(null);
 
 const months = [
   'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-]
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
 
-const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 99 + i)
+const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 99 + i);
 
 const loginForm = reactive({
   email: '',
   password: '',
   remember: false,
-  service_type: props.serviceType
-})
+  service_type: props.serviceType,
+});
 
 const registerForm = reactive({
   first_name: '',
@@ -379,21 +384,15 @@ const isToday = (dateObj) => {
 
 const handleLogin = async () => {
   try {
-    const response = await apiService.login({
-      email: loginForm.email,
-      password: loginForm.password,
-      service_type: loginForm.service_type
-    })
-
-    console.log('Login successful:', response.data)
+    await authStore.login(loginForm); // Use the auth store's login action
   } catch (error) {
-    console.error('Login failed:', error.response?.data || error.message)
+    console.error(error);
   }
-}
+};
 
 const handleRegister = async () => {
   if (registerForm.password !== registerForm.confirm_password) {
-    alert('Passwords do not match');
+    toast.error('Passwords do not match');
     return;
   }
 
@@ -411,10 +410,11 @@ const handleRegister = async () => {
       service_type: registerForm.service_type,
     };
 
-    const response = await apiService.register(payload);
-    console.log('Registration successful:', response.data);
+    await apiService.register(payload);
+    toast.success('Registration successful! Please login.');
+    activeTab.value = 'login';
   } catch (error) {
-    console.error('Registration failed:', error.response?.data || error.message);
+    toast.error(error.response?.data?.message || 'Registration failed. Please try again.');
   }
 };
 </script>
