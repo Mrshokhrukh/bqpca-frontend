@@ -64,6 +64,7 @@ export default {
     roq: {
       dashboard: () => import('@/views/admin/ROQ/Dashboard.vue'),
       my_applications: () => import('@/views/admin/ROQ/MyApplications.vue'),
+      secondcopy_applications: () => import('@/views/admin/ROQ/secondcopy_applications.vue'),
       // new_application: () => import('@/views/admin/ROQ/NewApplication.vue'),
       // application_status: () => import('@/views/admin/ROQ/ApplicationStatus.vue'),
       // profile: () => import('@/views/admin/ROQ/Profile.vue'),

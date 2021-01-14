@@ -277,7 +277,7 @@ const generateNavigationItems = () => {
       {
         name: 'Apply for Second Copy',
         icon: getIconComponent('File'),
-        route: `/admin/user/${serviceType}/new_application`
+        route: `/admin/user/${serviceType}/secondcopy_applications`
       },
       // {
       //   name: 'Application Status',
