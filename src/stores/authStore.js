@@ -66,7 +66,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('user');
 
     toast.success('Logged out successfully!');
-    router.push('/admin/login');
+    router.push('/');
   };
 
   return {

@@ -168,7 +168,6 @@ const toggleProfileMenu = () => {
 
 const handleLogout = async () => {
   await authStore.logout();
-  router.push('/admin/login');
 };
 
 const handleProfile = () => {

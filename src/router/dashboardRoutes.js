@@ -15,9 +15,16 @@ function generateDynamicRoutes() {
         alias: `/admin/${role.key}`,
         beforeEnter: (to, from, next) => {
           const authStore = useAuthStore();
+          console.log('beforeEnter Guard:', {
+            routeRole: role.key,
+            authStoreServiceType: authStore.serviceType,
+            authStoreRole: authStore.role,
+          });
+
           if (authStore.role === role.key) {
             next();
           } else {
+            console.log('Unauthorized: Role mismatch');
             next({ name: 'unauthorized' });
           }
         },

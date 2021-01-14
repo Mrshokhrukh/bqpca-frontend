@@ -27,7 +27,7 @@
             error.
           </p>
           <div class="mt-10 flex justify-center gap-4">
-            <router-link to="/admin/login"
+            <router-link to="/#services"
               class="group inline-flex items-center px-6 py-3 bg-white text-slate-900 rounded-lg hover:bg-slate-100 transition-all shadow-lg hover:shadow-xl">
               <span>Return to Login</span>
               <ChevronRight class="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform" />
