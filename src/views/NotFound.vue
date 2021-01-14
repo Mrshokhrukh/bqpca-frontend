@@ -30,7 +30,7 @@
               <span>Return to Home</span>
               <ChevronRight class="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform" />
             </router-link>
-            <router-link to="/contact"
+            <router-link to="/#contact"
               class="inline-flex items-center px-6 py-3 border-2 border-white text-white rounded-lg hover:bg-white/10 transition-colors">
               Contact Support
             </router-link>

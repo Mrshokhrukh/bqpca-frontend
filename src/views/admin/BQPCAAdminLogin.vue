@@ -1,4 +1,3 @@
-<!-- src/views/admin/BQPCAAdminLogin.vue -->
 <template>
   <div class="min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
@@ -61,7 +60,7 @@
 
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <input type="checkbox" id="remember-me"
+              <input type="checkbox" id="remember-me" v-model="rememberMe"
                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded" />
               <label for="remember-me" class="ml-2 block text-sm text-slate-700">Remember me</label>
             </div>
@@ -84,13 +83,18 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { QrCode as QrCodeIcon } from 'lucide-vue-next'
+import { useAuthStore } from '@/stores/authStore'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
+const authStore = useAuthStore()
 
 const services = [
-  { id: 'roq', name: 'Qualification Recognition' },
-  { id: 'ecpf', name: 'Professional Certification' },
-  { id: 'accreditation', name: 'Institution Accreditation' },
-  { id: 'engineering', name: 'Engineering Standards' },
-  { id: 'bmhc', name: 'Medical Certification' }
+  { id: 'roq', name: 'ROQ' },
+  { id: 'ecpf', name: 'ECPF' },
+  { id: 'health_certification', name: 'Health Certification' },
+  { id: 'engineering_certification', name: 'Engineer Certification' },
+  { id: 'accreditation', name: 'Accreditation' },
 ]
 
 const loginTabs = [
@@ -102,6 +106,7 @@ const selectedService = ref('')
 const activeTab = ref('ndi')
 const email = ref('')
 const password = ref('')
+const rememberMe = ref(false)
 
 const isFormValid = computed(() => {
   if (!selectedService.value) return false
@@ -116,15 +121,21 @@ const handleLogin = async () => {
     if (activeTab.value === 'ndi') {
       // Handle NDI QR login
       console.log('Processing NDI login for service:', selectedService.value)
+      // Implement NDI QR login logic here if needed
     } else {
       // Handle email/password login
-      console.log('Processing email login:', {
-        service: selectedService.value,
-        email: email.value
-      })
+      const loginForm = {
+        email: email.value,
+        password: password.value,
+        remember: rememberMe.value,
+        service_type: selectedService.value,
+      }
+      await authStore.login(loginForm)
+      toast.success('Login successful!')
     }
   } catch (error) {
     console.error('Login error:', error)
+    toast.error(error.response?.data?.message || 'Login failed. Please try again.')
   }
 }
 </script>
