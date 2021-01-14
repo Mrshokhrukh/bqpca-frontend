@@ -11,11 +11,15 @@ export const useAuthStore = defineStore('auth', () => {
   // State
   const accessToken = ref(localStorage.getItem('accessToken') || null);
   const refreshToken = ref(localStorage.getItem('refreshToken') || null);
-  const serviceType = ref(localStorage.getItem('serviceType') || null);
-  const role = ref(localStorage.getItem('role') || null);
+  const user = ref(JSON.parse(localStorage.getItem('user')) || null);
 
   // Getters
   const isAuthenticated = computed(() => !!accessToken.value);
+  const serviceType = computed(() => user.value?.service_type || null);
+  const role = computed(() => user.value?.role || null);
+  const email = computed(() => user.value?.email || null);
+  const username = computed(() => user.value?.username || null);
+  const fullName = computed(() => user.value?.full_name || null);
 
   // Actions
   const login = async (credentials) => {
@@ -26,26 +30,24 @@ export const useAuthStore = defineStore('auth', () => {
         service_type: credentials.service_type,
       });
 
-      // Access properties directly from response.data
-      console.log('Full API Response:', response);
-      console.log('Response Data:', response.data);
-      console.log('Service Type from API:', response.data.service_type); // Correct access
-
       // Update state
       accessToken.value = response.data.access;
       refreshToken.value = response.data.refresh;
-      serviceType.value = response.data.service_type;
-      role.value = response.data.role;
+      user.value = {
+        email: response.data.email,
+        username: response.data.username,
+        full_name: response.data.full_name,
+        service_type: response.data.service_type,
+        role: response.data.role,
+      };
 
       // Save to localStorage
       localStorage.setItem('accessToken', response.data.access);
       localStorage.setItem('refreshToken', response.data.refresh);
-      localStorage.setItem('serviceType', response.data.service_type);
-      localStorage.setItem('role', response.data.role);
+      localStorage.setItem('user', JSON.stringify(user.value));
 
       toast.success('Login successful!');
-      console.log('Redirecting to:', `/dashboard/${response.data.service_type}/`);
-      router.push(`/dashboard/${response.data.service_type}/`);
+      router.push(`/admin/${response.data.service_type}/dashboard/`);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed. Please try again.');
       throw error;
@@ -56,14 +58,12 @@ export const useAuthStore = defineStore('auth', () => {
     // Clear state
     accessToken.value = null;
     refreshToken.value = null;
-    serviceType.value = null;
-    role.value = null;
+    user.value = null;
 
     // Clear localStorage
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    localStorage.removeItem('serviceType');
-    localStorage.removeItem('role');
+    localStorage.removeItem('user');
 
     toast.success('Logged out successfully!');
     router.push('/admin/login');
@@ -72,9 +72,13 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     accessToken,
     refreshToken,
+    user,
+    isAuthenticated,
     serviceType,
     role,
-    isAuthenticated,
+    email,
+    username,
+    fullName,
     login,
     logout,
   };

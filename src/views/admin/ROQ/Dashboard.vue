@@ -1,11 +1,16 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div>
-    <h1 class="text-2xl font-bold">ROQ Admin Dashboard</h1>
-    <div>TEST ROQ ADMIN DASHABORD</div>
+    <p>Welcome, {{ authStore.fullName }}!</p>
+    <p>Email: {{ authStore.email }}</p>
+    <p>Username: {{ authStore.username }}</p>
+    <p>Role: {{ authStore.role }}</p>
+    <p>Service Type: {{ authStore.serviceType }}</p>
   </div>
 </template>
 
 <script setup>
-// Add your script logic here
+import { useAuthStore } from '@/stores/authStore';
+
+const authStore = useAuthStore();
 </script>

@@ -5,7 +5,7 @@
     <div class="w-64 bg-slate-800 text-white transition-all duration-300" :class="{ '-ml-64': !sidebarOpen }">
       <div class="flex items-center justify-between p-4 border-b border-slate-700">
         <router-link to="/" class="flex items-center space-x-3">
-          <img src="@/assets/rgob.png" alt="BQPCA Logo" class="h-8 w-8">
+          <img src="@/assets/rgob.png" alt="BQPCA Logo" class="h-8 w-8" />
           <span class="font-semibold">BQPCA Admin</span>
         </router-link>
         <button @click="toggleSidebar" class="lg:hidden">
@@ -22,7 +22,7 @@
                 class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors" :class="[
                   isActive
                     ? 'bg-slate-700 text-white'
-                    : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                    : 'text-slate-300 hover:bg-slate-700 hover:text-white',
                 ]">
                 <component :is="item.icon" class="h-5 w-5 mr-3" />
                 {{ item.name }}
@@ -74,13 +74,20 @@
       <main class="flex-1 overflow-auto bg-slate-50 p-6">
         <router-view />
       </main>
+      <!-- Footer -->
+      <footer class="bg-white border-t border-slate-200 py-4 text-center">
+        <p class="text-sm text-slate-600">
+          &copy; {{ currentYear }} Bhutan Qualifications & Professional Certification Authority. All rights reserved.
+        </p>
+      </footer>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onBeforeMount } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/authStore';
 import {
   Menu,
   X as XIcon,
@@ -92,75 +99,121 @@ import {
   Users,
   ClipboardCheck,
   BookOpen,
-  Building2
-} from 'lucide-vue-next'
+  Building2,
+  File,
+  Folder,
+  Briefcase
+} from 'lucide-vue-next';
+import { SERVICE_TYPE_CHOICES } from '@/router/constants';
 
-// State
-const sidebarOpen = ref(true)
-const showProfileMenu = ref(false)
-const router = useRouter()
+// State (using Pinia)
+const authStore = useAuthStore();
+const sidebarOpen = ref(true);
+const showProfileMenu = ref(false);
+const router = useRouter();
 
-// Props
-const props = defineProps({
-  userRole: {
-    type: String,
-    required: true
-  },
-  userModule: {
-    type: String,
-    default: null
-  }
-})
+// Data
+const navigationItems = ref({});
 
-// Navigation items based on roles
-const navigationItems = {
-  superAdmin: [
-    { name: 'Dashboard', icon: LayoutDashboard, route: '/admin/dashboard' },
-    { name: 'Reports', icon: FileText, route: '/admin/reports' },
-    { name: 'Configuration', icon: Settings, route: '/admin/config' }
-  ],
-  roqAdmin: [
-    { name: 'Dashboard', icon: LayoutDashboard, route: '/roq/dashboard' },
-    { name: 'Applications', icon: ClipboardCheck, route: '/roq/applications' },
-    { name: 'Qualifications', icon: BookOpen, route: '/roq/qualifications' },
-    { name: 'Institutions', icon: Building2, route: '/roq/institutions' }
-  ],
-  ecpfAdmin: [
-    { name: 'Dashboard', icon: LayoutDashboard, route: '/ecpf/dashboard' },
-    { name: 'Certifications', icon: BookOpen, route: '/ecpf/certifications' },
-    { name: 'Professionals', icon: Users, route: '/ecpf/professionals' }
-  ],
-  // Add other module menus similarly
-}
+// Icons map
+const iconMap = {
+  LayoutDashboard,
+  FileText,
+  Settings,
+  Users,
+  ClipboardCheck,
+  BookOpen,
+  Building2,
+  File,
+  Folder,
+  Briefcase
+};
+
+onBeforeMount(async () => {
+  await router.isReady();
+  generateNavigationItems();
+});
 
 // Computed
 const userDisplayName = computed(() => {
-  return `${props.userRole} ${props.userModule ? `- ${props.userModule}` : ''}`
-})
+  const userFullName = authStore.fullName;
+  const serviceTypeLabel = SERVICE_TYPE_CHOICES.find((s) => s.key === authStore.serviceType)?.label || authStore.serviceType;
+
+  return `${userFullName} ${serviceTypeLabel ? `- ${serviceTypeLabel}` : ''}`;
+});
 
 const filteredNavigationItems = computed(() => {
-  if (props.userRole === 'superAdmin') {
-    return navigationItems.superAdmin
-  }
-  return navigationItems[`roqAdmin`]
-})
+  return navigationItems.value[authStore.role] || [];
+});
+
+const currentYear = computed(() => new Date().getFullYear());
 
 // Methods
 const toggleSidebar = () => {
-  sidebarOpen.value = !sidebarOpen.value
-}
+  sidebarOpen.value = !sidebarOpen.value;
+};
 
 const toggleProfileMenu = () => {
-  showProfileMenu.value = !showProfileMenu.value
-}
+  showProfileMenu.value = !showProfileMenu.value;
+};
 
 const handleLogout = async () => {
-  // Add logout logic here
-  await router.push('/admin/login')
-}
+  await authStore.logout();
+  router.push('/admin/login');
+};
 
 const handleProfile = () => {
-  showProfileMenu.value = false
-  // Add profile navigation logic
-}
+  showProfileMenu.value = false;
+};
+
+const getIconComponent = (iconName) => {
+  return iconMap[iconName] || File;
+};
+
+const generateNavigationItems = () => {
+  const role = authStore.role;
+  const serviceType = authStore.serviceType;
+  const routeMap = router.options.routes.find(r => r.path === '/admin').children;
+
+  if (role) {
+    navigationItems.value[role] = [];
+
+    if (role === 'super_admin') {
+      // Super Admin routes (no service type)
+      const superAdminRoutes = routeMap.find(r => r.path === 'super_admin')?.children || [];
+      superAdminRoutes.forEach(route => {
+        let cleanName = route.name.split('-')[1];
+        navigationItems.value[role].push({
+          name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1),
+          icon: getIconComponent(Object.keys(iconMap).find(key => key.toLowerCase().includes(cleanName))),
+          route: `/admin/super_admin/${route.path}`,
+        });
+      });
+    } else if (role === 'admin') {
+      // Admin routes (with service types)
+      const adminRoutes = routeMap.find(r => r.path === serviceType)?.children || [];
+      adminRoutes.forEach(route => {
+        let cleanName = route.name.split('-')[1];
+        navigationItems.value[role].push({
+          name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1),
+          icon: getIconComponent(Object.keys(iconMap).find(key => key.toLowerCase().includes(cleanName))),
+          route: `/admin/${serviceType}/${route.path}`,
+        });
+      });
+    } else {
+      // Routes for other roles (user, dealing_officer, chief, director)
+      const roleRoutes = routeMap.find(r => r.path === role)?.children || [];
+      const serviceRoutes = roleRoutes.find(r => r.path === serviceType)?.children || [];
+      serviceRoutes.forEach(route => {
+        let cleanName = route.name.split('-')[2];
+        navigationItems.value[role].push({
+          name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1),
+          icon: getIconComponent(Object.keys(iconMap).find(key => key.toLowerCase().includes(cleanName))),
+          route: `/admin/${role}/${serviceType}/${route.path}`,
+        });
+      });
+    }
+  }
+};
+
 </script>

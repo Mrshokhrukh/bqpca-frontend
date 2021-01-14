@@ -1,4 +1,3 @@
-// publicRoutes.js
 const publicRoutes = [
   {
     path: '/',
@@ -38,6 +37,20 @@ const publicRoutes = [
     name: 'bmhc',
     component: () => import('@/views/services/BMHCPage.vue'),
   },
+  {
+    path: '/unauthorized',
+    name: 'unauthorized',
+    component: () => import('@/views/Unauthorized.vue'),
+  },
+  {
+    path: '/404',
+    name: 'not-found',
+    component: () => import('@/views/NotFound.vue'),
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/404',
+  }
 ];
 
 export default publicRoutes;

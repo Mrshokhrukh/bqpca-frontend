@@ -120,7 +120,7 @@
 <script setup>
 import { ref } from 'vue'
 import { Clock, FileText, ShieldCheck } from 'lucide-vue-next'
-import AuthSection from '@/components/AuthSection.vue'
+import AuthSection from '@/components/common/AuthSection.vue'
 
 const serviceType = ref('ecpf')
 
