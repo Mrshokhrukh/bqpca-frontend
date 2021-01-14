@@ -102,7 +102,11 @@ import {
   Building2,
   File,
   Folder,
-  Briefcase
+  Briefcase,
+  Clock,
+  CheckCircle,
+  XCircle,
+  FileSearch
 } from 'lucide-vue-next';
 import { SERVICE_TYPE_CHOICES } from '@/router/constants';
 
@@ -126,7 +130,12 @@ const iconMap = {
   Building2,
   File,
   Folder,
-  Briefcase
+  Briefcase,
+  UserCircle,
+  Clock,
+  CheckCircle,
+  XCircle,
+  FileSearch
 };
 
 onBeforeMount(async () => {
@@ -173,46 +182,195 @@ const getIconComponent = (iconName) => {
 const generateNavigationItems = () => {
   const role = authStore.role;
   const serviceType = authStore.serviceType;
-  const routeMap = router.options.routes.find(r => r.path === '/admin').children;
 
-  if (role) {
-    navigationItems.value[role] = [];
+  if (!role) return;
 
-    if (role === 'super_admin') {
-      // Super Admin routes (no service type)
-      const superAdminRoutes = routeMap.find(r => r.path === 'super_admin')?.children || [];
-      superAdminRoutes.forEach(route => {
-        let cleanName = route.name.split('-')[1];
-        navigationItems.value[role].push({
-          name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1),
-          icon: getIconComponent(Object.keys(iconMap).find(key => key.toLowerCase().includes(cleanName))),
-          route: `/admin/super_admin/${route.path}`,
-        });
-      });
-    } else if (role === 'admin') {
-      // Admin routes (with service types)
-      const adminRoutes = routeMap.find(r => r.path === serviceType)?.children || [];
-      adminRoutes.forEach(route => {
-        let cleanName = route.name.split('-')[1];
-        navigationItems.value[role].push({
-          name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1),
-          icon: getIconComponent(Object.keys(iconMap).find(key => key.toLowerCase().includes(cleanName))),
-          route: `/admin/${serviceType}/${route.path}`,
-        });
-      });
-    } else {
-      // Routes for other roles (user, dealing_officer, chief, director)
-      const roleRoutes = routeMap.find(r => r.path === role)?.children || [];
-      const serviceRoutes = roleRoutes.find(r => r.path === serviceType)?.children || [];
-      serviceRoutes.forEach(route => {
-        let cleanName = route.name.split('-')[2];
-        navigationItems.value[role].push({
-          name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1),
-          icon: getIconComponent(Object.keys(iconMap).find(key => key.toLowerCase().includes(cleanName))),
-          route: `/admin/${role}/${serviceType}/${route.path}`,
-        });
-      });
-    }
+  navigationItems.value[role] = [];
+
+  if (role === 'super_admin') {
+    // Super Admin routes
+    navigationItems.value[role] = [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: '/admin/super_admin/dashboard'
+      },
+      {
+        name: 'Users',
+        icon: getIconComponent('Users'),
+        route: '/admin/super_admin/users'
+      },
+      {
+        name: 'User Management',
+        icon: getIconComponent('Users'),
+        route: '/admin/super_admin/user_management'
+      },
+      {
+        name: 'Settings',
+        icon: getIconComponent('Settings'),
+        route: '/admin/super_admin/settings'
+      },
+      {
+        name: 'Activity Logs',
+        icon: getIconComponent('FileText'),
+        route: '/admin/super_admin/activity_logs'
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('ClipboardCheck'),
+        route: '/admin/super_admin/reports'
+      }
+    ];
+  }
+  else if (role === 'admin') {
+    // Admin routes based on service type
+    navigationItems.value[role] = [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: `/admin/${serviceType}/dashboard`
+      },
+      {
+        name: 'Applications',
+        icon: getIconComponent('FileText'),
+        route: `/admin/${serviceType}/applications`
+      },
+      {
+        name: 'New Application',
+        icon: getIconComponent('File'),
+        route: `/admin/${serviceType}/new_application`
+      },
+      {
+        name: 'Pending Applications',
+        icon: getIconComponent('Clock'),
+        route: `/admin/${serviceType}/pending_applications`
+      },
+      {
+        name: 'Approved Applications',
+        icon: getIconComponent('CheckCircle'),
+        route: `/admin/${serviceType}/approved_applications`
+      },
+      {
+        name: 'Clients',
+        icon: getIconComponent('Users'),
+        route: `/admin/${serviceType}/clients`
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('ClipboardCheck'),
+        route: `/admin/${serviceType}/reports`
+      }
+    ];
+  }
+  else if (role === 'user') {
+    // User routes based on service type
+    navigationItems.value[role] = [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: `/admin/user/${serviceType}/dashboard`
+      },
+      {
+        name: 'Apply for RoQ',
+        icon: getIconComponent('FileText'),
+        route: `/admin/user/${serviceType}/my_applications`
+      },
+      {
+        name: 'Apply for Second Copy',
+        icon: getIconComponent('File'),
+        route: `/admin/user/${serviceType}/new_application`
+      },
+      // {
+      //   name: 'Application Status',
+      //   icon: getIconComponent('ClipboardCheck'),
+      //   route: `/admin/user/${serviceType}/application_status`
+      // },
+      {
+        name: 'Profile',
+        icon: getIconComponent('UserCircle'),
+        route: `/admin/user/${serviceType}/profile`
+      }
+    ];
+  }
+  else if (role === 'dealing_officer') {
+    // Dealing Officer routes
+    navigationItems.value[role] = [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: `/admin/dealing_officer/${serviceType}/dashboard`
+      },
+      {
+        name: 'Pending Applications',
+        icon: getIconComponent('Clock'),
+        route: `/admin/dealing_officer/${serviceType}/pending_applications`
+      },
+      {
+        name: 'Approved Applications',
+        icon: getIconComponent('CheckCircle'),
+        route: `/admin/dealing_officer/${serviceType}/approved_applications`
+      },
+      {
+        name: 'Rejected Applications',
+        icon: getIconComponent('XCircle'),
+        route: `/admin/dealing_officer/${serviceType}/rejected_applications`
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('ClipboardCheck'),
+        route: `/admin/dealing_officer/${serviceType}/reports`
+      }
+    ];
+  }
+  else if (role === 'chief') {
+    // Chief routes
+    navigationItems.value[role] = [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: `/admin/chief/${serviceType}/dashboard`
+      },
+      {
+        name: 'For Review Applications',
+        icon: getIconComponent('FileSearch'),
+        route: `/admin/chief/${serviceType}/for_review_applications`
+      },
+      {
+        name: 'Endorsed Applications',
+        icon: getIconComponent('CheckCircle'),
+        route: `/admin/chief/${serviceType}/endorsed_applications`
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('ClipboardCheck'),
+        route: `/admin/chief/${serviceType}/reports`
+      }
+    ];
+  }
+  else if (role === 'director') {
+    // Director routes
+    navigationItems.value[role] = [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: `/admin/director/${serviceType}/dashboard`
+      },
+      {
+        name: 'For Approval Applications',
+        icon: getIconComponent('FileSearch'),
+        route: `/admin/director/${serviceType}/for_approval_applications`
+      },
+      {
+        name: 'Approved Applications',
+        icon: getIconComponent('CheckCircle'),
+        route: `/admin/director/${serviceType}/approved_applications`
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('ClipboardCheck'),
+        route: `/admin/director/${serviceType}/reports`
+      }
+    ];
   }
 };
 
