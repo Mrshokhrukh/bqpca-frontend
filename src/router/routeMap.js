@@ -11,13 +11,11 @@ export default {
   admin: {
     roq: {
       dashboard: () => import('@/views/admin/ROQ/Dashboard.vue'),
-      // applications: () => import('@/views/admin/ROQ/Applications.vue'),
-      // new_application: () => import('@/views/admin/ROQ/NewApplication.vue'),
-      // pending_applications: () => import('@/views/admin/ROQ/PendingApplications.vue'),
-      // approved_applications: () => import('@/views/admin/ROQ/ApprovedApplications.vue'),
-      // clients: () => import('@/views/admin/ROQ/Clients.vue'),
-      // reports: () => import('@/views/admin/ROQ/Reports.vue'),
-      // ... all other ROQ related routes for admin
+      decisions: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      learning_types: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      qualifications: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      reason_for_issue_of_second_copy: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      type_of_courses: () => import('@/views/admin/ROQ/Dashboard.vue'),
     },
     ecpf: {
       dashboard: () => import('@/views/admin/ECPF/Dashboard.vue'),
@@ -63,8 +61,8 @@ export default {
   user: {
     roq: {
       dashboard: () => import('@/views/admin/ROQ/Dashboard.vue'),
-      my_applications: () => import('@/views/admin/ROQ/MyApplications.vue'),
-      secondcopy_applications: () => import('@/views/admin/ROQ/secondcopy_applications.vue'),
+      // my_applications: () => import('@/views/admin/ROQ/MyApplications.vue'),
+      // secondcopy_applications: () => import('@/views/admin/ROQ/secondcopy_applications.vue'),
       // new_application: () => import('@/views/admin/ROQ/NewApplication.vue'),
       // application_status: () => import('@/views/admin/ROQ/ApplicationStatus.vue'),
       // profile: () => import('@/views/admin/ROQ/Profile.vue'),

@@ -47,7 +47,6 @@ export const generateNavigationItems = (role, serviceType) => {
   navigationItems[role] = []
 
   if (role === 'super_admin') {
-    // Super Admin routes
     navigationItems[role] = [
       {
         name: 'Dashboard',
@@ -81,7 +80,6 @@ export const generateNavigationItems = (role, serviceType) => {
       },
     ]
   } else if (role === 'admin') {
-    // Admin routes based on service type
     navigationItems[role] = [
       {
         name: 'Dashboard',
@@ -89,34 +87,29 @@ export const generateNavigationItems = (role, serviceType) => {
         route: `/admin/admin/${serviceType}/dashboard`,
       },
       {
-        name: 'Applications',
+        name: 'Decisions',
         icon: getIconComponent('FileText'),
-        route: `/admin/admin/${serviceType}/applications`,
+        route: `/admin/admin/${serviceType}/decisions`,
       },
       {
-        name: 'New Application',
+        name: 'Learning Types',
         icon: getIconComponent('File'),
-        route: `/admin/admin/${serviceType}/new_application`,
+        route: `/admin/admin/${serviceType}/learning_types`,
       },
       {
-        name: 'Pending Applications',
+        name: 'Qualifications',
         icon: getIconComponent('Clock'),
-        route: `/admin/admin/${serviceType}/pending_applications`,
+        route: `/admin/admin/${serviceType}/qualifications`,
       },
       {
         name: 'Approved Applications',
         icon: getIconComponent('CheckCircle'),
-        route: `/admin/admin/${serviceType}/approved_applications`,
+        route: `/admin/admin/${serviceType}/reason_for_issue_of_second_copy`,
       },
       {
-        name: 'Clients',
+        name: 'Type of Courses',
         icon: getIconComponent('Users'),
-        route: `/admin/admin/${serviceType}/clients`,
-      },
-      {
-        name: 'Reports',
-        icon: getIconComponent('ClipboardCheck'),
-        route: `/admin/admin/${serviceType}/reports`,
+        route: `/admin/admin/${serviceType}/type_of_courses`,
       },
     ]
   } else if (role === 'user') {

@@ -1,9 +1,14 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="p-4">
-    <StatsGrid :stats="filteredStats" />
-    <ApplicationTable :applications="paginatedApplications" :current-page="currentPage" :total-results="filteredTotal"
-      :per-page="perPage" @page-change="handlePageChange" />
+    <template v-if="role === 'admin'">
+      <AdminComponent />
+    </template>
+    <template v-else>
+      <StatsGrid :stats="filteredStats" />
+      <ApplicationTable :applications="paginatedApplications" :current-page="currentPage" :total-results="filteredTotal"
+        :per-page="perPage" @page-change="handlePageChange" />
+    </template>
   </div>
 </template>
 
@@ -12,17 +17,10 @@ import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import StatsGrid from '@/components/dashboard/roqcomponents/StatsGrid.vue';
 import ApplicationTable from '@/components/dashboard/roqcomponents/ApplicationsTable.vue';
+import AdminComponent from '@/components/dashboard/roqcomponents/admin/AdminDashboard.vue';
 import apiService from '@/services/services';
 
 const { role, user } = useAuthStore();
-
-// const stats = ref({
-//   totalApplied: 0,
-//   totalApproved: 0,
-//   totalRegretted: 0,
-//   totalPending: 0
-// });
-
 const applications = ref([]);
 const currentPage = ref(1);
 const perPage = ref(10);

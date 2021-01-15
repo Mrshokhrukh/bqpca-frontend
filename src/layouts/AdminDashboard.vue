@@ -23,16 +23,17 @@
       <div class="flex-1 overflow-y-auto custom-scrollbar p-4">
         <nav class="space-y-1.5">
           <template v-for="item in filteredNavigationItems" :key="item.name">
-            <router-link :to="item.route" v-slot="{ isActive }" custom>
-              <a :href="item.route"
-                class="flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200" :class="[
+            <router-link :to="item.route" v-slot="{ isActive, navigate }" custom>
+              <div @click="navigate"
+                class="flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer"
+                :class="[
                   isActive
                     ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
                     : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
                 ]">
                 <component :is="item.icon" class="h-5 w-5 mr-3" :class="{ 'text-primary': isActive }" />
                 {{ item.name }}
-              </a>
+              </div>
             </router-link>
           </template>
         </nav>
