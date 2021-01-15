@@ -86,37 +86,37 @@ export const generateNavigationItems = (role, serviceType) => {
       {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
-        route: `/admin/${serviceType}/dashboard`,
+        route: `/admin/admin/${serviceType}/dashboard`,
       },
       {
         name: 'Applications',
         icon: getIconComponent('FileText'),
-        route: `/admin/${serviceType}/applications`,
+        route: `/admin/admin/${serviceType}/applications`,
       },
       {
         name: 'New Application',
         icon: getIconComponent('File'),
-        route: `/admin/${serviceType}/new_application`,
+        route: `/admin/admin/${serviceType}/new_application`,
       },
       {
         name: 'Pending Applications',
         icon: getIconComponent('Clock'),
-        route: `/admin/${serviceType}/pending_applications`,
+        route: `/admin/admin/${serviceType}/pending_applications`,
       },
       {
         name: 'Approved Applications',
         icon: getIconComponent('CheckCircle'),
-        route: `/admin/${serviceType}/approved_applications`,
+        route: `/admin/admin/${serviceType}/approved_applications`,
       },
       {
         name: 'Clients',
         icon: getIconComponent('Users'),
-        route: `/admin/${serviceType}/clients`,
+        route: `/admin/admin/${serviceType}/clients`,
       },
       {
         name: 'Reports',
         icon: getIconComponent('ClipboardCheck'),
-        route: `/admin/${serviceType}/reports`,
+        route: `/admin/admin/${serviceType}/reports`,
       },
     ]
   } else if (role === 'user') {

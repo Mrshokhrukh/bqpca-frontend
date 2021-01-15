@@ -16,12 +16,12 @@ import apiService from '@/services/services';
 
 const { role, user } = useAuthStore();
 
-const stats = ref({
-  totalApplied: 0,
-  totalApproved: 0,
-  totalRegretted: 0,
-  totalPending: 0
-});
+// const stats = ref({
+//   totalApplied: 0,
+//   totalApproved: 0,
+//   totalRegretted: 0,
+//   totalPending: 0
+// });
 
 const applications = ref([]);
 const currentPage = ref(1);
