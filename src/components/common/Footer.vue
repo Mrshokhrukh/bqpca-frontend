@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <!-- src/components/common/Footer.vue -->
 <template>
   <footer class="bg-gradient-to-b from-gray-900 to-slate-900 text-white relative overflow-hidden">

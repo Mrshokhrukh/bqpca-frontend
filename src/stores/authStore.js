@@ -41,13 +41,16 @@ export const useAuthStore = defineStore('auth', () => {
         role: response.data.role,
       };
 
+      // Log the role and service_type for debugging
+      console.log('Logged in as:', user.value.role, 'with service type:', user.value.service_type);
+
       // Save to localStorage
       localStorage.setItem('accessToken', response.data.access);
       localStorage.setItem('refreshToken', response.data.refresh);
       localStorage.setItem('user', JSON.stringify(user.value));
 
       toast.success('Login successful!');
-      router.push(`/admin/${response.data.service_type}/dashboard/`);
+      router.push(`/admin/${user.value.role}/${user.value.service_type}/dashboard/`);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed. Please try again.');
       throw error;
