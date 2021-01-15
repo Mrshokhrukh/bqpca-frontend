@@ -1,19 +1,19 @@
 <template>
-    <div class="space-y-6">
-        <StatsCards :stats="stats" />
-        <ApplicationHistoryTable :applications="applications" />
+    <div class="p-4">
+        <StatsGrid :stats="filteredStats" />
+        <ApplicationTable :applications="paginatedApplications" :current-page="currentPage"
+            :total-results="filteredTotal" :per-page="perPage" @page-change="handlePageChange" />
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
-import StatsCards from './StatsCards.vue';
-import ApplicationHistoryTable from './ApplicationHistoryTable.vue';
+import StatsGrid from './StatsGrid.vue';
+import ApplicationTable from './ApplicationsTable.vue';
 
-const authStore = useAuthStore();
+const { role, user } = useAuthStore();
 
-// Stats data
 const stats = ref({
     totalApplied: 0,
     totalApproved: 0,
@@ -21,42 +21,65 @@ const stats = ref({
     totalPending: 0
 });
 
-// Applications data
 const applications = ref([]);
+const currentPage = ref(1);
+const perPage = ref(10);
 
-// Fetch dashboard data
-const fetchDashboardData = async () => {
+// Filter applications based on role
+const filteredApplications = computed(() => {
+    switch (role) {
+        case 'user':
+            return applications.value.filter(app => app.user_id === user.id);
+
+        case 'dealing_officer':
+            return applications.value.filter(app => app.dealing_officer_id === user.id);
+
+        case 'chief':
+            return applications.value.filter(app => app.department_id === user.department_id);
+
+        case 'director':
+            return applications.value;
+
+        default:
+            return [];
+    }
+});
+
+// Calculate stats based on filtered applications
+const filteredStats = computed(() => {
+    const filtered = filteredApplications.value;
+    return {
+        totalApplied: filtered.length,
+        totalApproved: filtered.filter(app => app.status === 'Approved').length,
+        totalRegretted: filtered.filter(app => app.status === 'Regretted').length,
+        totalPending: filtered.filter(app => app.status === 'Pending').length
+    };
+});
+
+// Compute total for pagination
+const filteredTotal = computed(() => filteredApplications.value.length);
+
+// Get paginated data
+const paginatedApplications = computed(() => {
+    const start = (currentPage.value - 1) * perPage.value;
+    const end = start + perPage.value;
+    return filteredApplications.value.slice(start, end);
+});
+
+const loadData = async () => {
     try {
-        // Replace with actual API calls
-        stats.value = {
-            totalApplied: 125,
-            totalApproved: 80,
-            totalRegretted: 15,
-            totalPending: 30
-        };
-
-        // Mock applications data
-        applications.value = [
-            {
-                id: 'APP001',
-                date: '2024-01-10',
-                type: 'New Application',
-                status: 'Approved'
-            },
-            {
-                id: 'APP002',
-                date: '2024-01-15',
-                type: 'Renewal',
-                status: 'Pending'
-            },
-            // Add more mock data as needed
-        ];
+        const response = await apiService.get('/applications');
+        applications.value = response.data.applications;
     } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        console.error('Error loading data:', error);
     }
 };
 
+const handlePageChange = (newPage) => {
+    currentPage.value = newPage;
+};
+
 onMounted(() => {
-    fetchDashboardData();
+    loadData();
 });
 </script>

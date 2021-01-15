@@ -16,7 +16,7 @@ import {
   XCircle,
   FileSearch,
 } from 'lucide-vue-next'
-import { SERVICE_TYPE_CHOICES } from '@/router/constants' // Keep the import
+// import { SERVICE_TYPE_CHOICES } from '@/router/constants'
 const iconMap = {
   LayoutDashboard,
   FileText,

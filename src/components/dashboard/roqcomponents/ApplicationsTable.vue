@@ -1,56 +1,89 @@
 <template>
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Application ID
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="application in applications" :key="application.id">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.id }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(application.date) }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ application.type }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <StatusBadge :status="application.status" />
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <ApplicationActions :id="application.id" />
-                    </td>
-                </tr>
-                <tr v-if="applications.length === 0">
-                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">No applications found</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="bg-white rounded-lg shadow">
+        <div class="p-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold">Application History</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th v-for="header in headers" :key="header.key"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {{ header.label }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr v-for="application in applications" :key="application.id">
+                        <td class="px-6 py-4 whitespace-nowrap">{{ application.id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(application.date) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ application.type }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span :class="getStatusClass(application.status)">
+                                {{ application.status }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <router-link :to="{ name: 'application-details', params: { id: application.id } }"
+                                class="text-blue-600 hover:text-blue-900">
+                                View
+                            </router-link>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <TablePagination :current-page="currentPage" :total-results="totalResults" :per-page="perPage"
+            @page-change="handlePageChange" />
     </div>
 </template>
+
 <script setup>
-import { useRouter } from 'vue-router';
-import ApplicationActions from './ApplicationActions.vue';
-import StatusBadge from './StatusBadge.vue';
+import TablePagination from './TablePagination.vue';
+
 defineProps({
     applications: {
         type: Array,
         required: true
+    },
+    currentPage: {
+        type: Number,
+        default: 1
+    },
+    totalResults: {
+        type: Number,
+        required: true
+    },
+    perPage: {
+        type: Number,
+        default: 10
     }
-})
+});
 
-// Format date
+const emit = defineEmits(['page-change']);
+
+const headers = [
+    { key: 'id', label: 'Application ID' },
+    { key: 'date', label: 'Date' },
+    { key: 'type', label: 'Type' },
+    { key: 'status', label: 'Status' },
+    { key: 'actions', label: 'Actions' }
+];
+
 const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
+    return new Date(date).toLocaleDateString();
+};
+
+const getStatusClass = (status) => {
+    const classes = {
+        Approved: 'text-green-800 bg-green-100',
+        Pending: 'text-yellow-800 bg-yellow-100',
+        Regretted: 'text-red-800 bg-red-100'
+    };
+    return `px-2 py-1 text-xs font-medium rounded-full ${classes[status] || ''}`;
+};
+
+const handlePageChange = (page) => {
+    emit('page-change', page);
 };
 </script>
