@@ -11,6 +11,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import StatsGrid from './StatsGrid.vue';
 import ApplicationTable from './ApplicationsTable.vue';
+import apiService from '@/services/services';
 
 const { role, user } = useAuthStore();
 
@@ -29,15 +30,26 @@ const perPage = ref(10);
 const filteredApplications = computed(() => {
     switch (role) {
         case 'user':
-            return applications.value.filter(app => app.user_id === user.id);
+            // Filter by applicants_name or email_address that matches current user
+            return applications.value.filter(app => app.email_address === user.email);
 
         case 'dealing_officer':
-            return applications.value.filter(app => app.dealing_officer_id === user.id);
+            // Filter applications that haven't been processed yet or are in dealing officer stage
+            return applications.value.filter(app =>
+                !app.dealing_officer_decision ||
+                (!app.chief_approved && !app.chief_regret)
+            );
 
         case 'chief':
-            return applications.value.filter(app => app.department_id === user.department_id);
+            // Filter applications forwarded to chief
+            return applications.value.filter(app =>
+                app.forward &&
+                !app.chief_approved &&
+                !app.chief_regret
+            );
 
         case 'director':
+            // Directors see all applications
             return applications.value;
 
         default:
@@ -50,9 +62,15 @@ const filteredStats = computed(() => {
     const filtered = filteredApplications.value;
     return {
         totalApplied: filtered.length,
-        totalApproved: filtered.filter(app => app.status === 'Approved').length,
-        totalRegretted: filtered.filter(app => app.status === 'Regretted').length,
-        totalPending: filtered.filter(app => app.status === 'Pending').length
+        totalApproved: filtered.filter(app => app.chief_approved).length,
+        totalRegretted: filtered.filter(app =>
+            app.dealing_officer_regret || app.chief_regret
+        ).length,
+        totalPending: filtered.filter(app =>
+            !app.chief_approved &&
+            !app.dealing_officer_regret &&
+            !app.chief_regret
+        ).length
     };
 });
 
@@ -63,13 +81,28 @@ const filteredTotal = computed(() => filteredApplications.value.length);
 const paginatedApplications = computed(() => {
     const start = (currentPage.value - 1) * perPage.value;
     const end = start + perPage.value;
-    return filteredApplications.value.slice(start, end);
+
+    // Transform the data to match the table structure
+    return filteredApplications.value.slice(start, end).map(app => ({
+        id: app.id,
+        date: app.date_of_birth, // You might want to use a different date field
+        type: app.type_of_course,
+        status: getApplicationStatus(app),
+    }));
 });
+
+// Helper function to determine application status
+const getApplicationStatus = (application) => {
+    if (application.chief_approved) return 'Approved';
+    if (application.chief_regret) return 'Regretted';
+    if (application.dealing_officer_regret) return 'Regretted';
+    return 'Pending';
+};
 
 const loadData = async () => {
     try {
-        const response = await apiService.get('/applications');
-        applications.value = response.data.applications;
+        const response = await apiService.get('/recognitions/recognition-of-qualifications/');
+        applications.value = response.data.results; // Note: using .results from the API response
     } catch (error) {
         console.error('Error loading data:', error);
     }
