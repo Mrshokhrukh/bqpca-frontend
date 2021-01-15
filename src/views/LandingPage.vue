@@ -2,7 +2,7 @@
 <template>
   <div class="min-h-screen bg-slate-50">
     <!-- Hero Section with Animated Background -->
-    <div class="relative bg-gradient-to-r from-slate-900 to-slate-800 overflow-hidden">
+    <div class="relative bg-gradient-to-r from-slate-900 to-slate-800 overflow-hidden mt-20">
       <!-- Decorative circles -->
       <div class="absolute inset-0">
         <div class="absolute -top-20 -right-20 w-72 h-72 bg-blue-600/10 rounded-full blur-3xl"></div>
