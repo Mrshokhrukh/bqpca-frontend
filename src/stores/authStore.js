@@ -41,9 +41,6 @@ export const useAuthStore = defineStore('auth', () => {
         role: response.data.role,
       };
 
-      // Log the role and service_type for debugging
-      console.log('Logged in as:', user.value.role, 'with service type:', user.value.service_type);
-
       // Save to localStorage
       localStorage.setItem('accessToken', response.data.access);
       localStorage.setItem('refreshToken', response.data.refresh);
