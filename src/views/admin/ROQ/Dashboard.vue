@@ -55,7 +55,6 @@ import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealin
 import ChiefDashboard from '@/components/dashboard/roqcomponents/chief/ChiefDashboard.vue';
 import ChiefApplicationList from '@/components/dashboard/roqcomponents/chief/ChiefApplicationLists.vue';
 import SecondCopyLists from '@/components/dashboard/roqcomponents/chief/SecondCopyLists.vue';
-import apiService from '@/services/services';
 
 
 const { role, user } = useAuthStore();
