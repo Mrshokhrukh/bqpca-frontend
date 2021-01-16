@@ -102,7 +102,7 @@ export const generateNavigationItems = (role, serviceType) => {
         route: `/admin/admin/${serviceType}/qualifications`,
       },
       {
-        name: 'Approved Applications',
+        name: 'Second Copy Reasons',
         icon: getIconComponent('CheckCircle'),
         route: `/admin/admin/${serviceType}/reason_for_issue_of_second_copy`,
       },
@@ -150,19 +150,24 @@ export const generateNavigationItems = (role, serviceType) => {
         route: `/admin/dealing_officer/${serviceType}/dashboard`,
       },
       {
-        name: 'Pending Applications',
+        name: 'Application Pool',
         icon: getIconComponent('Clock'),
-        route: `/admin/dealing_officer/${serviceType}/pending_applications`,
+        route: `/admin/dealing_officer/${serviceType}/application_pool`,
       },
       {
-        name: 'Approved Applications',
+        name: 'Application Lists',
         icon: getIconComponent('CheckCircle'),
-        route: `/admin/dealing_officer/${serviceType}/approved_applications`,
+        route: `/admin/dealing_officer/${serviceType}/application_lists`,
       },
       {
-        name: 'Rejected Applications',
+        name: 'Second Copy Pool',
         icon: getIconComponent('XCircle'),
-        route: `/admin/dealing_officer/${serviceType}/rejected_applications`,
+        route: `/admin/dealing_officer/${serviceType}/second_copy_pool`,
+      },
+      {
+        name: 'Second Copy Lists',
+        icon: getIconComponent('XCircle'),
+        route: `/admin/dealing_officer/${serviceType}/second_copy_lists`,
       },
       {
         name: 'Reports',

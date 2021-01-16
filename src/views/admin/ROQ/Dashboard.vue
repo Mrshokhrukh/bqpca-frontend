@@ -41,10 +41,18 @@ import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 import StatsGrid from '@/components/dashboard/roqcomponents/StatsGrid.vue';
 import ApplicationTable from '@/components/dashboard/roqcomponents/ApplicationsTable.vue';
+import apiService from '@/services/services';
+// Admin Components Import
 import AdminDashboard from '@/components/dashboard/roqcomponents/admin/AdminDashboard.vue';
 import AdminDecision from '@/components/dashboard/roqcomponents/admin/AdminDecision.vue';
 import AdminLearningType from '@/components/dashboard/roqcomponents/admin/AdminLearningType.vue';
-import apiService from '@/services/services';
+import AdminQualification from '@/components/dashboard/roqcomponents/admin/AdminQualification.vue';
+import AdminTypeOfCourse from '@/components/dashboard/roqcomponents/admin/AdminTypeOfCourse.vue';
+import AdminSecondCopyReason from '@/components/dashboard/roqcomponents/admin/AdminSecondCopyReason.vue';
+
+// Dealing Officer Components Import
+import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealingOfficer/DealingOfficerDashboard.vue';
+
 
 const { role, user } = useAuthStore();
 const route = useRoute();
@@ -62,6 +70,12 @@ const adminComponent = computed(() => {
       return AdminDecision;
     case path.endsWith('/roq/learning_types'):
       return AdminLearningType;
+    case path.endsWith('/roq/qualifications'):
+      return AdminQualification;
+    case path.endsWith('/roq/type_of_courses'):
+      return AdminTypeOfCourse;
+    case path.endsWith('/roq/reason_for_issue_of_second_copy'):
+      return AdminSecondCopyReason;
     default:
       return null;
   }
@@ -70,12 +84,22 @@ const adminComponent = computed(() => {
 // Dealing Officer Route-Based Components
 const dealingOfficerComponent = computed(() => {
   const path = route.path;
-  // Add route-based components for dealing officer here
-  // Example:
-  // if (path.endsWith('/roq/dashboard')) {
-  //   return DealingOfficerDashboard;
-  // }
-  return null;
+  switch (true) {
+    case path.endsWith('/roq/dashboard'):
+      return DealingOfficerDashboard;
+    // case path.endsWith('/roq/decisions'):
+    //   return AdminDecision;
+    // case path.endsWith('/roq/learning_types'):
+    //   return AdminLearningType;
+    // case path.endsWith('/roq/qualifications'):
+    //   return AdminQualification;
+    // case path.endsWith('/roq/type_of_courses'):
+    //   return AdminTypeOfCourse;
+    // case path.endsWith('/roq/reason_for_issue_of_second_copy'):
+    //   return AdminSecondCopyReason;
+    default:
+      return null;
+  }
 });
 
 // Chief Route-Based Components
