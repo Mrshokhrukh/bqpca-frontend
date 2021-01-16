@@ -47,7 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('user', JSON.stringify(user.value));
 
       toast.success('Login successful!');
-      router.push(`/admin/${user.value.role}/${user.value.service_type}/dashboard/`);
+      router.push(`/admin/${user.value.role}/${user.value.service_type}/dashboard`);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed. Please try again.');
       throw error;
