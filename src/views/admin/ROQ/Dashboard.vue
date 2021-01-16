@@ -1,10 +1,32 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="p-4">
+    <!-- Admin Section -->
     <template v-if="role === 'admin'">
-      <!-- Route-based rendering -->
-      <component :is="currentComponent" />
+      <component :is="adminComponent" />
     </template>
+
+    <!-- Dealing Officer Section -->
+    <template v-else-if="role === 'dealing_officer'">
+      <component :is="dealingOfficerComponent" />
+    </template>
+
+    <!-- Chief Section -->
+    <template v-else-if="role === 'chief'">
+      <component :is="chiefComponent" />
+    </template>
+
+    <!-- Director Section -->
+    <template v-else-if="role === 'director'">
+      <component :is="directorComponent" />
+    </template>
+
+    <!-- Super Admin Section -->
+    <template v-else-if="role === 'super_admin'">
+      <component :is="superAdminComponent" />
+    </template>
+
+    <!-- Default Section (User) -->
     <template v-else>
       <StatsGrid :stats="filteredStats" />
       <ApplicationTable :applications="paginatedApplications" :current-page="currentPage" :total-results="filteredTotal"
@@ -15,7 +37,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router'; // Import useRoute
+import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 import StatsGrid from '@/components/dashboard/roqcomponents/StatsGrid.vue';
 import ApplicationTable from '@/components/dashboard/roqcomponents/ApplicationsTable.vue';
@@ -25,22 +47,68 @@ import AdminLearningType from '@/components/dashboard/roqcomponents/admin/AdminL
 import apiService from '@/services/services';
 
 const { role, user } = useAuthStore();
-const route = useRoute(); // Get the current route
+const route = useRoute();
 const applications = ref([]);
 const currentPage = ref(1);
 const perPage = ref(10);
 
-// Determine the current component based on the route
-const currentComponent = computed(() => {
-  const path = route.path; // Get the current path
-  if (path.endsWith('/roq/dashboard')) {
-    return AdminDashboard;
-  } else if (path.endsWith('/roq/decisions')) {
-    return AdminDecision;
-  } else if (path.endsWith('/roq/learning_types')) {
-    return AdminLearningType;
+// Admin Route-Based Components
+const adminComponent = computed(() => {
+  const path = route.path;
+  switch (true) {
+    case path.endsWith('/roq/dashboard'):
+      return AdminDashboard;
+    case path.endsWith('/roq/decisions'):
+      return AdminDecision;
+    case path.endsWith('/roq/learning_types'):
+      return AdminLearningType;
+    default:
+      return null;
   }
-  return null; // Default fallback
+});
+
+// Dealing Officer Route-Based Components
+const dealingOfficerComponent = computed(() => {
+  const path = route.path;
+  // Add route-based components for dealing officer here
+  // Example:
+  // if (path.endsWith('/roq/dashboard')) {
+  //   return DealingOfficerDashboard;
+  // }
+  return null;
+});
+
+// Chief Route-Based Components
+const chiefComponent = computed(() => {
+  const path = route.path;
+  // Add route-based components for chief here
+  // Example:
+  // if (path.endsWith('/roq/dashboard')) {
+  //   return ChiefDashboard;
+  // }
+  return null;
+});
+
+// Director Route-Based Components
+const directorComponent = computed(() => {
+  const path = route.path;
+  // Add route-based components for director here
+  // Example:
+  // if (path.endsWith('/roq/dashboard')) {
+  //   return DirectorDashboard;
+  // }
+  return null;
+});
+
+// Super Admin Route-Based Components
+const superAdminComponent = computed(() => {
+  const path = route.path;
+  // Add route-based components for super admin here
+  // Example:
+  // if (path.endsWith('/roq/dashboard')) {
+  //   return SuperAdminDashboard;
+  // }
+  return null;
 });
 
 // Filter applications based on role
@@ -102,7 +170,7 @@ const paginatedApplications = computed(() => {
   // Transform the data to match the table structure
   return filteredApplications.value.slice(start, end).map(app => ({
     id: app.id,
-    date: app.date_of_birth, // You might want to use a different date field
+    date: app.date_of_birth,
     type: app.type_of_course,
     status: getApplicationStatus(app),
   }));
@@ -119,7 +187,7 @@ const getApplicationStatus = (application) => {
 const loadData = async () => {
   try {
     const response = await apiService.get('/recognitions/recognition-of-qualifications/');
-    applications.value = response.data.results; // Note: using .results from the API response
+    applications.value = response.data.results;
   } catch (error) {
     console.error('Error loading data:', error);
   }
