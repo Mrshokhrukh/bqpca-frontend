@@ -2,7 +2,8 @@
 <template>
   <div class="p-4">
     <template v-if="role === 'admin'">
-      <AdminComponent />
+      <!-- Route-based rendering -->
+      <component :is="currentComponent" />
     </template>
     <template v-else>
       <StatsGrid :stats="filteredStats" />
@@ -14,16 +15,33 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router'; // Import useRoute
 import { useAuthStore } from '@/stores/authStore';
 import StatsGrid from '@/components/dashboard/roqcomponents/StatsGrid.vue';
 import ApplicationTable from '@/components/dashboard/roqcomponents/ApplicationsTable.vue';
-import AdminComponent from '@/components/dashboard/roqcomponents/admin/AdminDashboard.vue';
+import AdminDashboard from '@/components/dashboard/roqcomponents/admin/AdminDashboard.vue';
+import AdminDecision from '@/components/dashboard/roqcomponents/admin/AdminDecision.vue';
+import AdminLearningType from '@/components/dashboard/roqcomponents/admin/AdminLearningType.vue';
 import apiService from '@/services/services';
 
 const { role, user } = useAuthStore();
+const route = useRoute(); // Get the current route
 const applications = ref([]);
 const currentPage = ref(1);
 const perPage = ref(10);
+
+// Determine the current component based on the route
+const currentComponent = computed(() => {
+  const path = route.path; // Get the current path
+  if (path.endsWith('/roq/dashboard')) {
+    return AdminDashboard;
+  } else if (path.endsWith('/roq/decisions')) {
+    return AdminDecision;
+  } else if (path.endsWith('/roq/learning_types')) {
+    return AdminLearningType;
+  }
+  return null; // Default fallback
+});
 
 // Filter applications based on role
 const filteredApplications = computed(() => {
