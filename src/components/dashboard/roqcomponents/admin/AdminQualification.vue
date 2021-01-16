@@ -27,7 +27,7 @@
                 <label for="qualificationDescription" class="block text-sm font-medium text-slate-700">Description</label>
                 <textarea
                   id="qualificationDescription"
-                  v-model="formData.description"
+                  v-model="formData.definition"
                   rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md
                          focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -99,7 +99,7 @@
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">{{ qualification.name }}</h3>
-                    <p class="text-sm text-slate-600 mt-1">{{ qualification.description }}</p>
+                    <p class="text-sm text-slate-600 mt-1">{{ qualification.definition }}</p>
                   </div>
                   <div class="flex gap-2">
                     <button
@@ -112,7 +112,7 @@
                       </svg>
                     </button>
                     <button
-                      @click="deleteQualification(qualification.id)"
+                      @click="openDeleteModal(qualification)"
                       class="p-2 text-red-600 hover:bg-red-50 rounded-md"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,31 +156,79 @@
           </div>
         </div>
       </div>
+
+      <!-- Confirmation modal -->
+      <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
+        <AlertDialogContent
+          class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50">
+          <AlertDialogTitle class="text-xl font-semibold text-slate-900 mb-2">
+            Are you absolutely sure?
+          </AlertDialogTitle>
+          <AlertDialogDescription class="text-slate-600 mb-6">
+            This action cannot be undone. This will permanently delete the qualification
+            "{{ qualificationToDelete?.name }}".
+          </AlertDialogDescription>
+          <div class="flex justify-end gap-4">
+            <AlertDialogCancel class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
+              @click="closeDeleteModal">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+              @click="confirmDelete">
+              Delete
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+        <AlertDialogOverlay class="fixed inset-0 bg-black/50 z-40" />
+      </AlertDialogRoot>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
+import services from '@/services/services';
+import {
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogOverlay,
+  AlertDialogRoot,
+  AlertDialogTitle,
+} from 'radix-vue';
 
 // State
 const qualifications = ref([]);
 const formData = ref({
   id: null,
   name: '',
-  description: ''
+  definition: ''
 });
 const isEditing = ref(false);
 const searchQuery = ref('');
 const currentPage = ref(1);
 const itemsPerPage = 5;
 
+const isDeleteModalOpen = ref(false);
+const qualificationToDelete = ref(null);
+
+// Fetch qualifications on component mount
+onMounted(async () => {
+  try {
+    const response = await services.getQualifications();
+    qualifications.value = response.data.results;
+  } catch (error) {
+    console.error('Error fetching qualifications:', error);
+  }
+});
+
 // Computed
 const filteredQualifications = computed(() => {
   return qualifications.value.filter(qualification => {
     const query = searchQuery.value.toLowerCase();
     return qualification.name.toLowerCase().includes(query) ||
-           qualification.description.toLowerCase().includes(query);
+      qualification.definition.toLowerCase().includes(query);
   });
 });
 
@@ -195,19 +243,22 @@ const paginatedQualifications = computed(() => {
 });
 
 // Methods
-const handleSubmit = () => {
-  if (isEditing.value) {
-    const index = qualifications.value.findIndex(q => q.id === formData.value.id);
-    if (index !== -1) {
-      qualifications.value[index] = { ...formData.value };
+const handleSubmit = async () => {
+  try {
+    if (isEditing.value) {
+      const response = await services.updateQualification(formData.value.id, formData.value);
+      const index = qualifications.value.findIndex(q => q.id === formData.value.id);
+      if (index !== -1) {
+        qualifications.value[index] = response.data;
+      }
+    } else {
+      const response = await services.createQualification(formData.value);
+      qualifications.value.push(response.data);
     }
-  } else {
-    qualifications.value.push({
-      ...formData.value,
-      id: Date.now()
-    });
+    resetForm();
+  } catch (error) {
+    console.error('Error saving qualification:', error);
   }
-  resetForm();
 };
 
 const startEdit = (qualification) => {
@@ -219,10 +270,28 @@ const cancelEdit = () => {
   resetForm();
 };
 
-const deleteQualification = (id) => {
-  const index = qualifications.value.findIndex(q => q.id === id);
-  if (index !== -1) {
-    qualifications.value.splice(index, 1);
+const openDeleteModal = (qualification) => {
+  qualificationToDelete.value = qualification;
+  isDeleteModalOpen.value = true;
+};
+
+const closeDeleteModal = () => {
+  isDeleteModalOpen.value = false;
+  qualificationToDelete.value = null;
+};
+
+const confirmDelete = async () => {
+  if (!qualificationToDelete.value) return;
+
+  try {
+    await services.deleteQualification(qualificationToDelete.value.id);
+    const index = qualifications.value.findIndex(q => q.id === qualificationToDelete.value.id);
+    if (index !== -1) {
+      qualifications.value.splice(index, 1);
+    }
+    closeDeleteModal();
+  } catch (error) {
+    console.error('Error deleting qualification:', error);
   }
 };
 
@@ -230,7 +299,7 @@ const resetForm = () => {
   formData.value = {
     id: null,
     name: '',
-    description: ''
+    definition: ''
   };
   isEditing.value = false;
 };

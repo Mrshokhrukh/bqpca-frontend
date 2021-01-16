@@ -108,8 +108,13 @@ export const generateNavigationItems = (role, serviceType) => {
       },
       {
         name: 'Type of Courses',
-        icon: getIconComponent('Users'),
+        icon: getIconComponent('Books'),
         route: `/admin/admin/${serviceType}/type_of_courses`,
+      },
+      {
+        name: 'Profile',
+        icon: getIconComponent('Users'),
+        route: `/admin/admin/${serviceType}/user_profile`,
       },
     ]
   } else if (role === 'user') {

@@ -36,12 +36,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 import StatsGrid from '@/components/dashboard/roqcomponents/StatsGrid.vue';
 import ApplicationTable from '@/components/dashboard/roqcomponents/ApplicationsTable.vue';
-import apiService from '@/services/services';
 // Admin Components Import
 import AdminDashboard from '@/components/dashboard/roqcomponents/admin/AdminDashboard.vue';
 import AdminDecision from '@/components/dashboard/roqcomponents/admin/AdminDecision.vue';
@@ -49,6 +48,7 @@ import AdminLearningType from '@/components/dashboard/roqcomponents/admin/AdminL
 import AdminQualification from '@/components/dashboard/roqcomponents/admin/AdminQualification.vue';
 import AdminTypeOfCourse from '@/components/dashboard/roqcomponents/admin/AdminTypeOfCourse.vue';
 import AdminSecondCopyReason from '@/components/dashboard/roqcomponents/admin/AdminSecondCopyReason.vue';
+import AdminProfile from '@/components/dashboard/roqcomponents/admin/AdminProfile.vue';
 
 // Dealing Officer Components Import
 import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealingOfficer/DealingOfficerDashboard.vue';
@@ -79,6 +79,8 @@ const adminComponent = computed(() => {
       return AdminTypeOfCourse;
     case path.endsWith('/roq/reason_for_issue_of_second_copy'):
       return AdminSecondCopyReason;
+    case path.endsWith('/roq/user_profile'):
+      return AdminProfile;
     default:
       return null;
   }
@@ -146,11 +148,9 @@ const superAdminComponent = computed(() => {
 const filteredApplications = computed(() => {
   switch (role) {
     case 'user':
-      // Filter by applicants_name or email_address that matches current user
       return applications.value.filter(app => app.email_address === user.email);
 
     case 'dealing_officer':
-      // Filter applications that haven't been processed yet or are in dealing officer stage
       return applications.value.filter(app =>
         !app.dealing_officer_decision ||
         (!app.chief_approved && !app.chief_regret)
@@ -215,20 +215,7 @@ const getApplicationStatus = (application) => {
   return 'Pending';
 };
 
-const loadData = async () => {
-  try {
-    const response = await apiService.get('/recognitions/recognition-of-qualifications/');
-    applications.value = response.data.results;
-  } catch (error) {
-    console.error('Error loading data:', error);
-  }
-};
-
 const handlePageChange = (newPage) => {
   currentPage.value = newPage;
 };
-
-onMounted(() => {
-  loadData();
-});
 </script>
