@@ -26,7 +26,12 @@
       <component :is="superAdminComponent" />
     </template>
 
-    <!-- Default Section (User) -->
+    <!-- User Section (with specific routes) -->
+    <template v-else-if="role === 'user'">
+      <component :is="userComponent" />
+    </template>
+
+    <!-- Default Section (fallback) -->
     <template v-else>
       <StatsGrid :stats="filteredStats" />
       <ApplicationTable :applications="paginatedApplications" :current-page="currentPage" :total-results="filteredTotal"
@@ -42,6 +47,7 @@ import { useAuthStore } from '@/stores/authStore';
 import StatsGrid from '@/components/dashboard/roqcomponents/StatsGrid.vue';
 import ApplicationTable from '@/components/dashboard/roqcomponents/ApplicationsTable.vue';
 import apiService from '@/services/services';
+
 // Admin Components Import
 import AdminDashboard from '@/components/dashboard/roqcomponents/admin/AdminDashboard.vue';
 import AdminDecision from '@/components/dashboard/roqcomponents/admin/AdminDecision.vue';
@@ -49,14 +55,25 @@ import AdminLearningType from '@/components/dashboard/roqcomponents/admin/AdminL
 import AdminQualification from '@/components/dashboard/roqcomponents/admin/AdminQualification.vue';
 import AdminTypeOfCourse from '@/components/dashboard/roqcomponents/admin/AdminTypeOfCourse.vue';
 import AdminSecondCopyReason from '@/components/dashboard/roqcomponents/admin/AdminSecondCopyReason.vue';
+import AdminProfile from '@/components/dashboard/roqcomponents/admin/AdminProfile.vue'; // Added Import
 
 // Dealing Officer Components Import
 import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealingOfficer/DealingOfficerDashboard.vue';
+<<<<<<< HEAD
 import ApplicationList from '@/components/dashboard/roqcomponents/dealingOfficer/ApplicationList.vue';
+=======
+
+// Chief Components Import
+>>>>>>> 37dd591357e57a1f8aaeeec35a2328e42bf6db27
 import ChiefDashboard from '@/components/dashboard/roqcomponents/chief/ChiefDashboard.vue';
 import ChiefApplicationList from '@/components/dashboard/roqcomponents/chief/ChiefApplicationLists.vue';
 import SecondCopyLists from '@/components/dashboard/roqcomponents/chief/SecondCopyLists.vue';
 
+// User Components Import
+import UserDashboard from '@/components/dashboard/roqcomponents/user/UserDashboard.vue';
+import UserApplications from '@/components/dashboard/roqcomponents/user/UserRoqApplicationList.vue';
+import SecondCopyApplication from '@/components/dashboard/roqcomponents/user/SecondCopyApplication.vue'; // Added Import
+import ProfileView from '@/components/dashboard/roqcomponents/user/ProfileView.vue'; // Added Import
 
 const { role, user } = useAuthStore();
 const route = useRoute();
@@ -80,6 +97,8 @@ const adminComponent = computed(() => {
       return AdminTypeOfCourse;
     case path.endsWith('/roq/reason_for_issue_of_second_copy'):
       return AdminSecondCopyReason;
+    case path.endsWith('/roq/user_profile'): //Added route for admin profile
+      return AdminProfile;
     default:
       return null;
   }
@@ -91,6 +110,7 @@ const dealingOfficerComponent = computed(() => {
   switch (true) {
     case path.endsWith('/roq/dashboard'):
       return DealingOfficerDashboard;
+<<<<<<< HEAD
     case path.endsWith('/roq/application_lists'):
       return ApplicationList;
     // case path.endsWith('/roq/decisions'):
@@ -103,6 +123,8 @@ const dealingOfficerComponent = computed(() => {
     //   return AdminTypeOfCourse;
     // case path.endsWith('/roq/reason_for_issue_of_second_copy'):
     //   return AdminSecondCopyReason;
+=======
+>>>>>>> 37dd591357e57a1f8aaeeec35a2328e42bf6db27
     default:
       return null;
   }
@@ -145,22 +167,36 @@ const superAdminComponent = computed(() => {
   return null;
 });
 
+// User Route-Based Components
+const userComponent = computed(() => {
+  const path = route.path;
+  switch (true) {
+    case path.endsWith('/roq/dashboard'):
+      return UserDashboard;
+    case path.endsWith('/roq/my_applications'):
+      return UserApplications;
+    case path.endsWith('/roq/secondcopy_applications'):
+      return SecondCopyApplication;
+    case path.endsWith('/roq/profile'):
+      return ProfileView; // Corrected case statement, using the correct variable name
+    default:
+      return null;
+  }
+});
+
 // Filter applications based on role
 const filteredApplications = computed(() => {
   switch (role) {
     case 'user':
-      // Filter by applicants_name or email_address that matches current user
       return applications.value.filter(app => app.email_address === user.email);
 
     case 'dealing_officer':
-      // Filter applications that haven't been processed yet or are in dealing officer stage
       return applications.value.filter(app =>
         !app.dealing_officer_decision ||
         (!app.chief_approved && !app.chief_regret)
       );
 
     case 'chief':
-      // Filter applications forwarded to chief
       return applications.value.filter(app =>
         app.forward &&
         !app.chief_approved &&
@@ -168,7 +204,6 @@ const filteredApplications = computed(() => {
       );
 
     case 'director':
-      // Directors see all applications
       return applications.value;
 
     default:
@@ -218,14 +253,18 @@ const getApplicationStatus = (application) => {
   return 'Pending';
 };
 
+
 const loadData = async () => {
   try {
-    const response = await apiService.get('/recognitions/recognition-of-qualifications/');
+    const response = await apiService.getRecognitions({
+      email_address: user.email
+    });
     applications.value = response.data.results;
   } catch (error) {
     console.error('Error loading data:', error);
   }
 };
+
 
 const handlePageChange = (newPage) => {
   currentPage.value = newPage;

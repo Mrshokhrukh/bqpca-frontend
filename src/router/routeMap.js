@@ -16,6 +16,7 @@ export default {
       qualifications: () => import('@/views/admin/ROQ/Dashboard.vue'),
       reason_for_issue_of_second_copy: () => import('@/views/admin/ROQ/Dashboard.vue'),
       type_of_courses: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      user_profile: () => import('@/views/admin/ROQ/Dashboard.vue'),
     },
     ecpf: {
       dashboard: () => import('@/views/admin/ECPF/Dashboard.vue'),
@@ -61,11 +62,11 @@ export default {
   user: {
     roq: {
       dashboard: () => import('@/views/admin/ROQ/Dashboard.vue'),
-      // my_applications: () => import('@/views/admin/ROQ/MyApplications.vue'),
-      // secondcopy_applications: () => import('@/views/admin/ROQ/secondcopy_applications.vue'),
+      my_applications: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      secondcopy_applications: () => import('@/views/admin/ROQ/Dashboard.vue'),
       // new_application: () => import('@/views/admin/ROQ/NewApplication.vue'),
       // application_status: () => import('@/views/admin/ROQ/ApplicationStatus.vue'),
-      // profile: () => import('@/views/admin/ROQ/Profile.vue'),
+      profile: () => import('@/views/admin/ROQ/Dashboard.vue'),
       // ... other ROQ routes for a regular user
     },
     ecpf: {

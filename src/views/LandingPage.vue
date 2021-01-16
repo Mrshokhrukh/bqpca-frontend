@@ -14,7 +14,8 @@
           <!-- Hero Content -->
           <div class="col-span-6 text-white">
             <div class="space-y-2 mb-6">
-              <div class="inline-flex items-center px-3 py-1 rounded-full border border-blue-400/30 bg-blue-400/10 text-blue-200">
+              <div
+                class="inline-flex items-center px-3 py-1 rounded-full border border-blue-400/30 bg-blue-400/10 text-blue-200">
                 <span class="text-sm">Official Government Authority</span>
               </div>
             </div>
@@ -45,7 +46,7 @@
             <div class="bg-white/5 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/10">
               <div class="grid grid-cols-2 gap-6">
                 <div v-for="stat in stats" :key="stat.label"
-                     class="p-6 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20">
+                  class="p-6 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20">
                   <p class="text-3xl font-bold text-white mb-1">{{ stat.value }}</p>
                   <p class="text-sm text-slate-300">{{ stat.label }}</p>
                 </div>
@@ -78,7 +79,9 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div v-for="service in services" :key="service.name"
             class="group relative bg-white rounded-xl hover:shadow-xl transition-all duration-300 border border-slate-200 overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+            </div>
             <div class="p-8 relative">
               <div class="flex items-center mb-6">
                 <div class="p-3 rounded-lg bg-blue-50 group-hover:bg-blue-100 transition-colors">
@@ -102,14 +105,82 @@
       </div>
     </div>
 
+    <!-- About Section -->
+    <div id="about" class="py-24 bg-slate-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-20">
+          <h2 class="text-3xl font-serif font-bold text-slate-900">About BQPCA</h2>
+          <div class="w-20 h-1 bg-blue-600 mx-auto mt-4"></div>
+          <p class="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
+            The Bhutan Qualifications and Professionals Certification Authority provides comprehensive certification,
+            qualification accreditation, and professional standards management under the Ministry of Education and
+            Skills Development.
+          </p>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <!-- Left Column: Mission & Description -->
+          <div class="relative">
+            <div class="absolute -top-10 -left-10 w-40 h-40 bg-blue-50 rounded-full opacity-50 blur-2xl"></div>
+            <div
+              class="relative bg-white rounded-xl p-8 shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-300">
+              <h3 class="text-2xl font-serif font-bold text-slate-800 mb-6">Our Mission</h3>
+              <p class="text-slate-600 leading-relaxed mb-6">
+                To automate and streamline professional certification and qualification processes,
+                enhancing service delivery and creating a centralized support system for all stakeholders in Bhutan.
+              </p>
+              <div class="flex items-center space-x-4 text-blue-600">
+                <DocumentCheckIcon class="w-6 h-6" />
+                <span class="font-medium">Ensuring Excellence in Professional Standards</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Councils Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div v-for="council in councils" :key="council.name"
+              class="group bg-white rounded-xl p-6 shadow-lg border border-slate-200 hover:border-blue-200 hover:shadow-xl transition-all duration-300">
+              <div class="flex flex-col h-full">
+                <div class="p-3 rounded-lg bg-blue-50 w-fit mb-4 group-hover:bg-blue-100 transition-colors">
+                  <component :is="council.icon" class="w-6 h-6 text-blue-600" />
+                </div>
+                <h4 class="text-lg font-semibold text-slate-900 mb-2">{{ council.name }}</h4>
+                <p class="text-slate-600 text-sm flex-grow">{{ council.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Stats Section -->
+        <div class="mt-20 bg-white rounded-2xl shadow-xl p-12 relative overflow-hidden">
+          <div class="absolute inset-0">
+            <div class="absolute top-0 right-0 w-40 h-40 bg-blue-50 rounded-full -translate-y-1/2 translate-x-1/2">
+            </div>
+            <div class="absolute bottom-0 left-0 w-40 h-40 bg-slate-50 rounded-full translate-y-1/2 -translate-x-1/2">
+            </div>
+          </div>
+
+          <div class="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div v-for="achievement in achievements" :key="achievement.label" class="text-center">
+              <p class="text-3xl font-bold text-blue-600 mb-2">{{ achievement.value }}</p>
+              <p class="text-sm text-slate-600">{{ achievement.label }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Admin Access Section -->
-    <div id="about" class="bg-slate-100 py-20">
+    <div id="login" class="bg-slate-100 py-20">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white rounded-2xl shadow-xl p-12 relative overflow-hidden">
           <!-- Decorative elements -->
           <div class="absolute inset-0">
-            <div class="absolute top-0 right-0 w-40 h-40 bg-blue-50 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-            <div class="absolute bottom-0 left-0 w-40 h-40 bg-slate-50 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+            <div class="absolute top-0 right-0 w-40 h-40 bg-blue-50 rounded-full -translate-y-1/2 translate-x-1/2">
+            </div>
+            <div class="absolute bottom-0 left-0 w-40 h-40 bg-slate-50 rounded-full translate-y-1/2 -translate-x-1/2">
+            </div>
           </div>
 
           <div class="text-center relative">
@@ -177,7 +248,9 @@ import {
   Building2,
   BookOpen,
   Users,
-  ArrowDownCircle
+  ArrowDownCircle,
+  Users as UsersIcon,
+  ClipboardCheck as DocumentCheckIcon
 } from 'lucide-vue-next'
 
 const services = [
@@ -214,7 +287,7 @@ const services = [
 ];
 
 const stats = [
-  { label: "Certified Professionals", value: "10,000+" },
+  { label: "Certified Professionals", value: "5,000+" },
   { label: "Accredited Institutions", value: "100+" },
   { label: "Certification Rate", value: "98%" },
   { label: "Processing Efficiency", value: "95%" }
@@ -236,5 +309,35 @@ const contacts = [
     info: "+975 XXXXXXX",
     icon: Phone
   }
+]
+
+const councils = [
+  {
+    name: 'MHPC',
+    description: 'Medical & Health Professional Council for healthcare certification',
+    icon: UsersIcon
+  },
+  {
+    name: 'HEQC',
+    description: 'Higher Education Quality Council for academic standards',
+    icon: GraduationCap
+  },
+  {
+    name: 'TVET-QC',
+    description: 'Technical & Vocational Education Training Quality Council',
+    icon: Award
+  },
+  {
+    name: 'EPC',
+    description: 'Engineering Professional Council for engineering certifications',
+    icon: Building2
+  }
+]
+
+const achievements = [
+  { label: 'Professional Certifications', value: '5,000+' },
+  { label: 'Registered Institutions', value: '100+' },
+  { label: 'Success Rate', value: '98%' },
+  { label: 'User Satisfaction', value: '95%' }
 ]
 </script>
