@@ -146,8 +146,8 @@ export default {
   chief: {
     roq: {
       dashboard: () => import('@/views/admin/ROQ/Dashboard.vue'),
-      // for_review_applications: () => import('@/views/admin/ROQ/ForReviewApplications.vue'),
-      // endorsed_applications: () => import('@/views/admin/ROQ/EndorsedApplications.vue'),
+      application_lists: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      second_copy_lists: () => import('@/views/admin/ROQ/Dashboard.vue'),
       // reports: () => import('@/views/admin/ROQ/Reports.vue'),
       // ... other ROQ routes for chief
     },

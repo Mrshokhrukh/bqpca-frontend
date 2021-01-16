@@ -44,6 +44,9 @@ import ApplicationTable from '@/components/dashboard/roqcomponents/ApplicationsT
 import AdminDashboard from '@/components/dashboard/roqcomponents/admin/AdminDashboard.vue';
 import AdminDecision from '@/components/dashboard/roqcomponents/admin/AdminDecision.vue';
 import AdminLearningType from '@/components/dashboard/roqcomponents/admin/AdminLearningType.vue';
+import ChiefDashboard from '@/components/dashboard/roqcomponents/chief/ChiefDashboard.vue';
+import ChiefApplicationList from '@/components/dashboard/roqcomponents/chief/ChiefApplicationLists.vue';
+import SecondCopyLists from '@/components/dashboard/roqcomponents/chief/SecondCopyLists.vue';
 import apiService from '@/services/services';
 
 const { role, user } = useAuthStore();
@@ -81,12 +84,16 @@ const dealingOfficerComponent = computed(() => {
 // Chief Route-Based Components
 const chiefComponent = computed(() => {
   const path = route.path;
-  // Add route-based components for chief here
-  // Example:
-  // if (path.endsWith('/roq/dashboard')) {
-  //   return ChiefDashboard;
-  // }
-  return null;
+  switch (true) {
+    case path.endsWith('/roq/dashboard'):
+      return ChiefDashboard;
+    case path.endsWith('/roq/application_lists'):
+      return ChiefApplicationList;
+    case path.endsWith('/roq/second_copy_lists'):
+      return SecondCopyLists;
+    default:
+      return null;
+  }
 });
 
 // Director Route-Based Components

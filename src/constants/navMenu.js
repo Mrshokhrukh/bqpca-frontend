@@ -179,14 +179,14 @@ export const generateNavigationItems = (role, serviceType) => {
         route: `/admin/chief/${serviceType}/dashboard`,
       },
       {
-        name: 'For Review Applications',
+        name: 'Application Lists',
         icon: getIconComponent('FileSearch'),
-        route: `/admin/chief/${serviceType}/for_review_applications`,
+        route: `/admin/chief/${serviceType}/application_lists`,
       },
       {
-        name: 'Endorsed Applications',
+        name: 'Second Copy Lists',
         icon: getIconComponent('CheckCircle'),
-        route: `/admin/chief/${serviceType}/endorsed_applications`,
+        route: `/admin/chief/${serviceType}/second_copy_lists`,
       },
       {
         name: 'Reports',
