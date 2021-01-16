@@ -41,7 +41,11 @@ export const useAuthStore = defineStore('auth', () => {
       accessToken.value = response.data.access;
       refreshToken.value = response.data.refresh;
       user.value = {
+<<<<<<< Updated upstream
         id: response.data.user_id, // Ensure this is included
+=======
+        id: response.data.user_id, // Store the user ID
+>>>>>>> Stashed changes
         email: response.data.email,
         username: response.data.username,
         full_name: response.data.full_name,
@@ -79,10 +83,19 @@ export const useAuthStore = defineStore('auth', () => {
 
   const refreshAccessToken = async () => {
     try {
+<<<<<<< Updated upstream
+=======
+      console.log("Refreshing access token. Refresh token:", refreshToken.value);
+>>>>>>> Stashed changes
       const response = await apiService.post('/users/token/refresh/', {
         refresh: refreshToken.value, // Make sure this is in the request body
       });
 
+<<<<<<< Updated upstream
+=======
+      console.log("Refresh token response:", response.data);
+
+>>>>>>> Stashed changes
       accessToken.value = response.data.access;
       localStorage.setItem('accessToken', response.data.access);
 
@@ -105,6 +118,7 @@ export const useAuthStore = defineStore('auth', () => {
     email,
     username,
     fullName,
+    userId, // Expose the user ID getter
     login,
     logout,
     initializeAuth,
