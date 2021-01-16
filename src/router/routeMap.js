@@ -104,7 +104,7 @@ export default {
   dealing_officer: {
     roq: {
       dashboard: () => import('@/views/admin/ROQ/Dashboard.vue'),
-      // pending_applications: () => import('@/views/admin/ROQ/PendingApplications.vue'),
+      application_lists: () => import('@/views/admin/ROQ/Dashboard.vue'),
       // approved_applications: () => import('@/views/admin/ROQ/ApprovedApplications.vue'),
       // rejected_applications: () => import('@/views/admin/ROQ/RejectedApplications.vue'),
       // reports: () => import('@/views/admin/ROQ/Reports.vue'),
