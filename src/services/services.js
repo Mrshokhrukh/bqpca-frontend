@@ -149,4 +149,9 @@ export default {
   deleteTypeOfCourse(id) {
     return apiClient.delete(`/masters/roq-types-of-course/${id}/`)
   },
-}
+
+  // Fetch user details by user_id
+  getUserDetails(userId) {
+    return apiClient.get(`/users/user/${userId}/`);
+  },
+};
