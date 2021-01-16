@@ -41,7 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
       accessToken.value = response.data.access;
       refreshToken.value = response.data.refresh;
       user.value = {
-        id: response.data.user_id, // Store the user ID
+        id: response.data.user_id, // Ensure this is included
         email: response.data.email,
         username: response.data.username,
         full_name: response.data.full_name,
@@ -79,12 +79,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   const refreshAccessToken = async () => {
     try {
-      console.log("Refreshing access token. Refresh token:", refreshToken.value);
       const response = await apiService.post('/users/token/refresh/', {
         refresh: refreshToken.value, // Make sure this is in the request body
       });
-
-      console.log("Refresh token response:", response.data);
 
       accessToken.value = response.data.access;
       localStorage.setItem('accessToken', response.data.access);
@@ -101,13 +98,13 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken,
     refreshToken,
     user,
+    userId, // Add this
     isAuthenticated,
     serviceType,
     role,
     email,
     username,
     fullName,
-    userId, // Expose the user ID getter
     login,
     logout,
     initializeAuth,
