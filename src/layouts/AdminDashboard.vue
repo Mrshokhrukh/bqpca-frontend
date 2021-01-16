@@ -88,7 +88,7 @@
                     class="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
                     @click="handleProfile">
                     <Settings class="h-4 w-4 mr-2" />
-                    Profile Settings
+                    Go to Profile
                   </a>
                   <a href="#"
                     class="flex items-center px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors"
@@ -181,7 +181,12 @@ const handleLogout = async () => {
 
 const handleProfile = () => {
   showProfileMenu.value = false;
-  // Add profile navigation logic
+
+  const role = authStore.role;
+  const serviceType = authStore.serviceType;
+
+  const profileRoute = `/admin/${role}/${serviceType}/user_profile`;
+  router.push(profileRoute);
 };
 </script>
 

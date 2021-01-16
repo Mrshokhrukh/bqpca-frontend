@@ -20,6 +20,13 @@ export const useAuthStore = defineStore('auth', () => {
   const email = computed(() => user.value?.email || null);
   const username = computed(() => user.value?.username || null);
   const fullName = computed(() => user.value?.full_name || null);
+  const userId = computed(() => user.value?.id || null); // Add a getter for user ID
+
+  // Fetch and set tokens from localStorage
+  const initializeAuth = () => {
+    accessToken.value = localStorage.getItem('accessToken') || null;
+    refreshToken.value = localStorage.getItem('refreshToken') || null;
+  };
 
   // Actions
   const login = async (credentials) => {
@@ -34,6 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
       accessToken.value = response.data.access;
       refreshToken.value = response.data.refresh;
       user.value = {
+        id: response.data.user_id, // Store the user ID
         email: response.data.email,
         username: response.data.username,
         full_name: response.data.full_name,
@@ -69,6 +77,26 @@ export const useAuthStore = defineStore('auth', () => {
     router.push('/');
   };
 
+  const refreshAccessToken = async () => {
+    try {
+      console.log("Refreshing access token. Refresh token:", refreshToken.value);
+      const response = await apiService.post('/users/token/refresh/', {
+        refresh: refreshToken.value, // Make sure this is in the request body
+      });
+
+      console.log("Refresh token response:", response.data);
+
+      accessToken.value = response.data.access;
+      localStorage.setItem('accessToken', response.data.access);
+
+      return response.data.access;
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      logout();
+      throw error;
+    }
+  };
+
   return {
     accessToken,
     refreshToken,
@@ -79,7 +107,10 @@ export const useAuthStore = defineStore('auth', () => {
     email,
     username,
     fullName,
+    userId, // Expose the user ID getter
     login,
     logout,
+    initializeAuth,
+    refreshAccessToken,
   };
 });

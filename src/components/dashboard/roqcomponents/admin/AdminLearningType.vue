@@ -27,7 +27,7 @@
                 <label for="learningTypeDescription" class="block text-sm font-medium text-slate-700">Description</label>
                 <textarea
                   id="learningTypeDescription"
-                  v-model="formData.description"
+                  v-model="formData.definition"
                   rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md
                          focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -99,7 +99,7 @@
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">{{ learningType.name }}</h3>
-                    <p class="text-sm text-slate-600 mt-1">{{ learningType.description }}</p>
+                    <p class="text-sm text-slate-600 mt-1">{{ learningType.definition }}</p>
                   </div>
                   <div class="flex gap-2">
                     <button
@@ -112,7 +112,7 @@
                       </svg>
                     </button>
                     <button
-                      @click="deleteLearningType(learningType.id)"
+                      @click="openDeleteModal(learningType)"
                       class="p-2 text-red-600 hover:bg-red-50 rounded-md"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,31 +156,79 @@
           </div>
         </div>
       </div>
+
+      <!-- Confirmation modal -->
+      <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
+        <AlertDialogContent
+          class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50">
+          <AlertDialogTitle class="text-xl font-semibold text-slate-900 mb-2">
+            Are you absolutely sure?
+          </AlertDialogTitle>
+          <AlertDialogDescription class="text-slate-600 mb-6">
+            This action cannot be undone. This will permanently delete the learning type
+            "{{ learningTypeToDelete?.name }}".
+          </AlertDialogDescription>
+          <div class="flex justify-end gap-4">
+            <AlertDialogCancel class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
+              @click="closeDeleteModal">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+              @click="confirmDelete">
+              Delete
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+        <AlertDialogOverlay class="fixed inset-0 bg-black/50 z-40" />
+      </AlertDialogRoot>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
+import services from '@/services/services';
+import {
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogOverlay,
+  AlertDialogRoot,
+  AlertDialogTitle,
+} from 'radix-vue';
 
 // State
 const learningTypes = ref([]);
 const formData = ref({
   id: null,
   name: '',
-  description: ''
+  definition: ''
 });
 const isEditing = ref(false);
 const searchQuery = ref('');
 const currentPage = ref(1);
 const itemsPerPage = 5;
 
+const isDeleteModalOpen = ref(false);
+const learningTypeToDelete = ref(null);
+
+// Fetch learning types on component mount
+onMounted(async () => {
+  try {
+    const response = await services.getLearningTypes();
+    learningTypes.value = response.data.results;
+  } catch (error) {
+    console.error('Error fetching learning types:', error);
+  }
+});
+
 // Computed
 const filteredLearningTypes = computed(() => {
   return learningTypes.value.filter(learningType => {
     const query = searchQuery.value.toLowerCase();
     return learningType.name.toLowerCase().includes(query) ||
-           learningType.description.toLowerCase().includes(query);
+      learningType.definition.toLowerCase().includes(query);
   });
 });
 
@@ -195,19 +243,22 @@ const paginatedLearningTypes = computed(() => {
 });
 
 // Methods
-const handleSubmit = () => {
-  if (isEditing.value) {
-    const index = learningTypes.value.findIndex(lt => lt.id === formData.value.id);
-    if (index !== -1) {
-      learningTypes.value[index] = { ...formData.value };
+const handleSubmit = async () => {
+  try {
+    if (isEditing.value) {
+      const response = await services.updateLearningType(formData.value.id, formData.value);
+      const index = learningTypes.value.findIndex(lt => lt.id === formData.value.id);
+      if (index !== -1) {
+        learningTypes.value[index] = response.data;
+      }
+    } else {
+      const response = await services.createLearningType(formData.value);
+      learningTypes.value.push(response.data);
     }
-  } else {
-    learningTypes.value.push({
-      ...formData.value,
-      id: Date.now()
-    });
+    resetForm();
+  } catch (error) {
+    console.error('Error saving learning type:', error);
   }
-  resetForm();
 };
 
 const startEdit = (learningType) => {
@@ -219,10 +270,28 @@ const cancelEdit = () => {
   resetForm();
 };
 
-const deleteLearningType = (id) => {
-  const index = learningTypes.value.findIndex(lt => lt.id === id);
-  if (index !== -1) {
-    learningTypes.value.splice(index, 1);
+const openDeleteModal = (learningType) => {
+  learningTypeToDelete.value = learningType;
+  isDeleteModalOpen.value = true;
+};
+
+const closeDeleteModal = () => {
+  isDeleteModalOpen.value = false;
+  learningTypeToDelete.value = null;
+};
+
+const confirmDelete = async () => {
+  if (!learningTypeToDelete.value) return;
+
+  try {
+    await services.deleteLearningType(learningTypeToDelete.value.id);
+    const index = learningTypes.value.findIndex(lt => lt.id === learningTypeToDelete.value.id);
+    if (index !== -1) {
+      learningTypes.value.splice(index, 1);
+    }
+    closeDeleteModal();
+  } catch (error) {
+    console.error('Error deleting learning type:', error);
   }
 };
 
@@ -230,7 +299,7 @@ const resetForm = () => {
   formData.value = {
     id: null,
     name: '',
-    description: ''
+    definition: ''
   };
   isEditing.value = false;
 };
