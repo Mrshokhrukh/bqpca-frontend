@@ -194,6 +194,6 @@ export default {
 
   // Fetch user details by user_id
   getUserDetails(userId) {
-    return apiClient.get(`/users/user/${userId}/`);
+    return apiClient.get(`/users/users/${userId}/`);
   },
 };
