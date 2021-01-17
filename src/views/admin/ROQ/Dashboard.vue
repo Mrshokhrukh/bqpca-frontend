@@ -46,11 +46,7 @@ import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 import StatsGrid from '@/components/dashboard/roqcomponents/StatsGrid.vue';
 import ApplicationTable from '@/components/dashboard/roqcomponents/ApplicationsTable.vue';
-<<<<<<< Updated upstream
-import apiService from '@/services/services';
 
-=======
->>>>>>> Stashed changes
 // Admin Components Import
 import AdminDashboard from '@/components/dashboard/roqcomponents/admin/AdminDashboard.vue';
 import AdminDecision from '@/components/dashboard/roqcomponents/admin/AdminDecision.vue';
@@ -58,27 +54,16 @@ import AdminLearningType from '@/components/dashboard/roqcomponents/admin/AdminL
 import AdminQualification from '@/components/dashboard/roqcomponents/admin/AdminQualification.vue';
 import AdminTypeOfCourse from '@/components/dashboard/roqcomponents/admin/AdminTypeOfCourse.vue';
 import AdminSecondCopyReason from '@/components/dashboard/roqcomponents/admin/AdminSecondCopyReason.vue';
-<<<<<<< Updated upstream
 import AdminProfile from '@/components/dashboard/roqcomponents/admin/AdminProfile.vue'; // Added Import
 
 // Dealing Officer Components Import
 import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealingOfficer/DealingOfficerDashboard.vue';
-<<<<<<< HEAD
 import ApplicationList from '@/components/dashboard/roqcomponents/dealingOfficer/ApplicationList.vue';
-=======
 
 // Chief Components Import
->>>>>>> 37dd591357e57a1f8aaeeec35a2328e42bf6db27
-=======
-import AdminProfile from '@/components/dashboard/roqcomponents/admin/AdminProfile.vue';
-
-// Dealing Officer Components Import
-import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealingOfficer/DealingOfficerDashboard.vue';
->>>>>>> Stashed changes
 import ChiefDashboard from '@/components/dashboard/roqcomponents/chief/ChiefDashboard.vue';
 import ChiefApplicationList from '@/components/dashboard/roqcomponents/chief/ChiefApplicationLists.vue';
 import SecondCopyLists from '@/components/dashboard/roqcomponents/chief/SecondCopyLists.vue';
-import ApplicationList from '@/components/dashboard/roqcomponents/dealingOfficer/ApplicationList.vue';
 import Secondcopypool from '@/components/dashboard/roqcomponents/dealingOfficer/SecondCopyPool.vue';
 
 // User Components Import
@@ -109,11 +94,7 @@ const adminComponent = computed(() => {
       return AdminTypeOfCourse;
     case path.endsWith('/roq/reason_for_issue_of_second_copy'):
       return AdminSecondCopyReason;
-<<<<<<< Updated upstream
-    case path.endsWith('/roq/user_profile'): //Added route for admin profile
-=======
     case path.endsWith('/roq/user_profile'):
->>>>>>> Stashed changes
       return AdminProfile;
     default:
       return null;
@@ -126,10 +107,8 @@ const dealingOfficerComponent = computed(() => {
   switch (true) {
     case path.endsWith('/roq/dashboard'):
       return DealingOfficerDashboard;
-<<<<<<< HEAD
     case path.endsWith('/roq/application_lists'):
       return ApplicationList;
-<<<<<<< Updated upstream
     // case path.endsWith('/roq/decisions'):
     //   return AdminDecision;
     // case path.endsWith('/roq/learning_types'):
@@ -140,13 +119,9 @@ const dealingOfficerComponent = computed(() => {
     //   return AdminTypeOfCourse;
     // case path.endsWith('/roq/reason_for_issue_of_second_copy'):
     //   return AdminSecondCopyReason;
-=======
->>>>>>> 37dd591357e57a1f8aaeeec35a2328e42bf6db27
-=======
     case path.endsWith('/roq/second_copy_pool'):
       return Secondcopypool;
 
->>>>>>> Stashed changes
     default:
       return null;
   }
@@ -169,7 +144,7 @@ const chiefComponent = computed(() => {
 
 // Director Route-Based Components
 const directorComponent = computed(() => {
-  const path = route.path;
+  // const path = route.path;
   // Add route-based components for director here
   // Example:
   // if (path.endsWith('/roq/dashboard')) {
@@ -180,7 +155,7 @@ const directorComponent = computed(() => {
 
 // Super Admin Route-Based Components
 const superAdminComponent = computed(() => {
-  const path = route.path;
+  // const path = route.path;
   // Add route-based components for super admin here
   // Example:
   // if (path.endsWith('/roq/dashboard')) {
@@ -275,31 +250,7 @@ const getApplicationStatus = (application) => {
   return 'Pending';
 };
 
-<<<<<<< Updated upstream
-
-const loadData = async () => {
-  try {
-    const response = await apiService.getRecognitions({
-      email_address: user.email
-    });
-    applications.value = response.data.results;
-  } catch (error) {
-    console.error('Error loading data:', error);
-  }
-};
-
-
-const handlePageChange = (newPage) => {
-  currentPage.value = newPage;
-};
-
-onMounted(() => {
-  loadData();
-});
-</script>
-=======
 const handlePageChange = (newPage) => {
   currentPage.value = newPage;
 };
 </script>
->>>>>>> Stashed changes

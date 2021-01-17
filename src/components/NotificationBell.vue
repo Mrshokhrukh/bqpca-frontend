@@ -20,8 +20,7 @@
       <!-- Header -->
       <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
         <h3 class="font-medium text-slate-800">Notifications</h3>
-        <button @click="markAllAsRead"
-          class="text-xs text-primary hover:text-primary-dark transition-colors"
+        <button @click="markAllAsRead" class="text-xs text-primary hover:text-primary-dark transition-colors"
           :disabled="!hasUnread">
           Mark all as read
         </button>
@@ -43,12 +42,10 @@
           <template v-else>
             <div v-for="notification in notifications" :key="notification.id"
               class="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer"
-              :class="{ 'bg-blue-50/50': !notification.read }"
-              @click="handleNotificationClick(notification)">
+              :class="{ 'bg-blue-50/50': !notification.read }" @click="handleNotificationClick(notification)">
               <div class="flex items-start space-x-3">
                 <div class="flex-shrink-0 mt-1">
-                  <component :is="getNotificationIcon(notification.type)"
-                    class="h-5 w-5"
+                  <component :is="getNotificationIcon(notification.type)" class="h-5 w-5"
                     :class="getNotificationIconColor(notification.type)" />
                 </div>
                 <div class="flex-1 min-w-0">
@@ -56,8 +53,7 @@
                   <p class="text-sm text-slate-500 mt-0.5">{{ notification.message }}</p>
                   <p class="text-xs text-slate-400 mt-1">{{ formatTimestamp(notification.timestamp) }}</p>
                 </div>
-                <button v-if="!notification.read"
-                  @click.stop="markAsRead(notification.id)"
+                <button v-if="!notification.read" @click.stop="markAsRead(notification.id)"
                   class="p-1 rounded-full hover:bg-slate-200 transition-colors">
                   <Check class="h-4 w-4 text-slate-400" />
                 </button>
@@ -69,9 +65,7 @@
 
       <!-- Footer -->
       <div class="px-4 py-3 bg-slate-50 border-t border-slate-200 text-center">
-        <button
-          class="text-sm text-primary hover:text-primary-dark transition-colors"
-          @click="viewAllNotifications">
+        <button class="text-sm text-primary hover:text-primary-dark transition-colors" @click="viewAllNotifications">
           View all notifications
         </button>
       </div>

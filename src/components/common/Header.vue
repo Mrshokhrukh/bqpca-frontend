@@ -12,13 +12,17 @@
             <div class="relative h-16 w-16 mr-4 overflow-hidden rounded-xl shadow-sm">
               <img src="@/assets/rgob.png" alt="BQPCA Crest"
                 class="h-full w-full object-contain transform transition-all duration-500 group-hover:scale-110" />
-              <div class="absolute inset-0 ring-1 ring-gray-200 rounded-xl group-hover:ring-primary/30 transition-colors duration-300"></div>
+              <div
+                class="absolute inset-0 ring-1 ring-gray-200 rounded-xl group-hover:ring-primary/30 transition-colors duration-300">
+              </div>
             </div>
             <div class="flex flex-col space-y-0.5">
-              <span class="text-base font-dzongkha leading-tight text-gray-900 transition-transform duration-300 group-hover:translate-x-1">
+              <span
+                class="text-base font-dzongkha leading-tight text-gray-900 transition-transform duration-300 group-hover:translate-x-1">
                 འབྲུག་ཤེས་ཚད་དང་ཁྱད་རིག་ངོ་སྦྱོར་དབང་འཛིན།
               </span>
-              <span class="text-sm font-medium tracking-wide text-gray-700 transition-transform duration-300 group-hover:translate-x-1">
+              <span
+                class="text-sm font-medium tracking-wide text-gray-700 transition-transform duration-300 group-hover:translate-x-1">
                 Bhutan Qualifications and Professionals Certification Authority
               </span>
             </div>
@@ -30,8 +34,10 @@
           <router-link v-for="item in navItems" :key="item.name" :to="item.route"
             class="relative text-gray-600 hover:text-primary transition-all duration-300 group py-2 px-1">
             <span class="relative z-10">{{ item.name }}</span>
-            <span class="absolute inset-0 bg-gray-50 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 -z-0"></span>
-            <span class="absolute bottom-0 left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out origin-left"></span>
+            <span
+              class="absolute inset-0 bg-gray-50 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 -z-0"></span>
+            <span
+              class="absolute bottom-0 left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out origin-left"></span>
           </router-link>
         </div>
 

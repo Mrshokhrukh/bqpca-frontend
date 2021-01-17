@@ -13,6 +13,11 @@ function generateDynamicRoutes() {
       routes.push({
         path: `${role.key}`,
         alias: `/admin/${role.key}`,
+        meta: {
+          title: 'Super Admin Dashboard',
+          description: 'BQPCA System Super Administrator Dashboard',
+          keywords: 'super admin, dashboard, BQPCA administration'
+        },
         beforeEnter: (to, from, next) => {
           const authStore = useAuthStore();
           console.log('Super Admin beforeEnter Guard:', {
@@ -41,6 +46,11 @@ function generateDynamicRoutes() {
             path: `${serviceType.key}`,
             alias: `/admin/${role.key}/${serviceType.key}`,
             component: ModuleContainer,
+            meta: {
+              title: `${serviceType.label} ${role.label} Dashboard`,
+              description: `${serviceType.label} management dashboard for ${role.label}`,
+              keywords: `${serviceType.key}, ${role.key}, dashboard, BQPCA administration`
+            },
             beforeEnter: (to, from, next) => {
               const authStore = useAuthStore();
               console.log('beforeEnter Guard:', {

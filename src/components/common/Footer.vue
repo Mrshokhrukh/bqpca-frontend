@@ -15,7 +15,8 @@
         <div class="col-span-1 md:col-span-2">
           <router-link to="/" class="flex items-center group">
             <div class="relative h-16 w-16 mr-4">
-              <div class="absolute inset-0 bg-blue-500/20 rounded-full blur-sm group-hover:blur-md transition-all"></div>
+              <div class="absolute inset-0 bg-blue-500/20 rounded-full blur-sm group-hover:blur-md transition-all">
+              </div>
               <img src="@/assets/rgob.png" alt="BQPCA Crest"
                 class="h-full w-full object-contain relative transition-transform duration-300 group-hover:scale-105" />
             </div>

@@ -1,11 +1,6 @@
 // src/services/services.js
-<<<<<<< Updated upstream
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
-=======
-import axios from 'axios';
-import { useAuthStore } from '@/stores/authStore';
->>>>>>> Stashed changes
 
 const apiClient = axios.create({
   baseURL:
@@ -111,7 +106,6 @@ export default {
 
   // Decision CRUD operations
   getDecisions() {
-<<<<<<< Updated upstream
     return apiClient.get('/masters/roq-decisions/')
   },
   getDecision(id) {
@@ -128,29 +122,10 @@ export default {
   },
   deleteDecision(id) {
     return apiClient.delete(`/masters/roq-decisions/${id}/`)
-=======
-    return apiClient.get('/masters/roq-decisions/');
-  },
-  getDecision(id) {
-    return apiClient.get(`/masters/roq-decisions/${id}/`);
-  },
-  createDecision(decisionData) {
-    return apiClient.post('/masters/roq-decisions/', decisionData);
-  },
-  updateDecision(id, decisionData) {
-    return apiClient.put(`/masters/roq-decisions/${id}/`, decisionData);
-  },
-  patchDecision(id, decisionData) {
-    return apiClient.patch(`/masters/roq-decisions/${id}/`, decisionData);
-  },
-  deleteDecision(id) {
-    return apiClient.delete(`/masters/roq-decisions/${id}/`);
->>>>>>> Stashed changes
   },
 
   // Learning Types CRUD operations
   getLearningTypes() {
-<<<<<<< Updated upstream
     return apiClient.get('/masters/roq-learning-types/')
   },
   getLearningType(id) {
@@ -164,26 +139,10 @@ export default {
   },
   deleteLearningType(id) {
     return apiClient.delete(`/masters/roq-learning-types/${id}/`)
-=======
-    return apiClient.get('/masters/roq-learning-types/');
-  },
-  getLearningType(id) {
-    return apiClient.get(`/masters/roq-learning-types/${id}/`);
-  },
-  createLearningType(learningTypeData) {
-    return apiClient.post('/masters/roq-learning-types/', learningTypeData);
-  },
-  updateLearningType(id, learningTypeData) {
-    return apiClient.put(`/masters/roq-learning-types/${id}/`, learningTypeData);
-  },
-  deleteLearningType(id) {
-    return apiClient.delete(`/masters/roq-learning-types/${id}/`);
->>>>>>> Stashed changes
   },
 
   // Qualifications CRUD operations
   getQualifications() {
-<<<<<<< Updated upstream
     return apiClient.get('/masters/roq-qualifications/')
   },
   getQualification(id) {
@@ -214,43 +173,10 @@ export default {
   },
   deleteReasonForIssueOfSecondCopy(id) {
     return apiClient.delete(`/masters/roq-reasons-for-issue-of-second-copy/${id}/`)
-=======
-    return apiClient.get('/masters/roq-qualifications/');
-  },
-  getQualification(id) {
-    return apiClient.get(`/masters/roq-qualifications/${id}/`);
-  },
-  createQualification(qualificationData) {
-    return apiClient.post('/masters/roq-qualifications/', qualificationData);
-  },
-  updateQualification(id, qualificationData) {
-    return apiClient.put(`/masters/roq-qualifications/${id}/`, qualificationData);
-  },
-  deleteQualification(id) {
-    return apiClient.delete(`/masters/roq-qualifications/${id}/`);
-  },
-
-   // Reasons for Issue of Second Copy CRUD operations
-   getReasonsForIssueOfSecondCopy() {
-    return apiClient.get('/masters/roq-reasons-for-issue-of-second-copy/');
-  },
-  getReasonForIssueOfSecondCopy(id) {
-    return apiClient.get(`/masters/roq-reasons-for-issue-of-second-copy/${id}/`);
-  },
-  createReasonForIssueOfSecondCopy(reasonData) {
-    return apiClient.post('/masters/roq-reasons-for-issue-of-second-copy/', reasonData);
-  },
-  updateReasonForIssueOfSecondCopy(id, reasonData) {
-    return apiClient.put(`/masters/roq-reasons-for-issue-of-second-copy/${id}/`, reasonData);
-  },
-  deleteReasonForIssueOfSecondCopy(id) {
-    return apiClient.delete(`/masters/roq-reasons-for-issue-of-second-copy/${id}/`);
->>>>>>> Stashed changes
   },
 
   // Types of Course CRUD operations
   getTypesOfCourse() {
-<<<<<<< Updated upstream
     return apiClient.get('/masters/roq-types-of-course/')
   },
   getTypeOfCourse(id) {
@@ -269,20 +195,5 @@ export default {
   // Fetch user details by user_id
   getUserDetails(userId) {
     return apiClient.get(`/users/user/${userId}/`);
-=======
-    return apiClient.get('/masters/roq-types-of-course/');
-  },
-  getTypeOfCourse(id) {
-    return apiClient.get(`/masters/roq-types-of-course/${id}/`);
-  },
-  createTypeOfCourse(courseTypeData) {
-    return apiClient.post('/masters/roq-types-of-course/', courseTypeData);
-  },
-  updateTypeOfCourse(id, courseTypeData) {
-    return apiClient.put(`/masters/roq-types-of-course/${id}/`, courseTypeData);
-  },
-  deleteTypeOfCourse(id) {
-    return apiClient.delete(`/masters/roq-types-of-course/${id}/`);
->>>>>>> Stashed changes
   },
 };

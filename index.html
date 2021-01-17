@@ -1,13 +1,82 @@
 <!DOCTYPE html>
-<html lang="">
-  <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vite App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<html lang="en" dir="ltr">
+
+<head>
+  <!-- Character encoding -->
+  <meta charset="UTF-8">
+
+  <!-- Favicon and device-specific icons -->
+  <link rel="icon" href="/icons/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/icons/icon-192x192.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Viewport settings -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+
+  <!-- Primary Meta Tags -->
+  <title>
+    <%= title %> | BQPCA System
+  </title>
+  <meta name="title" content="<%= title %> | BQPCA System">
+  <meta name="description" content="<%= description %>">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="<%= url %>">
+  <meta property="og:title" content="<%= title %> | Bhutan Qualification & Professional Certification Authority">
+  <meta property="og:description" content="<%= description %>">
+  <meta property="og:image" content="<%= image %>">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="<%= url %>">
+  <meta name="twitter:title" content="<%= title %> | BQPCA System">
+  <meta name="twitter:description" content="<%= description %>">
+  <meta name="twitter:image" content="<%= image %>">
+
+  <!-- Performance optimizations -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <!-- SEO -->
+  <link rel="canonical" href="<%= url %>">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Bhutan Qualification & Professional Certification Authority">
+  <meta name="keywords" content="BQPCA, Bhutan Qualification, Professional Certification, <%= keywords %>">
+
+  <!-- Theme -->
+  <meta name="theme-color" content="#1e40af">
+  <meta name="color-scheme" content="light">
+
+  <!-- Critical CSS -->
+  <style>
+    body {
+      margin: 0;
+    }
+
+    #app-loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f8fafc;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div id="app-loading">
+      <img src="/icons/icon-96x96.png" alt="BQPCA System" width="96" height="96">
+    </div>
+  </div>
+
+  <noscript>
+    <strong>We're sorry but the BQPCA System doesn't work properly without JavaScript enabled. Please enable it to
+      continue.</strong>
+  </noscript>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
 </html>

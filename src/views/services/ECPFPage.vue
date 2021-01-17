@@ -2,7 +2,7 @@
 <template>
   <div class="min-h-screen bg-slate-50">
     <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-slate-900 to-slate-800 relative overflow-hidden">
+    <div class="bg-gradient-to-r from-slate-900 to-slate-800 relative overflow-hidden mt-10">
       <!-- Decorative elements -->
       <div class="absolute inset-0">
         <div class="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl"></div>
