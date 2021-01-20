@@ -7,13 +7,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div v-for="(field, key) in personalFields" :key="key">
             <label class="block text-slate-600 text-base mb-2">{{ field.label }}</label>
-            <input
-              v-model="form[key]"
-              :type="field.type"
-              :maxlength="field.maxLength"
-              class="w-full p-3 border border-slate-200 rounded-lg"
-              :disabled="!isEditable"
-            />
+            <input v-model="form[key]" :type="field.type" :maxlength="field.maxLength"
+              class="w-full p-3 border border-slate-200 rounded-lg" :disabled="!isEditable && !isViewMode" />
             <span class="text-red-500 text-sm">{{ errors[key] }}</span>
           </div>
         </div>
@@ -28,13 +23,8 @@
             <label class="block text-slate-600 text-base mb-2">Study in Country?</label>
             <div class="flex items-center space-x-6">
               <label v-for="option in ['yes', 'no']" :key="option" class="flex items-center text-slate-600">
-                <input
-                  v-model="form.studyInCountry"
-                  type="radio"
-                  :value="option"
-                  class="mr-2"
-                  :disabled="!isEditable"
-                />
+                <input v-model="form.studyInCountry" type="radio" :value="option" class="mr-2"
+                  :disabled="!isEditable && !isViewMode" />
                 {{ option.charAt(0).toUpperCase() + option.slice(1) }}
               </label>
             </div>
@@ -43,11 +33,8 @@
           <!-- Dropdowns -->
           <div v-for="(field, key) in dropdownFields" :key="key">
             <label class="block text-slate-600 text-base mb-2">{{ field.label }}</label>
-            <select
-              v-model="form[key]"
-              class="w-full p-3 border border-slate-200 rounded-lg"
-              :disabled="!isEditable"
-            >
+            <select v-model="form[key]" class="w-full p-3 border border-slate-200 rounded-lg"
+              :disabled="!isEditable && !isViewMode">
               <option value="">Select {{ field.label }}</option>
               <option v-for="option in field.options" :key="option" :value="option">
                 {{ option }}
@@ -59,12 +46,8 @@
           <!-- Text Input Fields -->
           <div v-for="(field, key) in educationFields" :key="key">
             <label class="block text-slate-600 text-base mb-2">{{ field.label }}</label>
-            <input
-              v-model="form[key]"
-              type="text"
-              class="w-full p-3 border border-slate-200 rounded-lg"
-              :disabled="!isEditable"
-            />
+            <input v-model="form[key]" type="text" class="w-full p-3 border border-slate-200 rounded-lg"
+              :disabled="!isEditable && !isViewMode" />
             <span class="text-red-500 text-sm">{{ errors[key] }}</span>
           </div>
         </div>
@@ -76,11 +59,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block mb-1">Document Type</label>
-            <select
-              v-model="form.documentType"
-              class="w-full p-2 border rounded"
-              :disabled="!isEditable"
-            >
+            <select v-model="form.documentType" class="w-full p-2 border rounded"
+              :disabled="!isEditable && !isViewMode">
               <option value="">Select Document Type</option>
               <option v-for="type in documentTypes" :key="type" :value="type">
                 {{ type }}
@@ -91,16 +71,13 @@
           <div>
 
             <label class="block mb-1">Upload Document</label>
-            <input
-              type="file"
-              @change="handleFileUpload"
-              class="w-full p-2 border rounded"
-              :disabled="!isEditable"
-            />
+            <input type="file" @change="handleFileUpload" class="w-full p-2 border rounded"
+              :disabled="!isEditable && !isViewMode" />
           </div>
           <div>
             <label class="block text-slate-600 text-base mb-2">Remarks</label>
-            <input v-model="form.remarks" type="text" class="w-full p-3 border border-slate-200 rounded-lg" />
+            <input v-model="form.remarks" type="text" class="w-full p-3 border border-slate-200 rounded-lg"
+              :disabled="!isEditable && !isViewMode" />
             <span class="text-red-500 text-sm">{{ errors.remarks }}</span>
           </div>
 
@@ -110,18 +87,12 @@
 
       <!-- Form Actions -->
       <div class="flex gap-4">
-        <button
-          type="button"
-          @click="toggleEdit"
-          class="inline-flex items-center px-6 py-3 bg-slate-600 text-white rounded hover:bg-slate-700 transition-colors"
-        >
+        <button type="button" @click="toggleEdit"
+          class="inline-flex items-center px-6 py-3 bg-slate-600 text-white rounded hover:bg-slate-700 transition-colors">
           {{ isEditable ? 'Cancel' : 'Edit' }}
         </button>
-        <button
-          type="submit"
-          :disabled="!isEditable"
-          class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <button type="submit" :disabled="!isEditable && !isViewMode"
+          class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
           Update
         </button>
       </div>
@@ -130,7 +101,19 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, watch } from 'vue';
+
+const props = defineProps({
+  application: {
+    type: Object,
+    required: true,
+  },
+  isViewMode: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 
 const isEditable = ref(false);
 const initialFormState = {
@@ -190,6 +173,11 @@ const educationFields = {
 
 const documentTypes = ['Degree Certificate', 'Diploma Certificate', 'Transcript', 'Other'];
 
+
+const resetForm = () => {
+  Object.assign(form, initialFormState);
+}
+
 // Form validation
 const validateForm = () => {
   errors.value = {};
@@ -231,6 +219,7 @@ const validateForm = () => {
   });
 };
 
+
 // Form submission
 const handleUpdate = () => {
   validateForm();
@@ -243,14 +232,16 @@ const handleUpdate = () => {
   }
 };
 
+
 // Toggle edit mode
 const toggleEdit = () => {
   if (isEditable.value) {
     // Reset form to initial values when canceling
-    Object.assign(form, initialFormState);
+    resetForm();
   }
   isEditable.value = !isEditable.value;
 };
+
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
@@ -258,4 +249,14 @@ const handleFileUpload = (event) => {
     console.log('File selected:', file.name);
   }
 };
+
+watch(
+  () => props.application,
+  (newApplication) => {
+    if (newApplication) {
+      Object.assign(form, newApplication);
+    }
+  },
+  { immediate: true } // This ensures that watcher runs when component first loads
+);
 </script>

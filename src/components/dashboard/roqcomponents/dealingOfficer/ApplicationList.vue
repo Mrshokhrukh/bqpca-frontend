@@ -1,92 +1,64 @@
 <template>
   <div class="p-6">
-    <h2 class="text-xl font-semibold text-gray-800 mb-6">Application List</h2>
+    <h2 class="text-xl font-semibold text-gray-800 mb-6">Application History</h2>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
       <div class="w-full overflow-x-auto">
         <table class="w-full">
           <thead>
             <tr class="bg-gray-50 border-b border-gray-200">
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application ID
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Application ID
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CID</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date of Birth
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Full Name
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Number
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Course Title
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email Address
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Study In Country
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Study In
-                Country</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course Title
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qualification
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type of Course
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID No
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name of
-                Institute</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">University</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course Duration
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year of
-                Completion</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="(item, index) in paginatedData" :key="index" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.applicationId }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.cid }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.fullName }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.dateOfBirth }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.contactNumber }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.emailAddress }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.studyInCountry }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.courseTitle }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.qualification }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.type_of_course }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.studentIdNo }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.nameOfInstitute }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.university }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.course_duration }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.year_completion }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.location }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.country }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.website }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.studyInCountry }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
-                <button @click="handleNew(item)"
+                <!-- Primary/View action -->
+                <button @click="handleView(item)"
                   class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700">
-                  New
+                  View
                 </button>
-                <button @click="handleEdit(item)"
-                  class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-green-600 hover:bg-green-700">
-                  Edit
-                </button>
+                <!-- Informational action -->
                 <button @click="handleAddNote(item)"
-                  class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-yellow-600 hover:bg-yellow-700">
+                  class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-cyan-600 hover:bg-cyan-700">
                   Add Note
                 </button>
+                <!-- File management -->
                 <button @click="handleReUpload(item)"
-                  class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-purple-600 hover:bg-purple-700">
+                  class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-indigo-600 hover:bg-indigo-700">
                   Re-upload
                 </button>
+                <!-- Process action -->
                 <button @click="handleReProcess(item)"
-                  class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-indigo-600 hover:bg-indigo-700">
+                  class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-green-600 hover:bg-green-700">
                   Re-process
                 </button>
+                <!-- Forward/progress action -->
                 <button @click="handleForward(item)"
-                  class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-orange-600 hover:bg-orange-700">
+                  class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-teal-600 hover:bg-teal-700">
                   Forward
                 </button>
+                <!-- Destructive action -->
                 <button @click="handleRegret(item)"
-                  class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-gray-700 bg-gray-200 hover:bg-gray-300">
+                  class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700">
                   Regret
                 </button>
               </td>
@@ -104,13 +76,19 @@
             </div>
             <div class="flex space-x-2">
               <button @click="prevPage" :disabled="currentPage === 1"
-                class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md"
-                :class="[currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300']">
+                class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md" :class="[
+                  currentPage === 1
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300',
+                ]">
                 Previous
               </button>
               <button @click="nextPage" :disabled="currentPage === totalPages"
-                class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md"
-                :class="[currentPage === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300']">
+                class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md" :class="[
+                  currentPage === totalPages
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300',
+                ]">
                 Next
               </button>
             </div>
@@ -135,7 +113,8 @@
           </div>
         </div>
         <div class="px-6 py-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
-          <UpdateApplication v-if="dialogMode === 'edit'" :application="selectedApplication" />
+          <UpdateApplication v-if="dialogMode === 'edit'" :application="selectedApplication"
+            :isViewMode="dialogTitle === 'View Application'" />
           <div v-else-if="dialogMode === 'note'" class="space-y-4">
             <textarea
               class="w-full h-32 px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-blue-500"
@@ -202,11 +181,13 @@ const applications = ref([
     applicationId: '1',
     cid: 'CID001',
     fullName: 'John Doe',
+    courseTitle: 'Computer Science',
+    studyInCountry: 'USA',
+    status: 'Pending',
+    // Additional fields for dialog
     dateOfBirth: '1990-01-01',
     contactNumber: '1234567890',
     emailAddress: 'john@example.com',
-    studyInCountry: 'USA',
-    courseTitle: 'Computer Science',
     qualification: 'Bachelor',
     type_of_course: 'Full-time',
     studentIdNo: 'S123456',
@@ -217,9 +198,56 @@ const applications = ref([
     location: 'New York',
     country: 'USA',
     website: 'https://example.com',
-    documentType: 'Passport',
+    documentType: 'Passport'
+  },
+  {
+    applicationId: '2',
+    cid: 'CID002',
+    fullName: 'Jane Smith',
+    courseTitle: 'MBA',
+    studyInCountry: 'Canada',
+    status: 'Approved',
+    // Additional fields for dialog
+    dateOfBirth: '1995-05-10',
+    contactNumber: '9876543210',
+    emailAddress: 'jane@example.com',
+    qualification: 'Master',
+    type_of_course: 'Part-time',
+    studentIdNo: 'S654321',
+    nameOfInstitute: 'ABC Institute',
+    university: 'ABC University',
+    course_duration: '2 years',
+    year_completion: '2024',
+    location: 'Toronto',
+    country: 'Canada',
+    website: 'https://example2.com',
+    documentType: 'ID Card',
+  },
+  {
+    applicationId: '3',
+    cid: 'CID003',
+    fullName: 'Bob Johnson',
+    courseTitle: 'Medicine',
+    studyInCountry: 'UK',
+    status: 'Rejected',
+    // Additional fields for dialog
+    dateOfBirth: '1992-11-20',
+    contactNumber: '7890123456',
+    emailAddress: 'bob@example.com',
+    qualification: 'PHD',
+    type_of_course: 'Full-time',
+    studentIdNo: 'S789012',
+    nameOfInstitute: 'LMN Institute',
+    university: 'LMN University',
+    course_duration: '5 years',
+    year_completion: '2026',
+    location: 'London',
+    country: 'UK',
+    website: 'https://example3.com',
+    documentType: 'Visa',
   },
 ]);
+
 
 // UI State
 const currentPage = ref(1);
@@ -271,12 +299,8 @@ const closeDialog = () => {
 };
 
 // Action Handlers
-const handleNew = (item) => {
-  openDialog('new', {}, 'New Application');
-};
-
-const handleEdit = (item) => {
-  openDialog('edit', item, 'Edit Application');
+const handleView = (item) => {
+  openDialog('edit', item, 'View Application'); // Using 'edit' mode to show UpdateApplication component
 };
 
 const handleAddNote = (item) => {
