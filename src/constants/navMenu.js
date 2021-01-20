@@ -154,21 +154,13 @@ export const generateNavigationItems = (role, serviceType) => {
         icon: getIconComponent('LayoutDashboard'),
         route: `/admin/dealing_officer/${serviceType}/dashboard`,
       },
-      {
-        name: 'Application Pool',
-        icon: getIconComponent('Clock'),
-        route: `/admin/dealing_officer/${serviceType}/application_pool`,
-      },
+
       {
         name: 'Application Lists',
         icon: getIconComponent('CheckCircle'),
         route: `/admin/dealing_officer/${serviceType}/application_lists`,
       },
-      {
-        name: 'Second Copy Pool',
-        icon: getIconComponent('XCircle'),
-        route: `/admin/dealing_officer/${serviceType}/second_copy_pool`,
-      },
+
       {
         name: 'Second Copy Lists',
         icon: getIconComponent('XCircle'),

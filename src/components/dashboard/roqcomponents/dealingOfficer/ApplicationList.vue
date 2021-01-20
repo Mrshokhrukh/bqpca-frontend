@@ -1,72 +1,138 @@
 <template>
-  <div class="table-container p-4">
-    <table class="w-full border-collapse border border-gray-300">
-      <thead class="bg-gray-200">
-        <tr>
-          <th class="border border-gray-300 p-2">Application ID</th>
-          <th class="border border-gray-300 p-2">CID</th>
-          <th class="border border-gray-300 p-2">Full Name</th>
-          <th class="border border-gray-300 p-2">Date of Birth</th>
-          <th class="border border-gray-300 p-2">Contact Number</th>
-          <th class="border border-gray-300 p-2">Email Address</th>
-          <th class="border border-gray-300 p-2">Study In Country</th>
-          <th class="border border-gray-300 p-2">Course Title</th>
-          <th class="border border-gray-300 p-2">Qualification</th>
-          <th class="border border-gray-300 p-2">Type of Course</th>
-          <th class="border border-gray-300 p-2">Student ID No</th>
-          <th class="border border-gray-300 p-2">Name of Institute</th>
-          <th class="border border-gray-300 p-2">University</th>
-          <th class="border border-gray-300 p-2">Course Duration</th>
-          <th class="border border-gray-300 p-2">Year of Completion</th>
-          <th class="border border-gray-300 p-2">Location</th>
-          <th class="border border-gray-300 p-2">Country</th>
-          <th class="border border-gray-300 p-2">Website</th>
-          <th class="border border-gray-300 p-2">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(item, index) in paginatedData" :key="index" class="odd:bg-white even:bg-gray-50">
-          <td class="border border-gray-300 p-2">{{ item.applicationId }}</td>
-          <td class="border border-gray-300 p-2">{{ item.cid }}</td>
-          <td class="border border-gray-300 p-2">{{ item.fullName }}</td>
-          <td class="border border-gray-300 p-2">{{ item.dateOfBirth }}</td>
-          <td class="border border-gray-300 p-2">{{ item.contactNumber }}</td>
-          <td class="border border-gray-300 p-2">{{ item.emailAddress }}</td>
-          <td class="border border-gray-300 p-2">{{ item.studyInCountry }}</td>
-          <td class="border border-gray-300 p-2">{{ item.courseTitle }}</td>
-          <td class="border border-gray-300 p-2">{{ item.qualification }}</td>
-          <td class="border border-gray-300 p-2">{{ item.type_of_course }}</td>
-          <td class="border border-gray-300 p-2">{{ item.studentIdNo }}</td>
-          <td class="border border-gray-300 p-2">{{ item.nameOfInstitute }}</td>
-          <td class="border border-gray-300 p-2">{{ item.university }}</td>
-          <td class="border border-gray-300 p-2">{{ item.course_duration }}</td>
-          <td class="border border-gray-300 p-2">{{ item.year_completion }}</td>
-          <td class="border border-gray-300 p-2">{{ item.location }}</td>
-          <td class="border border-gray-300 p-2">{{ item.country }}</td>
-          <td class="border border-gray-300 p-2">{{ item.website }}</td>
-          <td class="border border-gray-300 p-2 flex gap-2">
-            <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" @click="confirmAction(item)">Confirm</button>
-            <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" @click="cancelAction(item)">Cancel</button>
-            <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" @click="openDialog(item)">View</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="p-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-6">Application History</h2>
 
-    <!-- Pagination -->
-    <div class="mt-4 flex justify-between items-center">
-      <button class="bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400" :disabled="currentPage === 1" @click="prevPage">Previous</button>
-      <div>Page {{ currentPage }} of {{ totalPages }}</div>
-      <button class="bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400" :disabled="currentPage === totalPages" @click="nextPage">Next</button>
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="w-full overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-50 border-b border-gray-200">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application ID
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date of Birth
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Number
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email Address
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Study In
+                Country</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course Title
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qualification
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type of Course
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID No
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name of
+                Institute</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">University</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course Duration
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year of
+                Completion</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr v-for="(item, index) in paginatedData" :key="index" class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.applicationId }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.cid }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.fullName }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.dateOfBirth }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.contactNumber }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.emailAddress }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.studyInCountry }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.courseTitle }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.qualification }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.type_of_course }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.studentIdNo }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.nameOfInstitute }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.university }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.course_duration }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.year_completion }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.location }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.country }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.website }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                <button @click="confirmAction(item)"
+                  class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                  Confirm
+                </button>
+                <button @click="cancelAction(item)"
+                  class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                  Cancel
+                </button>
+                <button @click="openDialog(item)"
+                  class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+                  View
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+        <div class="flex items-center justify-between">
+          <div class="flex-1 flex items-center justify-between">
+            <div class="text-sm text-gray-700">
+              Page {{ currentPage }} of {{ totalPages }}
+            </div>
+            <div class="flex space-x-2">
+              <button @click="prevPage" :disabled="currentPage === 1"
+                class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md" :class="[
+                  currentPage === 1
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                ]">
+                Previous
+              </button>
+              <button @click="nextPage" :disabled="currentPage === totalPages"
+                class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md" :class="[
+                  currentPage === totalPages
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                ]">
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Dialog Box -->
-    <div v-if="showDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-6 rounded shadow-md w-3/4 max-h-[90vh] overflow-y-auto">
-        <h2 class="text-lg font-bold mb-4">Update Application</h2>
-        <UpadateApplication :application="selectedApplication" />
-        <div class="mt-4 flex justify-end gap-2">
-          <button class="bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400" @click="closeDialog">Close</button>
+    <!-- Modal Dialog -->
+    <div v-if="showDialog"
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 overflow-y-auto">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl my-8"> <!-- Increased from max-w-2xl to max-w-4xl -->
+        <div class="sticky top-0 bg-white px-6 py-4 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-medium text-gray-900">Update Application</h3>
+            <button @click="closeDialog" class="text-gray-400 hover:text-gray-500">
+              <span class="sr-only">Close</span>
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="px-6 py-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
+          <!-- Increased height from -16rem to -12rem -->
+          <UpadateApplication :application="selectedApplication" />
+        </div>
+        <div class="sticky bottom-0 bg-gray-50 px-6 py-4 border-t border-gray-200 rounded-b-lg flex justify-end">
+          <button @click="closeDialog"
+            class="bg-white py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+            Close
+          </button>
         </div>
       </div>
     </div>
@@ -74,10 +140,10 @@
 </template>
 
 <script setup>
+// Keep your existing script code exactly as it is
 import { ref, computed } from 'vue';
 import UpadateApplication from './UpdateApplication.vue';
 
-// Sample data for the table
 const applications = ref([
   {
     applicationId: '1',
@@ -100,10 +166,8 @@ const applications = ref([
     website: 'https://example.com',
     documentType: 'Passport',
   },
-  // Add more sample objects as needed
 ]);
 
-// Pagination state
 const currentPage = ref(1);
 const pageSize = ref(5);
 const totalPages = computed(() => Math.ceil(applications.value.length / pageSize.value));
@@ -114,6 +178,9 @@ const paginatedData = computed(() => {
   return applications.value.slice(start, end);
 });
 
+const showDialog = ref(false);
+const selectedApplication = ref(null);
+
 const prevPage = () => {
   if (currentPage.value > 1) currentPage.value--;
 };
@@ -121,10 +188,6 @@ const prevPage = () => {
 const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++;
 };
-
-// Dialog state
-const showDialog = ref(false);
-const selectedApplication = ref(null);
 
 const openDialog = (item) => {
   selectedApplication.value = item;
@@ -136,7 +199,6 @@ const closeDialog = () => {
   selectedApplication.value = null;
 };
 
-// Button action handlers
 const confirmAction = (item) => {
   alert(`Confirming application for ${item.fullName}`);
 };
