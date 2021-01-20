@@ -106,7 +106,7 @@ export default {
     roq: {
       dashboard: () => import('@/views/admin/ROQ/Dashboard.vue'),
       application_lists: () => import('@/views/admin/ROQ/Dashboard.vue'),
-      second_copy_pool: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      second_copy_lists: () => import('@/views/admin/ROQ/Dashboard.vue'),
       // approved_applications: () => import('@/views/admin/ROQ/ApprovedApplications.vue'),
       // rejected_applications: () => import('@/views/admin/ROQ/RejectedApplications.vue'),
       // reports: () => import('@/views/admin/ROQ/Reports.vue'),

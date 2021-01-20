@@ -59,12 +59,12 @@ import AdminProfile from '@/components/dashboard/roqcomponents/admin/AdminProfil
 // Dealing Officer Components Import
 import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealingOfficer/DealingOfficerDashboard.vue';
 import ApplicationList from '@/components/dashboard/roqcomponents/dealingOfficer/ApplicationList.vue';
+import secondcopylist from '@/components/dashboard/roqcomponents/dealingOfficer/second_copy_lists.vue';
 
 // Chief Components Import
 import ChiefDashboard from '@/components/dashboard/roqcomponents/chief/ChiefDashboard.vue';
 import ChiefApplicationList from '@/components/dashboard/roqcomponents/chief/ChiefApplicationLists.vue';
 import SecondCopyLists from '@/components/dashboard/roqcomponents/chief/SecondCopyLists.vue';
-import Secondcopypool from '@/components/dashboard/roqcomponents/dealingOfficer/SecondCopyPool.vue';
 
 // User Components Import
 import UserDashboard from '@/components/dashboard/roqcomponents/user/UserDashboard.vue';
@@ -119,8 +119,8 @@ const dealingOfficerComponent = computed(() => {
     //   return AdminTypeOfCourse;
     // case path.endsWith('/roq/reason_for_issue_of_second_copy'):
     //   return AdminSecondCopyReason;
-    case path.endsWith('/roq/second_copy_pool'):
-      return Secondcopypool;
+    case path.endsWith('/roq/second_copy_lists'):
+      return secondcopylist;
 
     default:
       return null;
