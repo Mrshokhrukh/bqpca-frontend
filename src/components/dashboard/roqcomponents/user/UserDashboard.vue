@@ -58,7 +58,7 @@ const getApplicationStatus = (application) => {
 
 const loadUserApplications = async () => {
   try {
-    const response = await apiService.getRecognitions({
+    const response = await apiService.getRecognitionOfQualifications({
       email_address: user.email
     });
     applications.value = response.data.results;

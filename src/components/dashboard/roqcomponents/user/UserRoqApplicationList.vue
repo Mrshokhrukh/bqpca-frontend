@@ -155,7 +155,7 @@ const handleApplicationSubmitted = async () => {
 const loadData = async () => {
   loading.value = true;
   try {
-    const response = await apiService.getRecognitions({
+    const response = await apiService.getRecognitionOfQualifications({
       email_address: user.email
     });
     applications.value = response.data.results;

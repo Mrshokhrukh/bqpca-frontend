@@ -143,7 +143,7 @@ const fetchData = async () => {
   error.value = null;
 
   try {
-    const response = await services.getRecognitions(queryParams.value);
+    const response = await services.getRecognitionOfQualifications(queryParams.value);
     applications.value = response.data.results;
     totalResults.value = response.data.count;
   } catch (err) {

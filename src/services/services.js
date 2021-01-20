@@ -69,11 +69,11 @@ apiClient.interceptors.response.use(
 
     const originalRequest = error.config;
     const authStore = useAuthStore();
-     if (
-         (error.response.status === 401 || error.response.status === 403) &&
-         error.response.data.code === 'token_not_valid' &&
-         !originalRequest._retry
-     ) {
+    if (
+      (error.response.status === 401 || error.response.status === 403) &&
+      error.response.data.code === 'token_not_valid' &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
       console.log("Retrying request. Original request:", originalRequest);
 
@@ -86,8 +86,8 @@ apiClient.interceptors.response.use(
 
         return apiClient(originalRequest);
       } catch (refreshError) {
-          console.error("Unable to refresh token:", refreshError);
-          return Promise.reject(refreshError)
+        console.error("Unable to refresh token:", refreshError);
+        return Promise.reject(refreshError)
       }
     }
 
@@ -197,6 +197,7 @@ export default {
     return apiClient.get(`/users/users/${userId}/`);
   },
 
+  // Endpoints for Recognition of Qualifications
   getRecognitionOfQualifications() {
     return apiClient.get('/recognitions/recognition-of-qualifications/')
   },
@@ -215,4 +216,9 @@ export default {
   deleteRecognitionOfQualification(id) {
     return apiClient.delete(`/recognitions/recognition-of-qualifications/${id}/`)
   },
+
+  fetchCitizenDetails(cid) {
+    return apiClient.get(`/users/fetch-citizen-details/${cid}/`)
+      .then(response => response.data);
+  }
 };

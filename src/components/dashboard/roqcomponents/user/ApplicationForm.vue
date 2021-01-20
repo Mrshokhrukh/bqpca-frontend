@@ -37,7 +37,7 @@
         <!-- Contact Number -->
         <div>
           <label for="contact_number" class="block text-sm font-medium text-gray-700 required">Contact Number</label>
-          <input type="tel" id="contact_number" v-model="form.contact_number" pattern="[0-9]{8}" required
+          <input type="tel" id="contact_number" v-model="form.contact_no" pattern="[0-9]{8}" required
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
           <p class="mt-1 text-sm text-gray-500">Must be 8 digits</p>
         </div>
@@ -45,15 +45,16 @@
         <!-- Email Address -->
         <div>
           <label for="email_address" class="block text-sm font-medium text-gray-700">Email Address</label>
-          <input type="email" id="email_address" v-model="form.email_address" readonly
-            class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          <input type="email" id="email_address" v-model="form.email_address" :readonly="!!form.email_address" :class="['mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
+            { 'bg-gray-50': !!form.email_address }]" />
         </div>
 
         <!-- Gender -->
         <div>
           <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
-          <input type="text" id="gender" v-model="form.gender" readonly
+          <input type="text" id="gender" :value="genderDisplay" readonly
             class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          <input type="hidden" v-model="form.gender" />
         </div>
 
         <!-- Dzongkhag -->
@@ -83,7 +84,7 @@
     <div class="bg-white border p-6 rounded-lg shadow-sm">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-xl font-semibold text-gray-900">Education Details</h3>
-        <button type="button" @click="fetchRUBData" :disabled="!form.study_in_country || isLoadingRUB"
+        <button type="button" @click="fetchRUBData" :disabled="!form.from_in_country || isLoadingRUB"
           class="px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
           {{ isLoadingRUB ? 'Fetching...' : 'Fetch from RUB' }}
         </button>
@@ -95,12 +96,12 @@
           <label class="block text-sm font-medium text-gray-700 required">From in-country?</label>
           <div class="mt-2 space-x-4">
             <label class="inline-flex items-center">
-              <input type="radio" v-model="form.study_in_country" :value="true" required
+              <input type="radio" v-model="form.from_in_country" :value="true" required
                 class="form-radio text-primary" />
               <span class="ml-2">Yes</span>
             </label>
             <label class="inline-flex items-center">
-              <input type="radio" v-model="form.study_in_country" :value="false" required
+              <input type="radio" v-model="form.from_in_country" :value="false" required
                 class="form-radio text-primary" />
               <span class="ml-2">No</span>
             </label>
@@ -110,9 +111,9 @@
         <!-- Course Title -->
         <div>
           <label for="course_title" class="block text-sm font-medium text-gray-700 required">Course Title</label>
-          <input type="text" id="course_title" v-model="form.course_title" required :readonly="form.study_in_country"
+          <input type="text" id="course_title" v-model="form.course_title" required :readonly="form.from_in_country"
             :class="['mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
-              { 'bg-gray-50': form.study_in_country }]" />
+              { 'bg-gray-50': form.from_in_country }]" />
         </div>
 
         <!-- Qualification -->
@@ -152,8 +153,8 @@
           <label for="name_of_institute" class="block text-sm font-medium text-gray-700 required">Name of
             Institute</label>
           <input type="text" id="name_of_institute" v-model="form.name_of_institute" required
-            :readonly="form.study_in_country" :class="['mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
-              { 'bg-gray-50': form.study_in_country }]" />
+            :readonly="form.from_in_country" :class="['mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
+              { 'bg-gray-50': form.from_in_country }]" />
         </div>
 
         <!-- Name of University -->
@@ -161,16 +162,16 @@
           <label for="name_of_university" class="block text-sm font-medium text-gray-700 required">Name of
             University</label>
           <input type="text" id="name_of_university" v-model="form.name_of_university" required
-            :readonly="form.study_in_country" :class="['mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
-              { 'bg-gray-50': form.study_in_country }]" />
+            :readonly="form.from_in_country" :class="['mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
+              { 'bg-gray-50': form.from_in_country }]" />
         </div>
 
         <!-- Student ID No. -->
         <div>
           <label for="student_id_no" class="block text-sm font-medium text-gray-700 required">Student ID No.</label>
-          <input type="text" id="student_id_no" v-model="form.student_id_no" required :readonly="form.study_in_country"
+          <input type="text" id="student_id_no" v-model="form.student_id_no" required :readonly="form.from_in_country"
             :class="['mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
-              { 'bg-gray-50': form.study_in_country }]" />
+              { 'bg-gray-50': form.from_in_country }]" />
         </div>
 
         <!-- Year of Completion -->
@@ -178,8 +179,8 @@
           <label for="year_of_completion" class="block text-sm font-medium text-gray-700 required">Year of
             Completion</label>
           <input type="number" id="year_of_completion" v-model="form.year_of_completion" :min="minYear"
-            :max="currentYear" required :readonly="form.study_in_country" :class="['mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
-              { 'bg-gray-50': form.study_in_country }]" />
+            :max="currentYear" required :readonly="form.from_in_country" :class="['mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
+              { 'bg-gray-50': form.from_in_country }]" />
         </div>
 
         <!-- Website -->
@@ -199,8 +200,8 @@
         <!-- Country -->
         <div>
           <label for="country" class="block text-sm font-medium text-gray-700 required">Country</label>
-          <input type="text" id="country" v-model="form.country" required :readonly="form.study_in_country" :class="['mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
-            { 'bg-gray-50': form.study_in_country }]" />
+          <input type="text" id="country" v-model="form.country" required :readonly="form.from_in_country" :class="['mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
+            { 'bg-gray-50': form.from_in_country }]" />
         </div>
       </div>
     </div>
@@ -211,21 +212,19 @@
 
       <div class="space-y-6">
         <!-- Degree Certificate -->
-        <div v-if="!form.study_in_country">
+        <div v-if="!form.from_in_country">
           <label class="block text-sm font-medium text-gray-700 required">Degree Certificate</label>
           <div class="mt-2">
-            <FileUpload v-model="form.degree_certificate" accept=".pdf" :max-size="5" required
-              @upload-error="handleUploadError" />
+            <FileUpload v-model="form.degree_certificate" accept=".pdf" :max-size="5" required />
             <p class="mt-1 text-sm text-gray-500">PDF only, max 5MB</p>
           </div>
         </div>
 
         <!-- Academic Transcript -->
-        <div v-if="!form.study_in_country">
+        <div v-if="!form.from_in_country">
           <label class="block text-sm font-medium text-gray-700 required">Academic Transcript</label>
           <div class="mt-2">
-            <FileUpload v-model="form.academic_transcript" accept=".pdf" :max-size="5" required
-              @upload-error="handleUploadError" />
+            <FileUpload v-model="form.academic_transcript" accept=".pdf" :max-size="5" required />
             <p class="mt-1 text-sm text-gray-500">PDF only, max 5MB</p>
           </div>
         </div>
@@ -234,9 +233,8 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 required">Passport Size Photo</label>
           <div class="mt-2">
-            <FileUpload v-model="form.passport_photo" accept="image/jpeg,image/png" :max-size="2" required
-              @upload-error="handleUploadError" />
-            <p class="mt-1 text-sm text-gray-500">JPEG/PNG only, max 2MB, passport format</p>
+            <FileUpload v-model="form.passport_photo" accept=".jpg,.jpeg,.png,.webp" :max-size="2" required />
+            <p class="mt-1 text-sm text-gray-500">JPEG/PNG/WEBP only, max 2MB, passport format</p>
           </div>
         </div>
       </div>
@@ -284,14 +282,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, computed } from 'vue';
+import { ref, reactive, watch, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import apiService from '@/services/services';
 import FileUpload from '@/components/common/FileUpload.vue';
 import { useToast } from 'vue-toastification';
 
 const { user } = useAuthStore();
-const { showToast } = useToast();
+const toast = useToast();
 
 const isLoadingDCRC = ref(false);
 const isLoadingRUB = ref(false);
@@ -299,25 +297,16 @@ const isSubmitting = ref(false);
 const currentYear = new Date().getFullYear();
 const minYear = currentYear - 50;
 
-const qualificationOptions = [
-  { value: 'diploma', label: 'Diploma' },
-  { value: 'bachelor', label: 'Bachelor' },
-  { value: 'masters', label: "Master's" },
-  { value: 'phd', label: 'PhD' }
-];
-
-const courseTypeOptions = [
-  { value: 'full-time', label: 'Full Time' },
-  { value: 'part-time', label: 'Part Time' },
-  { value: 'distance', label: 'Distance Education' }
-];
+// Remove hardcoded options
+const qualificationOptions = ref([]);
+const courseTypeOptions = ref([]);
 
 const form = reactive({
   // Personal Information
   cid_no: '',
   applicants_name: '',
   date_of_birth: '',
-  contact_number: '',
+  contact_no: '', // Changed from contact_number
   email_address: user.email,
   gender: '',
   dzongkhag: '',
@@ -325,7 +314,7 @@ const form = reactive({
   village: '',
 
   // Education Details
-  study_in_country: null,
+  from_in_country: null, // Changed from study_in_country
   course_title: '',
   qualification: '',
   type_of_course: '',
@@ -346,7 +335,7 @@ const form = reactive({
   // Additional Fields
   remarks: '',
   declaration: false,
-  status: 'draft'
+  status: 'applied' // Changed to a valid status
 });
 
 // Computed property to check if CID is valid
@@ -354,8 +343,17 @@ const isCIDValid = computed(() => {
   return /^\d{11}$/.test(form.cid_no);
 });
 
+// Computed property to transform gender
+const genderDisplay = computed(() => {
+  const genderMap = {
+    'M': 'Male',
+    'F': 'Female'
+  };
+  return genderMap[form.gender] || '';
+});
+
 // Watch for study_in_country changes
-watch(() => form.study_in_country, (newValue) => {
+watch(() => form.from_in_country, (newValue) => {
   if (newValue === true) {
     form.country = 'Bhutan';
   } else {
@@ -363,33 +361,65 @@ watch(() => form.study_in_country, (newValue) => {
   }
 });
 
+// Fetch dropdown options on component mount
+onMounted(async () => {
+  try {
+    const [qualificationsResponse, courseTypesResponse] = await Promise.all([
+      apiService.getQualifications(),
+      apiService.getTypesOfCourse()
+    ]);
+
+    // Log the responses to debug
+    console.log('Qualifications Response:', qualificationsResponse);
+    console.log('Course Types Response:', courseTypesResponse);
+
+    // Access the `results` array from the response
+    qualificationOptions.value = qualificationsResponse.data.results.map(qual => ({
+      value: qual.id, // Assuming the API returns `id` and `name`
+      label: qual.name
+    }));
+
+    courseTypeOptions.value = courseTypesResponse.data.results.map(type => ({
+      value: type.id, // Assuming the API returns `id` and `name`
+      label: type.name
+    }));
+  } catch (error) {
+    toast.error('Failed to fetch dropdown options', 'error');
+    console.error('Error fetching dropdown options:', error);
+  }
+});
+
 const fetchDCRCData = async () => {
   if (!isCIDValid.value) {
-    showToast('Please enter a valid 11-digit CID', 'error');
+    toast.error('Please enter a valid 11-digit CID');
     return;
   }
 
   isLoadingDCRC.value = true;
   try {
-    const response = await apiService.getDCRCData(form.cid_no);
+    const response = await apiService.fetchCitizenDetails(form.cid_no);
+
+    // Assign the response data to the form
     Object.assign(form, {
       cid_no: response.cid_no,
-      applicants_name: response.name,
-      date_of_birth: response.dob,
+      applicants_name: response.applicants_name,
+      date_of_birth: response.date_of_birth,
       gender: response.gender,
       dzongkhag: response.dzongkhag,
       gewog: response.gewog,
       village: response.village
     });
-    showToast('DCRC data fetched successfully', 'success');
+
+    console.log('Updated Form:', form); // Log the updated form object
+
+    toast.success('DCRC data fetched successfully');
   } catch (error) {
-    showToast('Failed to fetch DCRC data', 'error');
+    toast.error('Failed to fetch DCRC data');
     console.error('Error fetching DCRC data:', error);
   } finally {
     isLoadingDCRC.value = false;
   }
 };
-
 
 const fetchRUBData = async () => {
   isLoadingRUB.value = true;
@@ -402,76 +432,72 @@ const fetchRUBData = async () => {
       name_of_university: response.university,
       year_of_completion: response.completion_year
     });
-    showToast('RUB data fetched successfully', 'success');
+    toast.success('RUB data fetched successfully', 'success');
   } catch (error) {
-    showToast('Failed to fetch RUB data', 'error');
+    toast.error('Failed to fetch RUB data', 'error');
     console.error('Error fetching RUB data:', error);
   } finally {
     isLoadingRUB.value = false;
   }
 };
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const [day, month, year] = dateString.split('/');
+  return `${year}-${month}-${day}`;
+};
 
 const handleSubmit = async () => {
   if (!form.declaration) {
-    showToast('Please accept the declaration', 'error');
+    toast.error('Please accept the declaration', 'error');
     return;
   }
 
   isSubmitting.value = true;
 
-  // Prepare the data for the API
+  // Create FormData instance
   const formData = new FormData();
 
   // Append personal information
-  formData.append('cid_no', form.cid_no);
-  formData.append('applicants_name', form.applicants_name);
-  formData.append('date_of_birth', form.date_of_birth);
-  formData.append('contact_number', form.contact_number);
-  formData.append('email_address', form.email_address);
-  formData.append('gender', form.gender);
-  formData.append('dzongkhag', form.dzongkhag);
-  formData.append('gewog', form.gewog);
-  formData.append('village', form.village);
+  Object.entries(form).forEach(([key, value]) => {
+    // Handle special cases for file uploads
+    if (['degree_certificate', 'academic_transcript', 'passport_photo'].includes(key)) {
+      // Check if we have a file to upload
+      if (value?.file instanceof File) {
+        // Map passport_photo to passport_size_photo in the API
+        const fieldName = key === 'passport_photo' ? 'passport_size_photo' : key;
+        formData.append(fieldName, value.file);
+      }
+    }
+    // Handle date formatting
+    else if (key === 'date_of_birth' && value) {
+      formData.append(key, formatDate(value));
+    }
+    // Handle boolean values
+    else if (typeof value === 'boolean') {
+      formData.append(key, value.toString());
+    }
+    // Handle all other fields
+    else if (value !== null && value !== undefined) {
+      formData.append(key, value.toString());
+    }
+  });
 
-  // Append education details
-  formData.append('course_title', form.course_title);
-  formData.append('qualification', form.qualification);
-  formData.append('type_of_course', form.type_of_course);
-  formData.append('duration_of_course', form.duration_of_course);
-  formData.append('name_of_institute', form.name_of_institute);
-  formData.append('name_of_university', form.name_of_university);
-  formData.append('student_id_no', form.student_id_no);
-  formData.append('year_of_completion', form.year_of_completion);
-  formData.append('website', form.website);
-  formData.append('location', form.location);
-  formData.append('country', form.country);
-
-  // Append documents
-  if (form.degree_certificate) {
-    formData.append('degree_certificate', form.degree_certificate.file);
+  // Log the FormData entries for debugging
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ': ' + pair[1]);
   }
-  if (form.academic_transcript) {
-    formData.append('academic_transcript', form.academic_transcript.file);
-  }
-  if (form.passport_photo) {
-    formData.append('passport_size_photo', form.passport_photo.file);
-  }
-
-  // Append additional fields
-  formData.append('remarks', form.remarks);
-  formData.append('status', form.status);
 
   try {
-    // Call the API to create the recognition
     const response = await apiService.createRecognitionOfQualification(formData);
 
     if (response.status === 201) {
-      showToast('Application submitted successfully', 'success');
+      toast.success('Application submitted successfully');
       emit('application-submitted');
     }
   } catch (error) {
-    console.error('Error submitting form:', error);
-    showToast('Failed to submit application', 'error');
+    console.error('Error submitting form:', error.response?.data || error);
+    const errorMessage = error.response?.data?.message || 'Failed to submit application';
+    toast.error(errorMessage);
   } finally {
     isSubmitting.value = false;
   }
@@ -479,13 +505,8 @@ const handleSubmit = async () => {
 
 // Handle saving as draft
 const handleSaveAsDraft = async () => {
-  form.status = 'draft'; // Set status to draft
+  form.status = 'applied'; // Set status to draft
   await handleSubmit(); // Reuse the handleSubmit logic
-};
-
-// Handle file upload errors
-const handleUploadError = (error) => {
-  showToast(error, 'error');
 };
 
 const emit = defineEmits(['application-submitted', 'close-modal']);
