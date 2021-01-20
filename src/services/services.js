@@ -196,4 +196,23 @@ export default {
   getUserDetails(userId) {
     return apiClient.get(`/users/users/${userId}/`);
   },
+
+  getRecognitionOfQualifications() {
+    return apiClient.get('/recognitions/recognition-of-qualifications/')
+  },
+  getRecognitionOfQualification(id) {
+    return apiClient.get(`/recognitions/recognition-of-qualifications/${id}/`)
+  },
+  createRecognitionOfQualification(qualificationData) {
+    return apiClient.post('/recognitions/recognition-of-qualifications/', qualificationData)
+  },
+  updateRecognitionOfQualification(id, qualificationData) {
+    return apiClient.put(`/recognitions/recognition-of-qualifications/${id}/`, qualificationData)
+  },
+  patchRecognitionOfQualification(id, qualificationData) {
+    return apiClient.patch(`/recognitions/recognition-of-qualifications/${id}/`, qualificationData)
+  },
+  deleteRecognitionOfQualification(id) {
+    return apiClient.delete(`/recognitions/recognition-of-qualifications/${id}/`)
+  },
 };

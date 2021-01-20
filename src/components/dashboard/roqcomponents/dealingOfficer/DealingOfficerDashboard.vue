@@ -58,8 +58,8 @@
 </template>
 <script setup>
 import { Clock, Eye, CheckCircle, XCircle } from 'lucide-vue-next'
-import StatsCard from '../StatsCards.vue'
-import TablePagination from '../TablePagination.vue'
+import StatsCard from '../user/StatsCards.vue'
+import TablePagination from '../user/TablePagination.vue'
 
 defineProps({
   stats: {

@@ -44,8 +44,8 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import StatsGrid from '@/components/dashboard/roqcomponents/StatsGrid.vue';
-import ApplicationTable from '@/components/dashboard/roqcomponents/ApplicationsTable.vue';
+import StatsGrid from '@/components/dashboard/roqcomponents/user/StatsGrid.vue';
+import ApplicationTable from '@/components/dashboard/roqcomponents/user/ApplicationsTable.vue';
 
 // Admin Components Import
 import AdminDashboard from '@/components/dashboard/roqcomponents/admin/AdminDashboard.vue';

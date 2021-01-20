@@ -14,8 +14,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
-import StatsGrid from '@/components/dashboard/roqcomponents/StatsGrid.vue';
-import ApplicationTable from '@/components/dashboard/roqcomponents/ApplicationsTable.vue';
+import StatsGrid from '@/components/dashboard/roqcomponents/user/StatsGrid.vue';
+import ApplicationTable from '@/components/dashboard/roqcomponents/user/ApplicationsTable.vue';
 import apiService from '@/services/services';
 
 const { user } = useAuthStore();
