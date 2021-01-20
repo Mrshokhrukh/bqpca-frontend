@@ -1,103 +1,296 @@
 <template>
-  <div>
-    <!-- Stats Cards -->
-    <ChiefStatsCard :totalApplications="applications.length" :totalApproved="approvedCount"
-      :totalRegretted="regrettedCount" :totalPending="pendingCount" />
-
-    <!-- Filter Dropdown -->
-    <div class="mb-4">
-      <label for="filterStatus" class="mr-2">Filter by Status:</label>
-      <select id="filterStatus" v-model="filterStatus" class="p-2 border rounded">
-        <option value="All">All</option>
-        <option value="Pending">Pending</option>
-        <option value="Approved">Approved</option>
-        <option value="Regretted">Regretted</option>
-      </select>
-    </div>
-
-    <!-- Table -->
-    <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-      <thead class="bg-gray-200">
-        <tr>
-          <th class="py-2 px-4">ID</th>
-          <th class="py-2 px-4">Applicant Name</th>
-          <th class="py-2 px-4">Status</th>
-          <th class="py-2 px-4">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="app in filteredApplications" :key="app.id">
-          <td class="py-2 px-4 text-center">{{ app.id }}</td>
-          <td class="py-2 px-4 text-center">{{ app.name }}</td>
-          <td class="py-2 px-4 text-center">
-            {{ app.status }}
-            <span v-if="app.status === 'Regretted' && app.regretReason" class="text-red-500 block text-sm">
-              Reason: {{ app.regretReason }}
-            </span>
-          </td>
-          <td class="py-2 px-4 text-center">
-            <button v-if="app.status === 'Pending'" @click="viewApplication(app)"
-              class="bg-blue-500 text-white px-3 py-1 rounded mr-2">
-              View
-            </button>
-            <button v-if="app.status === 'Pending'" @click="openApproveModal(app)"
-              class="bg-green-500 text-white px-3 py-1 rounded mr-2">
-              Approve
-            </button>
-            <button v-if="app.status === 'Pending'" @click="openRejectModal(app)"
-              class="bg-red-500 text-white px-3 py-1 rounded">
-              Reject
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- Modal for Viewing/Editing Application Details -->
-    <div v-if="selectedApplication" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-8 rounded-lg w-1/2 max-h-[90vh] overflow-y-auto relative">
-        <h2 class="text-2xl font-bold mb-4">Application Details</h2>
-        <div class="space-y-4">
-          <!-- Editable Fields -->
-          <div v-for="(value, key) in selectedApplication" :key="key">
-            <label :for="key" class="block font-semibold">{{ key }}</label>
-            <input v-if="isEditable(key) && isEditing" v-model="selectedApplication[key]" :id="key"
-              class="w-full p-2 border rounded" />
-            <p v-else>{{ value }}</p>
+  <div class="min-h-screen bg-slate-50 p-6">
+    <div class="max-w-7xl mx-auto space-y-8">
+      <!-- Stats Grid with Interactive Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- First Row -->
+        <div 
+          @click="filterByStatus('All')"
+          class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+          :class="{'ring-2 ring-blue-500': filterStatus === 'All'}"
+        >
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-base font-medium text-slate-600">Total</p>
+              <p class="mt-2 text-3xl font-bold text-slate-900">{{ applications.length }}</p>
+              <p class="text-sm text-slate-500">All applications</p>
+            </div>
+            <div class="p-3 rounded-full bg-blue-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
           </div>
         </div>
-        <div class="sticky bottom-0 bg-white py-4">
-          <button @click="toggleEdit" :class="isEditing ? 'bg-green-500' : 'bg-blue-500'"
-            class="text-white px-4 py-2 rounded mr-2">
-            {{ isEditing ? "Save" : "Edit" }}
-          </button>
-          <button @click="closeModal" class="bg-gray-500 text-white px-4 py-2 rounded">Close</button>
+
+        <div 
+          @click="filterByStatus('Pending')"
+          class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+          :class="{'ring-2 ring-yellow-500': filterStatus === 'Pending'}"
+        >
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-base font-medium text-slate-600">Pending</p>
+              <p class="mt-2 text-3xl font-bold text-yellow-600">{{ pendingCount }}</p>
+              <p class="text-sm text-slate-500">New applications</p>
+            </div>
+            <div class="p-3 rounded-full bg-yellow-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div 
+          @click="filterByStatus('Under Review')"
+          class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+          :class="{'ring-2 ring-indigo-500': filterStatus === 'Under Review'}"
+        >
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-base font-medium text-slate-600">Under Review</p>
+              <p class="mt-2 text-3xl font-bold text-indigo-600">{{ underReviewCount }}</p>
+              <p class="text-sm text-slate-500">In progress</p>
+            </div>
+            <div class="p-3 rounded-full bg-indigo-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Second Row -->
+        <div 
+          @click="filterByStatus('QEC Issued')"
+          class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+          :class="{'ring-2 ring-green-500': filterStatus === 'QEC Issued'}"
+        >
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-base font-medium text-slate-600">QEC Issued</p>
+              <p class="mt-2 text-3xl font-bold text-green-600">{{ qecIssuedCount }}</p>
+              <p class="text-sm text-slate-500">Approved</p>
+            </div>
+            <div class="p-3 rounded-full bg-green-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div 
+          @click="filterByStatus('Suspended')"
+          class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+          :class="{'ring-2 ring-orange-500': filterStatus === 'Suspended'}"
+        >
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-base font-medium text-slate-600">Suspended</p>
+              <p class="mt-2 text-3xl font-bold text-orange-600">{{ suspendedCount }}</p>
+              <p class="text-sm text-slate-500">On hold</p>
+            </div>
+            <div class="p-3 rounded-full bg-orange-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div 
+          @click="filterByStatus('Regretted')"
+          class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+          :class="{'ring-2 ring-red-500': filterStatus === 'Regretted'}"
+        >
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-base font-medium text-slate-600">Regretted</p>
+              <p class="mt-2 text-3xl font-bold text-red-600">{{ regrettedCount }}</p>
+              <p class="text-sm text-slate-500">Rejected</p>
+            </div>
+            <div class="p-3 rounded-full bg-red-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Approve Modal -->
-    <div v-if="isApproveModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-8 rounded-lg w-1/3">
-        <h2 class="text-2xl font-bold mb-4">Approve Application</h2>
-        <p class="mb-4">Are you sure you want to approve this application?</p>
-        <div class="flex justify-end">
-          <button @click="closeApproveModal" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancel</button>
-          <button @click="confirmApprove" class="bg-green-500 text-white px-4 py-2 rounded">Approve</button>
+      <!-- Active Filter Indicator -->
+      <div class="flex items-center space-x-2">
+        <span class="text-sm text-slate-600">Active Filter:</span>
+        <span 
+          class="px-3 py-1 rounded-full text-sm font-medium"
+          :class="{
+            'bg-blue-100 text-blue-800': filterStatus === 'All',
+            'bg-yellow-100 text-yellow-800': filterStatus === 'Pending',
+            'bg-indigo-100 text-indigo-800': filterStatus === 'Under Review',
+            'bg-green-100 text-green-800': filterStatus === 'QEC Issued',
+            'bg-orange-100 text-orange-800': filterStatus === 'Suspended',
+            'bg-red-100 text-red-800': filterStatus === 'Regretted'
+          }"
+        >
+          {{ filterStatus }}
+        </span>
+        <button 
+          v-if="filterStatus !== 'All'"
+          @click="filterByStatus('All')"
+          class="text-sm text-slate-500 hover:text-slate-700"
+        >
+          Clear filter
+        </button>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="w-full">
+        <input 
+          v-model="searchQuery" 
+          type="text" 
+          placeholder="Search by QEC, Name, or CID..." 
+          class="w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+
+      <!-- Applications Table -->
+      <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-slate-50 border-b border-slate-200">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-medium text-slate-600">ID</th>
+              <th class="px-6 py-4 text-left text-sm font-medium text-slate-600">Name</th>
+              <th class="px-6 py-4 text-left text-sm font-medium text-slate-600">CID</th>
+              <th class="px-6 py-4 text-left text-sm font-medium text-slate-600">QEC Number</th>
+              <th class="px-6 py-4 text-left text-sm font-medium text-slate-600">Status</th>
+              <th class="px-6 py-4 text-left text-sm font-medium text-slate-600">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            <tr v-for="app in filteredApplications" :key="app.id" class="hover:bg-slate-50 transition-colors">
+              <td class="px-6 py-4 text-sm text-slate-600">{{ app.id }}</td>
+              <td class="px-6 py-4">
+                <div class="text-sm font-medium text-slate-900">{{ app.name }}</div>
+                <div class="text-sm text-slate-600">{{ app.email }}</div>
+              </td>
+              <td class="px-6 py-4 text-sm text-slate-900">{{ app.cidNo }}</td>
+              <td class="px-6 py-4 text-sm text-slate-900">{{ app.qecNumber || 'N/A' }}</td>
+              <td class="px-6 py-4">
+                <span :class="[
+                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                  {
+                    'bg-yellow-100 text-yellow-800': app.status === 'Pending',
+                    'bg-indigo-100 text-indigo-800': app.status === 'Under Review',
+                    'bg-green-100 text-green-800': app.status === 'QEC Issued',
+                    'bg-orange-100 text-orange-800': app.status === 'Suspended',
+                    'bg-red-100 text-red-800': app.status === 'Regretted'
+                  }
+                ]">
+                  {{ app.status }}
+                </span>
+                <span v-if="app.status === 'Regretted' && app.regretReason" class="block text-sm text-red-500 mt-1">
+                  Reason: {{ app.regretReason }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <button v-if="app.status === 'Pending'" @click="viewApplication(app)"
+                  class="bg-blue-500 text-white px-3 py-1 rounded mr-2 hover:bg-blue-600">
+                  View
+                </button>
+                <button v-if="app.status === 'Pending'" @click="openApproveModal(app)"
+                  class="bg-green-500 text-white px-3 py-1 rounded mr-2 hover:bg-green-600">
+                  Approve
+                </button>
+                <button v-if="app.status === 'Pending'" @click="openRejectModal(app)"
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                  Reject
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- View Modal -->
+      <div v-if="isViewModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6">
+          <h2 class="text-xl font-bold text-slate-900 mb-4">Application Details</h2>
+          <div class="space-y-4">
+            <p><strong>Name:</strong> {{ selectedApplication.name }}</p>
+            <p><strong>Email:</strong> {{ selectedApplication.email }}</p>
+            <p><strong>CID:</strong> {{ selectedApplication.cidNo }}</p>
+            <p><strong>QEC Number:</strong> {{ selectedApplication.qecNumber || 'N/A' }}</p>
+            <p><strong>Status:</strong> {{ selectedApplication.status }}</p>
+          </div>
+          <div class="mt-6 flex justify-end">
+            <button 
+              @click="closeViewModal"
+              class="px-4 py-2 text-sm text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors"
+            >
+              Close
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Reject Modal -->
-    <div v-if="isRejectModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-8 rounded-lg w-1/3">
-        <h2 class="text-2xl font-bold mb-4">Reject Application</h2>
-        <p class="mb-4">Please provide a reason for rejection:</p>
-        <textarea v-model="rejectReason" class="w-full p-2 border rounded mb-4"
-          placeholder="Enter reason..."></textarea>
-        <div class="flex justify-end">
-          <button @click="closeRejectModal" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancel</button>
-          <button @click="confirmReject" class="bg-red-500 text-white px-4 py-2 rounded">Reject</button>
+      <!-- Approve Modal -->
+      <div v-if="isApproveModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+          <h2 class="text-xl font-bold text-slate-900 mb-4">Approve Application</h2>
+          <p class="text-slate-600 mb-6">Are you sure you want to approve this application?</p>
+          <div class="flex justify-end space-x-4">
+            <button 
+              @click="closeApproveModal"
+              class="px-4 py-2 text-sm text-slate-600 bg-slate-100 rounded-md hover:bg-slate-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              @click="confirmApprove"
+              class="px-4 py-2 text-sm text-white bg-green-500 rounded-md hover:bg-green-600 transition-colors"
+            >
+              Approve
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reject Modal -->
+      <div v-if="isRejectModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+          <h2 class="text-xl font-bold text-slate-900 mb-4">Reject Application</h2>
+          <textarea
+            v-model="rejectReason"
+            placeholder="Enter rejection reason..."
+            class="w-full p-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows="4"
+          ></textarea>
+          <div class="mt-6 flex justify-end space-x-4">
+            <button 
+              @click="closeRejectModal"
+              class="px-4 py-2 text-sm text-slate-600 bg-slate-100 rounded-md hover:bg-slate-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              @click="confirmReject"
+              class="px-4 py-2 text-sm text-white bg-red-500 rounded-md hover:bg-red-600 transition-colors"
+            >
+              Reject
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -106,31 +299,13 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import ChiefStatsCard from "./ChiefStatsCard.vue";
 
 const applications = ref([
   {
     id: 1,
     cidNo: "10101010101",
     name: "John Doe",
-    dob: "01/01/1990",
-    contactNo: "17171717",
     email: "john.doe@example.com",
-    courseTitle: "Computer Science",
-    qualification: "Bachelor's Degree",
-    typeOfCourse: "Full-time",
-    duration: "4 years",
-    institute: "Royal University of Bhutan",
-    university: "Royal University of Bhutan",
-    website: "www.rub.edu.bt",
-    location: "Thimphu",
-    country: "Bhutan",
-    studentId: "STU12345",
-    yearOfCompletion: "2022",
-    degreeCertificate: "degree.pdf",
-    academicTranscript: "transcript.pdf",
-    remarks: "No remarks",
-    confirmationDocument: "confirmation.pdf",
     status: "Pending",
     qecNumber: null,
     regretReason: null,
@@ -139,175 +314,220 @@ const applications = ref([
     id: 2,
     cidNo: "20202020202",
     name: "Jane Smith",
-    dob: "02/02/1991",
-    contactNo: "18181818",
     email: "jane.smith@example.com",
-    courseTitle: "Business Administration",
-    qualification: "Master's Degree",
-    typeOfCourse: "Part-time",
-    duration: "2 years",
-    institute: "Royal Institute of Management",
-    university: "Royal University of Bhutan",
-    website: "www.rim.edu.bt",
-    location: "Thimphu",
-    country: "Bhutan",
-    studentId: "STU67890",
-    yearOfCompletion: "2021",
-    degreeCertificate: "degree.pdf",
-    academicTranscript: "transcript.pdf",
-    remarks: "No remarks",
-    confirmationDocument: "confirmation.pdf",
-    status: "Approved",
-    qecNumber: "QEC-1234",
+    status: "Under Review",
+    qecNumber: null,
     regretReason: null,
   },
   {
     id: 3,
     cidNo: "30303030303",
     name: "Alice Johnson",
-    dob: "03/03/1992",
-    contactNo: "19191919",
     email: "alice.johnson@example.com",
-    courseTitle: "Electrical Engineering",
-    qualification: "Bachelor's Degree",
-    typeOfCourse: "Full-time",
-    duration: "4 years",
-    institute: "College of Science and Technology",
-    university: "Royal University of Bhutan",
-    website: "www.cst.edu.bt",
-    location: "Phuentsholing",
-    country: "Bhutan",
-    studentId: "STU54321",
-    yearOfCompletion: "2023",
-    degreeCertificate: "degree.pdf",
-    academicTranscript: "transcript.pdf",
-    remarks: "No remarks",
-    confirmationDocument: "confirmation.pdf",
-    status: "Pending",
-    qecNumber: null,
+    status: "QEC Issued",
+    qecNumber: "QEC-1234",
     regretReason: null,
   },
   {
     id: 4,
     cidNo: "40404040404",
     name: "Bob Williams",
-    dob: "04/04/1993",
-    contactNo: "20202020",
     email: "bob.williams@example.com",
-    courseTitle: "Mechanical Engineering",
-    qualification: "Bachelor's Degree",
-    typeOfCourse: "Full-time",
-    duration: "4 years",
-    institute: "College of Science and Technology",
-    university: "Royal University of Bhutan",
-    website: "www.cst.edu.bt",
-    location: "Phuentsholing",
-    country: "Bhutan",
-    studentId: "STU98765",
-    yearOfCompletion: "2023",
-    degreeCertificate: "degree.pdf",
-    academicTranscript: "transcript.pdf",
-    remarks: "No remarks",
-    confirmationDocument: "confirmation.pdf",
-    status: "Approved",
-    qecNumber: "QEC-5678",
-    regretReason: null,
+    status: "Suspended",
+    qecNumber: null,
+    regretReason: "Pending further verification",
   },
   {
     id: 5,
     cidNo: "50505050505",
     name: "Charlie Brown",
-    dob: "05/05/1994",
-    contactNo: "21212121",
     email: "charlie.brown@example.com",
-    courseTitle: "Civil Engineering",
-    qualification: "Bachelor's Degree",
-    typeOfCourse: "Full-time",
-    duration: "4 years",
-    institute: "College of Science and Technology",
-    university: "Royal University of Bhutan",
-    website: "www.cst.edu.bt",
-    location: "Phuentsholing",
-    country: "Bhutan",
-    studentId: "STU11223",
-    yearOfCompletion: "2024",
-    degreeCertificate: "degree.pdf",
-    academicTranscript: "transcript.pdf",
-    remarks: "No remarks",
-    confirmationDocument: "confirmation.pdf",
+    status: "Regretted",
+    qecNumber: null,
+    regretReason: "Incomplete documentation",
+  },
+  {
+    id: 6,
+    cidNo: "60606060606",
+    name: "David Wilson",
+    email: "david.wilson@example.com",
     status: "Pending",
     qecNumber: null,
     regretReason: null,
   },
   {
-    id: 6,
-    cidNo: "60606060606",
-    name: "Diana Evans",
-    dob: "06/06/1995",
-    contactNo: "22222222",
-    email: "diana.evans@example.com",
-    courseTitle: "Architecture",
-    qualification: "Bachelor's Degree",
-    typeOfCourse: "Full-time",
-    duration: "5 years",
-    institute: "College of Science and Technology",
-    university: "Royal University of Bhutan",
-    website: "www.cst.edu.bt",
-    location: "Phuentsholing",
-    country: "Bhutan",
-    studentId: "STU33445",
-    yearOfCompletion: "2025",
-    degreeCertificate: "degree.pdf",
-    academicTranscript: "transcript.pdf",
-    remarks: "No remarks",
-    confirmationDocument: "confirmation.pdf",
+    id: 7,
+    cidNo: "70707070707",
+    name: "Eva Green",
+    email: "eva.green@example.com",
+    status: "Under Review",
+    qecNumber: null,
+    regretReason: null,
+  },
+  {
+    id: 8,
+    cidNo: "80808080808",
+    name: "Frank White",
+    email: "frank.white@example.com",
+    status: "QEC Issued",
+    qecNumber: "QEC-5678",
+    regretReason: null,
+  },
+  {
+    id: 9,
+    cidNo: "90909090909",
+    name: "Grace Black",
+    email: "grace.black@example.com",
+    status: "Suspended",
+    qecNumber: null,
+    regretReason: "Pending additional information",
+  },
+  {
+    id: 10,
+    cidNo: "10101010110",
+    name: "Henry Brown",
+    email: "henry.brown@example.com",
     status: "Regretted",
     qecNumber: null,
-    regretReason: "Incomplete documentation",
+    regretReason: "Insufficient qualifications",
+  },
+  {
+    id: 11,
+    cidNo: "11111111111",
+    name: "Ivy Davis",
+    email: "ivy.davis@example.com",
+    status: "Pending",
+    qecNumber: null,
+    regretReason: null,
+  },
+  {
+    id: 12,
+    cidNo: "12121212121",
+    name: "Jack Evans",
+    email: "jack.evans@example.com",
+    status: "Under Review",
+    qecNumber: null,
+    regretReason: null,
+  },
+  {
+    id: 13,
+    cidNo: "13131313131",
+    name: "Karen Harris",
+    email: "karen.harris@example.com",
+    status: "QEC Issued",
+    qecNumber: "QEC-9101",
+    regretReason: null,
+  },
+  {
+    id: 14,
+    cidNo: "14141414141",
+    name: "Leo Clark",
+    email: "leo.clark@example.com",
+    status: "Suspended",
+    qecNumber: null,
+    regretReason: "Pending background check",
+  },
+  {
+    id: 15,
+    cidNo: "15151515151",
+    name: "Mia Lewis",
+    email: "mia.lewis@example.com",
+    status: "Regretted",
+    qecNumber: null,
+    regretReason: "Incomplete application form",
+  },
+  {
+    id: 16,
+    cidNo: "16161616161",
+    name: "Noah Walker",
+    email: "noah.walker@example.com",
+    status: "Pending",
+    qecNumber: null,
+    regretReason: null,
+  },
+  {
+    id: 17,
+    cidNo: "17171717171",
+    name: "Olivia Hall",
+    email: "olivia.hall@example.com",
+    status: "Under Review",
+    qecNumber: null,
+    regretReason: null,
+  },
+  {
+    id: 18,
+    cidNo: "18181818181",
+    name: "Paul Young",
+    email: "paul.young@example.com",
+    status: "QEC Issued",
+    qecNumber: "QEC-1121",
+    regretReason: null,
+  },
+  {
+    id: 19,
+    cidNo: "19191919191",
+    name: "Quinn Allen",
+    email: "quinn.allen@example.com",
+    status: "Suspended",
+    qecNumber: null,
+    regretReason: "Pending verification of documents",
+  },
+  {
+    id: 20,
+    cidNo: "20202020220",
+    name: "Rachel King",
+    email: "rachel.king@example.com",
+    status: "Regretted",
+    qecNumber: null,
+    regretReason: "Ineligible due to age",
   },
 ]);
 
 const selectedApplication = ref(null);
+const searchQuery = ref("");
 const filterStatus = ref("All");
-const isEditing = ref(false);
+const isViewModalOpen = ref(false);
 const isApproveModalOpen = ref(false);
 const isRejectModalOpen = ref(false);
 const rejectReason = ref("");
 const applicationToProcess = ref(null);
 
-const approvedCount = computed(() => applications.value.filter((app) => app.status === "Approved").length);
-const regrettedCount = computed(() => applications.value.filter((app) => app.status === "Regretted").length);
+// Computed properties
 const pendingCount = computed(() => applications.value.filter((app) => app.status === "Pending").length);
-const filteredApplications = computed(() => {
-  if (filterStatus.value === "All") {
-    return applications.value;
-  }
-  return applications.value.filter((app) => app.status === filterStatus.value);
-});
+const underReviewCount = computed(() => applications.value.filter((app) => app.status === "Under Review").length);
+const qecIssuedCount = computed(() => applications.value.filter((app) => app.status === "QEC Issued").length);
+const suspendedCount = computed(() => applications.value.filter((app) => app.status === "Suspended").length);
+const regrettedCount = computed(() => applications.value.filter((app) => app.status === "Regretted").length);
 
-const isEditable = (key) => {
-  const nonEditableFields = ["id", "status", "qecNumber", "regretReason"];
-  return !nonEditableFields.includes(key);
-};
+const filteredApplications = computed(() => {
+  let filtered = applications.value;
+
+  // Filter by status
+  if (filterStatus.value !== "All") {
+    filtered = filtered.filter((app) => app.status === filterStatus.value);
+  }
+
+  // Filter by search query
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (app) =>
+        app.name.toLowerCase().includes(query) ||
+        app.cidNo.includes(query) ||
+        (app.qecNumber && app.qecNumber.toLowerCase().includes(query))
+    );
+  }
+
+  return filtered;
+});
 
 const viewApplication = (app) => {
   selectedApplication.value = { ...app };
-  isEditing.value = false;
+  isViewModalOpen.value = true;
 };
 
-const toggleEdit = () => {
-  if (isEditing.value) {
-    const index = applications.value.findIndex((app) => app.id === selectedApplication.value.id);
-    if (index !== -1) {
-      applications.value[index] = { ...selectedApplication.value };
-    }
-  }
-  isEditing.value = !isEditing.value;
-};
-
-const closeModal = () => {
-  selectedApplication.value = null;
-  isEditing.value = false;
+const closeViewModal = () => {
+  isViewModalOpen.value = false;
 };
 
 const openApproveModal = (app) => {
@@ -322,7 +542,7 @@ const closeApproveModal = () => {
 
 const confirmApprove = () => {
   if (applicationToProcess.value) {
-    applicationToProcess.value.status = "Approved";
+    applicationToProcess.value.status = "QEC Issued";
     applicationToProcess.value.qecNumber = `QEC-${Math.floor(1000 + Math.random() * 9000)}`;
   }
   closeApproveModal();
@@ -346,6 +566,10 @@ const confirmReject = () => {
   }
   closeRejectModal();
 };
+
+const filterByStatus = (status) => {
+  filterStatus.value = status;
+};
 </script>
 
 <style scoped>
@@ -363,91 +587,5 @@ td {
 
 th {
   background-color: #f2f2f2;
-}
-
-tr:hover {
-  background-color: #f5f5f5;
-}
-
-/* Modal styles */
-.fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.bg-opacity-50 {
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.rounded-lg {
-  border-radius: 0.5rem;
-}
-
-.shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-/* Button styles */
-button {
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-.bg-blue-500 {
-  background-color: #3b82f6;
-}
-
-.bg-green-500 {
-  background-color: #10b981;
-}
-
-.bg-red-500 {
-  background-color: #ef4444;
-}
-
-.bg-gray-500 {
-  background-color: #6b7280;
-}
-
-.text-white {
-  color: white;
-}
-
-.px-4 {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-.py-2 {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-
-.rounded {
-  border-radius: 0.25rem;
-}
-
-/* Scrollable modal content */
-.max-h-[90vh] {
-  max-height: 90vh;
-}
-
-.overflow-y-auto {
-  overflow-y: auto;
-}
-
-/* Sticky buttons at the bottom */
-.sticky {
-  position: sticky;
-  bottom: 0;
 }
 </style>
