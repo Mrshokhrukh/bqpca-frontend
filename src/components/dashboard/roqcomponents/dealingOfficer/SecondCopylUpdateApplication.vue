@@ -70,44 +70,79 @@
         </div>
       </div>
 
-      <!-- Supporting Documents -->
-      <div class="bg-white p-8 rounded-lg shadow-lg mb-12">
+       <!-- Updated Supporting Documents Section -->
+       <div class="bg-white p-8 rounded-lg shadow-lg mb-12">
         <h2 class="text-lg font-semibold mb-4">Supporting Documents</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block mb-1">Document Type</label>
-            <select
-              v-model="form.documentType"
-              class="w-full p-2 border rounded"
-              :disabled="!isEditable"
-            >
-              <option value="">Select Document Type</option>
-              <option v-for="type in documentTypes" :key="type" :value="type">
-                {{ type }}
-              </option>
-            </select>
-            <span class="text-red-500 text-sm">{{ errors.documentType }}</span>
-          </div>
-          <div>
 
-            <label class="block mb-1">Upload Document</label>
-            <input
-              type="file"
-              @change="handleFileUpload"
-              class="w-full p-2 border rounded"
-              :disabled="!isEditable"
-            />
-          </div>
-          <div>
-            <label class="block text-slate-600 text-base mb-2">Remarks</label>
-            <input v-model="form.remarks" type="text" class="w-full p-3 border border-slate-200 rounded-lg" />
-            <span class="text-red-500 text-sm">{{ errors.remarks }}</span>
-          </div>
+        <!-- Document List -->
+        <div v-for="(doc, index) in form.documents" :key="index" class="mb-6 border-b pb-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block mb-1">Document Type</label>
+              <select
+                v-model="doc.documentType"
+                class="w-full p-2 border rounded"
+                :disabled="!isEditable"
+              >
+                <option value="">Select Document Type</option>
+                <option v-for="type in documentTypes" :key="type" :value="type">
+                  {{ type }}
+                </option>
+              </select>
+              <span class="text-red-500 text-sm">{{ errors.documents?.[index]?.documentType }}</span>
+            </div>
 
+            <div>
+              <label class="block mb-1">Upload Document</label>
+              <div class="relative">
+                <input
+                  type="file"
+                  @change="(e) => handleFileUpload(e, index)"
+                  class="w-full p-2 border rounded"
+                  :disabled="!isEditable"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                />
+                <span v-if="doc.file" class="text-sm text-green-600 mt-1 block">
+                  Selected: {{ doc.file.name }}
+                </span>
+              </div>
+              <span class="text-red-500 text-sm">{{ errors.documents?.[index]?.file }}</span>
+            </div>
 
+            <div>
+              <label class="block text-slate-600 text-base mb-2">Remarks</label>
+              <input
+                v-model="doc.remarks"
+                type="text"
+                class="w-full p-3 border border-slate-200 rounded-lg"
+                :disabled="!isEditable"
+              />
+              <span class="text-red-500 text-sm">{{ errors.documents?.[index]?.remarks }}</span>
+            </div>
+
+            <div class="flex items-end">
+              <button
+                type="button"
+                @click="removeDocument(index)"
+                class="text-red-500 hover:text-red-700 px-4 py-2"
+                :disabled="!isEditable || form.documents.length <= 1"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
 
+        <!-- Add Document Button -->
+        <button
+          type="button"
+          @click="addDocument"
+          class="mt-4 inline-flex items-center px-4 py-2 bg-slate-100 text-slate-700 rounded hover:bg-slate-200 transition-colors"
+          :disabled="!isEditable"
+        >
+          Add Another Document
+        </button>
+      </div>
       <!-- Form Actions -->
       <div class="flex gap-4">
         <button
@@ -259,4 +294,6 @@ const handleFileUpload = (event) => {
     console.log('File selected:', file.name);
   }
 };
+
+
 </script>

@@ -65,8 +65,8 @@
     <!-- Dialog Box -->
     <div v-if="showDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div class="bg-white p-6 rounded shadow-md w-3/4 max-h-[90vh] overflow-y-auto">
-        <h2 class="text-lg font-bold mb-4">Update Application</h2>
-        <UpadateApplication :application="selectedApplication" />
+        <h2 class="text-lg font-bold mb-4"> Second Copy Update Application</h2>
+        <secondcopyUpadateApplication :application="selectedApplication" />
         <div class="mt-4 flex justify-end gap-2">
           <button class="bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400" @click="closeDialog">Close</button>
         </div>
@@ -77,7 +77,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import UpadateApplication from './UpdateApplication.vue';
+import secondcopyUpadateApplication from './SecondCopylUpdateApplication.vue';
 
 // Sample data for the table
 const applications = ref([
@@ -100,7 +100,7 @@ const applications = ref([
     location: 'New York',
     country: 'USA',
     website: 'https://example.com',
-    secondcopy_status: '',
+    secondcopy_status: true,
     documentType: 'Passport',
   },
   // Add more sample objects as needed
