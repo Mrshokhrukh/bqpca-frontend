@@ -1,0 +1,388 @@
+<template>
+  <div>
+    <PaymentModal ref="paymentModal" @payment-completed="onPaymentCompleted" @close="onPaymentModalClose" />
+    <form @submit.prevent="handleSubmit" class="space-y-6">
+      <!-- Autocomplete Dropdown for Original Application -->
+      <div class="bg-white border p-6 rounded-lg shadow-sm">
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">Select Original Application</h3>
+        <div>
+          <label for="original_application" class="block text-sm font-medium text-gray-700 required">
+            Search by Name or CID
+          </label>
+          <input
+            type="text"
+            id="original_application"
+            v-model="searchQuery"
+            @input="onSearchInput"
+            placeholder="Type to search..."
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+          />
+          <ul v-if="filteredApplications.length > 0" class="mt-2 bg-white border rounded-lg shadow-sm">
+            <li
+              v-for="app in filteredApplications"
+              :key="app.id"
+              @click="onOriginalApplicationSelect(app)"
+              class="p-2 hover:bg-gray-50 cursor-pointer"
+            >
+              {{ app.applicants_name }} ({{ app.cid_no }})
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Personal Information Section -->
+      <div class="bg-white border p-6 rounded-lg shadow-sm">
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">Personal Information</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- CID No. -->
+          <div>
+            <label for="cid" class="block text-sm font-medium text-gray-700">CID No.</label>
+            <input type="text" id="cid" v-model="form.cid_no"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Full Name -->
+          <div>
+            <label for="full_name" class="block text-sm font-medium text-gray-700">Full Name</label>
+            <input type="text" id="full_name" v-model="form.applicants_name"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Date of Birth -->
+          <div>
+            <label for="date_of_birth" class="block text-sm font-medium text-gray-700">Date of Birth</label>
+            <input type="text" id="date_of_birth" v-model="form.date_of_birth"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Contact Number -->
+          <div>
+            <label for="contact_number" class="block text-sm font-medium text-gray-700 required">Contact Number</label>
+            <input type="tel" id="contact_number" v-model="form.contact_no" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Email Address -->
+          <div>
+            <label for="email_address" class="block text-sm font-medium text-gray-700">Email Address</label>
+            <input type="email" id="email_address" v-model="form.email_address" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Gender -->
+          <div>
+            <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
+            <input type="text" id="gender" v-model="form.gender"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Dzongkhag -->
+          <div>
+            <label for="dzongkhag" class="block text-sm font-medium text-gray-700">Dzongkhag</label>
+            <input type="text" id="dzongkhag" v-model="form.dzongkhag"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Gewog -->
+          <div>
+            <label for="gewog" class="block text-sm font-medium text-gray-700">Gewog</label>
+            <input type="text" id="gewog" v-model="form.gewog"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Village -->
+          <div>
+            <label for="village" class="block text-sm font-medium text-gray-700">Village</label>
+            <input type="text" id="village" v-model="form.village"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Education Details Section -->
+      <div class="bg-white border p-6 rounded-lg shadow-sm">
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">Education Details</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- From in-country? -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 required">From in-country?</label>
+            <div class="mt-2 space-x-4">
+              <label class="inline-flex items-center">
+                <input type="radio" v-model="form.from_in_country" :value="true" required
+                  class="form-radio text-primary" />
+                <span class="ml-2">Yes</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input type="radio" v-model="form.from_in_country" :value="false" required
+                  class="form-radio text-primary" />
+                <span class="ml-2">No</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Course Title -->
+          <div>
+            <label for="course_title" class="block text-sm font-medium text-gray-700 required">Course Title</label>
+            <input type="text" id="course_title" v-model="form.course_title" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Qualification -->
+          <div>
+            <label for="qualification" class="block text-sm font-medium text-gray-700 required">Qualification</label>
+            <input type="text" id="qualification" v-model="form.qualification" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Type of Course -->
+          <div>
+            <label for="type_of_course" class="block text-sm font-medium text-gray-700 required">Type of Course</label>
+            <input type="text" id="type_of_course" v-model="form.type_of_course" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Duration of Course -->
+          <div>
+            <label for="duration_of_course" class="block text-sm font-medium text-gray-700 required">Duration of Course
+              (Years)</label>
+            <input type="number" id="duration_of_course" v-model="form.duration_of_course" min="1" max="10" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Name of Institute -->
+          <div>
+            <label for="name_of_institute" class="block text-sm font-medium text-gray-700 required">Name of
+              Institute</label>
+            <input type="text" id="name_of_institute" v-model="form.name_of_institute" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Name of University -->
+          <div>
+            <label for="name_of_university" class="block text-sm font-medium text-gray-700 required">Name of
+              University</label>
+            <input type="text" id="name_of_university" v-model="form.name_of_university" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Student ID No. -->
+          <div>
+            <label for="student_id_no" class="block text-sm font-medium text-gray-700 required">Student ID No.</label>
+            <input type="text" id="student_id_no" v-model="form.student_id_no" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Year of Completion -->
+          <div>
+            <label for="year_of_completion" class="block text-sm font-medium text-gray-700 required">Year of
+              Completion</label>
+            <input type="number" id="year_of_completion" v-model="form.year_of_completion" :min="minYear"
+              :max="currentYear" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Website -->
+          <div>
+            <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
+            <input type="url" id="website" v-model="form.website" placeholder="https://" pattern="https?://.+"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Location -->
+          <div>
+            <label for="location" class="block text-sm font-medium text-gray-700 required">Location</label>
+            <input type="text" id="location" v-model="form.location" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+
+          <!-- Country -->
+          <div>
+            <label for="country" class="block text-sm font-medium text-gray-700 required">Country</label>
+            <input type="text" id="country" v-model="form.country" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Reason for Second Copy -->
+      <div class="bg-white border p-6 rounded-lg shadow-sm">
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">Reason for Second Copy</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Reason for Issue of Second Copy -->
+          <div>
+            <label for="reason_for_second_copy" class="block text-sm font-medium text-gray-700 required">Reason</label>
+            <select id="reason_for_second_copy" v-model="form.reason_for_issue_of_second_copy" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2">
+              <option value="" disabled>Select a reason</option>
+              <option v-for="reason in reasonsForSecondCopy" :key="reason.id" :value="reason.id">
+                {{ reason.name }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Other Specify -->
+          <div v-if="form.reason_for_issue_of_second_copy === othersReasonId">
+            <label for="other_specify" class="block text-sm font-medium text-gray-700 required">Other (Specify)</label>
+            <input type="text" id="other_specify" v-model="form.second_copy_other" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Supporting Document for Second Copy -->
+      <div class="bg-white border p-6 rounded-lg shadow-sm">
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">Supporting Document</h3>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 required">Upload Supporting Document</label>
+          <FileUpload v-model="form.second_copy_supporting_document" accept=".pdf" :max-size="5" required />
+          <p class="mt-1 text-sm text-gray-500">PDF only, max 5MB</p>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex justify-end space-x-4">
+        <button type="button" @click="$emit('close-modal')"
+          class="px-6 py-3 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+          Cancel
+        </button>
+        <button type="submit"
+          class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive, onMounted } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
+import apiService from '@/services/services';
+import FileUpload from '@/components/common/FileUpload.vue';
+import { useToast } from 'vue-toastification';
+
+const { userId } = useAuthStore();
+const toast = useToast();
+
+const originalApplications = ref([]);
+const filteredApplications = ref([]);
+const searchQuery = ref('');
+const selectedOriginalApplication = ref(null);
+const reasonsForSecondCopy = ref([]);
+const othersReasonId = ref(null);
+
+const form = reactive({
+  cid_no: '',
+  applicants_name: '',
+  date_of_birth: '',
+  contact_no: '',
+  email_address: '',
+  gender: '',
+  dzongkhag: '',
+  gewog: '',
+  village: '',
+  from_in_country: null,
+  course_title: '',
+  qualification: '',
+  type_of_course: '',
+  duration_of_course: '',
+  name_of_institute: '',
+  name_of_university: '',
+  student_id_no: '',
+  year_of_completion: '',
+  website: '',
+  location: '',
+  country: '',
+  reason_for_issue_of_second_copy: '',
+  second_copy_other: '',
+  second_copy_supporting_document: null,
+  is_second_copy: true,
+});
+
+// Fetch original applications and reasons for second copy
+onMounted(async () => {
+  try {
+    const [applicationsResponse, reasonsResponse] = await Promise.all([
+      apiService.getRecognitionOfQualifications({ user_id: userId.value }),
+      apiService.getReasonsForIssueOfSecondCopy(),
+    ]);
+
+    originalApplications.value = applicationsResponse.data.results;
+    reasonsForSecondCopy.value = reasonsResponse.data.results;
+
+    // Find the ID of the "Others" reason
+    const othersReason = reasonsForSecondCopy.value.find(reason => reason.name.toLowerCase() === 'others');
+    if (othersReason) {
+      othersReasonId.value = othersReason.id;
+    }
+  } catch (error) {
+    toast.error('Failed to fetch data');
+    console.error('Error fetching data:', error);
+  }
+});
+
+// Autocomplete search
+const onSearchInput = () => {
+  if (searchQuery.value) {
+    filteredApplications.value = originalApplications.value.filter(app =>
+      app.applicants_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      app.cid_no.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+  } else {
+    filteredApplications.value = [];
+  }
+};
+
+// Auto-fill form when an original application is selected
+const onOriginalApplicationSelect = (app) => {
+  selectedOriginalApplication.value = app;
+  Object.assign(form, {
+    cid_no: app.cid_no,
+    applicants_name: app.applicants_name,
+    date_of_birth: app.date_of_birth,
+    contact_no: app.contact_no,
+    email_address: app.email_address,
+    gender: app.gender,
+    dzongkhag: app.dzongkhag,
+    gewog: app.gewog,
+    village: app.village,
+    from_in_country: app.from_in_country,
+    course_title: app.course_title,
+    qualification: app.qualification,
+    type_of_course: app.type_of_course,
+    duration_of_course: app.duration_of_course,
+    name_of_institute: app.name_of_institute,
+    name_of_university: app.name_of_university,
+    student_id_no: app.student_id_no,
+    year_of_completion: app.year_of_completion,
+    website: app.website,
+    location: app.location,
+    country: app.country,
+  });
+  searchQuery.value = '';
+  filteredApplications.value = [];
+};
+
+// Handle form submission
+const handleSubmit = async () => {
+  try {
+    const formData = new FormData();
+    Object.entries(form).forEach(([key, value]) => {
+      if (value instanceof File) {
+        formData.append(key, value);
+      } else if (value !== null && value !== undefined) {
+        formData.append(key, value.toString());
+      }
+    });
+
+    await apiService.createRecognitionOfQualification(formData);
+    toast.success('Second copy application submitted successfully');
+    emit('application-submitted');
+  } catch (error) {
+    toast.error('Failed to submit application');
+    console.error('Error submitting application:', error);
+  }
+};
+
+const emit = defineEmits(['application-submitted', 'close-modal']);
+</script>
