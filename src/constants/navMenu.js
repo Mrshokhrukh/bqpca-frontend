@@ -96,10 +96,21 @@ const serviceSpecificMenuItems = {
       {
         name: 'Practitioner Reg & Cert',
         icon: getIconComponent('Heart'),
-        route: (serviceType) => `/admin/user/${serviceType}/practitioner_reg_and_cert`,
+        children: [
+          {
+            name: 'Registration Application',
+            route: (serviceType) =>
+              `/admin/user/${serviceType}/practitioner_reg_and_cert/registration`,
+          },
+          {
+            name: 'Certificate Application',
+            route: (serviceType) =>
+              `/admin/user/${serviceType}/practitioner_reg_and_cert/certificate`,
+          },
+        ],
       },
       {
-        name: 'cpd',
+        name: 'Continuous Professional Development',
         icon: getIconComponent('BookOpen'),
         route: (serviceType) => `/admin/user/${serviceType}/cpd`,
       },
@@ -299,10 +310,18 @@ export const generateNavigationItems = (role, serviceType) => {
 
   // Add service-specific menu items if they exist for the role and service type
   if (serviceType && serviceSpecificMenuItems[serviceType]?.[role]) {
-    const serviceItems = serviceSpecificMenuItems[serviceType][role].map((item) => ({
-      ...item,
-      route: typeof item.route === 'function' ? item.route(serviceType) : item.route,
-    }))
+    const processMenuItem = (item) => {
+      const newItem = {
+        ...item,
+        route: typeof item.route === 'function' ? item.route(serviceType) : item.route,
+      }
+      if (newItem.children) {
+        newItem.children = newItem.children.map((child) => processMenuItem(child))
+      }
+      return newItem
+    }
+
+    const serviceItems = serviceSpecificMenuItems[serviceType][role].map(processMenuItem)
 
     // Insert service-specific items after Dashboard but before Profile
     const dashboardIndex = navigationItems[role].findIndex((item) => item.name === 'Dashboard')

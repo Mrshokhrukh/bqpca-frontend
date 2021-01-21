@@ -68,10 +68,11 @@ import BmhDirectorDashboard from '@/components/dashboard/bhmccomponents/director
 import BmhCpdCmeProviderDashboard from '@/components/dashboard/bhmccomponents/cpdCmeProvider/BmhCpdCmeProviderDashboard.vue';
 import BmhInstitutionsDashboard from '@/components/dashboard/bhmccomponents/institutions/BmhInstitutionsDashboard.vue';
 import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superAdmin/BmhSuperAdminDashboard.vue';
-import PractitionerRegandCert from '@/components/dashboard/bhmccomponents/user/PractitionerRegandCert.vue';
+import PractitionerRegandCert from '@/components/dashboard/bhmccomponents/user/pracitioner_reg_and_cert/PractitionerRegandCert.vue';
 import CPDcomponent from '@/components/dashboard/bhmccomponents/user/CPDcomponent.vue';
 import CoGSComponet from '@/components/dashboard/bhmccomponents/user/CoGSComponet.vue';
-
+import PractitionerCertification from '@/components/dashboard/bhmccomponents/user/pracitioner_reg_and_cert/PractitionerCertification.vue';
+import PractitionerRegistration from '@/components/dashboard/bhmccomponents/user/pracitioner_reg_and_cert/PractitionerRegistration.vue';
 
 
 const { role, user } = useAuthStore();
@@ -103,6 +104,10 @@ const bmhUserComponent = computed(() => {
       return BmhUserDashboard;
     case path.endsWith('/health_certification/practitioner_reg_and_cert'):
       return PractitionerRegandCert;
+    case path.endsWith('/health_certification/practitioner_reg_and_cert/registration'):
+      return PractitionerRegistration;
+    case path.endsWith('/health_certification/practitioner_reg_and_cert/certificate'):
+      return PractitionerCertification;
     case path.endsWith('/health_certification/cpd'):
       return CPDcomponent;
     case path.endsWith('/health_certification/CoGS'):

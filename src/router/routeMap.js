@@ -95,11 +95,15 @@ export default {
     },
     health_certification: {
       dashboard: () => import('@/views/admin/BMHC/Dashboard.vue'),
-      practitioner_reg_and_cert: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      practitioner_reg_and_cert: {
+        component: () => import('@/views/admin/BMHC/Dashboard.vue'),
+        children: {
+          registration: () => import('@/views/admin/BMHC/Dashboard.vue'),
+          certificate: () => import('@/views/admin/BMHC/Dashboard.vue'),
+        },
+      },
       cpd: () => import('@/views/admin/BMHC/Dashboard.vue'),
       CoGS: () => import('@/views/admin/BMHC/Dashboard.vue'),
-      // profile: () => import('@/views/admin/BMHC/Profile.vue'),
-      // ... other Health Certification routes for a regular user
     },
   },
   dealing_officer: {
