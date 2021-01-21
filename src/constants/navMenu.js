@@ -248,6 +248,11 @@ const commonMenuItems = {
       route: (serviceType) => `/admin/chief/${serviceType}/application_lists`,
     },
     {
+      name: 'Second Copy',
+      icon: getIconComponent('FileSearch'),
+      route: (serviceType) => `/admin/chief/${serviceType}/second_copy_lists`,
+    },
+    {
       name: 'Reports',
       icon: getIconComponent('ClipboardCheck'),
       route: (serviceType) => `/admin/chief/${serviceType}/reports`,

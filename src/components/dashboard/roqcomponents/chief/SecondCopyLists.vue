@@ -159,7 +159,6 @@
         </button>
       </div>
 
-      
       <!-- Applications Table -->
       <div class="bg-white rounded-lg shadow-sm">
         <div class="overflow-x-auto">
@@ -202,28 +201,13 @@
                 <td class="px-6 py-4">
                   <div v-if="app.status === 'Pending'" class="flex space-x-2">
                     <!-- View Button -->
-                    <button 
-                      @click="openViewModal(app)"
-                      class="px-3 py-1.5 text-sm text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors"
-                    >
-                      View
-                    </button>
+                    <ViewButton @click="openViewModal(app)" />
 
                     <!-- Approve Button -->
-                    <button 
-                      @click="openApproveModal(app)"
-                      class="px-3 py-1.5 text-sm text-white bg-green-500 rounded-md hover:bg-green-600 transition-colors"
-                    >
-                      Approve
-                    </button>
+                    <ApproveButton @click="openApproveModal(app)" />
 
                     <!-- Reject Button -->
-                    <button 
-                      @click="openRejectModal(app)"
-                      class="px-3 py-1.5 text-sm text-white bg-red-500 rounded-md hover:bg-red-600 transition-colors"
-                    >
-                      Reject
-                    </button>
+                    <RejectButton @click="openRejectModal(app)" />
                   </div>
                 </td>
               </tr>
@@ -308,6 +292,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import ViewButton from './buttons/ViewButton.vue'
+import ApproveButton from './buttons/ApproveButton.vue'
+import RejectButton from './buttons/RejectButton.vue'
 
 // Current filter state
 const currentFilter = ref('All')
