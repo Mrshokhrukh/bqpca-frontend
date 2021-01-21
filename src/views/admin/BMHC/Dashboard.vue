@@ -68,6 +68,11 @@ import BmhDirectorDashboard from '@/components/dashboard/bhmccomponents/director
 import BmhCpdCmeProviderDashboard from '@/components/dashboard/bhmccomponents/cpdCmeProvider/BmhCpdCmeProviderDashboard.vue';
 import BmhInstitutionsDashboard from '@/components/dashboard/bhmccomponents/institutions/BmhInstitutionsDashboard.vue';
 import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superAdmin/BmhSuperAdminDashboard.vue';
+import PractitionerRegandCert from '@/components/dashboard/bhmccomponents/user/PractitionerRegandCert.vue';
+import CPDcomponent from '@/components/dashboard/bhmccomponents/user/CPDcomponent.vue';
+import CoGSComponet from '@/components/dashboard/bhmccomponents/user/CoGSComponet.vue';
+
+
 
 const { role, user } = useAuthStore();
 const route = useRoute();
@@ -96,6 +101,14 @@ const bmhUserComponent = computed(() => {
   switch (true) {
     case path.endsWith('/health_certification/dashboard'):
       return BmhUserDashboard;
+    case path.endsWith('/health_certification/practitioner_reg_and_cert'):
+      return PractitionerRegandCert;
+    case path.endsWith('/health_certification/cpd'):
+      return CPDcomponent;
+    case path.endsWith('/health_certification/CoGS'):
+      return CoGSComponet;
+    case path.endsWith('/health_certification/profile'):
+      return CoGSComponet;
     default:
       return null;
   }

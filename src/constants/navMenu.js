@@ -94,9 +94,19 @@ const serviceSpecificMenuItems = {
   health_certification: {
     user: [
       {
-        name: 'Health Certification',
+        name: 'Practitioner Reg & Cert',
         icon: getIconComponent('Heart'),
-        route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+        route: (serviceType) => `/admin/user/${serviceType}/practitioner_reg_and_cert`,
+      },
+      {
+        name: 'cpd',
+        icon: getIconComponent('BookOpen'),
+        route: (serviceType) => `/admin/user/${serviceType}/cpd`,
+      },
+      {
+        name: 'Certificate of Good Standing',
+        icon: getIconComponent('Users'),
+        route: (serviceType) => `/admin/user/${serviceType}/CoGS`,
       },
     ],
     admin: [
