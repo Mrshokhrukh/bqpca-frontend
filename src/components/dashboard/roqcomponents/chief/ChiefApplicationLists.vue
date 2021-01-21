@@ -205,18 +205,16 @@
                 </span>
               </td>
               <td class="px-6 py-4">
-                <button v-if="app.status === 'Pending'" @click="viewApplication(app)"
-                  class="bg-blue-500 text-white px-3 py-1 rounded mr-2 hover:bg-blue-600">
-                  View
-                </button>
-                <button v-if="app.status === 'Pending'" @click="openApproveModal(app)"
-                  class="bg-green-500 text-white px-3 py-1 rounded mr-2 hover:bg-green-600">
-                  Approve
-                </button>
-                <button v-if="app.status === 'Pending'" @click="openRejectModal(app)"
-                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                  Reject
-                </button>
+                <div class="flex items-center space-x-4">
+                  <!-- View Button -->
+                  <ViewButton v-if="app.status === 'Pending'" @click="viewApplication(app)" />
+
+                  <!-- Approve Button -->
+                  <ApproveButton v-if="app.status === 'Pending'" @click="openApproveModal(app)" />
+
+                  <!-- Reject Button -->
+                  <RejectButton v-if="app.status === 'Pending'" @click="openRejectModal(app)" />
+                </div>
               </td>
             </tr>
           </tbody>
@@ -233,8 +231,17 @@
             <p><strong>CID:</strong> {{ selectedApplication.cidNo }}</p>
             <p><strong>QEC Number:</strong> {{ selectedApplication.qecNumber || 'N/A' }}</p>
             <p><strong>Status:</strong> {{ selectedApplication.status }}</p>
+            <p v-if="selectedApplication.regretReason"><strong>Regret Reason:</strong> {{ selectedApplication.regretReason }}</p>
           </div>
-          <div class="mt-6 flex justify-end">
+          <div class="mt-6 flex justify-end space-x-4">
+            <!-- Edit Button -->
+            <button 
+              @click="openEditModal(selectedApplication)"
+              class="px-4 py-2 text-sm text-yellow-500 bg-yellow-100 rounded-md hover:bg-yellow-200 transition-colors"
+            >
+              Edit
+            </button>
+            <!-- Close Button -->
             <button 
               @click="closeViewModal"
               class="px-4 py-2 text-sm text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors"
@@ -293,12 +300,68 @@
           </div>
         </div>
       </div>
+
+      <!-- Edit Modal -->
+      <div v-if="isEditModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6">
+          <h2 class="text-xl font-bold text-slate-900 mb-4">Edit Application</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700">Name</label>
+              <input v-model="editableApplication.name" class="w-full p-2 border border-slate-300 rounded-md" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700">Email</label>
+              <input v-model="editableApplication.email" class="w-full p-2 border border-slate-300 rounded-md" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700">CID</label>
+              <input v-model="editableApplication.cidNo" class="w-full p-2 border border-slate-300 rounded-md" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700">QEC Number</label>
+              <input v-model="editableApplication.qecNumber" class="w-full p-2 border border-slate-300 rounded-md" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700">Status</label>
+              <select v-model="editableApplication.status" class="w-full p-2 border border-slate-300 rounded-md">
+                <option value="Pending">Pending</option>
+                <option value="Under Review">Under Review</option>
+                <option value="QEC Issued">QEC Issued</option>
+                <option value="Suspended">Suspended</option>
+                <option value="Regretted">Regretted</option>
+              </select>
+            </div>
+            <div v-if="editableApplication.status === 'Regretted'">
+              <label class="block text-sm font-medium text-slate-700">Regret Reason</label>
+              <textarea v-model="editableApplication.regretReason" class="w-full p-2 border border-slate-300 rounded-md"></textarea>
+            </div>
+          </div>
+          <div class="mt-6 flex justify-end space-x-4">
+            <button 
+              @click="closeEditModal"
+              class="px-4 py-2 text-sm text-slate-600 bg-slate-100 rounded-md hover:bg-slate-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              @click="saveEdits"
+              class="px-4 py-2 text-sm text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
+import ViewButton from './buttons/ViewButton.vue';
+import ApproveButton from './buttons/ApproveButton.vue';
+import RejectButton from './buttons/RejectButton.vue';
 
 const applications = ref([
   {
@@ -484,11 +547,13 @@ const applications = ref([
 ]);
 
 const selectedApplication = ref(null);
+const editableApplication = ref(null);
 const searchQuery = ref("");
 const filterStatus = ref("All");
 const isViewModalOpen = ref(false);
 const isApproveModalOpen = ref(false);
 const isRejectModalOpen = ref(false);
+const isEditModalOpen = ref(false);
 const rejectReason = ref("");
 const applicationToProcess = ref(null);
 
@@ -565,6 +630,24 @@ const confirmReject = () => {
     applicationToProcess.value.regretReason = rejectReason.value;
   }
   closeRejectModal();
+};
+
+const openEditModal = (app) => {
+  editableApplication.value = { ...app };
+  isEditModalOpen.value = true;
+};
+
+const closeEditModal = () => {
+  isEditModalOpen.value = false;
+  editableApplication.value = null;
+};
+
+const saveEdits = () => {
+  const index = applications.value.findIndex(app => app.id === editableApplication.value.id);
+  if (index !== -1) {
+    applications.value[index] = { ...editableApplication.value };
+  }
+  closeEditModal();
 };
 
 const filterByStatus = (status) => {
