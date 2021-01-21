@@ -1,4 +1,3 @@
-// constants.js
 export const ROLE_CHOICES = [
   { key: 'user', label: 'User' },
   { key: 'dealing_officer', label: 'Dealing Officer' },
@@ -6,6 +5,8 @@ export const ROLE_CHOICES = [
   { key: 'director', label: 'Director' },
   { key: 'admin', label: 'Admin' },
   { key: 'super_admin', label: 'Super Admin' },
+  { key: 'cpd_cme_provider', label: 'CMD/CPD Provider' },
+  { key: 'institutions', label: 'Medical Institutions' },
 ];
 
 export const SERVICE_TYPE_CHOICES = [
