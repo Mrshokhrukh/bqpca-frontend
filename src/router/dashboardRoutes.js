@@ -20,15 +20,9 @@ function generateDynamicRoutes() {
         },
         beforeEnter: (to, from, next) => {
           const authStore = useAuthStore();
-          console.log('Super Admin beforeEnter Guard:', {
-            routeRole: role.key,
-            authStoreRole: authStore.role,
-          });
-
           if (authStore.role === role.key) {
             next();
           } else {
-            console.log('Unauthorized: Role mismatch for Super Admin');
             next({ name: 'unauthorized' });
           }
         },
@@ -53,23 +47,15 @@ function generateDynamicRoutes() {
             },
             beforeEnter: (to, from, next) => {
               const authStore = useAuthStore();
-              console.log('beforeEnter Guard:', {
-                routeRole: role.key,
-                routeServiceType: serviceType.key,
-                authStoreRole: authStore.role,
-                authStoreServiceType: authStore.serviceType,
-              });
-
               // Allow access if the user's role and service type match the route
               if (authStore.serviceType === serviceType.key && authStore.role === role.key) {
                 next();
               } else {
-                console.log('Unauthorized: Role or service type mismatch');
                 next({ name: 'unauthorized' });
               }
             },
             children: Object.keys(routeMap[role.key][serviceType.key]).map(routeName => ({
-              path: routeName,
+              path: routeName === 'application_details' ? ':id' : routeName,
               name: `${role.key}-${serviceType.key}-${routeName}`,
               component: routeMap[role.key][serviceType.key][routeName],
             })),

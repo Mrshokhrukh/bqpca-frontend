@@ -42,8 +42,6 @@ async function generateIcons() {
       background: { r: 255, g: 255, b: 255, alpha: 0 },
     })
     .toFile(path.join(targetDir, 'favicon.ico'));
-
-  console.log('Icons generated successfully!');
 }
 
 generateIcons().catch(console.error);

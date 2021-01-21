@@ -301,6 +301,11 @@ const minYear = currentYear - 50;
 const qualificationOptions = ref([]);
 const courseTypeOptions = ref([]);
 
+const props = defineProps({
+  initialData: Object,
+  mode: { type: String, default: 'create' }
+});
+
 const form = reactive({
   // Personal Information
   cid_no: '',
@@ -335,7 +340,8 @@ const form = reactive({
   // Additional Fields
   remarks: '',
   declaration: false,
-  status: 'applied' // Changed to a valid status
+  status: 'applied',
+  ...(props.initialData ? props.initialData : {})
 });
 
 // Computed property to check if CID is valid
@@ -369,10 +375,6 @@ onMounted(async () => {
       apiService.getTypesOfCourse()
     ]);
 
-    // Log the responses to debug
-    console.log('Qualifications Response:', qualificationsResponse);
-    console.log('Course Types Response:', courseTypesResponse);
-
     // Access the `results` array from the response
     qualificationOptions.value = qualificationsResponse.data.results.map(qual => ({
       value: qual.id, // Assuming the API returns `id` and `name`
@@ -399,18 +401,29 @@ const fetchDCRCData = async () => {
   try {
     const response = await apiService.fetchCitizenDetails(form.cid_no);
 
+    // Log the API response
+    console.log('API Response:', response);
+
+    // Helper function to convert dd/mm/yyyy to yyyy-mm-dd
+    const formatDate = (dateString) => {
+      if (!dateString) return '';
+      const [day, month, year] = dateString.split('/');
+      return `${year}-${month}-${day}`;
+    };
+
     // Assign the response data to the form
     Object.assign(form, {
-      cid_no: response.cid_no,
-      applicants_name: response.applicants_name,
-      date_of_birth: response.date_of_birth,
-      gender: response.gender,
-      dzongkhag: response.dzongkhag,
-      gewog: response.gewog,
-      village: response.village
+      cid_no: response.data.cid_no, // Access `data` from the response
+      applicants_name: response.data.applicants_name,
+      date_of_birth: formatDate(response.data.date_of_birth), // Format the date
+      gender: response.data.gender,
+      dzongkhag: response.data.dzongkhag,
+      gewog: response.data.gewog,
+      village: response.data.village
     });
 
-    console.log('Updated Form:', form); // Log the updated form object
+    // Log the updated form object
+    console.log('Updated Form:', form);
 
     toast.success('DCRC data fetched successfully');
   } catch (error) {
@@ -442,71 +455,101 @@ const fetchRUBData = async () => {
 };
 const formatDate = (dateString) => {
   if (!dateString) return '';
-  const [day, month, year] = dateString.split('/');
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    return dateString;
+  }
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    console.error('Invalid date:', dateString);
+    return '';
+  }
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
   return `${year}-${month}-${day}`;
 };
 
 const handleSubmit = async () => {
-  if (!form.declaration) {
-    toast.error('Please accept the declaration', 'error');
-    return;
-  }
-
-  isSubmitting.value = true;
-
-  // Create FormData instance
-  const formData = new FormData();
-
-  // Append personal information
-  Object.entries(form).forEach(([key, value]) => {
-    // Handle special cases for file uploads
-    if (['degree_certificate', 'academic_transcript', 'passport_photo'].includes(key)) {
-      // Check if we have a file to upload
-      if (value?.file instanceof File) {
-        // Map passport_photo to passport_size_photo in the API
-        const fieldName = key === 'passport_photo' ? 'passport_size_photo' : key;
-        formData.append(fieldName, value.file);
-      }
-    }
-    // Handle date formatting
-    else if (key === 'date_of_birth' && value) {
-      formData.append(key, formatDate(value));
-    }
-    // Handle boolean values
-    else if (typeof value === 'boolean') {
-      formData.append(key, value.toString());
-    }
-    // Handle all other fields
-    else if (value !== null && value !== undefined) {
-      formData.append(key, value.toString());
-    }
-  });
-
-  // Log the FormData entries for debugging
-  for (let pair of formData.entries()) {
-    console.log(pair[0] + ': ' + pair[1]);
-  }
-
   try {
-    const response = await apiService.createRecognitionOfQualification(formData);
+    if (props.mode === 'edit') {
+      const formData = new FormData();
+      Object.entries(form).forEach(([key, value]) => {
+        if (['degree_certificate', 'academic_transcript', 'passport_photo'].includes(key)) {
+          if (value?.file instanceof File) {
+            const fieldName = key === 'passport_photo' ? 'passport_size_photo' : key;
+            formData.append(fieldName, value.file);
+          }
+        }
+        else if (key === 'date_of_birth' && value) {
+          formData.append(key, formatDate(value)); // Use the corrected formatDate function
+        }
+        else if (typeof value === 'boolean') {
+          formData.append(key, value.toString());
+        }
+        else if (value !== null && value !== undefined) {
+          formData.append(key, value.toString());
+        }
+      });
+      await apiService.updateRecognitionOfQualification(props.initialData.id, formData);
+      toast.success('Application updated successfully');
+    } else {
+      if (!form.declaration) {
+        toast.error('Please accept the declaration', 'error');
+        return;
+      }
 
-    if (response.status === 201) {
-      toast.success('Application submitted successfully');
-      emit('application-submitted');
-    }
+      isSubmitting.value = true;
+      const formData = new FormData();
+
+      // Append personal information
+      Object.entries(form).forEach(([key, value]) => {
+        if (['degree_certificate', 'academic_transcript', 'passport_photo'].includes(key)) {
+          if (value?.file instanceof File) {
+            const fieldName = key === 'passport_photo' ? 'passport_size_photo' : key;
+            formData.append(fieldName, value.file);
+          }
+        }
+        else if (key === 'date_of_birth' && value) {
+          formData.append(key, formatDate(value)); // Use the corrected formatDate function
+        }
+        else if (typeof value === 'boolean') {
+          formData.append(key, value.toString());
+        }
+        else if (value !== null && value !== undefined) {
+          formData.append(key, value.toString());
+        }
+      });
+
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
+
+      try {
+        const response = await apiService.createRecognitionOfQualification(formData);
+
+        if (response.status === 201) {
+          toast.success('Application submitted successfully');
+          emit('application-submitted');
+        }
+      } catch (error) {
+        console.error('Error submitting form:', error.response?.data || error);
+        const errorMessage = error.response?.data?.message || 'Failed to submit application';
+        toast.error(errorMessage);
+      } finally {
+        isSubmitting.value = false;
+      }
+    };
+    emit('submitted');
   } catch (error) {
-    console.error('Error submitting form:', error.response?.data || error);
-    const errorMessage = error.response?.data?.message || 'Failed to submit application';
-    toast.error(errorMessage);
-  } finally {
-    isSubmitting.value = false;
+    console.error('Error submitting form:', error);
   }
 };
 
 // Handle saving as draft
 const handleSaveAsDraft = async () => {
-  form.status = 'applied'; // Set status to draft
-  await handleSubmit(); // Reuse the handleSubmit logic
+  form.status = 'applied';
+  await handleSubmit();
 };
 
 const emit = defineEmits(['application-submitted', 'close-modal']);

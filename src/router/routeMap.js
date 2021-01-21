@@ -64,8 +64,8 @@ export default {
       dashboard: () => import('@/views/admin/ROQ/Dashboard.vue'),
       my_applications: () => import('@/views/admin/ROQ/Dashboard.vue'),
       secondcopy_applications: () => import('@/views/admin/ROQ/Dashboard.vue'),
-      // new_application: () => import('@/views/admin/ROQ/NewApplication.vue'),
-      // application_status: () => import('@/views/admin/ROQ/ApplicationStatus.vue'),
+      application_lists: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      application_details: () => import('@/views/admin/ROQ/Dashboard.vue'),
       profile: () => import('@/views/admin/ROQ/Dashboard.vue'),
       // ... other ROQ routes for a regular user
     },
@@ -107,8 +107,7 @@ export default {
       dashboard: () => import('@/views/admin/ROQ/Dashboard.vue'),
       application_lists: () => import('@/views/admin/ROQ/Dashboard.vue'),
       second_copy_lists: () => import('@/views/admin/ROQ/Dashboard.vue'),
-      // approved_applications: () => import('@/views/admin/ROQ/ApprovedApplications.vue'),
-      // rejected_applications: () => import('@/views/admin/ROQ/RejectedApplications.vue'),
+      application_details: () => import('@/views/admin/ROQ/Dashboard.vue'),
       // reports: () => import('@/views/admin/ROQ/Reports.vue'),
       // ... other ROQ routes for dealing officer
     },

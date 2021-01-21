@@ -11,28 +11,6 @@
       </button>
     </div>
 
-    <!-- Filter and Search Section -->
-    <div class="mb-6 space-y-4 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
-      <div class="flex flex-col sm:flex-row gap-4 sm:items-center">
-        <select v-model="selectedStatus"
-          class="w-full sm:w-48 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-2">
-          <option value="">All Status</option>
-          <option v-for="status in statusOptions" :key="status.value" :value="status.value">
-            {{ status.label }}
-          </option>
-        </select>
-        <select v-model="selectedType"
-          class="w-full sm:w-48 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-2">
-          <option value="">All Types</option>
-          <option v-for="type in typeOptions" :key="type" :value="type">{{ type }}</option>
-        </select>
-      </div>
-      <div class="relative w-full sm:w-auto sm:min-w-[300px]">
-        <input v-model="searchQuery" type="text" placeholder="Search applications..."
-          class="w-full pl-10 pr-4 py-2 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
-        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
-      </div>
-    </div>
 
     <!-- Modal for New Application Form -->
     <TransitionRoot appear :show="showModal" as="template">
@@ -86,7 +64,7 @@ import ApplicationTable from '@/components/dashboard/roqcomponents/user/Applicat
 import apiService from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
 
-const { user } = useAuthStore();
+const { userId } = useAuthStore();
 const showModal = ref(false);
 const loading = ref(true);
 const currentPage = ref(1);
@@ -95,19 +73,6 @@ const applications = ref([]);
 const searchQuery = ref('');
 const selectedStatus = ref('');
 const selectedType = ref('');
-
-const statusOptions = [
-  { value: 'draft', label: 'Draft' },
-  { value: 'submitted', label: 'Submitted' },
-  { value: 'approved', label: 'Approved' },
-  { value: 'suspended', label: 'Suspended' },
-  { value: 'regretted', label: 'Regretted' },
-];
-
-const typeOptions = computed(() => {
-  // Get unique course types from applications
-  return [...new Set(applications.value.map(app => app.type_of_course))];
-});
 
 // Computed Property for filtered Applications
 const filteredApplications = computed(() => {
@@ -132,12 +97,7 @@ const paginatedApplications = computed(() => {
   const start = (currentPage.value - 1) * perPage.value;
   const end = start + perPage.value;
 
-  return filteredApplications.value.slice(start, end).map(app => ({
-    id: app.id,
-    date: app.date_of_birth,
-    type: app.type_of_course,
-    status: app.status,
-  }));
+  return filteredApplications.value.slice(start, end);
 });
 
 // Reset pagination when filters change
@@ -156,7 +116,7 @@ const loadData = async () => {
   loading.value = true;
   try {
     const response = await apiService.getRecognitionOfQualifications({
-      email_address: user.email
+      user_id: userId.value // Use user ID instead of email
     });
     applications.value = response.data.results;
   } catch (error) {
