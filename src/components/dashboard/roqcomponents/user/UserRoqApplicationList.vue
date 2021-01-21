@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import ApplicationForm from './ApplicationForm.vue';
@@ -84,8 +84,9 @@ const filteredApplications = computed(() => {
         String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
       )
       : true;
+    const isNotSecondCopy = !app.is_second_copy; // Exclude if is_second_copy is true
 
-    return matchesStatus && matchesType && matchesSearch;
+    return matchesStatus && matchesType && matchesSearch && isNotSecondCopy;
   });
 });
 
@@ -105,10 +106,17 @@ watch([selectedStatus, selectedType, searchQuery], () => {
   currentPage.value = 1;
 });
 
-// Method for closing the modal
+// Method for closing the modal and refreshing data
 const handleApplicationSubmitted = async () => {
   showModal.value = false;
-  await loadData();
+  loading.value = true; // Indicate loading again
+  try {
+    await loadData();
+    await nextTick(); // Still keep nextTick for DOM updates
+    console.log('Applications updated:', applications.value); // Verification
+  } finally {
+    loading.value = false; // Ensure loading is turned off
+  }
 };
 
 // Load Data Function
