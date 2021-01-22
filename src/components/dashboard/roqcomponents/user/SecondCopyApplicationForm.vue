@@ -7,24 +7,15 @@
         <h3 class="text-xl font-semibold mb-4 text-gray-900">Select Original Application</h3>
         <div>
           <label for="original_application" class="block text-sm font-medium text-gray-700 required">
-            Search by Name or CID
+            Search by Your Name or CID
           </label>
-          <input
-            type="text"
-            id="original_application"
-            v-model="searchQuery"
-            @input="onSearchInput"
-            placeholder="Type to search..."
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-          />
+          <input type="text" id="original_application" v-model="searchQuery" @input="onSearchInput"
+            placeholder="Start typing to begin search..."
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
           <ul v-if="filteredApplications.length > 0" class="mt-2 bg-white border rounded-lg shadow-sm">
-            <li
-              v-for="app in filteredApplications"
-              :key="app.id"
-              @click="onOriginalApplicationSelect(app)"
-              class="p-2 hover:bg-gray-50 cursor-pointer"
-            >
-              {{ app.applicants_name }} ({{ app.cid_no }})
+            <li v-for="app in filteredApplications" :key="app.id" @click="onOriginalApplicationSelect(app)"
+              class="p-2 hover:bg-gray-50 cursor-pointer">
+              {{ app.applicants_name }} ({{ app.cid_no }}), {{ app.course_title }}
             </li>
           </ul>
         </div>
@@ -127,18 +118,28 @@
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
           </div>
 
-          <!-- Qualification -->
+          <!-- Qualification Dropdown -->
           <div>
             <label for="qualification" class="block text-sm font-medium text-gray-700 required">Qualification</label>
-            <input type="text" id="qualification" v-model="form.qualification" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <select id="qualification" v-model="form.qualification" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2">
+              <option value="" disabled>Select Qualification</option>
+              <option v-for="qual in qualificationOptions" :key="qual.value" :value="qual.value">
+                {{ qual.label }}
+              </option>
+            </select>
           </div>
 
-          <!-- Type of Course -->
+          <!-- Type of Course Dropdown -->
           <div>
             <label for="type_of_course" class="block text-sm font-medium text-gray-700 required">Type of Course</label>
-            <input type="text" id="type_of_course" v-model="form.type_of_course" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <select id="type_of_course" v-model="form.type_of_course" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2">
+              <option value="" disabled>Select Course Type</option>
+              <option v-for="type in courseTypeOptions" :key="type.value" :value="type.value">
+                {{ type.label }}
+              </option>
+            </select>
           </div>
 
           <!-- Duration of Course -->
@@ -270,6 +271,8 @@ const searchQuery = ref('');
 const selectedOriginalApplication = ref(null);
 const reasonsForSecondCopy = ref([]);
 const othersReasonId = ref(null);
+const qualificationOptions = ref([]);
+const courseTypeOptions = ref([]);
 
 const form = reactive({
   cid_no: '',
@@ -302,31 +305,60 @@ const form = reactive({
 // Fetch original applications and reasons for second copy
 onMounted(async () => {
   try {
-    const [applicationsResponse, reasonsResponse] = await Promise.all([
+    // Fetch all required data concurrently
+    const [
+      applicationsResponse,
+      reasonsResponse,
+      qualificationsResponse,
+      courseTypesResponse,
+    ] = await Promise.all([
       apiService.getRecognitionOfQualifications({ user_id: userId.value }),
       apiService.getReasonsForIssueOfSecondCopy(),
+      apiService.getQualifications(),
+      apiService.getTypesOfCourse(),
     ]);
 
-    originalApplications.value = applicationsResponse.data.results;
+    // Filter applications to include only those with status "approved" and is_second_copy false
+    originalApplications.value = applicationsResponse.data.results.filter(
+      (app) => app.status === "approved" && !app.is_second_copy
+    );
+
+    // Set reasons for second copy
     reasonsForSecondCopy.value = reasonsResponse.data.results;
 
     // Find the ID of the "Others" reason
-    const othersReason = reasonsForSecondCopy.value.find(reason => reason.name.toLowerCase() === 'others');
+    const othersReason = reasonsForSecondCopy.value.find(
+      (reason) => reason.name.toLowerCase() === "others"
+    );
     if (othersReason) {
       othersReasonId.value = othersReason.id;
     }
+
+    // Map the API responses to the dropdown options
+    qualificationOptions.value = qualificationsResponse.data.results.map((qual) => ({
+      value: qual.id,
+      label: qual.name,
+    }));
+
+    courseTypeOptions.value = courseTypesResponse.data.results.map((type) => ({
+      value: type.id,
+      label: type.name,
+    }));
   } catch (error) {
-    toast.error('Failed to fetch data');
-    console.error('Error fetching data:', error);
+    toast.error("Failed to fetch data");
+    console.error("Error fetching data:", error);
   }
 });
 
 // Autocomplete search
 const onSearchInput = () => {
   if (searchQuery.value) {
-    filteredApplications.value = originalApplications.value.filter(app =>
-      app.applicants_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      app.cid_no.toLowerCase().includes(searchQuery.value.toLowerCase())
+    filteredApplications.value = originalApplications.value.filter(
+      (app) =>
+        (app.applicants_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+          app.cid_no.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
+        app.status === "approved" &&
+        !app.is_second_copy
     );
   } else {
     filteredApplications.value = [];
@@ -336,6 +368,7 @@ const onSearchInput = () => {
 // Auto-fill form when an original application is selected
 const onOriginalApplicationSelect = (app) => {
   selectedOriginalApplication.value = app;
+  // Auto-fill form fields
   Object.assign(form, {
     cid_no: app.cid_no,
     applicants_name: app.applicants_name,
@@ -366,7 +399,19 @@ const onOriginalApplicationSelect = (app) => {
 // Handle form submission
 const handleSubmit = async () => {
   try {
+    // Validate that an original application is selected
+    if (!selectedOriginalApplication.value) {
+      toast.error('Please select an original application');
+      return;
+    }
+
     const formData = new FormData();
+
+    // Add original_application_id and is_second_copy
+    formData.append('original_application_id', selectedOriginalApplication.value.id);
+    formData.append('is_second_copy', 'true'); // Explicitly include
+
+    // Append other form fields
     Object.entries(form).forEach(([key, value]) => {
       if (value instanceof File) {
         formData.append(key, value);
@@ -375,11 +420,12 @@ const handleSubmit = async () => {
       }
     });
 
+    // Submit the form
     await apiService.createRecognitionOfQualification(formData);
     toast.success('Second copy application submitted successfully');
     emit('application-submitted');
   } catch (error) {
-    toast.error('Failed to submit application');
+    toast.error('Failed to submit application:', error);
     console.error('Error submitting application:', error);
   }
 };

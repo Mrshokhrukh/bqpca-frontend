@@ -44,7 +44,6 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import StatsGrid from '@/components/dashboard/roqcomponents/user/StatsGrid.vue';
 import ApplicationTable from '@/components/dashboard/roqcomponents/user/ApplicationsTable.vue';
 
 // Admin Components Import
@@ -58,8 +57,8 @@ import AdminProfile from '@/components/dashboard/roqcomponents/admin/AdminProfil
 
 // Dealing Officer Components Import
 import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealingOfficer/DealingOfficerDashboard.vue';
-import ApplicationList from '@/components/dashboard/roqcomponents/dealingOfficer/ApplicationList.vue';
-import secondcopylist from '@/components/dashboard/roqcomponents/dealingOfficer/second_copy_lists.vue';
+import ApplicationsTable from '@/components/dashboard/roqcomponents/dealingOfficer/ApplicationsTable.vue';
+import secondcopylist from '@/components/dashboard/roqcomponents/dealingOfficer/SecondCopyLists.vue';
 
 // Chief Components Import
 import ChiefDashboard from '@/components/dashboard/roqcomponents/chief/ChiefDashboard.vue';
@@ -108,7 +107,7 @@ const dealingOfficerComponent = computed(() => {
     case path.endsWith('/roq/dashboard'):
       return DealingOfficerDashboard;
     case path.endsWith('/roq/application_lists'):
-      return ApplicationList;
+      return ApplicationsTable;
     // case path.endsWith('/roq/decisions'):
     //   return AdminDecision;
     // case path.endsWith('/roq/learning_types'):
