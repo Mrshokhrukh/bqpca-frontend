@@ -98,11 +98,11 @@
                         <span class="h-2 w-2 rounded-full" :class="getStatusDotClass(application.status)"></span>
                         <span class="ml-2">{{
                           formatStatus(application.status)
-                          }}</span>
+                        }}</span>
                       </span>
                     </span>
                     <span class="text-xs text-gray-500">
-                      Updated: {{ formatDate(application.updatedAt) }}
+                      Updated: {{ formatDate(application.updated_at) }}
                     </span>
                   </div>
                 </td>
@@ -115,10 +115,10 @@
             </template>
             <template v-else>
               <tr>
-                 <td colspan="4" class="py-12 text-center text-gray-500">
-                     No applications found
-                 </td>
-             </tr>
+                <td colspan="4" class="py-12 text-center text-gray-500">
+                  No applications found
+                </td>
+              </tr>
             </template>
           </tbody>
         </table>
@@ -198,8 +198,8 @@ const props = defineProps({
     default: ''
   },
   noResults: {
-     type: Boolean,
-     default: false
+    type: Boolean,
+    default: false
   }
 
 });
@@ -230,11 +230,19 @@ const headers = [
 ];
 
 const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+  if (!date) {
+    return 'N/A'; // Handle cases with no date
+  }
+  try {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  } catch{
+    return "Invalid Date"
+  }
+
 };
 
 const formatStatus = (status) => {

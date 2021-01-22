@@ -183,7 +183,7 @@ const router = useRouter();
 const route = useRoute();
 const sidebarOpen = ref(true);
 const showProfileMenu = ref(false);
-const navigationItems = ref({});
+const navigationItems = ref([]); // Now an array
 const showSubMenu = reactive({});
 
 // Lifecycle Hook
@@ -204,7 +204,7 @@ const serviceTypeLabel = computed(() => {
 });
 
 const filteredNavigationItems = computed(() => {
-  return navigationItems.value[authStore.role] || [];
+  return navigationItems.value; // Directly return the array
 });
 
 const currentYear = computed(() => new Date().getFullYear());

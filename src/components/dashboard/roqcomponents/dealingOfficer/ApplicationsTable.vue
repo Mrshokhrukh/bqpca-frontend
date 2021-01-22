@@ -1,3 +1,4 @@
+// Parent Component
 <template>
   <div class="p-4 w-full">
     <!-- Header Section -->
@@ -50,6 +51,7 @@ import { useToast } from 'vue-toastification';
 const toast = useToast();
 const { userId } = useAuthStore();
 
+const noteText = ref('');
 const showModal = ref(false);
 const loading = ref(false); // Initialize as false
 const currentPage = ref(1);
@@ -165,17 +167,20 @@ const handleStatusChange = (newStatus) => {
 }
 
 const handleApplicationAction = ({ action, application }) => {
-  if (action === 'regretReason') {
-    selectedApplication.value = application;
-    showRemarksModal.value = true;
-    return;
-  } else if (action === 'viewCertificate') {
-    modalType.value = 'viewCertificate';
-  } else {
-    modalType.value = action;
-  }
-  selectedApplication.value = application;
-  showModal.value = true;
+   if (action === 'regretReason') {
+     selectedApplication.value = application;
+     showRemarksModal.value = true;
+     return;
+   } else if (action === 'viewCertificate') {
+     modalType.value = 'viewCertificate';
+   } else {
+     modalType.value = action;
+   }
+   selectedApplication.value = application;
+   if(action === 'addNote'){
+      noteText.value = application.remarks
+   }
+   showModal.value = true;
 };
 
 const closeModal = () => {

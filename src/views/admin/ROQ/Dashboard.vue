@@ -58,7 +58,7 @@ import AdminProfile from '@/components/dashboard/roqcomponents/admin/AdminProfil
 // Dealing Officer Components Import
 import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealingOfficer/DealingOfficerDashboard.vue';
 import ApplicationsTable from '@/components/dashboard/roqcomponents/dealingOfficer/ApplicationsTable.vue';
-import secondcopylist from '@/components/dashboard/roqcomponents/dealingOfficer/SecondCopyLists.vue';
+import SecondCopyApplicationsTable from '@/components/dashboard/roqcomponents/dealingOfficer/SecondCopyApplicationsTable.vue';
 
 // Chief Components Import
 import ChiefDashboard from '@/components/dashboard/roqcomponents/chief/ChiefDashboard.vue';
@@ -119,7 +119,7 @@ const dealingOfficerComponent = computed(() => {
     // case path.endsWith('/roq/reason_for_issue_of_second_copy'):
     //   return AdminSecondCopyReason;
     case path.endsWith('/roq/second_copy_lists'):
-      return secondcopylist;
+      return SecondCopyApplicationsTable;
 
     default:
       return null;
