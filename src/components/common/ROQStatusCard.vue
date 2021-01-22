@@ -1,4 +1,3 @@
-<!-- StatusCard.vue -->
 <template>
   <div class="bg-white rounded-lg shadow p-6">
     <div class="flex items-center justify-between mb-4">

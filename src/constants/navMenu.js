@@ -112,6 +112,28 @@ const serviceSpecificMenuItems = {
     ],
     // Add dealing_officer to roq
     dealing_officer: dealingOfficerMenuItems,
+    chief: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/chief/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Application Lists',
+        icon: getIconComponent('CheckCircle'),
+        route: (serviceType) => `/admin/chief/${serviceType}/application_lists`,
+      },
+      {
+        name: 'Second Copy Application Lists',
+        icon: getIconComponent('CheckCircle'),
+        route: (serviceType) => `/admin/chief/${serviceType}/second_copy_lists`,
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/chief/${serviceType}/reports`,
+      },
+    ],
   },
   ecpf: {
     user: [

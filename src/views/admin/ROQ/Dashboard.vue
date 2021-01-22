@@ -62,7 +62,7 @@ import SecondCopyApplicationsTable from '@/components/dashboard/roqcomponents/de
 
 // Chief Components Import
 import ChiefDashboard from '@/components/dashboard/roqcomponents/chief/ChiefDashboard.vue';
-import ChiefApplicationList from '@/components/dashboard/roqcomponents/chief/ChiefApplicationLists.vue';
+import ChiefApplicationsTable from '@/components/dashboard/roqcomponents/chief/ChiefApplicationsTable.vue';
 import SecondCopyLists from '@/components/dashboard/roqcomponents/chief/SecondCopyLists.vue';
 
 // User Components Import
@@ -108,16 +108,6 @@ const dealingOfficerComponent = computed(() => {
       return DealingOfficerDashboard;
     case path.endsWith('/roq/application_lists'):
       return ApplicationsTable;
-    // case path.endsWith('/roq/decisions'):
-    //   return AdminDecision;
-    // case path.endsWith('/roq/learning_types'):
-    //   return AdminLearningType;
-    // case path.endsWith('/roq/qualifications'):
-    //   return AdminQualification;
-    // case path.endsWith('/roq/type_of_courses'):
-    //   return AdminTypeOfCourse;
-    // case path.endsWith('/roq/reason_for_issue_of_second_copy'):
-    //   return AdminSecondCopyReason;
     case path.endsWith('/roq/second_copy_lists'):
       return SecondCopyApplicationsTable;
 
@@ -133,7 +123,7 @@ const chiefComponent = computed(() => {
     case path.endsWith('/roq/dashboard'):
       return ChiefDashboard;
     case path.endsWith('/roq/application_lists'):
-      return ChiefApplicationList;
+      return ChiefApplicationsTable;
     case path.endsWith('/roq/second_copy_lists'):
       return SecondCopyLists;
     default:

@@ -40,9 +40,9 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
-import ApplicationList from './ApplicationList.vue';
-import ApplicationModal from './ApplicationModal.vue';
-import RemarksModal from './RemarksModal.vue';
+import ApplicationList from '@/components/common/ROQApplicationList.vue';
+import ApplicationModal from '@/components/common/ROQApplicationModal.vue';
+import RemarksModal from '@/components/common/ROQRemarksModal.vue';
 import apiService from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
 import { RefreshCw } from 'lucide-vue-next';
@@ -167,20 +167,20 @@ const handleStatusChange = (newStatus) => {
 }
 
 const handleApplicationAction = ({ action, application }) => {
-   if (action === 'regretReason') {
-     selectedApplication.value = application;
-     showRemarksModal.value = true;
-     return;
-   } else if (action === 'viewCertificate') {
-     modalType.value = 'viewCertificate';
-   } else {
-     modalType.value = action;
-   }
-   selectedApplication.value = application;
-   if(action === 'addNote'){
-      noteText.value = application.remarks
-   }
-   showModal.value = true;
+  if (action === 'regretReason') {
+    selectedApplication.value = application;
+    showRemarksModal.value = true;
+    return;
+  } else if (action === 'viewCertificate') {
+    modalType.value = 'viewCertificate';
+  } else {
+    modalType.value = action;
+  }
+  selectedApplication.value = application;
+  if (action === 'addNote') {
+    noteText.value = application.remarks
+  }
+  showModal.value = true;
 };
 
 const closeModal = () => {

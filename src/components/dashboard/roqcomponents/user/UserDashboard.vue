@@ -38,8 +38,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
-import StatsCard from './StatsCard.vue';
-import StatusCard from './StatusCard.vue';
+import StatsCard from '../../../common/ROQStatsCard.vue';
+import StatusCard from '../../../common/ROQStatusCard.vue';
 import { FileText, CheckCircle, XCircle, Clock, TrendingUp, Calendar } from 'lucide-vue-next';
 import VueApexCharts from 'vue3-apexcharts'
 import apiService from '@/services/services';
