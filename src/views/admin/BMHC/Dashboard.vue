@@ -54,7 +54,7 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import StatsGrid from '@/components/dashboard/roqcomponents/user/StatsGrid.vue';
+// import StatsGrid from '@/components/dashboard/roqcomponents/user/StatsGrid.vue';
 import ApplicationTable from '@/components/dashboard/roqcomponents/user/ApplicationsTable.vue';
 
 
@@ -72,6 +72,7 @@ import CPDcomponent from '@/components/dashboard/bhmccomponents/user/CPDcomponen
 import CoGSComponet from '@/components/dashboard/bhmccomponents/user/CoGSComponet.vue';
 import PractitionerCertification from '@/components/dashboard/bhmccomponents/user/pracitioner_reg_and_cert/PractitionerCertification.vue';
 import PractitionerRegistration from '@/components/dashboard/bhmccomponents/user/pracitioner_reg_and_cert/PractitionerRegistration.vue';
+import PractitionerRenewal from '@/components/dashboard/bhmccomponents/user/pracitioner_reg_and_cert/PractitionerRenewal.vue';
 
 
 const { role, user } = useAuthStore();
@@ -105,6 +106,8 @@ const bmhUserComponent = computed(() => {
       return PractitionerRegistration;
     case path.endsWith('/health_certification/practitioner_reg_and_cert/certificate'):
       return PractitionerCertification;
+    case path.endsWith('/health_certification/practitioner_reg_and_cert/renewal'):
+      return PractitionerRenewal;
     case path.endsWith('/health_certification/cpd'):
       return CPDcomponent;
     case path.endsWith('/health_certification/CoGS'):

@@ -100,6 +100,7 @@ export default {
         children: {
           registration: () => import('@/views/admin/BMHC/Dashboard.vue'),
           certificate: () => import('@/views/admin/BMHC/Dashboard.vue'),
+          renewal: () => import('@/views/admin/BMHC/Dashboard.vue'),
         },
       },
       cpd: () => import('@/views/admin/BMHC/Dashboard.vue'),

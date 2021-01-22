@@ -44,6 +44,7 @@ const iconMap = {
   Award,
 };
 
+
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
   return iconMap[iconName] || File;
@@ -169,6 +170,13 @@ const serviceSpecificMenuItems = {
             route: (serviceType) =>
               `/admin/user/${serviceType}/practitioner_reg_and_cert/certificate`,
           },
+          {
+            name: 'Renewal',
+            // notification count 
+            notificationCount: 1,
+            route: (serviceType) =>
+              `/admin/user/${serviceType}/practitioner_reg_and_cert/renewal`,
+          },
         ],
       },
       {
@@ -256,3 +264,5 @@ export const generateNavigationItems = (role, serviceType) => {
 
   return serviceMenu[role].map(processMenuItem);
 };
+
+

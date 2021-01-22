@@ -40,43 +40,50 @@
             </div>
 
             <!-- Parent Item With Children -->
-            <div v-else>
-              <button @click="toggleSubMenu(item)"
-                class="flex items-center justify-between w-full px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer group"
-                :class="[
-                  isChildActive(item.children)
-                    ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
-                    : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
-                ]">
-                <div class="flex items-center">
-                  <component :is="item.icon" class="h-5 w-5 mr-3" />
-                  {{ item.name }}
-                </div>
-                <ChevronDown class="h-4 w-4 transform transition-transform duration-200"
-                  :class="{ 'rotate-180': showSubMenu[item.name] }" />
-              </button>
+          <div v-else>
+  <button @click="toggleSubMenu(item)"
+    class="flex items-center justify-between w-full px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer group"
+    :class="[
+      isChildActive(item.children)
+        ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
+        : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
+    ]">
+    <div class="flex items-center">
+      <component :is="item.icon" class="h-5 w-5 mr-3" />
+      {{ item.name }}
+    </div>
+    <ChevronDown class="h-4 w-4 transform transition-transform duration-200"
+      :class="{ 'rotate-180': showSubMenu[item.name] }" />
+  </button>
 
-              <!-- Animated Submenu -->
-              <transition enter-active-class="transition-all duration-200 ease-out"
-                leave-active-class="transition-all duration-150 ease-in" enter-from-class="opacity-0 max-h-0"
-                enter-to-class="opacity-100 max-h-96" leave-from-class="opacity-100 max-h-96"
-                leave-to-class="opacity-0 max-h-0">
-                <div v-show="showSubMenu[item.name]" class="ml-8 space-y-1 overflow-hidden">
-                  <router-link v-for="child in item.children" :key="child.name" :to="child.route"
-                    v-slot="{ isActive, navigate }" custom>
-                    <div @click="navigate"
-                      class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors duration-200" :class="[
-                        isActive
-                          ? 'bg-slate-700/50 text-white font-medium'
-                          : 'text-slate-300 hover:bg-slate-700/30 hover:text-white',
-                      ]">
-                      <span class="w-2 h-2 mr-3 rounded-full bg-slate-400/50"></span>
-                      {{ child.name }}
-                    </div>
-                  </router-link>
-                </div>
-              </transition>
-            </div>
+  <!-- Animated Submenu -->
+  <transition enter-active-class="transition-all duration-200 ease-out"
+    leave-active-class="transition-all duration-150 ease-in" enter-from-class="opacity-0 max-h-0"
+    enter-to-class="opacity-100 max-h-96" leave-from-class="opacity-100 max-h-96"
+    leave-to-class="opacity-0 max-h-0">
+    <div v-show="showSubMenu[item.name]" class="ml-8 space-y-1 overflow-hidden">
+      <router-link v-for="child in item.children" :key="child.name" :to="child.route"
+        v-slot="{ isActive, navigate }" custom>
+        <div @click="navigate"
+          class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors duration-200" :class="[
+            isActive
+              ? 'bg-slate-700/50 text-white font-medium'
+              : 'text-slate-300 hover:bg-slate-700/30 hover:text-white',
+          ]">
+          <span class="w-2 h-2 mr-3 rounded-full bg-slate-400/50"></span>
+          {{ child.name }}
+
+          <!-- Conditionally render notification badge -->
+          <div v-if="child.notificationCount > 0" class="ml-6 notification-badge">
+            {{ child.notificationCount }}
+          </div>
+
+        </div>
+      </router-link>
+    </div>
+  </transition>
+</div>
+
           </template>
         </nav>
       </div>
@@ -260,4 +267,18 @@ const handleProfile = () => {
 .transition-all {
   transition-property: all;
 }
+
+
+/* menu notification */
+.notification-badge {
+  display: inline-block;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 0.2em 0.5em;
+  font-size: 0.8em;
+  margin-left: 0.5em;
+  vertical-align: top;
+}
+
 </style>
