@@ -57,7 +57,6 @@ import { useAuthStore } from '@/stores/authStore';
 import StatsGrid from '@/components/dashboard/roqcomponents/user/StatsGrid.vue';
 import ApplicationTable from '@/components/dashboard/roqcomponents/user/ApplicationsTable.vue';
 
-
 // BMHC Component Imports
 import BmhAdminDashboard from '@/components/dashboard/bhmccomponents/admin/BmhAdminDashboard.vue';
 import BmhUserManagement from '@/components/dashboard/bhmccomponents/admin/BmhUserManagement.vue';
@@ -74,12 +73,22 @@ import PractitionerCertification from '@/components/dashboard/bhmccomponents/use
 import PractitionerRegistration from '@/components/dashboard/bhmccomponents/user/pracitioner_reg_and_cert/PractitionerRegistration.vue';
 
 
+// Dealing Officer Components
+import ApplicationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/ApplicationLists.vue';
+import CpdManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/CpdManagement.vue';
+import InstituteManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/InstituteManagement.vue';
+import ProfessionalProfiles from '@/components/dashboard/bhmccomponents/dealingOfficer/ProfessionalProfiles.vue';
+import CogsManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/CogsManagement.vue';
+import Capa from '@/components/dashboard/bhmccomponents/dealingOfficer/Capa.vue';
+
+import PaymentManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/Payments.vue';
+import Reports from '@/components/dashboard/bhmccomponents/dealingOfficer/Reports.vue';
+
 const { role, user } = useAuthStore();
 const route = useRoute();
 const applications = ref([]);
 const currentPage = ref(1);
 const perPage = ref(10);
-
 
 // BMHC Admin Route-Based Components
 const bmhAdminComponent = computed(() => {
@@ -89,7 +98,6 @@ const bmhAdminComponent = computed(() => {
       return BmhAdminDashboard;
     case path.endsWith('/health_certification/user_management'):
       return BmhUserManagement;
-    //   add other admin routes
     default:
       return null;
   }
@@ -122,6 +130,22 @@ const bmhDealingOfficerComponent = computed(() => {
   switch (true) {
     case path.endsWith('/health_certification/dashboard'):
       return BmhDealingOfficerDashboard;
+    case path.endsWith('/health_certification/application_lists'):
+      return ApplicationLists;
+    case path.endsWith('/health_certification/cpd_management'):
+      return CpdManagement;
+    case path.endsWith('/health_certification/institutes'):
+      return InstituteManagement;
+    case path.endsWith('/health_certification/profiles'):
+      return ProfessionalProfiles;
+    case path.endsWith('/health_certification/cogs'):
+      return CogsManagement;
+      case path.endsWith('/health_certification/capa'):
+      return Capa;  
+    case path.endsWith('/health_certification/payments'):
+      return PaymentManagement;
+    case path.endsWith('/health_certification/reports'):
+      return Reports;
     default:
       return null;
   }
@@ -152,23 +176,20 @@ const bmhDirectorComponent = computed(() => {
 // BMHC CPD/CME Provider Route-Based Components
 const bmhCpdCmeProviderComponent = computed(() => {
   const path = route.path;
-  // Add route-based components for CPD/CME provider here
   switch (true) {
     case path.endsWith('/health_certification/dashboard'):
       return BmhCpdCmeProviderDashboard;
-    // add other cpd cme provider routes
     default:
       return null;
   }
 });
+
 // BMHC Institutions Route-Based Components
 const bmhInstitutionsComponent = computed(() => {
   const path = route.path;
-  // Add route-based components for Institutions here
   switch (true) {
     case path.endsWith('/health_certification/dashboard'):
       return BmhInstitutionsDashboard;
-    // add other institution routes
     default:
       return null;
   }
@@ -177,11 +198,9 @@ const bmhInstitutionsComponent = computed(() => {
 // BMHC Super Admin Route-Based Components
 const bmhSuperAdminComponent = computed(() => {
   const path = route.path;
-  // Add route-based components for Super Admin here
   switch (true) {
     case path.endsWith('/health_certification/dashboard'):
       return BmhSuperAdminDashboard;
-    // add other super admin routes
     default:
       return null;
   }
@@ -213,7 +232,6 @@ const filteredApplications = computed(() => {
       return [];
   }
 });
-
 
 // Calculate stats based on filtered applications
 const filteredStats = computed(() => {

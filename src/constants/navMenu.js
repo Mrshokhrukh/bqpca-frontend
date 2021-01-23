@@ -189,8 +189,54 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/admin/${serviceType}/certification_types`,
       },
     ],
-    // Add dealing_officer to health_certification
-    dealing_officer: dealingOfficerMenuItems,
+    dealing_officer: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Applications',
+        icon: getIconComponent('FileText'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/application_lists`,
+      },
+      {
+        name: 'CPD Management',
+        icon: getIconComponent('BookOpen'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_management`,
+      },
+      {
+        name: 'Institute Management',
+        icon: getIconComponent('Building2'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/institutes`,
+      },
+      {
+        name: 'Professional Profiles',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/profiles`,
+      },
+      {
+        name: 'CoGS Management',
+        icon: getIconComponent('Users'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/cogs`,
+      },
+      {
+        name: 'CAPA',
+        icon: getIconComponent('Users'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/capa`,
+      },
+      {
+        name: 'Payments',
+        icon: getIconComponent('CreditCard'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/payments`,
+      },
+      
+      {
+        name: 'Reports',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
+      },
+    ],
   },
   engineering_certification: {
     user: [
