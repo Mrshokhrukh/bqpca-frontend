@@ -140,8 +140,8 @@ const bmhDealingOfficerComponent = computed(() => {
       return ProfessionalProfiles;
     case path.endsWith('/health_certification/cogs'):
       return CogsManagement;
-      case path.endsWith('/health_certification/capa'):
-      return Capa;  
+    case path.endsWith('/health_certification/capa'):
+      return Capa;
     case path.endsWith('/health_certification/payments'):
       return PaymentManagement;
     case path.endsWith('/health_certification/reports'):
