@@ -68,6 +68,7 @@ import BmhDirectorDashboard from '@/components/dashboard/bhmccomponents/director
 import BmhCpdCmeProviderDashboard from '@/components/dashboard/bhmccomponents/cpdCmeProvider/BmhCpdCmeProviderDashboard.vue';
 import BmhInstitutionsDashboard from '@/components/dashboard/bhmccomponents/institutions/BmhInstitutionsDashboard.vue';
 import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superAdmin/BmhSuperAdminDashboard.vue';
+// BMH user
 import CPDcomponent from '@/components/dashboard/bhmccomponents/user/CPDcomponent.vue';
 import CoGSComponet from '@/components/dashboard/bhmccomponents/user/CoGSComponet.vue';
 import PractitionerCertification from '@/components/dashboard/bhmccomponents/user/pracitioner_reg_and_cert/PractitionerCertification.vue';

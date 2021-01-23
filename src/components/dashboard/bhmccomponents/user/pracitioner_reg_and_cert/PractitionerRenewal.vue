@@ -1,4 +1,7 @@
 <template>
+  <div>
+    <!-- <p v-if="warningMessage">{{ warningMessage }}</p> -->
+  </div>
   <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
     <h2 class="text-2xl font-bold mb-6">Renewal Application</h2>
 
@@ -125,10 +128,10 @@
     </div>
   </div>
 </template>
-
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
+// Form data
 const formData = ref({
   cidNo: '',
   fullName: '',
@@ -137,20 +140,60 @@ const formData = ref({
   village: '',
   gewog: '',
   dzongkhag: '',
-  credits: 0 // For BQPCA validation
+  credits: 0, // For BQPCA validation
+  regdate: '', // Registration date
+  username: '' // Username for matching
 })
 
 const showConfirmation = ref(false)
 const minimumCredits = 10 // Replace with actual minimum credit requirement
 const isEligibleForRenewal = ref(false)
+const warningMessage = ref('') // For storing the warning message if needed
 
-// Fetch user data on component mount
+// Calculated dates
+const expirationDate = computed(() => {
+  if (!formData.value.regdate) return ''
+  const regDate = new Date(formData.value.regdate)
+  regDate.setFullYear(regDate.getFullYear() + 5) // Add 5 years
+  return regDate.toISOString().split('T')[0] // Format as YYYY-MM-DD
+})
+
+const isWithinThreeMonths = computed(() => {
+  if (!expirationDate.value) return false
+  const expDate = new Date(expirationDate.value)
+  const today = new Date()
+  const diffTime = expDate - today
+  const diffMonths = diffTime / (1000 * 60 * 60 * 24 * 30) // Convert to months
+  return diffMonths <= 3 && diffMonths > 0 // Within three months
+})
+
+// Fetch user data and validate on component mount
 onMounted(async () => {
   try {
+    const storedUser = localStorage.getItem('user'); // Retrieve the JSON string
+const storedUsername = storedUser ? JSON.parse(storedUser).username : ''; // Parse and extract username
+
+
     // Simulate API call to fetch user data
     const userData = await fetchUserData()
+
+    // Check if the username matches
+    if (storedUsername !== userData.username) {
+      alert('Unauthorized access. Username mismatch.')
+      return
+    }
+
+    // If username matches, populate formData
     formData.value = { ...userData }
+
+    // Validate eligibility
     validateEligibility()
+
+    // Check if within three months of expiration
+    if (isWithinThreeMonths.value) {
+      warningMessage.value = `Your license is about to expire on ${expirationDate.value}. Please renew soon!`
+      alert(warningMessage.value)
+    }
   } catch (error) {
     console.error('Error fetching user data:', error)
   }
@@ -163,6 +206,10 @@ const validateEligibility = () => {
 const handleSubmit = () => {
   if (!isEligibleForRenewal.value) {
     alert('You do not meet the minimum credit requirements for renewal.')
+    return
+  }
+  if (new Date() < new Date(expirationDate.value)) {
+    alert(`Your license is not yet expired. Expiration date: ${expirationDate.value}`)
     return
   }
   showConfirmation.value = true
@@ -195,7 +242,9 @@ const fetchUserData = async () => {
     village: 'Sample Village',
     gewog: 'Sample Gewog',
     dzongkhag: 'Sample Dzongkhag',
-    credits: 15
+    credits: 15,
+    regdate: '2020-03-01',
+    username: 'dtoby'
   }
 }
 
@@ -204,15 +253,4 @@ const submitRenewal = async (data) => {
   console.log('Submitting renewal:', data)
   return Promise.resolve()
 }
-
-// time being session
-sessionStorage.setItem('mydetails', JSON.stringify({
-    name: 'dtoby',
-    cid: '123456789',
-    notification: {
-        renewal: true,
-        reg: false
-    }
-}));
-
 </script>

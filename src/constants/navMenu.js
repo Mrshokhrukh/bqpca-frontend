@@ -157,6 +157,11 @@ const serviceSpecificMenuItems = {
   health_certification: {
     user: [
       {
+        name: 'Dashboard',
+        icon: getIconComponent('Dashboard'),
+        route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
+      },
+      {
         name: 'Practitioner Reg & Cert',
         icon: getIconComponent('Heart'),
         children: [
@@ -172,8 +177,7 @@ const serviceSpecificMenuItems = {
           },
           {
             name: 'Renewal',
-            // notification count 
-            notificationCount: 1,
+            // notification count
             route: (serviceType) =>
               `/admin/user/${serviceType}/practitioner_reg_and_cert/renewal`,
           },

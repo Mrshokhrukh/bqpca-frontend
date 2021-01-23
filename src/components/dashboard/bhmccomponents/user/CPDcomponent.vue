@@ -16,7 +16,7 @@
 
     <!-- Dialog -->
     <div v-if="isDialogOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+      <div class="bg-white p-12 rounded-lg shadow-lg w-1/2 px-6 py-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
         <component :is="selectedComponent" />
         <button
           class="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg"

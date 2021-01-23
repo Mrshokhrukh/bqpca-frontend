@@ -1,149 +1,90 @@
 <template>
-  <div class="max-w-xl mx-auto p-6 bg-white shadow-md rounded">
-    <h2 class="text-xl font-semibold mb-4">CPD Registration Form</h2>
-    <form @submit.prevent="handleSubmit" class="space-y-4">
-      <!-- Personal Details -->
-      <fieldset>
-        <legend class="font-semibold">Personal Details</legend>
-
-        <div>
-          <label for="registrationNumber" class="block text-sm font-medium">Registration Number</label>
-          <input
-            id="registrationNumber"
-            v-model="form.registrationNumber"
-            type="text"
-            class="mt-1 block w-full border rounded px-3 py-2"
-            disabled
-          />
+  <div class="max-w-1/2 mx-auto p-6 bg-white rounded-lg shadow">
+    <form @submit.prevent="handleSubmit" class="space-y-8">
+      <!-- Applicant Details Section -->
+      <div class="border rounded-lg p-4 space-y-4">
+        <h2 class="text-xl font-bold">Applicant Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Registration Number</label>
+            <input type="text" v-model="form.registrationNumber" disabled class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">CID No./Identity/Work Permit No.</label>
+            <input type="text" v-model="form.cidNumber" disabled class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Full Name</label>
+            <input type="text" v-model="form.fullName" disabled class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Agency/Training Location</label>
+            <input type="text" v-model="form.agency" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+          </div>
         </div>
+      </div>
 
-        <div>
-          <label for="cidNumber" class="block text-sm font-medium">CID No./Identity/Work Permit No.</label>
-          <input
-            id="cidNumber"
-            v-model="form.cidNumber"
-            type="text"
-            class="mt-1 block w-full border rounded px-3 py-2"
-            disabled
-          />
+      <!-- Application Details Section -->
+      <div class="border rounded-lg p-4 space-y-4">
+        <h2 class="text-xl font-bold">Application Details</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Is CPD approved?</label>
+            <div class="mt-2 space-x-4">
+              <label class="inline-flex items-center">
+                <input type="radio" v-model="form.isCpdApproved" :value="true" class="form-radio"/>
+                <span class="ml-2">Yes</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input type="radio" v-model="form.isCpdApproved" :value="false" class="form-radio"/>
+                <span class="ml-2">No</span>
+              </label>
+            </div>
+          </div>
+
+          <div v-if="form.isCpdApproved" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Approval Type</label>
+              <select v-model="form.approvalType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <option value="">Select approval type</option>
+                <!-- Add options here -->
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Approval Letter</label>
+              <input type="file" @change="handleFileUpload" accept=".pdf,.doc,.docx" class="mt-1 block w-full"/>
+            </div>
+          </div>
+
+          <div v-else class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Title of CPD</label>
+              <input type="text" v-model="form.cpdTitle" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">From Date</label>
+                <input type="date" v-model="form.fromDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">To Date</label>
+                <input type="date" v-model="form.toDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div>
-          <label for="fullName" class="block text-sm font-medium">Full Name</label>
-          <input
-            id="fullName"
-            v-model="form.fullName"
-            type="text"
-            class="mt-1 block w-full border rounded px-3 py-2"
-            disabled
-          />
-        </div>
-
-        <div>
-          <label for="gender" class="block text-sm font-medium">Gender</label>
-          <input
-            id="gender"
-            v-model="form.gender"
-            type="text"
-            class="mt-1 block w-full border rounded px-3 py-2"
-            disabled
-          />
-        </div>
-      </fieldset>
-
-      <!-- CPD Details -->
-      <fieldset>
-        <legend class="font-semibold">CPD Details</legend>
-
-        <div>
-          <label for="cpdTitle" class="block text-sm font-medium">Title of CPD</label>
-          <input
-            id="cpdTitle"
-            v-model="form.cpdTitle"
-            type="text"
-            class="mt-1 block w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-
-        <div>
-          <label for="relevance" class="block text-sm font-medium">Relevance to your profession</label>
-          <input
-            id="relevance"
-            v-model="form.relevance"
-            type="text"
-            class="mt-1 block w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-
-        <div>
-          <label for="participationCategory" class="block text-sm font-medium">Participation Category</label>
-          <select
-            id="participationCategory"
-            v-model="form.participationCategory"
-            class="mt-1 block w-full border rounded px-3 py-2"
-            required
-          >
-            <option value="" disabled>Select</option>
-            <option value="category1">Category 1</option>
-            <option value="category2">Category 2</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="participantSubCategory" class="block text-sm font-medium">Participant Sub-category</label>
-          <select
-            id="participantSubCategory"
-            v-model="form.participantSubCategory"
-            class="mt-1 block w-full border rounded px-3 py-2"
-            required
-          >
-            <option value="" disabled>Select</option>
-            <option value="subCategory1">Sub-category 1</option>
-            <option value="subCategory2">Sub-category 2</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="activityType" class="block text-sm font-medium">Type of CPD Activity</label>
-          <select
-            id="activityType"
-            v-model="form.activityType"
-            class="mt-1 block w-full border rounded px-3 py-2"
-            required
-          >
-            <option value="" disabled>Select</option>
-            <option value="type1">Type 1</option>
-            <option value="type2">Type 2</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="attachment" class="block text-sm font-medium">Attachment</label>
-          <input
-            id="attachment"
-            type="file"
-            @change="handleFileUpload"
-            class="mt-1 block w-full border rounded px-3 py-2"
-          />
-        </div>
-      </fieldset>
-
-      <!-- Buttons -->
+      <!-- Action Buttons -->
       <div class="flex justify-end space-x-4">
-        <button
-          type="button"
-          @click="handleCancel"
-          class="px-4 py-2 bg-gray-500 text-white rounded"
-        >
-          Cancel
+        <button type="button" @click="saveDraft" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+          Save as Draft
         </button>
-        <button
-          type="submit"
-          class="px-4 py-2 bg-blue-600 text-white rounded"
-        >
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
           Submit
+        </button>
+        <button type="button" @click="cancel" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+          Cancel
         </button>
       </div>
     </form>
@@ -151,35 +92,90 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { ref, reactive } from 'vue'
 
 const form = reactive({
+  // Applicant Details
   registrationNumber: '',
   cidNumber: '',
   fullName: '',
-  gender: '',
+  agency: '',
+
+  // Application Details
+  isCpdApproved: false,
+  approvalType: '',
   cpdTitle: '',
-  relevance: '',
+  venue: '',
+  fromDate: '',
+  toDate: '',
+
+  // CPD Provider Details
+  providingAgency: '',
+  otherAgency: '',
+  conductingReason: '',
+  reasonDetails: '',
+
+  // Resource Person Details
+  resourcePersons: [],
+
+  // Teaching Learning Method
+  cpdType: '',
+  methodologies: '',
+  expectedOutcome: '',
+  activity: '',
+  durationHours: 0,
+  credit: 0,
+
+  // Participants Details
   participationCategory: '',
   participantSubCategory: '',
-  activityType: '',
-  attachment: null,
+  numberOfParticipants: 0,
+  relevance: '',
+  attachments: []
 })
 
-const handleSubmit = () => {
-  alert('Form submitted successfully!')
-  console.log(form)
+const handleSubmit = async () => {
+  try {
+    // Add your submission logic here
+    console.log('Form submitted:', form)
+  } catch (error) {
+    console.error('Error submitting form:', error)
+  }
 }
 
-const handleCancel = () => {
-  Object.keys(form).forEach((key) => (form[key] = ''))
+const saveDraft = () => {
+  // Add your draft saving logic here
+  console.log('Saving draft:', form)
+}
+
+const cancel = () => {
+  // Add your cancel logic here
+  console.log('Form cancelled')
 }
 
 const handleFileUpload = (event) => {
-  form.attachment = event.target.files[0]
+  const file = event.target.files[0]
+  // Add your file handling logic here
+  console.log('File uploaded:', file)
+}
+
+// Computed property for credit calculation based on hours
+const calculateCredit = (hours) => {
+  // Add your credit calculation logic here
+  return hours // Placeholder calculation
 }
 </script>
 
 <style scoped>
-/* Add additional styling if required */
+.form-radio {
+  @apply h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+  @apply focus:ring-blue-500 focus:border-blue-500;
+}
 </style>

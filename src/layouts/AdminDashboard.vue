@@ -73,11 +73,6 @@
           <span class="w-2 h-2 mr-3 rounded-full bg-slate-400/50"></span>
           {{ child.name }}
 
-          <!-- Conditionally render notification badge -->
-          <div v-if="child.notificationCount > 0" class="ml-6 notification-badge">
-            {{ child.notificationCount }}
-          </div>
-
         </div>
       </router-link>
     </div>
