@@ -1,4 +1,3 @@
-// Parent Component
 <template>
   <div class="p-4 w-full">
     <!-- Header Section -->
@@ -54,7 +53,7 @@ const { userId } = useAuthStore();
 const noteText = ref('');
 const qecNumber = ref('');
 const showModal = ref(false);
-const loading = ref(false); // Initialize as false
+const loading = ref(false);
 const currentPage = ref(1);
 const perPage = ref(10);
 const applications = ref([]);
@@ -179,7 +178,11 @@ const handleApplicationAction = ({ action, application }) => {
   }
   else if (action === 'viewCertificate') {
     modalType.value = 'viewCertificate';
-  } else {
+  }
+  else if (action === 'approve') {
+    modalType.value = 'approve';
+  }
+  else {
     modalType.value = action;
   }
   selectedApplication.value = application;
@@ -209,7 +212,7 @@ const handleApplicationUpdate = async (updateData) => {
   try {
     if (updateData.modal_action === 'addNote') {
       await apiService.patchRecognitionOfQualification(selectedApplication.value.id, {
-        chief_remarks: updateData.chief_remarks,
+        chief_remarks: updateData.remarks,
         modal_action: updateData.modal_action,
       })
     } else if (updateData.modal_action === 'regret') {

@@ -98,7 +98,7 @@
                         <span class="h-2 w-2 rounded-full" :class="getStatusDotClass(application.status)"></span>
                         <span class="ml-2">{{
                           formatStatus(application.status)
-                        }}</span>
+                          }}</span>
                       </span>
                     </span>
                     <span class="text-xs text-gray-500">
@@ -109,7 +109,7 @@
 
                 <!-- Actions -->
                 <td class="px-6 py-4 whitespace-nowrap text-right">
-                  <ActionButtons :application="application" @action="handleAction" />
+                  <ActionButtons :application="application" @action="handleAction" :user-role="userRole" />
                 </td>
               </tr>
             </template>
@@ -170,7 +170,7 @@ import {
   MapPinIcon,
   CalendarIcon,
 } from '@heroicons/vue/24/outline';
-import ActionButtons from './ROQActionButtons.vue';
+import ActionButtons from './ActionButtons.vue';
 
 const props = defineProps({
   applications: {
@@ -200,8 +200,12 @@ const props = defineProps({
   noResults: {
     type: Boolean,
     default: false
+  },
+  userRole: {
+    type: String,
+    required: false,
+    default: null
   }
-
 });
 
 const localPerPage = ref(props.perPage);
@@ -239,7 +243,7 @@ const formatDate = (date) => {
       month: 'short',
       day: 'numeric',
     });
-  } catch{
+  } catch {
     return "Invalid Date"
   }
 

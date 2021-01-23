@@ -181,10 +181,10 @@ const emit = defineEmits(['page-change', 'per-page-change', 'search', 'filter', 
 
 const searchQuery = ref('');
 const selectedStatus = ref('');
-const sortOrder = ref({ field: 'id', direction: 'asc' });
+const sortOrder = ref({ field: 'created_at', direction: 'desc' });
 
 const statusOptions = [
-  'draft',
+  'draft', // Ensure "draft" is included
   'applied',
   'processing',
   'under_review',
@@ -290,6 +290,16 @@ const sortedApplications = computed(() => {
     const bValue = b[sortOrder.value.field];
     const modifier = sortOrder.value.direction === 'asc' ? 1 : -1;
 
+    // Handle date fields
+    if (sortOrder.value.field === 'created_at' || sortOrder.value.field === 'updated_at') {
+      const aDate = new Date(aValue);
+      const bDate = new Date(bValue);
+      if (aDate < bDate) return -1 * modifier;
+      if (aDate > bDate) return 1 * modifier;
+      return 0;
+    }
+
+    // Handle other fields
     if (aValue < bValue) return -1 * modifier;
     if (aValue > bValue) return 1 * modifier;
     return 0;

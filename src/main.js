@@ -6,6 +6,7 @@ import App from './App.vue';
 import router from './router';
 import Toast, { POSITION, TYPE as ToastType } from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
+import 'apexcharts/dist/apexcharts.css';
 
 const app = createApp(App);
 
