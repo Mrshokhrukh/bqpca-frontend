@@ -15,10 +15,17 @@
     </button>
 
     <!-- Download Certificate Button -->
-    <button v-if="status === 'approved'" @click="downloadCertificate(application)"
+    <!-- <button v-if="status === 'approved'" @click="downloadCertificate(application)"
       class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all duration-200 shadow-sm hover:shadow-md">
       <ArrowDownTrayIcon class="w-4 h-4 mr-1.5" />
       Download
+    </button> -->
+
+    <!-- View Certificate Button -->
+    <button v-if="status === 'approved'" @click="showCertificateModal = true"
+      class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md">
+      <EyeIcon class="w-4 h-4 mr-1.5" />
+      View &amp; Download Certificate
     </button>
 
     <!-- Disabled State Button -->
@@ -183,6 +190,34 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <!-- View Certificate Modal -->
+    <TransitionRoot appear :show="showCertificateModal" as="template">
+      <Dialog as="div" @close="showCertificateModal = false" class="relative z-50">
+        <TransitionChild enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
+          leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
+          <div class="fixed inset-0 bg-black/25" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4">
+            <TransitionChild enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95">
+              <DialogPanel class="w-full max-w-3xl bg-white rounded-2xl p-8 shadow-xl">
+                <div class="flex justify-between items-center mb-6">
+                  <DialogTitle class="text-xl font-semibold">View Certificate</DialogTitle>
+                  <button @click="showCertificateModal = false" class="text-gray-500 hover:text-gray-600">
+                    <XMarkIcon class="w-6 h-6" />
+                  </button>
+                </div>
+                <ViewCertificateModal :application="application" @close="showCertificateModal = false" />
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -192,7 +227,6 @@ import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } fro
 import {
   PencilIcon,
   EyeIcon,
-  ArrowDownTrayIcon,
   ClockIcon,
   XMarkIcon,
   UserIcon,
@@ -203,6 +237,7 @@ import {
   ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline';
 import ApplicationForm from './ApplicationForm.vue';
+import ViewCertificateModal from './ViewCertificateModal.vue'; // Import the new modal component
 
 defineProps({
   status: String,
@@ -211,15 +246,11 @@ defineProps({
 
 const showEditModal = ref(false);
 const showReasonModal = ref(false);
+const showCertificateModal = ref(false); // Ref for certificate modal visibility
 
 const handleEditSubmit = () => {
   showEditModal.value = false;
   // You can add additional logic here if needed
-};
-
-const downloadCertificate = (application) => {
-  console.log('Downloading certificate for:', application);
-  // Implement download functionality
 };
 
 const formatDate = (date) => {
