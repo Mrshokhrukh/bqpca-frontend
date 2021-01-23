@@ -54,7 +54,7 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import StatsGrid from '@/components/dashboard/roqcomponents/user/StatsGrid.vue';
+//import StatsGrid from '@/components/dashboard/roqcomponents/user/StatsGrid.vue';
 import ApplicationTable from '@/components/dashboard/roqcomponents/user/ApplicationsTable.vue';
 
 // BMHC Component Imports
