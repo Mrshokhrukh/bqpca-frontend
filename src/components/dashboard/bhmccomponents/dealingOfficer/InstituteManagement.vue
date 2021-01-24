@@ -76,48 +76,54 @@
     </div>
 
     <!-- DPR Submissions Tab -->
-    <div v-if="activeTab === 'dpr'">
-      <h2 class="text-xl font-bold mb-4">DPR Submissions</h2>
-      <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <table class="min-w-full">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Institute Name</th>
-              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Location</th>
-              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">DPR Status</th>
-              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="institute in filteredDPRInstitutes"
-              :key="institute.id"
-              class="border-b hover:bg-gray-50"
+<div v-if="activeTab === 'dpr'">
+  <h2 class="text-xl font-bold mb-4">DPR Submissions</h2>
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Institute Name</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Location</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">DPR Status</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="institute in filteredDPRInstitutes"
+          :key="institute.id"
+          class="border-b hover:bg-gray-50"
+        >
+          <td class="px-6 py-4">{{ institute.name }}</td>
+          <td class="px-6 py-4">{{ institute.location }}</td>
+          <td class="px-6 py-4">
+            <span :class="statusClass(institute.dprStatus)">{{ institute.dprStatus }}</span>
+          </td>
+          <td class="px-6 py-4 space-x-2">
+            <button
+              @click="viewDetails(institute)"
+              class="text-blue-500 hover:underline"
             >
-              <td class="px-6 py-4">{{ institute.name }}</td>
-              <td class="px-6 py-4">{{ institute.location }}</td>
-              <td class="px-6 py-4">
-                <span :class="statusClass(institute.dprStatus)">{{ institute.dprStatus }}</span>
-              </td>
-              <td class="px-6 py-4 space-x-2">
-                <button
-                  @click="viewDetails(institute)"
-                  class="text-blue-500 hover:underline"
-                >
-                  View
-                </button>
-                <button
-                  @click="reviewDPR(institute)"
-                  class="text-green-500 hover:underline"
-                >
-                  Review
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+              View
+            </button>
+            <button
+              @click="downloadDPR(institute)"
+              class="text-purple-500 hover:underline"
+            >
+              Download
+            </button>
+            <button
+              @click="reviewDPR(institute)"
+              class="text-green-500 hover:underline"
+            >
+              Review
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
     <!-- CAPA Management Tab -->
     <div v-if="activeTab === 'capa'">
@@ -423,6 +429,20 @@ export default {
         ? 'bg-blue-500 text-white px-4 py-2 rounded-lg'
         : 'bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300';
     };
+    const downloadDPR = (institute) => {
+  if (institute.dprDocument) {
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = institute.dprDocument;
+    link.target = '_blank';
+    link.download = `DPR_${institute.name.replace(/\s+/g, '_')}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    alert('DPR document not available for download');
+  }
+};
 
     return {
       activeTab,
@@ -447,6 +467,7 @@ export default {
       handleReject,
       exportReport,
       tabClass,
+      downloadDPR,
     };
   },
 };
