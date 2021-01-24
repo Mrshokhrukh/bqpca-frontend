@@ -170,7 +170,7 @@ import {
   MapPinIcon,
   CalendarIcon,
 } from '@heroicons/vue/24/outline';
-import ActionButtons from './ActionButtons.vue';
+import ActionButtons from './ROQAdminActionButtons.vue';
 
 const props = defineProps({
   applications: {

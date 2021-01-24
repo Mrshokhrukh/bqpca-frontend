@@ -16,6 +16,8 @@ export default {
       qualifications: () => import('@/views/admin/ROQ/Dashboard.vue'),
       reason_for_issue_of_second_copy: () => import('@/views/admin/ROQ/Dashboard.vue'),
       type_of_courses: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      genders: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      countries: () => import('@/views/admin/ROQ/Dashboard.vue'),
       user_profile: () => import('@/views/admin/ROQ/Dashboard.vue'),
     },
     ecpf: {

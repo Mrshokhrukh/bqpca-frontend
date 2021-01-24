@@ -14,12 +14,6 @@
       View Reason
     </button>
 
-    <!-- Download Certificate Button -->
-    <!-- <button v-if="status === 'approved'" @click="downloadCertificate(application)"
-      class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all duration-200 shadow-sm hover:shadow-md">
-      <ArrowDownTrayIcon class="w-4 h-4 mr-1.5" />
-      Download
-    </button> -->
 
     <!-- View Certificate Button -->
     <button v-if="status === 'approved'" @click="showCertificateModal = true"
@@ -236,8 +230,8 @@ import {
   DocumentIcon,
   ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline';
-import ApplicationForm from './ApplicationForm.vue';
-import ViewCertificateModal from './ViewCertificateModal.vue'; // Import the new modal component
+import ApplicationForm from '../dashboard/roqcomponents/user/ApplicationForm.vue';
+import ViewCertificateModal from './ROQViewCertificateModal.vue'; // Import the new modal component
 
 defineProps({
   status: String,

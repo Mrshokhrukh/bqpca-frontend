@@ -1,7 +1,7 @@
 <!-- StatsCard.vue -->
 <template>
   <div
-    class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 border border-gray-100">
+    class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 border border-gray-100">
     <div class="p-5">
       <div class="flex items-center justify-between mb-3">
         <div :class="`bg-${color}-50 text-${color}-500 rounded-xl p-3 shadow-md flex items-center justify-center`">

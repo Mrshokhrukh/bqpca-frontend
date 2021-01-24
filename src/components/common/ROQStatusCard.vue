@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 border border-gray-100 overflow-hidden"
+    class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 border border-gray-100 overflow-hidden"
   >
     <div class="p-6 relative">
       <div class="flex items-center justify-between mb-4">

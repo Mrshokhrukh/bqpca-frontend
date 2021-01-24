@@ -104,7 +104,8 @@ const showButtons = computed(() => props.application.status !== 'draft')
 const showViewCertificateButton = computed(() => props.application.status === 'approved')
 // Dealing Officer Specific
 const showAddNoteButton = computed(() => ['applied', 'processing'].includes(props.application.status) && props.userRole !== 'chief');
-const hasRemarks = computed(() => !!props.application.dealing_officer_remarks)
+// Update the hasRemarks computed property
+const hasRemarks = computed(() => !!props.application.dealing_officer_remarks);
 const showReUploadButton = computed(() => ['applied', 'processing'].includes(props.application.status) && props.userRole !== 'chief');
 const showReProcessButton = computed(() => ['applied', 'processing'].includes(props.application.status) && props.userRole !== 'chief');
 const showForwardButton = computed(() => ['applied', 'processing'].includes(props.application.status) && props.userRole !== 'chief');
@@ -113,6 +114,6 @@ const showReadDoRemarksButton = computed(() => props.userRole === 'chief' && pro
 const showRegretReasonButton = computed(() => props.userRole === 'chief' && (props.application.status === 'regretted' || props.application.status === 'reprocess' || props.application.status === 'reupload'));
 const showRegretButton = computed(() => props.userRole === 'chief' && ['applied', 'under_review', 'reprocess', 'reupload'].includes(props.application.status));
 const showChiefAddNoteButton = computed(() => props.userRole === 'chief' && ['applied', 'processing', 'under_review', 'reprocess', 'reupload'].includes(props.application.status))
-const hasChiefRemarks = computed(() => !!props.application.chief_remarks)
+const hasChiefRemarks = computed(() => !!props.application.chief_remarks);
 const showApproveButton = computed(() => props.userRole === 'chief' && ['applied', 'under_review', 'reprocess', 'reupload'].includes(props.application.status))
 </script>

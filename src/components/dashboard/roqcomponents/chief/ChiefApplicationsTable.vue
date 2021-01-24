@@ -34,6 +34,9 @@
       @close="closeModal" @update="handleApplicationUpdate" />
     <RemarksModal :show-modal="showRemarksModal" :chief-remarks="selectedApplication.chief_remarks"
       :dealing-officer-remarks="selectedApplication.dealing_officer_remarks" @close="closeRemarksModal" />
+    <!-- Add ViewCertificateModal -->
+    <ViewCertificateModal v-if="modalType === 'viewCertificate'" :show-modal="showModal"
+      :application="selectedApplication" @close="closeModal" />
   </div>
 </template>
 
@@ -42,6 +45,7 @@ import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import ApplicationList from '@/components/common/ROQApplicationList.vue';
 import ApplicationModal from '@/components/common/ROQApplicationModal.vue';
 import RemarksModal from '@/components/common/ROQRemarksModal.vue';
+import ViewCertificateModal from '@/components/common/ROQViewCertificateModal.vue';
 import apiService from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
 import { RefreshCw } from 'lucide-vue-next';
@@ -170,14 +174,15 @@ const handleApplicationAction = ({ action, application }) => {
     selectedApplication.value = application;
     showRemarksModal.value = true;
     return;
-  }
-  else if (action === 'readDoRemarks') {
+  } else if (action === 'readDoRemarks') {
     selectedApplication.value = application;
     showRemarksModal.value = true;
-    return
-  }
-  else if (action === 'viewCertificate') {
+    return;
+  } else if (action === 'viewCertificate') {
     modalType.value = 'viewCertificate';
+    selectedApplication.value = application;
+    showModal.value = true;
+    return;
   }
   else if (action === 'approve') {
     modalType.value = 'approve';
