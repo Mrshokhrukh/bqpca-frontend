@@ -16,6 +16,8 @@ export default {
       qualifications: () => import('@/views/admin/ROQ/Dashboard.vue'),
       reason_for_issue_of_second_copy: () => import('@/views/admin/ROQ/Dashboard.vue'),
       type_of_courses: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      genders: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      countries: () => import('@/views/admin/ROQ/Dashboard.vue'),
       user_profile: () => import('@/views/admin/ROQ/Dashboard.vue'),
     },
     ecpf: {
@@ -142,11 +144,14 @@ export default {
     },
     health_certification: {
       dashboard: () => import('@/views/admin/BMHC/Dashboard.vue'),
-      // pending_applications: () => import('@/views/admin/BMHC/PendingApplications.vue'),
-      // approved_applications: () => import('@/views/admin/BMHC/ApprovedApplications.vue'),
-      // rejected_applications: () => import('@/views/admin/BMHC/RejectedApplications.vue'),
-      // reports: () => import('@/views/admin/BMHC/Reports.vue'),
-      // ... other Health Certification routes for dealing officer
+      application_lists: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cpd_management: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      institutes: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      profiles: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cogs: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      capa: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      payments: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      reports: () => import('@/views/admin/BMHC/Dashboard.vue'),
     },
   },
   chief: {
@@ -180,9 +185,13 @@ export default {
     },
     health_certification: {
       dashboard: () => import('@/views/admin/BMHC/Dashboard.vue'),
-      // for_review_applications: () => import('@/views/admin/BMHC/ForReviewApplications.vue'),
-      // endorsed_applications: () => import('@/views/admin/BMHC/EndorsedApplications.vue'),
-      // reports: () => import('@/views/admin/BMHC/Reports.vue'),
+      application_lists: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cpd_management: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      institutes: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      profiles: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cogs: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      payments: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      reports: () => import('@/views/admin/BMHC/Dashboard.vue'),
       // ... other Health Certification routes for chief
     },
   },

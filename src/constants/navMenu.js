@@ -101,6 +101,21 @@ const serviceSpecificMenuItems = {
     ],
     admin: [
       {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Decisions',
+        icon: getIconComponent('Wrench'),
+        route: (serviceType) => `/admin/admin/${serviceType}/decisions`,
+      },
+      {
+        name: 'Learning Types',
+        icon: getIconComponent('BookOpen'),
+        route: (serviceType) => `/admin/admin/${serviceType}/learning_types`,
+      },
+      {
         name: 'Qualifications',
         icon: getIconComponent('Award'),
         route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
@@ -109,6 +124,26 @@ const serviceSpecificMenuItems = {
         name: 'Second Copy Reasons',
         icon: getIconComponent('CheckCircle'),
         route: (serviceType) => `/admin/admin/${serviceType}/reason_for_issue_of_second_copy`,
+      },
+      {
+        name: 'Types of Courses',
+        icon: getIconComponent('FileText'),
+        route: (serviceType) => `/admin/admin/${serviceType}/type_of_courses`,
+      },
+      {
+        name: 'Gender Types',
+        icon: getIconComponent('Users'),
+        route: (serviceType) => `/admin/admin/${serviceType}/genders`,
+      },
+      {
+        name: 'Countries',
+        icon: getIconComponent('Globe'),
+        route: (serviceType) => `/admin/admin/${serviceType}/countries`,
+      },
+      {
+        name: 'User Profile',
+        icon: getIconComponent('Users'),
+        route: (serviceType) => `/admin/admin/${serviceType}/user_profile`,
       },
     ],
     // Add dealing_officer to roq
@@ -201,8 +236,54 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/admin/${serviceType}/certification_types`,
       },
     ],
-    // Add dealing_officer to health_certification
-    dealing_officer: dealingOfficerMenuItems,
+    dealing_officer: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Applications',
+        icon: getIconComponent('FileText'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/application_lists`,
+      },
+      {
+        name: 'CPD Management',
+        icon: getIconComponent('BookOpen'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_management`,
+      },
+      {
+        name: 'Institute Management',
+        icon: getIconComponent('Building2'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/institutes`,
+      },
+      {
+        name: 'Professional Profiles',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/profiles`,
+      },
+      {
+        name: 'CoGS Management',
+        icon: getIconComponent('Users'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/cogs`,
+      },
+      {
+        name: 'CAPA',
+        icon: getIconComponent('Users'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/capa`,
+      },
+      {
+        name: 'Payments',
+        icon: getIconComponent('CreditCard'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/payments`,
+      },
+
+      {
+        name: 'Reports',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
+      },
+    ],
   },
   engineering_certification: {
     user: [

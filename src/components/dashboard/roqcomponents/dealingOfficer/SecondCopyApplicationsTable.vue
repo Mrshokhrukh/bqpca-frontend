@@ -1,4 +1,3 @@
-// Parent Component
 <template>
   <div class="p-4 w-full">
     <!-- Header Section -->
@@ -27,7 +26,7 @@
           :total-results="filteredTotal" :per-page="perPage" @page-change="handlePageChange"
           @action="handleApplicationAction" @per-page-change="handlePerPageChange"
           @search-query-change="handleSearchChange" @status-filter-change="handleStatusChange"
-          :no-results="filteredApplications.length === 0" />
+          :no-results="filteredApplications.length === 0" :user-role="authStoreRole" />
       </div>
     </div>
 
@@ -50,10 +49,12 @@ import { useToast } from 'vue-toastification';
 
 const toast = useToast();
 const { userId } = useAuthStore();
+const authStore = useAuthStore();
+const authStoreRole = computed(() => authStore.role);
 
 const noteText = ref('');
 const showModal = ref(false);
-const loading = ref(false); // Initialize as false
+const loading = ref(false);
 const currentPage = ref(1);
 const perPage = ref(10);
 const applications = ref([]);
@@ -79,10 +80,10 @@ const filteredApplications = computed(() => {
         String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
       )
       : true;
-    const usSecondCopy = app.is_second_copy;
-    const isNotDraft = app.status !== 'draft';
+    const isSecondCopy = app.is_second_copy; // Ensure boolean true
+    const isForward = !app.forward; // Ensure boolean true
 
-    return matchesStatus && matchesType && matchesSearch && usSecondCopy && isNotDraft;
+    return matchesStatus && matchesType && matchesSearch && isSecondCopy && isForward;
   });
 });
 

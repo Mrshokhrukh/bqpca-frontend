@@ -73,6 +73,7 @@ const applications = ref([]);
 const searchQuery = ref('');
 const selectedStatus = ref('');
 const selectedType = ref('');
+const sortOrder = ref({ field: 'created_at', direction: 'desc' }); // Default sorting by creation date, latest first
 
 // Computed Property for filtered Applications
 const filteredApplications = computed(() => {
@@ -90,15 +91,38 @@ const filteredApplications = computed(() => {
   });
 });
 
+// Sort the filtered applications
+const sortedApplications = computed(() => {
+  return [...filteredApplications.value].sort((a, b) => {
+    const aValue = a[sortOrder.value.field];
+    const bValue = b[sortOrder.value.field];
+    const modifier = sortOrder.value.direction === 'asc' ? 1 : -1;
+
+    // Handle date fields
+    if (sortOrder.value.field === 'created_at' || sortOrder.value.field === 'updated_at') {
+      const aDate = new Date(aValue);
+      const bDate = new Date(bValue);
+      if (aDate < bDate) return -1 * modifier;
+      if (aDate > bDate) return 1 * modifier;
+      return 0;
+    }
+
+    // Handle other fields
+    if (aValue < bValue) return -1 * modifier;
+    if (aValue > bValue) return 1 * modifier;
+    return 0;
+  });
+});
+
 // Compute total for pagination
-const filteredTotal = computed(() => filteredApplications.value.length);
+const filteredTotal = computed(() => sortedApplications.value.length);
 
 // Get paginated data
 const paginatedApplications = computed(() => {
   const start = (currentPage.value - 1) * perPage.value;
   const end = start + perPage.value;
 
-  return filteredApplications.value.slice(start, end);
+  return sortedApplications.value.slice(start, end);
 });
 
 // Reset pagination when filters change
@@ -124,7 +148,7 @@ const loadData = async () => {
   loading.value = true;
   try {
     const response = await apiService.getRecognitionOfQualifications({
-      user_id: userId.value // Use user ID instead of email
+      user_id: userId.value,
     });
     applications.value = response.data.results;
   } catch (error) {

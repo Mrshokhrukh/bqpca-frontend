@@ -1,4 +1,3 @@
-// Parent Component
 <template>
   <div class="p-4 w-full">
     <!-- Header Section -->
@@ -35,6 +34,9 @@
       @close="closeModal" @update="handleApplicationUpdate" />
     <RemarksModal :show-modal="showRemarksModal" :chief-remarks="selectedApplication.chief_remarks"
       :dealing-officer-remarks="selectedApplication.dealing_officer_remarks" @close="closeRemarksModal" />
+    <!-- Add ViewCertificateModal -->
+    <ViewCertificateModal v-if="modalType === 'viewCertificate'" :show-modal="showModal"
+      :application="selectedApplication" @close="closeModal" />
   </div>
 </template>
 
@@ -43,6 +45,7 @@ import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import ApplicationList from '@/components/common/ROQApplicationList.vue';
 import ApplicationModal from '@/components/common/ROQApplicationModal.vue';
 import RemarksModal from '@/components/common/ROQRemarksModal.vue';
+import ViewCertificateModal from '@/components/common/ROQViewCertificateModal.vue';
 import apiService from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
 import { RefreshCw } from 'lucide-vue-next';
@@ -54,7 +57,7 @@ const { userId } = useAuthStore();
 const noteText = ref('');
 const qecNumber = ref('');
 const showModal = ref(false);
-const loading = ref(false); // Initialize as false
+const loading = ref(false);
 const currentPage = ref(1);
 const perPage = ref(10);
 const applications = ref([]);
@@ -171,15 +174,20 @@ const handleApplicationAction = ({ action, application }) => {
     selectedApplication.value = application;
     showRemarksModal.value = true;
     return;
-  }
-  else if (action === 'readDoRemarks') {
+  } else if (action === 'readDoRemarks') {
     selectedApplication.value = application;
     showRemarksModal.value = true;
-    return
-  }
-  else if (action === 'viewCertificate') {
+    return;
+  } else if (action === 'viewCertificate') {
     modalType.value = 'viewCertificate';
-  } else {
+    selectedApplication.value = application;
+    showModal.value = true;
+    return;
+  }
+  else if (action === 'approve') {
+    modalType.value = 'approve';
+  }
+  else {
     modalType.value = action;
   }
   selectedApplication.value = application;
@@ -209,7 +217,7 @@ const handleApplicationUpdate = async (updateData) => {
   try {
     if (updateData.modal_action === 'addNote') {
       await apiService.patchRecognitionOfQualification(selectedApplication.value.id, {
-        chief_remarks: updateData.chief_remarks,
+        chief_remarks: updateData.remarks,
         modal_action: updateData.modal_action,
       })
     } else if (updateData.modal_action === 'regret') {

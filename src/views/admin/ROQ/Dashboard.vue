@@ -54,6 +54,8 @@ import AdminQualification from '@/components/dashboard/roqcomponents/admin/Admin
 import AdminTypeOfCourse from '@/components/dashboard/roqcomponents/admin/AdminTypeOfCourse.vue';
 import AdminSecondCopyReason from '@/components/dashboard/roqcomponents/admin/AdminSecondCopyReason.vue';
 import AdminProfile from '@/components/dashboard/roqcomponents/admin/AdminProfile.vue'; // Added Import
+import AdminGender from '@/components/dashboard/roqcomponents/admin/AdminGender.vue';
+import AdminCountry from '@/components/dashboard/roqcomponents/admin/AdminCountry.vue';
 
 // Dealing Officer Components Import
 import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealingOfficer/DealingOfficerDashboard.vue';
@@ -93,6 +95,10 @@ const adminComponent = computed(() => {
       return AdminTypeOfCourse;
     case path.endsWith('/roq/reason_for_issue_of_second_copy'):
       return AdminSecondCopyReason;
+    case path.endsWith('/roq/genders'):
+      return AdminGender;
+    case path.endsWith('/roq/countries'):
+      return AdminCountry;
     case path.endsWith('/roq/user_profile'):
       return AdminProfile;
     default:

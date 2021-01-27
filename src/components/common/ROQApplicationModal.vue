@@ -31,9 +31,10 @@
         <div class="flex-1 overflow-y-auto p-6 space-y-6">
           <!-- View Mode with Enhanced Cards -->
           <div v-if="modalType === 'view' || modalType === 'viewCertificate'" class="space-y-6">
+
             <!-- Personal & Address Information Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Personal Information Card -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+              <!-- Left Column: Personal Information -->
               <div class="bg-gray-50 rounded-xl p-6 shadow-sm">
                 <div class="flex items-center gap-3 mb-6">
                   <div class="p-2 bg-blue-50 rounded-lg">
@@ -53,23 +54,60 @@
                 </div>
               </div>
 
-              <!-- Address Information Card -->
-              <div class="bg-gray-50 rounded-xl p-6 shadow-sm">
-                <div class="flex items-center gap-3 mb-6">
-                  <div class="p-2 bg-green-50 rounded-lg">
-                    <MapPinIcon class="w-5 h-5 text-green-600" />
+              <!-- Right Column: Passport Photo and Address Details -->
+              <div class="space-y-6">
+                <!-- Passport Photo Card -->
+                <div v-if="modalApplication.passport_size_photo"
+                  class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden h-[300px]">
+                  <div class="relative h-full flex items-center justify-center">
+                    <div class="absolute top-4 right-4 bg-blue-100 rounded-full p-2">
+                      <CameraIcon class="w-5 h-5 text-blue-600" />
+                    </div>
+                    <img :src="modalApplication.passport_size_photo" alt="Passport Photo"
+                      class="w-50 h-full object-cover" />
                   </div>
-                  <h4 class="text-lg font-medium text-gray-900">Address Details</h4>
+                  <div class="p-4 text-center bg-gray-50">
+                    <p class="text-sm font-medium text-gray-600">Passport Photograph</p>
+                    <p class="text-xs text-gray-500">High-resolution Image</p>
+                  </div>
                 </div>
-                <div class="space-y-4">
-                  <div v-for="(item, index) in addressInfo" :key="index"
-                    class="flex items-start bg-white p-4 rounded-lg border border-gray-200">
-                    <component :is="addressInfoIcons[index]" class="w-4 h-4 text-gray-400 mt-1 mr-3" />
-                    <div class="flex-1">
-                      <span class="text-sm font-medium text-gray-500 block mb-1">{{ item.label }}</span>
-                      <span class="text-gray-900">{{ item.value || '-' }}</span>
+
+                <!-- Address Details Card -->
+                <div class="bg-gray-50 rounded-xl p-6 shadow-sm">
+                  <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 bg-green-50 rounded-lg">
+                      <MapPinIcon class="w-5 h-5 text-green-600" />
+                    </div>
+                    <h4 class="text-lg font-medium text-gray-900">Address Details</h4>
+                  </div>
+                  <div class="space-y-4">
+                    <div v-for="(item, index) in addressInfo" :key="index"
+                      class="flex items-start bg-white p-4 rounded-lg border border-gray-200 hover:shadow-sm transition-shadow">
+                      <component :is="addressInfoIcons[index]" class="w-5 h-5 text-gray-500 mt-1 mr-4" />
+                      <div class="flex-1">
+                        <span class="text-sm font-medium text-gray-500 block mb-1">{{ item.label }}</span>
+                        <span class="text-gray-900 text-base">{{ item.value || '-' }}</span>
+                      </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- QEC Number Display for Approved Applications -->
+            <div v-if="modalApplication.status === 'approved' && modalApplication.qec_number"
+              class="bg-green-50 rounded-xl p-6 shadow-sm">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="p-2 bg-green-100 rounded-lg">
+                  <HashIcon class="w-5 h-5 text-green-600" />
+                </div>
+                <h4 class="text-lg font-medium text-green-900">QEC Number</h4>
+              </div>
+              <div class="bg-white p-4 rounded-lg border border-green-200 flex items-center justify-between">
+                <span class="text-2xl font-bold text-green-700">{{ modalApplication.qec_number }}</span>
+                <div class="flex items-center gap-2 text-green-600">
+                  <CheckCircleIcon class="w-5 h-5" />
+                  <span class="font-medium">Verified</span>
                 </div>
               </div>
             </div>
@@ -196,6 +234,15 @@
                   rows="4" placeholder="Enter your note here..."></textarea>
               </label>
             </div>
+            <!-- Assign QEC Number Form -->
+            <div v-if="modalType === 'assignQEC'" class="space-y-4">
+              <label class="block">
+                <span class="text-sm font-medium text-gray-700">QEC Number</span>
+                <input type="text" v-model="qecNumber"
+                  class="mt-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter the QEC Number here" />
+              </label>
+            </div>
 
             <!-- Re-upload Form -->
             <div v-if="modalType === 'reUpload'" class="space-y-6">
@@ -241,6 +288,11 @@
               <AlertCircleIcon class="w-6 h-6 text-blue-600" />
               <p class="text-blue-700">Are you sure you want to forward this application?</p>
             </div>
+            <!-- Approve Confirmation -->
+            <div v-if="modalType === 'approve'" class="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
+              <CheckCircleIcon class="w-6 h-6 text-green-600" />
+              <p class="text-green-700">Are you sure you want to approve this application?</p>
+            </div>
           </div>
         </div>
 
@@ -256,7 +308,7 @@
             class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
             @click="handleModalAction">
             <component :is="actionButtonIcon" class="w-4 h-4 mr-1.5" />
-            {{ modalType === 'forward' ? 'Forward' : 'Save' }}
+            {{ modalType === 'forward' ? 'Forward' : modalType === 'approve' ? 'Approve' : 'Save' }}
           </button>
         </div>
       </div>
@@ -291,7 +343,8 @@ import {
   Save as SaveIcon,
   ArrowRight as ArrowRightIcon,
   Copy as CopyIcon,
-  HelpCircle as HelpCircleIcon, // Updated import
+  HelpCircle as HelpCircleIcon,
+  Camera as CameraIcon,
 } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -316,6 +369,7 @@ const noteText = ref('');
 const selectedDocuments = ref([]);
 const reProcessReason = ref('');
 const rejectionReason = ref('');
+const qecNumber = ref('');
 
 // Computed properties for enhanced styling
 const headerColorClass = computed(() => {
@@ -326,7 +380,9 @@ const headerColorClass = computed(() => {
     reProcess: 'bg-purple-50',
     forward: 'bg-indigo-50',
     regret: 'bg-red-50',
-    viewCertificate: 'bg-blue-50'
+    viewCertificate: 'bg-blue-50',
+    assignQEC: 'bg-emerald-50',
+    approve: 'bg-green-50'
   };
   return classes[props.modalType] || 'bg-gray-50';
 });
@@ -339,7 +395,9 @@ const headerIconClass = computed(() => {
     reProcess: 'text-purple-600',
     forward: 'text-indigo-600',
     regret: 'text-red-600',
-    viewCertificate: 'text-blue-600'
+    viewCertificate: 'text-blue-600',
+    assignQEC: 'text-emerald-600',
+    approve: 'text-green-600'
   };
   return classes[props.modalType] || 'text-gray-600';
 });
@@ -352,7 +410,9 @@ const modalDescription = computed(() => {
     reProcess: 'Reprocess this application',
     forward: 'Forward to next stage',
     regret: 'Reject this application',
-    viewCertificate: 'View certificate details'
+    viewCertificate: 'View certificate details',
+    assignQEC: 'Assign QEC Number to the application',
+    approve: 'Approve this application'
   };
   return descriptions[props.modalType] || '';
 });
@@ -365,7 +425,9 @@ const modalIcons = {
   reProcess: ActivityIcon,
   forward: ArrowRightIcon,
   regret: XIcon,
-  viewCertificate: FileTextIcon
+  viewCertificate: FileTextIcon,
+  assignQEC: HashIcon,
+  approve: CheckCircleIcon,
 };
 
 const personalInfoIcons = [UserIcon, HashIcon, CalendarIcon, UserIcon, PhoneIcon, MailIcon];
@@ -377,7 +439,7 @@ const educationInfoIcons = [
 const statusInfoIcons = [CheckCircleIcon, ClockIcon, ClockIcon, FileTextIcon];
 
 const actionButtonIcon = computed(() =>
-  props.modalType === 'forward' ? ArrowRightIcon : SaveIcon
+  props.modalType === 'forward' ? ArrowRightIcon : props.modalType === 'approve' ? CheckCircleIcon : SaveIcon
 );
 
 // Data formatting
@@ -456,15 +518,16 @@ const textAreaValue = computed({
 
 // Status styling
 const getStatusClass = (status) => {
+  const capitalizedStatus = status ? status.charAt(0).toUpperCase() + status.slice(1).toLowerCase() : '';
   const classes = {
-    pending: 'text-yellow-600 font-medium',
-    approved: 'text-green-600 font-medium',
-    rejected: 'text-red-600 font-medium',
-    reprocess: 'text-blue-600 font-medium',
-    reupload: 'text-purple-600 font-medium',
-    regretted: 'text-red-600 font-medium',
+    Processing: 'text-yellow-600 font-medium',
+    Approved: 'text-green-600 font-medium',
+    Rejected: 'text-red-600 font-medium',
+    Reprocess: 'text-blue-600 font-medium',
+    Reupload: 'text-purple-600 font-medium',
+    Regretted: 'text-red-600 font-medium',
   };
-  return classes[status?.toLowerCase()] || 'text-gray-600 font-medium';
+  return classes[capitalizedStatus] || 'text-gray-600 font-medium';
 };
 
 // Event handlers
@@ -492,6 +555,10 @@ const handleModalAction = async () => {
       remarks: noteText.value,
       modal_action: 'addNote'
     },
+    'assignQEC': {
+      qec_number: qecNumber.value,
+      modal_action: 'assignQEC'
+    },
     'reUpload': {
       remarks: remarksValue,
       status: 'reupload',
@@ -507,9 +574,13 @@ const handleModalAction = async () => {
       modal_action: 'forward'
     },
     'regret': {
-      remarks: rejectionReason.value,
+      chief_remarks: rejectionReason.value,
       status: 'regretted',
       modal_action: 'regret'
+    },
+    'approve': {
+      status: 'approved',
+      modal_action: 'approve'
     }
   }[props.modalType] || {};
 
@@ -522,6 +593,7 @@ const closeModal = () => {
   selectedDocuments.value = [];
   reProcessReason.value = '';
   rejectionReason.value = '';
+  qecNumber.value = '';
   if (props.modalType === 'view') {
     emit('update', { modal_action: 'view' });
   }
@@ -532,16 +604,22 @@ const closeModal = () => {
 watch(
   () => props.showModal,
   (newValue) => {
-    if (props.modalType === 'addNote' && newValue && props.application.remarks) {
-      noteText.value = props.application.remarks
+    if (props.modalType === 'addNote' && newValue) {
+      noteText.value = props.application.chief_remarks ? props.application.chief_remarks : props.application.remarks ? props.application.remarks : '';
     } else {
       noteText.value = ''
     }
 
+    if (props.modalType === 'assignQEC' && newValue && props.application.qec_number) {
+      qecNumber.value = props.application.qec_number
+    } else {
+      qecNumber.value = ''
+    }
+
     if (props.modalType === 'reProcess' && props.application.remarks && newValue) {
       reProcessReason.value = props.application.remarks;
-    } else if (props.modalType === 'regret' && props.application.remarks && newValue) {
-      rejectionReason.value = props.application.remarks;
+    } else if (props.modalType === 'regret' && props.application.chief_remarks && newValue) {
+      rejectionReason.value = props.application.chief_remarks;
     }
   }
 );

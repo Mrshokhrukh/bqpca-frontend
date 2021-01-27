@@ -151,6 +151,40 @@ export default {
     return apiClient.delete(`/masters/roq-types-of-course/${id}/`)
   },
 
+  // Gender CRUD operations
+  getGenders() {
+    return apiClient.get('/masters/roq-genders/')
+  },
+  getGender(id) {
+    return apiClient.get(`/masters/roq-genders/${id}/`)
+  },
+  createGender(genderData) {
+    return apiClient.post('/masters/roq-genders/', genderData)
+  },
+  updateGender(id, genderData) {
+    return apiClient.put(`/masters/roq-genders/${id}/`, genderData)
+  },
+  deleteGender(id) {
+    return apiClient.delete(`/masters/roq-genders/${id}/`)
+  },
+
+  // Country CRUD operations
+  getCountries() {
+    return apiClient.get('/masters/roq-countries/')
+  },
+  getCountry(id) {
+    return apiClient.get(`/masters/roq-countries/${id}/`)
+  },
+  createCountry(countryData) {
+    return apiClient.post('/masters/roq-countries/', countryData)
+  },
+  updateCountry(id, countryData) {
+    return apiClient.put(`/masters/roq-countries/${id}/`, countryData)
+  },
+  deleteCountry(id) {
+    return apiClient.delete(`/masters/roq-countries/${id}/`)
+  },
+
   // Fetch user details by user_id
   getUserDetails(userId) {
     return apiClient.get(`/users/users/${userId}/`);

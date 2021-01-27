@@ -65,7 +65,7 @@ const successRate = computed(() => {
 const chartOptions = ref({
   chart: {
     height: 350,
-    type: 'line',
+    type: 'bar',
     toolbar: {
       show: false
     },
