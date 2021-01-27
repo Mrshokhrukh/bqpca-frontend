@@ -12,85 +12,44 @@ const apiClient = axios.create({
   },
 })
 
-apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
-
-apiClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    console.log('Interceptor caught an error:', error.response)
-
-    const originalRequest = error.config
-    const authStore = useAuthStore()
-    if (
-      (error.response.status === 401 || error.response.status === 403) &&
-      error.response.data.code === 'token_not_valid' &&
-      !originalRequest._retry
-    ) {
-      originalRequest._retry = true
-      console.log('Retrying request. Original request:', originalRequest)
-
-      try {
-        const newAccessToken = await authStore.refreshAccessToken()
-        console.log('New access token:', newAccessToken)
-
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
-        console.log('Retry request headers:', originalRequest.headers)
-
-        return apiClient(originalRequest)
-      } catch (refreshError) {
-        console.error('Unable to refresh token:', refreshError)
-        return Promise.reject(refreshError)
-      }
-    }
-
-    return Promise.reject(error)
-  },
-)
-
+// Consolidated interceptors (removed duplicates)
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // Handle FormData content type automatically
+  if (config.data instanceof FormData) {
+    config.headers['Content-Type'] = 'multipart/form-data';
+  } else if (!config.headers['Content-Type']) {
+    config.headers['Content-Type'] = 'application/json';
+  }
+
   return config;
 });
-
 
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log("Interceptor caught an error:", error.response);
-
     const originalRequest = error.config;
     const authStore = useAuthStore();
-     if (
-         (error.response.status === 401 || error.response.status === 403) &&
-         error.response.data.code === 'token_not_valid' &&
-         !originalRequest._retry
-     ) {
-      originalRequest._retry = true;
-      console.log("Retrying request. Original request:", originalRequest);
 
+    if (
+      (error.response?.status === 401 || error.response?.status === 403) &&
+      error.response?.data?.code === 'token_not_valid' &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
       try {
         const newAccessToken = await authStore.refreshAccessToken();
-        console.log("New access token:", newAccessToken);
-
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        console.log("Retry request headers:", originalRequest.headers);
-
         return apiClient(originalRequest);
       } catch (refreshError) {
-          console.error("Unable to refresh token:", refreshError);
-          return Promise.reject(refreshError)
+        console.error('Unable to refresh token:', refreshError);
+        return Promise.reject(refreshError);
       }
     }
-
     return Promise.reject(error);
   }
 );
@@ -192,8 +151,71 @@ export default {
     return apiClient.delete(`/masters/roq-types-of-course/${id}/`)
   },
 
+  // Gender CRUD operations
+  getGenders() {
+    return apiClient.get('/masters/roq-genders/')
+  },
+  getGender(id) {
+    return apiClient.get(`/masters/roq-genders/${id}/`)
+  },
+  createGender(genderData) {
+    return apiClient.post('/masters/roq-genders/', genderData)
+  },
+  updateGender(id, genderData) {
+    return apiClient.put(`/masters/roq-genders/${id}/`, genderData)
+  },
+  deleteGender(id) {
+    return apiClient.delete(`/masters/roq-genders/${id}/`)
+  },
+
+  // Country CRUD operations
+  getCountries() {
+    return apiClient.get('/masters/roq-countries/')
+  },
+  getCountry(id) {
+    return apiClient.get(`/masters/roq-countries/${id}/`)
+  },
+  createCountry(countryData) {
+    return apiClient.post('/masters/roq-countries/', countryData)
+  },
+  updateCountry(id, countryData) {
+    return apiClient.put(`/masters/roq-countries/${id}/`, countryData)
+  },
+  deleteCountry(id) {
+    return apiClient.delete(`/masters/roq-countries/${id}/`)
+  },
+
   // Fetch user details by user_id
   getUserDetails(userId) {
     return apiClient.get(`/users/users/${userId}/`);
   },
+
+  // Recognition of Qualifications endpoints (enhanced for file uploads)
+  getRecognitionOfQualifications(params) {
+    return apiClient.get('/recognitions/recognition-of-qualifications/', { params });
+  },
+  getRecognitionOfQualification(id) {
+    return apiClient.get(`/recognitions/recognition-of-qualifications/${id}/`);
+  },
+  createRecognitionOfQualification(formData) {
+    return apiClient.post('/recognitions/recognition-of-qualifications/', formData);
+  },
+  updateRecognitionOfQualification(id, formData) {
+    return apiClient.put(`/recognitions/recognition-of-qualifications/${id}/`, formData);
+  },
+  patchRecognitionOfQualification(id, updates) {
+    return apiClient.patch(`/recognitions/recognition-of-qualifications/${id}/`, updates);
+  },
+  deleteRecognitionOfQualification(id) {
+    return apiClient.delete(`/recognitions/recognition-of-qualifications/${id}/`);
+  },
+
+  fetchCitizenDetails(cid) {
+    return apiClient.get(`/users/fetch-citizen-details/${cid}/`);
+  },
+
+  // File upload helper
+  uploadFile(url, formData) {
+    return apiClient.post(url, formData);
+  }
 };

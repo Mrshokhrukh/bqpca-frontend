@@ -1,11 +1,35 @@
 <template>
-  <div>
-    <StatsGrid :stats="userStats" />
-    <div class="mt-8 space-y-6">
-      <div class="bg-white shadow rounded-lg p-6">
-        <h2 class="text-lg font-semibold mb-4">Recent Applications</h2>
-        <ApplicationTable :applications="recentApplications" :current-page="currentPage"
-          :total-results="totalApplications" :per-page="perPage" @page-change="handlePageChange" />
+  <div class="space-y-6">
+    <!-- Enhanced Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
+        <StatsCard title="Total Applied" :count="stats.totalApplied" :icon="FileText" color="blue"
+          trend="+12% from last month" />
+        <StatsCard title="Success Rate" :count="`${successRate}%`" :icon="TrendingUp" color="emerald"
+          trend="Based on approved applications" />
+      </div>
+      <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
+        <StatsCard title="Avg. Processing Time" count="14 days" :icon="Clock" color="purple"
+          trend="2 days faster than avg." />
+        <StatsCard title="Next Review Due" count="2 days" :icon="Calendar" color="amber" trend="Upcoming review" />
+      </div>
+    </div>
+
+    <!-- Application Status Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <StatusCard title="Approved" :count="stats.totalApproved" :icon="CheckCircle" color="green"
+        :percentage="(stats.totalApproved / stats.totalApplied) * 100" />
+      <StatusCard title="Pending" :count="stats.totalPending" :icon="Clock" color="yellow"
+        :percentage="(stats.totalPending / stats.totalApplied) * 100" />
+      <StatusCard title="Regretted" :count="stats.totalRegretted" :icon="XCircle" color="red"
+        :percentage="(stats.totalRegretted / stats.totalApplied) * 100" />
+    </div>
+
+    <!-- Timeline Chart -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold mb-4">Application Timeline</h3>
+      <div class="h-[350px]">
+        <VueApexCharts :options="chartOptions" :series="chartSeries" height="100%" />
       </div>
     </div>
   </div>
@@ -14,64 +38,159 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
-import StatsGrid from '@/components/dashboard/roqcomponents/StatsGrid.vue';
-import ApplicationTable from '@/components/dashboard/roqcomponents/ApplicationsTable.vue';
+import StatsCard from '../../../common/ROQStatsCard.vue';
+import StatusCard from '../../../common/ROQStatusCard.vue';
+import { FileText, CheckCircle, XCircle, Clock, TrendingUp, Calendar } from 'lucide-vue-next';
+import VueApexCharts from 'vue3-apexcharts'
 import apiService from '@/services/services';
 
 const { user } = useAuthStore();
 const applications = ref([]);
-const currentPage = ref(1);
-const perPage = ref(5);
 
-const recentApplications = computed(() => {
-  const start = (currentPage.value - 1) * perPage.value;
-  const end = start + perPage.value;
-  return applications.value.slice(start, end).map(app => ({
-    id: app.id,
-    date: app.date_of_birth,
-    type: app.type_of_course,
-    status: getApplicationStatus(app),
-  }));
-});
-
-const totalApplications = computed(() => applications.value.length);
-
-const userStats = computed(() => ({
+// Compute statistics
+const stats = computed(() => ({
   totalApplied: applications.value.length,
-  totalApproved: applications.value.filter(app => app.chief_approved).length,
-  totalRegretted: applications.value.filter(app =>
-    app.dealing_officer_regret || app.chief_regret
-  ).length,
-  totalPending: applications.value.filter(app =>
-    !app.chief_approved &&
-    !app.dealing_officer_regret &&
-    !app.chief_regret
-  ).length
+  totalApproved: applications.value.filter(app => app.status === 'approved').length,
+  totalRegretted: applications.value.filter(app => app.status === 'regretted').length,
+  totalPending: applications.value.filter(app => app.status === 'applied').length
 }));
 
-const getApplicationStatus = (application) => {
-  if (application.chief_approved) return 'Approved';
-  if (application.chief_regret) return 'Regretted';
-  if (application.dealing_officer_regret) return 'Regretted';
-  return 'Pending';
+const successRate = computed(() => {
+  if (applications.value.length === 0) return 0;
+  return ((stats.value.totalApproved / applications.value.length) * 100).toFixed(1);
+});
+
+// Chart configuration
+// Chart configuration
+const chartOptions = ref({
+  chart: {
+    height: 350,
+    type: 'bar',
+    toolbar: {
+      show: false
+    },
+    zoom: {
+      enabled: false
+    }
+  },
+  dataLabels: {
+    enabled: false
+  },
+  stroke: {
+    curve: 'smooth',
+    width: 3
+  },
+  grid: {
+    row: {
+      colors: ['#f3f3f3', 'transparent'],
+      opacity: 0.5
+    },
+    borderColor: '#f3f4f6'
+  },
+  xaxis: {
+    categories: [],
+    labels: {
+      rotate: -45,
+      trim: false
+    }
+  },
+  yaxis: {
+    labels: {
+      formatter: function (val) {
+        return val.toFixed(0)
+      }
+    }
+  },
+  colors: ['#3B82F6', '#10B981'],
+  legend: {
+    position: 'top'
+  }
+});
+
+const chartSeries = ref([
+  {
+    name: 'Applications',
+    data: []
+  },
+  {
+    name: 'Approved',
+    data: []
+  }
+]);
+
+// Helper function to group applications by month
+const groupApplicationsByMonth = (applications) => {
+  const grouped = {};
+  applications.forEach(app => {
+    const date = new Date(app.created_at);
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    const monthYear = `${month} ${year}`;
+    if (!grouped[monthYear]) {
+      grouped[monthYear] = { applications: 0, approved: 0 };
+    }
+    grouped[monthYear].applications += 1;
+    if (app.status === 'approved') {
+      grouped[monthYear].approved += 1;
+    }
+  });
+
+  // Sort the grouped data based on the date and return the sorted grouped object
+  const sortedGrouped = Object.keys(grouped)
+    .sort((a, b) => {
+      const dateA = new Date(a);
+      const dateB = new Date(b);
+
+      return dateA - dateB;
+    })
+    .reduce((obj, key) => {
+      obj[key] = grouped[key];
+      return obj;
+    }, {});
+
+  return sortedGrouped;
 };
 
-const loadUserApplications = async () => {
+// Update chart data
+const updateChartData = () => {
+  const groupedData = groupApplicationsByMonth(applications.value);
+  const months = Object.keys(groupedData);
+  const applicationCounts = months.map(month => groupedData[month].applications);
+  const approvedCounts = months.map(month => groupedData[month].approved);
+
+  // Update the chart options and series
+  chartOptions.value = {
+    ...chartOptions.value,
+    xaxis: {
+      ...chartOptions.value.xaxis,
+      categories: months
+    }
+  };
+
+  chartSeries.value = [
+    {
+      name: 'Applications',
+      data: applicationCounts
+    },
+    {
+      name: 'Approved',
+      data: approvedCounts
+    }
+  ];
+};
+
+// Load applications
+const loadApplications = async () => {
   try {
-    const response = await apiService.getRecognitions({
-      email_address: user.email
-    });
-    applications.value = response.data.results;
+    const response = await apiService.getRecognitionOfQualifications();
+    applications.value = response.data.results.filter(app => app.applicant === user.id);
+    updateChartData();
   } catch (error) {
     console.error('Error loading applications:', error);
   }
 };
 
-const handlePageChange = (newPage) => {
-  currentPage.value = newPage;
-};
-
 onMounted(() => {
-  loadUserApplications();
+  loadApplications();
 });
 </script>

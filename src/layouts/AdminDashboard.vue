@@ -23,23 +23,67 @@
       <div class="flex-1 overflow-y-auto custom-scrollbar p-4">
         <nav class="space-y-1.5">
           <template v-for="item in filteredNavigationItems" :key="item.name">
-            <router-link :to="item.route" v-slot="{ isActive, navigate }" custom>
-              <div @click="navigate"
-                class="flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer"
-                :class="[
-                  isActive
-                    ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
-                    : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
-                ]">
-                <component :is="item.icon" class="h-5 w-5 mr-3" :class="{ 'text-primary': isActive }" />
-                {{ item.name }}
-              </div>
-            </router-link>
+            <!-- Single Item Without Children -->
+            <div v-if="!item.children">
+              <router-link :to="item.route" v-slot="{ isActive, navigate }" custom>
+                <div @click="navigate"
+                  class="flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer"
+                  :class="[
+                    isActive
+                      ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
+                      : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
+                  ]">
+                  <component :is="item.icon" class="h-5 w-5 mr-3" :class="{ 'text-primary': isActive }" />
+                  {{ item.name }}
+                </div>
+              </router-link>
+            </div>
+
+            <!-- Parent Item With Children -->
+          <div v-else>
+  <button @click="toggleSubMenu(item)"
+    class="flex items-center justify-between w-full px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer group"
+    :class="[
+      isChildActive(item.children)
+        ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
+        : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
+    ]">
+    <div class="flex items-center">
+      <component :is="item.icon" class="h-5 w-5 mr-3" />
+      {{ item.name }}
+    </div>
+    <ChevronDown class="h-4 w-4 transform transition-transform duration-200"
+      :class="{ 'rotate-180': showSubMenu[item.name] }" />
+  </button>
+
+  <!-- Animated Submenu -->
+  <transition enter-active-class="transition-all duration-200 ease-out"
+    leave-active-class="transition-all duration-150 ease-in" enter-from-class="opacity-0 max-h-0"
+    enter-to-class="opacity-100 max-h-96" leave-from-class="opacity-100 max-h-96"
+    leave-to-class="opacity-0 max-h-0">
+    <div v-show="showSubMenu[item.name]" class="ml-8 space-y-1 overflow-hidden">
+      <router-link v-for="child in item.children" :key="child.name" :to="child.route"
+        v-slot="{ isActive, navigate }" custom>
+        <div @click="navigate"
+          class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors duration-200" :class="[
+            isActive
+              ? 'bg-slate-700/50 text-white font-medium'
+              : 'text-slate-300 hover:bg-slate-700/30 hover:text-white',
+          ]">
+          <span class="w-2 h-2 mr-3 rounded-full bg-slate-400/50"></span>
+          {{ child.name }}
+
+        </div>
+      </router-link>
+    </div>
+  </transition>
+</div>
+
           </template>
         </nav>
       </div>
 
-      <!-- Logout Section at Bottom -->
+      <!-- Logout Section -->
       <div class="p-4 border-t border-slate-700/50">
         <button @click="handleLogout"
           class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-300 rounded-xl hover:bg-rose-500/10 hover:text-rose-500 transition-all duration-200 group">
@@ -49,9 +93,9 @@
       </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main Content Area -->
     <div class="flex-1 flex flex-col overflow-hidden">
-      <!-- Enhanced Top Navigation -->
+      <!-- Top Navigation -->
       <header class="bg-white shadow-sm border-b border-slate-200">
         <div class="flex items-center justify-between px-6 py-4">
           <div class="flex items-center space-x-4">
@@ -62,10 +106,9 @@
           </div>
 
           <div class="flex items-center space-x-6">
-            <!-- Notification Component -->
             <NotificationBell />
 
-            <!-- User Profile Section -->
+            <!-- User Profile -->
             <div class="relative flex items-center space-x-4">
               <div class="text-right hidden sm:block">
                 <p class="text-sm font-medium text-slate-700">{{ authStore.fullName }}</p>
@@ -76,10 +119,11 @@
                   class="flex items-center p-1.5 rounded-xl border-2 border-slate-200 hover:border-primary transition-colors duration-200">
                   <UserCircle class="h-8 w-8 text-slate-600" />
                 </button>
-                <!-- Enhanced Profile Dropdown -->
+
+                <!-- Profile Dropdown -->
                 <div v-if="showProfileMenu"
-                  class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg py-2 border border-slate-200"
-                  v-click-outside="() => showProfileMenu = false">
+                  class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg py-2 border border-slate-200 z-50"
+                  v-click-outside="() => (showProfileMenu = false)">
                   <div class="px-4 py-2 border-b border-slate-100">
                     <p class="text-sm font-medium text-slate-700">{{ authStore.fullName }}</p>
                     <p class="text-xs text-slate-500">{{ authStore.email }}</p>
@@ -103,12 +147,12 @@
         </div>
       </header>
 
-      <!-- Main Content Area -->
+      <!-- Main Content -->
       <main class="flex-1 overflow-auto bg-slate-50 p-6">
         <router-view />
       </main>
 
-      <!-- Enhanced Footer -->
+      <!-- Footer -->
       <footer class="bg-white border-t border-slate-200 px-6 py-4">
         <p class="text-sm text-slate-600 text-center">
           © {{ currentYear }} Bhutan Qualifications & Professional Certification Authority. All rights reserved.
@@ -119,7 +163,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onBeforeMount } from 'vue';
+import { ref, computed, onBeforeMount, reactive } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 import {
@@ -128,26 +172,29 @@ import {
   LogOut,
   UserCircle,
   Settings,
+  ChevronDown,
 } from 'lucide-vue-next';
 import { SERVICE_TYPE_CHOICES } from '@/router/constants';
 import { generateNavigationItems } from '@/constants/navMenu';
 import NotificationBell from '@/components/NotificationBell.vue';
-import { formatText } from '@/utils/formatText'; // Import the utility function
+import { formatText } from '@/utils/formatText';
 
-// State
+// State Management
 const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 const sidebarOpen = ref(true);
 const showProfileMenu = ref(false);
-const navigationItems = ref({});
+const navigationItems = ref([]); // Now an array
+const showSubMenu = reactive({});
 
+// Lifecycle Hook
 onBeforeMount(async () => {
   await router.isReady();
   navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType);
 });
 
-// Computed
+// Computed Properties
 const currentRouteName = computed(() => {
   const formattedRole = formatText(authStore.role);
   const formattedServiceType = formatText(serviceTypeLabel.value);
@@ -158,13 +205,15 @@ const serviceTypeLabel = computed(() => {
   return SERVICE_TYPE_CHOICES.find((s) => s.key === authStore.serviceType)?.label || '';
 });
 
-console.log(route)
-
 const filteredNavigationItems = computed(() => {
-  return navigationItems.value[authStore.role] || [];
+  return navigationItems.value; // Directly return the array
 });
 
 const currentYear = computed(() => new Date().getFullYear());
+
+const isChildActive = (children) => {
+  return children.some(child => route.path === child.route);
+};
 
 // Methods
 const toggleSidebar = () => {
@@ -175,17 +224,17 @@ const toggleProfileMenu = () => {
   showProfileMenu.value = !showProfileMenu.value;
 };
 
+const toggleSubMenu = (item) => {
+  showSubMenu[item.name] = !showSubMenu[item.name];
+};
+
 const handleLogout = async () => {
   await authStore.logout();
 };
 
 const handleProfile = () => {
   showProfileMenu.value = false;
-
-  const role = authStore.role;
-  const serviceType = authStore.serviceType;
-
-  const profileRoute = `/admin/${role}/${serviceType}/user_profile`;
+  const profileRoute = `/admin/${authStore.role}/${authStore.serviceType}/user_profile`;
   router.push(profileRoute);
 };
 </script>
@@ -208,4 +257,23 @@ const handleProfile = () => {
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 20px;
 }
+
+/* Smooth transitions */
+.transition-all {
+  transition-property: all;
+}
+
+
+/* menu notification */
+.notification-badge {
+  display: inline-block;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 0.2em 0.5em;
+  font-size: 0.8em;
+  margin-left: 0.5em;
+  vertical-align: top;
+}
+
 </style>

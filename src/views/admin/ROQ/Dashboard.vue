@@ -44,8 +44,7 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import StatsGrid from '@/components/dashboard/roqcomponents/StatsGrid.vue';
-import ApplicationTable from '@/components/dashboard/roqcomponents/ApplicationsTable.vue';
+import ApplicationTable from '@/components/dashboard/roqcomponents/user/ApplicationsTable.vue';
 
 // Admin Components Import
 import AdminDashboard from '@/components/dashboard/roqcomponents/admin/AdminDashboard.vue';
@@ -55,16 +54,18 @@ import AdminQualification from '@/components/dashboard/roqcomponents/admin/Admin
 import AdminTypeOfCourse from '@/components/dashboard/roqcomponents/admin/AdminTypeOfCourse.vue';
 import AdminSecondCopyReason from '@/components/dashboard/roqcomponents/admin/AdminSecondCopyReason.vue';
 import AdminProfile from '@/components/dashboard/roqcomponents/admin/AdminProfile.vue'; // Added Import
+import AdminGender from '@/components/dashboard/roqcomponents/admin/AdminGender.vue';
+import AdminCountry from '@/components/dashboard/roqcomponents/admin/AdminCountry.vue';
 
 // Dealing Officer Components Import
 import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealingOfficer/DealingOfficerDashboard.vue';
-import ApplicationList from '@/components/dashboard/roqcomponents/dealingOfficer/ApplicationList.vue';
+import ApplicationsTable from '@/components/dashboard/roqcomponents/dealingOfficer/ApplicationsTable.vue';
+import SecondCopyApplicationsTable from '@/components/dashboard/roqcomponents/dealingOfficer/SecondCopyApplicationsTable.vue';
 
 // Chief Components Import
 import ChiefDashboard from '@/components/dashboard/roqcomponents/chief/ChiefDashboard.vue';
-import ChiefApplicationList from '@/components/dashboard/roqcomponents/chief/ChiefApplicationLists.vue';
+import ChiefApplicationsTable from '@/components/dashboard/roqcomponents/chief/ChiefApplicationsTable.vue';
 import SecondCopyLists from '@/components/dashboard/roqcomponents/chief/SecondCopyLists.vue';
-import Secondcopypool from '@/components/dashboard/roqcomponents/dealingOfficer/SecondCopyPool.vue';
 
 // User Components Import
 import UserDashboard from '@/components/dashboard/roqcomponents/user/UserDashboard.vue';
@@ -94,6 +95,10 @@ const adminComponent = computed(() => {
       return AdminTypeOfCourse;
     case path.endsWith('/roq/reason_for_issue_of_second_copy'):
       return AdminSecondCopyReason;
+    case path.endsWith('/roq/genders'):
+      return AdminGender;
+    case path.endsWith('/roq/countries'):
+      return AdminCountry;
     case path.endsWith('/roq/user_profile'):
       return AdminProfile;
     default:
@@ -108,19 +113,9 @@ const dealingOfficerComponent = computed(() => {
     case path.endsWith('/roq/dashboard'):
       return DealingOfficerDashboard;
     case path.endsWith('/roq/application_lists'):
-      return ApplicationList;
-    // case path.endsWith('/roq/decisions'):
-    //   return AdminDecision;
-    // case path.endsWith('/roq/learning_types'):
-    //   return AdminLearningType;
-    // case path.endsWith('/roq/qualifications'):
-    //   return AdminQualification;
-    // case path.endsWith('/roq/type_of_courses'):
-    //   return AdminTypeOfCourse;
-    // case path.endsWith('/roq/reason_for_issue_of_second_copy'):
-    //   return AdminSecondCopyReason;
-    case path.endsWith('/roq/second_copy_pool'):
-      return Secondcopypool;
+      return ApplicationsTable;
+    case path.endsWith('/roq/second_copy_lists'):
+      return SecondCopyApplicationsTable;
 
     default:
       return null;
@@ -134,7 +129,7 @@ const chiefComponent = computed(() => {
     case path.endsWith('/roq/dashboard'):
       return ChiefDashboard;
     case path.endsWith('/roq/application_lists'):
-      return ChiefApplicationList;
+      return ChiefApplicationsTable;
     case path.endsWith('/roq/second_copy_lists'):
       return SecondCopyLists;
     default:

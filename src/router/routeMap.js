@@ -16,6 +16,8 @@ export default {
       qualifications: () => import('@/views/admin/ROQ/Dashboard.vue'),
       reason_for_issue_of_second_copy: () => import('@/views/admin/ROQ/Dashboard.vue'),
       type_of_courses: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      genders: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      countries: () => import('@/views/admin/ROQ/Dashboard.vue'),
       user_profile: () => import('@/views/admin/ROQ/Dashboard.vue'),
     },
     ecpf: {
@@ -64,8 +66,8 @@ export default {
       dashboard: () => import('@/views/admin/ROQ/Dashboard.vue'),
       my_applications: () => import('@/views/admin/ROQ/Dashboard.vue'),
       secondcopy_applications: () => import('@/views/admin/ROQ/Dashboard.vue'),
-      // new_application: () => import('@/views/admin/ROQ/NewApplication.vue'),
-      // application_status: () => import('@/views/admin/ROQ/ApplicationStatus.vue'),
+      application_lists: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      application_details: () => import('@/views/admin/ROQ/Dashboard.vue'),
       profile: () => import('@/views/admin/ROQ/Dashboard.vue'),
       // ... other ROQ routes for a regular user
     },
@@ -95,20 +97,24 @@ export default {
     },
     health_certification: {
       dashboard: () => import('@/views/admin/BMHC/Dashboard.vue'),
-      // my_applications: () => import('@/views/admin/BMHC/MyApplications.vue'),
-      // new_application: () => import('@/views/admin/BMHC/NewApplication.vue'),
-      // application_status: () => import('@/views/admin/BMHC/ApplicationStatus.vue'),
-      // profile: () => import('@/views/admin/BMHC/Profile.vue'),
-      // ... other Health Certification routes for a regular user
+      practitioner_reg_and_cert: {
+        component: () => import('@/views/admin/BMHC/Dashboard.vue'),
+        children: {
+          registration: () => import('@/views/admin/BMHC/Dashboard.vue'),
+          certificate: () => import('@/views/admin/BMHC/Dashboard.vue'),
+          renewal: () => import('@/views/admin/BMHC/Dashboard.vue'),
+        },
+      },
+      cpd: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      CoGS: () => import('@/views/admin/BMHC/Dashboard.vue'),
     },
   },
   dealing_officer: {
     roq: {
       dashboard: () => import('@/views/admin/ROQ/Dashboard.vue'),
       application_lists: () => import('@/views/admin/ROQ/Dashboard.vue'),
-      second_copy_pool: () => import('@/views/admin/ROQ/Dashboard.vue'),
-      // approved_applications: () => import('@/views/admin/ROQ/ApprovedApplications.vue'),
-      // rejected_applications: () => import('@/views/admin/ROQ/RejectedApplications.vue'),
+      second_copy_lists: () => import('@/views/admin/ROQ/Dashboard.vue'),
+      application_details: () => import('@/views/admin/ROQ/Dashboard.vue'),
       // reports: () => import('@/views/admin/ROQ/Reports.vue'),
       // ... other ROQ routes for dealing officer
     },
@@ -138,11 +144,14 @@ export default {
     },
     health_certification: {
       dashboard: () => import('@/views/admin/BMHC/Dashboard.vue'),
-      // pending_applications: () => import('@/views/admin/BMHC/PendingApplications.vue'),
-      // approved_applications: () => import('@/views/admin/BMHC/ApprovedApplications.vue'),
-      // rejected_applications: () => import('@/views/admin/BMHC/RejectedApplications.vue'),
-      // reports: () => import('@/views/admin/BMHC/Reports.vue'),
-      // ... other Health Certification routes for dealing officer
+      application_lists: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cpd_management: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      institutes: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      profiles: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cogs: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      capa: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      payments: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      reports: () => import('@/views/admin/BMHC/Dashboard.vue'),
     },
   },
   chief: {
@@ -176,9 +185,13 @@ export default {
     },
     health_certification: {
       dashboard: () => import('@/views/admin/BMHC/Dashboard.vue'),
-      // for_review_applications: () => import('@/views/admin/BMHC/ForReviewApplications.vue'),
-      // endorsed_applications: () => import('@/views/admin/BMHC/EndorsedApplications.vue'),
-      // reports: () => import('@/views/admin/BMHC/Reports.vue'),
+      application_lists: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cpd_management: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      institutes: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      profiles: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cogs: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      payments: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      reports: () => import('@/views/admin/BMHC/Dashboard.vue'),
       // ... other Health Certification routes for chief
     },
   },
@@ -190,6 +203,66 @@ export default {
       // reports: () => import('@/views/admin/ROQ/Reports.vue'),
       // ... other ROQ routes for director
     },
+    ecpf: {
+      dashboard: () => import('@/views/admin/ECPF/Dashboard.vue'),
+      // for_approval_applications: () => import('@/views/admin/ECPF/ForApprovalApplications.vue'),
+      // approved_applications: () => import('@/views/admin/ECPF/ApprovedApplications.vue'),
+      // reports: () => import('@/views/admin/ECPF/Reports.vue'),
+      // ... other ECPF routes for director
+    },
+    accreditation: {
+      dashboard: () => import('@/views/admin/ACCRED/Dashboard.vue'),
+      // for_approval_applications: () => import('@/views/admin/ACCRED/ForApprovalApplications.vue'),
+      // approved_applications: () => import('@/views/admin/ACCRED/ApprovedApplications.vue'),
+      // reports: () => import('@/views/admin/ACCRED/Reports.vue'),
+      // ... other Accreditation routes for director
+    },
+    engineering_certification: {
+      dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
+      // for_approval_applications: () => import('@/views/admin/Engineering/ForApprovalApplications.vue'),
+      // approved_applications: () => import('@/views/admin/Engineering/ApprovedApplications.vue'),
+      // reports: () => import('@/views/admin/Engineering/Reports.vue'),
+      // ... other Engineering routes for director
+    },
+    health_certification: {
+      dashboard: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      // for_approval_applications: () => import('@/views/admin/BMHC/ForApprovalApplications.vue'),
+      // approved_applications: () => import('@/views/admin/BMHC/ApprovedApplications.vue'),
+      // reports: () => import('@/views/admin/BMHC/Reports.vue'),
+      // ... other Health Certification routes for director
+    },
+  },
+  institutions: {
+    ecpf: {
+      dashboard: () => import('@/views/admin/ECPF/Dashboard.vue'),
+      // for_approval_applications: () => import('@/views/admin/ECPF/ForApprovalApplications.vue'),
+      // approved_applications: () => import('@/views/admin/ECPF/ApprovedApplications.vue'),
+      // reports: () => import('@/views/admin/ECPF/Reports.vue'),
+      // ... other ECPF routes for director
+    },
+    accreditation: {
+      dashboard: () => import('@/views/admin/ACCRED/Dashboard.vue'),
+      // for_approval_applications: () => import('@/views/admin/ACCRED/ForApprovalApplications.vue'),
+      // approved_applications: () => import('@/views/admin/ACCRED/ApprovedApplications.vue'),
+      // reports: () => import('@/views/admin/ACCRED/Reports.vue'),
+      // ... other Accreditation routes for director
+    },
+    engineering_certification: {
+      dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
+      // for_approval_applications: () => import('@/views/admin/Engineering/ForApprovalApplications.vue'),
+      // approved_applications: () => import('@/views/admin/Engineering/ApprovedApplications.vue'),
+      // reports: () => import('@/views/admin/Engineering/Reports.vue'),
+      // ... other Engineering routes for director
+    },
+    health_certification: {
+      dashboard: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      // for_approval_applications: () => import('@/views/admin/BMHC/ForApprovalApplications.vue'),
+      // approved_applications: () => import('@/views/admin/BMHC/ApprovedApplications.vue'),
+      // reports: () => import('@/views/admin/BMHC/Reports.vue'),
+      // ... other Health Certification routes for director
+    },
+  },
+  cpd_cme_provider: {
     ecpf: {
       dashboard: () => import('@/views/admin/ECPF/Dashboard.vue'),
       // for_approval_applications: () => import('@/views/admin/ECPF/ForApprovalApplications.vue'),

@@ -35,9 +35,6 @@ onMounted(async () => {
     await userProfileStore.fetchUserProfile(userId);
     isLoading.value = userProfileStore.isLoading;
     error.value = userProfileStore.error;
-
-    // Log the userProfile to verify the data
-    console.log('User Profile Data:', userProfileStore.userProfile);
   } else {
     error.value = 'User ID not found. Please log in again.';
   }
