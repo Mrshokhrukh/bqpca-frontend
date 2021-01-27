@@ -48,7 +48,7 @@
             <th class="text-left p-2">Date</th>
             <th class="text-left p-2">Status</th>
             <th class="text-left p-2">Remarks</th>
-            <th class="text-left p-2">visit</th>
+            <th class="text-left p-2" v-if="modalTitle === 'Rejected Applications'">Visit</th>
           </tr>
         </thead>
         <tbody>
@@ -62,7 +62,14 @@
             <td class="p-2">{{ app.date }}</td>
             <td class="p-2">{{ app.status }}</td>
             <td class="p-2">{{ app.remarks }}</td>
-            <td class="p-2"></td>
+            <td class="p-2" v-if="app.status === 'reject'">
+              <button
+                class="bg-blue-500 text-white px-4 py-2 rounded"
+                @click="visitApplication(app)"
+              >
+                Visit
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -72,8 +79,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { FileText, CheckCircle, XCircle } from 'lucide-vue-next'
 import dayjs from 'dayjs'
+
+const router = useRouter()
 
 const userDetail = {
   id: 3,
@@ -81,7 +91,7 @@ const userDetail = {
   application: {
     name: "Application",
     date: "2024-03-01",
-    registerDate: "2020-09-01",
+    registerDate: "2020-05-01",
     status: "approved",
     rejectRemarks: "",
   },
@@ -163,6 +173,14 @@ const checkExpiration = () => {
     } else {
       renewalMessage.value = ''
     }
+  }
+}
+
+const visitApplication = (app) => {
+  if (app.type === 'CPD' && app.status === 'reject') {
+    window.location.href = 'http://localhost:5173/admin/user/health_certification/cpd'
+  } else if (app.type === 'Application' && app.status === 'reject') {
+    window.location.href = 'http://localhost:5173/admin/user/health_certification/practitioner_reg_and_cert/registration'
   }
 }
 
