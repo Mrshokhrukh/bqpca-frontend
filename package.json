@@ -20,7 +20,7 @@
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.2.0",
     "@vueuse/core": "^12.3.0",
-    "apexcharts": "^4.3.0",
+    "apexcharts": "^4.4.0",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
     "lucide-vue-next": "^0.469.0",
