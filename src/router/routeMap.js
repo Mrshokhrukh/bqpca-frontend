@@ -31,14 +31,47 @@ export default {
       // ... all other ECPF related routes for admin
     },
     accreditation: {
-      dashboard: () => import('@/views/admin/ACCRED/Dashboard.vue'),
-      // applications: () => import('@/views/admin/ACCRED/Applications.vue'),
-      // new_application: () => import('@/views/admin/ACCRED/NewApplication.vue'),
-      // pending_applications: () => import('@/views/admin/ACCRED/PendingApplications.vue'),
-      // approved_applications: () => import('@/views/admin/ACCRED/ApprovedApplications.vue'),
-      // clients: () => import('@/views/admin/ACCRED/Clients.vue'),
-      // reports: () => import('@/views/admin/ACCRED/Reports.vue'),
-      // ... all other Accreditation related routes for admin
+      dashboard: () =>
+        import('@/components/dashboard/accredcomponent/admin/AccreditationDashboard.vue'),
+      application_lists: () =>
+        import('@/components/dashboard/accredcomponent/admin/ApplicationLists.vue'),
+      appeal_lists: () => import('@/components/dashboard/accredcomponent/admin/AppealLists.vue'),
+      reports: () => import('@/components/dashboard/accredcomponent/admin/AdminReports.vue'),
+      masters: {
+        appeal_reason: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/AppealReasonMaster.vue'),
+        application_duration: () =>
+          import(
+            '@/components/dashboard/accredcomponent/admin/masters/ApplicationDurationMaster.vue'
+          ),
+        assessor_pool: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/AssessorPoolMaster.vue'),
+        decision: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/DecisionMaster.vue'),
+        e_signature: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/ESignatureMaster.vue'),
+        employee_category: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/EmployeeCategoryMaster.vue'),
+        employee_type: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/EmployeeTypeMaster.vue'),
+        fees: () => import('@/components/dashboard/accredcomponent/admin/masters/FeesMaster.vue'),
+        indicators: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/IndicatorsMaster.vue'),
+        institute: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/InstituteMaster.vue'),
+        key_aspects: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/KeyAspectsMaster.vue'),
+        qualification: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/QualificationMaster.vue'),
+        rating_category: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/RatingCategoryMaster.vue'),
+        source_of_funding: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/SourceOfFundingMaster.vue'),
+        staff_type: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/StaffTypeMaster.vue'),
+        standard: () =>
+          import('@/components/dashboard/accredcomponent/admin/masters/StandardMaster.vue'),
+      },
     },
     engineering_certification: {
       dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
@@ -127,47 +160,12 @@ export default {
       // ... other ECPF routes for dealing officer
     },
     accreditation: {
-      dashboard: () =>
-        import('@/components/dashboard/accredcomponent/admin/AccreditationDashboard.vue'),
-      application_lists: () =>
-        import('@/components/dashboard/accredcomponent/admin/ApplicationLists.vue'),
-      appeal_lists: () => import('@/components/dashboard/accredcomponent/admin/AppealLists.vue'),
-      reports: () => import('@/components/dashboard/accredcomponent/admin/AdminReports.vue'),
-      masters: {
-        appeal_reason: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/AppealReasonMaster.vue'),
-        application_duration: () =>
-          import(
-            '@/components/dashboard/accredcomponent/admin/masters/ApplicationDurationMaster.vue'
-          ),
-        assessor_pool: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/AssessorPoolMaster.vue'),
-        decision: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/DecisionMaster.vue'),
-        e_signature: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/ESignatureMaster.vue'),
-        employee_category: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/EmployeeCategoryMaster.vue'),
-        employee_type: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/EmployeeTypeMaster.vue'),
-        fees: () => import('@/components/dashboard/accredcomponent/admin/masters/FeesMaster.vue'),
-        indicators: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/IndicatorsMaster.vue'),
-        institute: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/InstituteMaster.vue'),
-        key_aspects: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/KeyAspectsMaster.vue'),
-        qualification: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/QualificationMaster.vue'),
-        rating_category: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/RatingCategoryMaster.vue'),
-        source_of_funding: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/SourceOfFundingMaster.vue'),
-        staff_type: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/StaffTypeMaster.vue'),
-        standard: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/StandardMaster.vue'),
-      },
+      dashboard: () => import('@/views/admin/ACCRED/Dashboard.vue'),
+      // pending_applications: () => import('@/views/admin/ACCRED/PendingApplications.vue'),
+      // approved_applications: () => import('@/views/admin/ACCRED/ApprovedApplications.vue'),
+      // rejected_applications: () => import('@/views/admin/ACCRED/RejectedApplications.vue'),
+      // reports: () => import('@/views/admin/ACCRED/Reports.vue'),
+      // ... other Accreditation routes for dealing officer
     },
     engineering_certification: {
       dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
