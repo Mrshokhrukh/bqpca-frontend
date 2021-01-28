@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="p-4">
     <!-- Admin Section -->
@@ -33,9 +32,9 @@
 
     <!-- Default Section (fallback) -->
     <template v-else>
-      <StatsGrid :stats="filteredStats" />
-      <ApplicationTable :applications="paginatedApplications" :current-page="currentPage" :total-results="filteredTotal"
-        :per-page="perPage" @page-change="handlePageChange" />
+      <div>
+        Select the service and role.
+      </div>
     </template>
   </div>
 </template>
@@ -48,24 +47,43 @@ import { useAuthStore } from '@/stores/authStore';
 
 // Admin Components Import
 import AdminDashboard from '@/components/dashboard/accredcomponent/admin/AccreditationDashboard.vue';
-// import AdminDecision from '@/components/dashboard/accredcomponent/admin/AdminDecision.vue';
+import ApplicationLists from '@/components/dashboard/accredcomponent/admin/ApplicationLists.vue';
+import AppealLists from '@/components/dashboard/accredcomponent/admin/AppealLists.vue';
+import AdminReports from '@/components/dashboard/accredcomponent/admin/AdminReports.vue';
 
+// Import Admin Masters Components
+import AppealReasonMaster from '@/components/dashboard/accredcomponent/admin/masters/AppealReasonMaster.vue';
+import ApplicationDurationMaster from '@/components/dashboard/accredcomponent/admin/masters/ApplicationDurationMaster.vue';
+import AssessorPoolMaster from '@/components/dashboard/accredcomponent/admin/masters/AssessorPoolMaster.vue';
+import DecisionMaster from '@/components/dashboard/accredcomponent/admin/masters/DecisionMaster.vue';
+import ESignatureMaster from '@/components/dashboard/accredcomponent/admin/masters/ESignatureMaster.vue';
+import EmployeeCategoryMaster from '@/components/dashboard/accredcomponent/admin/masters/EmployeeCategoryMaster.vue';
+import EmployeeTypeMaster from '@/components/dashboard/accredcomponent/admin/masters/EmployeeTypeMaster.vue';
+import FeesMaster from '@/components/dashboard/accredcomponent/admin/masters/FeesMaster.vue';
+import IndicatorsMaster from '@/components/dashboard/accredcomponent/admin/masters/IndicatorsMaster.vue';
+import InstituteMaster from '@/components/dashboard/accredcomponent/admin/masters/InstituteMaster.vue';
+import KeyAspectsMaster from '@/components/dashboard/accredcomponent/admin/masters/KeyAspectsMaster.vue';
+import QualificationMaster from '@/components/dashboard/accredcomponent/admin/masters/QualificationMaster.vue';
+import RatingCategoryMaster from '@/components/dashboard/accredcomponent/admin/masters/RatingCategoryMaster.vue';
+import SourceOfFundingMaster from '@/components/dashboard/accredcomponent/admin/masters/SourceOfFundingMaster.vue';
+import StaffTypeMaster from '@/components/dashboard/accredcomponent/admin/masters/StaffTypeMaster.vue';
+import StandardMaster from '@/components/dashboard/accredcomponent/admin/masters/StandardMaster.vue';
 
-// // Dealing Officer Components Import
-// import DealingOfficerDashboard from '@/components/dashboard/accredcomponent/dealingOfficer/DealingOfficerDashboard.vue';
-// import ApplicationsTable from '@/components/dashboard/accredcomponent/dealingOfficer/ApplicationsTable.vue';
-// import SecondCopyApplicationsTable from '@/components/dashboard/accredcomponent/dealingOfficer/SecondCopyApplicationsTable.vue';
+// Dealing Officer Components Import
+// import DealingOfficerDashboard from '@/components/dashboard/roqcomponent/dealingOfficer/DealingOfficerDashboard.vue';
+// import ApplicationsTable from '@/components/dashboard/roqcomponent/dealingOfficer/ApplicationsTable.vue';
+// import SecondCopyApplicationsTable from '@/components/dashboard/roqcomponent/dealingOfficer/SecondCopyApplicationsTable.vue';
 
-// // Chief Components Import
-// import ChiefDashboard from '@/components/dashboard/accredcomponent/chief/ChiefDashboard.vue';
-// import ChiefApplicationsTable from '@/components/dashboard/accredcomponent/chief/ChiefApplicationsTable.vue';
-// import SecondCopyLists from '@/components/dashboard/accredcomponent/chief/SecondCopyLists.vue';
+// Chief Components Import
+// import ChiefDashboard from '@/components/dashboard/roqcomponent/chief/ChiefDashboard.vue';
+// import ChiefApplicationsTable from '@/components/dashboard/roqcomponent/chief/ChiefApplicationsTable.vue';
+// import SecondCopyLists from '@/components/dashboard/roqcomponent/chief/SecondCopyLists.vue';
 
-// // User Components Import
-// import UserDashboard from '@/components/dashboard/accredcomponent/user/UserDashboard.vue';
-// import UserApplications from '@/components/dashboard/accredcomponent/user/UserRoqApplicationList.vue';
-// import SecondCopyApplication from '@/components/dashboard/accredcomponent/user/SecondCopyApplication.vue'; // Added Import
-// import ProfileView from '@/components/dashboard/accredcomponent/user/ProfileView.vue'; // Added Import
+// User Components Import
+// import UserDashboard from '@/components/dashboard/roqcomponent/user/UserDashboard.vue';
+// import UserApplications from '@/components/dashboard/roqcomponent/user/UserRoqApplicationList.vue';
+// import SecondCopyApplication from '@/components/dashboard/roqcomponent/user/SecondCopyApplication.vue'; // Added Import
+// import ProfileView from '@/components/dashboard/roqcomponent/user/ProfileView.vue'; // Added Import
 
 const { role, user } = useAuthStore();
 const route = useRoute();
@@ -73,13 +91,69 @@ const applications = ref([]);
 const currentPage = ref(1);
 const perPage = ref(10);
 
-
 // Admin Route-Based Components
 const adminComponent = computed(() => {
   const path = route.path;
+  const serviceType = route.params.serviceType;
+
+  if (serviceType === 'accreditation') {
+    switch (true) {
+      case path.endsWith('accreditation/dashboard'):
+        return AdminDashboard;
+      case path.endsWith('/application_lists'):
+        return ApplicationLists;
+      case path.endsWith('/appeal_lists'):
+        return AppealLists;
+      case path.endsWith('accreditation/reports'):
+        return AdminReports;
+      // Masters
+      case path.endsWith('/masters/appeal_reason'):
+        return AppealReasonMaster;
+      case path.endsWith('/masters/application_duration'):
+        return ApplicationDurationMaster;
+      case path.endsWith('/masters/assessor_pool'):
+        return AssessorPoolMaster;
+      case path.endsWith('/masters/decision'):
+        return DecisionMaster;
+      case path.endsWith('/masters/e_signature'):
+        return ESignatureMaster;
+      case path.endsWith('/masters/employee_category'):
+        return EmployeeCategoryMaster;
+      case path.endsWith('/masters/employee_type'):
+        return EmployeeTypeMaster;
+      case path.endsWith('/masters/fees'):
+        return FeesMaster;
+      case path.endsWith('/masters/indicators'):
+        return IndicatorsMaster;
+      case path.endsWith('/masters/institute'):
+        return InstituteMaster;
+      case path.endsWith('/masters/key_aspects'):
+        return KeyAspectsMaster;
+      case path.endsWith('/masters/qualification'):
+        return QualificationMaster;
+      case path.endsWith('/masters/rating_category'):
+        return RatingCategoryMaster;
+      case path.endsWith('/masters/source_of_funding'):
+        return SourceOfFundingMaster;
+      case path.endsWith('/masters/staff_type'):
+        return StaffTypeMaster;
+      case path.endsWith('/masters/standard'):
+        return StandardMaster;
+      default:
+        return null;
+    }
+  } else {
+    // Handle other services or return a default component
+    return null; // Or a default dashboard component for non-accreditation services
+  }
+});
+
+// Dealing Officer Route-Based Components
+const dealingOfficerComponent = computed(() => {
+  const path = route.path;
   switch (true) {
-    case path.endsWith('/accredcomponent/dashboard'):
-      return AdminDashboard;
+    case path.endsWith('/roq/dashboard'):
+      return null;
 
 
     default:
@@ -87,36 +161,16 @@ const adminComponent = computed(() => {
   }
 });
 
-// Dealing Officer Route-Based Components
-// const dealingOfficerComponent = computed(() => {
-//   const path = route.path;
-//   switch (true) {
-//     case path.endsWith('/roq/dashboard'):
-//       return DealingOfficerDashboard;
-//     case path.endsWith('/roq/application_lists'):
-//       return ApplicationsTable;
-//     case path.endsWith('/roq/second_copy_lists'):
-//       return SecondCopyApplicationsTable;
-
-//     default:
-//       return null;
-//   }
-// });
-
 // Chief Route-Based Components
-// const chiefComponent = computed(() => {
-//   const path = route.path;
-//   switch (true) {
-//     case path.endsWith('/roq/dashboard'):
-//       return ChiefDashboard;
-//     case path.endsWith('/roq/application_lists'):
-//       return ChiefApplicationsTable;
-//     case path.endsWith('/roq/second_copy_lists'):
-//       return SecondCopyLists;
-//     default:
-//       return null;
-//   }
-// });
+const chiefComponent = computed(() => {
+  const path = route.path;
+  switch (true) {
+    case path.endsWith('/roq/dashboard'):
+      return null
+    default:
+      return null;
+  }
+});
 
 // Director Route-Based Components
 const directorComponent = computed(() => {
@@ -141,21 +195,21 @@ const superAdminComponent = computed(() => {
 });
 
 // User Route-Based Components
-// const userComponent = computed(() => {
-//   const path = route.path;
-//   switch (true) {
-//     case path.endsWith('accreditation/dashboard'):
-//       return UserDashboard;
-//     case path.endsWith('/roq/my_applications'):
-//       return UserApplications;
-//     case path.endsWith('/roq/secondcopy_applications'):
-//       return SecondCopyApplication;
-//     case path.endsWith('/roq/profile'):
-//       return ProfileView; // Corrected case statement, using the correct variable name
-//     default:
-//       return null;
-//   }
-// });
+const userComponent = computed(() => {
+  const path = route.path;
+  switch (true) {
+    case path.endsWith('/roq/dashboard'):
+      return UserDashboard;
+    case path.endsWith('/roq/my_applications'):
+      return UserApplications;
+    case path.endsWith('/roq/secondcopy_applications'):
+      return SecondCopyApplication;
+    case path.endsWith('/roq/profile'):
+      return ProfileView; // Corrected case statement, using the correct variable name
+    default:
+      return null;
+  }
+});
 
 // Filter applications based on role
 const filteredApplications = computed(() => {
@@ -202,31 +256,31 @@ const filteredStats = computed(() => {
 });
 
 // Compute total for pagination
-// const filteredTotal = computed(() => filteredApplications.value.length);
+const filteredTotal = computed(() => filteredApplications.value.length);
 
 // Get paginated data
-// const paginatedApplications = computed(() => {
-//   const start = (currentPage.value - 1) * perPage.value;
-//   const end = start + perPage.value;
+const paginatedApplications = computed(() => {
+  const start = (currentPage.value - 1) * perPage.value;
+  const end = start + perPage.value;
 
-//   // Transform the data to match the table structure
-//   return filteredApplications.value.slice(start, end).map(app => ({
-//     id: app.id,
-//     date: app.date_of_birth,
-//     type: app.type_of_course,
-//     status: getApplicationStatus(app),
-//   }));
-// });
+  // Transform the data to match the table structure
+  return filteredApplications.value.slice(start, end).map(app => ({
+    id: app.id,
+    date: app.date_of_birth,
+    type: app.type_of_course,
+    status: getApplicationStatus(app),
+  }));
+});
 
 // Helper function to determine application status
-// const getApplicationStatus = (application) => {
-//   if (application.chief_approved) return 'Approved';
-//   if (application.chief_regret) return 'Regretted';
-//   if (application.dealing_officer_regret) return 'Regretted';
-//   return 'Pending';
-// };
+const getApplicationStatus = (application) => {
+  if (application.chief_approved) return 'Approved';
+  if (application.chief_regret) return 'Regretted';
+  if (application.dealing_officer_regret) return 'Regretted';
+  return 'Pending';
+};
 
-// const handlePageChange = (newPage) => {
-//   currentPage.value = newPage;
-// };
+const handlePageChange = (newPage) => {
+  currentPage.value = newPage;
+};
 </script>
