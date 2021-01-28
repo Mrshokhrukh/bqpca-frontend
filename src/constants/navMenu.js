@@ -1,5 +1,8 @@
 // src/constants/navMenu.js
 import {
+  DollarSign,
+  Edit,
+  Globe,
   LayoutDashboard,
   FileText,
   Settings,
@@ -19,11 +22,13 @@ import {
   Heart,
   Wrench,
   Award,
-
-} from 'lucide-vue-next';
+} from 'lucide-vue-next'
 
 // Icon mapping for dynamic icon selection
 const iconMap = {
+  DollarSign,
+  Edit,
+  Globe,
   LayoutDashboard,
   FileText,
   Settings,
@@ -43,13 +48,12 @@ const iconMap = {
   Heart,
   Wrench,
   Award,
-};
-
+}
 
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
-  return iconMap[iconName] || File;
-};
+  return iconMap[iconName] || File
+}
 
 // Define the dealing_officer menu items (shared across all services)
 const dealingOfficerMenuItems = [
@@ -73,7 +77,7 @@ const dealingOfficerMenuItems = [
     icon: getIconComponent('ClipboardCheck'),
     route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
   },
-];
+]
 
 // Service-specific menu items structured as service > role > routes
 const serviceSpecificMenuItems = {
@@ -214,8 +218,7 @@ const serviceSpecificMenuItems = {
           {
             name: 'Renewal',
             // notification count
-            route: (serviceType) =>
-              `/admin/user/${serviceType}/practitioner_reg_and_cert/renewal`,
+            route: (serviceType) => `/admin/user/${serviceType}/practitioner_reg_and_cert/renewal`,
           },
         ],
       },
@@ -314,55 +317,146 @@ const serviceSpecificMenuItems = {
     ],
     admin: [
       {
-        name: 'Fees',
-        icon: getIconComponent('Award'),
-        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
       },
       {
-        name: 'Indicators',
-        icon: getIconComponent('Award'),
-        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+        name: 'Application Management',
+        icon: getIconComponent('FileText'),
+        children: [
+          {
+            name: 'Application Lists',
+            icon: getIconComponent('FileText'),
+            route: (serviceType) => `/admin/admin/${serviceType}/application_lists`,
+          },
+          {
+            name: 'Application Duration',
+            icon: getIconComponent('Clock'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/application_duration`,
+          },
+        ],
       },
       {
-        name: 'Institute',
-        icon: getIconComponent('Award'),
-        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+        name: 'Appeal Management',
+        icon: getIconComponent('XCircle'),
+        children: [
+          {
+            name: 'Appeal Lists',
+            icon: getIconComponent('XCircle'),
+            route: (serviceType) => `/admin/admin/${serviceType}/appeal_lists`,
+          },
+          {
+            name: 'Appeal Reasons',
+            icon: getIconComponent('FileText'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/appeal_reason`,
+          },
+        ],
       },
       {
-        name: 'Key Aspects',
-        icon: getIconComponent('Award'),
-        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+        name: 'Assessment',
+        icon: getIconComponent('FileSearch'),
+        children: [
+          {
+            name: 'Assessor Pool',
+            icon: getIconComponent('Users'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/assessor_pool`,
+          },
+          {
+            name: 'Indicators',
+            icon: getIconComponent('FileSearch'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/indicators`,
+          },
+          {
+            name: 'Key Aspects',
+            icon: getIconComponent('BookOpen'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/key_aspects`,
+          },
+          {
+            name: 'Standard',
+            icon: getIconComponent('File'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/standard`,
+          },
+        ],
+      },
+      {
+        name: 'Institute Management',
+        icon: getIconComponent('Building2'),
+        children: [
+          {
+            name: 'Institutes',
+            icon: getIconComponent('Building2'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/institute`,
+          },
+          {
+            name: 'Source of Funding',
+            icon: getIconComponent('DollarSign'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/source_of_funding`,
+          },
+        ],
+      },
+      {
+        name: 'Configuration',
+        icon: getIconComponent('Settings'),
+        children: [
+          {
+            name: 'e-Signature',
+            icon: getIconComponent('Edit'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/e_signature`,
+          },
+          {
+            name: 'Fees',
+            icon: getIconComponent('CreditCard'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/fees`,
+          },
+          {
+            name: 'Rating Category',
+            icon: getIconComponent('Award'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/rating_category`,
+          },
+        ],
+      },
+      {
+        name: 'HR',
+        icon: getIconComponent('Users'),
+        children: [
+          {
+            name: 'Employee Category',
+            icon: getIconComponent('Briefcase'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/employee_category`,
+          },
+          {
+            name: 'Employee Type',
+            icon: getIconComponent('UserCircle'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/employee_type`,
+          },
+          {
+            name: 'Staff Type',
+            icon: getIconComponent('Users'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/staff_type`,
+          },
+        ],
+      },
+      {
+        name: 'Decision',
+        icon: getIconComponent('CheckCircle'),
+        route: (serviceType) => `/admin/admin/${serviceType}/masters/decision`,
       },
       {
         name: 'Qualification',
-        icon: getIconComponent('FIles'),
-        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
-      },
-      {
-        name: 'Rating Category',
         icon: getIconComponent('Award'),
-        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+        route: (serviceType) => `/admin/admin/${serviceType}/masters/qualification`,
       },
       {
-        name: 'Source of Funding',
-        icon: getIconComponent('Dollar'),
-        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
-      },
-      {
-        name: 'Staff Type',
-        icon: getIconComponent('staff'),
-        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
-      },
-      {
-        name: 'Standard',
-        icon: getIconComponent('Award'),
-        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+        name: 'Reports',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/admin/${serviceType}/reports`,
       },
     ],
     // Add dealing_officer to accreditation
     dealing_officer: dealingOfficerMenuItems,
   },
-};
+}
 
 /**
  * Generates navigation items based on the service type and role.
@@ -371,24 +465,22 @@ const serviceSpecificMenuItems = {
  * @returns {Array} - An array of navigation items for the given role and service type.
  */
 export const generateNavigationItems = (role, serviceType) => {
-  if (!role || !serviceType) return [];
+  if (!role || !serviceType) return []
 
-  const serviceMenu = serviceSpecificMenuItems[serviceType];
-  if (!serviceMenu || !serviceMenu[role]) return [];
+  const serviceMenu = serviceSpecificMenuItems[serviceType]
+  if (!serviceMenu || !serviceMenu[role]) return []
 
   // Process the menu items to resolve dynamic routes
   const processMenuItem = (item) => {
     const newItem = {
       ...item,
       route: typeof item.route === 'function' ? item.route(serviceType) : item.route,
-    };
-    if (newItem.children) {
-      newItem.children = newItem.children.map((child) => processMenuItem(child));
     }
-    return newItem;
-  };
+    if (newItem.children) {
+      newItem.children = newItem.children.map((child) => processMenuItem(child))
+    }
+    return newItem
+  }
 
-  return serviceMenu[role].map(processMenuItem);
-};
-
-
+  return serviceMenu[role].map(processMenuItem)
+}
