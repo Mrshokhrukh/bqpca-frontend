@@ -44,34 +44,28 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import ApplicationTable from '@/components/dashboard/roqcomponents/user/ApplicationsTable.vue';
+// import ApplicationTable from '@/components/dashboard/roqcomponents/user/ApplicationsTable.vue';
 
 // Admin Components Import
-import AdminDashboard from '@/components/dashboard/roqcomponents/admin/AdminDashboard.vue';
-import AdminDecision from '@/components/dashboard/roqcomponents/admin/AdminDecision.vue';
-import AdminLearningType from '@/components/dashboard/roqcomponents/admin/AdminLearningType.vue';
-import AdminQualification from '@/components/dashboard/roqcomponents/admin/AdminQualification.vue';
-import AdminTypeOfCourse from '@/components/dashboard/roqcomponents/admin/AdminTypeOfCourse.vue';
-import AdminSecondCopyReason from '@/components/dashboard/roqcomponents/admin/AdminSecondCopyReason.vue';
-import AdminProfile from '@/components/dashboard/roqcomponents/admin/AdminProfile.vue'; // Added Import
-import AdminGender from '@/components/dashboard/roqcomponents/admin/AdminGender.vue';
-import AdminCountry from '@/components/dashboard/roqcomponents/admin/AdminCountry.vue';
+import AdminDashboard from '@/components/dashboard/accredcomponent/admin/AccreditationDashboard.vue';
+// import AdminDecision from '@/components/dashboard/accredcomponent/admin/AdminDecision.vue';
 
-// Dealing Officer Components Import
-import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealingOfficer/DealingOfficerDashboard.vue';
-import ApplicationsTable from '@/components/dashboard/roqcomponents/dealingOfficer/ApplicationsTable.vue';
-import SecondCopyApplicationsTable from '@/components/dashboard/roqcomponents/dealingOfficer/SecondCopyApplicationsTable.vue';
 
-// Chief Components Import
-import ChiefDashboard from '@/components/dashboard/roqcomponents/chief/ChiefDashboard.vue';
-import ChiefApplicationsTable from '@/components/dashboard/roqcomponents/chief/ChiefApplicationsTable.vue';
-import SecondCopyLists from '@/components/dashboard/roqcomponents/chief/SecondCopyLists.vue';
+// // Dealing Officer Components Import
+// import DealingOfficerDashboard from '@/components/dashboard/accredcomponent/dealingOfficer/DealingOfficerDashboard.vue';
+// import ApplicationsTable from '@/components/dashboard/accredcomponent/dealingOfficer/ApplicationsTable.vue';
+// import SecondCopyApplicationsTable from '@/components/dashboard/accredcomponent/dealingOfficer/SecondCopyApplicationsTable.vue';
 
-// User Components Import
-import UserDashboard from '@/components/dashboard/roqcomponents/user/UserDashboard.vue';
-import UserApplications from '@/components/dashboard/roqcomponents/user/UserRoqApplicationList.vue';
-import SecondCopyApplication from '@/components/dashboard/roqcomponents/user/SecondCopyApplication.vue'; // Added Import
-import ProfileView from '@/components/dashboard/roqcomponents/user/ProfileView.vue'; // Added Import
+// // Chief Components Import
+// import ChiefDashboard from '@/components/dashboard/accredcomponent/chief/ChiefDashboard.vue';
+// import ChiefApplicationsTable from '@/components/dashboard/accredcomponent/chief/ChiefApplicationsTable.vue';
+// import SecondCopyLists from '@/components/dashboard/accredcomponent/chief/SecondCopyLists.vue';
+
+// // User Components Import
+// import UserDashboard from '@/components/dashboard/accredcomponent/user/UserDashboard.vue';
+// import UserApplications from '@/components/dashboard/accredcomponent/user/UserRoqApplicationList.vue';
+// import SecondCopyApplication from '@/components/dashboard/accredcomponent/user/SecondCopyApplication.vue'; // Added Import
+// import ProfileView from '@/components/dashboard/accredcomponent/user/ProfileView.vue'; // Added Import
 
 const { role, user } = useAuthStore();
 const route = useRoute();
@@ -79,63 +73,50 @@ const applications = ref([]);
 const currentPage = ref(1);
 const perPage = ref(10);
 
+
 // Admin Route-Based Components
 const adminComponent = computed(() => {
   const path = route.path;
   switch (true) {
-    case path.endsWith('/roq/dashboard'):
+    case path.endsWith('/accredcomponent/dashboard'):
       return AdminDashboard;
-    case path.endsWith('/roq/decisions'):
-      return AdminDecision;
-    case path.endsWith('/roq/learning_types'):
-      return AdminLearningType;
-    case path.endsWith('/roq/qualifications'):
-      return AdminQualification;
-    case path.endsWith('/roq/type_of_courses'):
-      return AdminTypeOfCourse;
-    case path.endsWith('/roq/reason_for_issue_of_second_copy'):
-      return AdminSecondCopyReason;
-    case path.endsWith('/roq/genders'):
-      return AdminGender;
-    case path.endsWith('/roq/countries'):
-      return AdminCountry;
-    case path.endsWith('/roq/user_profile'):
-      return AdminProfile;
+
+
     default:
       return null;
   }
 });
 
 // Dealing Officer Route-Based Components
-const dealingOfficerComponent = computed(() => {
-  const path = route.path;
-  switch (true) {
-    case path.endsWith('/roq/dashboard'):
-      return DealingOfficerDashboard;
-    case path.endsWith('/roq/application_lists'):
-      return ApplicationsTable;
-    case path.endsWith('/roq/second_copy_lists'):
-      return SecondCopyApplicationsTable;
+// const dealingOfficerComponent = computed(() => {
+//   const path = route.path;
+//   switch (true) {
+//     case path.endsWith('/roq/dashboard'):
+//       return DealingOfficerDashboard;
+//     case path.endsWith('/roq/application_lists'):
+//       return ApplicationsTable;
+//     case path.endsWith('/roq/second_copy_lists'):
+//       return SecondCopyApplicationsTable;
 
-    default:
-      return null;
-  }
-});
+//     default:
+//       return null;
+//   }
+// });
 
 // Chief Route-Based Components
-const chiefComponent = computed(() => {
-  const path = route.path;
-  switch (true) {
-    case path.endsWith('/roq/dashboard'):
-      return ChiefDashboard;
-    case path.endsWith('/roq/application_lists'):
-      return ChiefApplicationsTable;
-    case path.endsWith('/roq/second_copy_lists'):
-      return SecondCopyLists;
-    default:
-      return null;
-  }
-});
+// const chiefComponent = computed(() => {
+//   const path = route.path;
+//   switch (true) {
+//     case path.endsWith('/roq/dashboard'):
+//       return ChiefDashboard;
+//     case path.endsWith('/roq/application_lists'):
+//       return ChiefApplicationsTable;
+//     case path.endsWith('/roq/second_copy_lists'):
+//       return SecondCopyLists;
+//     default:
+//       return null;
+//   }
+// });
 
 // Director Route-Based Components
 const directorComponent = computed(() => {
@@ -160,21 +141,21 @@ const superAdminComponent = computed(() => {
 });
 
 // User Route-Based Components
-const userComponent = computed(() => {
-  const path = route.path;
-  switch (true) {
-    case path.endsWith('accreditation/dashboard'):
-      return UserDashboard;
-    case path.endsWith('/roq/my_applications'):
-      return UserApplications;
-    case path.endsWith('/roq/secondcopy_applications'):
-      return SecondCopyApplication;
-    case path.endsWith('/roq/profile'):
-      return ProfileView; // Corrected case statement, using the correct variable name
-    default:
-      return null;
-  }
-});
+// const userComponent = computed(() => {
+//   const path = route.path;
+//   switch (true) {
+//     case path.endsWith('accreditation/dashboard'):
+//       return UserDashboard;
+//     case path.endsWith('/roq/my_applications'):
+//       return UserApplications;
+//     case path.endsWith('/roq/secondcopy_applications'):
+//       return SecondCopyApplication;
+//     case path.endsWith('/roq/profile'):
+//       return ProfileView; // Corrected case statement, using the correct variable name
+//     default:
+//       return null;
+//   }
+// });
 
 // Filter applications based on role
 const filteredApplications = computed(() => {
@@ -221,31 +202,31 @@ const filteredStats = computed(() => {
 });
 
 // Compute total for pagination
-const filteredTotal = computed(() => filteredApplications.value.length);
+// const filteredTotal = computed(() => filteredApplications.value.length);
 
 // Get paginated data
-const paginatedApplications = computed(() => {
-  const start = (currentPage.value - 1) * perPage.value;
-  const end = start + perPage.value;
+// const paginatedApplications = computed(() => {
+//   const start = (currentPage.value - 1) * perPage.value;
+//   const end = start + perPage.value;
 
-  // Transform the data to match the table structure
-  return filteredApplications.value.slice(start, end).map(app => ({
-    id: app.id,
-    date: app.date_of_birth,
-    type: app.type_of_course,
-    status: getApplicationStatus(app),
-  }));
-});
+//   // Transform the data to match the table structure
+//   return filteredApplications.value.slice(start, end).map(app => ({
+//     id: app.id,
+//     date: app.date_of_birth,
+//     type: app.type_of_course,
+//     status: getApplicationStatus(app),
+//   }));
+// });
 
 // Helper function to determine application status
-const getApplicationStatus = (application) => {
-  if (application.chief_approved) return 'Approved';
-  if (application.chief_regret) return 'Regretted';
-  if (application.dealing_officer_regret) return 'Regretted';
-  return 'Pending';
-};
+// const getApplicationStatus = (application) => {
+//   if (application.chief_approved) return 'Approved';
+//   if (application.chief_regret) return 'Regretted';
+//   if (application.dealing_officer_regret) return 'Regretted';
+//   return 'Pending';
+// };
 
-const handlePageChange = (newPage) => {
-  currentPage.value = newPage;
-};
+// const handlePageChange = (newPage) => {
+//   currentPage.value = newPage;
+// };
 </script>

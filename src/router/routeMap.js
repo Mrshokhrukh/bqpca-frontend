@@ -210,6 +210,7 @@ export default {
       // reports: () => import('@/views/admin/ECPF/Reports.vue'),
       // ... other ECPF routes for director
     },
+    
     accreditation: {
       dashboard: () => import('@/views/admin/ACCRED/Dashboard.vue'),
       // for_approval_applications: () => import('@/views/admin/ACCRED/ForApprovalApplications.vue'),

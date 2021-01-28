@@ -19,6 +19,7 @@ import {
   Heart,
   Wrench,
   Award,
+
 } from 'lucide-vue-next';
 
 // Icon mapping for dynamic icon selection
@@ -313,7 +314,47 @@ const serviceSpecificMenuItems = {
     ],
     admin: [
       {
-        name: 'Accreditation Types',
+        name: 'Fees',
+        icon: getIconComponent('Award'),
+        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+      },
+      {
+        name: 'Indicators',
+        icon: getIconComponent('Award'),
+        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+      },
+      {
+        name: 'Institute',
+        icon: getIconComponent('Award'),
+        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+      },
+      {
+        name: 'Key Aspects',
+        icon: getIconComponent('Award'),
+        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+      },
+      {
+        name: 'Qualification',
+        icon: getIconComponent('FIles'),
+        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+      },
+      {
+        name: 'Rating Category',
+        icon: getIconComponent('Award'),
+        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+      },
+      {
+        name: 'Source of Funding',
+        icon: getIconComponent('Dollar'),
+        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+      },
+      {
+        name: 'Staff Type',
+        icon: getIconComponent('staff'),
+        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+      },
+      {
+        name: 'Standard',
         icon: getIconComponent('Award'),
         route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
       },
