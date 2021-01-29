@@ -438,14 +438,30 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Decision',
+        name: 'Decision Management',
         icon: getIconComponent('CheckCircle'),
-        route: (serviceType) => `/admin/admin/${serviceType}/masters/decision`,
+        children: [
+          {
+            name: 'Decisions',
+            icon: getIconComponent('CheckCircle'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/decision`,
+          },
+          {
+            name: 'Decision Classes',
+            icon: getIconComponent('Layers'),
+            route: (serviceType) => `/admin/admin/${serviceType}/masters/decision_classes`,
+          },
+        ],
       },
       {
         name: 'Qualification',
         icon: getIconComponent('Award'),
         route: (serviceType) => `/admin/admin/${serviceType}/masters/qualification`,
+      },
+      {
+        name: 'Document',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/admin/${serviceType}/masters/document`,
       },
       {
         name: 'Reports',

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="p-4">
     <!-- Admin Section -->
@@ -58,6 +59,7 @@ import AppealReasonMaster from '@/components/dashboard/accredcomponent/admin/mas
 import ApplicationDurationMaster from '@/components/dashboard/accredcomponent/admin/masters/ApplicationDurationMaster.vue';
 import AssessorPoolMaster from '@/components/dashboard/accredcomponent/admin/masters/AssessorPoolMaster.vue';
 import DecisionMaster from '@/components/dashboard/accredcomponent/admin/masters/DecisionMaster.vue';
+import DecisionClass from '@/components/dashboard/accredcomponent/admin/masters/DecisionClass.vue';
 import ESignatureMaster from '@/components/dashboard/accredcomponent/admin/masters/ESignatureMaster.vue';
 import EmployeeCategoryMaster from '@/components/dashboard/accredcomponent/admin/masters/EmployeeCategoryMaster.vue';
 import EmployeeTypeMaster from '@/components/dashboard/accredcomponent/admin/masters/EmployeeTypeMaster.vue';
@@ -70,6 +72,7 @@ import RatingCategoryMaster from '@/components/dashboard/accredcomponent/admin/m
 import SourceOfFundingMaster from '@/components/dashboard/accredcomponent/admin/masters/SourceOfFundingMaster.vue';
 import StaffTypeMaster from '@/components/dashboard/accredcomponent/admin/masters/StaffTypeMaster.vue';
 import StandardMaster from '@/components/dashboard/accredcomponent/admin/masters/StandardMaster.vue';
+import DocumentType from '@/components/dashboard/accredcomponent/admin/DocumentType.vue';
 
 const { role, user } = useAuthStore();
 const route = useRoute();
@@ -110,6 +113,7 @@ const adminComponent = computed(() => {
         'application_duration': ApplicationDurationMaster,
         'assessor_pool': AssessorPoolMaster,
         'decision': DecisionMaster,
+        'decision_classes': DecisionClass,
         'e_signature': ESignatureMaster,
         'employee_category': EmployeeCategoryMaster,
         'employee_type': EmployeeTypeMaster,
@@ -118,6 +122,7 @@ const adminComponent = computed(() => {
         'institute': InstituteMaster,
         'key_aspects': KeyAspectsMaster,
         'qualification': QualificationMaster,
+        'document': DocumentType,
         'rating_category': RatingCategoryMaster,
         'source_of_funding': SourceOfFundingMaster,
         'staff_type': StaffTypeMaster,

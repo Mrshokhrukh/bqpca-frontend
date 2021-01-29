@@ -52,6 +52,8 @@ export default {
             import('@/components/dashboard/accredcomponent/admin/masters/AssessorPoolMaster.vue'),
           decision: () =>
             import('@/components/dashboard/accredcomponent/admin/masters/DecisionMaster.vue'),
+          decision_classes: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/DecisionClass.vue'),
           e_signature: () =>
             import('@/components/dashboard/accredcomponent/admin/masters/ESignatureMaster.vue'),
           employee_category: () =>
@@ -67,6 +69,8 @@ export default {
             import('@/components/dashboard/accredcomponent/admin/masters/InstituteMaster.vue'),
           key_aspects: () =>
             import('@/components/dashboard/accredcomponent/admin/masters/KeyAspectsMaster.vue'),
+          document: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/DecisionClass.vue'),
           qualification: () =>
             import('@/components/dashboard/accredcomponent/admin/masters/QualificationMaster.vue'),
           rating_category: () =>
