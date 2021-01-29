@@ -58,6 +58,7 @@ import AppealReasonMaster from '@/components/dashboard/accredcomponent/admin/mas
 import ApplicationDurationMaster from '@/components/dashboard/accredcomponent/admin/masters/ApplicationDurationMaster.vue';
 import AssessorPoolMaster from '@/components/dashboard/accredcomponent/admin/masters/AssessorPoolMaster.vue';
 import DecisionMaster from '@/components/dashboard/accredcomponent/admin/masters/DecisionMaster.vue';
+import DecisionClass from '@/components/dashboard/accredcomponent/admin/masters/DecisionClass.vue';
 import ESignatureMaster from '@/components/dashboard/accredcomponent/admin/masters/ESignatureMaster.vue';
 import EmployeeCategoryMaster from '@/components/dashboard/accredcomponent/admin/masters/EmployeeCategoryMaster.vue';
 import EmployeeTypeMaster from '@/components/dashboard/accredcomponent/admin/masters/EmployeeTypeMaster.vue';
@@ -110,6 +111,7 @@ const adminComponent = computed(() => {
         'application_duration': ApplicationDurationMaster,
         'assessor_pool': AssessorPoolMaster,
         'decision': DecisionMaster,
+        'decision_classes': DecisionClass,
         'e_signature': ESignatureMaster,
         'employee_category': EmployeeCategoryMaster,
         'employee_type': EmployeeTypeMaster,
