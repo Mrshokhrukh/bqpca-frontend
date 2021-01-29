@@ -37,40 +37,49 @@ export default {
         import('@/components/dashboard/accredcomponent/admin/ApplicationLists.vue'),
       appeal_lists: () => import('@/components/dashboard/accredcomponent/admin/AppealLists.vue'),
       reports: () => import('@/components/dashboard/accredcomponent/admin/AdminReports.vue'),
+
+      // Masters routes
       masters: {
-        appeal_reason: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/AppealReasonMaster.vue'),
-        application_duration: () =>
-          import(
-            '@/components/dashboard/accredcomponent/admin/masters/ApplicationDurationMaster.vue'
-          ),
-        assessor_pool: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/AssessorPoolMaster.vue'),
-        decision: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/DecisionMaster.vue'),
-        e_signature: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/ESignatureMaster.vue'),
-        employee_category: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/EmployeeCategoryMaster.vue'),
-        employee_type: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/EmployeeTypeMaster.vue'),
-        fees: () => import('@/components/dashboard/accredcomponent/admin/masters/FeesMaster.vue'),
-        indicators: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/IndicatorsMaster.vue'),
-        institute: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/InstituteMaster.vue'),
-        key_aspects: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/KeyAspectsMaster.vue'),
-        qualification: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/QualificationMaster.vue'),
-        rating_category: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/RatingCategoryMaster.vue'),
-        source_of_funding: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/SourceOfFundingMaster.vue'),
-        staff_type: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/StaffTypeMaster.vue'),
-        standard: () =>
-          import('@/components/dashboard/accredcomponent/admin/masters/StandardMaster.vue'),
+        component: () => import('@/views/admin/ACCRED/Dashboard.vue'),
+        children: {
+          appeal_reason: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/AppealReasonMaster.vue'),
+          application_duration: () =>
+            import(
+              '@/components/dashboard/accredcomponent/admin/masters/ApplicationDurationMaster.vue'
+            ),
+          assessor_pool: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/AssessorPoolMaster.vue'),
+          decision: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/DecisionMaster.vue'),
+          e_signature: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/ESignatureMaster.vue'),
+          employee_category: () =>
+            import(
+              '@/components/dashboard/accredcomponent/admin/masters/EmployeeCategoryMaster.vue'
+            ),
+          employee_type: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/EmployeeTypeMaster.vue'),
+          fees: () => import('@/components/dashboard/accredcomponent/admin/masters/FeesMaster.vue'),
+          indicators: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/IndicatorsMaster.vue'),
+          institute: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/InstituteMaster.vue'),
+          key_aspects: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/KeyAspectsMaster.vue'),
+          qualification: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/QualificationMaster.vue'),
+          rating_category: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/RatingCategoryMaster.vue'),
+          source_of_funding: () =>
+            import(
+              '@/components/dashboard/accredcomponent/admin/masters/SourceOfFundingMaster.vue'
+            ),
+          staff_type: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/StaffTypeMaster.vue'),
+          standard: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/StandardMaster.vue'),
+        },
       },
     },
     engineering_certification: {
