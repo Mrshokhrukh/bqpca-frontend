@@ -69,6 +69,8 @@ export default {
             import('@/components/dashboard/accredcomponent/admin/masters/InstituteMaster.vue'),
           key_aspects: () =>
             import('@/components/dashboard/accredcomponent/admin/masters/KeyAspectsMaster.vue'),
+          document: () =>
+            import('@/components/dashboard/accredcomponent/admin/masters/DecisionClass.vue'),
           qualification: () =>
             import('@/components/dashboard/accredcomponent/admin/masters/QualificationMaster.vue'),
           rating_category: () =>

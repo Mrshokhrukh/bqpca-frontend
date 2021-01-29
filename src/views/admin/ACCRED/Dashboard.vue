@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="p-4">
     <!-- Admin Section -->
@@ -71,6 +72,7 @@ import RatingCategoryMaster from '@/components/dashboard/accredcomponent/admin/m
 import SourceOfFundingMaster from '@/components/dashboard/accredcomponent/admin/masters/SourceOfFundingMaster.vue';
 import StaffTypeMaster from '@/components/dashboard/accredcomponent/admin/masters/StaffTypeMaster.vue';
 import StandardMaster from '@/components/dashboard/accredcomponent/admin/masters/StandardMaster.vue';
+import DocumentType from '@/components/dashboard/accredcomponent/admin/DocumentType.vue';
 
 const { role, user } = useAuthStore();
 const route = useRoute();
@@ -120,6 +122,7 @@ const adminComponent = computed(() => {
         'institute': InstituteMaster,
         'key_aspects': KeyAspectsMaster,
         'qualification': QualificationMaster,
+        'document': DocumentType,
         'rating_category': RatingCategoryMaster,
         'source_of_funding': SourceOfFundingMaster,
         'staff_type': StaffTypeMaster,

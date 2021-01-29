@@ -459,6 +459,11 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/admin/${serviceType}/masters/qualification`,
       },
       {
+        name: 'Document',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/admin/${serviceType}/masters/document`,
+      },
+      {
         name: 'Reports',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/admin/${serviceType}/reports`,
