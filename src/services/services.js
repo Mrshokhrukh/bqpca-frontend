@@ -220,7 +220,7 @@ export default {
   },
 
   //accreditation endpoints
-  
+
   // Institution Profiles
   getInstitutionProfiles() {
     return apiClient.get('/accrediations/institution-profiles/');
@@ -541,6 +541,7 @@ export default {
     return apiClient.delete(`/accrediations/past-accreditations/${id}/`);
   },
 
+  
   // Profile Appeals
   getProfileAppeals() {
     return apiClient.get('/accrediations/profile-appeals/');
