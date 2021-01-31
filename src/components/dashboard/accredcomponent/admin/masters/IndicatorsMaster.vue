@@ -13,34 +13,21 @@
             <div class="space-y-4">
               <div>
                 <label for="indicatorName" class="block text-sm font-medium text-slate-700">Indicator Name</label>
-                <input
-                  type="text"
-                  id="indicatorName"
-                  v-model="formData.indicator_name"
+                <input type="text" id="indicatorName" v-model="formData.indicator_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter indicator name"
-                  required
-                />
+                  placeholder="Enter indicator name" required />
               </div>
               <div>
                 <label for="indicatorDescription" class="block text-sm font-medium text-slate-700">Description</label>
-                <textarea
-                  id="indicatorDescription"
-                  v-model="formData.description"
-                  rows="4"
+                <textarea id="indicatorDescription" v-model="formData.description" rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter indicator description"
-                  required
-                ></textarea>
+                  placeholder="Enter indicator description" required></textarea>
               </div>
               <div>
                 <label for="keyAspectName" class="block text-sm font-medium text-slate-700">Key Aspect Name</label>
-                <select
-                  id="keyAspectName"
-                  v-model="formData.key_aspect_name"
+                <select id="keyAspectName" v-model="formData.key_aspect_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                >
+                  required>
                   <option v-for="keyAspect in keyAspects" :key="keyAspect.id" :value="keyAspect.id">
                     {{ keyAspect.key_aspect_name }}
                   </option>
@@ -48,26 +35,15 @@
               </div>
               <div>
                 <label for="inForm" class="block text-sm font-medium text-slate-700">In Form</label>
-                <input
-                  type="checkbox"
-                  id="inForm"
-                  v-model="formData.in_form"
-                  class="mt-1 block"
-                />
+                <input type="checkbox" id="inForm" v-model="formData.in_form" class="mt-1 block" />
               </div>
               <div class="flex gap-3">
-                <button
-                  type="submit"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
+                <button type="submit"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                   {{ isEditing ? 'Update Indicator' : 'Add Indicator' }}
                 </button>
-                <button
-                  v-if="isEditing"
-                  type="button"
-                  @click="cancelEdit"
-                  class="py-2 px-4 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200"
-                >
+                <button v-if="isEditing" type="button" @click="cancelEdit"
+                  class="py-2 px-4 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200">
                   Cancel
                 </button>
               </div>
@@ -87,20 +63,12 @@
 
             <!-- Search Bar -->
             <div class="relative">
-              <input
-                type="text"
-                v-model="searchQuery"
-                placeholder="Search Indicators..."
-                class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <svg
-                class="absolute left-3 top-2.5 h-5 w-5 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <input type="text" v-model="searchQuery" placeholder="Search Indicators..."
+                class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <svg class="absolute left-3 top-2.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
           </div>
@@ -108,11 +76,8 @@
           <!-- Indicators Grid -->
           <div class="space-y-4 mb-6">
             <TransitionGroup name="list">
-              <div
-                v-for="indicator in paginatedIndicators"
-                :key="indicator.id"
-                class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200"
-              >
+              <div v-for="indicator in paginatedIndicators" :key="indicator.id"
+                class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200">
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">{{ indicator.indicator_name }}</h3>
@@ -121,22 +86,16 @@
                     <p class="text-sm text-slate-600 mt-1">{{ indicator.in_form ? 'Yes' : 'No' }}</p>
                   </div>
                   <div class="flex gap-2">
-                    <button
-                      @click="startEdit(indicator)"
-                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
-                    >
+                    <button @click="startEdit(indicator)" class="p-2 text-blue-600 hover:bg-blue-50 rounded-md">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                     </button>
-                    <button
-                      @click="openDeleteModal(indicator)"
-                      class="p-2 text-red-600 hover:bg-red-50 rounded-md"
-                    >
+                    <button @click="openDeleteModal(indicator)" class="p-2 text-red-600 hover:bg-red-50 rounded-md">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
                     </button>
                   </div>
@@ -151,23 +110,16 @@
           </div>
 
           <!-- Pagination -->
-          <div v-if="filteredIndicators.length > itemsPerPage"
-               class="flex justify-center gap-2">
-            <button
-              @click="currentPage--"
-              :disabled="currentPage === 1"
-              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
-            >
+          <div v-if="filteredIndicators.length > itemsPerPage" class="flex justify-center gap-2">
+            <button @click="currentPage--" :disabled="currentPage === 1"
+              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">
               Previous
             </button>
             <span class="px-3 py-1 text-sm text-slate-600">
               Page {{ currentPage }} of {{ totalPages }}
             </span>
-            <button
-              @click="currentPage++"
-              :disabled="currentPage === totalPages"
-              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
-            >
+            <button @click="currentPage++" :disabled="currentPage === totalPages"
+              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">
               Next
             </button>
           </div>
@@ -252,7 +204,7 @@ const filteredIndicators = computed(() => {
   return indicators.value.filter(indicator => {
     const query = searchQuery.value.toLowerCase();
     return indicator.indicator_name.toLowerCase().includes(query) ||
-           indicator.description.toLowerCase().includes(query);
+      indicator.description.toLowerCase().includes(query);
   });
 });
 
