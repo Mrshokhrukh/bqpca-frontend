@@ -12,6 +12,7 @@ const apiClient = axios.create({
   },
 })
 
+
 // Consolidated interceptors (removed duplicates)
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken')
