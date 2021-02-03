@@ -326,11 +326,6 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('FileText'),
         children: [
           {
-            name: 'Application Lists',
-            icon: getIconComponent('FileText'),
-            route: (serviceType) => `/admin/admin/${serviceType}/application_lists`,
-          },
-          {
             name: 'Application Duration',
             icon: getIconComponent('Clock'),
             route: (serviceType) => `/admin/admin/${serviceType}/masters/application_duration`,
@@ -341,11 +336,6 @@ const serviceSpecificMenuItems = {
         name: 'Appeal Management',
         icon: getIconComponent('XCircle'),
         children: [
-          {
-            name: 'Appeal Lists',
-            icon: getIconComponent('XCircle'),
-            route: (serviceType) => `/admin/admin/${serviceType}/appeal_lists`,
-          },
           {
             name: 'Appeal Reasons',
             icon: getIconComponent('FileText'),

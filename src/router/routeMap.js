@@ -33,9 +33,6 @@ export default {
     accreditation: {
       dashboard: () =>
         import('@/components/dashboard/accredcomponent/admin/AccreditationDashboard.vue'),
-      application_lists: () =>
-        import('@/components/dashboard/accredcomponent/admin/ApplicationLists.vue'),
-      appeal_lists: () => import('@/components/dashboard/accredcomponent/admin/AppealLists.vue'),
       reports: () => import('@/components/dashboard/accredcomponent/admin/AdminReports.vue'),
 
       // Masters routes
