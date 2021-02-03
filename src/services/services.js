@@ -641,7 +641,6 @@ export default {
     return apiClient.delete(`/accrediations/site-visit-schedules/${id}/`)
   },
   //BMHC API endpoints
-  // BMHC API endpoints
   // Masters CME Activities
   getMastersCmeActivities() {
     return apiClient.get('/bmhc/masters-cme-activities/')
