@@ -235,9 +235,106 @@ const serviceSpecificMenuItems = {
     ],
     admin: [
       {
-        name: 'Certification Types',
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Practitioner Masters',
         icon: getIconComponent('Heart'),
-        route: (serviceType) => `/admin/admin/${serviceType}/certification_types`,
+        children: [
+          {
+            name: 'CME Activities',
+            route: (serviceType) => `/admin/admin/${serviceType}/cme_activities`,
+          },
+          {
+            name: 'CME Credits',
+            route: (serviceType) => `/admin/admin/${serviceType}/cme_credits`,
+          },
+          {
+            name: 'CME Methodologies',
+            route: (serviceType) => `/admin/admin/${serviceType}/cme_methodologies`,
+          },
+          {
+            name: 'CPD Activities',
+            route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
+          },
+          {
+            name: 'Qualifications',
+            route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
+          },
+          {
+            name: 'Qualification Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/qualification_types`,
+          },
+
+          {
+            name: 'Registration Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/registration_type`,
+          },
+        ],
+      },
+      {
+        name: 'Settings Masters',
+        icon: getIconComponent('Settings'),
+        children: [
+          {
+            name: 'Document Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/document_types`,
+          },
+          {
+            name: 'File Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
+          },
+          {
+            name: 'e-Signatures',
+            route: (serviceType) => `/admin/admin/${serviceType}/e_signatures`,
+          },
+          {
+            name: 'Fees',
+            route: (serviceType) => `/admin/admin/${serviceType}/fee_structures`,
+          },
+          {
+            name: 'Fees Associated For',
+            route: (serviceType) => `/admin/admin/${serviceType}/fees_associated_for`,
+          },
+          {
+            name: 'Sector',
+            route: (serviceType) => `/admin/admin/${serviceType}/sector`,
+          },
+          {
+            name: 'Sub Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/sub_categories`,
+          },
+          {
+            name: 'University',
+            route: (serviceType) => `/admin/admin/${serviceType}/university`,
+          },
+        ],
+      },
+      {
+        name: 'Participation Masters',
+        icon: getIconComponent('Users'),
+        children: [
+          {
+            name: 'Participation Category',
+            route: (serviceType) => `/admin/admin/${serviceType}/participation_category`,
+          },
+          {
+            name: 'Participation Sub Category',
+            route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
+          },
+        ],
+      },
+      {
+        name: 'Personnel',
+        icon: getIconComponent('Briefcase'),
+        children: [
+          {
+            name: 'Personnel Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/personnel_categories`,
+          },
+        ],
       },
     ],
     dealing_officer: [

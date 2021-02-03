@@ -1,3 +1,3 @@
 <template>
-    <h1>admin</h1>
+    <h1>admin sss</h1>
 </template>

@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="p-4">
     <!-- User Section -->
@@ -43,7 +42,6 @@
 
     <!-- Default Section (fallback) -->
     <template v-else>
-      <StatsGrid :stats="filteredStats" />
       <ApplicationTable :applications="paginatedApplications" :current-page="currentPage" :total-results="filteredTotal"
         :per-page="perPage" @page-change="handlePageChange" />
     </template>
@@ -54,7 +52,6 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-// import StatsGrid from '@/components/dashboard/roqcomponents/user/StatsGrid.vue';
 import ApplicationTable from '@/components/dashboard/roqcomponents/user/ApplicationsTable.vue';
 
 // BMHC Component Imports
@@ -86,6 +83,27 @@ import Capa from '@/components/dashboard/bhmccomponents/dealingOfficer/Capa.vue'
 import PaymentManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/Payments.vue';
 import Reports from '@/components/dashboard/bhmccomponents/dealingOfficer/Reports.vue';
 
+//BMHC masters components
+import MastersCmeActivities from '@/components/dashboard/bhmccomponents/admin/MastersCmeActivities.vue'
+import MastersCmeCredits from '@/components/dashboard/bhmccomponents/admin/MastersCmeCredits.vue'
+import MastersCmeMethodologies from '@/components/dashboard/bhmccomponents/admin/MastersCmeMethodologies.vue'
+import MastersCpdActivity from '@/components/dashboard/bhmccomponents/admin/MastersCpdActivity.vue'
+import MastersDocumentTypes from '@/components/dashboard/bhmccomponents/admin/MastersDocumentTypes.vue'
+import MastersESignatures from '@/components/dashboard/bhmccomponents/admin/MastersESignatures.vue'
+import MastersFeeStructures from '@/components/dashboard/bhmccomponents/admin/MastersFeeStructures.vue'
+import MastersFeesAssociatedFor from '@/components/dashboard/bhmccomponents/admin/MastersFeesAssociatedFor.vue'
+import MastersFileTypes from '@/components/dashboard/bhmccomponents/admin/MastersFileTypes.vue'
+import MastersParticipationCategory from '@/components/dashboard/bhmccomponents/admin/MastersParticipationCategory.vue'
+import MastersParticipationSubCategory from '@/components/dashboard/bhmccomponents/admin/MastersParticipationSubCategory.vue'
+import MastersPersonnelCategories from '@/components/dashboard/bhmccomponents/admin/MastersPersonnelCategories.vue'
+import MastersQualificationTypes from '@/components/dashboard/bhmccomponents/admin/MastersQualificationTypes.vue'
+import MastersQualifications from '@/components/dashboard/bhmccomponents/admin/MastersQualifications.vue'
+import MastersRegistrationType from '@/components/dashboard/bhmccomponents/admin/MastersRegistrationType.vue'
+import MastersSector from '@/components/dashboard/bhmccomponents/admin/MastersSector.vue'
+import MastersSubCategories from '@/components/dashboard/bhmccomponents/admin/MastersSubCategories.vue'
+import MastersUniversity from '@/components/dashboard/bhmccomponents/admin/MastersUniversity.vue'
+
+
 const { role, user } = useAuthStore();
 const route = useRoute();
 const applications = ref([]);
@@ -100,6 +118,42 @@ const bmhAdminComponent = computed(() => {
       return BmhAdminDashboard;
     case path.endsWith('/health_certification/user_management'):
       return BmhUserManagement;
+    case path.endsWith('/health_certification/cme_activities'):
+      return MastersCmeActivities
+    case path.endsWith('/health_certification/cme_credits'):
+      return MastersCmeCredits
+    case path.endsWith('/health_certification/cme_methodologies'):
+      return MastersCmeMethodologies
+    case path.endsWith('/health_certification/cpd_activity'):
+      return MastersCpdActivity
+    case path.endsWith('/health_certification/document_types'):
+      return MastersDocumentTypes;
+    case path.endsWith('/health_certification/e_signatures'):
+      return MastersESignatures;
+    case path.endsWith('/health_certification/fee_structures'):
+      return MastersFeeStructures
+    case path.endsWith('/health_certification/fees_associated_for'):
+      return MastersFeesAssociatedFor
+    case path.endsWith('/health_certification/file_types'):
+      return MastersFileTypes;
+    case path.endsWith('/health_certification/participation_category'):
+      return MastersParticipationCategory;
+    case path.endsWith('/health_certification/participation_sub_category'):
+      return MastersParticipationSubCategory
+    case path.endsWith('/health_certification/personnel_categories'):
+      return MastersPersonnelCategories
+    case path.endsWith('/health_certification/qualification_types'):
+      return MastersQualificationTypes
+    case path.endsWith('/health_certification/qualifications'):
+      return MastersQualifications
+    case path.endsWith('/health_certification/registration_type'):
+      return MastersRegistrationType
+    case path.endsWith('/health_certification/sector'):
+      return MastersSector;
+    case path.endsWith('/health_certification/sub_categories'):
+      return MastersSubCategories
+    case path.endsWith('/health_certification/university'):
+      return MastersUniversity
     default:
       return null;
   }
