@@ -113,6 +113,9 @@ export default {
       sector: () => import('@/views/admin/BMHC/Dashboard.vue'),
       sub_categories: () => import('@/views/admin/BMHC/Dashboard.vue'),
       university: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cogs_agency: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cogs_dept: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cogs_workplace: () => import('@/views/admin/BMHC/Dashboard.vue'),
     },
   },
   user: {

@@ -102,7 +102,9 @@ import MastersRegistrationType from '@/components/dashboard/bhmccomponents/admin
 import MastersSector from '@/components/dashboard/bhmccomponents/admin/MastersSector.vue'
 import MastersSubCategories from '@/components/dashboard/bhmccomponents/admin/MastersSubCategories.vue'
 import MastersUniversity from '@/components/dashboard/bhmccomponents/admin/MastersUniversity.vue'
-
+import CogsAgency from '@/components/dashboard/bhmccomponents/admin/CogsAgency.vue';
+import CogsDepartment from '@/components/dashboard/bhmccomponents/admin/CogsDepartment.vue';
+import CogsWorkplace from '@/components/dashboard/bhmccomponents/admin/CogsWorkplace.vue';
 
 const { role, user } = useAuthStore();
 const route = useRoute();
@@ -154,6 +156,12 @@ const bmhAdminComponent = computed(() => {
       return MastersSubCategories
     case path.endsWith('/health_certification/university'):
       return MastersUniversity
+    case path.endsWith('/health_certification/cogs_agency'):
+      return CogsAgency;
+    case path.endsWith('/health_certification/cogs_dept'):
+      return CogsDepartment;
+    case path.endsWith('/health_certification/cogs_workplace'):
+      return CogsWorkplace;
     default:
       return null;
   }

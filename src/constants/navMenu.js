@@ -310,6 +310,18 @@ const serviceSpecificMenuItems = {
             name: 'University',
             route: (serviceType) => `/admin/admin/${serviceType}/university`,
           },
+          {
+            name: 'Cogs Agency',
+            route: (serviceType) => `/admin/admin/${serviceType}/cogs_agency`,
+          },
+          {
+            name: 'Cogs Dept.',
+            route: (serviceType) => `/admin/admin/${serviceType}/cogs_dept`,
+          },
+          {
+            name: 'Cogs Workplace',
+            route: (serviceType) => `/admin/admin/${serviceType}/cogs_workplace`,
+          },
         ],
       },
       {
