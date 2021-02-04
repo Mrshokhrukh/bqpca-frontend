@@ -79,11 +79,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { FileText, CheckCircle, XCircle } from 'lucide-vue-next'
 import dayjs from 'dayjs'
 
-const router = useRouter()
 
 const userDetail = {
   id: 3,

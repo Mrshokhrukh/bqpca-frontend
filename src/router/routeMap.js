@@ -113,6 +113,9 @@ export default {
       sector: () => import('@/views/admin/BMHC/Dashboard.vue'),
       sub_categories: () => import('@/views/admin/BMHC/Dashboard.vue'),
       university: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cogs_agency: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cogs_dept: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cogs_workplace: () => import('@/views/admin/BMHC/Dashboard.vue'),
     },
   },
   user: {
@@ -151,14 +154,9 @@ export default {
     },
     health_certification: {
       dashboard: () => import('@/views/admin/BMHC/Dashboard.vue'),
-      practitioner_reg_and_cert: {
-        component: () => import('@/views/admin/BMHC/Dashboard.vue'),
-        children: {
-          registration: () => import('@/views/admin/BMHC/Dashboard.vue'),
-          certificate: () => import('@/views/admin/BMHC/Dashboard.vue'),
-          renewal: () => import('@/views/admin/BMHC/Dashboard.vue'),
-        },
-      },
+      registration: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      certificate: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      renewal: () => import('@/views/admin/BMHC/Dashboard.vue'),
       cpd: () => import('@/views/admin/BMHC/Dashboard.vue'),
       CoGS: () => import('@/views/admin/BMHC/Dashboard.vue'),
     },

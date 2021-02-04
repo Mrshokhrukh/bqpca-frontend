@@ -1,6 +1,6 @@
 <!-- src/views/services/AccreditationPage.vue -->
 <template>
-  <div class="min-h-screen bg-slate-50">
+  <div class="min-h-screen bg-slate-50 pb-12">
     <!-- Hero Section -->
     <div class="bg-gradient-to-r from-slate-900 to-slate-800 relative overflow-hidden mt-10">
       <!-- Decorative elements -->

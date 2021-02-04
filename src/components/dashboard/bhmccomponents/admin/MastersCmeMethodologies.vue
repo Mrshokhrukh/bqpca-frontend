@@ -1,7 +1,7 @@
 <template>
     <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
         <div class="max-w-[1600px] mx-auto">
-            <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">CME Methodologies Management</h1>
+            <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">CME Methodology Management</h1>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Left Column - Add/Edit Form -->
@@ -19,11 +19,11 @@
                                     placeholder="Enter methodology name" required />
                             </div>
                             <div>
-                                <label for="description"
+                                <label for="methodologyDescription"
                                     class="block text-sm font-medium text-slate-700">Description</label>
-                                <textarea id="description" v-model="formData.description" rows="3"
+                                <textarea id="methodologyDescription" v-model="formData.description" rows="4"
                                     class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder="Enter description"></textarea>
+                                    placeholder="Enter methodology description" required></textarea>
                             </div>
                             <div class="flex gap-3">
                                 <button type="submit"
@@ -39,82 +39,75 @@
                     </form>
                 </div>
 
-                <!-- Right Column - Data Table -->
+                <!-- Right Column - Methodologies List -->
                 <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
                     <div class="mb-6 space-y-4">
                         <div class="flex justify-between items-center">
-                            <h2 class="text-xl font-semibold text-slate-900">CME Methodologies</h2>
+                            <h2 class="text-xl font-semibold text-slate-900">CME Methodologies List</h2>
                             <span class="text-sm text-slate-500">
-                                {{ methodologies.length }} Methodology{{ methodologies.length !== 1 ? 'ies' : 'y' }}
+                                {{ filteredMethodologies.length }} Methodology{{ filteredMethodologies.length !== 1 ?
+                                    's' : '' }}
                             </span>
+                        </div>
+
+                        <!-- Search Bar -->
+                        <div class="relative">
+                            <input type="text" v-model="searchQuery" placeholder="Search Methodologies..."
+                                class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <svg class="absolute left-3 top-2.5 h-5 w-5 text-slate-400" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
                         </div>
                     </div>
 
-                    <!-- Methodologies List -->
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-slate-200">
-                            <thead class="bg-slate-50">
-                                <tr>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
-                                        Methodology Name
-                                    </th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
-                                        Description
-                                    </th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
-                                        Created At
-                                    </th>
-                                    <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 text-right">
-                                        <span class="sr-only">Actions</span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-200 bg-white">
-                                <tr v-for="methodology in methodologies" :key="methodology.id">
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-900">{{
-                                        methodology.methodology_name }}</td>
-                                    <td class="px-3 py-4 text-sm text-slate-700">{{ methodology.description }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-700">{{
-                                        formatDate(methodology.created_at) }}</td>
-                                    <td
-                                        class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                        <button @click="editMethodology(methodology)"
+                    <!-- Methodologies Grid -->
+                    <div class="space-y-4 mb-6">
+                        <TransitionGroup name="list">
+                            <div v-for="methodology in paginatedMethodologies" :key="methodology.id"
+                                class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200">
+                                <div class="flex justify-between items-start gap-4">
+                                    <div>
+                                        <h3 class="font-medium text-slate-900">{{ methodology.methodology_name }}</h3>
+                                        <p class="text-sm text-slate-600 mt-1">{{ methodology.description }}</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button @click="startEdit(methodology)"
                                             class="p-2 text-blue-600 hover:bg-blue-50 rounded-md">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
                                         </button>
-                                        <button @click="confirmDelete(methodology.id)"
+                                        <button @click="openDeleteModal(methodology)"
                                             class="p-2 text-red-600 hover:bg-red-50 rounded-md">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                         </button>
-                                    </td>
-                                </tr>
-                                <tr v-if="methodologies.length === 0">
-                                    <td colspan="3" class="px-6 py-4 text-center text-slate-500">
-                                        No CME methodologies found
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </TransitionGroup>
+
+                        <!-- Empty State -->
+                        <div v-if="filteredMethodologies.length === 0" class="text-center py-8">
+                            <p class="text-slate-500">No CME methodologies found</p>
+                        </div>
                     </div>
 
                     <!-- Pagination -->
-                    <div v-if="totalPages > 1" class="flex justify-center gap-2 mt-6">
-                        <button @click="currentPage > 1 && fetchMethodologies(currentPage - 1)"
-                            :disabled="currentPage === 1"
+                    <div v-if="filteredMethodologies.length > itemsPerPage" class="flex justify-center gap-2">
+                        <button @click="currentPage--" :disabled="currentPage === 1"
                             class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">
                             Previous
                         </button>
                         <span class="px-3 py-1 text-sm text-slate-600">
                             Page {{ currentPage }} of {{ totalPages }}
                         </span>
-                        <button @click="currentPage < totalPages && fetchMethodologies(currentPage + 1)"
-                            :disabled="currentPage === totalPages"
+                        <button @click="currentPage++" :disabled="currentPage === totalPages"
                             class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">
                             Next
                         </button>
@@ -122,22 +115,24 @@
                 </div>
             </div>
 
-            <!-- Delete Confirmation Modal -->
-            <AlertDialogRoot :open="showDeleteModal" @update:open="showDeleteModal = $event">
+            <!-- Confirmation modal -->
+            <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
                 <AlertDialogContent
                     class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50">
                     <AlertDialogTitle class="text-xl font-semibold text-slate-900 mb-2">
                         Are you absolutely sure?
                     </AlertDialogTitle>
                     <AlertDialogDescription class="text-slate-600 mb-6">
-                        This action cannot be undone. This will permanently delete the CME methodology.
+                        This action cannot be undone. This will permanently delete the methodology
+                        "{{ methodologyToDelete?.methodology_name }}".
                     </AlertDialogDescription>
                     <div class="flex justify-end gap-4">
-                        <AlertDialogCancel class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200">
+                        <AlertDialogCancel class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
+                            @click="closeDeleteModal">
                             Cancel
                         </AlertDialogCancel>
                         <AlertDialogAction class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
-                            @click="deleteMethodology">
+                            @click="confirmDelete">
                             Delete
                         </AlertDialogAction>
                     </div>
@@ -149,8 +144,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import api from '@/services/services'
+import { ref, computed, watch, onMounted } from 'vue';
+import services from '@/services/services'; // Assuming you have a services.js file
 import {
     AlertDialogAction,
     AlertDialogCancel,
@@ -159,101 +154,133 @@ import {
     AlertDialogOverlay,
     AlertDialogRoot,
     AlertDialogTitle,
-} from 'radix-vue'
+} from 'radix-vue';
 
 // State
-const methodologies = ref([])
+const methodologies = ref([]);
 const formData = ref({
+    id: null,
     methodology_name: '',
-    description: ''
-})
-const isEditing = ref(false)
-const editingId = ref(null)
-const showDeleteModal = ref(false)
-const deleteId = ref(null)
-const currentPage = ref(1)
-const totalPages = ref(1)
+    description: '',
+});
+const isEditing = ref(false);
+const searchQuery = ref('');
+const currentPage = ref(1);
+const itemsPerPage = 5;
+
+const isDeleteModalOpen = ref(false);
+const methodologyToDelete = ref(null);
+
+// Fetch methodologies on component mount
+onMounted(async () => {
+    try {
+        const response = await services.getMastersCmeMethodologies();
+        methodologies.value = response.data.results;
+    } catch (error) {
+        console.error('Error fetching CME methodologies:', error);
+    }
+});
+
+// Computed
+const filteredMethodologies = computed(() => {
+    return methodologies.value.filter(methodology => {
+        const query = searchQuery.value.toLowerCase();
+        return methodology.methodology_name.toLowerCase().includes(query) ||
+            methodology.description.toLowerCase().includes(query);
+    });
+});
+
+const totalPages = computed(() => {
+    return Math.ceil(filteredMethodologies.value.length / itemsPerPage);
+});
+
+const paginatedMethodologies = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return filteredMethodologies.value.slice(start, end);
+});
 
 // Methods
-const fetchMethodologies = async (page = 1) => {
-    try {
-        const response = await api.getMastersCmeMethodologies()
-        methodologies.value = response.data.results
-        totalPages.value = Math.ceil(response.data.count / 10)
-        currentPage.value = page
-    } catch (error) {
-        console.error('Error fetching CME methodologies:', error)
-    }
-}
-
 const handleSubmit = async () => {
     try {
         if (isEditing.value) {
-            await api.updateMastersCmeMethodology(editingId.value, formData.value)
+            const response = await services.updateMastersCmeMethodology(formData.value.id, formData.value);
+            const index = methodologies.value.findIndex(dt => dt.id === formData.value.id);
+            if (index !== -1) {
+                methodologies.value[index] = response.data;
+            }
         } else {
-            await api.createMastersCmeMethodology(formData.value)
+            const response = await services.createMastersCmeMethodology(formData.value);
+            methodologies.value.push(response.data);
         }
-        resetForm()
-        fetchMethodologies()
+        resetForm();
     } catch (error) {
-        console.error('Error saving CME methodology:', error)
+        console.error('Error saving CME methodology:', error);
     }
-}
+};
 
-const editMethodology = (methodology) => {
-    formData.value = {
-        methodology_name: methodology.methodology_name,
-        description: methodology.description
-    }
-    isEditing.value = true
-    editingId.value = methodology.id
-}
+const startEdit = (methodology) => {
+    formData.value = { ...methodology };
+    isEditing.value = true;
+};
 
 const cancelEdit = () => {
-    resetForm()
-}
+    resetForm();
+};
+
+const openDeleteModal = (methodology) => {
+    methodologyToDelete.value = methodology;
+    isDeleteModalOpen.value = true;
+};
+
+const closeDeleteModal = () => {
+    isDeleteModalOpen.value = false;
+    methodologyToDelete.value = null;
+};
+
+const confirmDelete = async () => {
+    if (!methodologyToDelete.value) return;
+
+    try {
+        await services.deleteMastersCmeMethodology(methodologyToDelete.value.id);
+        const index = methodologies.value.findIndex(dt => dt.id === methodologyToDelete.value.id);
+        if (index !== -1) {
+            methodologies.value.splice(index, 1);
+        }
+        closeDeleteModal();
+    } catch (error) {
+        console.error('Error deleting CME methodology:', error);
+    }
+};
 
 const resetForm = () => {
     formData.value = {
+        id: null,
         methodology_name: '',
-        description: ''
-    }
-    isEditing.value = false
-    editingId.value = null
-}
+        description: '',
+    };
+    isEditing.value = false;
+};
 
-const confirmDelete = (id) => {
-    deleteId.value = id
-    showDeleteModal.value = true
-}
-
-const deleteMethodology = async () => {
-    try {
-        await api.deleteMastersCmeMethodology(deleteId.value)
-        showDeleteModal.value = false
-        deleteId.value = null
-        fetchMethodologies()
-    } catch (error) {
-        console.error('Error deleting CME methodology:', error)
-    }
-}
-
-const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    })
-}
-
-// Lifecycle
-onMounted(() => {
-    fetchMethodologies()
-})
+// Watch for search query changes to reset pagination
+watch(searchQuery, () => {
+    currentPage.value = 1;
+});
 </script>
 
 <style scoped>
-/* Add your styles here */
+.list-enter-active,
+.list-leave-active {
+    transition: all 0.3s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+.list-move {
+    transition: transform 0.3s ease;
+}
 </style>

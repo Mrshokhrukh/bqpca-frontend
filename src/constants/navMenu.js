@@ -198,27 +198,21 @@ const serviceSpecificMenuItems = {
     user: [
       {
         name: 'Dashboard',
-        icon: getIconComponent('Dashboard'),
+        icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
       },
       {
-        name: 'Practitioner Reg & Cert',
-        icon: getIconComponent('Heart'),
+        name: 'Certification',
+        icon: getIconComponent('Certificate'),
         children: [
           {
-            name: 'Registration Application',
+            name: 'Apply for Certification',
             route: (serviceType) =>
-              `/admin/user/${serviceType}/practitioner_reg_and_cert/registration`,
-          },
-          {
-            name: 'Certificate Application',
-            route: (serviceType) =>
-              `/admin/user/${serviceType}/practitioner_reg_and_cert/certificate`,
+              `/admin/user/${serviceType}/registration`,
           },
           {
             name: 'Renewal',
-            // notification count
-            route: (serviceType) => `/admin/user/${serviceType}/practitioner_reg_and_cert/renewal`,
+            route: (serviceType) => `/admin/user/${serviceType}/renewal`,
           },
         ],
       },
@@ -309,6 +303,18 @@ const serviceSpecificMenuItems = {
           {
             name: 'University',
             route: (serviceType) => `/admin/admin/${serviceType}/university`,
+          },
+          {
+            name: 'Cogs Agency',
+            route: (serviceType) => `/admin/admin/${serviceType}/cogs_agency`,
+          },
+          {
+            name: 'Cogs Dept.',
+            route: (serviceType) => `/admin/admin/${serviceType}/cogs_dept`,
+          },
+          {
+            name: 'Cogs Workplace',
+            route: (serviceType) => `/admin/admin/${serviceType}/cogs_workplace`,
           },
         ],
       },
