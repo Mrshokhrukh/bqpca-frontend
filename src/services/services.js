@@ -12,7 +12,6 @@ const apiClient = axios.create({
   },
 })
 
-
 // Consolidated interceptors (removed duplicates)
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken')
@@ -996,5 +995,65 @@ export default {
   },
   deleteMastersUniversity(id) {
     return apiClient.delete(`/bmhc/masters-university/${id}/`)
+  },
+
+  // COGS Agencies
+  getBmhcCogsAgencies() {
+    return apiClient.get('/bmhc/bmhc-cogs-agencies/')
+  },
+  createBmhcCogsAgency(data) {
+    return apiClient.post('/bmhc/bmhc-cogs-agencies/', data)
+  },
+  getBmhcCogsAgency(id) {
+    return apiClient.get(`/bmhc/bmhc-cogs-agencies/${id}/`)
+  },
+  updateBmhcCogsAgency(id, data) {
+    return apiClient.put(`/bmhc/bmhc-cogs-agencies/${id}/`, data)
+  },
+  patchBmhcCogsAgency(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-cogs-agencies/${id}/`, data)
+  },
+  deleteBmhcCogsAgency(id) {
+    return apiClient.delete(`/bmhc/bmhc-cogs-agencies/${id}/`)
+  },
+
+  // COGS Departments
+  getBmhcCogsDepartments() {
+    return apiClient.get('/bmhc/bmhc-cogs-departments/')
+  },
+  createBmhcCogsDepartment(data) {
+    return apiClient.post('/bmhc/bmhc-cogs-departments/', data)
+  },
+  getBmhcCogsDepartment(id) {
+    return apiClient.get(`/bmhc/bmhc-cogs-departments/${id}/`)
+  },
+  updateBmhcCogsDepartment(id, data) {
+    return apiClient.put(`/bmhc/bmhc-cogs-departments/${id}/`, data)
+  },
+  patchBmhcCogsDepartment(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-cogs-departments/${id}/`, data)
+  },
+  deleteBmhcCogsDepartment(id) {
+    return apiClient.delete(`/bmhc/bmhc-cogs-departments/${id}/`)
+  },
+
+  // COGS Workplaces
+  getBmhcCogsWorkplaces() {
+    return apiClient.get('/bmhc/bmhc-cogs-workplaces/')
+  },
+  createBmhcCogsWorkplace(data) {
+    return apiClient.post('/bmhc/bmhc-cogs-workplaces/', data)
+  },
+  getBmhcCogsWorkplace(id) {
+    return apiClient.get(`/bmhc/bmhc-cogs-workplaces/${id}/`)
+  },
+  updateBmhcCogsWorkplace(id, data) {
+    return apiClient.put(`/bmhc/bmhc-cogs-workplaces/${id}/`, data)
+  },
+  patchBmhcCogsWorkplace(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-cogs-workplaces/${id}/`, data)
+  },
+  deleteBmhcCogsWorkplace(id) {
+    return apiClient.delete(`/bmhc/bmhc-cogs-workplaces/${id}/`)
   },
 }
