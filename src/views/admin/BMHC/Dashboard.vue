@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="p-4">
     <!-- User Section -->
@@ -67,9 +68,9 @@ import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superA
 // BMH user
 import CPDcomponent from '@/components/dashboard/bhmccomponents/user/CPDcomponent.vue';
 import CoGSComponet from '@/components/dashboard/bhmccomponents/user/CoGSComponet.vue';
-import PractitionerCertification from '@/components/dashboard/bhmccomponents/user/pracitioner_reg_and_cert/PractitionerCertification.vue';
-import PractitionerRegistration from '@/components/dashboard/bhmccomponents/user/pracitioner_reg_and_cert/PractitionerRegistration.vue';
-import PractitionerRenewal from '@/components/dashboard/bhmccomponents/user/pracitioner_reg_and_cert/PractitionerRenewal.vue';
+import PractitionerCertification from '@/components/dashboard/bhmccomponents/user/certificateApplication/PractitionerCertification.vue';
+import PractitionerRegistration from '@/components/dashboard/bhmccomponents/user/certificateApplication/CertificateRegistrationComponent.vue';
+import PractitionerRenewal from '@/components/dashboard/bhmccomponents/user/certificateApplication/PractitionerRenewal.vue';
 
 
 // Dealing Officer Components
@@ -173,11 +174,11 @@ const bmhUserComponent = computed(() => {
   switch (true) {
     case path.endsWith('/health_certification/dashboard'):
       return BmhUserDashboard;
-    case path.endsWith('/health_certification/practitioner_reg_and_cert/registration'):
+    case path.endsWith('/health_certification/registration'):
       return PractitionerRegistration;
-    case path.endsWith('/health_certification/practitioner_reg_and_cert/certificate'):
+    case path.endsWith('/health_certification/certificate'):
       return PractitionerCertification;
-    case path.endsWith('/health_certification/practitioner_reg_and_cert/renewal'):
+    case path.endsWith('/health_certification/renewal'):
       return PractitionerRenewal;
     case path.endsWith('/health_certification/cpd'):
       return CPDcomponent;
@@ -297,23 +298,6 @@ const filteredApplications = computed(() => {
     default:
       return [];
   }
-});
-
-// Calculate stats based on filtered applications
-const filteredStats = computed(() => {
-  const filtered = filteredApplications.value;
-  return {
-    totalApplied: filtered.length,
-    totalApproved: filtered.filter(app => app.chief_approved).length,
-    totalRegretted: filtered.filter(app =>
-      app.dealing_officer_regret || app.chief_regret
-    ).length,
-    totalPending: filtered.filter(app =>
-      !app.chief_approved &&
-      !app.dealing_officer_regret &&
-      !app.chief_regret
-    ).length
-  };
 });
 
 // Compute total for pagination

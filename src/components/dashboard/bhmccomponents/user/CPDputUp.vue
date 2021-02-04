@@ -7,19 +7,23 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700">Registration Number</label>
-            <input type="text" v-model="form.registrationNumber" disabled class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+            <input type="text" v-model="form.registrationNumber" disabled
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">CID No./Identity/Work Permit No.</label>
-            <input type="text" v-model="form.cidNumber" disabled class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+            <input type="text" v-model="form.cidNumber" disabled
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Full Name</label>
-            <input type="text" v-model="form.fullName" disabled class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+            <input type="text" v-model="form.fullName" disabled
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Agency/Training Location</label>
-            <input type="text" v-model="form.agency" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+            <input type="text" v-model="form.agency" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
           </div>
         </div>
       </div>
@@ -32,11 +36,11 @@
             <label class="block text-sm font-medium text-gray-700">Is CPD approved?</label>
             <div class="mt-2 space-x-4">
               <label class="inline-flex items-center">
-                <input type="radio" v-model="form.isCpdApproved" :value="true" class="form-radio"/>
+                <input type="radio" v-model="form.isCpdApproved" :value="true" class="form-radio" />
                 <span class="ml-2">Yes</span>
               </label>
               <label class="inline-flex items-center">
-                <input type="radio" v-model="form.isCpdApproved" :value="false" class="form-radio"/>
+                <input type="radio" v-model="form.isCpdApproved" :value="false" class="form-radio" />
                 <span class="ml-2">No</span>
               </label>
             </div>
@@ -52,23 +56,26 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Approval Letter</label>
-              <input type="file" @change="handleFileUpload" accept=".pdf,.doc,.docx" class="mt-1 block w-full"/>
+              <input type="file" @change="handleFileUpload" accept=".pdf,.doc,.docx" class="mt-1 block w-full" />
             </div>
           </div>
 
           <div v-else class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700">Title of CPD</label>
-              <input type="text" v-model="form.cpdTitle" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+              <input type="text" v-model="form.cpdTitle" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700">From Date</label>
-                <input type="date" v-model="form.fromDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+                <input type="date" v-model="form.fromDate" required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">To Date</label>
-                <input type="date" v-model="form.toDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+                <input type="date" v-model="form.toDate" required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
               </div>
             </div>
           </div>
@@ -92,7 +99,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 
 const form = reactive({
   // Applicant Details
@@ -159,11 +166,6 @@ const handleFileUpload = (event) => {
   console.log('File uploaded:', file)
 }
 
-// Computed property for credit calculation based on hours
-const calculateCredit = (hours) => {
-  // Add your credit calculation logic here
-  return hours // Placeholder calculation
-}
 </script>
 
 <style scoped>

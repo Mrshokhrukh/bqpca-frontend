@@ -69,8 +69,6 @@ const router = createRouter({
 
 // Combined navigation guard for authentication and meta updates
 router.beforeEach((to, from, next) => {
-  console.log('Current route:', to)
-  console.log('Matched routes:', to.matched)
   const authStore = useAuthStore()
 
   // Handle authentication

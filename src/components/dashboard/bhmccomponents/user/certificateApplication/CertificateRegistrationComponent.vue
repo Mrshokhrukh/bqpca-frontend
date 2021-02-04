@@ -1,7 +1,7 @@
 <template>
-  <div class="max-w-3xl mx-auto p-4 md:p-6">
+  <div class="max-w-6xl mx-auto p-4 md:p-6">
     <header class="text-center mb-8">
-      <h1 class="text-2xl font-bold text-gray-800 mb-2">Medical Worker Registration</h1>
+      <h1 class="text-2xl font-bold text-gray-800 mb-2">Medical Certification Registration</h1>
       <div class="text-sm text-gray-500">Step {{ currentStep }} of 2</div>
     </header>
 
