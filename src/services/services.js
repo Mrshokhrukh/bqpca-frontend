@@ -2,7 +2,7 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 import bmhcServices from './bmhcservices';
-import accreditationServices from './accreditationServices';
+import accreditationServices from './accreditationservices';
 import roqservices from './roqservices';
 import userservices from './userservices';
 

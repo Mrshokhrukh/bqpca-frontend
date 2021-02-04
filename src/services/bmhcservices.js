@@ -366,6 +366,66 @@ export default {
     return apiClient.delete(`/bmhc/masters-university/${id}/`)
   },
 
+  // COGS Agencies
+  getBmhcCogsAgencies() {
+    return apiClient.get('/bmhc/masters-cogs-agencies/')
+  },
+  createBmhcCogsAgency(data) {
+    return apiClient.post('/bmhc/masters-cogs-agencies/', data)
+  },
+  getBmhcCogsAgency(id) {
+    return apiClient.get(`/bmhc/masters-cogs-agencies/${id}/`)
+  },
+  updateBmhcCogsAgency(id, data) {
+    return apiClient.put(`/bmhc/masters-cogs-agencies/${id}/`, data)
+  },
+  patchBmhcCogsAgency(id, data) {
+    return apiClient.patch(`/bmhc/masters-cogs-agencies/${id}/`, data)
+  },
+  deleteBmhcCogsAgency(id) {
+    return apiClient.delete(`/bmhc/masters-cogs-agencies/${id}/`)
+  },
+
+  // COGS Departments
+  getBmhcCogsDepartments() {
+    return apiClient.get('/bmhc/masters-cogs-departments/')
+  },
+  createBmhcCogsDepartment(data) {
+    return apiClient.post('/bmhc/masters-cogs-departments/', data)
+  },
+  getBmhcCogsDepartment(id) {
+    return apiClient.get(`/bmhc/masters-cogs-departments/${id}/`)
+  },
+  updateBmhcCogsDepartment(id, data) {
+    return apiClient.put(`/bmhc/masters-cogs-departments/${id}/`, data)
+  },
+  patchBmhcCogsDepartment(id, data) {
+    return apiClient.patch(`/bmhc/masters-cogs-departments/${id}/`, data)
+  },
+  deleteBmhcCogsDepartment(id) {
+    return apiClient.delete(`/bmhc/masters-cogs-departments/${id}/`)
+  },
+
+  // COGS Workplaces
+  getBmhcCogsWorkplaces() {
+    return apiClient.get('/bmhc/masters-cogs-workplaces/')
+  },
+  createBmhcCogsWorkplace(data) {
+    return apiClient.post('/bmhc/masters-cogs-workplaces/', data)
+  },
+  getBmhcCogsWorkplace(id) {
+    return apiClient.get(`/bmhc/masters-cogs-workplaces/${id}/`)
+  },
+  updateBmhcCogsWorkplace(id, data) {
+    return apiClient.put(`/bmhc/masters-cogs-workplaces/${id}/`, data)
+  },
+  patchBmhcCogsWorkplace(id, data) {
+    return apiClient.patch(`/bmhc/masters-cogs-workplaces/${id}/`, data)
+  },
+  deleteBmhcCogsWorkplace(id) {
+    return apiClient.delete(`/bmhc/masters-cogs-workplaces/${id}/`)
+  },
+
   // New BMHC Application Endpoints
   getBhmcNewApplications() {
     return apiClient.get('/bmhc/bmhc-new-application/');
