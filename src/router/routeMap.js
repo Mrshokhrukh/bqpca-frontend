@@ -155,7 +155,7 @@ export default {
     health_certification: {
       dashboard: () => import('@/views/admin/BMHC/Dashboard.vue'),
       registration: () => import('@/views/admin/BMHC/Dashboard.vue'),
-      certificate: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      my_applications: () => import('@/views/admin/BMHC/Dashboard.vue'),
       renewal: () => import('@/views/admin/BMHC/Dashboard.vue'),
       cpd: () => import('@/views/admin/BMHC/Dashboard.vue'),
       CoGS: () => import('@/views/admin/BMHC/Dashboard.vue'),

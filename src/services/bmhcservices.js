@@ -426,7 +426,7 @@ export default {
     return apiClient.delete(`/bmhc/masters-cogs-workplaces/${id}/`)
   },
 
-  // New BMHC Application Endpoints
+  // BMHC Application Endpoints
   getBhmcNewApplications() {
     return apiClient.get('/bmhc/bmhc-new-application/');
   },
@@ -448,5 +448,25 @@ export default {
   },
   deleteBhmcNewApplication(id) {
     return apiClient.delete(`/bmhc/bmhc-new-application/${id}/`);
+  },
+
+ // BMHC Renewals Endpoints
+  getBhmcRenewals() {
+    return apiClient.get('/bmhc/bmhc-renewals/');
+  },
+  createBhmcRenewal(data) {
+    return apiClient.post('/bmhc/bmhc-renewals/', data);
+  },
+  getBhmcRenewal(id) {
+    return apiClient.get(`/bmhc/bmhc-renewals/${id}/`);
+  },
+  updateBhmcRenewal(id, data) {
+    return apiClient.put(`/bmhc/bmhc-renewals/${id}/`, data);
+  },
+  patchBhmcRenewal(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-renewals/${id}/`, data);
+  },
+  deleteBhmcRenewal(id) {
+    return apiClient.delete(`/bmhc/bmhc-renewals/${id}/`);
   },
 }

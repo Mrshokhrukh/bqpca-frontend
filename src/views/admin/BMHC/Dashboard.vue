@@ -68,9 +68,9 @@ import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superA
 // BMH user
 import CPDcomponent from '@/components/dashboard/bhmccomponents/user/CPDcomponent.vue';
 import CoGSComponet from '@/components/dashboard/bhmccomponents/user/CoGSComponet.vue';
-import PractitionerCertification from '@/components/dashboard/bhmccomponents/user/certificateApplication/PractitionerCertification.vue';
 import PractitionerRegistration from '@/components/dashboard/bhmccomponents/user/certificateApplication/CertificateRegistrationComponent.vue';
-import PractitionerRenewal from '@/components/dashboard/bhmccomponents/user/certificateApplication/PractitionerRenewal.vue';
+import PractitionerRenewal from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationRenewal.vue';
+import ApplicationTracker from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationTracker.vue';
 
 
 // Dealing Officer Components
@@ -176,8 +176,8 @@ const bmhUserComponent = computed(() => {
       return BmhUserDashboard;
     case path.endsWith('/health_certification/registration'):
       return PractitionerRegistration;
-    case path.endsWith('/health_certification/certificate'):
-      return PractitionerCertification;
+    case path.endsWith('/health_certification/my_applications'):
+      return ApplicationTracker;
     case path.endsWith('/health_certification/renewal'):
       return PractitionerRenewal;
     case path.endsWith('/health_certification/cpd'):

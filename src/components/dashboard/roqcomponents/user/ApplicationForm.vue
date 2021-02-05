@@ -424,9 +424,6 @@ const fetchDCRCData = async () => {
   try {
     const response = await apiService.fetchCitizenDetails(form.cid_no);
 
-    // Log the API response
-    console.log('API Response:', response);
-
     // Helper function to convert dd/mm/yyyy to yyyy-mm-dd
     const formatDate = (dateString) => {
       if (!dateString) return '';

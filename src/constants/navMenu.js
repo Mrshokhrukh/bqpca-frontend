@@ -211,6 +211,11 @@ const serviceSpecificMenuItems = {
               `/admin/user/${serviceType}/registration`,
           },
           {
+            name: 'My Applications',
+            route: (serviceType) =>
+              `/admin/user/${serviceType}/my_applications`,
+          },
+          {
             name: 'Renewal',
             route: (serviceType) => `/admin/user/${serviceType}/renewal`,
           },
