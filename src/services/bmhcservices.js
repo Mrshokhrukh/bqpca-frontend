@@ -471,7 +471,7 @@ export default {
     return apiClient.delete(`/bmhc/bmhc-renewals/${id}/`);
   },
 
-<<<<<<< HEAD
+
 // BHMC user qualifications
 getBhmcNewQualifications() {
   return apiClient.get('/bmhc/bmhc-new-qualification/');
@@ -492,29 +492,4 @@ deleteBhmcNewQualification(id) {
   return apiClient.delete(`/bmhc/bmhc-new-qualification/${id}/`);
 },
 
-=======
- // BMHC New Qualification Endpoints
-  getBhmcNewQualifications() {
-    return apiClient.get('/bmhc/bmhc-new-qualification/');
-  },
-  createBhmcNewQualification(data) {
-    return apiClient.post('/bmhc/bmhc-new-qualification/', data, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-  },
-  getBhmcNewQualification(id) {
-    return apiClient.get(`/bmhc/bmhc-new-qualification/${id}/`);
-  },
-  updateBhmcNewQualification(id, data) {
-    return apiClient.put(`/bmhc/bmhc-new-qualification/${id}/`, data);
-  },
-  patchBhmcNewQualification(id, data) {
-    return apiClient.patch(`/bmhc/bmhc-new-qualification/${id}/`, data);
-  },
-  deleteBhmcNewQualification(id) {
-    return apiClient.delete(`/bmhc/bmhc-new-qualification/${id}/`);
-  },
->>>>>>> 6ac8093891435b884d2c1c4f5ba7e6240bb58719
 }
