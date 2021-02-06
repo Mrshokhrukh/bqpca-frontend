@@ -157,8 +157,11 @@ export default {
       registration: () => import('@/views/admin/BMHC/Dashboard.vue'),
       my_applications: () => import('@/views/admin/BMHC/Dashboard.vue'),
       renewal: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      re_registration: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      additional_qualification: () => import('@/views/admin/BMHC/Dashboard.vue'),
       cpd: () => import('@/views/admin/BMHC/Dashboard.vue'),
       CoGS: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      reports: () => import('@/views/admin/BMHC/Dashboard.vue'),
     },
   },
   dealing_officer: {

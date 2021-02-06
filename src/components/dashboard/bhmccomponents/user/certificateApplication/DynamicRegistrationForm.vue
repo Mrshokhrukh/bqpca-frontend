@@ -15,7 +15,9 @@
       </p>
     </div>
 
-    <form @submit.prevent="handleSubmit" class="bg-white border rounded-xl shadow-sm">
+    <form @submit.prevent="handleNext" class="bg-white border rounded-xl shadow-sm p-6" v-if="stage === 1">
+      <!-- add header as step 2 -->
+      <h3 class="text-lg font-semibold text-gray-900 my-4">Step 1: Medical Institution Registration</h3>
       <!-- Form Sections -->
       <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
         <h3 class="text-lg font-semibold text-gray-900">Personal Information</h3>
@@ -174,140 +176,154 @@
           </div>
         </div>
 
-        <!-- Qualification Details Section -->
-        <div class="mt-12">
-          <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Qualification Details</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-              <div class="col-span-1">
-                <label class="block text-sm font-medium text-gray-700 required">Qualification Type</label>
-                <select v-model="localFormData.qualification_type"
-                  class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
-                  <option value="">Select Qualification Type</option>
-                  <option v-for="type in qualificationTypes" :key="type.id" :value="type.id">
-                    {{ type.qualification_type_name }}
-                  </option>
-                </select>
-                <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
-      errors.qualification_type
-    }}</span>
-              </div>
-
-              <div class="col-span-1">
-                <label class="block text-sm font-medium text-gray-700 required">Qualification Name</label>
-                <select v-model="localFormData.qualification_name"
-                  class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
-                  <option value="">Select Qualification Name</option>
-                  <option v-for="qualification in qualifications" :key="qualification.id" :value="qualification.id">
-                    {{ qualification.qualification }}
-                  </option>
-                </select>
-                <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
-      errors.qualification_name
-    }}</span>
-              </div>
-
-              <div class="col-span-1">
-                <label class="block text-sm font-medium text-gray-700 required">Institute/University</label>
-                <select v-model="localFormData.institute"
-                  class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
-                  <option value="">Select Institute/University</option>
-                  <option v-for="university in universities" :key="university.id" :value="university.id">
-                    {{ university.country }}, {{ university.university }}, {{ university.institute_name }}
-                  </option>
-                </select>
-                <span v-if="errors.institute" class="text-sm text-red-500 mt-1">{{ errors.institute }}</span>
-              </div>
-
-              <div class="col-span-1">
-                <label class="block text-sm font-medium text-gray-700 required">Year of Completion</label>
-                <input type="month" v-model="localFormData.year_of_completion"
-                  class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                  placeholder="YYYY" />
-                <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
-      errors.year_of_completion
-    }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Documents Section with new design -->
-        <div class="mt-12">
-          <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Supporting Documents</h3>
-            <div class="space-y-4">
-              <div v-for="(doc, index) in supportingDocuments" :key="index"
-                class="flex items-start space-x-4 bg-white p-4 rounded-lg border border-gray-100">
-                <div class="w-1/3">
-                  <select v-model="doc.type"
-                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
-                    <option value="">Select Document Type</option>
-                    <option v-for="type in fetchedDocumentTypes" :key="type.id" :value="type.id">
-                      {{ type.document_name }}
-                    </option>
-                  </select>
-                </div>
-                <div class="flex-1 flex items-center space-x-2">
-                  <input type="file" @change="(e) => handleFileSelect(e, index)" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4
-                           file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                           file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple />
-                  <button @click="removeDocument(index)" type="button"
-                    class="p-2 text-gray-400 hover:text-red-500 transition-colors">
-                    <span class="sr-only">Remove</span>
-                    ✕
-                  </button>
-                </div>
-              </div>
-
-              <button type="button" @click="addDocument"
-                class="mt-4 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center">
-                <span class="mr-2">+</span>
-                Add Another Document
-              </button>
-            </div>
-            <p class="text-sm text-gray-500 mt-2">
-              Required documents are graduation certificate, cid copy, security clarance, roq certificate, class 10, 12
-              and graduation marksheets.
-            </p>
-          </div>
-        </div>
-
-        <!-- Declaration Section -->
-        <div class="mt-12 bg-gray-50 p-6 rounded-xl border border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Declaration</h3>
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Remarks</label>
-              <textarea v-model="localFormData.remarks" rows="3"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                placeholder="Enter any additional remarks or comments"></textarea>
-            </div>
-
-            <div class="flex items-start space-x-3 bg-white p-4 rounded-lg">
-              <input type="checkbox" v-model="localFormData.declaration"
-                class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-              <label class="text-sm text-gray-700">
-                I hereby declare that all the information provided above is true and correct to the best of my
-                knowledge.
-                I understand that any false statements may result in the rejection of my registration.
-              </label>
-            </div>
-          </div>
-        </div>
-
         <!-- Form Actions -->
         <div class="mt-12 flex justify-end space-x-4">
           <button type="button" @click="$emit('back')"
             class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
             Back to Previous Step
           </button>
-          <button type="button" @click="handleSubmit"
-            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            Submit Registration
+          <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            Next
           </button>
         </div>
+      </div>
+    </form>
+    <form @submit.prevent="handleSubmit" class="bg-white border rounded-xl shadow-sm p-6" v-else-if="stage === 2">
+      <!-- add header as step 2 -->
+      <h3 class="text-lg font-semibold text-gray-900 my-4">Step 2: Medical Institution Registration</h3>
+      <!-- Qualification Details Section -->
+      <div class="mt-12">
+        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Qualification Details</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+            <div class="col-span-1">
+              <label class="block text-sm font-medium text-gray-700 required">Qualification Type</label>
+              <select v-model="localFormData.qualification_type"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                <option value="">Select Qualification Type</option>
+                <option v-for="type in qualificationTypes" :key="type.id" :value="type.id">
+                  {{ type.qualification_type_name }}
+                </option>
+              </select>
+              <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
+      errors.qualification_type
+    }}</span>
+            </div>
+
+            <div class="col-span-1">
+              <label class="block text-sm font-medium text-gray-700 required">Qualification Name</label>
+              <select v-model="localFormData.qualification_name"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                <option value="">Select Qualification Name</option>
+                <option v-for="qualification in qualifications" :key="qualification.id" :value="qualification.id">
+                  {{ qualification.qualification }}
+                </option>
+              </select>
+              <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
+      errors.qualification_name
+    }}</span>
+            </div>
+
+            <div class="col-span-1">
+              <label class="block text-sm font-medium text-gray-700 required">Institute/University</label>
+              <select v-model="localFormData.institute"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                <option value="">Select Institute/University</option>
+                <option v-for="university in universities" :key="university.id" :value="university.id">
+                  {{ university.country }}, {{ university.university }}, {{ university.institute_name }}
+                </option>
+              </select>
+              <span v-if="errors.institute" class="text-sm text-red-500 mt-1">{{ errors.institute }}</span>
+            </div>
+
+            <div class="col-span-1">
+              <label class="block text-sm font-medium text-gray-700 required">Year of Completion</label>
+              <input type="month" v-model="localFormData.year_of_completion"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                placeholder="YYYY" />
+              <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
+      errors.year_of_completion
+    }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Documents Section with new design -->
+      <div class="mt-12">
+        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Supporting Documents</h3>
+          <div class="space-y-4">
+            <div v-for="(doc, index) in supportingDocuments" :key="index"
+              class="flex items-start space-x-4 bg-white p-4 rounded-lg border border-gray-100">
+              <div class="w-1/3">
+                <select v-model="doc.type"
+                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                  <option value="">Select Document Type</option>
+                  <option v-for="type in fetchedDocumentTypes" :key="type.id" :value="type.id">
+                    {{ type.document_name }}
+                  </option>
+                </select>
+              </div>
+              <div class="flex-1 flex items-center space-x-2">
+                <input type="file" @change="(e) => handleFileSelect(e, index)" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4
+                           file:rounded-lg file:border-0 file:text-sm file:font-semibold
+                           file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple />
+                <button @click="removeDocument(index)" type="button"
+                  class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                  <span class="sr-only">Remove</span>
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <button type="button" @click="addDocument"
+              class="mt-4 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center">
+              <span class="mr-2">+</span>
+              Add Another Document
+            </button>
+          </div>
+          <p class="text-sm text-gray-500 mt-2">
+            Required documents are graduation certificate, cid copy, security clarance, roq certificate, class 10, 12
+            and graduation marksheets.
+          </p>
+        </div>
+      </div>
+
+      <!-- Declaration Section -->
+      <div class="mt-12 bg-gray-50 p-6 rounded-xl border border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Declaration</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Remarks</label>
+            <textarea v-model="localFormData.remarks" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+              placeholder="Enter any additional remarks or comments"></textarea>
+          </div>
+
+          <div class="flex items-start space-x-3 bg-white p-4 rounded-lg">
+            <input type="checkbox" v-model="localFormData.declaration"
+              class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+            <label class="text-sm text-gray-700">
+              I hereby declare that all the information provided above is true and correct to the best of my
+              knowledge.
+              I understand that any false statements may result in the rejection of my registration.
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="mt-12 flex justify-end space-x-4">
+        <button type="button" @click="$emit('back')"
+          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+          Back to Previous Step
+        </button>
+        <button type="button" @click="handleSubmit"
+          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          Submit Registration
+        </button>
       </div>
     </form>
 
@@ -328,7 +344,6 @@ const { user } = useAuthStore();
 const router = useRouter();
 const showSuccessModal = ref(false);
 
-
 const props = defineProps({
   selectedType: {
     type: String,
@@ -341,6 +356,9 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue', 'submit', 'back', 'create', 'cancel', 'view-checklist', 'declare-code']);
+
+const stage = ref(1); // 1: Personal Info, 2: Qualification Details, etc.
+const applicationId = ref(null); // Store the application ID from the first stage submission
 
 // Document types list - NOW FETCHED FROM API
 const fetchedDocumentTypes = ref([]);
@@ -458,6 +476,7 @@ const localFormData = reactive({
   institute: '',
   year_of_completion: null,
   is_active: true,
+  application: null
 });
 
 const errors = reactive({});
@@ -477,6 +496,49 @@ watch(
   },
   { deep: true }
 );
+
+const validateFormStageOne = () => {
+  Object.keys(errors).forEach(key => delete errors[key]);
+  let isValid = true;
+
+  if (!localFormData.full_name) { errors.full_name = 'Full name is required'; isValid = false; }
+  if (!localFormData.gender) { errors.gender = 'Gender is required'; isValid = false; }
+  if (!localFormData.date_of_birth) { errors.date_of_birth = 'Date of birth is required'; isValid = false; }
+  if (!localFormData.contact_no) { errors.contact_no = 'Contact number is required'; isValid = false; }
+  if (!localFormData.passport_photo) { errors.passport_photo = 'Passport photo is required'; isValid = false; }
+
+  if (props.selectedType === 'cid') {
+    if (!localFormData.cid_no) {
+      errors.cid_no = 'CID is required';
+      isValid = false;
+    } else if (localFormData.cid_no.length > 11) {
+      errors.cid_no = 'CID must be no more than 11 digits.';
+      isValid = false;
+    }
+
+    if (!localFormData.dzongkhag) { errors.dzongkhag = 'Dzongkhag is required'; isValid = false; }
+    if (!localFormData.village) { errors.village = 'Village is required'; isValid = false; }
+  } else {
+    if (!localFormData.nationality) { errors.nationality = 'Nationality is required'; isValid = false; }
+    if (!localFormData.email_address) { errors.email_address = 'Email is required'; isValid = false; }
+    if (!localFormData.workPermitNo) { errors.workPermitNo = 'Work permit number is required'; isValid = false; }
+    if (!localFormData.country) { errors.country = 'Country is required'; isValid = false; }
+    if (!localFormData.mobileNumber) {
+      if (!localFormData.mobileNumber) {
+        errors.mobileNumber = 'Mobile number is required';
+        isValid = false;
+      } else if (localFormData.mobileNumber.length > 8) {
+        errors.mobileNumber = 'Mobile number must be no more than 8 digits.';
+        isValid = false;
+      } else if (!/^[17]/.test(localFormData.mobileNumber)) {
+        errors.mobileNumber = 'Mobile number must start with 1 or 7.';
+        isValid = false;
+      }
+    }
+  }
+
+  return isValid;
+};
 
 const validateForm = () => {
   Object.keys(errors).forEach(key => delete errors[key]);
@@ -616,6 +678,75 @@ const formatDateForAPI = (date) => {
   return `${year}-${month}-${day}`;
 };
 
+const handleNext = async () => {
+  if (validateFormStageOne()) {
+    // Prepare the data for the first stage submission
+    const formDataStageOne = { ...localFormData };
+
+    // Transform data if it's a Non-CID application
+    if (props.selectedType !== 'cid') {
+      formDataStageOne.cid_no = formDataStageOne.workPermitNo;
+      formDataStageOne.village = formDataStageOne.city;
+      formDataStageOne.gewog = formDataStageOne.state;
+      formDataStageOne.dzongkhag = formDataStageOne.country;
+
+      delete formDataStageOne.city;
+      delete formDataStageOne.state;
+      delete formDataStageOne.country;
+      delete formDataStageOne.workPermitNo;
+    }
+    delete formDataStageOne.documents;
+    delete formDataStageOne.remarks;
+    delete formDataStageOne.declaration;
+    delete formDataStageOne.is_payment_complete;
+    delete formDataStageOne.payment_id;
+    delete formDataStageOne.qualification_type;
+    delete formDataStageOne.qualification_name;
+    delete formDataStageOne.institute;
+    delete formDataStageOne.year_of_completion;
+    delete formDataStageOne.is_active;
+    delete formDataStageOne.application;
+
+    // Calculate and format registration and expiry dates
+    const today = new Date();
+    const expiry = new Date(today);
+    expiry.setFullYear(today.getFullYear() + 5);
+
+    formDataStageOne.registration_date = formatDateForAPI(today);
+    formDataStageOne.expiry_date = formatDateForAPI(expiry);
+
+    // Create FormData for the API, including the passport photo
+    const apiFormData = new FormData();
+    for (const key in formDataStageOne) {
+      if (Object.prototype.hasOwnProperty.call(formDataStageOne, key)) {
+        if (key === 'passport_photo' && formDataStageOne[key] instanceof File) {
+          apiFormData.append('passport_photo', formDataStageOne[key]);
+        } else {
+          apiFormData.append(key, formDataStageOne[key]);
+        }
+      }
+    }
+
+    try {
+      // Submit the first part of the form data
+      const response = await apiService.createBhmcNewApplication(apiFormData);
+
+      // Capture the application ID from the response
+      applicationId.value = response.data.id;
+      localFormData.application = response.data.id;
+
+      // Show a success toast
+      toast.success('Personal information saved!');
+
+      // Move to the next stage
+      stage.value = 2;
+    } catch (error) {
+      console.error('Error submitting personal information:', error);
+      toast.error(`Failed to save personal information: ${error.message}`);
+    }
+  }
+};
+
 const handleSubmit = async () => {
   if (validateForm()) {
     openPaymentModal();
@@ -625,64 +756,39 @@ const handleSubmit = async () => {
 const handleSubmitActual = async () => {
   isSubmitting.value = true;
   try {
-    const formDataForApi = { ...localFormData }; // Create a copy to modify
+    // Create the FormData object
+    const formData = new FormData();
 
-    if (props.selectedType !== 'cid') {
-      // Apply the Non-CID transformations
-      formDataForApi.cid_no = formDataForApi.workPermitNo; // workPermitNo to cid_no
+    // Add all the regular fields to FormData
+    formData.append('completion_year', new Date(localFormData.year_of_completion).getFullYear());
+    formData.append('declaration', localFormData.declaration);
+    formData.append('remarks', localFormData.remarks);
+    formData.append('registration_date', formatDateForAPI(new Date()));
+    formData.append('expiry_date', formatDateForAPI(new Date(new Date().setFullYear(new Date().getFullYear() + 5))));
+    formData.append('is_payment_complete', localFormData.is_payment_complete);
+    formData.append('payment_id', localFormData.payment_id);
+    formData.append('is_active', localFormData.is_active);
+    formData.append('application', localFormData.application);
+    formData.append('qualification_name', localFormData.qualification_name);
+    formData.append('qualification_type', localFormData.qualification_type);
+    formData.append('institute_university', localFormData.institute);
 
-      formDataForApi.village = formDataForApi.city;
-      formDataForApi.gewog = formDataForApi.state;
-      formDataForApi.dzongkhag = formDataForApi.country;
-
-      // Remove city, state, country, workPermitNo from the payload (optional but cleaner)
-      delete formDataForApi.city;
-      delete formDataForApi.state;
-      delete formDataForApi.country;
-      delete formDataForApi.workPermitNo;
-    }
-
-    const apiFormData = new FormData();  // Create FormData for the API
-
-    for (const key in formDataForApi) {
-      if (Object.hasOwnProperty.call(formDataForApi, key)) { // Safe iteration
-        const value = formDataForApi[key];
-
-        if (key === 'passport_photo' && value instanceof File) {
-          apiFormData.append('passport_photo', value);
-        } else if (key === 'image' && value instanceof File) {
-          apiFormData.append('image', value);
-        } else if (key === 'documents' && Array.isArray(value)) {
-          value.forEach((doc, index) => {
-            apiFormData.append(`documents[${index}][type]`, doc.type); // Send type
-            if (doc.files && Array.isArray(doc.files)) {
-              doc.files.forEach((file, fileIndex) => {
-                apiFormData.append(`documents[${index}][file][${fileIndex}]`, file);  // File data
-              });
-            }
-            apiFormData.append(`documents[${index}][description]`, doc.description);
-          });
-        }
-        else if (value !== null && value !== undefined) {
-          apiFormData.append(key, value);
-        }
+    // Handle file attachments
+    localFormData.documents.forEach((doc, index) => {
+      if (doc.files && doc.files.length > 0) {
+        doc.files.forEach(file => {
+          formData.append(`attachments[${index}][file]`, file);
+          formData.append(`attachments[${index}][file_type]`, doc.type);
+        });
       }
-    }
+    });
 
-    const today = new Date();
-    const expiry = new Date(today);
-    expiry.setFullYear(today.getFullYear() + 5);
-
-    apiFormData.append('registration_date', formatDateForAPI(today));
-    apiFormData.append('expiry_date', formatDateForAPI(expiry));
-
-    await apiService.createBhmcNewApplication(apiFormData);
+    // Send everything in a single request
+    await apiService.createBhmcNewQualification(formData);
 
     toast.success('Application submitted successfully!');
-    showSuccessModal.value = true; // Show the modal instead of using setTimeout
-
-    emit('submit', apiFormData);
-
+    showSuccessModal.value = true;
+    emit('submit', formData);
   } catch (error) {
     console.error('Error submitting application:', error);
     toast.error(`Application submission failed: ${error.message}`);

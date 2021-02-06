@@ -248,7 +248,7 @@ const fetchUserData = async () => {
     village: 'Sample Village',
     gewog: 'Sample Gewog',
     dzongkhag: 'Sample Dzongkhag',
-    credits: 90
+    credits: 40,
   }
 }
 

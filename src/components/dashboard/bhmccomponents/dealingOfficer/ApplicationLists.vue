@@ -49,9 +49,9 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
-            <tr 
-              v-for="app in paginatedApplications(tab.value)" 
-              :key="app.id" 
+            <tr
+              v-for="app in paginatedApplications(tab.value)"
+              :key="app.id"
               class="hover:bg-gray-50 transition-colors"
             >
               <td class="py-3 px-4 text-sm text-gray-700">{{ app.id }}</td>
@@ -110,6 +110,7 @@
 import { ref, computed } from 'vue';
 import ViewDetailsModal from './modals/ViewDetailsModal.vue';
 import ConfirmationModal from './modals/ConfirmationModal.vue';
+import services from '@/services/services';
 
 const tabs = ref([
   { label: 'Registration', value: 'Registration' },
@@ -125,6 +126,7 @@ const applications = ref([
   { id: 4, fullName: 'Bob Wilson', type: 'Registration', status: 'Rejected', submissionDate: '2023-10-04' },
   { id: 5, fullName: 'Charlie Brown', type: 'Renewal', status: 'Approved', submissionDate: '2023-10-05' },
 ]);
+
 
 const activeTab = ref('Registration');
 const filterStatus = ref('all');

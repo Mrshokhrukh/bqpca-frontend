@@ -37,6 +37,7 @@ export default {
   createMastersCmeCredit(data) {
     return apiClient.post('/bmhc/masters-cme-credits/', data)
   },
+
   getMastersCmeCredit(id) {
     return apiClient.get(`/bmhc/masters-cme-credits/${id}/`)
   },
@@ -505,4 +506,26 @@ export default {
   deleteBhmcRenewal(id) {
     return apiClient.delete(`/bmhc/bmhc-renewals/${id}/`)
   },
+
+
+// BHMC user qualifications
+getBhmcNewQualifications() {
+  return apiClient.get('/bmhc/bmhc-new-qualification/');
+},
+createBhmcNewQualification(data) {
+  return apiClient.post('/bmhc/bmhc-new-qualification/', data);
+},
+getBhmcNewQualification(id) {
+  return apiClient.get(`/bmhc/bmhc-new-qualification/${id}/`);
+},
+updateBhmcNewQualificationl(id, data) {
+  return apiClient.put(`/bmhc/bmhc-new-qualification/${id}/`, data);
+},
+patchBhmcNewQualification(id, data) {
+  return apiClient.patch(`/bmhc/bmhc-new-qualification/${id}/`, data);
+},
+deleteBhmcNewQualification(id) {
+  return apiClient.delete(`/bmhc/bmhc-new-qualification/${id}/`);
+},
+
 }
