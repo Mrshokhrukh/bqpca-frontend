@@ -222,7 +222,7 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('CreditCard'),
         route: (serviceType) => `/admin/user/${serviceType}/payment_history`,
       },
-  
+
       {
         name: 'Profile',
         icon: getIconComponent('CreditCard'),
@@ -259,7 +259,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/admin/${serviceType}/shortlisting`,
       },
       {
-        name: 'Compliance', 
+        name: 'Compliance',
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/admin/${serviceType}/compliance`,
       },
@@ -280,18 +280,27 @@ const serviceSpecificMenuItems = {
   health_certification: {
     user: [
       {
-        name: 'Practitioner Reg & Cert',
-        icon: getIconComponent('Heart'),
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Certification',
+        icon: getIconComponent('Certificate'),
         children: [
           {
-            name: 'Registration Application',
+            name: 'Apply for Certification',
             route: (serviceType) =>
-              `/admin/user/${serviceType}/practitioner_reg_and_cert/registration`,
+              `/admin/user/${serviceType}/registration`,
           },
           {
-            name: 'Certificate Application',
+            name: 'My Applications',
             route: (serviceType) =>
-              `/admin/user/${serviceType}/practitioner_reg_and_cert/certificate`,
+              `/admin/user/${serviceType}/my_applications`,
+          },
+          {
+            name: 'Renewal',
+            route: (serviceType) => `/admin/user/${serviceType}/renewal`,
           },
           {
             name: 'Re-Registration',
