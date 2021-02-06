@@ -293,6 +293,14 @@ const serviceSpecificMenuItems = {
             route: (serviceType) =>
               `/admin/user/${serviceType}/practitioner_reg_and_cert/certificate`,
           },
+          {
+            name: 'Re-Registration',
+            route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
+          },
+          {
+            name: 'Additional Qualification',
+            route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
+          },
         ],
       },
       {
