@@ -73,6 +73,7 @@ import PractitionerRenewal from '@/components/dashboard/bhmccomponents/user/cert
 import ApplicationTracker from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationTracker.vue';
 import AdditionalQualification from '@/components/dashboard/bhmccomponents/user/certificateApplication/AdditionalQualification.vue';
 import ReRegistration from '@/components/dashboard/bhmccomponents/user/certificateApplication/ReRegistration.vue';
+import BMHCUserReports from '@/components/dashboard/bhmccomponents/user/BMHCUserReports.vue';
 
 // Dealing Officer Components
 import ApplicationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/ApplicationLists.vue';
@@ -165,6 +166,8 @@ const bmhAdminComponent = computed(() => {
       return CogsDepartment;
     case path.endsWith('/health_certification/cogs_workplace'):
       return CogsWorkplace;
+
+      
     default:
       return null;
   }
@@ -192,6 +195,8 @@ const bmhUserComponent = computed(() => {
       return CoGSComponet;
     case path.endsWith('/health_certification/profile'):
       return CoGSComponet;
+    case path.endsWith('/health_certification/reports'):  
+      return BMHCUserReports;  
     default:
       return null;
   }
