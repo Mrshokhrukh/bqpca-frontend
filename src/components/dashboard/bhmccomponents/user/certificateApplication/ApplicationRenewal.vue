@@ -1,162 +1,136 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-4xl mx-auto">
-      <!-- Header Card -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-6">
-        <div class="flex items-center space-x-4">
-          <div class="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Form Header -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+      <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
+        Renewal Application
+      </h2>
+      <p class="text-gray-600 text-center max-w-2xl mx-auto">
+        Please review your personal details and BQPCA credits to ensure your eligibility for renewal.
+      </p>
+    </div>
+
+    <!-- Main Form Card -->
+    <div class="bg-white border rounded-xl shadow-sm p-6">
+      <!-- Personal Details Section -->
+      <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
+        <h3 class="text-lg font-semibold text-gray-900">Personal Details</h3>
+        <p class="mt-1 text-sm text-gray-500">Verify your personal information.</p>
+      </div>
+
+      <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- CID Number -->
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">CID No./Identity/Work Permit No.</label>
+          <div class="relative">
+            <input type="text" v-model="formData.cidNo"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+              :class="{
+                'bg-gray-50 border border-gray-200': fetchedData,
+                'border border-gray-300': !fetchedData,
+              }" placeholder="Enter CID number" @input="resetFetchedData"
+              :disabled="isFetchingData || fetchedData" />
+            <button @click="fetchCitizenData" type="button" :disabled="isFetchingData || fetchedData"
+              class="absolute right-2.5 top-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed">
+              <span v-if="isFetchingData">Fetching...</span>
+              <span v-else>Fetch Data</span>
+            </button>
           </div>
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900">Renewal Application</h1>
-            <p class="text-gray-500">Please review your information before submission</p>
+          <span v-if="cidError" class="text-sm text-red-500 mt-1">{{ cidError }}</span>
+        </div>
+
+        <!-- Full Name -->
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Full Name</label>
+          <input type="text" v-model="formData.fullName" disabled
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+        </div>
+
+        <!-- Gender -->
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Gender</label>
+          <input type="text" v-model="formData.gender" disabled
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
+          <input type="text" v-model="formData.dateOfBirth" disabled
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+        </div>
+
+        <!-- Village -->
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Village</label>
+          <input type="text" v-model="formData.village" disabled
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+        </div>
+
+        <!-- Gewog -->
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Gewog</label>
+          <input type="text" v-model="formData.gewog" disabled
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+        </div>
+
+        <!-- Dzongkhag -->
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Dzongkhag</label>
+          <input type="text" v-model="formData.dzongkhag" disabled
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+        </div>
+
+        <!-- Credits Information -->
+        <div class="col-span-1">
+          <div :class="['rounded-xl p-4',
+              creditStatus === 'red' ? 'bg-red-50 border border-red-200' :
+                creditStatus === 'blue' ? 'bg-blue-50 border border-blue-200' : 'bg-green-50 border border-green-200']">
+            <div class="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2"
+                :class="creditStatus === 'red' ? 'text-red-600' : creditStatus === 'blue' ? 'text-blue-600' : 'text-green-600'"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span class="text-sm font-medium"
+                :class="creditStatus === 'red' ? 'text-red-900' : creditStatus === 'blue' ? 'text-blue-900' : 'text-green-900'">BQPCA
+                Credits</span>
+            </div>
+            <div class="mt-2 flex items-center justify-between">
+              <div>
+                <div class="text-2xl font-bold"
+                  :class="creditStatus === 'red' ? 'text-red-900' : creditStatus === 'blue' ? 'text-blue-900' : 'text-green-900'">
+                  {{ formData.credits }}</div>
+                <div class="text-sm"
+                  :class="creditStatus === 'red' ? 'text-red-700' : creditStatus === 'blue' ? 'text-blue-700' : 'text-green-700'">
+                  Current Credits</div>
+              </div>
+              <div>
+                <div class="text-2xl font-bold"
+                  :class="creditStatus === 'red' ? 'text-red-900' : creditStatus === 'blue' ? 'text-blue-900' : 'text-green-900'">
+                  {{ minimumCredits }}</div>
+                <div class="text-sm"
+                  :class="creditStatus === 'red' ? 'text-red-700' : creditStatus === 'blue' ? 'text-blue-700' : 'text-green-700'">
+                  Required Credits</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Main Form Card -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-        <!-- Personal Details Section -->
-        <div class="mb-8">
-          <div class="flex items-center mb-6">
-            <div class="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-            <h2 class="text-xl font-semibold text-gray-900">Personal Details</h2>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-6">
-              <!-- CID Number -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">CID No./Identity/Work Permit No.</label>
-                <div class="relative">
-                  <input type="text" v-model="formData.cidNo"
-                    class="w-full px-4 py-2.5 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500"
-                    :class="{ 'bg-gray-50 border border-gray-200': fetchedData, 'border border-gray-300': !fetchedData }"
-                    placeholder="Enter CID number" @input="resetFetchedData"
-                    :disabled="isFetchingData || fetchedData" />
-                  <button @click="fetchCitizenData" type="button" :disabled="isFetchingData || fetchedData"
-                    class="absolute right-2.5 top-1.5 bg-blue-500 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-4 py-2"
-                    :class="{ 'cursor-not-allowed opacity-50': isFetchingData || fetchedData }">
-                    <span v-if="isFetchingData">Fetching...</span>
-                    <span v-else>Fetch Data</span>
-                  </button>
-                </div>
-                <span v-if="cidError" class="text-sm text-red-500 mt-1">{{ cidError }}</span>
-              </div>
-
-              <!-- Full Name -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                <input type="text" v-model="formData.fullName" disabled
-                  class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
-              </div>
-
-              <!-- Gender -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                <input type="text" v-model="formData.gender" disabled
-                  class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
-              </div>
-
-              <!-- Date of Birth -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-                <input type="text" v-model="formData.dateOfBirth" disabled
-                  class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
-              </div>
-            </div>
-
-            <div class="space-y-6">
-              <!-- Village -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Village</label>
-                <input type="text" v-model="formData.village" disabled
-                  class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
-              </div>
-
-              <!-- Gewog -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Gewog</label>
-                <input type="text" v-model="formData.gewog" disabled
-                  class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
-              </div>
-
-              <!-- Dzongkhag -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Dzongkhag</label>
-                <input type="text" v-model="formData.dzongkhag" disabled
-                  class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
-              </div>
-
-              <!-- Credits Information -->
-              <div :class="['p-4 rounded-lg',
-                    creditStatus === 'red' ? 'bg-red-50' :
-                      creditStatus === 'blue' ? 'bg-blue-50' : 'bg-green-50']">
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2"
-                    :class="creditStatus === 'red' ? 'text-red-600' : creditStatus === 'blue' ? 'text-blue-600' : 'text-green-600'"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span class="text-sm font-medium"
-                    :class="creditStatus === 'red' ? 'text-red-900' : creditStatus === 'blue' ? 'text-blue-900' : 'text-green-900'">BQPCA
-                    Credits</span>
-                </div>
-                <div class="mt-2 flex items-center justify-between">
-                  <div>
-                    <div class="text-2xl font-bold"
-                      :class="creditStatus === 'red' ? 'text-red-900' : creditStatus === 'blue' ? 'text-blue-900' : 'text-green-900'">
-                      {{ formData.credits }}</div>
-                    <div class="text-sm"
-                      :class="creditStatus === 'red' ? 'text-red-700' : creditStatus === 'blue' ? 'text-blue-700' : 'text-green-700'">
-                      Current Credits</div>
-                  </div>
-                  <div>
-                    <div class="text-2xl font-bold"
-                      :class="creditStatus === 'red' ? 'text-red-900' : creditStatus === 'blue' ? 'text-blue-900' : 'text-green-900'">
-                      {{ minimumCredits }}</div>
-                    <div class="text-sm"
-                      :class="creditStatus === 'red' ? 'text-red-700' : creditStatus === 'blue' ? 'text-blue-700' : 'text-green-700'">
-                      Required Credits</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="border-t pt-6 flex justify-end gap-4">
-          <button @click="handleCancel"
-            class="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            Cancel
-          </button>
-          <button @click="handleSubmit" :class="['px-6 py-2.5 rounded-lg text-white transition-colors duration-200 flex items-center',
-                    isEligibleForRenewal ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed']"
-            :disabled="!isEligibleForRenewal">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {{ buttonText }}
-          </button>
-        </div>
+      <!-- Action Buttons -->
+      <div class="mt-12 flex justify-end space-x-4 p-8">
+        <button @click="handleCancel"
+          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+          Cancel
+        </button>
+        <button @click="handleSubmit"
+          :class="['px-6 py-3 rounded-lg text-white transition-colors',
+            isEligibleForRenewal ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed']"
+          :disabled="!isEligibleForRenewal">
+          {{ buttonText }}
+        </button>
       </div>
     </div>
 
@@ -193,8 +167,11 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import apiService from '@/services/services';
+import { useToast } from 'vue-toastification';
 
 const router = useRouter()
+const toast = useToast();
+
 const formData = ref({
   cidNo: '',
   fullName: '',
@@ -259,7 +236,7 @@ onMounted(async () => {
     validateEligibility()
   } catch (error) {
     console.error('Error fetching user data:', error)
-    // Show error notification
+    toast.error('Error fetching user data.');
   }
 })
 
@@ -269,7 +246,7 @@ const validateEligibility = () => {
 
 const handleSubmit = () => {
   if (!isEligibleForRenewal.value) {
-    // Show error notification
+    toast.error('Insufficient credits to submit renewal.');
     return
   }
   showConfirmation.value = true
@@ -278,13 +255,13 @@ const handleSubmit = () => {
 const confirmSubmit = async () => {
   try {
     await submitRenewal(formData.value)
-    // Show success notification
+    toast.success('Renewal submitted successfully!')
     showConfirmation.value = false
     // Redirect to success page or dashboard
     router.push('/dashboard')
   } catch (error) {
     console.error('Error submitting renewal:', error)
-    // Show error notification
+    toast.error('Error submitting renewal.');
   }
 }
 
