@@ -313,14 +313,32 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Continuous Professional Development',
+        name: 'Apply for CPD',
         icon: getIconComponent('BookOpen'),
-        route: (serviceType) => `/admin/user/${serviceType}/cpd`,
+        children: [
+          {
+            name: 'Apply for CPD',
+            route: (serviceType) => `/admin/user/${serviceType}/cpd`,
+          },
+          {
+            name: 'My Applications',
+            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+          },
+        ],
       },
       {
-        name: 'Certificate of Good Standing',
+        name: 'Apply for CoGS',
         icon: getIconComponent('Users'),
-        route: (serviceType) => `/admin/user/${serviceType}/CoGS`,
+        children: [
+          {
+            name: 'Apply for CoGS',
+            route: (serviceType) => `/admin/user/${serviceType}/CoGS`,
+          },
+          {
+            name: 'My Applications',
+            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+          },
+        ],
       },
       {
         name: 'Reports',
