@@ -8,7 +8,7 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-})
+});
 
 export default {
   getMastersCmeActivities() {
@@ -508,24 +508,24 @@ export default {
   },
 
 
-  // BHMC user qualifications
-  getBhmcNewQualifications() {
-    return apiClient.get('/bmhc/bmhc-new-qualification/');
-  },
-  createBhmcNewQualification(data) {
-    return apiClient.post('/bmhc/bmhc-new-qualification/', data);
-  },
-  getBhmcNewQualification(id) {
-    return apiClient.get(`/bmhc/bmhc-new-qualification/${id}/`);
-  },
-  updateBhmcNewQualificationl(id, data) {
-    return apiClient.put(`/bmhc/bmhc-new-qualification/${id}/`, data);
-  },
-  patchBhmcNewQualification(id, data) {
-    return apiClient.patch(`/bmhc/bmhc-new-qualification/${id}/`, data);
-  },
-  deleteBhmcNewQualification(id) {
-    return apiClient.delete(`/bmhc/bmhc-new-qualification/${id}/`);
-  },
+// BHMC user qualifications
+getBhmcNewQualifications() {
+  return apiClient.get('/bmhc/bmhc-new-qualification/');
+},
+createBhmcNewQualification(data) {
+  return apiClient.post('/bmhc/bmhc-new-qualification/', data);
+},
+getBhmcNewQualification(id) {
+  return apiClient.get(`/bmhc/bmhc-new-qualification/${id}/`);
+},
+updateBhmcNewQualification(id, data) {
+  return apiClient.put(`/bmhc/bmhc-new-qualification/${id}/`, data);
+},
+patchBhmcNewQualification(id, data) {
+  return apiClient.patch(`/bmhc/bmhc-new-qualification/${id}/`, data);
+},
+deleteBhmcNewQualification(id) {
+  return apiClient.delete(`/bmhc/bmhc-new-qualification/${id}/`);
+},
 
-}
+};
