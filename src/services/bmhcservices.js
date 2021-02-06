@@ -8,7 +8,7 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-})
+});
 
 export default {
   getMastersCmeActivities() {
@@ -482,7 +482,7 @@ createBhmcNewQualification(data) {
 getBhmcNewQualification(id) {
   return apiClient.get(`/bmhc/bmhc-new-qualification/${id}/`);
 },
-updateBhmcNewQualificationl(id, data) {
+updateBhmcNewQualification(id, data) {
   return apiClient.put(`/bmhc/bmhc-new-qualification/${id}/`, data);
 },
 patchBhmcNewQualification(id, data) {
@@ -492,4 +492,4 @@ deleteBhmcNewQualification(id) {
   return apiClient.delete(`/bmhc/bmhc-new-qualification/${id}/`);
 },
 
-}
+};
