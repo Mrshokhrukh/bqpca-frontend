@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from 'axios'
 
 const apiClient = axios.create({
   baseURL:
@@ -367,6 +367,42 @@ export default {
   },
 
   // COGS Agencies
+
+  // Get all COGS applications
+  getBmhcCogs(params = {}) {
+    return apiClient.get('/bmhc/bmhc-cogs/', { params })
+  },
+
+  // Create new COGS application
+  createBmhcCogs(data) {
+    return apiClient.post('/bmhc/bmhc-cogs/', data)
+  },
+
+  // Get single COGS application by ID
+  getBmhcCogsById(id) {
+    return apiClient.get(`/bmhc/bmhc-cogs/${id}/`)
+  },
+
+  // Update COGS application (full update)
+  updateBmhcCogs(id, data) {
+    return apiClient.put(`/bmhc/bmhc-cogs/${id}/`, data)
+  },
+
+  // Partial update COGS application
+  patchBmhcCogs(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-cogs/${id}/`, data)
+  },
+
+  // Delete COGS application
+  deleteBmhcCogs(id) {
+    return apiClient.delete(`/bmhc/bmhc-cogs/${id}/`)
+  },
+
+  // For pagination with full URLs
+  getBmhcCogsWithUrl(url) {
+    return apiClient.get(url)
+  },
+
   getBmhcCogsAgencies() {
     return apiClient.get('/bmhc/masters-cogs-agencies/')
   },
@@ -428,45 +464,45 @@ export default {
 
   // BMHC Application Endpoints
   getBhmcNewApplications() {
-    return apiClient.get('/bmhc/bmhc-new-application/');
+    return apiClient.get('/bmhc/bmhc-new-application/')
   },
   createBhmcNewApplication(data) {
     return apiClient.post('/bmhc/bmhc-new-application/', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-    });
+    })
   },
   getBhmcNewApplication(id) {
-    return apiClient.get(`/bmhc/bmhc-new-application/${id}/`);
+    return apiClient.get(`/bmhc/bmhc-new-application/${id}/`)
   },
   updateBhmcNewApplication(id, data) {
-    return apiClient.put(`/bmhc/bmhc-new-application/${id}/`, data);
+    return apiClient.put(`/bmhc/bmhc-new-application/${id}/`, data)
   },
   patchBhmcNewApplication(id, data) {
-    return apiClient.patch(`/bmhc/bmhc-new-application/${id}/`, data);
+    return apiClient.patch(`/bmhc/bmhc-new-application/${id}/`, data)
   },
   deleteBhmcNewApplication(id) {
-    return apiClient.delete(`/bmhc/bmhc-new-application/${id}/`);
+    return apiClient.delete(`/bmhc/bmhc-new-application/${id}/`)
   },
 
- // BMHC Renewals Endpoints
+  // BMHC Renewals Endpoints
   getBhmcRenewals() {
-    return apiClient.get('/bmhc/bmhc-renewals/');
+    return apiClient.get('/bmhc/bmhc-renewals/')
   },
   createBhmcRenewal(data) {
-    return apiClient.post('/bmhc/bmhc-renewals/', data);
+    return apiClient.post('/bmhc/bmhc-renewals/', data)
   },
   getBhmcRenewal(id) {
-    return apiClient.get(`/bmhc/bmhc-renewals/${id}/`);
+    return apiClient.get(`/bmhc/bmhc-renewals/${id}/`)
   },
   updateBhmcRenewal(id, data) {
-    return apiClient.put(`/bmhc/bmhc-renewals/${id}/`, data);
+    return apiClient.put(`/bmhc/bmhc-renewals/${id}/`, data)
   },
   patchBhmcRenewal(id, data) {
-    return apiClient.patch(`/bmhc/bmhc-renewals/${id}/`, data);
+    return apiClient.patch(`/bmhc/bmhc-renewals/${id}/`, data)
   },
   deleteBhmcRenewal(id) {
-    return apiClient.delete(`/bmhc/bmhc-renewals/${id}/`);
+    return apiClient.delete(`/bmhc/bmhc-renewals/${id}/`)
   },
 }
