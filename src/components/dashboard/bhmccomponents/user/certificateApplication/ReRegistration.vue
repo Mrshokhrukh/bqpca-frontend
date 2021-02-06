@@ -1,91 +1,92 @@
 <template>
-  <div class="min-h-screen py-6 flex flex-col justify-center sm:py-12">
-    <div class="relative py-3 sm:max-w-xl sm:mx-auto">
-      <div class="relative px-4 py-10 bg-white mx-8 md:mx-0 shadow rounded-3xl sm:p-10">
-        <div class="max-w-md mx-auto">
-          <div class="divide-y divide-gray-200">
-            <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-              <h2 class="text-2xl font-bold mb-8 text-center text-gray-800">Re-Registration Application</h2>
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Form Header -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+      <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
+        Re-Registration Application
+      </h2>
+      <p class="text-gray-600 text-center max-w-2xl mx-auto">
+        Please ensure all pre-filled information is correct. Update contact details if necessary. Fields marked with an
+        asterisk (<span class="text-red-600">*</span>) are mandatory.
+      </p>
+    </div>
 
-              <form @submit.prevent="handleSubmit" class="space-y-6">
-                <!-- Personal Information Section -->
-                <div class="space-y-4">
-                  <div class="flex flex-col">
-                    <label class="text-sm font-medium text-gray-700">CID/Identity/Work Permit No.*</label>
-                    <input type="text" v-model="formData.cidNumber" :readonly="true"
-                      class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm">
-                  </div>
+    <form @submit.prevent="handleSubmit" class="bg-white border rounded-xl shadow-sm p-6">
+      <!-- Personal Information Section -->
+      <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
+        <h3 class="text-lg font-semibold text-gray-900">Personal Information</h3>
+        <p class="mt-1 text-sm text-gray-500">Your pre-filled personal details.</p>
+      </div>
 
-                  <div class="flex flex-col">
-                    <label class="text-sm font-medium text-gray-700">Full Name*</label>
-                    <input type="text" v-model="formData.fullName" :readonly="true"
-                      class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm">
-                  </div>
+      <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">CID/Identity/Work Permit No.*</label>
+          <input type="text" v-model="formData.cidNumber" :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+        </div>
 
-                  <div class="flex flex-col">
-                    <label class="text-sm font-medium text-gray-700">Gender*</label>
-                    <input type="text" v-model="formData.gender" :readonly="true"
-                      class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm">
-                  </div>
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Full Name*</label>
+          <input type="text" v-model="formData.fullName" :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+        </div>
 
-                  <div class="flex flex-col">
-                    <label class="text-sm font-medium text-gray-700">Date of Birth*</label>
-                    <input type="date" v-model="formData.dateOfBirth" :readonly="true"
-                      class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm">
-                  </div>
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Gender*</label>
+          <input type="text" v-model="formData.gender" :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+        </div>
 
-                  <!-- Address Information -->
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="flex flex-col">
-                      <label class="text-sm font-medium text-gray-700">Village*</label>
-                      <input type="text" v-model="formData.village" :readonly="true"
-                        class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm">
-                    </div>
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Date of Birth*</label>
+          <input type="date" v-model="formData.dateOfBirth" :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+        </div>
 
-                    <div class="flex flex-col">
-                      <label class="text-sm font-medium text-gray-700">Gewog*</label>
-                      <input type="text" v-model="formData.gewog" :readonly="true"
-                        class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm">
-                    </div>
-                  </div>
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Village*</label>
+          <input type="text" v-model="formData.village" :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+        </div>
 
-                  <div class="flex flex-col">
-                    <label class="text-sm font-medium text-gray-700">Dzongkhag*</label>
-                    <input type="text" v-model="formData.dzongkhag" :readonly="true"
-                      class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm">
-                  </div>
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Gewog*</label>
+          <input type="text" v-model="formData.gewog" :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+        </div>
 
-                  <!-- Contact Information -->
-                  <div class="flex flex-col">
-                    <label class="text-sm font-medium text-gray-700">Contact Number</label>
-                    <input type="tel" v-model="formData.contactNumber"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                  </div>
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Dzongkhag*</label>
+          <input type="text" v-model="formData.dzongkhag" :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+        </div>
 
-                  <div class="flex flex-col">
-                    <label class="text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" v-model="formData.email"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                  </div>
-                </div>
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Contact Number</label>
+          <input type="tel" v-model="formData.contactNumber"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
+          <span v-if="errors.contactNumber" class="text-sm text-red-500 mt-1">{{ errors.contactNumber }}</span>
+        </div>
 
-                <!-- Action Buttons -->
-                <div class="pt-4 flex space-x-4">
-                  <button type="button" @click="handleCancel"
-                    class="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Cancel
-                  </button>
-                  <button type="submit"
-                    class="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Confirm & Submit
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Email</label>
+          <input type="email" v-model="formData.email"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
+          <span v-if="errors.email" class="text-sm text-red-500 mt-1">{{ errors.email }}</span>
         </div>
       </div>
-    </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-12 flex justify-end space-x-4 p-8">
+        <button type="button" @click="handleCancel"
+          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+          Cancel
+        </button>
+        <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          Confirm & Submit
+        </button>
+      </div>
+    </form>
 
     <!-- Confirmation Modal -->
     <TransitionRoot appear :show="isConfirmationOpen" as="template">
@@ -133,12 +134,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification';
 
 const router = useRouter()
 const isConfirmationOpen = ref(false)
+const toast = useToast();
 
 const formData = ref({
   cidNumber: '', // These will be populated from your backend
@@ -151,6 +154,8 @@ const formData = ref({
   contactNumber: '',
   email: ''
 })
+
+const errors = reactive({}); // Validation Errors
 
 // Simulated function to fetch user details
 const fetchUserDetails = async (cidNumber) => {
@@ -166,12 +171,33 @@ const fetchUserDetails = async (cidNumber) => {
     }
   } catch (error) {
     console.error('Error fetching user details:', error)
+    toast.error('Error fetching user details.');
   }
 }
 
+const validateForm = () => {
+  Object.keys(errors).forEach(key => delete errors[key]); // Clear previous errors
+  let isValid = true;
+
+  if (!formData.value.contactNumber) {
+    errors.contactNumber = 'Contact Number is required';
+    isValid = false;
+  }
+  if (!formData.value.email) {
+    errors.email = 'Email is required';
+    isValid = false;
+  }
+
+  return isValid;
+};
+
 const handleSubmit = (event) => {
   event.preventDefault()
-  isConfirmationOpen.value = true
+  if (validateForm()) {
+    isConfirmationOpen.value = true;
+  } else {
+    toast.error('Please correct the errors in the form.');
+  }
 }
 
 const confirmSubmit = async () => {
@@ -187,14 +213,14 @@ const confirmSubmit = async () => {
 
     if (response.ok) {
       // Handle successful submission
-      alert('Re-registration submitted successfully!')
+      toast.success('Re-registration submitted successfully!')
       router.push('/dashboard') // Or wherever you want to redirect
     } else {
       throw new Error('Submission failed')
     }
   } catch (error) {
     console.error('Error submitting form:', error)
-    alert('Failed to submit re-registration. Please try again.')
+    toast.error('Failed to submit re-registration. Please try again.')
   } finally {
     closeConfirmationModal()
   }
@@ -219,3 +245,10 @@ onMounted(() => {
   }
 })
 </script>
+
+<style scoped>
+.required::after {
+  content: " *";
+  color: #ef4444;
+}
+</style>

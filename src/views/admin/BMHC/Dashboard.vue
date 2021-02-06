@@ -66,14 +66,14 @@ import BmhCpdCmeProviderDashboard from '@/components/dashboard/bhmccomponents/cp
 import BmhInstitutionsDashboard from '@/components/dashboard/bhmccomponents/institutions/BmhInstitutionsDashboard.vue';
 import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superAdmin/BmhSuperAdminDashboard.vue';
 // BMH user
-import CPDcomponent from '@/components/dashboard/bhmccomponents/user/CPDcomponent.vue';
-import CoGSComponet from '@/components/dashboard/bhmccomponents/user/CoGSComponet.vue';
+import CPDcomponent from '@/components/dashboard/bhmccomponents/user/CPDApplication.vue';
+import CoGSComponet from '@/components/dashboard/bhmccomponents/user/CoGSApplication.vue';
 import PractitionerRegistration from '@/components/dashboard/bhmccomponents/user/certificateApplication/CertificateRegistrationComponent.vue';
 import PractitionerRenewal from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationRenewal.vue';
 import ApplicationTracker from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationTracker.vue';
 import AdditionalQualification from '@/components/dashboard/bhmccomponents/user/certificateApplication/AdditionalQualification.vue';
 import ReRegistration from '@/components/dashboard/bhmccomponents/user/certificateApplication/ReRegistration.vue';
-import BMHCUserReports from '@/components/dashboard/bhmccomponents/user/BMHCUserReports.vue';
+import BMHCUserReports from '@/components/dashboard/bhmccomponents/user/ReportsComponent.vue';
 
 // Dealing Officer Components
 import ApplicationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/ApplicationLists.vue';
@@ -167,7 +167,7 @@ const bmhAdminComponent = computed(() => {
     case path.endsWith('/health_certification/cogs_workplace'):
       return CogsWorkplace;
 
-      
+
     default:
       return null;
   }
@@ -195,8 +195,8 @@ const bmhUserComponent = computed(() => {
       return CoGSComponet;
     case path.endsWith('/health_certification/profile'):
       return CoGSComponet;
-    case path.endsWith('/health_certification/reports'):  
-      return BMHCUserReports;  
+    case path.endsWith('/health_certification/reports'):
+      return BMHCUserReports;
     default:
       return null;
   }
