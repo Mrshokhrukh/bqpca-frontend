@@ -1,6 +1,6 @@
 <template>
   <div class="p-6">
-    <!-- Header Section, Search, Filter, Loading, Error - All Unchanged -->
+    <!-- Header, Search, Filter, Loading, Error, Data Table, Pagination -->
     <div class="mb-6 flex justify-between items-center">
       <h1 class="text-2xl font-bold text-gray-900">Certificate of Good Standing Applications</h1>
       <div class="flex space-x-4">
@@ -33,7 +33,6 @@
         <p class="text-red-700">{{ error }}</p>
       </div>
     </div>
-
     <!-- Data Table -->
     <div v-else class="bg-white rounded-lg shadow overflow-hidden">
       <table class="min-w-full divide-y divide-gray-200">
@@ -129,9 +128,7 @@
       <div v-if="selectedApplication"
         class="fixed z-50 inset-0 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-start justify-center pt-4 px-4 pb-20 sm:p-0">
         <div class="relative w-full max-w-6xl mx-auto mt-10">
-          <!-- Modal Content -->
           <div class="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <!-- Modal Header -->
             <div class="bg-gray-50 px-8 py-4 border-b border-gray-200 flex justify-between items-center">
               <div>
                 <h2 class="text-2xl font-bold text-gray-900">Application Review</h2>
@@ -143,10 +140,8 @@
               </button>
             </div>
 
-            <!-- Modal Body -->
             <div class="px-8 py-6">
               <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Left Column: Applicant Details -->
                 <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                   <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
                     <UserIcon class="w-5 h-5 text-blue-500" />
@@ -179,7 +174,6 @@
                   </div>
                 </div>
 
-                <!-- Middle Column: Workplace Details -->
                 <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                   <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
                     <BuildingIcon class="w-5 h-5 text-blue-500" />
@@ -210,15 +204,15 @@
                   </div>
                 </div>
 
-                <!-- Right Column: Status & Review -->
                 <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                   <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
                     <ClipboardIcon class="w-5 h-5 text-blue-500" />
                     Review Status
                   </h3>
                   <div class="space-y-4">
+                    <!-- Review Status Section -->
                     <div class="rounded-lg bg-gray-50 p-4">
-                      <span class="text-sm font-medium text-gray-500">Current Status</span>
+                      <span class="text-sm font-medium text-gray-500">Review Status</span>
                       <div class="mt-1 flex items-center gap-2">
                         <span :class="[
                           'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
@@ -227,11 +221,33 @@
                           {{ selectedApplication.review_status }}
                         </span>
                       </div>
-                      <p class="mt-2 text-sm text-gray-600">{{ selectedApplication.review_remark || 'No remarks' }}</p>
+                      <textarea v-if="selectedApplication.review_status !== 'Pending'" v-model="reviewRemark"
+                        placeholder="Enter review remarks..."
+                        class="mt-2 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+
+                      <!-- Review Actions -->
+                      <div v-if="selectedApplication.review_status !== 'Pending'" class="mt-4 flex justify-end gap-2">
+                        <button @click="handleReviewAction('Rejected', 'review_status')"
+                          class="inline-flex items-center px-3 py-1.5 border border-red-300 text-red-700 bg-white rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
+                          <XCircleIcon class="w-4 h-4 mr-1" />
+                          Reject
+                        </button>
+                        <button @click="handleReviewAction('Approved', 'review_status')"
+                          class="inline-flex items-center px-3 py-1.5 border border-transparent text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                          <CheckCircleIcon class="w-4 h-4 mr-1" />
+                          Approve
+                        </button>
+                      </div>
+                      <button v-else @click="handleReviewAction('Processing', 'review_status')"
+                        class="mt-4 inline-flex items-center px-3 py-1.5 border border-transparent text-white bg-yellow-600 rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors">
+                        <Loader2Icon class="w-4 h-4 mr-1 animate-spin" />
+                        Mark as Processing
+                      </button>
                     </div>
 
+                    <!-- Endorsement Status Section -->
                     <div class="rounded-lg bg-gray-50 p-4">
-                      <span class="text-sm font-medium text-gray-500">Endorsement</span>
+                      <span class="text-sm font-medium text-gray-500">Endorsement Status</span>
                       <div class="mt-1 flex items-center gap-2">
                         <span :class="[
                           'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
@@ -240,10 +256,32 @@
                           {{ selectedApplication.endorsement_decision }}
                         </span>
                       </div>
-                      <p class="mt-2 text-sm text-gray-600">{{ selectedApplication.endorsement_remark || 'No remarks' }}
-                      </p>
+                      <textarea v-model="endorsementRemark" placeholder="Enter endorsement remarks..."
+                        class="mt-2 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+
+                      <!-- Endorsement Actions -->
+                      <div class="mt-4 flex justify-end gap-2">
+                        <button @click="handleReviewAction('Rejected', 'endorsement_decision')"
+                          class="inline-flex items-center px-3 py-1.5 border border-red-300 text-red-700 bg-white rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
+                          <XCircleIcon class="w-4 h-4 mr-1" />
+                          Reject
+                        </button>
+                        <button @click="handleReviewAction('Approved', 'endorsement_decision')"
+                          class="inline-flex items-center px-3 py-1.5 border border-transparent text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                          <CheckCircleIcon class="w-4 h-4 mr-1" />
+                          Approve
+                        </button>
+                        <button
+                          v-if="selectedApplication.endorsement_decision === 'Pending' && selectedApplication.review_status === 'Approved'"
+                          @click="handleReviewAction('Processing', 'endorsement_decision')"
+                          class="inline-flex items-center px-3 py-1.5 border border-transparent text-white bg-yellow-600 rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors">
+                          <Loader2Icon class="w-4 h-4 mr-1 animate-spin" />
+                          Mark as Processing
+                        </button>
+                      </div>
                     </div>
 
+                    <!-- Payment Status Section -->
                     <div class="rounded-lg bg-gray-50 p-4">
                       <span class="text-sm font-medium text-gray-500">Payment Status</span>
                       <div class="mt-1">
@@ -260,20 +298,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <!-- Action Buttons -->
-              <div class="mt-8 flex justify-end gap-4 border-t pt-6">
-                <button @click="handleReviewAction('Rejected')"
-                  class="inline-flex items-center px-4 py-2 border border-red-300 text-red-700 bg-white rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
-                  <XCircleIcon class="w-5 h-5 mr-2" />
-                  Reject
-                </button>
-                <button @click="handleReviewAction('Approved')"
-                  class="inline-flex items-center px-4 py-2 border border-transparent text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
-                  <CheckCircleIcon class="w-5 h-5 mr-2" />
-                  Approve
-                </button>
               </div>
             </div>
           </div>
@@ -331,6 +355,9 @@ const selectedApplication = ref(null);
 const showConfirmation = ref(false);
 const confirmationMessage = ref('');
 const actionType = ref('');
+const reviewRemark = ref('');   //for remarks
+const endorsementRemark = ref('');
+const statusField = ref('');  // Add statusField
 
 const router = useRouter()
 
@@ -383,11 +410,10 @@ const fetchData = async () => {
 // Watchers for Search, Filter, and Pagination
 watch([searchQuery, statusFilter], () => {
   currentPage.value = 1; // Reset to the first page when search/filter changes
-  // No need to call fetchData here, computed properties handle the update
 });
 
 watch(currentPage, () => {
-  // No need to call fetchData here, computed properties handle the update
+
 
 });
 
@@ -399,6 +425,7 @@ const getStatusClass = (status) => {
     'Pending': 'bg-yellow-100 text-yellow-800',
     'Approved': 'bg-green-100 text-green-800',
     'Rejected': 'bg-red-100 text-red-800',
+    'Processing': 'bg-yellow-100 text-yellow-800', // Added for "Processing"
     // Add more status mappings as needed
   };
   return classes[status] || 'bg-gray-100 text-gray-800'; // Default class
@@ -406,6 +433,9 @@ const getStatusClass = (status) => {
 
 const reviewApplication = (application) => {
   selectedApplication.value = application;
+  // Initialize remarks with existing values or empty strings
+  reviewRemark.value = application.review_remark || '';
+  endorsementRemark.value = application.endorsement_remark || '';
 };
 
 const downloadCertificate = async (id) => {
@@ -424,52 +454,72 @@ const downloadCertificate = async (id) => {
   }
 }
 
-const handleReviewAction = (action) => {
-  actionType.value = action; // Store the action
-  confirmationMessage.value = `Are you sure you want to ${action} this application?`;
+const handleReviewAction = (action, field) => {
+  actionType.value = action;
+  statusField.value = field;
+  confirmationMessage.value = `Are you sure you want to ${action === 'Processing' ? 'mark as Processing' : action} this application's ${field === 'review_status' ? 'review' : 'endorsement'}?`;
   showConfirmation.value = true;
 };
 
+
 const confirmReviewAction = async () => {
   try {
-    const updateData = {
-      review_status: actionType.value, // Or endorsement_decision, depending on your logic
-      // Add other fields you might want to update (e.g., review_remark)
-    };
+    let updateData = {};
+
+    if (statusField.value === 'review_status') {
+      updateData = {
+        review_status: actionType.value,
+        review_remark: reviewRemark.value,
+      };
+    } else if (statusField.value === 'endorsement_decision') {
+      updateData = {
+        endorsement_decision: actionType.value,
+        endorsement_remark: endorsementRemark.value,
+      };
+    }
+    console.log("Sending updateData:", updateData); // Debugging line
 
     const response = await services.patchBmhcCogs(selectedApplication.value.id, updateData);
+    console.log("API Response:", response); // Debugging line
+
 
     if (response.status === 200) {
-      // Update the application in the local data
+      // Find and update the specific application in the applications array
       const index = applications.value.findIndex(app => app.id === selectedApplication.value.id);
       if (index !== -1) {
-        applications.value[index] = response.data; // Use the API response data
+        //  Update the relevant fields.  Use spread to avoid mutation issues
+        applications.value = [
+          ...applications.value.slice(0, index),
+          { ...applications.value[index], ...response.data }, // Merge updates
+          ...applications.value.slice(index + 1)
+        ];
       }
       closeReviewModal();
     } else {
       console.error('Failed to update application:', response);
-      error.value = 'Failed to update application. Please try again.'; // Display error
+      error.value = 'Failed to update application. Please try again.';
     }
   } catch (err) {
     console.error('Error updating application:', err);
-    error.value = 'Failed to update application. Please try again.'; // Display error
-
+    error.value = 'Failed to update application. Please try again.';
   } finally {
-    showConfirmation.value = false; // Close confirmation
+    showConfirmation.value = false;
   }
 };
-
 const cancelReviewAction = () => {
-  showConfirmation.value = false; // Close confirmation
+  showConfirmation.value = false;
 };
+
 const closeReviewModal = () => {
   selectedApplication.value = null;
+  reviewRemark.value = '';
+  endorsementRemark.value = '';
 };
 
 </script>
 
 <style scoped>
-/* Modal Transition Styles (Optional, but recommended) */
+/* Modal Transition Styles */
 .modal-enter-active,
 .modal-leave-active {
   transition: opacity 0.3s ease;
