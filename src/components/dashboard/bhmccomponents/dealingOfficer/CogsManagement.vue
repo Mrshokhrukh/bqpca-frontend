@@ -1,6 +1,6 @@
 <template>
   <div class="p-6">
-    <!-- Header Section -->
+    <!-- Header Section, Search, Filter, Loading, Error - All Unchanged -->
     <div class="mb-6 flex justify-between items-center">
       <h1 class="text-2xl font-bold text-gray-900">Certificate of Good Standing Applications</h1>
       <div class="flex space-x-4">
@@ -124,116 +124,178 @@
         </button>
       </div>
     </div>
-
     <!-- Review Modal -->
     <Transition name="modal">
       <div v-if="selectedApplication"
-        class="fixed z-50 inset-0 overflow-y-auto bg-black bg-opacity-50 flex items-start justify-center pt-10">
-        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-5xl relative transform transition-all">
-          <button @click="closeReviewModal"
-            class="absolute top-4 right-6 text-gray-500 hover:text-gray-700 focus:outline-none">
-            <XIcon class="w-6 h-6" />
-          </button>
-          <h2 class="text-3xl font-bold mb-6 text-gray-800">Review Application</h2>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Applicant Details -->
-            <div>
-              <h3 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">Applicant Details</h3>
-              <div class="space-y-3">
-                <p class="text-gray-600"><span class="font-medium text-gray-800">Registration No:</span> {{
-                  selectedApplication.registration_no }}</p>
-                <p class="text-gray-600"><span class="font-medium text-gray-800">CID No:</span> {{
-                  selectedApplication.cid_no }}</p>
-                <p class="text-gray-600"><span class="font-medium text-gray-800">Full Name:</span> {{
-                  selectedApplication.full_name }}</p>
-                <p class="text-gray-600"><span class="font-medium text-gray-800">Gender:</span> {{
-                  selectedApplication.gender }}</p>
-                <p class="text-gray-600"><span class="font-medium text-gray-800">Email:</span> {{
-                  selectedApplication.email_address }}</p>
-                <p class="text-gray-600"><span class="font-medium text-gray-800">Contact:</span> {{
-                  selectedApplication.contact_number }}</p>
-                <p class="text-gray-600"><span class="font-medium text-gray-800">Address:</span> {{
-                  selectedApplication.address }}</p>
-                <p class="text-gray-600"><span class="font-medium text-gray-800">PO Box:</span> {{
-                  selectedApplication.po_box }}</p>
-                <p class="text-gray-600"><span class="font-medium text-gray-800">Zip Code:</span> {{
-                  selectedApplication.zip_code }}</p>
+        class="fixed z-50 inset-0 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-start justify-center pt-4 px-4 pb-20 sm:p-0">
+        <div class="relative w-full max-w-6xl mx-auto mt-10">
+          <!-- Modal Content -->
+          <div class="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Modal Header -->
+            <div class="bg-gray-50 px-8 py-4 border-b border-gray-200 flex justify-between items-center">
+              <div>
+                <h2 class="text-2xl font-bold text-gray-900">Application Review</h2>
+                <p class="text-sm text-gray-500 mt-1">Registration No: {{ selectedApplication.registration_no }}</p>
               </div>
+              <button @click="closeReviewModal"
+                class="rounded-full p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <XIcon class="w-6 h-6" />
+              </button>
             </div>
 
-            <!-- Workplace & Supervisor Details -->
-            <div>
-              <h3 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">Workplace & Supervisor</h3>
-              <div class="space-y-3">
-                <p class="text-gray-600"><span class="font-medium text-gray-800">Agency:</span> {{
-                  selectedApplication.agency?.name }}</p>
-                <p class="text-gray-600"><span class="font-medium text-gray-800">Department:</span> {{
-                  selectedApplication.department?.name }}</p>
-                <p class="text-gray-600"><span class="font-medium text-gray-800">Workplace:</span> {{
-                  selectedApplication.workplace?.name }}</p>
-                <p class="text-gray-600"><span class="font-medium text-gray-800">Supervisor:</span> {{
-                  selectedApplication.supervisor_name }}</p>
-                <p class="text-gray-600"><span class="font-medium text-gray-800">Supervisor Designation:</span> {{
-                  selectedApplication.supervisor_designation }}</p>
-                <p class="text-gray-600"><span class="font-medium text-gray-800">Reason for Application:</span> {{
-                  selectedApplication.reason_for_application }}</p>
-              </div>
-            </div>
+            <!-- Modal Body -->
+            <div class="px-8 py-6">
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column: Applicant Details -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                  <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
+                    <UserIcon class="w-5 h-5 text-blue-500" />
+                    Applicant Details
+                  </h3>
+                  <div class="space-y-4">
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-gray-500">Full Name</span>
+                      <span class="text-base text-gray-900">{{ selectedApplication.full_name }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-gray-500">CID No</span>
+                      <span class="text-base text-gray-900">{{ selectedApplication.cid_no }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-gray-500">Gender</span>
+                      <span class="text-base text-gray-900">{{ selectedApplication.gender }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-gray-500">Contact Info</span>
+                      <span class="text-base text-gray-900">{{ selectedApplication.contact_number }}</span>
+                      <span class="text-sm text-gray-600">{{ selectedApplication.email_address }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-gray-500">Address</span>
+                      <span class="text-base text-gray-900">{{ selectedApplication.address }}</span>
+                      <span class="text-sm text-gray-600">PO Box: {{ selectedApplication.po_box }}</span>
+                      <span class="text-sm text-gray-600">ZIP: {{ selectedApplication.zip_code }}</span>
+                    </div>
+                  </div>
+                </div>
 
-            <!-- Recipient and Review Details (Combined) -->
-            <div class="md:col-span-2">
-              <h3 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">Recipient & Review Details</h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p class="text-gray-600"><span class="font-medium text-gray-800">Recipient Name:</span> {{
-                    selectedApplication.recipient_name }}</p>
-                  <p class="text-gray-600"><span class="font-medium text-gray-800">Recipient Contact:</span> {{
-                    selectedApplication.recipient_contact_number }}</p>
-                  <p class="text-gray-600"><span class="font-medium text-gray-800">Recipient Email:</span> {{
-                    selectedApplication.recipient_email }}</p>
+                <!-- Middle Column: Workplace Details -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                  <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
+                    <BuildingIcon class="w-5 h-5 text-blue-500" />
+                    Workplace Details
+                  </h3>
+                  <div class="space-y-4">
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-gray-500">Agency</span>
+                      <span class="text-base text-gray-900">{{ selectedApplication.agency?.name || 'N/A' }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-gray-500">Department</span>
+                      <span class="text-base text-gray-900">{{ selectedApplication.department?.name || 'N/A' }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-gray-500">Workplace</span>
+                      <span class="text-base text-gray-900">{{ selectedApplication.workplace?.name || 'N/A' }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-gray-500">Supervisor</span>
+                      <span class="text-base text-gray-900">{{ selectedApplication.supervisor_name }}</span>
+                      <span class="text-sm text-gray-600">{{ selectedApplication.supervisor_designation }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-gray-500">Application Reason</span>
+                      <span class="text-base text-gray-900">{{ selectedApplication.reason_for_application }}</span>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <p class="text-gray-600"><span class="font-medium text-gray-800">Review Status:</span> <span
-                      :class="getStatusClass(selectedApplication.review_status)">{{ selectedApplication.review_status
-                      }}</span></p>
-                  <p class="text-gray-600"><span class="font-medium text-gray-800">Review Remark:</span> {{
-                    selectedApplication.review_remark || 'N/A' }}</p>
-                  <p class="text-gray-600"><span class="font-medium text-gray-800">Endorsement:</span> <span
-                      :class="getStatusClass(selectedApplication.endorsement_decision)">{{
-                        selectedApplication.endorsement_decision }}</span></p>
-                  <p class="text-gray-600"><span class="font-medium text-gray-800">Endorsement Remark:</span> {{
-                    selectedApplication.endorsement_remark || 'N/A' }}</p>
-                  <p class="text-gray-600"><span class="font-medium text-gray-800">Payment Complete:</span> {{
-                    selectedApplication.is_payment_complete ? 'Yes' : 'No' }}</p>
-                  <p v-if="selectedApplication.is_payment_complete" class="text-gray-600"><span
-                      class="font-medium text-gray-800">Payment ID:</span> {{ selectedApplication.payment_id }}</p>
-                  <p class="text-gray-600"><span class="font-medium text-gray-800">Declared:</span> {{
-                    selectedApplication.declaration ? 'Yes' : 'No' }}</p>
+
+                <!-- Right Column: Status & Review -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                  <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
+                    <ClipboardIcon class="w-5 h-5 text-blue-500" />
+                    Review Status
+                  </h3>
+                  <div class="space-y-4">
+                    <div class="rounded-lg bg-gray-50 p-4">
+                      <span class="text-sm font-medium text-gray-500">Current Status</span>
+                      <div class="mt-1 flex items-center gap-2">
+                        <span :class="[
+                          'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
+                          getStatusClass(selectedApplication.review_status)
+                        ]">
+                          {{ selectedApplication.review_status }}
+                        </span>
+                      </div>
+                      <p class="mt-2 text-sm text-gray-600">{{ selectedApplication.review_remark || 'No remarks' }}</p>
+                    </div>
+
+                    <div class="rounded-lg bg-gray-50 p-4">
+                      <span class="text-sm font-medium text-gray-500">Endorsement</span>
+                      <div class="mt-1 flex items-center gap-2">
+                        <span :class="[
+                          'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
+                          getStatusClass(selectedApplication.endorsement_decision)
+                        ]">
+                          {{ selectedApplication.endorsement_decision }}
+                        </span>
+                      </div>
+                      <p class="mt-2 text-sm text-gray-600">{{ selectedApplication.endorsement_remark || 'No remarks' }}
+                      </p>
+                    </div>
+
+                    <div class="rounded-lg bg-gray-50 p-4">
+                      <span class="text-sm font-medium text-gray-500">Payment Status</span>
+                      <div class="mt-1">
+                        <span :class="[
+                          'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
+                          selectedApplication.is_payment_complete ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                        ]">
+                          {{ selectedApplication.is_payment_complete ? 'Paid' : 'Pending' }}
+                        </span>
+                        <p v-if="selectedApplication.is_payment_complete" class="mt-2 text-sm text-gray-600">
+                          Payment ID: {{ selectedApplication.payment_id }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="mt-8 flex justify-end gap-4 border-t pt-6">
+                <button @click="handleReviewAction('Rejected')"
+                  class="inline-flex items-center px-4 py-2 border border-red-300 text-red-700 bg-white rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
+                  <XCircleIcon class="w-5 h-5 mr-2" />
+                  Reject
+                </button>
+                <button @click="handleReviewAction('Approved')"
+                  class="inline-flex items-center px-4 py-2 border border-transparent text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                  <CheckCircleIcon class="w-5 h-5 mr-2" />
+                  Approve
+                </button>
               </div>
             </div>
           </div>
-
-          <!-- Action Buttons (Approve, Reject, etc.) -->
-          <div class="mt-8 flex justify-end space-x-4">
-            <button @click="handleReviewAction('Approved')"
-              class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-200">
-              Approve
+        </div>
+      </div>
+    </Transition>
+    <!-- Confirmation Modal -->
+    <Transition name="modal">
+      <div v-if="showConfirmation"
+        class="fixed z-50 inset-0 overflow-y-auto bg-black/75 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+          <p class="text-lg text-gray-800">{{ confirmationMessage }}</p>
+          <div class="mt-6 flex justify-end space-x-4">
+            <button @click="cancelReviewAction"
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
+              Cancel
             </button>
-            <button @click="handleReviewAction('Rejected')"
-              class="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-200">
-              Reject
-            </button>
-            <button @click="closeReviewModal"
-              class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none transition duration-200">
-              Close
+            <button @click="confirmReviewAction"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+              Confirm
             </button>
           </div>
-
-          <!-- Confirmation Modal (Nested) -->
-          <ConfirmationModal v-if="showConfirmation" :message="confirmationMessage" @confirm="confirmReviewAction"
-            @cancel="cancelReviewAction" />
         </div>
       </div>
     </Transition>
@@ -248,10 +310,15 @@ import {
   SearchIcon,
   AlertCircleIcon,
   InboxIcon,
-  XIcon
+  XIcon,
+  UserIcon,
+  BuildingIcon,
+  ClipboardIcon,
+  CheckCircleIcon,
+  XCircleIcon
 } from 'lucide-vue-next'
 import services from '@/services/services'
-import ConfirmationModal from './modals/ConfirmationModal.vue'; // Import
+
 
 const applications = ref([])  // Store the raw API response
 const isLoading = ref(false)
@@ -402,10 +469,10 @@ const closeReviewModal = () => {
 </script>
 
 <style scoped>
-/* Modal Transition Styles */
+/* Modal Transition Styles (Optional, but recommended) */
 .modal-enter-active,
 .modal-leave-active {
-  transition: opacity 0.3s cubic-bezier(0.52, 0.02, 0.19, 1.02);
+  transition: opacity 0.3s ease;
 }
 
 .modal-enter-from,
@@ -413,15 +480,13 @@ const closeReviewModal = () => {
   opacity: 0;
 }
 
-.modal-enter-active .modal-container,
-.modal-leave-active .modal-container {
-  transition: transform 0.4s cubic-bezier(0.52, 0.02, 0.19, 1.02);
-  /* Slightly longer for a smoother effect */
+.modal-enter-active .modal-content,
+.modal-leave-active .modal-content {
+  transition: transform 0.3s ease;
 }
 
-.modal-enter-from .modal-container,
-.modal-leave-to .modal-container {
-  transform: scale(0.7) translateY(-50px);
-  /* Start slightly smaller and above */
+.modal-enter-from .modal-content,
+.modal-leave-to .modal-content {
+  transform: translateY(-20px);
 }
 </style>
