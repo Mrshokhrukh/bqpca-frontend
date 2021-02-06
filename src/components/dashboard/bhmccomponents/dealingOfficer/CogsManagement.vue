@@ -17,7 +17,6 @@
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
           <option value="Rejected">Rejected</option>
-          <!-- Consider adding "Processing" or other statuses from your API -->
         </select>
       </div>
     </div>
@@ -85,7 +84,7 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <div class="space-y-2">
-                <button @click="reviewApplication(application.id)" class="text-blue-600 hover:text-blue-900 block">
+                <button @click="reviewApplication(application)" class="text-blue-600 hover:text-blue-900 block">
                   Review
                 </button>
                 <button v-if="application.endorsement_decision === 'Approved'"
@@ -125,6 +124,119 @@
         </button>
       </div>
     </div>
+
+    <!-- Review Modal -->
+    <Transition name="modal">
+      <div v-if="selectedApplication"
+        class="fixed z-50 inset-0 overflow-y-auto bg-black bg-opacity-50 flex items-start justify-center pt-10">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-5xl relative transform transition-all">
+          <button @click="closeReviewModal"
+            class="absolute top-4 right-6 text-gray-500 hover:text-gray-700 focus:outline-none">
+            <XIcon class="w-6 h-6" />
+          </button>
+          <h2 class="text-3xl font-bold mb-6 text-gray-800">Review Application</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Applicant Details -->
+            <div>
+              <h3 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">Applicant Details</h3>
+              <div class="space-y-3">
+                <p class="text-gray-600"><span class="font-medium text-gray-800">Registration No:</span> {{
+                  selectedApplication.registration_no }}</p>
+                <p class="text-gray-600"><span class="font-medium text-gray-800">CID No:</span> {{
+                  selectedApplication.cid_no }}</p>
+                <p class="text-gray-600"><span class="font-medium text-gray-800">Full Name:</span> {{
+                  selectedApplication.full_name }}</p>
+                <p class="text-gray-600"><span class="font-medium text-gray-800">Gender:</span> {{
+                  selectedApplication.gender }}</p>
+                <p class="text-gray-600"><span class="font-medium text-gray-800">Email:</span> {{
+                  selectedApplication.email_address }}</p>
+                <p class="text-gray-600"><span class="font-medium text-gray-800">Contact:</span> {{
+                  selectedApplication.contact_number }}</p>
+                <p class="text-gray-600"><span class="font-medium text-gray-800">Address:</span> {{
+                  selectedApplication.address }}</p>
+                <p class="text-gray-600"><span class="font-medium text-gray-800">PO Box:</span> {{
+                  selectedApplication.po_box }}</p>
+                <p class="text-gray-600"><span class="font-medium text-gray-800">Zip Code:</span> {{
+                  selectedApplication.zip_code }}</p>
+              </div>
+            </div>
+
+            <!-- Workplace & Supervisor Details -->
+            <div>
+              <h3 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">Workplace & Supervisor</h3>
+              <div class="space-y-3">
+                <p class="text-gray-600"><span class="font-medium text-gray-800">Agency:</span> {{
+                  selectedApplication.agency?.name }}</p>
+                <p class="text-gray-600"><span class="font-medium text-gray-800">Department:</span> {{
+                  selectedApplication.department?.name }}</p>
+                <p class="text-gray-600"><span class="font-medium text-gray-800">Workplace:</span> {{
+                  selectedApplication.workplace?.name }}</p>
+                <p class="text-gray-600"><span class="font-medium text-gray-800">Supervisor:</span> {{
+                  selectedApplication.supervisor_name }}</p>
+                <p class="text-gray-600"><span class="font-medium text-gray-800">Supervisor Designation:</span> {{
+                  selectedApplication.supervisor_designation }}</p>
+                <p class="text-gray-600"><span class="font-medium text-gray-800">Reason for Application:</span> {{
+                  selectedApplication.reason_for_application }}</p>
+              </div>
+            </div>
+
+            <!-- Recipient and Review Details (Combined) -->
+            <div class="md:col-span-2">
+              <h3 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">Recipient & Review Details</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p class="text-gray-600"><span class="font-medium text-gray-800">Recipient Name:</span> {{
+                    selectedApplication.recipient_name }}</p>
+                  <p class="text-gray-600"><span class="font-medium text-gray-800">Recipient Contact:</span> {{
+                    selectedApplication.recipient_contact_number }}</p>
+                  <p class="text-gray-600"><span class="font-medium text-gray-800">Recipient Email:</span> {{
+                    selectedApplication.recipient_email }}</p>
+                </div>
+                <div>
+                  <p class="text-gray-600"><span class="font-medium text-gray-800">Review Status:</span> <span
+                      :class="getStatusClass(selectedApplication.review_status)">{{ selectedApplication.review_status
+                      }}</span></p>
+                  <p class="text-gray-600"><span class="font-medium text-gray-800">Review Remark:</span> {{
+                    selectedApplication.review_remark || 'N/A' }}</p>
+                  <p class="text-gray-600"><span class="font-medium text-gray-800">Endorsement:</span> <span
+                      :class="getStatusClass(selectedApplication.endorsement_decision)">{{
+                        selectedApplication.endorsement_decision }}</span></p>
+                  <p class="text-gray-600"><span class="font-medium text-gray-800">Endorsement Remark:</span> {{
+                    selectedApplication.endorsement_remark || 'N/A' }}</p>
+                  <p class="text-gray-600"><span class="font-medium text-gray-800">Payment Complete:</span> {{
+                    selectedApplication.is_payment_complete ? 'Yes' : 'No' }}</p>
+                  <p v-if="selectedApplication.is_payment_complete" class="text-gray-600"><span
+                      class="font-medium text-gray-800">Payment ID:</span> {{ selectedApplication.payment_id }}</p>
+                  <p class="text-gray-600"><span class="font-medium text-gray-800">Declared:</span> {{
+                    selectedApplication.declaration ? 'Yes' : 'No' }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons (Approve, Reject, etc.) -->
+          <div class="mt-8 flex justify-end space-x-4">
+            <button @click="handleReviewAction('Approved')"
+              class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-200">
+              Approve
+            </button>
+            <button @click="handleReviewAction('Rejected')"
+              class="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-200">
+              Reject
+            </button>
+            <button @click="closeReviewModal"
+              class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none transition duration-200">
+              Close
+            </button>
+          </div>
+
+          <!-- Confirmation Modal (Nested) -->
+          <ConfirmationModal v-if="showConfirmation" :message="confirmationMessage" @confirm="confirmReviewAction"
+            @cancel="cancelReviewAction" />
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -135,9 +247,11 @@ import {
   Loader2Icon,
   SearchIcon,
   AlertCircleIcon,
-  InboxIcon
+  InboxIcon,
+  XIcon
 } from 'lucide-vue-next'
 import services from '@/services/services'
+import ConfirmationModal from './modals/ConfirmationModal.vue'; // Import
 
 const applications = ref([])  // Store the raw API response
 const isLoading = ref(false)
@@ -146,7 +260,10 @@ const searchQuery = ref('')
 const statusFilter = ref('')
 const currentPage = ref(1)
 const itemsPerPage = ref(10); //  Set items per page
-
+const selectedApplication = ref(null);
+const showConfirmation = ref(false);
+const confirmationMessage = ref('');
+const actionType = ref('');
 
 const router = useRouter()
 
@@ -220,9 +337,9 @@ const getStatusClass = (status) => {
   return classes[status] || 'bg-gray-100 text-gray-800'; // Default class
 };
 
-const reviewApplication = (id) => {
-  router.push(`/health_certification/cogs/${id}`)
-}
+const reviewApplication = (application) => {
+  selectedApplication.value = application;
+};
 
 const downloadCertificate = async (id) => {
   try {
@@ -239,4 +356,72 @@ const downloadCertificate = async (id) => {
     error.value = 'Failed to download certificate. Please try again later.'
   }
 }
+
+const handleReviewAction = (action) => {
+  actionType.value = action; // Store the action
+  confirmationMessage.value = `Are you sure you want to ${action} this application?`;
+  showConfirmation.value = true;
+};
+
+const confirmReviewAction = async () => {
+  try {
+    const updateData = {
+      review_status: actionType.value, // Or endorsement_decision, depending on your logic
+      // Add other fields you might want to update (e.g., review_remark)
+    };
+
+    const response = await services.patchBmhcCogs(selectedApplication.value.id, updateData);
+
+    if (response.status === 200) {
+      // Update the application in the local data
+      const index = applications.value.findIndex(app => app.id === selectedApplication.value.id);
+      if (index !== -1) {
+        applications.value[index] = response.data; // Use the API response data
+      }
+      closeReviewModal();
+    } else {
+      console.error('Failed to update application:', response);
+      error.value = 'Failed to update application. Please try again.'; // Display error
+    }
+  } catch (err) {
+    console.error('Error updating application:', err);
+    error.value = 'Failed to update application. Please try again.'; // Display error
+
+  } finally {
+    showConfirmation.value = false; // Close confirmation
+  }
+};
+
+const cancelReviewAction = () => {
+  showConfirmation.value = false; // Close confirmation
+};
+const closeReviewModal = () => {
+  selectedApplication.value = null;
+};
+
 </script>
+
+<style scoped>
+/* Modal Transition Styles */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s cubic-bezier(0.52, 0.02, 0.19, 1.02);
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .modal-container,
+.modal-leave-active .modal-container {
+  transition: transform 0.4s cubic-bezier(0.52, 0.02, 0.19, 1.02);
+  /* Slightly longer for a smoother effect */
+}
+
+.modal-enter-from .modal-container,
+.modal-leave-to .modal-container {
+  transform: scale(0.7) translateY(-50px);
+  /* Start slightly smaller and above */
+}
+</style>
