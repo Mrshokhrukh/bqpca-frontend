@@ -59,12 +59,13 @@ import ApplicationTable from '@/components/dashboard/roqcomponents/user/Applicat
 import BmhAdminDashboard from '@/components/dashboard/bhmccomponents/admin/BmhAdminDashboard.vue';
 import BmhUserManagement from '@/components/dashboard/bhmccomponents/admin/BmhUserManagement.vue';
 import BmhUserDashboard from '@/components/dashboard/bhmccomponents/user/UserBmhcDashboard.vue';
-import BmhDealingOfficerDashboard from '@/components/dashboard/bhmccomponents/dealingOfficer/BmhDealingOfficerDashboard.vue';
+import BmhDealingOfficerDashboard from '@/components/dashboard/bhmccomponents/dealingOfficer/DashboardComponent.vue';
 import BmhChiefDashboard from '@/components/dashboard/bhmccomponents/chief/BmhChiefDashboard.vue';
 import BmhDirectorDashboard from '@/components/dashboard/bhmccomponents/director/BmhDirectorDashboard.vue';
-import BmhCpdCmeProviderDashboard from '@/components/dashboard/bhmccomponents/cpdCmeProvider/BmhCpdCmeProviderDashboard.vue';
-import BmhInstitutionsDashboard from '@/components/dashboard/bhmccomponents/institutions/BmhInstitutionsDashboard.vue';
+import BmhCpdCmeProviderDashboard from '@/components/dashboard/bhmccomponents/cpdCmeProvider/ProviderDashboard.vue';
+import BmhInstitutionsDashboard from '@/components/dashboard/bhmccomponents/institutions/InstitutionsDashboard.vue';
 import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superAdmin/BmhSuperAdminDashboard.vue';
+
 // BMH user
 import CPDcomponent from '@/components/dashboard/bhmccomponents/user/CPDApplication.vue';
 import CoGSComponet from '@/components/dashboard/bhmccomponents/user/CoGSApplication.vue';
@@ -82,7 +83,6 @@ import InstituteManagement from '@/components/dashboard/bhmccomponents/dealingOf
 import ProfessionalProfiles from '@/components/dashboard/bhmccomponents/dealingOfficer/ProfessionalProfiles.vue';
 import CogsManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/CogsManagement.vue';
 import Capa from '@/components/dashboard/bhmccomponents/dealingOfficer/Capa.vue';
-
 import PaymentManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/Payments.vue';
 import Reports from '@/components/dashboard/bhmccomponents/dealingOfficer/Reports.vue';
 
@@ -108,6 +108,11 @@ import MastersUniversity from '@/components/dashboard/bhmccomponents/admin/Maste
 import CogsAgency from '@/components/dashboard/bhmccomponents/admin/CogsAgency.vue';
 import CogsDepartment from '@/components/dashboard/bhmccomponents/admin/CogsDepartment.vue';
 import CogsWorkplace from '@/components/dashboard/bhmccomponents/admin/CogsWorkplace.vue';
+
+// CPD Provider Components
+import CPDProviderComponent from '@/components/dashboard/bhmccomponents/cpdCmeProvider/CPDProviderComponent.vue';
+import CounselorForm from '@/components/dashboard/bhmccomponents/dealingOfficer/CounselorForm.vue';
+import BMHCUserProfile from '@/components/dashboard/bhmccomponents/user/BMHCUserProfile.vue';
 
 
 const { role, user } = useAuthStore();
@@ -166,8 +171,6 @@ const bmhAdminComponent = computed(() => {
       return CogsDepartment;
     case path.endsWith('/health_certification/cogs_workplace'):
       return CogsWorkplace;
-
-
     default:
       return null;
   }
@@ -197,6 +200,8 @@ const bmhUserComponent = computed(() => {
       return CoGSComponet;
     case path.endsWith('/health_certification/reports'):
       return BMHCUserReports;
+    case path.endsWith('/health_certification/user_profile'):
+      return BMHCUserProfile;
     default:
       return null;
   }
@@ -222,6 +227,8 @@ const bmhDealingOfficerComponent = computed(() => {
       return Capa;
     case path.endsWith('/health_certification/payments'):
       return PaymentManagement;
+    case path.endsWith('/health_certification/counselor_application'):
+      return CounselorForm;
     case path.endsWith('/health_certification/reports'):
       return Reports;
     default:
@@ -257,6 +264,8 @@ const bmhCpdCmeProviderComponent = computed(() => {
   switch (true) {
     case path.endsWith('/health_certification/dashboard'):
       return BmhCpdCmeProviderDashboard;
+    case path.endsWith('/health_certification/new_cpd'):
+      return CPDProviderComponent;
     default:
       return null;
   }

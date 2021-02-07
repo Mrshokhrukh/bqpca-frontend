@@ -8,7 +8,7 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-});
+})
 
 export default {
   getMastersCmeActivities() {
@@ -507,25 +507,43 @@ export default {
     return apiClient.delete(`/bmhc/bmhc-renewals/${id}/`)
   },
 
+  // BHMC user qualifications
+  getBhmcNewQualifications() {
+    return apiClient.get('/bmhc/bmhc-new-qualification/')
+  },
+  createBhmcNewQualification(data) {
+    return apiClient.post('/bmhc/bmhc-new-qualification/', data)
+  },
+  getBhmcNewQualification(id) {
+    return apiClient.get(`/bmhc/bmhc-new-qualification/${id}/`)
+  },
+  updateBhmcNewQualification(id, data) {
+    return apiClient.put(`/bmhc/bmhc-new-qualification/${id}/`, data)
+  },
+  patchBhmcNewQualification(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-new-qualification/${id}/`, data)
+  },
+  deleteBhmcNewQualification(id) {
+    return apiClient.delete(`/bmhc/bmhc-new-qualification/${id}/`)
+  },
 
-// BHMC user qualifications
-getBhmcNewQualifications() {
-  return apiClient.get('/bmhc/bmhc-new-qualification/');
-},
-createBhmcNewQualification(data) {
-  return apiClient.post('/bmhc/bmhc-new-qualification/', data);
-},
-getBhmcNewQualification(id) {
-  return apiClient.get(`/bmhc/bmhc-new-qualification/${id}/`);
-},
-updateBhmcNewQualification(id, data) {
-  return apiClient.put(`/bmhc/bmhc-new-qualification/${id}/`, data);
-},
-patchBhmcNewQualification(id, data) {
-  return apiClient.patch(`/bmhc/bmhc-new-qualification/${id}/`, data);
-},
-deleteBhmcNewQualification(id) {
-  return apiClient.delete(`/bmhc/bmhc-new-qualification/${id}/`);
-},
-
-};
+  // BMHC Capa
+  getBmhcCapas() {
+    return apiClient.get('/bmhc/bmhc-capa/')
+  },
+  createBmhcCapa(data) {
+    return apiClient.post('/bmhc/bmhc-capa/', data)
+  },
+  getBmhcCapa(id) {
+    return apiClient.get(`/bmhc/bmhc-capa/${id}/`)
+  },
+  updateBmhcCapa(id, data) {
+    return apiClient.put(`/bmhc/bmhc-capa/${id}/`, data)
+  },
+  patchBmhcCapa(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-capa/${id}/`, data)
+  },
+  deleteBmhcCapa(id) {
+    return apiClient.delete(`/bmhc/bmhc-capa/${id}/`)
+  },
+}
