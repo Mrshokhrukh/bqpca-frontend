@@ -287,18 +287,12 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import {
   Loader2Icon,
   SearchIcon,
   AlertCircleIcon,
   InboxIcon,
-  XIcon,
-  UserIcon,
-  BuildingIcon,
-  ClipboardIcon,
-  CheckCircleIcon,
-  XCircleIcon
+  XIcon
 } from 'lucide-vue-next'
 import services from '@/services/services'
 
@@ -329,7 +323,6 @@ const capaForm = ref({
 });
 
 const router = useRouter()
-
 // --- Computed Properties ---
 const filteredCapas = computed(() => {
   let filtered = capas.value;
