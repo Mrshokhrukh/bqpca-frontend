@@ -394,13 +394,61 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('CreditCard'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/payments`,
       },
-
+      {
+        name: 'Counselor Application',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/counselor_application`,
+      },
       {
         name: 'Reports',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
       },
     ],
+    cpd_cme_provider: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Apply New CPD',
+        icon: getIconComponent('BookOpen'),
+        route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/new_cpd`,
+      },
+      {
+        name: 'Track Applications',
+        icon: getIconComponent('FileText'),
+        route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/track_applications`,
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/reports`,
+      }
+    ],
+    institutions:[
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Institute Management',
+        icon: getIconComponent('Building2'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/institutes`,
+      },
+      {
+        name: 'Professional Profiles',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/profiles`,
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/reports`,
+      }
+    ]
   },
   engineering_certification: {
     user: [

@@ -207,6 +207,7 @@ export default {
       capa: () => import('@/views/admin/BMHC/Dashboard.vue'),
       payments: () => import('@/views/admin/BMHC/Dashboard.vue'),
       reports: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      counselor_application: () => import('@/views/admin/BMHC/Dashboard.vue'),
     },
   },
   chief: {
@@ -341,11 +342,10 @@ export default {
       // ... other Engineering routes for director
     },
     health_certification: {
-      dashboard: () => import('@/views/admin/BMHC/Dashboard.vue'),
-      // for_approval_applications: () => import('@/views/admin/BMHC/ForApprovalApplications.vue'),
-      // approved_applications: () => import('@/views/admin/BMHC/ApprovedApplications.vue'),
-      // reports: () => import('@/views/admin/BMHC/Reports.vue'),
-      // ... other Health Certification routes for director
+      dashboard: () => () => import('@/views/admin/BMHC/Dashboard.vue'),
+      new_cpd: () => () => import('@/views/admin/BMHC/Dashboard.vue'),
+      track_applications: () => () => import('@/views/admin/BMHC/Dashboard.vue'),
+      reports: () => () => import('@/views/admin/BMHC/Dashboard.vue'),
     },
   },
 }

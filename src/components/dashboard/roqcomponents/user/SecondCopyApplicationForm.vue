@@ -4,7 +4,9 @@
     <form @submit.prevent="handleSubmit" class="space-y-6">
       <!-- Autocomplete Dropdown for Original Application -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">Select Original Application</h3>
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">
+          Select Original Application
+        </h3>
         <div>
           <label for="original_application" class="block text-sm font-medium text-gray-700 required">
             Search by Your Name or CID
@@ -15,7 +17,8 @@
           <ul v-if="filteredApplications.length > 0" class="mt-2 bg-white border rounded-lg shadow-sm">
             <li v-for="app in filteredApplications" :key="app.id" @click="onOriginalApplicationSelect(app)"
               class="p-2 hover:bg-gray-50 cursor-pointer">
-              {{ app.applicants_name }} ({{ app.cid_no }}), {{ app.course_title }}
+              {{ app.applicants_name }} ({{ app.cid_no }}),
+              {{ app.course_title }}
             </li>
           </ul>
         </div>
@@ -23,7 +26,9 @@
 
       <!-- Personal Information Section -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">Personal Information</h3>
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">
+          Personal Information
+        </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- CID No. -->
           <div>
@@ -92,7 +97,9 @@
 
       <!-- Education Details Section -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">Education Details</h3>
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">
+          Education Details
+        </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- From in-country? -->
           <div>
@@ -207,7 +214,9 @@
 
       <!-- Reason for Second Copy -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">Reason for Second Copy</h3>
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">
+          Reason for Second Copy
+        </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Reason for Issue of Second Copy -->
           <div>
@@ -232,11 +241,31 @@
 
       <!-- Supporting Document for Second Copy -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">Supporting Document</h3>
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">
+          Supporting Document
+        </h3>
         <div>
           <label class="block text-sm font-medium text-gray-700 required">Upload Supporting Document</label>
           <FileUpload v-model="form.second_copy_supporting_document" accept=".pdf" :max-size="5" required />
           <p class="mt-1 text-sm text-gray-500">PDF only, max 5MB</p>
+        </div>
+      </div>
+
+      <!-- Declaration -->
+      <div class="bg-white border p-6 rounded-lg shadow-sm space-y-6">
+        <!-- Declaration -->
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <input type="checkbox" id="declaration" v-model="declaration" required
+              class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary" />
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="declaration" class="font-medium text-gray-700">Declaration</label>
+            <p class="text-gray-500">
+              I declare that all the information provided is true and accurate
+              to the best of my knowledge.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -246,9 +275,9 @@
           class="px-6 py-3 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
           Cancel
         </button>
-        <button type="submit"
-          class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-          Submit
+        <button type="button" @click="openPaymentModal" :disabled="isSubmitting || !declaration"
+          class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ isSubmitting ? "Submitting..." : "Submit" }}
         </button>
       </div>
     </form>
@@ -256,51 +285,72 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useAuthStore } from '@/stores/authStore';
-import apiService from '@/services/services';
-import FileUpload from '@/components/common/FileUpload.vue';
-import { useToast } from 'vue-toastification';
+import { ref, reactive, onMounted } from "vue";
+import { useAuthStore } from "@/stores/authStore";
+import apiService from "@/services/services";
+import FileUpload from "@/components/common/FileUpload.vue";
+import { useToast } from "vue-toastification";
+import PaymentModal from "@/components/common/PaymentModal.vue";
 
 const { userId } = useAuthStore();
 const toast = useToast();
 
 const originalApplications = ref([]);
 const filteredApplications = ref([]);
-const searchQuery = ref('');
+const searchQuery = ref("");
 const selectedOriginalApplication = ref(null);
 const reasonsForSecondCopy = ref([]);
 const othersReasonId = ref(null);
 const qualificationOptions = ref([]);
 const courseTypeOptions = ref([]);
+const isSubmitting = ref(false);
+const declaration = ref(false);
 
 const form = reactive({
-  cid_no: '',
-  applicants_name: '',
-  date_of_birth: '',
-  contact_no: '',
-  email_address: '',
-  gender: '',
-  dzongkhag: '',
-  gewog: '',
-  village: '',
+  cid_no: "",
+  applicants_name: "",
+  date_of_birth: "",
+  contact_no: "",
+  email_address: "",
+  gender: "",
+  dzongkhag: "",
+  gewog: "",
+  village: "",
   from_in_country: null,
-  course_title: '',
-  qualification: '',
-  type_of_course: '',
-  duration_of_course: '',
-  name_of_institute: '',
-  name_of_university: '',
-  student_id_no: '',
-  year_of_completion: '',
-  website: '',
-  location: '',
-  country: '',
-  reason_for_issue_of_second_copy: '',
-  second_copy_other: '',
+  course_title: "",
+  qualification: "",
+  type_of_course: "",
+  duration_of_course: "",
+  name_of_institute: "",
+  name_of_university: "",
+  student_id_no: "",
+  year_of_completion: "",
+  website: "",
+  location: "",
+  country: "",
+  reason_for_issue_of_second_copy: "",
+  second_copy_other: "",
   second_copy_supporting_document: null,
   is_second_copy: true,
+  is_payment_complete: false,
+  payment_id: null,
 });
+
+const paymentModal = ref(null);
+
+const openPaymentModal = () => {
+  paymentModal.value.openModal();
+};
+
+const onPaymentModalClose = () => {
+  console.log("Payment modal closed");
+};
+
+const onPaymentCompleted = (paymentData) => {
+  form.is_payment_complete = paymentData.paymentDone;
+  form.payment_id = paymentData.paymentHash;
+  handleSubmitActual();
+};
 
 // Fetch original applications and reasons for second copy
 onMounted(async () => {
@@ -335,10 +385,12 @@ onMounted(async () => {
     }
 
     // Map the API responses to the dropdown options
-    qualificationOptions.value = qualificationsResponse.data.results.map((qual) => ({
-      value: qual.id,
-      label: qual.name,
-    }));
+    qualificationOptions.value = qualificationsResponse.data.results.map(
+      (qual) => ({
+        value: qual.id,
+        label: qual.name,
+      })
+    );
 
     courseTypeOptions.value = courseTypesResponse.data.results.map((type) => ({
       value: type.id,
@@ -355,7 +407,9 @@ const onSearchInput = () => {
   if (searchQuery.value) {
     filteredApplications.value = originalApplications.value.filter(
       (app) =>
-        (app.applicants_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        (app.applicants_name
+          .toLowerCase()
+          .includes(searchQuery.value.toLowerCase()) ||
           app.cid_no.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
         app.status === "approved" &&
         !app.is_second_copy
@@ -392,24 +446,37 @@ const onOriginalApplicationSelect = (app) => {
     location: app.location,
     country: app.country,
   });
-  searchQuery.value = '';
+  searchQuery.value = "";
   filteredApplications.value = [];
 };
 
-// Handle form submission
-const handleSubmit = async () => {
+// Handle form submission - Initial handler to trigger payment modal
+const handleSubmit = () => {
+  if (declaration.value) {
+    openPaymentModal();
+  } else {
+    toast.error("Please accept the declaration", "error");
+  }
+};
+
+// Actual submit handler after payment
+const handleSubmitActual = async () => {
+  isSubmitting.value = true;
   try {
     // Validate that an original application is selected
     if (!selectedOriginalApplication.value) {
-      toast.error('Please select an original application');
+      toast.error("Please select an original application");
       return;
     }
 
     const formData = new FormData();
 
     // Add original_application_id and is_second_copy
-    formData.append('original_application_id', selectedOriginalApplication.value.id);
-    formData.append('is_second_copy', 'true'); // Explicitly include
+    formData.append(
+      "original_application_id",
+      selectedOriginalApplication.value.id
+    );
+    formData.append("is_second_copy", "true"); // Explicitly include
 
     // Append other form fields
     Object.entries(form).forEach(([key, value]) => {
@@ -422,13 +489,15 @@ const handleSubmit = async () => {
 
     // Submit the form
     await apiService.createRecognitionOfQualification(formData);
-    toast.success('Second copy application submitted successfully');
-    emit('application-submitted');
+    toast.success("Second copy application submitted successfully");
+    emit("application-submitted");
   } catch (error) {
-    toast.error('Failed to submit application:', error);
-    console.error('Error submitting application:', error);
+    toast.error("Failed to submit application:", error);
+    console.error("Error submitting application:", error);
+  } finally {
+    isSubmitting.value = false;
   }
 };
 
-const emit = defineEmits(['application-submitted', 'close-modal']);
+const emit = defineEmits(["application-submitted", "close-modal"]);
 </script>
