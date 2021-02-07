@@ -1,4 +1,4 @@
-# src/components/dashboard/bhmccomponents/dealingOfficer/Reports.vue
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
     <!-- Header -->
