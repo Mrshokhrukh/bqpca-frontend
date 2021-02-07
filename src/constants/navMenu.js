@@ -19,7 +19,7 @@ import {
   Heart,
   Wrench,
   Award,
-} from 'lucide-vue-next';
+} from 'lucide-vue-next'
 
 // Icon mapping for dynamic icon selection
 const iconMap = {
@@ -42,12 +42,12 @@ const iconMap = {
   Heart,
   Wrench,
   Award,
-};
+}
 
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
-  return iconMap[iconName] || File;
-};
+  return iconMap[iconName] || File
+}
 
 // Define the dealing_officer menu items (shared across all services)
 const dealingOfficerMenuItems = [
@@ -71,7 +71,7 @@ const dealingOfficerMenuItems = [
     icon: getIconComponent('ClipboardCheck'),
     route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
   },
-];
+]
 
 // Service-specific menu items structured as service > role > routes
 const serviceSpecificMenuItems = {
@@ -228,7 +228,6 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('CreditCard'),
         route: (serviceType) => `/admin/user/${serviceType}/profile`,
       },
-
     ],
     admin: [
       {
@@ -290,13 +289,11 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Apply for Certification',
-            route: (serviceType) =>
-              `/admin/user/${serviceType}/registration`,
+            route: (serviceType) => `/admin/user/${serviceType}/registration`,
           },
           {
             name: 'My Applications',
-            route: (serviceType) =>
-              `/admin/user/${serviceType}/my_applications`,
+            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
           },
           {
             name: 'Renewal',
@@ -353,9 +350,137 @@ const serviceSpecificMenuItems = {
     ],
     admin: [
       {
-        name: 'Certification Types',
-        icon: getIconComponent('Heart'),
-        route: (serviceType) => `/admin/admin/${serviceType}/certification_types`,
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
+      },
+      {
+        name: 'CME Management',
+        icon: getIconComponent('BookOpen'),
+        children: [
+          {
+            name: 'CME Activities',
+            route: (serviceType) => `/admin/admin/${serviceType}/cme_activities`,
+          },
+          {
+            name: 'CME Credits',
+            route: (serviceType) => `/admin/admin/${serviceType}/cme_credits`,
+          },
+          {
+            name: 'CME Methodologies',
+            route: (serviceType) => `/admin/admin/${serviceType}/cme_methodologies`,
+          },
+        ],
+      },
+      {
+        name: 'CPD Activity',
+        icon: getIconComponent('FileText'),
+        route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
+      },
+      {
+        name: 'Document Management',
+        icon: getIconComponent('File'),
+        children: [
+          {
+            name: 'Document Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/document_types`,
+          },
+          {
+            name: 'E-Signatures',
+            route: (serviceType) => `/admin/admin/${serviceType}/e_signatures`,
+          },
+          {
+            name: 'File Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
+          },
+        ],
+      },
+      {
+        name: 'Fee Management',
+        icon: getIconComponent('CreditCard'),
+        children: [
+          {
+            name: 'Fee Structures',
+            route: (serviceType) => `/admin/admin/${serviceType}/fee_structures`,
+          },
+          {
+            name: 'Fees Associated For',
+            route: (serviceType) => `/admin/admin/${serviceType}/fees_associated_for`,
+          },
+        ],
+      },
+      {
+        name: 'Participation',
+        icon: getIconComponent('Users'),
+        children: [
+          {
+            name: 'Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/participation_category`,
+          },
+          {
+            name: 'Sub Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
+          },
+        ],
+      },
+      {
+        name: 'Personnel',
+        icon: getIconComponent('UserCircle'),
+        children: [
+          {
+            name: 'Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/personnel_categories`,
+          },
+          {
+            name: 'Qualifications',
+            route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
+          },
+          {
+            name: 'Qualification Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/qualification_types`,
+          },
+        ],
+      },
+      {
+        name: 'Registration',
+        icon: getIconComponent('ClipboardCheck'),
+        children: [
+          {
+            name: 'Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/registration_type`,
+          },
+          {
+            name: 'Sectors',
+            route: (serviceType) => `/admin/admin/${serviceType}/sector`,
+          },
+          {
+            name: 'Sub Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/sub_categories`,
+          },
+        ],
+      },
+      {
+        name: 'University',
+        icon: getIconComponent('BookOpen'),
+        route: (serviceType) => `/admin/admin/${serviceType}/university`,
+      },
+      {
+        name: 'COGS Management',
+        icon: getIconComponent('Building2'),
+        children: [
+          {
+            name: 'Agency',
+            route: (serviceType) => `/admin/admin/${serviceType}/cogs_agency`,
+          },
+          {
+            name: 'Department',
+            route: (serviceType) => `/admin/admin/${serviceType}/cogs_dept`,
+          },
+          {
+            name: 'Workplace',
+            route: (serviceType) => `/admin/admin/${serviceType}/cogs_workplace`,
+          },
+        ],
       },
     ],
     dealing_officer: [
@@ -430,9 +555,9 @@ const serviceSpecificMenuItems = {
         name: 'Reports',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/reports`,
-      }
+      },
     ],
-    institutions:[
+    institutions: [
       {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
@@ -452,8 +577,8 @@ const serviceSpecificMenuItems = {
         name: 'Reports',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/institutions/${serviceType}/reports`,
-      }
-    ]
+      },
+    ],
   },
   engineering_certification: {
     user: [
@@ -491,7 +616,7 @@ const serviceSpecificMenuItems = {
     // Add dealing_officer to accreditation
     dealing_officer: dealingOfficerMenuItems,
   },
-};
+}
 
 /**
  * Generates navigation items based on the service type and role.
@@ -500,22 +625,22 @@ const serviceSpecificMenuItems = {
  * @returns {Array} - An array of navigation items for the given role and service type.
  */
 export const generateNavigationItems = (role, serviceType) => {
-  if (!role || !serviceType) return [];
+  if (!role || !serviceType) return []
 
-  const serviceMenu = serviceSpecificMenuItems[serviceType];
-  if (!serviceMenu || !serviceMenu[role]) return [];
+  const serviceMenu = serviceSpecificMenuItems[serviceType]
+  if (!serviceMenu || !serviceMenu[role]) return []
 
   // Process the menu items to resolve dynamic routes
   const processMenuItem = (item) => {
     const newItem = {
       ...item,
       route: typeof item.route === 'function' ? item.route(serviceType) : item.route,
-    };
-    if (newItem.children) {
-      newItem.children = newItem.children.map((child) => processMenuItem(child));
     }
-    return newItem;
-  };
+    if (newItem.children) {
+      newItem.children = newItem.children.map((child) => processMenuItem(child))
+    }
+    return newItem
+  }
 
-  return serviceMenu[role].map(processMenuItem);
-};
+  return serviceMenu[role].map(processMenuItem)
+}

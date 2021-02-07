@@ -68,13 +68,26 @@ const router = createRouter({
 })
 
 // Combined navigation guard for authentication and meta updates
+// In router/index.js
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
   // Handle authentication
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/unauthorized')
-    return
+  if (to.meta.requiresAuth) {
+    if (!authStore.isAuthenticated) {
+      next('/unauthorized')
+      return
+    }
+
+    // Add this validation
+    if (to.path.includes('/admin/') && (!authStore.role || !authStore.serviceType)) {
+      console.log('Missing role or service type:', {
+        role: authStore.role,
+        serviceType: authStore.serviceType,
+      })
+      next('/unauthorized')
+      return
+    }
   }
 
   // Update meta tags

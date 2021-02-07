@@ -1,4 +1,3 @@
-<!-- src/views/LandingPage.vue -->
 <template>
   <div class="min-h-screen bg-slate-50">
     <!-- Hero Section with Animated Background -->
@@ -20,7 +19,7 @@
               </div>
             </div>
             <h1 class="text-4xl font-serif font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6">
-              <span class="block">Bhutan Qualifications &amp;</span>
+              <span class="block">Bhutan Qualifications &</span>
               <span class="block text-blue-400">Professional Certification</span>
               <span class="block">Authority</span>
             </h1>
@@ -228,6 +227,14 @@
               <p class="text-slate-600">{{ contact.info }}</p>
             </div>
           </div>
+        </div>
+
+        <!-- Button for Certification Validity -->
+        <div class="mt-12 text-center">
+          <router-link to="/certification-validity"
+            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+            Check Certificate Validity
+          </router-link>
         </div>
       </div>
     </div>

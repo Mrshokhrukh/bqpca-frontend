@@ -5,9 +5,10 @@ const publicRoutes = [
     component: () => import('@/views/LandingPage.vue'),
     meta: {
       title: 'Home',
-      description: 'Welcome to Bhutan Qualification & Professional Certification Authority - Your gateway to professional certification and accreditation in Bhutan',
-      keywords: 'BQPCA, home, certification, Bhutan, qualification'
-    }
+      description:
+        'Welcome to Bhutan Qualification & Professional Certification Authority - Your gateway to professional certification and accreditation in Bhutan',
+      keywords: 'BQPCA, home, certification, Bhutan, qualification',
+    },
   },
   {
     path: '/admin/login',
@@ -15,8 +16,8 @@ const publicRoutes = [
     meta: {
       title: 'Admin Login',
       description: 'BQPCA System administrator login portal',
-      keywords: 'admin login, BQPCA admin, administrator'
-    }
+      keywords: 'admin login, BQPCA admin, administrator',
+    },
   },
   {
     path: '/super-admin/login',
@@ -24,8 +25,8 @@ const publicRoutes = [
     meta: {
       title: 'Super Admin Login',
       description: 'BQPCA System super administrator login portal',
-      keywords: 'super admin login, BQPCA super admin'
-    }
+      keywords: 'super admin login, BQPCA super admin',
+    },
   },
   {
     path: '/roq',
@@ -34,8 +35,8 @@ const publicRoutes = [
     meta: {
       title: 'Registry of Qualifications',
       description: 'Explore the Registry of Qualifications (RoQ) service provided by BQPCA',
-      keywords: 'RoQ, qualifications registry, Bhutan qualifications'
-    }
+      keywords: 'RoQ, qualifications registry, Bhutan qualifications',
+    },
   },
   {
     path: '/ecpf',
@@ -44,8 +45,8 @@ const publicRoutes = [
     meta: {
       title: 'ECPF Service',
       description: 'Engineering, Construction and Production Firms certification services',
-      keywords: 'ECPF, engineering firms, construction firms, production firms'
-    }
+      keywords: 'ECPF, engineering firms, construction firms, production firms',
+    },
   },
   {
     path: '/accreditation',
@@ -54,8 +55,8 @@ const publicRoutes = [
     meta: {
       title: 'Accreditation Services',
       description: 'Professional accreditation services provided by BQPCA',
-      keywords: 'accreditation, professional certification, BQPCA accreditation'
-    }
+      keywords: 'accreditation, professional certification, BQPCA accreditation',
+    },
   },
   {
     path: '/engineering',
@@ -64,8 +65,8 @@ const publicRoutes = [
     meta: {
       title: 'Engineering Services',
       description: 'Engineering certification and qualification services',
-      keywords: 'engineering certification, engineering qualifications, BQPCA engineering'
-    }
+      keywords: 'engineering certification, engineering qualifications, BQPCA engineering',
+    },
   },
   {
     path: '/bmhc',
@@ -74,8 +75,18 @@ const publicRoutes = [
     meta: {
       title: 'BMHC Services',
       description: 'Bhutan Medical and Health Council certification services',
-      keywords: 'BMHC, medical certification, health council, healthcare professionals'
-    }
+      keywords: 'BMHC, medical certification, health council, healthcare professionals',
+    },
+  },
+  {
+    path: '/certification-validity',
+    name: 'CertificationValidityPage',
+    component: () => import('@/views/CertificationValidityPage.vue'),
+    meta: {
+      title: 'Certification Validity Check',
+      description: 'Check the validity of professional certifications issued by BQPCA',
+      keywords: 'certification validity, verify certification, BQPCA verification',
+    },
   },
   {
     path: '/unauthorized',
@@ -84,8 +95,8 @@ const publicRoutes = [
     meta: {
       title: 'Unauthorized Access',
       description: 'Unauthorized access - Please login with appropriate credentials',
-      keywords: 'unauthorized, access denied, login required'
-    }
+      keywords: 'unauthorized, access denied, login required',
+    },
   },
   {
     path: '/404',
@@ -94,13 +105,13 @@ const publicRoutes = [
     meta: {
       title: 'Page Not Found',
       description: 'The requested page could not be found',
-      keywords: '404, not found, error page'
-    }
+      keywords: '404, not found, error page',
+    },
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/404'
-  }
-];
+    redirect: '/404',
+  },
+]
 
-export default publicRoutes;
+export default publicRoutes
