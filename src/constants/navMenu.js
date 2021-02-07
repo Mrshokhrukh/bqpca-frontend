@@ -341,8 +341,13 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Reports',
+        name: 'Profile',
         icon: getIconComponent('Users'),
+        route: (serviceType) => `/admin/user/${serviceType}/user_profile`,
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('FileSearch'),
         route: (serviceType) => `/admin/user/${serviceType}/reports`,
       },
     ],

@@ -112,6 +112,7 @@ import CogsWorkplace from '@/components/dashboard/bhmccomponents/admin/CogsWorkp
 // CPD Provider Components
 import CPDProviderComponent from '@/components/dashboard/bhmccomponents/cpdCmeProvider/CPDProviderComponent.vue';
 import CounselorForm from '@/components/dashboard/bhmccomponents/dealingOfficer/CounselorForm.vue';
+import BMHCUserProfile from '@/components/dashboard/bhmccomponents/user/BMHCUserProfile.vue';
 
 
 const { role, user } = useAuthStore();
@@ -199,6 +200,8 @@ const bmhUserComponent = computed(() => {
       return CoGSComponet;
     case path.endsWith('/health_certification/reports'):
       return BMHCUserReports;
+    case path.endsWith('/health_certification/user_profile'):
+      return BMHCUserProfile;
     default:
       return null;
   }

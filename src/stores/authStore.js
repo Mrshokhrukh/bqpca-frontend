@@ -15,17 +15,28 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Getters
   const isAuthenticated = computed(() => !!accessToken.value);
+  const userId = computed(() => user.value?.id || null);  // Keep userId getter
   const serviceType = computed(() => user.value?.service_type || null);
   const role = computed(() => user.value?.role || null);
   const email = computed(() => user.value?.email || null);
   const username = computed(() => user.value?.username || null);
-  const fullName = computed(() => user.value?.full_name || null);
-  const userId = computed(() => user.value?.id || null); // Add a getter for user ID
+  const fullName = computed(() => user.value?.first_name + ' ' + (user.value.middle_name ? user.value.middle_name + ' ' : '') + user.value.last_name || null); // Construct full name
+  const dzongkhag = computed(() => user.value?.dzongkhag || null);
+  const gewog = computed(() => user.value?.gewog || null);
+  const village = computed(() => user.value?.village || null);
+  const dateOfBirth = computed(() => user.value?.date_of_birth || null);
+  const contactNumber = computed(() => user.value?.contact_number || null);
+  const gender = computed(() => user.value?.gender || null);
+  const isCounselor = computed(() => user.value?.is_counselor || false);
+  const isStaff = computed(() => user.value?.is_staff || false);
+  const isSuperuser = computed(() => user.value?.is_superuser || false);
+  const isActive = computed(() => user.value?.is_active || false);
 
   // Fetch and set tokens from localStorage
   const initializeAuth = () => {
     accessToken.value = localStorage.getItem('accessToken') || null;
     refreshToken.value = localStorage.getItem('refreshToken') || null;
+    user.value = JSON.parse(localStorage.getItem('user')) || null;
   };
 
   // Actions
@@ -40,14 +51,9 @@ export const useAuthStore = defineStore('auth', () => {
       // Update state
       accessToken.value = response.data.access;
       refreshToken.value = response.data.refresh;
-      user.value = {
-        id: response.data.user_id, // Ensure this is included
-        email: response.data.email,
-        username: response.data.username,
-        full_name: response.data.full_name,
-        service_type: response.data.service_type,
-        role: response.data.role,
-      };
+
+      // Directly assign the user object from the API response
+      user.value = response.data.user;
 
       // Save to localStorage
       localStorage.setItem('accessToken', response.data.access);
@@ -98,13 +104,23 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken,
     refreshToken,
     user,
-    userId, // Add this
+    userId,
     isAuthenticated,
     serviceType,
     role,
     email,
     username,
     fullName,
+    dzongkhag,
+    gewog,
+    village,
+    dateOfBirth,
+    contactNumber,
+    gender,
+    isCounselor,
+    isStaff,
+    isSuperuser,
+    isActive,
     login,
     logout,
     initializeAuth,

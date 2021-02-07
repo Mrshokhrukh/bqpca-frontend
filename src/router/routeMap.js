@@ -161,6 +161,7 @@ export default {
       additional_qualification: () => import('@/views/admin/BMHC/Dashboard.vue'),
       cpd: () => import('@/views/admin/BMHC/Dashboard.vue'),
       CoGS: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      user_profile: () => import('@/views/admin/BMHC/Dashboard.vue'),
       reports: () => import('@/views/admin/BMHC/Dashboard.vue'),
     },
   },
