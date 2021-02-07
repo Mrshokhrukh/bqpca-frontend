@@ -1,140 +1,231 @@
 <template>
-  <div class="container">
-    <h1>Search Records</h1>
-    
-    <!-- Search Filters -->
-    <div class="filters-section">
-      <div class="filter-actions">
-        <button class="reset-btn" @click="resetFilters">Reset Filters</button>
+  <div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <!-- Header with Gradient -->
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10 shadow-md">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Search Records</h1>
+        <p class="text-gray-600">Find and manage professional records within the system.</p>
       </div>
-      
-      <div class="filter-row">
-        <div class="filter-group">
-          <label>Registration From</label>
-          <input type="date" v-model="filters.regFrom">
+
+      <!-- Filters Section -->
+      <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
+        <div class="mb-4 flex justify-end">
+          <button @click="resetFilters"
+            class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
+            Reset Filters
+          </button>
         </div>
-        <div class="filter-group">
-          <label>Registration To</label>
-          <input type="date" v-model="filters.regTo">
-        </div>
-        <div class="filter-group">
-          <label>Search by name</label>
-          <input type="text" v-model="filters.name">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Registration Date Range -->
+          <div>
+            <label for="reg-from" class="block text-sm font-medium text-gray-700">Registration From</label>
+            <div class="mt-1">
+              <input id="reg-from" type="date" v-model="filters.regFrom"
+                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+            </div>
+          </div>
+          <div>
+            <label for="reg-to" class="block text-sm font-medium text-gray-700">Registration To</label>
+            <div class="mt-1">
+              <input id="reg-to" type="date" v-model="filters.regTo"
+                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+            </div>
+          </div>
+
+          <!-- Search by Name -->
+          <div>
+            <label for="name-search" class="block text-sm font-medium text-gray-700">Search by Name</label>
+            <div class="mt-1">
+              <input id="name-search" type="text" v-model="filters.name"
+                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                placeholder="Enter name...">
+            </div>
+          </div>
+
+          <!-- CID/Work Permit/Passport No. -->
+          <div>
+            <label for="cid-search" class="block text-sm font-medium text-gray-700">CID/Work Permit/Passport No.</label>
+            <div class="mt-1">
+              <input id="cid-search" type="text" v-model="filters.cid"
+                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                placeholder="Enter CID/Work Permit/Passport No....">
+            </div>
+          </div>
+
+          <!-- Gender -->
+          <div>
+            <label for="gender-filter" class="block text-sm font-medium text-gray-700">Gender</label>
+            <div class="mt-1">
+              <select id="gender-filter" v-model="filters.gender"
+                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                <option value="">All</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Category -->
+          <div>
+            <label for="category-filter" class="block text-sm font-medium text-gray-700">Category</label>
+            <div class="mt-1">
+              <select id="category-filter" v-model="filters.category"
+                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                <option value="">All</option>
+                <option>University</option>
+                <option>Sector</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Sub Category -->
+          <div>
+            <label for="sub-category-filter" class="block text-sm font-medium text-gray-700">Sub Category</label>
+            <div class="mt-1">
+              <select id="sub-category-filter" v-model="filters.subCategory"
+                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                <option value="">All</option>
+                <option>Qualification Type</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Health Facility -->
+          <div>
+            <label for="health-facility-filter" class="block text-sm font-medium text-gray-700">Health Facility</label>
+            <div class="mt-1">
+              <select id="health-facility-filter" v-model="filters.healthFacility"
+                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                <option value="">All</option>
+                <option>Hospital</option>
+                <option>Clinic</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="filter-row">
-        <div class="filter-group">
-          <label>CID/Work Permit/Passport No.</label>
-          <input type="text" v-model="filters.cid">
+      <!-- Results Table -->
+      <div class="bg-white rounded-xl shadow-md">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 table-fixed">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Ref. No.</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Reg. Dt.</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Name</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">CID/Permit</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Gender</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Category</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Facility</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Status</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">Action</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr v-for="(record, index) in filteredRecords" :key="record.cid">
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ index + 1 }}</td>
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ formatDate(record.regDate) }}</td>
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 truncate">{{ record.name }}</td>
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ record.cid }}</td>
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ record.gender === 'M' ? 'Male' : 'Female' }}</td>
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ record.category }}</td>
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 truncate">{{ record.healthFacility }}</td>
+                <td class="px-3 py-2 whitespace-nowrap text-sm">
+                  <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusClass(record.status)}`">
+                    {{ record.status }}
+                  </span>
+                </td>
+                <td class="px-3 py-2 whitespace-nowrap text-sm space-x-1">
+                  <button @click="viewRecord(record)" 
+                    class="inline-flex items-center p-1 text-blue-600 hover:text-blue-800">
+                    <span class="sr-only">View</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                  </button>
+                  <button @click="editRecord(record)" 
+                    class="inline-flex items-center p-1 text-green-600 hover:text-green-800">
+                    <span class="sr-only">Edit</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                  </button>
+                  <button @click="deleteRecord(record.cid)" 
+                    class="inline-flex items-center p-1 text-red-600 hover:text-red-800">
+                    <span class="sr-only">Delete</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="filter-group">
-          <label>GENDER</label>
-          <select v-model="filters.gender">
-            <option value="">All</option>
-            <option>Male</option>
-            <option>Female</option>
-          </select>
+        <div v-if="filteredRecords.length === 0" class="p-4 text-gray-500 text-center">
+          No matching records found.
         </div>
       </div>
 
-      <div class="category-filters">
-        <div class="filter-group">
-          <label>CATEGORY</label>
-          <select v-model="filters.category">
-            <option value="">All</option>
-            <option>University</option>
-            <option>Sector</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label>SUB CATEGORY</label>
-          <select v-model="filters.subCategory">
-            <option value="">All</option>
-            <option>Qualification Type</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label>HEALTH FACILITY</label>
-          <select v-model="filters.healthFacility">
-            <option value="">All</option>
-            <option>Hospital</option>
-            <option>Clinic</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Results Table -->
-    <table class="records-table">
-      <thead>
-        <tr>
-          <th>REF. No.</th>
-          <th>Reg. Dt.</th>
-          <th>Personnel Name</th>
-          <th>CID/Work Permit/Passport No.</th>
-          <th>Gender</th>
-          <th>Category</th>
-          <th>Health Facility</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(record, index) in filteredRecords" :key="record.cid">
-          <td>{{ index + 1 }}</td>
-          <td>{{ formatDate(record.regDate) }}</td>
-          <td>{{ record.name }}</td>
-          <td>{{ record.cid }}</td>
-          <td>{{ record.gender }}</td>
-          <td>{{ record.category }}</td>
-          <td>{{ record.healthFacility }}</td>
-          <td :class="statusClass(record.status)">{{ record.status }}</td>
-          <td>
-            <button class="view-btn" @click="viewRecord(record)">View</button>
-            <button class="edit-btn" @click="editRecord(record)">✓ Edit</button>
-            <button class="delete-btn" @click="deleteRecord(record.cid)">✗ Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- View/Edit Modal -->
-    <div v-if="showModal" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <h2>{{ isEditing ? 'Edit Record' : 'View Record' }}</h2>
-        <div v-if="selectedRecord" class="modal-fields">
-          <div class="modal-field">
-            <label>Registration Date:</label>
-            <input v-model="selectedRecord.regDate" type="date" :readonly="!isEditing">
-          </div>
-          <div class="modal-field">
-            <label>Full Name:</label>
-            <input v-model="selectedRecord.name" :readonly="!isEditing">
-          </div>
-          <div class="modal-field">
-            <label>CID Number:</label>
-            <input v-model="selectedRecord.cid" :readonly="!isEditing">
-          </div>
-          <div class="modal-field">
-            <label>Gender:</label>
-            <select v-model="selectedRecord.gender" :disabled="!isEditing">
-              <option value="M">Male</option>
-              <option value="F">Female</option>
-            </select>
-          </div>
-          <div class="modal-field">
-            <label>Status:</label>
-            <select v-model="selectedRecord.status" :disabled="!isEditing">
-              <option>Verified</option>
-              <option>Pending</option>
-              <option>Agreed</option>
-            </select>
-          </div>
-          <div v-if="isEditing" class="modal-actions">
-            <button class="save-btn" @click="saveChanges">Save Changes</button>
-            <button class="cancel-btn" @click="closeModal">Cancel</button>
+      <!-- View/Edit Modal -->
+      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 transform transition-all">
+          <span class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 cursor-pointer"
+            @click="closeModal">×</span>
+          <h2 class="text-xl font-bold text-gray-900 mb-4">{{ isEditing ? 'Edit Record' : 'View Record' }}</h2>
+          <div v-if="selectedRecord" class="space-y-4">
+            <div>
+              <label for="modal-reg-date" class="block text-sm font-medium text-gray-700">Registration Date:</label>
+              <div class="mt-1">
+                <input id="modal-reg-date" type="date" v-model="selectedRecord.regDate" :readonly="!isEditing"
+                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+              </div>
+            </div>
+            <div>
+              <label for="modal-name" class="block text-sm font-medium text-gray-700">Full Name:</label>
+              <div class="mt-1">
+                <input id="modal-name" type="text" v-model="selectedRecord.name" :readonly="!isEditing"
+                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+              </div>
+            </div>
+            <div>
+              <label for="modal-cid" class="block text-sm font-medium text-gray-700">CID Number:</label>
+              <div class="mt-1">
+                <input id="modal-cid" type="text" v-model="selectedRecord.cid" :readonly="!isEditing"
+                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+              </div>
+            </div>
+            <div>
+              <label for="modal-gender" class="block text-sm font-medium text-gray-700">Gender:</label>
+              <div class="mt-1">
+                <select id="modal-gender" v-model="selectedRecord.gender" :disabled="!isEditing"
+                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label for="modal-status" class="block text-sm font-medium text-gray-700">Status:</label>
+              <div class="mt-1">
+                <select id="modal-status" v-model="selectedRecord.status" :disabled="!isEditing"
+                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                  <option>Verified</option>
+                  <option>Pending</option>
+                  <option>Agreed</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex justify-end gap-4">
+              <button v-if="isEditing" @click="saveChanges"
+                class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">Save
+                Changes</button>
+              <button @click="closeModal"
+                class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">Cancel</button>
+            </div>
           </div>
         </div>
       </div>
@@ -304,13 +395,13 @@ const filteredRecords = computed(() => {
     const regDate = new Date(record.regDate);
     const from = filters.value.regFrom ? new Date(filters.value.regFrom) : null;
     const to = filters.value.regTo ? new Date(filters.value.regTo) : null;
-    
+
     return (
       (!from || regDate >= from) &&
       (!to || regDate <= to) &&
       (!filters.value.name || record.name.toLowerCase().includes(filters.value.name.toLowerCase())) &&
       (!filters.value.cid || record.cid.includes(filters.value.cid)) &&
-      (!filters.value.gender || record.gender === filters.value.gender.charAt(0)) &&
+      (!filters.value.gender || record.gender === filters.value.gender) &&
       (!filters.value.category || record.category === filters.value.category) &&
       (!filters.value.healthFacility || record.healthFacility === filters.value.healthFacility)
     );
@@ -318,12 +409,13 @@ const filteredRecords = computed(() => {
 });
 
 const statusClass = (status: string) => ({
-  'verified': status === 'Verified',
-  'pending': status === 'Pending',
-  'agreed': status === 'Agreed'
+  'bg-green-100 text-green-800': status === 'Verified',
+  'bg-yellow-100 text-yellow-800': status === 'Pending',
+  'bg-blue-100 text-blue-800': status === 'Agreed'
 });
 
 const formatDate = (dateString: string) => {
+  if (!dateString) return '-';
   const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
@@ -376,175 +468,3 @@ const closeModal = () => {
   selectedRecord.value = null;
 };
 </script>
-
-<style scoped>
-.container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.filters-section {
-  background: #f5f5f5;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-.filter-actions {
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.reset-btn {
-  background-color: #666;
-  color: white;
-  padding: 8px 20px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.reset-btn:hover {
-  background-color: #555;
-}
-
-.filter-row {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 15px;
-}
-
-.category-filters {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.filter-group {
-  flex: 1;
-}
-
-.filter-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
-}
-
-.filter-group input, 
-.filter-group select {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.records-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  margin-top: 20px;
-}
-
-.records-table th, 
-.records-table td {
-  padding: 12px;
-  border: 1px solid #ddd;
-  text-align: left;
-}
-
-.records-table th {
-  background-color: #f8f9fa;
-  font-weight: 600;
-}
-
-button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  margin: 2px;
-  cursor: pointer;
-  color: white;
-}
-
-.view-btn { background-color: #4CAF50; }
-.edit-btn { background-color: #2196F3; }
-.delete-btn { background-color: #f44336; }
-
-.verified { color: #4CAF50; font-weight: bold; }
-.pending { color: #FF9800; font-weight: bold; }
-.agreed { color: #2196F3; font-weight: bold; }
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background: white;
-  padding: 25px;
-  border-radius: 8px;
-  width: 500px;
-  position: relative;
-}
-
-.close {
-  position: absolute;
-  right: 20px;
-  top: 10px;
-  font-size: 28px;
-  cursor: pointer;
-  color: #666;
-}
-
-.modal-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.modal-field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.modal-field label {
-  font-weight: 500;
-  color: #444;
-}
-
-.modal-field input,
-.modal-field select {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.modal-actions {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-}
-
-.save-btn {
-  background-color: #4CAF50;
-  padding: 8px 20px;
-}
-
-.cancel-btn {
-  background-color: #666;
-  padding: 8px 20px;
-}
-</style>
