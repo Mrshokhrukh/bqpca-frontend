@@ -1,33 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-import { CheckCircle } from 'lucide-vue-next'
-
-const registrationNumber = ref('PMLT165')
-const cidNumber = ref('CID123456')
-const fullName = ref('Doji Ishering')
-const gender = ref('Male')
-const title = ref('')
-const relevance = ref('')
-const participationCategory = ref('')
-const participantSubCategory = ref('')
-const cpdActivityType = ref('')
-const duration = ref(0)
-const credits = ref(0)
-const file = ref(null)
-
-const submitApplication = () => {
-  alert('Application submitted successfully!')
-}
-
-const saveDraft = () => {
-  alert('Application saved as draft.')
-}
-
-const handleFileUpload = (event) => {
-  file.value = event.target.files[0]
-}
-</script>
-
 <template>
   <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-3xl mx-auto">
@@ -90,7 +60,7 @@ const handleFileUpload = (event) => {
             <CheckCircle class="w-5 h-5 mr-2 text-blue-500" />
             CPD Details
           </h3>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="col-span-2">
               <label class="block text-sm font-medium text-gray-700">Title of CPD</label>
@@ -234,24 +204,57 @@ const handleFileUpload = (event) => {
     </div>
   </div>
 </template>
-  
-  
+
+
+<script setup>
+import { ref } from 'vue'
+import { CheckCircle } from 'lucide-vue-next'
+
+const registrationNumber = ref('PMLT165')
+const cidNumber = ref('CID123456')
+const fullName = ref('Doji Ishering')
+const gender = ref('Male')
+const title = ref('')
+const relevance = ref('')
+const participationCategory = ref('')
+const participantSubCategory = ref('')
+const cpdActivityType = ref('')
+const duration = ref(0)
+const credits = ref(0)
+const file = ref(null)
+
+const submitApplication = () => {
+  alert('Application submitted successfully!')
+}
+
+const saveDraft = () => {
+  alert('Application saved as draft.')
+}
+
+const handleFileUpload = (event) => {
+  file.value = event.target.files[0]
+}
+</script>
+
+
+
+
   <style scoped>
   .create-application {
     max-width: 600px;
     margin: 0 auto;
   }
-  
+
   .form-group {
     margin-bottom: 15px;
   }
-  
+
   label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
   }
-  
+
   input,
   textarea,
   select {
@@ -259,7 +262,7 @@ const handleFileUpload = (event) => {
     padding: 8px;
     box-sizing: border-box;
   }
-  
+
   button {
     padding: 10px 20px;
     margin-right: 10px;
@@ -269,7 +272,7 @@ const handleFileUpload = (event) => {
     border: none;
     border-radius: 5px;
   }
-  
+
   button:hover {
     background-color: #0056b3;
   }
