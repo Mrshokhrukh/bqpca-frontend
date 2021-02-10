@@ -1,7 +1,7 @@
 const roqDashboard = () => import('@/views/admin/ROQ/Dashboard.vue')
 const ecpfDashboard = () => import('@/views/admin/ECPF/Dashboard.vue')
 const bmhcDashboard = () => import('@/views/admin/BMHC/Dashboard.vue')
-
+const accredDashboard = () => import('@/views/admin/ACCRED/Dashboard.vue')
 export default {
   super_admin: {
     dashboard: () => import('@/views/admin/SuperAdmin/Dashboard.vue'),
@@ -35,57 +35,28 @@ export default {
       // ... all other ECPF related routes for admin
     },
     accreditation: {
-      dashboard: () =>
-        import('@/components/dashboard/accredcomponent/admin/AccreditationDashboard.vue'),
-      reports: () => import('@/components/dashboard/accredcomponent/admin/AdminReports.vue'),
+      dashboard: accredDashboard,
+      reports: accredDashboard,
 
-      // Masters routes
-      masters: {
-        component: () => import('@/views/admin/ACCRED/Dashboard.vue'),
-        children: {
-          appeal_reason: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/AppealReasonMaster.vue'),
-          application_duration: () =>
-            import(
-              '@/components/dashboard/accredcomponent/admin/masters/ApplicationDurationMaster.vue'
-            ),
-          assessor_pool: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/AssessorPoolMaster.vue'),
-          decision: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/DecisionMaster.vue'),
-          decision_classes: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/DecisionClass.vue'),
-          e_signature: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/ESignatureMaster.vue'),
-          employee_category: () =>
-            import(
-              '@/components/dashboard/accredcomponent/admin/masters/EmployeeCategoryMaster.vue'
-            ),
-          employee_type: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/EmployeeTypeMaster.vue'),
-          fees: () => import('@/components/dashboard/accredcomponent/admin/masters/FeesMaster.vue'),
-          indicators: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/IndicatorsMaster.vue'),
-          institute: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/InstituteMaster.vue'),
-          key_aspects: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/KeyAspectsMaster.vue'),
-          document: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/DecisionClass.vue'),
-          qualification: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/QualificationMaster.vue'),
-          rating_category: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/RatingCategoryMaster.vue'),
-          source_of_funding: () =>
-            import(
-              '@/components/dashboard/accredcomponent/admin/masters/SourceOfFundingMaster.vue'
-            ),
-          staff_type: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/StaffTypeMaster.vue'),
-          standard: () =>
-            import('@/components/dashboard/accredcomponent/admin/masters/StandardMaster.vue'),
-        },
-      },
+      // All master routes now point to accredDashboard
+      appeal_reason: accredDashboard,
+      application_duration: accredDashboard,
+      assessor_pool: accredDashboard,
+      decision: accredDashboard,
+      decision_classes: accredDashboard,
+      e_signature: accredDashboard,
+      employee_category: accredDashboard,
+      employee_type: accredDashboard,
+      fees: accredDashboard,
+      indicators: accredDashboard,
+      institute: accredDashboard,
+      key_aspects: accredDashboard,
+      document: accredDashboard,
+      qualification: accredDashboard,
+      rating_category: accredDashboard,
+      source_of_funding: accredDashboard,
+      staff_type: accredDashboard,
+      standard: accredDashboard,
     },
     engineering_certification: {
       dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
