@@ -56,8 +56,12 @@ export default {
   },
 
     // Citizen Details (Assuming this is public/semi-public)
-  fetchCitizenDetails(cid) {
-    return apiClient.get(`/users/fetch-citizen-details/${cid}/`);
+  fetchCitizenDetails(cid, config) {
+    return apiClient.get(`/users/fetch-citizen-details/${cid}/`, config);
+  },
+
+  fetchRubDetails(cid, stUid) {
+    return apiClient.get(`/masters/fetch-rub-details/${cid}/${stUid}/`);
   },
 
   // Work Address Management

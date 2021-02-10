@@ -1,43 +1,28 @@
 <template>
-  <div class="file-upload">
-    <!-- Hidden file input -->
-    <input
-      type="file"
-      :accept="accept"
-      @change="handleFileChange"
-      class="hidden"
-      ref="fileInput"
-      :required="required"
-    />
-    <!-- Upload button -->
-    <button
-      type="button"
-      @click="triggerFileInput"
-      class="px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
-    >
-      {{ file ? file.name : 'Upload File' }}
+  <div class="file-upload relative">
+    <input type="file" :accept="accept" @change="handleFileChange" class="sr-only" ref="fileInput" :id="inputId"
+      :required="required" />
+    <label :for="inputId"
+      class="cursor-pointer bg-blue-100 text-blue-700 rounded-md px-4 py-2 hover:bg-blue-200 transition-colors">
+      {{ fileName || 'Upload File' }}
+    </label>
+    <button v-if="fileName" type="button" @click="removeFile"
+      class="absolute top-1/2 right-2 transform -translate-y-1/2 text-red-500 hover:text-red-700 focus:outline-none"
+      title="Remove File">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
     </button>
-    <!-- Remove button (visible only when a file is selected) -->
-    <button
-      v-if="file"
-      type="button"
-      @click="removeFile"
-      class="ml-2 px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
-    >
-      Remove
-    </button>
-    <!-- Error message -->
     <p v-if="error" class="mt-1 text-sm text-red-500">{{ error }}</p>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 
-// Props
 const props = defineProps({
   modelValue: {
-    type: [File, null], // Expects a File object or null
+    type: [File, null],
     default: null,
   },
   accept: {
@@ -52,49 +37,58 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  initialFileName: { // Add this prop
+    type: String,
+    default: '',
+  },
 });
 
-// Emits
 const emit = defineEmits(['update:modelValue', 'upload-error']);
 
-// Refs
-const file = ref(props.modelValue || null); // Holds the selected file
-const error = ref(''); // Holds validation error messages
-const fileInput = ref(null); // Reference to the file input element
+const fileInput = ref(null);
+const error = ref('');
+const inputId = ref(`file-upload-${Math.random().toString(36).substring(7)}`);
+const fileName = ref(props.initialFileName); // Use initialFileName
 
-// Helper function to map file extensions to MIME types
+
+// Helper function to map file extensions to MIME types (Keep this)
 const getMimeTypes = (acceptString) => {
   return acceptString.split(',').map((type) => {
     type = type.trim();
-    // Handle special cases
     switch (type) {
-      case '.pdf':
-        return 'application/pdf';
-      case '.jpg':
-      case '.jpeg':
-        return 'image/jpeg';
-      case '.png':
-        return 'image/png';
-      case '.webp':
-        return 'image/webp';
-      default:
-        return type;
+      case '.pdf': return 'application/pdf';
+      case '.jpg': case '.jpeg': return 'image/jpeg';
+      case '.png': return 'image/png';
+      case '.webp': return 'image/webp';
+      default: return type;
     }
   });
 };
 
-// Validate the selected file
+const handleFileChange = (event) => {
+  error.value = ''; // Reset error
+  const selectedFile = event.target.files[0];
+
+  if (selectedFile) {
+    if (!validateFile(selectedFile)) {
+      clearFileInput(event);
+      return;
+    }
+    fileName.value = selectedFile.name; //update the file name
+    emit('update:modelValue', selectedFile);
+  }
+  else {
+    removeFile(); // Clear if no file selected
+  }
+};
+
 const validateFile = (selectedFile) => {
   error.value = '';
-
-  // Get array of accepted MIME types
   const acceptedMimeTypes = getMimeTypes(props.accept);
-
-  // Check if file type matches any accepted MIME type
   const isValidType = acceptedMimeTypes.some((mimeType) => {
     if (mimeType.endsWith('/*')) {
-      const baseType = mimeType.slice(0, -2); // Remove '/*'
-      return selectedFile.type.startsWith(baseType); // Check if file starts with 'image/', etc.
+      const baseType = mimeType.slice(0, -2);
+      return selectedFile.type.startsWith(baseType);
     }
     return selectedFile.type === mimeType;
   });
@@ -102,58 +96,59 @@ const validateFile = (selectedFile) => {
   if (!isValidType) {
     error.value = `Invalid file type. Allowed types: ${props.accept}`;
     emit('upload-error', error.value);
-    file.value = null;
-    emit('update:modelValue', null);
-    return;
+    return false; // Return false for invalid
   }
 
-  // Check file size
-  const maxSizeBytes = props.maxSize * 1024 * 1024; // Convert MB to bytes
+  const maxSizeBytes = props.maxSize * 1024 * 1024;
   if (selectedFile.size > maxSizeBytes) {
     error.value = `File size exceeds ${props.maxSize}MB`;
     emit('upload-error', error.value);
-    file.value = null;
-    emit('update:modelValue', null);
-    return;
+    return false; // Return false for invalid
   }
+  return true; //valid file
 
-  // If valid, update the file
-  file.value = selectedFile;
-  emit('update:modelValue', selectedFile); // Emit the File object directly
 };
 
-// Watch for changes to modelValue (e.g., when resetting the form)
+
+const removeFile = () => {
+  fileName.value = '';
+  emit('update:modelValue', null);
+  clearFileInput(); // Clear the *input element*
+};
+
+const clearFileInput = (event = null) => {
+  if (event) {
+    event.target.value = '';
+  }
+  else {
+    if (fileInput.value) {
+      fileInput.value.value = ''; // Access the DOM element and clear its value
+    }
+  }
+};
+
+
 watch(
   () => props.modelValue,
   (newValue) => {
-    file.value = newValue || null;
+    if (!newValue) { // if new value is null or undefined
+      fileName.value = ''; //clear the filename as well
+    }
   }
 );
 
-// Trigger the file input click
-const triggerFileInput = () => {
-  fileInput.value.click();
-};
-
-// Handle file selection
-const handleFileChange = (event) => {
-  const selectedFile = event.target.files[0];
-  if (selectedFile) {
-    validateFile(selectedFile);
-  }
-};
-
-// Remove the selected file
-const removeFile = () => {
-  file.value = null;
-  emit('update:modelValue', null); // Emit null to clear the file
-  error.value = '';
-};
+//watch for initial file name changes
+onMounted(() => {
+  fileName.value = props.initialFileName;
+});
 </script>
 
 <style scoped>
+/* Keep your existing styles, but add this for the clear button positioning */
 .file-upload {
   display: flex;
   align-items: center;
+  position: relative;
+  /* Add this */
 }
 </style>

@@ -153,8 +153,8 @@ import {
   MapPinIcon,
   CalendarIcon
 } from '@heroicons/vue/24/outline';
-
-import ActionButtons from '../../../common/ROQUserActionButtons.vue';
+import { useAuthStore } from '@/stores/authStore'; // Import the auth store
+import ActionButtons from '@/components/common/ROQUserActionButtons.vue';
 
 const props = defineProps({
   applications: {
@@ -182,9 +182,10 @@ const emit = defineEmits(['page-change', 'per-page-change', 'search', 'filter', 
 const searchQuery = ref('');
 const selectedStatus = ref('');
 const sortOrder = ref({ field: 'created_at', direction: 'desc' });
+const authStore = useAuthStore(); // Access the auth store
 
 const statusOptions = [
-  'draft', // Ensure "draft" is included
+  'draft',
   'applied',
   'processing',
   'under_review',
@@ -268,9 +269,16 @@ const handleAction = (action, application) => {
 };
 
 const sortedApplications = computed(() => {
-  let filtered = [...props.applications];
+  // 1. Filter by user email (if applicable)
+  let filtered = props.applications;
 
-  // Apply search filter
+  // *Only* filter by email if authStore.user and authStore.user.email exist.
+  if (authStore.user && authStore.user.email) {
+    filtered = filtered.filter(app => app.email_address === authStore.user.email);
+  }
+
+
+  // 2. Apply search filter
   if (searchQuery.value) {
     filtered = filtered.filter(app =>
       app.applicants_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
@@ -279,12 +287,12 @@ const sortedApplications = computed(() => {
     );
   }
 
-  // Apply status filter
+  // 3. Apply status filter
   if (selectedStatus.value) {
     filtered = filtered.filter(app => app.status === selectedStatus.value);
   }
 
-  // Apply sorting
+  // 4. Apply sorting
   return filtered.sort((a, b) => {
     const aValue = a[sortOrder.value.field];
     const bValue = b[sortOrder.value.field];

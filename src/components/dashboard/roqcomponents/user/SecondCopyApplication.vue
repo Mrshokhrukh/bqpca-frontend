@@ -60,7 +60,7 @@ import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import SecondCopyApplicationForm from './SecondCopyApplicationForm.vue';
-import ApplicationTable from '@/components/dashboard/roqcomponents/user/ApplicationsTable.vue';
+import ApplicationTable from '@/components/common/ROQApplicationsTable.vue';
 import apiService from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
 

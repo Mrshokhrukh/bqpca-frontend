@@ -137,6 +137,42 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
+  const updateUserAfterFetch = async () => {
+    if (!userId.value) {
+      console.warn("Cannot update user: User ID is not available.");
+      return;
+    }
+    try {
+      const response = await apiService.getUserDetails(userId.value);
+      if (response.data) {
+        // Preserve the existing tokens while updating user data
+        const currentTokens = {
+          access: accessToken.value,
+          refresh: refreshToken.value
+        };
+
+        // Update user data
+        user.value = {
+          ...response.data,
+          // Ensure critical auth-related fields are preserved
+          access_token: currentTokens.access,
+          refresh_token: currentTokens.refresh
+        };
+
+        localStorage.setItem('user', JSON.stringify(user.value));
+        toast.success("User details updated successfully");
+      }
+    } catch (error) {
+      console.error("Error updating user details:", error);
+      // Don't logout on error, just show error message
+      toast.error("Failed to update user details. Please try again.");
+      // Only logout if it's an authentication error (401)
+      if (error.response?.status === 401) {
+        logout();
+      }
+    }
+  };
+
   return {
     accessToken,
     refreshToken,
@@ -162,5 +198,6 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     initializeAuth,
     refreshAccessToken,
+    updateUserAfterFetch,
   };
 });

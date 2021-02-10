@@ -1,187 +1,338 @@
 <template>
-  <div class="max-w-4xl mx-auto py-8 px-4">
-    <div class="bg-white shadow-lg rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl">
-      <!-- Header Section with Avatar -->
-      <div class="bg-gradient-to-r from-blue-600 to-blue-400 p-8 text-white">
-        <div class="flex items-center space-x-4">
-          <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center text-blue-600 text-2xl font-bold shadow-lg">
-            {{ profileData.name ? profileData.name.charAt(0).toUpperCase() : 'U' }}
+  <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+      <!-- Left Column: Profile Card (Sticky) -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden sticky top-6">
+          <div class="bg-gradient-to-r from-blue-500 to-blue-400 p-6 text-white">
+            <div class="flex flex-col items-center">
+              <div class="relative group mb-4">
+                <div
+                  class="w-28 h-28 rounded-full bg-white flex items-center justify-center text-blue-500 text-4xl font-bold shadow-lg transition-all duration-300 group-hover:shadow-xl">
+                  {{ authStore.fullName ? authStore.fullName.charAt(0).toUpperCase() : 'U' }}
+                </div>
+              </div>
+              <h2 class="text-2xl font-bold text-center">{{ profileData.first_name }} {{ profileData.last_name }}</h2>
+              <p class="text-sm text-blue-100 flex items-center justify-center mt-1">
+                <Mail class="w-4 h-4 mr-1" />
+                {{ profileData.email }}
+              </p>
+              <div v-if="profileData.contact_number"
+                class="text-sm text-blue-100 flex items-center justify-center mt-1">
+                <Phone class="w-4 h-4 mr-1" />
+                {{ profileData.contact_number }}
+              </div>
+            </div>
           </div>
-          <div>
-            <h2 class="text-2xl font-bold">Profile Information</h2>
-            <p class="text-blue-100">Manage your personal details</p>
+
+          <div class="p-6">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-blue-50 p-4 rounded-lg">
+                <div class="flex items-center text-blue-600">
+                  <Award class="w-5 h-5 mr-2" />
+                  <span class="font-medium">Certs</span>
+                </div>
+                <p class="text-2xl font-bold text-gray-800">{{ userCertificates.length }}</p>
+              </div>
+              <div class="bg-green-50 p-4 rounded-lg">
+                <div class="flex items-center text-green-600">
+                  <CheckCircle class="w-5 h-5 mr-2" />
+                  <span class="font-medium">Verified</span>
+                </div>
+                <p class="text-2xl font-bold text-gray-800">{{ userCertificates.filter(c => c.status ===
+                    'Verified').length
+                  }} / {{ userCertificates.length }}</p>
+              </div>
+            </div>
+            <button @click="toggleEditMode"
+              class="w-full mt-4 flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              :class="[isEditing ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white']">
+              <Edit v-if="!isEditing" class="w-4 h-4 mr-2" />
+              <X v-else class="w-4 h-4 mr-2" />
+              {{ isEditing ? 'Cancel' : 'Edit Profile' }}
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Form Section -->
-      <div class="p-8">
-        <form @submit.prevent="updateProfile" class="space-y-8">
-          <!-- Personal Information Section -->
-          <div class="bg-gray-50 p-6 rounded-lg">
-            <h3 class="text-lg font-semibold text-gray-700 mb-4">Personal Details</h3>
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Full Name</label>
-                <input 
-                  type="text" 
-                  v-model="profileData.name"
-                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  required 
-                />
-              </div>
 
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Email Address</label>
-                <input 
-                  type="email" 
-                  v-model="profileData.email"
-                  class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 cursor-not-allowed"
-                  disabled 
-                />
-              </div>
+      <!-- Right Column: Main Content (Forms and Certificates) -->
+      <div class="lg:col-span-2 space-y-6">
+        <form @submit.prevent="updateProfile" class="space-y-6">
 
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">CID Number</label>
-                <input 
-                  type="text" 
-                  v-model="profileData.cid_no"
-                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  required 
-                />
+          <!-- ... (Personal Information and Location - No Changes Here) ... -->
+          <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex items-center mb-4">
+              <User class="w-5 h-5 text-blue-500 mr-2" />
+              <h3 class="text-xl font-semibold text-gray-800">Personal Information</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">First Name <span
+                    class="text-red-500">*</span></label>
+                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
+                    profileData.first_name }}</div>
+                <input v-else v-model="profileData.first_name" type="text" required
+                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
-
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Contact Number</label>
-                <input 
-                  type="tel" 
-                  v-model="profileData.contact_number"
-                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  required 
-                />
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Middle Name</label>
+                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
+                    profileData.middle_name || '-' }}</div>
+                <input v-else v-model="profileData.middle_name" type="text"
+                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Last Name <span
+                    class="text-red-500">*</span></label>
+                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
+                    profileData.last_name }}</div>
+                <input v-else v-model="profileData.last_name" type="text" required
+                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
+                    formatDate(profileData.date_of_birth) }}</div>
+                <input v-else v-model="profileData.date_of_birth" type="date"
+                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Gender</label>
+                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1 capitalize">{{
+                    profileData.gender || '-' }}</div>
+                <select v-else v-model="profileData.gender"
+                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                  <option value="">Select</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Contact Number <span
+                    class="text-red-500">*</span></label>
+                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
+                    profileData.contact_number }}</div>
+                <input v-else v-model="profileData.contact_number" type="tel" required
+                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
             </div>
           </div>
 
-          <!-- Location Information Section -->
-          <div class="bg-gray-50 p-6 rounded-lg">
-            <h3 class="text-lg font-semibold text-gray-700 mb-4">Location Details</h3>
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Dzongkhag</label>
-                <input 
-                  type="text" 
-                  v-model="profileData.dzongkhag"
-                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  required 
-                />
+          <!-- Location Information -->
+          <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex items-center mb-4">
+              <MapPin class="w-5 h-5 text-blue-500 mr-2" />
+              <h3 class="text-xl font-semibold text-gray-800">Location Details</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Dzongkhag <span
+                    class="text-red-500">*</span></label>
+                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
+                    profileData.dzongkhag }}</div>
+                <input v-else v-model="profileData.dzongkhag" type="text" required
+                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
-
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Gewog</label>
-                <input 
-                  type="text" 
-                  v-model="profileData.gewog"
-                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  required 
-                />
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Gewog <span class="text-red-500">*</span></label>
+                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{ profileData.gewog
+                  }}</div>
+                <input v-else v-model="profileData.gewog" type="text" required
+                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
-
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Village</label>
-                <input 
-                  type="text" 
-                  v-model="profileData.village"
-                  class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  required 
-                />
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Village <span
+                    class="text-red-500">*</span></label>
+                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
+                    profileData.village }}</div>
+                <input v-else v-model="profileData.village" type="text" required
+                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
             </div>
           </div>
 
-          <!-- Success/Error Messages -->
-          <TransitionRoot appear :show="!!message" as="template">
-            <div 
-              :class="[
-                'p-4 rounded-lg transition-all duration-300 transform',
-                messageClass,
-                message ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
-              ]"
-            >
-              {{ message }}
+          <!-- Certificates Section -->
+          <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center">
+                <Award class="w-5 h-5 text-blue-500 mr-2" />
+                <h3 class="text-xl font-semibold text-gray-800">Approved Certificates</h3>
+              </div>
+              <span class="text-sm text-gray-500">Total: {{ userCertificates.length }}</span>
             </div>
-          </TransitionRoot>
-
-          <!-- Submit Button -->
-          <div class="flex justify-end pt-4">
-            <button 
-              type="submit" 
-              :disabled="loading"
-              class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-            >
-              <span v-if="loading" class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
-              <span>{{ loading ? 'Updating...' : 'Update Profile' }}</span>
+            <div class="space-y-4">
+              <!-- Display Certificates -->
+              <div v-for="cert in userCertificates" :key="cert.id"
+                class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:border-blue-300 transition-all duration-200 flex items-center justify-between">
+                <div class="flex items-center">
+                  <ScrollText class="w-5 h-5 text-blue-600 mr-2" />
+                  <div>
+                    <h4 class="font-medium text-gray-800">{{ cert.title }}</h4>
+                    <p class="text-sm text-gray-600">QEC Number: <span class="font-medium">{{ cert.qec_number }}</span>
+                    </p>
+                    <p class="text-sm text-gray-600">Issued: {{ formatDate(cert.issued_date) }}</p>
+                  </div>
+                </div>
+                <span :class="[
+                    'px-3 py-1 rounded-full text-xs font-medium',
+                    cert.status === 'Verified' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                  ]">
+                  {{ cert.status }}
+                </span>
+              </div>
+              <div v-if="userCertificates.length === 0" class="text-gray-500 text-center py-4">
+                No certificates found.
+              </div>
+            </div>
+          </div>
+          <!-- Submit Button (Only when editing) -->
+          <div v-if="isEditing" class="flex justify-end">
+            <button type="submit" :disabled="loading"
+              class="px-6 py-2.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+              <Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
+              <Save v-else class="w-4 h-4 mr-2" />
+              <span>{{ loading ? 'Saving...' : 'Save Changes' }}</span>
             </button>
           </div>
         </form>
+
+        <!-- Message Display -->
+        <TransitionRoot appear :show="!!message" as="template">
+          <div :class="[
+                    'fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-all duration-300 transform max-w-md',
+                    messageClass,
+                    message ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+                  ]">
+            <div class="flex items-center">
+              <CheckCircle v-if="messageClass.includes('green')" class="w-5 h-5 mr-2 text-green-500" />
+              <AlertCircle v-else class="w-5 h-5 mr-2 text-red-500" />
+              {{ message }}
+            </div>
+          </div>
+        </TransitionRoot>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import apiService from '@/services/services';
 import { storeToRefs } from 'pinia';
 import { TransitionRoot } from '@headlessui/vue';
+import {
+  Mail, User, MapPin, Award, ScrollText, Edit, X, CheckCircle, AlertCircle, Save, Loader2, Phone
+} from 'lucide-vue-next';
 
-const { user, userId } = storeToRefs(useAuthStore());
+const authStore = useAuthStore();
+const { userId } = storeToRefs(authStore);
 const loading = ref(false);
 const message = ref('');
 const messageClass = ref('');
+const isEditing = ref(false);
 
 const profileData = ref({
-  name: '',
+  first_name: '',
+  middle_name: '',
+  last_name: '',
   email: '',
-  cid_no: '',
+  date_of_birth: '',
   contact_number: '',
+  gender: '',
   dzongkhag: '',
   gewog: '',
-  village: ''
+  village: '',
 });
 
-const loadProfile = async () => {
-  try {
-    if (!userId.value) {
-      showMessage('User ID is not available. Please log in again.', 'error');
-      return;
+const allCertificates = ref([]); // Store *all* certificates
+
+// Filtered certificates for the logged-in user
+const userCertificates = computed(() => {
+  // Access the certificates array correctly, and handle potential null/undefined
+    const certificates = allCertificates.value?.data?.results || [];
+
+    //added console logs to display the required output in console.
+    console.log('All Certificates:', certificates);
+    console.log('AuthStore User Email:', authStore.user?.email); // Log for debugging
+
+    if (!authStore.user || !authStore.user.email) {
+        console.warn("User email is not available."); // Or handle appropriately
+        return []; // No user logged in, so no certificates
     }
 
-    const response = await apiService.getUserProfile(userId.value);
-    profileData.value = {
-      ...response.data,
-      email: user.value?.email
-    };
-  } catch (error) {
-    console.error('Error loading profile:', error);
-    showMessage('Failed to load profile information', 'error');
+    return certificates.filter(cert => cert.email_address === authStore.user.email);
+});
+
+
+const formatDate = (date) => {
+  if (!date) return '-';
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+
+const toggleEditMode = () => {
+  if (isEditing.value) {
+    loadProfile(); // Reset to original values
+  }
+  isEditing.value = !isEditing.value;
+  message.value = ''; // Clear messages
+};
+
+const loadProfile = async () => {
+  if (authStore.user) {
+    profileData.value = { ...authStore.user, email: authStore.email };
+
+    try {
+      // Fetch *all* certificates
+      const certs = await apiService.getRecognitionOfQualifications();
+      allCertificates.value = certs;
+    } catch (error) {
+      showMessage('Failed to load certificates.', 'error');
+      console.error('Error fetching certificates:', error);
+    }
+  } else {
+    showMessage('User not logged in.', 'error');
   }
 };
 
 const updateProfile = async () => {
   loading.value = true;
+  message.value = '';
   try {
     if (!userId.value) {
-      showMessage('User ID is not available. Please log in again.', 'error');
+      showMessage('User ID is missing. Please log in again.', 'error');
       return;
     }
-    
-    await apiService.updateUserProfile({ ...profileData.value, id: userId.value });
-    showMessage('Profile updated successfully', 'success');
+    const updateData = {
+      id: userId.value,
+      first_name: profileData.value.first_name,
+      middle_name: profileData.value.middle_name,
+      last_name: profileData.value.last_name,
+      date_of_birth: profileData.value.date_of_birth,
+      contact_number: profileData.value.contact_number,
+      gender: profileData.value.gender,
+      dzongkhag: profileData.value.dzongkhag,
+      gewog: profileData.value.gewog,
+      village: profileData.value.village,
+    };
+
+    await apiService.updateUserProfile(updateData);
+    await authStore.updateUserAfterFetch();
+    showMessage('Profile updated successfully!', 'success');
+    isEditing.value = false;
+
   } catch (error) {
     console.error('Error updating profile:', error);
-    showMessage('Failed to update profile', 'error');
+    const errorMessage = error.response?.data?.message || 'Failed to update profile. Please try again.';
+    showMessage(errorMessage, 'error');
+
   } finally {
     loading.value = false;
   }
@@ -190,8 +341,8 @@ const updateProfile = async () => {
 const showMessage = (text, type = 'success') => {
   message.value = text;
   messageClass.value = type === 'success'
-    ? 'bg-green-50 text-green-800 border border-green-200'
-    : 'bg-red-50 text-red-800 border border-red-200';
+    ? 'bg-green-100 text-green-800'
+    : 'bg-red-100 text-red-800';
 
   setTimeout(() => {
     message.value = '';
@@ -199,7 +350,5 @@ const showMessage = (text, type = 'success') => {
   }, 5000);
 };
 
-onMounted(() => {
-  loadProfile();
-});
+onMounted(loadProfile);
 </script>
