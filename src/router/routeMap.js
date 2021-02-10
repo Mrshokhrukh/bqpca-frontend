@@ -288,10 +288,13 @@ export default {
       // ... other Engineering routes for director
     },
     health_certification: {
-      dashboard: bmhcDashboard,
-      // for_approval_applications: () => import('@/views/admin/BMHC/ForApprovalApplications.vue'),
-      // approved_applications: () => import('@/views/admin/BMHC/ApprovedApplications.vue'),
-      // reports: () => import('@/views/admin/BMHC/Reports.vue'),
+      dashboard: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      apply_for_eoi: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      apply_for_dpr: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      view_certificates: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      track_eoi: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      track_dpr: () => import('@/views/admin/BMHC/Dashboard.vue'),
+      draft_applications: () => import('@/views/admin/BMHC/Dashboard.vue'),
       // ... other Health Certification routes for director
     },
   },
@@ -318,10 +321,10 @@ export default {
       // ... other Engineering routes for director
     },
     health_certification: {
-      dashboard: () => bmhcDashboard,
-      new_cpd: () => bmhcDashboard,
-      track_applications: () => bmhcDashboard,
-      reports: () => bmhcDashboard,
+      dashboard: () => () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cpd_application_details: () => () => import('@/views/admin/BMHC/Dashboard.vue'),
+      cpd_application_tracker: () => () => import('@/views/admin/BMHC/Dashboard.vue'),
+      reports: () => () => import('@/views/admin/BMHC/Dashboard.vue'),
     },
   },
 }

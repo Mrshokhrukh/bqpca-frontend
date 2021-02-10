@@ -544,18 +544,18 @@ const serviceSpecificMenuItems = {
       {
         name: 'Apply New CPD',
         icon: getIconComponent('BookOpen'),
-        route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/new_cpd`,
+        route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/cpd_application_details`,
       },
       {
         name: 'Track Applications',
         icon: getIconComponent('FileText'),
-        route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/track_applications`,
+        route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/cpd_application_tracker`,
       },
-      {
-        name: 'Reports',
-        icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/reports`,
-      },
+      // {
+      //   name: 'Reports',
+      //   icon: getIconComponent('ClipboardCheck'),
+      //   route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/reports`,
+      // },
     ],
     institutions: [
       {
@@ -564,21 +564,36 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/institutions/${serviceType}/dashboard`,
       },
       {
-        name: 'Institute Management',
-        icon: getIconComponent('Building2'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/institutes`,
+        name: 'Apply for EOI',
+        icon: getIconComponent('CheckCircle'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_eoi`,
       },
       {
-        name: 'Professional Profiles',
-        icon: getIconComponent('UserCircle'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/profiles`,
+        name: 'Track EOI',
+        icon: getIconComponent('FileSearch'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
       },
       {
-        name: 'Reports',
+        name: 'Apply For DPR',
+        icon: getIconComponent('CheckCircle'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_dpr`,
+      },
+      {
+        name: 'Track DPR',
+        icon: getIconComponent('FileSearch'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,   
+      },
+      {
+        name: 'Draft Application',
+        icon: getIconComponent('FileSearch'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/draft_applications`,   
+      },
+      {
+        name: 'View Certificates',
         icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/reports`,
-      },
-    ],
+        route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
+      }
+    ]
   },
   engineering_certification: {
     user: [

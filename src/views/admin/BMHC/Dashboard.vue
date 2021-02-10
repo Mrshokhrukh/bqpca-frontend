@@ -62,7 +62,6 @@ import BmhUserDashboard from '@/components/dashboard/bhmccomponents/user/UserBmh
 import BmhDealingOfficerDashboard from '@/components/dashboard/bhmccomponents/dealingOfficer/DashboardComponent.vue';
 import BmhChiefDashboard from '@/components/dashboard/bhmccomponents/chief/BmhChiefDashboard.vue';
 import BmhDirectorDashboard from '@/components/dashboard/bhmccomponents/director/BmhDirectorDashboard.vue';
-import BmhCpdCmeProviderDashboard from '@/components/dashboard/bhmccomponents/cpdCmeProvider/ProviderDashboard.vue';
 import BmhInstitutionsDashboard from '@/components/dashboard/bhmccomponents/institutions/InstitutionsDashboard.vue';
 import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superAdmin/BmhSuperAdminDashboard.vue';
 
@@ -110,10 +109,20 @@ import CogsDepartment from '@/components/dashboard/bhmccomponents/admin/CogsDepa
 import CogsWorkplace from '@/components/dashboard/bhmccomponents/admin/CogsWorkplace.vue';
 
 // CPD Provider Components
-import CPDProviderComponent from '@/components/dashboard/bhmccomponents/cpdCmeProvider/CPDProviderComponent.vue';
+
 import CounselorForm from '@/components/dashboard/bhmccomponents/dealingOfficer/CounselorForm.vue';
 import BMHCUserProfile from '@/components/dashboard/bhmccomponents/user/BMHCUserProfile.vue';
+import ProviderDashboard from '@/components/dashboard/bhmccomponents/cpdCmeProvider/ProviderDashboard.vue';
+import CPDApplicationDetails from '@/components/dashboard/bhmccomponents/cpdCmeProvider/CPDApplicationDetails.vue';
+import CPDApplicationTracker from '@/components/dashboard/bhmccomponents/cpdCmeProvider/CPDApplicationTracker.vue';
 
+//institute components
+import InstituteEoiApplication from '@/components/dashboard/bhmccomponents/institutions/InstituteEoiApplication.vue';
+import InstituteDPRApplication from '@/components/dashboard/bhmccomponents/institutions/InstituteDPRApplication.vue';
+import TrackEoiApplication from '@/components/dashboard/bhmccomponents/institutions/TrackEoiApplication.vue';
+import TrackDPRApplication from '@/components/dashboard/bhmccomponents/institutions/TrackDPRApplication.vue';
+import DraftApplications from '@/components/dashboard/bhmccomponents/institutions/DraftApplications.vue';
+import ViewCertificates from '@/components/dashboard/bhmccomponents/institutions/ViewCertificates.vue';
 
 const { role, user } = useAuthStore();
 const route = useRoute();
@@ -263,9 +272,11 @@ const bmhCpdCmeProviderComponent = computed(() => {
   const path = route.path;
   switch (true) {
     case path.endsWith('/health_certification/dashboard'):
-      return BmhCpdCmeProviderDashboard;
-    case path.endsWith('/health_certification/new_cpd'):
-      return CPDProviderComponent;
+      return ProviderDashboard;
+    case path.endsWith('/health_certification/cpd_application_details'):
+      return CPDApplicationDetails; 
+    case path.endsWith('/health_certification/cpd_application_tracker'): 
+      return CPDApplicationTracker;
     default:
       return null;
   }
@@ -277,6 +288,20 @@ const bmhInstitutionsComponent = computed(() => {
   switch (true) {
     case path.endsWith('/health_certification/dashboard'):
       return BmhInstitutionsDashboard;
+
+    case path.endsWith('/health_certification/apply_for_eoi'):
+      return InstituteEoiApplication; 
+    case path.endsWith('/health_certification/track_eoi'):
+      return TrackEoiApplication;  
+
+    case path.endsWith('/health_certification/apply_for_dpr'):
+      return InstituteDPRApplication;
+    case path.endsWith('/health_certification/track_dpr'):
+      return TrackDPRApplication;  
+    case path.endsWith('/health_certification/draft_applications'):
+      return DraftApplications;  
+    case path.endsWith('/health_certification/view_certificates'):
+      return ViewCertificates;  
     default:
       return null;
   }
