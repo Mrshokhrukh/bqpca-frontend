@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="min-h-screen">
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <!-- Dashboard Header -->
       <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10 shadow-md">
@@ -23,7 +23,7 @@
       <div class="bg-white rounded-xl p-6 shadow-md mb-8">
         <h2 class="text-xl font-bold text-gray-900 mb-4">Priority Tasks</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div v-for="task in priorityTasks" :key="task.id" 
+          <div v-for="task in priorityTasks" :key="task.id"
                class="border rounded-lg p-4 flex items-center space-x-3"
                :class="getTaskUrgencyClass(task.urgency)">
             <div class="flex-shrink-0">

@@ -76,8 +76,8 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div v-for="service in services" :key="service.name"
-            class="group relative bg-white rounded-xl hover:shadow-xl transition-all duration-300 border border-slate-200 overflow-hidden">
+          <router-link v-for="service in services" :key="service.name" :to="service.route"
+            class="group relative bg-white rounded-xl hover:shadow-xl transition-all duration-300 border border-slate-200 overflow-hidden block">
             <div
               class="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
             </div>
@@ -93,13 +93,12 @@
               <p class="text-slate-600 mb-6 min-h-[80px] leading-relaxed">
                 {{ service.description }}
               </p>
-              <router-link :to="service.route"
-                class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium group">
+              <div class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium group">
                 Learn More
                 <ArrowRight class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-2" />
-              </router-link>
+              </div>
             </div>
-          </div>
+          </router-link>
         </div>
       </div>
     </div>
@@ -262,7 +261,7 @@ import {
 
 const services = [
   {
-    name: "Recognition of Qualification",
+    name: "Recognition of Qualification (RoQ)",
     description: "Official verification and recognition of educational qualifications through our standardized system.",
     icon: GraduationCap,
     route: "/roq"
@@ -280,13 +279,13 @@ const services = [
     route: "/accreditation"
   },
   {
-    name: "Engineering Certification",
+    name: "Engineering Professionals Council (EPC)",
     description: "Professional certification and validation for engineering practitioners.",
     icon: BookOpen,
     route: "/engineering"
   },
   {
-    name: "Bhutan Medical & Health Certification (BMHC)",
+    name: "Medical & Health Professionals Council (MHPC)",
     description: "Official registration and certification for healthcare professionals.",
     icon: Users,
     route: "/bmhc"

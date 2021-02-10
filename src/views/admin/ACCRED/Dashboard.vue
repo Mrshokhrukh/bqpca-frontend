@@ -44,9 +44,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect } from 'vue';
+import { computed, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
-import { useAuthStore } from '@/stores/authStore';
 
 // Admin Components Import
 import AdminDashboard from '@/components/dashboard/accredcomponent/admin/AccreditationDashboard.vue';
@@ -74,11 +73,8 @@ import StaffTypeMaster from '@/components/dashboard/accredcomponent/admin/master
 import StandardMaster from '@/components/dashboard/accredcomponent/admin/masters/StandardMaster.vue';
 import DocumentType from '@/components/dashboard/accredcomponent/admin/DocumentType.vue';
 
-const { role, user } = useAuthStore();
 const route = useRoute();
-const applications = ref([]);
-const currentPage = ref(1);
-const perPage = ref(10);
+
 
 // Add route change debugging
 watchEffect(() => {
@@ -198,70 +194,5 @@ const userComponent = computed(() => {
   }
 });
 
-// Filter applications based on role
-const filteredApplications = computed(() => {
-  switch (role) {
-    case 'user':
-      return applications.value.filter(app => app.email_address === user.email);
-    case 'dealing_officer':
-      return applications.value.filter(app =>
-        !app.dealing_officer_decision ||
-        (!app.chief_approved && !app.chief_regret)
-      );
-    case 'chief':
-      return applications.value.filter(app =>
-        app.forward &&
-        !app.chief_approved &&
-        !app.chief_regret
-      );
-    case 'director':
-      return applications.value;
-    default:
-      return [];
-  }
-});
 
-// Calculate stats based on filtered applications
-const filteredStats = computed(() => {
-  const filtered = filteredApplications.value;
-  return {
-    totalApplied: filtered.length,
-    totalApproved: filtered.filter(app => app.chief_approved).length,
-    totalRegretted: filtered.filter(app =>
-      app.dealing_officer_regret || app.chief_regret
-    ).length,
-    totalPending: filtered.filter(app =>
-      !app.chief_approved &&
-      !app.dealing_officer_regret &&
-      !app.chief_regret
-    ).length
-  };
-});
-
-// Compute total for pagination
-const filteredTotal = computed(() => filteredApplications.value.length);
-
-// Get paginated data
-const paginatedApplications = computed(() => {
-  const start = (currentPage.value - 1) * perPage.value;
-  const end = start + perPage.value;
-  return filteredApplications.value.slice(start, end).map(app => ({
-    id: app.id,
-    date: app.date_of_birth,
-    type: app.type_of_course,
-    status: getApplicationStatus(app),
-  }));
-});
-
-// Helper function to determine application status
-const getApplicationStatus = (application) => {
-  if (application.chief_approved) return 'Approved';
-  if (application.chief_regret) return 'Regretted';
-  if (application.dealing_officer_regret) return 'Regretted';
-  return 'Pending';
-};
-
-const handlePageChange = (newPage) => {
-  currentPage.value = newPage;
-};
 </script>

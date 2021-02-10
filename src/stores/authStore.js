@@ -1,3 +1,4 @@
+// authStore.js
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
@@ -8,19 +9,19 @@ export const useAuthStore = defineStore('auth', () => {
   const router = useRouter();
   const toast = useToast();
 
-  // State
+  // State (remains largely the same)
   const accessToken = ref(localStorage.getItem('accessToken') || null);
   const refreshToken = ref(localStorage.getItem('refreshToken') || null);
   const user = ref(JSON.parse(localStorage.getItem('user')) || null);
 
-  // Getters
+  // Getters (remains largely the same)
   const isAuthenticated = computed(() => !!accessToken.value);
-  const userId = computed(() => user.value?.id || null);  // Keep userId getter
+  const userId = computed(() => user.value?.id || null);
   const serviceType = computed(() => user.value?.service_type || null);
   const role = computed(() => user.value?.role || null);
   const email = computed(() => user.value?.email || null);
   const username = computed(() => user.value?.username || null);
-  const fullName = computed(() => user.value?.first_name + ' ' + (user.value.middle_name ? user.value.middle_name + ' ' : '') + user.value.last_name || null); // Construct full name
+  const fullName = computed(() => user.value?.first_name + ' ' + (user.value.middle_name ? user.value.middle_name + ' ' : '') + user.value.last_name || null);
   const dzongkhag = computed(() => user.value?.dzongkhag || null);
   const gewog = computed(() => user.value?.gewog || null);
   const village = computed(() => user.value?.village || null);
@@ -31,6 +32,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isStaff = computed(() => user.value?.is_staff || false);
   const isSuperuser = computed(() => user.value?.is_superuser || false);
   const isActive = computed(() => user.value?.is_active || false);
+
 
   // Fetch and set tokens from localStorage
   const initializeAuth = () => {
@@ -51,8 +53,6 @@ export const useAuthStore = defineStore('auth', () => {
       // Update state
       accessToken.value = response.data.access;
       refreshToken.value = response.data.refresh;
-
-      // Directly assign the user object from the API response
       user.value = response.data.user;
 
       // Save to localStorage
@@ -60,8 +60,43 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('refreshToken', response.data.refresh);
       localStorage.setItem('user', JSON.stringify(user.value));
 
+      // *** ROLE-BASED REDIRECTION LOGIC ***
+      if (credentials.from === 'authSection') {
+        if (user.value.role !== 'user') {
+          toast.error("Admin/Internal role access is not permitted from the previous page. Please login from here");
+          // Clear state
+          accessToken.value = null;
+          refreshToken.value = null;
+          user.value = null;
+
+          // Clear localStorage
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          router.push('/admin/login');
+          return;
+        }
+      } else if (credentials.from === 'adminLogin') {
+        if (user.value.role === 'user') {
+          toast.error("User role access is not permitted from this page.");
+          // Clear state
+          accessToken.value = null;
+          refreshToken.value = null;
+          user.value = null;
+
+          // Clear localStorage
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          router.push('/');
+          return;
+        }
+      }
+
+      // Default redirection (if no role-based restrictions)
       toast.success('Login successful!');
       router.push(`/admin/${user.value.role}/${user.value.service_type}/dashboard`);
+
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed. Please try again.');
       throw error;
@@ -80,7 +115,9 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('user');
 
     toast.success('Logged out successfully!');
-    router.push('/');
+
+    router.push({ name: 'home' })
+
   };
 
   const refreshAccessToken = async () => {

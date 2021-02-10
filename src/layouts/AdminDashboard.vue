@@ -1,12 +1,9 @@
 <template>
-  <div class="flex bg-slate-50 min-h-screen">
-
-    <div v-if="sidebarOpen" @click="toggleSidebar" class="fixed inset-0 bg-black/50 lg:hidden z-20">
-    </div>
+  <div class="flex h-screen bg-slate-50">
     <!-- Enhanced Sidebar -->
-    <div class="fixed top-0 left-0 w-72 bg-gradient-to-b from-slate-800 to-slate-900
-         text-white transition-all duration-300 flex flex-col h-screen z-30"
-      :class="{ '-translate-x-full': !sidebarOpen }">
+    <div
+      class="w-72 bg-gradient-to-b from-slate-800 to-slate-900 text-white transition-all duration-300 flex flex-col relative"
+      :class="{ '-ml-72': !sidebarOpen }">
       <!-- Logo Section -->
       <div class="flex items-center justify-between p-5 border-b border-slate-700/50">
         <router-link to="/" class="flex items-center space-x-3 group">
@@ -32,10 +29,10 @@
                 <div @click="navigate"
                   class="flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer"
                   :class="[
-      isActive
-        ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
-        : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
-    ]">
+        isActive
+          ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
+          : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
+      ]">
                   <component :is="item.icon" class="h-5 w-5 mr-3" :class="{ 'text-primary': isActive }" />
                   {{ item.name }}
                 </div>
@@ -47,10 +44,10 @@
               <button @click="toggleSubMenu(item)"
                 class="flex items-center justify-between w-full px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer group"
                 :class="[
-      isChildActive(item.children)
-        ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
-        : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
-    ]">
+        isChildActive(item.children)
+          ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
+          : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
+      ]">
                 <div class="flex items-center">
                   <component :is="item.icon" class="h-5 w-5 mr-3" />
                   {{ item.name }}
@@ -69,10 +66,10 @@
                     v-slot="{ isActive, navigate }" custom>
                     <div @click="navigate"
                       class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors duration-200" :class="[
-      isActive
-        ? 'bg-slate-700/50 text-white font-medium'
-        : 'text-slate-300 hover:bg-slate-700/30 hover:text-white',
-    ]">
+        isActive
+          ? 'bg-slate-700/50 text-white font-medium'
+          : 'text-slate-300 hover:bg-slate-700/30 hover:text-white',
+      ]">
                       <span class="w-2 h-2 mr-3 rounded-full bg-slate-400/50"></span>
                       {{ child.name }}
 
@@ -97,7 +94,7 @@
     </div>
 
     <!-- Main Content Area -->
-    <div class="flex-1 lg:ml-72 flex flex-col min-h-screen">
+    <div class="flex-1 flex flex-col overflow-hidden">
       <!-- Top Navigation -->
       <header class="bg-white shadow-sm border-b border-slate-200">
         <div class="flex items-center justify-between px-6 py-4">
@@ -156,9 +153,9 @@
       </main>
 
       <!-- Footer -->
-      <footer class="bg-white border-t border-slate-200 px-6 py-4 mt-auto">
+      <footer class="bg-white border-t border-slate-200 px-6 py-4">
         <p class="text-sm text-slate-600 text-center">
-          © {{ currentYear }} Bhutan Qualifications &amp; Professional Certification Authority. All rights reserved.
+          © {{ currentYear }} Bhutan Qualifications & Professional Certification Authority. All rights reserved.
         </p>
       </footer>
     </div>

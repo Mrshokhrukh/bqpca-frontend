@@ -384,7 +384,7 @@ const isToday = (dateObj) => {
 
 const handleLogin = async () => {
   try {
-    await authStore.login(loginForm);
+    await authStore.login({ ...loginForm, from: 'authSection' });
   } catch (error) {
     console.error(error);
   }

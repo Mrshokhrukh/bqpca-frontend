@@ -121,7 +121,6 @@ const handleLogin = async () => {
     if (activeTab.value === 'ndi') {
       // Handle NDI QR login
       console.log('Processing NDI login for service:', selectedService.value)
-      // Implement NDI QR login logic here if needed
     } else {
       // Handle email/password login
       const loginForm = {
@@ -129,9 +128,9 @@ const handleLogin = async () => {
         password: password.value,
         remember: rememberMe.value,
         service_type: selectedService.value,
+        from: 'adminLogin',
       }
       await authStore.login(loginForm)
-      toast.success('Login successful!')
     }
   } catch (error) {
     console.error('Login error:', error)
