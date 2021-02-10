@@ -608,9 +608,149 @@ const serviceSpecificMenuItems = {
     ],
     admin: [
       {
-        name: 'Accreditation Types',
-        icon: getIconComponent('Award'),
-        route: (serviceType) => `/admin/admin/${serviceType}/accreditation_types`,
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Applications & Appeals', // Combined for brevity
+        icon: getIconComponent('ClipboardList'), // Could use a different combined icon
+        children: [
+          {
+            name: 'Applications',
+            icon: getIconComponent('ClipboardList'),
+            route: (serviceType) => `/admin/admin/${serviceType}/application_lists`,
+          },
+          {
+            name: 'Appeals',
+            icon: getIconComponent('Scale'),
+            route: (serviceType) => `/admin/admin/${serviceType}/appeal_lists`,
+          },
+        ],
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('FileBarChart'),
+        route: (serviceType) => `/admin/admin/${serviceType}/reports`,
+      },
+      {
+        name: 'Institutions', // Group institution-related settings
+        icon: getIconComponent('Building'),
+        children: [
+          {
+            name: 'Manage Institutes',
+            icon: getIconComponent('Building'), // Or another suitable icon
+            route: (serviceType) => `/admin/admin/${serviceType}/institute`,
+          },
+          {
+            name: 'Assessor Pool',
+            icon: getIconComponent('Users'),
+            route: (serviceType) => `/admin/admin/${serviceType}/assessor_pool`,
+          },
+          {
+            name: 'Institution Standards', // Clarify that these are *institution* standards
+            icon: getIconComponent('Award'),
+            route: (serviceType) => `/admin/admin/${serviceType}/institution_standards`, // NEW ROUTE
+          },
+        ],
+      },
+      {
+        name: 'Personnel', // Group employee/staff settings
+        icon: getIconComponent('Users'), // Consistent icon
+        children: [
+          {
+            name: 'Categories',
+            icon: getIconComponent('UserCircle'),
+            route: (serviceType) => `/admin/admin/${serviceType}/employee_category`,
+          },
+          {
+            name: 'Employee Types',
+            icon: getIconComponent('Users'),
+            route: (serviceType) => `/admin/admin/${serviceType}/employee_type`,
+          },
+          {
+            name: 'Staff Types',
+            icon: getIconComponent('UserPlus'),
+            route: (serviceType) => `/admin/admin/${serviceType}/staff_type`,
+          },
+        ],
+      },
+      {
+        name: 'Accreditation Setup',
+        icon: getIconComponent('Settings'), // Or perhaps a different icon, like 'Sliders'
+        children: [
+          {
+            name: 'Decisions',
+            icon: getIconComponent('CheckSquare'),
+            route: (serviceType) => `/admin/admin/${serviceType}/decision`,
+          },
+          {
+            name: 'Decision Classes',
+            icon: getIconComponent('Layers'),
+            route: (serviceType) => `/admin/admin/${serviceType}/decision_classes`,
+          },
+          {
+            name: 'Indicators',
+            icon: getIconComponent('Target'),
+            route: (serviceType) => `/admin/admin/${serviceType}/indicators`,
+          },
+          {
+            name: 'Key Aspects',
+            icon: getIconComponent('Key'),
+            route: (serviceType) => `/admin/admin/${serviceType}/key_aspects`,
+          },
+          {
+            name: 'Standards', // General accreditation standards
+            icon: getIconComponent('Award'),
+            route: (serviceType) => `/admin/admin/${serviceType}/standard`,
+          },
+          {
+            name: 'Rating Categories',
+            icon: getIconComponent('Star'),
+            route: (serviceType) => `/admin/admin/${serviceType}/rating_category`,
+          },
+        ],
+      },
+      {
+        name: 'System Config',
+        icon: getIconComponent('Sliders'),
+        children: [
+          {
+            name: 'Appeal Reasons',
+            icon: getIconComponent('Scroll'),
+            route: (serviceType) => `/admin/admin/${serviceType}/appeal_reason`,
+          },
+          {
+            name: 'Application Duration',
+            icon: getIconComponent('Clock'),
+            route: (serviceType) => `/admin/admin/${serviceType}/application_duration`,
+          },
+          {
+            name: 'E-Signature',
+            icon: getIconComponent('PenTool'),
+            route: (serviceType) => `/admin/admin/${serviceType}/e_signature`,
+          },
+          {
+            name: 'Fees',
+            icon: getIconComponent('DollarSign'),
+            route: (serviceType) => `/admin/admin/${serviceType}/fees`,
+          },
+          {
+            name: 'Documents',
+            icon: getIconComponent('FileText'),
+            route: (serviceType) => `/admin/admin/${serviceType}/document`,
+          },
+          {
+            name: 'Qualifications',
+            icon: getIconComponent('GraduationCap'),
+            route: (serviceType) => `/admin/admin/${serviceType}/qualification`,
+          },
+          {
+            name: 'Source of Funding',
+            icon: getIconComponent('Wallet'),
+            route: (serviceType) => `/admin/admin/${serviceType}/source_of_funding`,
+          },
+        ],
       },
     ],
     // Add dealing_officer to accreditation
