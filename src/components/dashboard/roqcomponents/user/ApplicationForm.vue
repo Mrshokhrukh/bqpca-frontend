@@ -6,26 +6,32 @@
     <PaymentModal ref="paymentModal" @payment-completed="onPaymentCompleted" @close="onPaymentModalClose" />
 
     <form v-if="isCIDHolder !== null" @submit.prevent="handleSubmit" class="space-y-6 mt-6">
-      <!-- Personal Information Section - CID Holders -->
-      <div v-if="isCIDHolder" class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold text-gray-900 mb-4">
-          Personal Information
-        </h3>
+  <!-- Personal Information Section - CID Holders -->
+  <div v-if="isCIDHolder" class="bg-white border p-6 rounded-lg shadow-sm">
+    <h3 class="text-xl font-semibold text-gray-900 mb-4">
+      Personal Information
+    </h3>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- CID No. -->
+    <!-- Caution Message -->
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+      <p class="font-bold">Caution for CID Holders</p>
+      <p>
+        You are applying for your own certification using your CID.
+        <b>Do not use information of other people.</b> Applying with other people's information will
+        <b>overwrite your personal details in this system, and you will lose access.</b>
+        Please ensure all information is your own.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- CID No. -->
           <div class="relative">
             <label for="cid" class="block text-sm font-medium text-gray-700">CID No.</label>
             <div class="mt-1 relative rounded-md shadow-sm">
-              <input type="text" id="cid" v-model="form.cid_no" @blur="validateCID"
+              <input type="text" id="cid" v-model="form.cid_no" @input="handleCIDInput"
+                maxlength="11"
                 class="block w-full pr-24 rounded-md border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
                 placeholder="Enter 11-digit CID" />
-              <button type="button" @click="fetchDCRCData" :disabled="isLoadingDCRC || !isCIDValid"
-                class="absolute inset-y-0 right-0 flex items-center px-3 rounded-r-md border-l bg-gray-50 hover:bg-gray-100 focus:outline-none">
-                <span class="text-sm text-gray-600" :class="{ 'opacity-50': isLoadingDCRC || !isCIDValid }">
-                  {{ isLoadingDCRC ? "Fetching..." : "Fetch DCRC" }}
-                </span>
-              </button>
             </div>
           </div>
 
@@ -695,11 +701,12 @@ const handleSubmitActual = async (isDraft = false) => {
       }
     }
 
-    // Debug log (keep this!)
+    // **ADD THESE LINES FOR DEBUGGING FormData RIGHT BEFORE API CALL**
+    console.log("FormData Contents BEFORE API CALL:");
     for (let pair of formData.entries()) {
-      console.log('sending data', pair[0] + ": ",
-        pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]);
+      console.log(pair[0] + ": ", pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]);
     }
+    console.log("Is formData instanceof FormData?", formData instanceof FormData); // Check if it's actually FormData
 
     let response;
     if (props.mode === "edit") {
@@ -731,6 +738,7 @@ const handleSubmitActual = async (isDraft = false) => {
     isSubmitting.value = false;
   }
 };
+
 // Helper function to extract file name from URL
 const getFileNameFromUrl = (url) => {
   if (!url) return '';
@@ -743,9 +751,12 @@ const emit = defineEmits([
   "submitted",
 ]);
 
-const validateCID = () => {
-  if (form.cid_no.length !== 11 && isCIDHolder.value) {
-    toast.error("CID must be 11 digits long.");
+const handleCIDInput = (event) => {
+  const input = event.target.value.replace(/\D/g, ''); // Remove non-digits
+  form.cid_no = input.slice(0, 11); // Limit to 11 digits
+
+  if (form.cid_no.length === 11) {
+    fetchDCRCData();
   }
 };
 </script>

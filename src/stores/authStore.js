@@ -21,7 +21,21 @@ export const useAuthStore = defineStore('auth', () => {
   const role = computed(() => user.value?.role || null);
   const email = computed(() => user.value?.email || null);
   const username = computed(() => user.value?.username || null);
-  const fullName = computed(() => user.value?.first_name + ' ' + (user.value.middle_name ? user.value.middle_name + ' ' : '') + user.value.last_name || null);
+  const fullName = computed(() => {
+    const firstName = user.value?.first_name || '';
+    const middleName = user.value?.middle_name || '';
+    const lastName = user.value?.last_name || '';
+
+    let fullNameString = firstName;
+    if (middleName) {
+      fullNameString += ' ' + middleName;
+    }
+    fullNameString += ' ' + lastName;
+
+    fullNameString = fullNameString.trim();
+
+    return fullNameString || null;
+  });
   const dzongkhag = computed(() => user.value?.dzongkhag || null);
   const gewog = computed(() => user.value?.gewog || null);
   const village = computed(() => user.value?.village || null);
@@ -122,13 +136,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const refreshAccessToken = async () => {
     try {
-      const response = await apiService.post('/users/token/refresh/', {
-        refresh: refreshToken.value, // Make sure this is in the request body
-      });
-
-      accessToken.value = response.data.access;
-      localStorage.setItem('accessToken', response.data.access);
-
+      const response = await apiService.refreshToken(refreshToken.value);
       return response.data.access;
     } catch (error) {
       console.error('Error refreshing token:', error);

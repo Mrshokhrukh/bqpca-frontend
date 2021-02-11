@@ -1,76 +1,10 @@
 // src/services/services.js
-import axios from 'axios';
-import { useAuthStore } from '@/stores/authStore';
+import apiClient from './apiClient';
 import bmhcServices from './bmhcservices';
 import accreditationServices from './accreditationservices';
 import roqservices from './roqservices';
 import userservices from './userservices';
 
-const apiClient = axios.create({
-    baseURL: import.meta.env.MODE === 'production'
-        ? import.meta.env.VITE_API_BASE_URL_PROD
-        : import.meta.env.VITE_API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
-
-apiClient.interceptors.request.use(async (config) => {
-    const authStore = useAuthStore();  // Get the store instance
-
-    // 1. Explicitly wait for the authStore to initialize (if needed)
-    if (!authStore.accessToken && !localStorage.getItem('accessToken')) {
-        await new Promise((resolve) => {
-            const checkInterval = setInterval(() => {
-                if (localStorage.getItem('accessToken')) {
-                    clearInterval(checkInterval);
-                    resolve();
-                }
-            }, 50); // Check every 50ms
-        });
-    }
-
-    // 2. Get token directly from localStorage (most reliable)
-    const token = localStorage.getItem('accessToken');
-
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    if (config.data instanceof FormData) {
-        config.headers['Content-Type'] = 'multipart/form-data';
-    } else if (!config.headers['Content-Type']) {
-        config.headers['Content-Type'] = 'application/json';
-    }
-
-    return config;
-}, (error) => {
-    return Promise.reject(error);
-});
-
-apiClient.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        const originalRequest = error.config;
-        const authStore = useAuthStore();
-
-        if ((error.response?.status === 401 || error.response?.status === 403) &&
-            error.response?.data?.code === 'token_not_valid' &&
-            !originalRequest._retry) {
-            originalRequest._retry = true;
-            try {
-                const newAccessToken = await authStore.refreshAccessToken();
-                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-                return apiClient(originalRequest);
-            } catch (refreshError) {
-                console.error('Unable to refresh token:', refreshError);
-                authStore.logout(); // Logout on refresh failure
-                return Promise.reject(refreshError);
-            }
-        }
-        return Promise.reject(error);
-    }
-);
 
 export default {
   uploadFile(url, formData) {

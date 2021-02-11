@@ -198,11 +198,11 @@
                   </div>
                   <!-- Calendar days -->
                   <button v-for="date in calendarDates" :key="date.date" @click="selectDate(date)" :class="[
-                    'p-1 text-sm rounded-full hover:bg-gray-100 relative',
-                    date.isCurrentMonth ? 'text-gray-900' : 'text-gray-400',
-                    isSelectedDate(date) ? 'bg-primary text-white hover:bg-primary/90' : '',
-                    isToday(date) ? 'font-bold' : ''
-                  ]">
+          'p-1 text-sm rounded-full hover:bg-gray-100 relative',
+          date.isCurrentMonth ? 'text-gray-900' : 'text-gray-400',
+          isSelectedDate(date) ? 'bg-primary text-white hover:bg-primary/90' : '',
+          isToday(date) ? 'font-bold' : ''
+        ]">
                     {{ date.day }}
                   </button>
                 </div>
