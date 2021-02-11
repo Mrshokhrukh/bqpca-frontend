@@ -89,10 +89,12 @@ router.beforeEach((to, from, next) => {
       return
     }
   }
+
   // Update meta tags
   if (to.meta) {
     updateMetaTags(to.meta)
   }
+
   next()
 })
 
