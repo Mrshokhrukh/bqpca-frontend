@@ -89,6 +89,20 @@ const publicRoutes = [
     },
   },
   {
+    path: '/certification-validity/search',  // The route for the search with parameters
+    name: 'CertificationValiditySearchPage',
+    component: () => import('@/views/CertificationValidityPage.vue'), // Use the SAME component
+    meta: {
+      title: 'Certification Validity Check - Search',
+      description: 'Search results for certification validity check',
+      keywords: 'certification validity search, BQPCA search results',
+    },
+    props: (route) => ({
+      service_type: route.query.service_type,
+      cert_number: route.query.cert_number,
+    }),
+  },
+  {
     path: '/unauthorized',
     name: 'unauthorized',
     component: () => import('@/views/Unauthorized.vue'),

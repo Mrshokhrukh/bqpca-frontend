@@ -228,13 +228,94 @@
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Button for Certification Validity -->
-        <div class="mt-12 text-center">
-          <router-link to="/certification-validity"
-            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors">
-            Check Certificate Validity
-          </router-link>
+    </div>
+    <!-- Certificate Verification Section -->
+    <div class="py-24 bg-slate-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl font-serif font-bold text-slate-900">Certificate Verification</h2>
+          <div class="w-20 h-1 bg-blue-600 mx-auto mt-4"></div>
+          <p class="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
+            The official BQPCA portal to verify the authenticity of certifications issued by the authority.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <!-- Left Column: Features -->
+          <div class="space-y-8">
+            <div class="bg-white rounded-xl p-8 shadow-lg border border-slate-200">
+              <h3 class="text-xl font-semibold text-slate-900 mb-6">Key Considerations</h3>
+              <div class="space-y-6">
+                <div v-for="feature in verificationFeatures" :key="feature.title" class="flex items-start space-x-4">
+                  <div class="p-2 rounded-lg bg-blue-50 mt-1">
+                    <component :is="feature.icon" class="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 class="font-medium text-slate-900">{{ feature.title }}</h4>
+                    <p class="text-sm text-slate-600 mt-1">{{ feature.description }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl p-8 text-white relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-transparent"></div>
+              <div class="relative">
+                <h3 class="text-xl font-semibold mb-4">Information</h3>
+                <p class="text-slate-300">
+                  Our online verification system provides secure and efficient authentication of certifications issued in Bhutan.
+                </p>
+                <div class="mt-6 flex items-center space-x-2 text-blue-300">
+                  <ActivityIcon class="w-5 h-5" />
+                  <span class="text-sm">Official verification system.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Verification Card -->
+          <div class="relative">
+            <!-- Decorative Elements -->
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-blue-50 rounded-full opacity-50 blur-2xl"></div>
+            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-slate-100 rounded-full opacity-50 blur-2xl"></div>
+
+            <div class="relative bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
+              <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-4">
+                  <SearchIcon class="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 class="text-xl font-semibold text-slate-900">Certificate Verification</h3>
+                <p class="text-sm text-slate-600 mt-2">Proceed to verify the authenticity of a BQPCA issued certificate.</p>
+              </div>
+
+              <router-link to="/certification-validity"
+                class="group block w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl p-6 hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <ShieldCheckIcon class="w-6 h-6" />
+                    <div class="text-left">
+                      <h4 class="font-medium">Initiate Verification</h4>
+                      <p class="text-sm text-blue-100">Official Portal • Secure Process</p>
+                    </div>
+                  </div>
+                  <ArrowRight class="w-6 h-6 transform group-hover:translate-x-2 transition-transform" />
+                </div>
+              </router-link>
+
+              <div class="mt-8 grid grid-cols-2 gap-4 text-center text-sm">
+                <div class="p-4 rounded-lg bg-slate-50">
+                  <p class="text-slate-900 font-medium">24/7</p>
+                  <p class="text-slate-600">Availability</p>
+                </div>
+                <div class="p-4 rounded-lg bg-slate-50">
+                  <p class="text-slate-900 font-medium">Instant</p>
+                  <p class="text-slate-600">Verification</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -257,8 +338,37 @@ import {
   Users,
   ArrowDownCircle,
   Users as UsersIcon,
-  ClipboardCheck as DocumentCheckIcon
+  ClipboardCheck as DocumentCheckIcon,
+  Search as SearchIcon,
+  ShieldCheck as ShieldCheckIcon,
+  Activity as ActivityIcon,
+  Clock as ClockIcon,
+  Database as DatabaseIcon,
 } from 'lucide-vue-next'
+
+
+const verificationFeatures = [
+  {
+    icon: ShieldIcon,
+    title: 'Authenticity Assurance',
+    description: 'Confirm if a certificate has been officially issued by the BQPCA.'
+  },
+  {
+    icon: ClockIcon,
+    title: 'Current Status',
+    description: 'Provides immediate verification of certification status and validity.'
+  },
+  {
+    icon: DatabaseIcon,
+    title: 'Detailed Information',
+    description: 'View comprehensive details about the certification, including its field and level.'
+  },
+  {
+    icon: LockIcon,
+    title: 'Secure Process',
+    description: 'The system employs advanced security measures to ensure data integrity.'
+  }
+];
 
 const services = [
   {

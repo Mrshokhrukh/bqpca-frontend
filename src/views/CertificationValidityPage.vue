@@ -1,77 +1,257 @@
 <template>
-  <div class="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+  <div
+    class="mt-16 min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl w-full space-y-8">
+      <!-- Header -->
       <div class="text-center">
-        <h2 class="text-3xl font-extrabold text-gray-900">Check Certification Validity</h2>
-        <p class="mt-2 text-sm text-gray-600">Select the certification type and enter the certification ID</p>
-      </div>
-      <form class="mt-8 space-y-6" @submit.prevent="checkValidity">
-        <div class="rounded-md shadow-sm -space-y-px">
-          <div>
-            <label for="certification-type" class="sr-only">Certification Type</label>
-            <select id="certification-type" v-model="certificationType"
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm">
-              <option value="" disabled>Select Certification Type</option>
-              <option value="education">Education</option>
-              <option value="engineering">Engineering</option>
-              <option value="medical">Medical</option>
-              <option value="roq">ROQ</option>
-            </select>
-          </div>
-          <div>
-            <label for="certification-id" class="sr-only">Certification ID</label>
-            <input id="certification-id" v-model="certificationId" type="text" autocomplete="off" required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              placeholder="Certification ID">
-          </div>
+        <div class="flex justify-center mb-6">
+          <img src="@/assets/rgob.png" alt="BQPCA Logo" class="h-40 w-40" />
         </div>
-        <div>
-          <button type="submit"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-            Check Validity
-          </button>
-        </div>
-      </form>
-      <div v-if="result && !result.valid" class="mt-6 text-center">
-        <p class="text-lg font-medium text-red-600">{{ result.message }}</p>
+        <h1 class="text-4xl font-bold text-gray-900">BQPCA Certification Verification</h1>
+        <p class="mt-2 text-lg text-gray-600">
+          Verify the authenticity of professional certifications issued by the Bhutan Qualifications and Professional
+          Certification Authority
+        </p>
       </div>
-    </div>
-  </div>
 
-  <!-- Modal for valid certificate details -->
-  <div v-if="result && result.valid" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
-    role="dialog" aria-modal="true">
-    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-      <div
-        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-          <div class="sm:flex sm:items-start">
-            <div
-              class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-              <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Certificate Details</h3>
-              <div class="mt-2">
-                <p class="text-sm text-gray-500">Certification Type: {{ certificationType }}</p>
-                <p class="text-sm text-gray-500">Certification ID: {{ certificationId }}</p>
-                <p class="text-sm text-gray-500">Holder Name: {{ result.details.holderName }}</p>
-                <p class="text-sm text-gray-500">Issue Date: {{ result.details.issueDate }}</p>
-                <p class="text-sm text-gray-500">Expiry Date: {{ result.details.expiryDate }}</p>
+      <!-- Normal Mode -->
+      <div v-if="!isSearchMode" class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="p-8">
+          <!-- Step 1: Service Selection -->
+          <div v-if="!selectedService" class="space-y-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Select Service Type</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div v-for="(details, key) in certificationTypeDetails" :key="key"
+                class="p-6 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md" :class="[
+        'border-gray-200 hover:border-blue-200'
+      ]" @click="selectService(key)">
+                <div class="flex items-start space-x-4">
+                  <div class="p-2 rounded-lg bg-blue-100 text-blue-600">
+                    <component :is="details.icon" class="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">{{ details.label }}</h3>
+                    <p class="text-sm text-gray-500 mt-1">{{ details.description }}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- Step 2: Certificate ID Input -->
+          <div v-else class="space-y-6">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-semibold text-gray-900">Enter Certificate ID</h2>
+              <button @click="resetSelection"
+                class="text-sm text-blue-600 hover:text-blue-800 flex items-center space-x-1">
+                <ArrowLeftIcon class="w-4 h-4" />
+                <span>Change Service</span>
+              </button>
+            </div>
+
+            <div class="flex items-center space-x-4 mb-6 p-4 bg-blue-50 rounded-lg">
+              <component :is="certificationTypeDetails[selectedService].icon" class="w-6 h-6 text-blue-600" />
+              <div>
+                <h3 class="font-medium text-gray-900">
+                  {{ certificationTypeDetails[selectedService].label }}
+                </h3>
+                <p class="text-sm text-gray-600">
+                  {{ certificationTypeDetails[selectedService].description }}
+                </p>
+              </div>
+            </div>
+
+            <form @submit.prevent="checkValidity" class="space-y-6">
+              <div class="relative">
+                <input v-model="certificationId" type="text"
+                  class="w-full pl-4 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter Certification ID (e.g., EDU123)" required />
+                <div class="absolute right-4 top-3 text-gray-400">
+                  <SearchIcon class="w-6 h-6" />
+                </div>
+              </div>
+
+              <button type="submit"
+                class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                :disabled="isLoading">
+                <Loader2Icon v-if="isLoading" class="w-5 h-5 mr-2 animate-spin" />
+                <span>{{ isLoading ? 'Verifying...' : 'Verify Certification' }}</span>
+              </button>
+            </form>
+          </div>
         </div>
-        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-          <button @click="closeModal" type="button"
-            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-            Close
-          </button>
+      </div>
+
+      <!-- Search Mode -->
+      <div v-if="isSearchMode" class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="p-8">
+          <div v-if="isLoading" class="flex justify-center items-center py-12">
+            <Loader2Icon class="w-8 h-8 animate-spin text-blue-600" />
+            <span class="ml-2 text-gray-600">Loading results...</span>
+          </div>
+
+          <div v-else-if="result && result.valid && result.details" class="space-y-8">
+            <!-- Certificate Header -->
+            <div class="border-b pb-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                  <div class="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center">
+                    <AwardIcon class="h-8 w-8 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 class="text-3xl font-bold text-gray-900">{{ result.details ? result.details.applicants_name : 'Name Loading...' }}</h3>
+                    <div class="flex items-center space-x-2 mt-1">
+                      <span class="text-sm text-gray-500">QEC: {{ result.details ? result.details.qec_number : 'QEC Loading...' }}</span>
+                      <span class="text-gray-300">|</span>
+                      <span class="text-sm text-gray-500">CID: {{ result.details ? result.details.cid_no : 'CID Loading...' }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="px-4 py-2 rounded-full text-sm font-semibold"
+                    :class="result.details && result.details.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'">
+                    {{ result.details ? (result.details.status ? result.details.status.toString().toUpperCase() : 'Status Loading...') : 'Status Loading...' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <!-- Personal Information -->
+              <div class="bg-gray-50 rounded-xl p-6 space-y-4">
+                <h4 class="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+                  <UserIcon class="w-5 h-5 text-blue-600" />
+                  <span>Personal Information</span>
+                </h4>
+                <div class="space-y-3">
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Date of Birth</span>
+                    <span class="text-sm font-medium">{{ formatDate(result.details.date_of_birth) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Gender</span>
+                    <span class="text-sm font-medium">{{ result.details.gender }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Contact</span>
+                    <span class="text-sm font-medium">{{ result.details.contact_no }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Email</span>
+                    <span class="text-sm font-medium">{{ result.details.email_address }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Academic Information -->
+              <div class="bg-gray-50 rounded-xl p-6 space-y-4">
+                <h4 class="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+                  <GraduationCapIcon class="w-5 h-5 text-blue-600" />
+                  <span>Academic Information</span>
+                </h4>
+                <div class="space-y-3">
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Course</span>
+                    <span class="text-sm font-medium">{{ result.details.course_title }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Duration</span>
+                    <span class="text-sm font-medium">{{ result.details.duration_of_course }} years</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Student ID</span>
+                    <span class="text-sm font-medium">{{ result.details.student_id_no }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Completion Year</span>
+                    <span class="text-sm font-medium">{{ result.details.year_of_completion }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Institution Information -->
+              <div class="bg-gray-50 rounded-xl p-6 space-y-4">
+                <h4 class="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+                  <BuildingIcon class="w-5 h-5 text-blue-600" />
+                  <span>Institution Details</span>
+                </h4>
+                <div class="space-y-3">
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">University</span>
+                    <span class="text-sm font-medium">{{ result.details.name_of_university }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Institute</span>
+                    <span class="text-sm font-medium">{{ result.details.name_of_institute }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Location</span>
+                    <span class="text-sm font-medium">{{ result.details.location }}, {{ result.details.country }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Website</span>
+                    <a :href="result.details.website" target="_blank"
+                      class="text-sm text-blue-600 hover:underline">Visit Website</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Address Information -->
+            <div class="bg-gray-50 rounded-xl p-6">
+              <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                <MapPinIcon class="w-5 h-5 text-blue-600" />
+                <span>Address Information</span>
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="space-y-2">
+                  <span class="text-sm text-gray-500">Dzongkhag</span>
+                  <p class="font-medium">{{ result.details.dzongkhag }}</p>
+                </div>
+                <div class="space-y-2">
+                  <span class="text-sm text-gray-500">Gewog</span>
+                  <p class="font-medium">{{ result.details.gewog }}</p>
+                </div>
+                <div class="space-y-2">
+                  <span class="text-sm text-gray-500">Village</span>
+                  <p class="font-medium">{{ result.details.village }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="bg-gray-50 rounded-xl p-6">
+              <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                <InfoIcon class="w-5 h-5 text-blue-600" />
+                <span>Additional Information</span>
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                  <span class="text-sm text-gray-500">Second Copy</span>
+                  <p class="font-medium">{{ result.details.is_second_copy ? 'Yes' : 'No' }}</p>
+                </div>
+                <div class="space-y-2">
+                  <span class="text-sm text-gray-500">From In Country</span>
+                  <p class="font-medium">{{ result.details.from_in_country ? 'Yes' : 'No' }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Verification Stamp -->
+            <div class="flex items-center justify-center space-x-2 text-green-600 bg-green-50 py-4 rounded-lg">
+              <ShieldCheckIcon class="w-6 h-6" />
+              <span class="text-sm font-medium">Verified by BQPCA Digital Verification System</span>
+            </div>
+          </div>
+
+          <div v-else-if="result && !result.valid" class="text-center py-12">
+            <div class="mx-auto h-16 w-16 mb-4 bg-red-100 rounded-full flex items-center justify-center">
+              <AlertTriangleIcon class="h-8 w-8 text-red-600" />
+            </div>
+            <h3 class="mt-4 text-xl font-medium text-gray-900">Invalid Certification</h3>
+            <p class="mt-2 text-gray-500">{{ result.message }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -79,59 +259,147 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import apiServices from '@/services/services';
+import {
+  Search as SearchIcon,
+  Award as AwardIcon,
+  ShieldCheck as ShieldCheckIcon,
+  AlertTriangle as AlertTriangleIcon,
+  Loader2 as Loader2Icon,
+  User as UserIcon,
+  GraduationCap as GraduationCapIcon,
+  Building as BuildingIcon,
+  MapPin as MapPinIcon,
+  Info as InfoIcon,
+  School as SchoolIcon,
+  Wrench as WrenchIcon,
+  Stethoscope as StethoscopeIcon,
+  ScrollText as ScrollTextIcon,
+  ArrowLeft as ArrowLeftIcon,
+} from 'lucide-vue-next';
 
-const certificationType = ref('');
+// Props definition
+const props = defineProps({
+  service_type: {
+    type: String,
+    default: '',
+  },
+  cert_number: {
+    type: String,
+    default: '',
+  },
+});
+
+// Reactive state
+const selectedService = ref('');
 const certificationId = ref('');
 const result = ref(null);
+const isLoading = ref(false);
+const route = useRoute();
+const router = useRouter();
+const isSearchActive = ref(false);
 
-const dummyData = {
-  education: [
-    { id: 'EDU123', holderName: 'Alice Smith', issueDate: '2021-01-01', expiryDate: '2023-01-01' },
-    { id: 'EDU456', holderName: 'Bob Johnson', issueDate: '2022-01-01', expiryDate: '2024-01-01' }
-  ],
-  engineering: [
-    { id: 'ENG123', holderName: 'Charlie Brown', issueDate: '2021-06-01', expiryDate: '2023-06-01' },
-    { id: 'ENG456', holderName: 'David Wilson', issueDate: '2022-06-01', expiryDate: '2024-06-01' }
-  ],
-  medical: [
-    { id: 'MED123', holderName: 'Eve Davis', issueDate: '2021-09-01', expiryDate: '2023-09-01' },
-    { id: 'MED456', holderName: 'Frank Miller', issueDate: '2022-09-01', expiryDate: '2024-09-01' }
-  ],
-  roq: [
-    { id: 'ROQ123', holderName: 'Grace Lee', issueDate: '2021-12-01', expiryDate: '2023-12-01' },
-    { id: 'ROQ456', holderName: 'Henry Martin', issueDate: '2022-12-01', expiryDate: '2024-12-01' }
-  ]
-};
+// Computed
+const isSearchMode = computed(() => {
+  console.log('route.path:', route.path, 'isSearchActive:', isSearchActive.value); // ADD THIS LINE
+  return route.path === '/certification-validity/search' || isSearchActive.value;
+});
 
-const checkValidity = () => {
-  if (certificationType.value && certificationId.value) {
-    const certificate = dummyData[certificationType.value].find(cert => cert.id === certificationId.value);
-    if (certificate) {
-      result.value = {
-        valid: true,
-        message: 'Certification is valid.',
-        details: certificate
-      };
-    } else {
-      result.value = {
-        valid: false,
-        message: 'Certification is invalid.'
-      };
-    }
-  } else {
-    result.value = {
-      valid: false,
-      message: 'Please select a certification type and enter a certification ID.'
-    };
+// Constants
+const certificationTypeDetails = {
+  education: {
+    icon: SchoolIcon,
+    label: 'Education Certification',
+    description: 'Verify academic qualifications and teaching certifications'
+  },
+  engineering: {
+    icon: WrenchIcon,
+    label: 'Engineering Certification',
+    description: 'Validate professional engineering licenses and qualifications'
+  },
+  medical: {
+    icon: StethoscopeIcon,
+    label: 'Medical Certification',
+    description: 'Check medical practice licenses and specializations'
+  },
+  roq: {
+    icon: ScrollTextIcon,
+    label: 'ROQ Certification',
+    description: 'Verify Recognition of Prior Learning and other qualifications'
   }
 };
 
-const closeModal = () => {
-  result.value = null;
+// Methods
+const formatDate = (dateString) => {
+  console.log('formatDate called with:', dateString); // ADD THIS LINE
+  return new Date(dateString).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
 };
-</script>
 
-<style scoped>
-/* Add any additional styles if needed */
-</style>
+const selectService = (service) => {
+  selectedService.value = service;
+};
+
+const resetSelection = () => {
+  selectedService.value = '';
+  certificationId.value = '';
+};
+
+const checkValidity = async () => {
+  if ((selectedService.value || props.service_type) && (certificationId.value || props.cert_number)) {
+    isLoading.value = true;
+    result.value = null;
+
+    const serviceType = selectedService.value || props.service_type;
+    const certNumber = certificationId.value || props.cert_number;
+
+    const queryParams = {
+      service_type: serviceType,
+      cert_number: certNumber,
+    };
+
+    try {
+      const response = await apiServices.verifyCertificate(queryParams);
+      result.value = {
+        valid: response.status === 200,
+        message: response.data?.message || 'Verification completed',
+        details: response.data
+      };
+      console.log('result.value after API call:', result.value);
+
+      await router.push({
+        path: '/certification-validity/search',
+        query: {
+          service_type: serviceType,
+          cert_number: certNumber,
+        },
+      });
+
+      isSearchActive.value = true;
+
+    } catch (error) {
+      console.error('API call failed:', error);
+      result.value = {
+        valid: false,
+        message: 'Failed to verify certification. Please try again later.',
+      };
+    } finally {
+      isLoading.value = false;
+    }
+  }
+};
+
+// Lifecycle hooks
+onMounted(() => {
+  console.log('Initial Route Path onMounted:', route.path);
+  if (props.service_type && props.cert_number) {
+    isSearchActive.value = true;
+    checkValidity();
+  }
+});
+</script>
