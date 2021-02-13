@@ -309,63 +309,181 @@ const formatStatus = (status) => {
 
 const downloadReport = async () => {
     try {
-        const doc = new jsPDF();
+        // Create PDF document in landscape mode
+        const doc = new jsPDF('landscape');
 
-        // Add title and date
-        doc.setFontSize(20);
-        doc.text("Applications Report", 14, 22);
-        doc.setFontSize(12);
-        doc.text(`Generated on ${format(new Date(), "MMMM dd, yyyy")}`, 14, 32);
+        // Header
+        doc.setFillColor(37, 99, 235);
+        doc.rect(0, 0, 297, 35, 'F');
 
-        // Add statistics
-        doc.setFontSize(16);
-        doc.text("Summary", 14, 45);
-        doc.setFontSize(12);
+        // Logo
+        doc.setFillColor(255, 255, 255);
+        doc.circle(25, 17, 6, 'F');
 
-        let yPos = 55;
-        Object.entries(stats.value).forEach(([key, value]) => {
-            doc.text(
-                `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`,
-                14,
-                yPos
-            );
-            yPos += 10;
+        // Title
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.setTextColor(255, 255, 255);
+        doc.text("Applications Report", 40, 20);
+
+        // Date
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text(`Generated: ${format(new Date(), "MMMM dd, yyyy, HH:mm")}`,
+            doc.internal.pageSize.width - 15, 20, { align: 'right' });
+
+        // Summary cards - made more compact
+        const summaryY = 45;
+        const cardSpacing = 8;
+        const cardWidth = 55;
+        const cardHeight = 35;
+
+        const statusCards = [
+            { label: 'Pending', value: stats.value.pending, color: '#6B7280', bgColor: '#F3F4F6' },
+            { label: 'Processing', value: stats.value.processing, color: '#2563EB', bgColor: '#EFF6FF' },
+            { label: 'Approved', value: stats.value.approved, color: '#059669', bgColor: '#ECFDF5' },
+            { label: 'Regretted', value: stats.value.regretted, color: '#DC2626', bgColor: '#FEF2F2' }
+        ];
+
+        statusCards.forEach((card, index) => {
+            const x = 15 + (cardWidth + cardSpacing) * index;
+
+            // Card background
+            doc.setFillColor(hexToRgb(card.bgColor).r, hexToRgb(card.bgColor).g, hexToRgb(card.bgColor).b);
+            doc.roundedRect(x, summaryY, cardWidth, cardHeight, 2, 2, 'F');
+
+            // Card content
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(71, 85, 105);
+            doc.text(card.label, x + 6, summaryY + 12);
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(18);
+            doc.setTextColor(hexToRgb(card.color).r, hexToRgb(card.color).g, hexToRgb(card.color).b);
+            doc.text(card.value.toString(), x + 6, summaryY + 28);
         });
 
         // Applications table
         doc.autoTable({
-            startY: yPos + 10,
+            startY: summaryY + cardHeight + 10,
             head: [TABLE_HEADERS.map(header => header.label)],
             body: applications.value.map(app => [
                 app.id,
                 app.applicants_name,
-                app.cid_no,
+                app.cid_no || '-',
                 formatDate(app.created_at),
                 formatStatus(app.status),
                 `${calculateProcessingDays(app)} days`,
                 app.course_title,
                 app.remarks || "-"
             ]),
-            theme: "striped",
-            headStyles: { fillColor: [59, 130, 246] },
+            theme: 'grid',
+            headStyles: {
+                fillColor: [37, 99, 235],
+                textColor: [255, 255, 255],
+                fontSize: 10,
+                fontStyle: 'bold',
+                cellPadding: { top: 8, bottom: 8, left: 6, right: 6 },
+                halign: 'left',
+                valign: 'middle'
+            },
+            bodyStyles: {
+                fontSize: 9,
+                textColor: [71, 85, 105],
+                cellPadding: { top: 6, bottom: 6, left: 6, right: 6 },
+                lineColor: [226, 232, 240],
+                lineWidth: 0.2
+            },
             columnStyles: {
-                0: { cellWidth: 25 },
-                1: { cellWidth: 30 },
-                2: { cellWidth: 25 },
-                3: { cellWidth: 25 },
-                4: { cellWidth: 20 },
-                5: { cellWidth: 25 },
-                6: { cellWidth: 25 },
-                7: { cellWidth: "auto" }
-            }
+                0: { cellWidth: 20 },     // ID
+                1: { cellWidth: 35 },     // Name
+                2: { cellWidth: 30 },     // CID
+                3: { cellWidth: 30 },     // Date
+                4: { cellWidth: 30 },     // Status
+                5: { cellWidth: 25 },     // Processing Time
+                6: { cellWidth: 45 },     // Course Type
+                7: { cellWidth: 'auto' }  // Remarks
+            },
+            alternateRowStyles: {
+                fillColor: [249, 250, 251]
+            },
+            didDrawCell: function (data) {
+                if (data.column.index === 4 && data.cell.section === 'body') {
+                    const status = data.cell.raw.toLowerCase();
+                    let statusStyle;
+                    switch (status) {
+                        case 'processing':
+                            statusStyle = { bg: '#EFF6FF', text: '#2563EB' };
+                            break;
+                        case 'approved':
+                            statusStyle = { bg: '#ECFDF5', text: '#059669' };
+                            break;
+                        case 'regretted':
+                            statusStyle = { bg: '#FEF2F2', text: '#DC2626' };
+                            break;
+                        default:
+                            statusStyle = { bg: '#F3F4F6', text: '#6B7280' };
+                    }
+
+                    const x = data.cell.x + 2;
+                    const y = data.cell.y + 2;
+                    const width = data.column.width - 4;
+                    const height = data.row.height - 4;
+
+                    // Status badge
+                    doc.setFillColor(hexToRgb(statusStyle.bg).r, hexToRgb(statusStyle.bg).g, hexToRgb(statusStyle.bg).b);
+                    doc.roundedRect(x, y, width, height, 2, 2, 'F');
+
+                    // Status text
+                    doc.setTextColor(hexToRgb(statusStyle.text).r, hexToRgb(statusStyle.text).g, hexToRgb(statusStyle.text).b);
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(9);
+                    doc.text(formatStatus(status), x + width / 2, y + height / 2 + 1,
+                        { align: 'center', baseline: 'middle' });
+                }
+            },
+            didDrawPage: function (data) {
+                // Footer
+                const footerY = doc.internal.pageSize.height - 10;
+
+                doc.setTextColor(148, 163, 184);
+                doc.setFontSize(8);
+                doc.setFont("helvetica", "normal");
+                doc.text(
+                    `Total Records: ${applications.value.length}`,
+                    15,
+                    footerY
+                );
+                doc.text(
+                    `Page ${data.pageNumber} of ${doc.internal.getNumberOfPages()}`,
+                    doc.internal.pageSize.width - 15,
+                    footerY,
+                    { align: 'right' }
+                );
+            },
+            margin: { top: 40, right: 15, bottom: 15, left: 15 },
+            showHead: 'everyPage'
         });
 
-        doc.save(`applications_report_${format(new Date(), "yyyy-MM-dd")}.pdf`);
+        // Save the PDF
+        const fileName = `applications_report_${format(new Date(), "yyyy-MM-dd")}.pdf`;
+        doc.save(fileName);
         toast.success("Report downloaded successfully");
     } catch (err) {
         console.error('Error generating PDF:', err);
         toast.error("Failed to generate report. Please try again.");
     }
+};
+
+// Utility function to convert hex to RGB
+const hexToRgb = (hex) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
 };
 
 const previousPage = () => {
