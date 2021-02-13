@@ -29,7 +29,7 @@
                     <h2 class="text-lg font-semibold">Applications List</h2>
                     <div class="relative">
                         <input type="text" v-model="searchQuery" placeholder="Search..."
-                            class="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            class="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                         <i class="pi pi-search absolute left-3 top-3 text-gray-400"></i>
                     </div>
                 </div>
@@ -39,33 +39,44 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th v-for="header in tableHeaders" :key="header.key"
+                            <th v-for="header in TABLE_HEADERS" :key="header.key"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                                 @click="sortBy(header.key)">
                                 {{ header.label }}
-                                <i v-if="sortKey === header.key"
-                                    :class="['pi', sortOrder === 'asc' ? 'pi-sort-up' : 'pi-sort-down', 'ml-1']">
-                                </i>
+                                <i v-if="sortKey === header.key" :class="[
+                                    'pi',
+                                    sortOrder === 'asc' ? 'pi-sort-up' : 'pi-sort-down',
+                                    'ml-1',
+                                ]"></i>
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody v-if="applications.length" class="bg-white divide-y divide-gray-200">
                         <tr v-for="app in paginatedData" :key="app.id" class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">{{ app.id }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ app.applicant_name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ app.cid }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(app.submission_date) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ app.applicants_name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ app.cid_no || '-' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(app.created_at) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span :class="getStatusClass(app.status)">
-                                    {{ app.status }}
+                                    <span class="flex items-center">
+                                        <span class="h-2 w-2 rounded-full"
+                                            :class="getStatusDotClass(app.status)"></span>
+                                        <span class="ml-2">{{ formatStatus(app.status) }}</span>
+                                    </span>
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ calculateProcessingDays(app) }} days</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ app.course_type }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ app.course_title }}</td>
                             <td class="px-6 py-4">
-                                <div class="truncate max-w-xs" :title="app.remarks">
-                                    {{ app.remarks || '-' }}
-                                </div>
+                                <div class="truncate max-w-xs" :title="app.remarks">{{ app.remarks || "-" }}</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody v-else>
+                        <tr>
+                            <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+                                No applications found
                             </td>
                         </tr>
                     </tbody>
@@ -76,225 +87,347 @@
             <div class="px-4 py-3 border-t border-gray-200">
                 <div class="flex items-center justify-between">
                     <div class="text-sm text-gray-700">
-                        Showing {{ startIndex + 1 }} to {{ endIndex }} of {{ filteredData.length }} entries
+                        Showing {{ startIndex + 1 }} to {{ endIndex }} of {{ totalItems }} entries
                     </div>
-                    <div class="flex gap-2">
-                        <button @click="previousPage" :disabled="currentPage === 1" class="px-3 py-1 border rounded"
-                            :class="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''">
-                            Previous
-                        </button>
-                        <button @click="nextPage" :disabled="currentPage === totalPages"
-                            class="px-3 py-1 border rounded"
-                            :class="currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''">
-                            Next
-                        </button>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <select v-model="itemsPerPage" class="px-3 py-1 rounded-md text-sm border border-gray-300"
+                                @change="handlePerPageChange">
+                                <option :value="10">10 / page</option>
+                                <option :value="25">25 / page</option>
+                                <option :value="50">50 / page</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button @click="previousPage" :disabled="currentPage === 1"
+                                class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                                Previous
+                            </button>
+                            <button @click="nextPage" :disabled="currentPage === totalPages"
+                                class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                                Next
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Loading indicator -->
+        <div v-if="loading" class="fixed inset-0 bg-gray-100 bg-opacity-50 flex items-center justify-center">
+            <i class="pi pi-spin pi-spinner text-blue-500 text-4xl"></i>
+        </div>
     </div>
 </template>
 
+
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useToast } from 'vue-toastification';
-import { Clock, CheckCircle, XCircle, Hourglass } from 'lucide-vue-next';
-import { format } from 'date-fns';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-import apiService from '@/services/services';
+import { ref, computed, onMounted, watch } from "vue";
+import { useToast } from "vue-toastification";
+import { Clock, CheckCircle, XCircle, Hourglass } from "lucide-vue-next";
+import { format, isValid, parseISO } from "date-fns";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import apiService from "@/services/services";
+import { useAuthStore } from '@/stores/authStore';
 
 const toast = useToast();
+const { userId } = useAuthStore();
 
-// Table headers configuration
-const tableHeaders = [
-    { key: 'id', label: 'Application ID' },
-    { key: 'applicant_name', label: 'Applicant Name' },
-    { key: 'cid', label: 'CID' },
-    { key: 'submission_date', label: 'Submission Date' },
-    { key: 'status', label: 'Status' },
-    { key: 'processing_time', label: 'Processing Time' },
-    { key: 'course_type', label: 'Course Type' },
-    { key: 'remarks', label: 'Remarks' }
+// Constants
+const TABLE_HEADERS = [
+    { key: "id", label: "Application ID" },
+    { key: "applicants_name", label: "Applicant Name" },
+    { key: "cid_no", label: "CID" },
+    { key: "created_at", label: "Submission Date" },
+    { key: "status", label: "Status" },
+    { key: "processing_time", label: "Processing Time" },
+    { key: "course_title", label: "Course Type" },
+    { key: "remarks", label: "Remarks" },
 ];
+
+const STATUS_CLASSES = {
+    draft: "inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800",
+    applied: "inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800",
+    processing: "inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800",
+    under_review: "inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800",
+    approved: "inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800",
+    regretted: "inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800",
+    reprocess: "inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800",
+    reupload: "inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800",
+};
+
+const STATUS_DOT_CLASSES = {
+    draft: 'bg-gray-600',
+    applied: 'bg-blue-600',
+    processing: 'bg-yellow-600',
+    under_review: 'bg-purple-600',
+    approved: 'bg-green-600',
+    regretted: 'bg-red-600',
+    reprocess: 'bg-orange-600',
+    reupload: 'bg-indigo-600',
+};
 
 // State
 const applications = ref([]);
-const searchQuery = ref('');
-const loading = ref(true);
+const searchQuery = ref("");
+const loading = ref(false);
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
-const sortKey = ref('id');
-const sortOrder = ref('asc');
+const sortKey = ref("id");
+const sortOrder = ref("asc");
+const totalItems = ref(0);
+const error = ref(null);
 
-// Computed properties
-const stats = computed(() => ({
-    pending: applications.value.filter(app => app.status === 'pending').length,
-    processing: applications.value.filter(app => app.status === 'processing').length,
-    approved: applications.value.filter(app => app.status === 'approved').length,
-    regretted: applications.value.filter(app => app.status === 'regretted').length
-}));
+// Computed Properties
+const stats = computed(() => {
+    try {
+        const apps = applications.value || [];
+        return {
+            pending: apps.filter(app => app?.status === "applied").length,
+            processing: apps.filter(app => app?.status === "processing").length,
+            approved: apps.filter(app => app?.status === "approved").length,
+            regretted: apps.filter(app => app?.status === "regretted").length
+        };
+    } catch (err) {
+        console.error('Error calculating stats:', err);
+        return { pending: 0, processing: 0, approved: 0, regretted: 0 };
+    }
+});
 
 const statsArray = computed(() => [
-    { label: 'Pending Applications', value: stats.value.pending, icon: Clock },
-    { label: 'Processing Applications', value: stats.value.processing, icon: Hourglass },
-    { label: 'Approved', value: stats.value.approved, icon: CheckCircle },
-    { label: 'Regretted', value: stats.value.regretted, icon: XCircle }
+    { label: "Pending Applications", value: stats.value.pending, icon: Clock },
+    { label: "Processing Applications", value: stats.value.processing, icon: Hourglass },
+    { label: "Approved", value: stats.value.approved, icon: CheckCircle },
+    { label: "Regretted", value: stats.value.regretted, icon: XCircle }
 ]);
 
-const filteredData = computed(() => {
-    let filtered = [...applications.value];
-
-    if (searchQuery.value) {
-        const query = searchQuery.value.toLowerCase();
-        filtered = filtered.filter(app =>
-            String(app.id).toLowerCase().includes(query) ||
-            app.applicant_name?.toLowerCase().includes(query) ||
-            app.cid?.toLowerCase().includes(query) ||
-            app.status?.toLowerCase().includes(query) ||
-            app.course_type?.toLowerCase().includes(query) ||
-            app.remarks?.toLowerCase().includes(query)
-        );
-    }
-
-    // Sort the filtered data
-    return filtered.sort((a, b) => {
-        let aValue = a[sortKey.value];
-        let bValue = b[sortKey.value];
-
-        if (sortKey.value === 'submission_date') {
-            aValue = new Date(aValue);
-            bValue = new Date(bValue);
-        }
-
-        if (aValue < bValue) return sortOrder.value === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortOrder.value === 'asc' ? 1 : -1;
-        return 0;
-    });
-});
-
-const totalPages = computed(() => Math.ceil(filteredData.value.length / itemsPerPage.value));
-
+const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / itemsPerPage.value)));
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage.value);
-
-const endIndex = computed(() => Math.min(startIndex.value + itemsPerPage.value, filteredData.value.length));
-
-const paginatedData = computed(() => {
-    return filteredData.value.slice(startIndex.value, endIndex.value);
-});
+const endIndex = computed(() => Math.min(startIndex.value + itemsPerPage.value, totalItems.value));
+const paginatedData = computed(() => applications.value);
 
 // Methods
+const fetchApplications = async () => {
+    try {
+        error.value = null;
+        loading.value = true;
+
+        const params = {
+            page: currentPage.value,
+            limit: itemsPerPage.value,
+            search: searchQuery.value || undefined,
+            ordering: sortOrder.value === 'asc' ? sortKey.value : `-${sortKey.value}`,
+            user_id: userId.value,
+        };
+
+        const response = await apiService.getRecognitionOfQualifications(params);
+
+        if (response?.data) {
+            applications.value = response.data.results;
+            totalItems.value = response.data.count || 0;
+        } else {
+            throw new Error('Invalid response format');
+        }
+    } catch (err) {
+        console.error("Error fetching applications:", err);
+        error.value = err.response?.data?.detail ||
+            err.response?.data?.message ||
+            'Failed to load applications. Please try again.';
+        toast.error(error.value);
+        applications.value = [];
+        totalItems.value = 0;
+    } finally {
+        loading.value = false;
+    }
+};
+
 const sortBy = (key) => {
     if (sortKey.value === key) {
-        sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+        sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
     } else {
         sortKey.value = key;
-        sortOrder.value = 'asc';
+        sortOrder.value = "asc";
+    }
+    fetchApplications();
+};
+
+const formatDate = (dateString) => {
+    try {
+        if (!dateString) return '-';
+
+        let date = parseISO(dateString);
+        if (!isValid(date)) {
+            date = new Date(dateString);
+            if (isNaN(date.getTime())) {
+                return '-';
+            }
+        }
+
+        return format(date, 'MMM dd, yyyy');
+    } catch (err) {
+        console.error('Error formatting date:', err);
+        return '-';
+    }
+};
+
+const calculateProcessingDays = (application) => {
+    try {
+        const submissionDate = new Date(application.created_at);
+        const completionDate = application.completion_date
+            ? new Date(application.completion_date)
+            : new Date();
+
+        if (isNaN(submissionDate.getTime())) {
+            return 0;
+        }
+
+        const diffTime = Math.abs(completionDate - submissionDate);
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    } catch (err) {
+        console.error('Error calculating processing days:', err);
+        return 0;
+    }
+};
+
+const getStatusClass = (status) => {
+    return STATUS_CLASSES[status?.toLowerCase()] ||
+        "inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800";
+};
+
+const getStatusDotClass = (status) => {
+    return STATUS_DOT_CLASSES[status?.toLowerCase()] || 'bg-gray-600';
+};
+
+const formatStatus = (status) => {
+    if (!status) return '';
+    return status
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+};
+
+const downloadReport = async () => {
+    try {
+        const doc = new jsPDF();
+
+        // Add title and date
+        doc.setFontSize(20);
+        doc.text("Applications Report", 14, 22);
+        doc.setFontSize(12);
+        doc.text(`Generated on ${format(new Date(), "MMMM dd, yyyy")}`, 14, 32);
+
+        // Add statistics
+        doc.setFontSize(16);
+        doc.text("Summary", 14, 45);
+        doc.setFontSize(12);
+
+        let yPos = 55;
+        Object.entries(stats.value).forEach(([key, value]) => {
+            doc.text(
+                `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`,
+                14,
+                yPos
+            );
+            yPos += 10;
+        });
+
+        // Applications table
+        doc.autoTable({
+            startY: yPos + 10,
+            head: [TABLE_HEADERS.map(header => header.label)],
+            body: applications.value.map(app => [
+                app.id,
+                app.applicants_name,
+                app.cid_no,
+                formatDate(app.created_at),
+                formatStatus(app.status),
+                `${calculateProcessingDays(app)} days`,
+                app.course_title,
+                app.remarks || "-"
+            ]),
+            theme: "striped",
+            headStyles: { fillColor: [59, 130, 246] },
+            columnStyles: {
+                0: { cellWidth: 25 },
+                1: { cellWidth: 30 },
+                2: { cellWidth: 25 },
+                3: { cellWidth: 25 },
+                4: { cellWidth: 20 },
+                5: { cellWidth: 25 },
+                6: { cellWidth: 25 },
+                7: { cellWidth: "auto" }
+            }
+        });
+
+        doc.save(`applications_report_${format(new Date(), "yyyy-MM-dd")}.pdf`);
+        toast.success("Report downloaded successfully");
+    } catch (err) {
+        console.error('Error generating PDF:', err);
+        toast.error("Failed to generate report. Please try again.");
     }
 };
 
 const previousPage = () => {
     if (currentPage.value > 1) {
         currentPage.value--;
+        fetchApplications();
     }
 };
 
 const nextPage = () => {
     if (currentPage.value < totalPages.value) {
         currentPage.value++;
+        fetchApplications();
     }
 };
 
-const calculateProcessingDays = (application) => {
-    const submissionDate = new Date(application.submission_date);
-    const completionDate = application.completion_date ?
-        new Date(application.completion_date) : new Date();
-    const diffTime = Math.abs(completionDate - submissionDate);
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+const handlePerPageChange = () => {
+    currentPage.value = 1;
+    fetchApplications();
 };
 
-const formatDate = (date) => {
-    return format(new Date(date), 'MMM dd, yyyy');
-};
-
-const getStatusClass = (status) => {
-    const classes = {
-        approved: 'inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800',
-        regretted: 'inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800',
-        pending: 'inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800',
-        processing: 'inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800'
-    };
-    return classes[status] || 'inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800';
-};
-
-const downloadReport = () => {
-    const doc = new jsPDF();
-
-    // Add title
-    doc.setFontSize(20);
-    doc.text('Applications Report', 14, 22);
-    doc.setFontSize(12);
-    doc.text(`Generated on ${format(new Date(), 'MMMM dd, yyyy')}`, 14, 32);
-
-    // Add statistics
-    doc.setFontSize(16);
-    doc.text('Summary', 14, 45);
-    doc.setFontSize(12);
-    let yPos = 55;
-    Object.entries(stats.value).forEach(([key, value]) => {
-        doc.text(`${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`, 14, yPos);
-        yPos += 10;
-    });
-
-    // Add applications table
-    doc.autoTable({
-        startY: yPos + 10,
-        head: [['Application ID', 'Applicant Name', 'CID', 'Submission Date', 'Status', 'Processing Time', 'Course Type', 'Remarks']],
-        body: applications.value.map(app => [
-            app.id,
-            app.applicant_name,
-            app.cid,
-            formatDate(app.submission_date),
-            app.status,
-            `${calculateProcessingDays(app)} days`,
-            app.course_type,
-            app.remarks || '-'
-        ]),
-        theme: 'striped',
-        headStyles: { fillColor: [59, 130, 246] },
-        columnStyles: {
-            0: { cellWidth: 25 },
-            1: { cellWidth: 30 },
-            2: { cellWidth: 25 },
-            3: { cellWidth: 25 },
-            4: { cellWidth: 20 },
-            5: { cellWidth: 25 },
-            6: { cellWidth: 25 },
-            7: { cellWidth: 'auto' }
-        }
-    });
-
-    // Save the PDF
-    doc.save(`applications_report_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
-    toast.success('Report downloaded successfully');
-};
-
-// Fetch Data
-const fetchApplications = async () => {
-    try {
-        loading.value = true;
-        const response = await apiService.getRecognitionOfQualifications();
-        applications.value = response.data.results;
-    } catch (error) {
-        console.error('Error fetching applications:', error);
-        toast.error('Failed to load applications');
-    } finally {
-        loading.value = false;
-    }
-};
+// Watchers
+watch(searchQuery, () => {
+    currentPage.value = 1;
+    fetchApplications();
+});
 
 // Lifecycle hooks
 onMounted(() => {
     fetchApplications();
 });
 </script>
+
+<style scoped>
+.pi-sort-up::before {
+    content: "↑";
+}
+
+.pi-sort-down::before {
+    content: "↓";
+}
+
+.pi-search::before {
+    content: "🔍";
+}
+
+.pi-download::before {
+    content: "↓";
+}
+
+.pi-spin::before {
+    content: "◌";
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+</style>
