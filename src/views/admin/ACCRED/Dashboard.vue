@@ -46,6 +46,7 @@
 <script setup>
 import { computed, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/authStore';
 
 // Admin Components Import
 import AdminDashboard from '@/components/dashboard/accredcomponent/admin/AccreditationDashboard.vue';
@@ -73,8 +74,16 @@ import StaffTypeMaster from '@/components/dashboard/accredcomponent/admin/master
 import StandardMaster from '@/components/dashboard/accredcomponent/admin/masters/StandardMaster.vue';
 import DocumentType from '@/components/dashboard/accredcomponent/admin/DocumentType.vue';
 
+//user components import
+import AccreUserDashboard from '@/components/dashboard/accredcomponent/users/AccreUserDashboard.vue';
+import AccreApplyForAccreditation from '@/components/dashboard/accredcomponent/users/AccreApplyForAccreditation.vue';
+import AccreViewResults from '@/components/dashboard/accredcomponent/users/AccreViewResults.vue';
+import AccreApplyForAppeal from '@/components/dashboard/accredcomponent/users/AccreApplyForAppeal.vue';
+import AccreUserProfile from '@/components/dashboard/accredcomponent/users/AccreUserProfile.vue';
+import CoIConfirmation from '@/components/dashboard/accredcomponent/users/CoIConfirmation.vue';
+import SiteVisitConfirmation from '@/components/dashboard/accredcomponent/users/SiteVisitConfirmation.vue';
 const route = useRoute();
-
+const { role } = useAuthStore();
 
 // Add route change debugging
 watchEffect(() => {
@@ -187,8 +196,20 @@ const superAdminComponent = computed(() => {
 const userComponent = computed(() => {
   const path = route.path;
   switch (true) {
-    case path.endsWith('/roq/dashboard'):
-      return null;
+    case path.endsWith('/accreditation/dashboard'):
+      return AccreUserDashboard;
+    case path.endsWith('/accreditation/apply_for_accreditation'):
+      return AccreApplyForAccreditation;
+    case path.endsWith('/accreditation/appeal'):
+      return AccreApplyForAppeal;  
+    case path.endsWith('/accreditation/results'):
+      return AccreViewResults; 
+    case path.endsWith('/accreditation/profile'):
+      return AccreUserProfile; 
+    case path.endsWith('/accreditation/coi_confirmation'):
+      return CoIConfirmation;   
+    case path.endsWith('/accreditation/site_visit_confirmation'):
+      return SiteVisitConfirmation;   
     default:
       return null;
   }

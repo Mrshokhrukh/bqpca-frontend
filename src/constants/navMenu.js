@@ -616,9 +616,39 @@ const serviceSpecificMenuItems = {
   accreditation: {
     user: [
       {
-        name: 'Accreditation Application',
-        icon: getIconComponent('Award'),
-        route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Apply for Accreditation',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/user/${serviceType}/apply_for_accreditation`,
+      },
+      {
+        name: 'Appeal for Accreditation',
+        icon: getIconComponent('FileSearch'),
+        route: (serviceType) => `/admin/user/${serviceType}/appeal`,
+      },
+      {
+        name: 'CoI Confirmation',
+        icon: getIconComponent('CheckCircle'),
+        route: (serviceType) => `/admin/user/${serviceType}/coi_confirmation`,
+      },
+      {
+        name: 'Site Visit',
+        icon: getIconComponent('Building2'),
+        route: (serviceType) => `/admin/user/${serviceType}/site_visit_confirmation`,
+      },
+      {
+        name: 'View Results',
+        icon: getIconComponent('FileText'),
+        route: (serviceType) => `/admin/user/${serviceType}/results`,
+      },
+      {
+        name: 'Profile',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/user/${serviceType}/profile`,
       },
     ],
     admin: [

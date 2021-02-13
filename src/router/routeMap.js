@@ -1,3 +1,5 @@
+
+
 const roqDashboard = () => import('@/views/admin/ROQ/Dashboard.vue')
 const ecpfDashboard = () => import('@/views/admin/ECPF/Dashboard.vue')
 const bmhcDashboard = () => import('@/views/admin/BMHC/Dashboard.vue')
@@ -112,12 +114,14 @@ export default {
       // ... other ECPF routes for a regular user
     },
     accreditation: {
-      dashboard: () => import('@/views/admin/ACCRED/Dashboard.vue'),
-      // my_applications: () => import('@/views/admin/ACCRED/MyApplications.vue'),
-      // new_application: () => import('@/views/admin/ACCRED/NewApplication.vue'),
-      // application_status: () => import('@/views/admin/ACCRED/ApplicationStatus.vue'),
-      // profile: () => import('@/views/admin/ACCRED/Profile.vue'),
-      // ... other Accreditation routes for a regular user
+      dashboard: accredDashboard,
+      apply_for_accreditation: accredDashboard,
+      appeal: accredDashboard,
+      coi_confirmation: accredDashboard,
+      site_visit_confirmation: accredDashboard,
+      results: accredDashboard,
+      profile: accredDashboard,
+      
     },
     engineering_certification: {
       dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
