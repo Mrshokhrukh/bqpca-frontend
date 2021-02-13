@@ -1,113 +1,120 @@
 <template>
-    <div class="p-4">
-        <!-- Header with Export Button -->
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold text-gray-900">Application Reports</h1>
+    <div class="p-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">All ROQ Applications</h1>
             <button @click="downloadReport"
-                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 <i class="pi pi-download mr-2"></i>
                 Export Report
             </button>
         </div>
 
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-            <div v-for="(stat, index) in statsArray" :key="index"
-                class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-4 gap-6 mb-6">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-500">{{ stat.label }}</span>
-                    <component :is="stat.icon" class="w-4 h-4 text-gray-500" />
+                    <span class="text-gray-600">Pending Applications</span>
+                    <Clock class="w-5 h-5 text-gray-400" />
                 </div>
-                <p class="text-2xl font-bold">{{ stat.value }}</p>
+                <div class="text-3xl font-semibold">{{ stats.pending }}</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-600">Processing Applications</span>
+                    <Hourglass class="w-5 h-5 text-gray-400" />
+                </div>
+                <div class="text-3xl font-semibold">{{ stats.processing }}</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-600">Approved</span>
+                    <CheckCircle class="w-5 h-5 text-gray-400" />
+                </div>
+                <div class="text-3xl font-semibold">{{ stats.approved }}</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-600">Regretted</span>
+                    <XCircle class="w-5 h-5 text-gray-400" />
+                </div>
+                <div class="text-3xl font-semibold">{{ stats.regretted }}</div>
             </div>
         </div>
 
-        <!-- Applications Table -->
-        <div class="bg-white rounded-lg shadow-sm">
-            <div class="p-4 border-b border-gray-200">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-semibold">Applications List</h2>
-                    <div class="relative">
-                        <input type="text" v-model="searchQuery" placeholder="Search..."
-                            class="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-                        <i class="pi pi-search absolute left-3 top-3 text-gray-400"></i>
-                    </div>
-                </div>
+        <!-- Search Bar -->
+        <div class="mb-6">
+            <div class="relative max-w-md">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="pi pi-search text-gray-400"></i>
+                </span>
+                <input type="text" v-model="searchQuery"
+                    class="pl-10 pr-4 py-2 w-full border rounded-lg text-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Search..." />
             </div>
+        </div>
 
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th v-for="header in TABLE_HEADERS" :key="header.key"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                @click="sortBy(header.key)">
-                                {{ header.label }}
-                                <i v-if="sortKey === header.key" :class="[
-                                    'pi',
-                                    sortOrder === 'asc' ? 'pi-sort-up' : 'pi-sort-down',
-                                    'ml-1',
-                                ]"></i>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody v-if="applications.length" class="bg-white divide-y divide-gray-200">
-                        <tr v-for="app in paginatedData" :key="app.id" class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">{{ app.id }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ app.applicants_name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ app.cid_no || '-' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(app.created_at) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span :class="getStatusClass(app.status)">
-                                    <span class="flex items-center">
-                                        <span class="h-2 w-2 rounded-full"
-                                            :class="getStatusDotClass(app.status)"></span>
-                                        <span class="ml-2">{{ formatStatus(app.status) }}</span>
-                                    </span>
+        <!-- Table -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <table class="min-w-full">
+                <thead>
+                    <tr class="border-b">
+                        <th v-for="header in TABLE_HEADERS" :key="header.key"
+                            class="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            @click="sortBy(header.key)">
+                            {{ header.label }}
+                            <i v-if="sortKey === header.key" :class="[
+                                'pi',
+                                sortOrder === 'asc' ? 'pi-sort-up' : 'pi-sort-down',
+                                'ml-1',
+                            ]"></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <tr v-for="app in paginatedData" :key="app.id" class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm">{{ app.id }}</td>
+                        <td class="px-6 py-4 text-sm">{{ app.applicants_name }}</td>
+                        <td class="px-6 py-4 text-sm">{{ app.cid_no || '-' }}</td>
+                        <td class="px-6 py-4 text-sm">{{ formatDate(app.created_at) }}</td>
+                        <td class="px-6 py-4">
+                            <span :class="getStatusClass(app.status)">
+                                <span class="flex items-center">
+                                    <span class="h-2 w-2 rounded-full" :class="getStatusDotClass(app.status)"></span>
+                                    <span class="ml-2">{{ formatStatus(app.status) }}</span>
                                 </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ calculateProcessingDays(app) }} days</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ app.course_title }}</td>
-                            <td class="px-6 py-4">
-                                <div class="truncate max-w-xs" :title="app.remarks">{{ app.remarks || "-" }}</div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody v-else>
-                        <tr>
-                            <td colspan="8" class="px-6 py-4 text-center text-gray-500">
-                                No applications found
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm">{{ calculateProcessingDays(app) }} days</td>
+                        <td class="px-6 py-4 text-sm">{{ app.course_title }}</td>
+                        <td class="px-6 py-4 text-sm">
+                            <div class="truncate max-w-xs" :title="app.remarks">{{ app.remarks || "-" }}</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
             <!-- Pagination -->
-            <div class="px-4 py-3 border-t border-gray-200">
+            <div class="px-6 py-4 border-t border-gray-200">
                 <div class="flex items-center justify-between">
-                    <div class="text-sm text-gray-700">
+                    <div class="text-sm text-gray-600">
                         Showing {{ startIndex + 1 }} to {{ endIndex }} of {{ totalItems }} entries
                     </div>
                     <div class="flex items-center space-x-4">
-                        <div class="flex items-center space-x-2">
-                            <select v-model="itemsPerPage" class="px-3 py-1 rounded-md text-sm border border-gray-300"
-                                @change="handlePerPageChange">
-                                <option :value="10">10 / page</option>
-                                <option :value="25">25 / page</option>
-                                <option :value="50">50 / page</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <button @click="previousPage" :disabled="currentPage === 1"
-                                class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                                Previous
-                            </button>
-                            <button @click="nextPage" :disabled="currentPage === totalPages"
-                                class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                                Next
-                            </button>
-                        </div>
+                        <select v-model="itemsPerPage" class="px-3 py-1 rounded-md text-sm border border-gray-300"
+                            @change="handlePerPageChange">
+                            <option :value="10">10 / page</option>
+                            <option :value="25">25 / page</option>
+                            <option :value="50">50 / page</option>
+                        </select>
+                        <button @click="previousPage" :disabled="currentPage === 1"
+                            class="px-4 py-1 text-sm text-gray-600 hover:text-gray-900 disabled:text-gray-400 disabled:cursor-not-allowed">
+                            Previous
+                        </button>
+                        <button @click="nextPage" :disabled="currentPage === totalPages"
+                            class="px-4 py-1 text-sm text-gray-600 hover:text-gray-900 disabled:text-gray-400 disabled:cursor-not-allowed">
+                            Next
+                        </button>
                     </div>
                 </div>
             </div>
@@ -119,6 +126,10 @@
         </div>
     </div>
 </template>
+
+
+
+
 
 
 <script setup>
@@ -195,12 +206,12 @@ const stats = computed(() => {
     }
 });
 
-const statsArray = computed(() => [
-    { label: "Pending Applications", value: stats.value.pending, icon: Clock },
-    { label: "Processing Applications", value: stats.value.processing, icon: Hourglass },
-    { label: "Approved", value: stats.value.approved, icon: CheckCircle },
-    { label: "Regretted", value: stats.value.regretted, icon: XCircle }
-]);
+// const statsArray = computed(() => [
+//     { label: "Pending Applications", value: stats.value.pending, icon: Clock },
+//     { label: "Processing Applications", value: stats.value.processing, icon: Hourglass },
+//     { label: "Approved", value: stats.value.approved, icon: CheckCircle },
+//     { label: "Regretted", value: stats.value.regretted, icon: XCircle }
+// ]);
 
 const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / itemsPerPage.value)));
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage.value);
@@ -485,6 +496,7 @@ const hexToRgb = (hex) => {
         b: parseInt(result[3], 16)
     } : null;
 };
+
 
 const previousPage = () => {
     if (currentPage.value > 1) {
