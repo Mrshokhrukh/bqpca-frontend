@@ -99,7 +99,8 @@
                     <AwardIcon class="h-8 w-8 text-green-600" />
                   </div>
                   <div>
-                    <h3 class="text-3xl font-bold text-gray-900">{{ result.details ? result.details.applicants_name : 'Name Loading...' }}</h3>
+                    <h3 class="text-3xl font-bold text-gray-900">{{ result.details ? result.details.applicants_name :
+        'Name Loading...' }}</h3>
                     <div class="flex items-center space-x-2 mt-1">
                       <span class="text-sm text-gray-500">QEC: {{ result.details ? result.details.qec_number : 'QEC Loading...' }}</span>
                       <span class="text-gray-300">|</span>
@@ -110,7 +111,8 @@
                 <div class="flex flex-col items-end">
                   <span class="px-4 py-2 rounded-full text-sm font-semibold"
                     :class="result.details && result.details.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'">
-                    {{ result.details ? (result.details.status ? result.details.status.toString().toUpperCase() : 'Status Loading...') : 'Status Loading...' }}
+                    {{ result.details ? (result.details.status ? result.details.status.toString().toUpperCase() :
+        'Status Loading...') : 'Status Loading...' }}
                   </span>
                 </div>
               </div>
@@ -280,18 +282,6 @@ import {
   ArrowLeft as ArrowLeftIcon,
 } from 'lucide-vue-next';
 
-// Props definition
-const props = defineProps({
-  service_type: {
-    type: String,
-    default: '',
-  },
-  cert_number: {
-    type: String,
-    default: '',
-  },
-});
-
 // Reactive state
 const selectedService = ref('');
 const certificationId = ref('');
@@ -351,37 +341,35 @@ const resetSelection = () => {
 };
 
 const checkValidity = async () => {
-  if ((selectedService.value || props.service_type) && (certificationId.value || props.cert_number)) {
+  const serviceType = selectedService.value || route.query.service_type;
+  const certNumber = certificationId.value || route.query.cert_number;
+
+  if (serviceType && certNumber) {
     isLoading.value = true;
     result.value = null;
 
-    const serviceType = selectedService.value || props.service_type;
-    const certNumber = certificationId.value || props.cert_number;
-
-    const queryParams = {
-      service_type: serviceType,
-      cert_number: certNumber,
-    };
-
     try {
-      const response = await apiServices.verifyCertificate(queryParams);
-      result.value = {
-        valid: response.status === 200,
-        message: response.data?.message || 'Verification completed',
-        details: response.data
-      };
-      console.log('result.value after API call:', result.value);
-
-      await router.push({
-        path: '/certification-validity/search',
-        query: {
-          service_type: serviceType,
-          cert_number: certNumber,
-        },
+      const response = await apiServices.verifyCertificate({
+        service_type: serviceType,
+        cert_number: certNumber,
       });
 
-      isSearchActive.value = true;
+      // Correctly map API response fields
+      result.value = {
+        valid: response.data.valid,
+        message: response.data?.message || 'Verification completed',
+        details: response.data.details // Access nested details
+      };
 
+      // Update router only if not already in search mode
+      if (!isSearchMode.value) {
+        await router.push({
+          path: '/certification-validity/search',
+          query: { service_type: serviceType, cert_number: certNumber },
+        });
+      }
+
+      isSearchActive.value = true;
     } catch (error) {
       console.error('API call failed:', error);
       result.value = {
@@ -396,8 +384,7 @@ const checkValidity = async () => {
 
 // Lifecycle hooks
 onMounted(() => {
-  console.log('Initial Route Path onMounted:', route.path);
-  if (props.service_type && props.cert_number) {
+  if (route.query.service_type && route.query.cert_number) {
     isSearchActive.value = true;
     checkValidity();
   }

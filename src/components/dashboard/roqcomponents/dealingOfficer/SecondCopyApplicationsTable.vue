@@ -30,9 +30,13 @@
       </div>
     </div>
 
-    <ApplicationModal :show-modal="showModal" :modal-type="modalType" :application="selectedApplication"
-      @close="closeModal" @update="handleApplicationUpdate" />
-    <RemarksModal :show-modal="showRemarksModal" :chief-remarks="selectedApplication.chief_remarks"
+    <ApplicationModal v-if="showModal && modalType !== 'viewCertificate' && modalType !== null" :show-modal="showModal"
+      :modal-type="modalType" :application="selectedApplication" @close="closeModal"
+      @update="handleApplicationUpdate" />
+    <ViewCertificateModal v-if="showModal && modalType === 'viewCertificate'" :show-modal="showModal"
+      :application="selectedApplication" @close="closeModal" />
+    <RemarksModal v-if="showRemarksModal" :show-modal="showRemarksModal"
+      :chief-remarks="selectedApplication.chief_remarks"
       :dealing-officer-remarks="selectedApplication.dealing_officer_remarks" @close="closeRemarksModal" />
   </div>
 </template>
@@ -42,13 +46,13 @@ import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import ApplicationList from '@/components/common/ROQApplicationList.vue';
 import ApplicationModal from '@/components/common/ROQApplicationModal.vue';
 import RemarksModal from '@/components/common/ROQRemarksModal.vue';
+import ViewCertificateModal from '@/components/common/ROQViewCertificateModal.vue';
 import apiService from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
 import { RefreshCw } from 'lucide-vue-next';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
-const { userId } = useAuthStore();
 const authStore = useAuthStore();
 const authStoreRole = computed(() => authStore.role);
 
@@ -80,10 +84,10 @@ const filteredApplications = computed(() => {
         String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
       )
       : true;
-    const isSecondCopy = app.is_second_copy; // Ensure boolean true
-    const isForward = !app.forward; // Ensure boolean true
+    const isSecondCopy = app.is_second_copy; // Exclude if is_second_copy is true
+    const isNotDraft = app.status !== 'draft';
 
-    return matchesStatus && matchesType && matchesSearch && isSecondCopy && isForward;
+    return matchesStatus && matchesType && matchesSearch && isSecondCopy && isNotDraft;
   });
 });
 
@@ -136,9 +140,7 @@ const handleApplicationSubmitted = async () => {
 const loadData = async () => {
   loading.value = true;
   try {
-    const response = await apiService.getRecognitionOfQualifications({
-      user_id: userId.value, // Use user ID instead of email
-    });
+    const response = await apiService.getRecognitionOfQualifications();
     applications.value = response.data.results;
   } catch (error) {
     console.error('Error loading data:', error);
@@ -174,7 +176,11 @@ const handleApplicationAction = ({ action, application }) => {
     return;
   } else if (action === 'viewCertificate') {
     modalType.value = 'viewCertificate';
-  } else {
+    selectedApplication.value = application;
+    showModal.value = true;
+    return;
+  }
+  else {
     modalType.value = action;
   }
   selectedApplication.value = application;

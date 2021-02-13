@@ -47,12 +47,10 @@ import ApplicationModal from '@/components/common/ROQApplicationModal.vue';
 import RemarksModal from '@/components/common/ROQRemarksModal.vue';
 import ViewCertificateModal from '@/components/common/ROQViewCertificateModal.vue';
 import apiService from '@/services/services';
-import { useAuthStore } from '@/stores/authStore';
 import { RefreshCw } from 'lucide-vue-next';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
-const { userId } = useAuthStore();
 
 const noteText = ref('');
 const showModal = ref(false);
@@ -138,9 +136,7 @@ const handleApplicationSubmitted = async () => {
 const loadData = async () => {
   loading.value = true;
   try {
-    const response = await apiService.getRecognitionOfQualifications({
-      user_id: userId.value, // Use user ID instead of email
-    });
+    const response = await apiService.getRecognitionOfQualifications();
     applications.value = response.data.results;
   } catch (error) {
     console.error('Error loading data:', error);

@@ -154,8 +154,8 @@
   </div>
 </template>
 
-<script>
-name: 'DealingOffcierStatsCard',
+<script setup>
+// The 'name' label was unused and has been removed.
   defineProps({
     pending: {
       type: Number,

@@ -104,7 +104,7 @@ const hasUnread = computed(() => unreadCount.value > 0);
 
 // WebSocket Setup
 const setupWebSocket = () => {
-  const wsUrl = `${import.meta.env.VITE_WS_URL}/notifications`;
+  const wsUrl = `${import.meta.env.VITE_WS_URL}/notifications/recognition_of_qualification/`;
   socket.value = new WebSocket(wsUrl);
 
   socket.value.onmessage = (event) => {
@@ -113,8 +113,8 @@ const setupWebSocket = () => {
   };
 
   socket.value.onclose = () => {
-    // Attempt to reconnect after 5 seconds
-    setTimeout(setupWebSocket, 5000);
+    // Attempt to reconnect after 30 minutes
+    setTimeout(setupWebSocket, 1800000);
   };
 };
 

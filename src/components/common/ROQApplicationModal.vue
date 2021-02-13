@@ -32,6 +32,24 @@
           <!-- View Mode with Enhanced Cards -->
           <div v-if="modalType === 'view' || modalType === 'viewCertificate'" class="space-y-6">
 
+            <!-- QEC Number Display for Approved Applications -->
+            <div v-if="modalApplication.status === 'approved' && modalApplication.qec_number"
+              class="bg-green-50 rounded-xl p-6 shadow-sm">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="p-2 bg-green-100 rounded-lg">
+                  <HashIcon class="w-5 h-5 text-green-600" />
+                </div>
+                <h4 class="text-lg font-medium text-green-900">QEC Number</h4>
+              </div>
+              <div class="bg-white p-4 rounded-lg border border-green-200 flex items-center justify-between">
+                <span class="text-2xl font-bold text-green-700">{{ modalApplication.qec_number }}</span>
+                <div class="flex items-center gap-2 text-green-600">
+                  <CheckCircleIcon class="w-5 h-5" />
+                  <span class="font-medium">Verified</span>
+                </div>
+              </div>
+            </div>
+
             <!-- Personal & Address Information Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
               <!-- Left Column: Personal Information -->
@@ -90,24 +108,6 @@
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- QEC Number Display for Approved Applications -->
-            <div v-if="modalApplication.status === 'approved' && modalApplication.qec_number"
-              class="bg-green-50 rounded-xl p-6 shadow-sm">
-              <div class="flex items-center gap-3 mb-4">
-                <div class="p-2 bg-green-100 rounded-lg">
-                  <HashIcon class="w-5 h-5 text-green-600" />
-                </div>
-                <h4 class="text-lg font-medium text-green-900">QEC Number</h4>
-              </div>
-              <div class="bg-white p-4 rounded-lg border border-green-200 flex items-center justify-between">
-                <span class="text-2xl font-bold text-green-700">{{ modalApplication.qec_number }}</span>
-                <div class="flex items-center gap-2 text-green-600">
-                  <CheckCircleIcon class="w-5 h-5" />
-                  <span class="font-medium">Verified</span>
                 </div>
               </div>
             </div>
