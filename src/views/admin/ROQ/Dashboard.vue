@@ -61,7 +61,7 @@ import AdminCountry from '@/components/dashboard/roqcomponents/admin/AdminCountr
 import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealingOfficer/DealingOfficerDashboard.vue';
 import ApplicationsTable from '@/components/dashboard/roqcomponents/dealingOfficer/ApplicationsTable.vue';
 import SecondCopyApplicationsTable from '@/components/dashboard/roqcomponents/dealingOfficer/SecondCopyApplicationsTable.vue';
-
+import ReportTable from '@/components/dashboard/roqcomponents/dealingOfficer/ReportTable.vue';
 // Chief Components Import
 import ChiefDashboard from '@/components/dashboard/roqcomponents/chief/ChiefDashboard.vue';
 import ChiefApplicationsTable from '@/components/dashboard/roqcomponents/chief/ChiefApplicationsTable.vue';
@@ -116,6 +116,8 @@ const dealingOfficerComponent = computed(() => {
       return ApplicationsTable;
     case path.endsWith('/roq/second_copy_lists'):
       return SecondCopyApplicationsTable;
+    case path.endsWith('/roq/reports'):
+      return ReportTable;
 
     default:
       return null;
