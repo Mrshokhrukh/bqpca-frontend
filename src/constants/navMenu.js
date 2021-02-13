@@ -581,19 +581,19 @@ const serviceSpecificMenuItems = {
       {
         name: 'Track DPR',
         icon: getIconComponent('FileSearch'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,   
+        route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
       },
       {
         name: 'Draft Application',
         icon: getIconComponent('FileSearch'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/draft_applications`,   
+        route: (serviceType) => `/admin/institutions/${serviceType}/draft_applications`,
       },
       {
         name: 'View Certificates',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
-      }
-    ]
+      },
+    ],
   },
   engineering_certification: {
     user: [

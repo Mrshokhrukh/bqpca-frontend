@@ -66,7 +66,7 @@ import ReportTable from '@/components/dashboard/roqcomponents/dealingOfficer/Rep
 import ChiefDashboard from '@/components/dashboard/roqcomponents/chief/ChiefDashboard.vue';
 import ChiefApplicationsTable from '@/components/dashboard/roqcomponents/chief/ChiefApplicationsTable.vue';
 import SecondCopyLists from '@/components/dashboard/roqcomponents/chief/SecondCopyLists.vue';
-
+import ChiefReportTable from '@/components/dashboard/roqcomponents/chief/ChiefReportTable.vue';
 // User Components Import
 import UserDashboard from '@/components/dashboard/roqcomponents/user/UserDashboard.vue';
 import UserApplications from '@/components/dashboard/roqcomponents/user/UserRoqApplicationList.vue';
@@ -134,6 +134,8 @@ const chiefComponent = computed(() => {
       return ChiefApplicationsTable;
     case path.endsWith('/roq/second_copy_lists'):
       return SecondCopyLists;
+    case path.endsWith('/roq/reports'):
+      return ChiefReportTable;
     default:
       return null;
   }

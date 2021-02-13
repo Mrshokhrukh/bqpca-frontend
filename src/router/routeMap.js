@@ -1,5 +1,3 @@
-
-
 const roqDashboard = () => import('@/views/admin/ROQ/Dashboard.vue')
 const ecpfDashboard = () => import('@/views/admin/ECPF/Dashboard.vue')
 const bmhcDashboard = () => import('@/views/admin/BMHC/Dashboard.vue')
@@ -121,7 +119,6 @@ export default {
       site_visit_confirmation: accredDashboard,
       results: accredDashboard,
       profile: accredDashboard,
-      
     },
     engineering_certification: {
       dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
@@ -195,7 +192,7 @@ export default {
       dashboard: roqDashboard,
       application_lists: roqDashboard,
       second_copy_lists: roqDashboard,
-      // reports: () => import('@/views/admin/ROQ/Reports.vue'),
+      reports: () => roqDashboard,
       // ... other ROQ routes for chief
     },
     ecpf: {
