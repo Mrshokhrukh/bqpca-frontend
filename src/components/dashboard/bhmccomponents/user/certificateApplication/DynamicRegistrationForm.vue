@@ -340,7 +340,9 @@ import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'vue-router';
 import SuccessModal from './SuccessModal.vue';
 
-const { user } = useAuthStore();
+const authStore = useAuthStore();
+const userId = authStore.userId;
+const user = authStore.user;
 const router = useRouter();
 const showSuccessModal = ref(false);
 
@@ -357,13 +359,11 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'submit', 'back', 'create', 'cancel', 'view-checklist', 'declare-code']);
 
-const stage = ref(1); // 1: Personal Info, 2: Qualification Details, etc.
-const applicationId = ref(null); // Store the application ID from the first stage submission
+const stage = ref(1);
+const applicationId = ref(null);
 
-// Document types list - NOW FETCHED FROM API
 const fetchedDocumentTypes = ref([]);
 
-// Supporting documents state
 const supportingDocuments = ref([
   { type: '', files: [], description: '' }
 ]);
@@ -605,12 +605,19 @@ const formatDateForInput = (dateString) => {
 // DCRC data fetching
 const fetchDCRCData = async () => {
   if (props.selectedType !== 'cid' || !isCIDValid.value) {
-    return; // Only fetch for CID type and valid CID
+    return;
+  }
+
+  // Check if userId is available before making the request
+  if (!userId) {
+    toast.error("User ID is not available. Please ensure you are logged in.");
+    return; // Stop execution if userId is missing
   }
 
   isLoadingDCRC.value = true;
   try {
-    const response = await apiService.fetchCitizenDetails(localFormData.cid_no);
+    // Pass userId as a query parameter
+    const response = await apiService.fetchCitizenDetails(localFormData.cid_no, { params: { user_id: userId } });
 
     const genderMap = {
       'F': 'Female',
@@ -630,7 +637,12 @@ const fetchDCRCData = async () => {
     toast.success('DCRC data fetched successfully');
   } catch (error) {
     console.error('Error fetching DCRC data:', error);
-    toast.error('Failed to fetch DCRC data. Please enter details manually.');
+     if (error.response && error.response.data && error.response.data.error) {
+            toast.error(error.response.data.error);
+        } else {
+            // Generic error message
+            toast.error('Failed to fetch DCRC data. Please enter details manually.');
+        }
 
     // Clear fetched data if the API call fails
     localFormData.full_name = '';

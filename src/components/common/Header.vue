@@ -30,7 +30,7 @@
         </div>
 
         <!-- Desktop Navigation with floating effect -->
-        <div class="hidden md:flex items-center space-x-12">
+        <div class="hidden md:flex items-center space-x-6">
           <router-link v-for="item in navItems" :key="item.name" :to="item.route"
             class="relative text-gray-600 hover:text-primary transition-all duration-300 group py-2 px-1">
             <span class="relative z-10">{{ item.name }}</span>
@@ -85,7 +85,8 @@ const navItems = [
   { name: 'Home', route: '/' },
   { name: 'Services', route: '#services' },
   { name: 'About', route: '#about' },
-  { name: 'Contact', route: '#contact' }
+  { name: 'Contact', route: '#contact' },
+  { name: 'Verification', route: '#certificate-verification' },
 ]
 </script>
 

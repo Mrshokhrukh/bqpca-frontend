@@ -269,14 +269,12 @@ const handleAction = (action, application) => {
 };
 
 const sortedApplications = computed(() => {
-  // 1. Filter by user email (if applicable)
+  // 1. Filter by user email only if the user's role is 'user'
   let filtered = props.applications;
 
-  // *Only* filter by email if authStore.user and authStore.user.email exist.
-  if (authStore.user && authStore.user.email) {
+  if (authStore.user && authStore.user.email && authStore.role === 'user') {
     filtered = filtered.filter(app => app.email_address === authStore.user.email);
   }
-
 
   // 2. Apply search filter
   if (searchQuery.value) {

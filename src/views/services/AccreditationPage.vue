@@ -17,7 +17,7 @@
             <span class="text-sm">Institutional Accreditation</span>
           </div>
           <h1 class="text-3xl font-serif font-bold text-white sm:text-4xl lg:text-5xl">
-            Accreditation
+            Accreditation Services
           </h1>
           <p class="mt-6 text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
             Streamline the accreditation process for educational institutions in Bhutan.

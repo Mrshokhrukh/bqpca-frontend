@@ -16,7 +16,7 @@
             <span class="text-sm">Healthcare Certification</span>
           </div>
           <h1 class="text-3xl font-serif font-bold text-white sm:text-4xl lg:text-5xl">
-            Medical & Health Council
+            Medical &amp; Health Professionals Council
           </h1>
           <p class="mt-6 text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
             Certification and registration services for healthcare professionals in Bhutan.
@@ -54,6 +54,43 @@
                   in accordance with the Royal Government of Bhutan's regulations.
                 </p>
               </div>
+            </div>
+          </div>
+          <!-- Service Provider Registration Options -->
+          <div class="max-w-7xl mx-auto mt-12">
+            <h2 class="text-2xl font-serif font-bold text-slate-900 mb-2 text-center">
+              Service Provider Registration
+            </h2>
+            <p class="text-center text-slate-600 mb-8">
+              For service providers, please register from the options below.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <button @click="openCMEProviderModal"
+                class="group relative rounded-xl shadow-md overflow-hidden bg-white hover:bg-red-50 border border-slate-200 p-6 transition-all duration-200 hover:shadow-lg">
+                <div class="flex items-center">
+                  <div class="p-3 rounded-lg bg-red-50 group-hover:bg-red-100 transition-colors">
+                    <BookOpen class="w-6 h-6 text-red-600" />
+                  </div>
+                  <div class="ml-4">
+                    <h3 class="text-lg font-medium text-slate-900">CME/CPD Provider Registration</h3>
+                    <p class="mt-1 text-sm text-slate-600">Register as an accredited continuing medical education
+                      provider</p>
+                  </div>
+                </div>
+              </button>
+
+              <button @click="openMedicalInstitutionModal"
+                class="group relative rounded-xl shadow-md overflow-hidden bg-white hover:bg-red-50 border border-slate-200 p-6 transition-all duration-200 hover:shadow-lg">
+                <div class="flex items-center">
+                  <div class="p-3 rounded-lg bg-red-50 group-hover:bg-red-100 transition-colors">
+                    <Hospital class="w-6 h-6 text-red-600" />
+                  </div>
+                  <div class="ml-4">
+                    <h3 class="text-lg font-medium text-slate-900">Medical Institution Registration</h3>
+                    <p class="mt-1 text-sm text-slate-600">Register your healthcare facility or institution</p>
+                  </div>
+                </div>
+              </button>
             </div>
           </div>
 
@@ -114,38 +151,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <!-- Additional Registration Options (Moved Here) -->
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <button @click="openCMEProviderModal"
-                class="group relative rounded-xl overflow-hidden bg-white hover:bg-red-50 border border-slate-200 p-6 transition-all duration-200 hover:shadow-lg">
-                <div class="flex items-center">
-                  <div class="p-3 rounded-lg bg-red-50 group-hover:bg-red-100 transition-colors">
-                    <BookOpen class="w-6 h-6 text-red-600" />
-                  </div>
-                  <div class="ml-4">
-                    <h3 class="text-lg font-medium text-slate-900">CME/CPD Provider Registration</h3>
-                    <p class="mt-1 text-sm text-slate-600">Register as an accredited continuing medical education
-                      provider</p>
-                  </div>
-                </div>
-              </button>
-
-              <button @click="openMedicalInstitutionModal"
-                class="group relative rounded-xl overflow-hidden bg-white hover:bg-red-50 border border-slate-200 p-6 transition-all duration-200 hover:shadow-lg">
-                <div class="flex items-center">
-                  <div class="p-3 rounded-lg bg-red-50 group-hover:bg-red-100 transition-colors">
-                    <Hospital class="w-6 h-6 text-red-600" />
-                  </div>
-                  <div class="ml-4">
-                    <h3 class="text-lg font-medium text-slate-900">Medical Institution Registration</h3>
-                    <p class="mt-1 text-sm text-slate-600">Register your healthcare facility or institution</p>
-                  </div>
-                </div>
-              </button>
             </div>
           </div>
         </div>

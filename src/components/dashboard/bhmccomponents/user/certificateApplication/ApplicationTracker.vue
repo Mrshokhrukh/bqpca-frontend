@@ -48,21 +48,21 @@
     </div>
 
     <!-- Results Section -->
-    <div v-if="filteredApplications?.length > 0" class="space-y-6">
-      <div v-for="application in filteredApplications" :key="application.id"
+    <div v-if="applications?.length > 0" class="space-y-6">
+      <div v-for="application in applications" :key="application.id"
         class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:border-blue-200 transition-colors">
         <div class="p-6">
           <div class="flex items-start justify-between">
             <div>
               <h3 class="text-lg font-semibold text-gray-900 mb-2">
                 {{ application.full_name }}
-                <span :class="[
-            'ml-2 px-2 py-1 text-xs rounded-full',
-            application.is_active
-              ? 'bg-green-100 text-green-700'
-              : 'bg-red-100 text-red-700'
-          ]">
-                  {{ application.is_active ? 'Active' : 'Inactive' }}
+                <span v-if="application.user_qualifications?.length > 0" :class="[
+                  'ml-2 px-2 py-1 text-xs rounded-full',
+                  application.user_qualifications[0].is_active
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-red-100 text-red-700'
+                ]">
+                  {{ application.user_qualifications[0].is_active ? 'Active' : 'Inactive' }}
                 </span>
               </h3>
               <p class="text-sm text-gray-500 mb-4">
@@ -102,18 +102,19 @@
               <div class="flex items-center space-x-4">
                 <div>
                   <p class="text-sm font-medium text-gray-900">Payment Status</p>
-                  <p :class="[
-            'text-sm',
-            application.is_payment_complete
-              ? 'text-green-600'
-              : 'text-red-600'
-          ]">
-                    {{ application.is_payment_complete ? 'Completed' : 'Pending' }}
+                  <p v-if="application.user_qualifications?.length > 0" :class="[
+                    'text-sm',
+                    application.user_qualifications[0].is_payment_complete
+                      ? 'text-green-600'
+                      : 'text-red-600'
+                  ]">
+                    {{ application.user_qualifications[0].is_payment_complete ? 'Completed' : 'Pending' }}
                   </p>
+                  <p v-else class="text-sm text-gray-600">No Qualification Data</p>
                 </div>
-                <div v-if="application.payment_id">
+                <div v-if="application.user_qualifications?.length > 0 && application.user_qualifications[0].payment_id">
                   <p class="text-sm font-medium text-gray-900">Payment ID</p>
-                  <p class="text-sm text-gray-500">{{ application.payment_id }}</p>
+                  <p class="text-sm text-gray-500">{{ application.user_qualifications[0].payment_id }}</p>
                 </div>
               </div>
               <img :src="application.passport_photo" :alt="application.full_name"
@@ -123,22 +124,14 @@
         </div>
       </div>
 
-      <!-- Pagination -->
-      <div v-if="totalPages > 1" class="flex justify-center space-x-2 mt-6">
-        <button v-for="page in totalPages" :key="page" @click="handlePageChange(page)" :class="[
-            'px-4 py-2 rounded-lg text-sm font-medium',
-            currentPage === page
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          ]">
-          {{ page }}
-        </button>
-      </div>
     </div>
 
     <!-- No Results Message -->
-    <div v-else-if="hasSearched" class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
+    <div v-else-if="hasSearched && !apiError" class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
       <p class="text-gray-600">No applications found matching your search.</p>
+    </div>
+    <div v-else-if="apiError" class="text-center py-12 bg-red-100 rounded-xl border border-red-200">
+      <p class="text-red-600">Error fetching applications. Please try again.</p>
     </div>
     <div v-else class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
       <p class="text-gray-600">Enter search criteria to find applications.</p>
@@ -147,7 +140,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import apiService from '@/services/services';
 
 // State
@@ -156,32 +149,13 @@ const searchQuery = ref('');
 const searchType = ref('id');
 const isLoading = ref(false);
 const hasSearched = ref(false);
-const currentPage = ref(1);
-const itemsPerPage = 10;
-
-// Computed
-const totalPages = computed(() => {
-  if (!applications.value || applications.value.length === 0) return 0;
-  return Math.ceil(filteredApplications.value.length / itemsPerPage);
-});
-
-const filteredApplications = computed(() => {
-  if (!searchQuery.value) {
-    return [];  // Return empty array if no search query
-  }
-
-  return applications.value.filter(app => {
-    if (searchType.value === 'id') {
-      return app.cid_no.toLowerCase().includes(searchQuery.value.toLowerCase());
-    } else {
-      return app.registration_no.toLowerCase().includes(searchQuery.value.toLowerCase());
-    }
-  });
-});
+const apiError = ref(false); // New state for API error
 
 // Methods
 const fetchApplications = async () => {
   isLoading.value = true;
+  apiError.value = false; // Reset error state
+
   try {
     let response;
     if (searchType.value === 'id') {
@@ -193,11 +167,12 @@ const fetchApplications = async () => {
     if (response && response.data && response.data.results) {
       applications.value = response.data.results;
     } else {
-      applications.value = []; // Set to empty array if no results or invalid response
+      applications.value = [];
     }
   } catch (error) {
     console.error('Error fetching applications:', error);
     applications.value = [];
+    apiError.value = true; // Set error state
   } finally {
     isLoading.value = false;
   }
@@ -206,10 +181,5 @@ const fetchApplications = async () => {
 const handleSearch = async () => {
   hasSearched.value = true;
   await fetchApplications();
-  currentPage.value = 1;
-};
-
-const handlePageChange = (page) => {
-  currentPage.value = page;
 };
 </script>

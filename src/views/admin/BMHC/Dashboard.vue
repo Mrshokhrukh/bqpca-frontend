@@ -53,7 +53,7 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import ApplicationTable from '@/components/common/ROQApplicationsTable.vue';
+import ApplicationTable from '@/components/common/ROQUserApplicationsTable.vue';
 
 // BMHC Component Imports
 import BmhAdminDashboard from '@/components/dashboard/bhmccomponents/admin/BmhAdminDashboard.vue';
@@ -274,8 +274,8 @@ const bmhCpdCmeProviderComponent = computed(() => {
     case path.endsWith('/health_certification/dashboard'):
       return ProviderDashboard;
     case path.endsWith('/health_certification/cpd_application_details'):
-      return CPDApplicationDetails; 
-    case path.endsWith('/health_certification/cpd_application_tracker'): 
+      return CPDApplicationDetails;
+    case path.endsWith('/health_certification/cpd_application_tracker'):
       return CPDApplicationTracker;
     default:
       return null;
@@ -290,18 +290,18 @@ const bmhInstitutionsComponent = computed(() => {
       return BmhInstitutionsDashboard;
 
     case path.endsWith('/health_certification/apply_for_eoi'):
-      return InstituteEoiApplication; 
+      return InstituteEoiApplication;
     case path.endsWith('/health_certification/track_eoi'):
-      return TrackEoiApplication;  
+      return TrackEoiApplication;
 
     case path.endsWith('/health_certification/apply_for_dpr'):
       return InstituteDPRApplication;
     case path.endsWith('/health_certification/track_dpr'):
-      return TrackDPRApplication;  
+      return TrackDPRApplication;
     case path.endsWith('/health_certification/draft_applications'):
-      return DraftApplications;  
+      return DraftApplications;
     case path.endsWith('/health_certification/view_certificates'):
-      return ViewCertificates;  
+      return ViewCertificates;
     default:
       return null;
   }
