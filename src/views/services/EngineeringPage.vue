@@ -16,7 +16,7 @@
             <span class="text-sm">Professional Certification</span>
           </div>
           <h1 class="text-3xl font-serif font-bold text-white sm:text-4xl lg:text-5xl">
-            Engineering Certification
+            Engineering Professionals Council
           </h1>
           <p class="mt-6 text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
             Professional validation and certification for engineering professionals in Bhutan.
