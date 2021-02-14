@@ -53,7 +53,7 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import ApplicationTable from '@/components/common/ROQUserApplicationsTable.vue';
+import ApplicationTable from '@/components/common/ROQApplicationsTable.vue';
 
 // BMHC Component Imports
 import BmhAdminDashboard from '@/components/dashboard/bhmccomponents/admin/BmhAdminDashboard.vue';
@@ -77,6 +77,7 @@ import BMHCUserReports from '@/components/dashboard/bhmccomponents/user/ReportsC
 
 // Dealing Officer Components
 import ApplicationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/ApplicationLists.vue';
+import RenewalLists from '@/components/dashboard/bhmccomponents/dealingOfficer/RenewalLists.vue';
 import CpdManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/CpdManagement.vue';
 import InstituteManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/InstituteManagement.vue';
 import ProfessionalProfiles from '@/components/dashboard/bhmccomponents/dealingOfficer/ProfessionalProfiles.vue';
@@ -224,6 +225,8 @@ const bmhDealingOfficerComponent = computed(() => {
       return BmhDealingOfficerDashboard;
     case path.endsWith('/health_certification/application_lists'):
       return ApplicationLists;
+    case path.endsWith('/health_certification/renewal_lists'):
+      return RenewalLists;
     case path.endsWith('/health_certification/cpd_management'):
       return CpdManagement;
     case path.endsWith('/health_certification/institutes'):

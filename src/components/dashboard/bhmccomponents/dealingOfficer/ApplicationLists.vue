@@ -1,70 +1,100 @@
 <template>
-  <div class="p-6 bg-gray-100 min-h-screen">
-    <h2 class="text-3xl font-bold mb-8 text-gray-900">Application List</h2>
-
-    <!-- Tabs -->
-    <div class="flex space-x-4 mb-8">
-      <button
-        v-for="tab in tabs"
-        :key="tab.value"
-        @click="activeTab = tab.value"
-        :class="[
-          'px-6 py-3 rounded-lg font-medium transition-colors',
-          activeTab === tab.value
-            ? 'bg-blue-600 text-white'
-            : 'bg-white text-gray-700 hover:bg-gray-200'
-        ]"
-      >
-        {{ tab.label }}
-      </button>
+  <div class="p-8 min-h-screen bg-gray-50">
+    <!-- Page Header -->
+    <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">Applications</h1>
+      <div class="flex items-center text-gray-600">
+        <span class="flex items-center">
+          <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
+          Total: {{ applications.length }}
+        </span>
+        <span class="mx-4">|</span>
+        <span class="flex items-center">
+          <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
+          Pending: {{ pendingCount }}
+        </span>
+      </div>
     </div>
 
-    <!-- Status Filter -->
-    <div class="mb-8">
-      <select
-        v-model="filterStatus"
-        class="p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <option value="all">All Statuses</option>
-        <option value="Pending">Pending</option>
-        <option value="Approved">Approved</option>
-        <option value="Rejected">Rejected</option>
-      </select>
+    <!-- Search and Filters -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <div class="relative">
+        <input v-model="searchQuery" type="text" placeholder="Search by name or ID..."
+          class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+      <div class="flex gap-4">
+        <select v-model="filterStatus"
+          class="flex-1 px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option value="all">All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
     </div>
 
-    <!-- Tables for each type -->
-    <div v-for="tab in tabs" :key="tab.value">
-      <div v-if="activeTab === tab.value" class="overflow-x-auto bg-white rounded-lg shadow">
-        <table class="min-w-full">
-          <thead class="bg-gray-200">
+    <!-- Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
             <tr>
-              <th class="py-4 px-6 text-left text-sm font-semibold text-gray-800">Application ID</th>
-              <th class="py-4 px-6 text-left text-sm font-semibold text-gray-800">Applicant Name</th>
-              <th class="py-4 px-6 text-left text-sm font-semibold text-gray-800">Type</th>
-              <th class="py-4 px-6 text-left text-sm font-semibold text-gray-800">Status</th>
-              <th class="py-4 px-6 text-left text-sm font-semibold text-gray-800">Submission Date</th>
-              <th class="py-4 px-6 text-left text-sm font-semibold text-gray-800">Actions</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Applicant
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-300">
-            <tr
-              v-for="app in paginatedApplications(tab.value)"
-              :key="app.id"
-              class="hover:bg-gray-100 transition-colors"
-            >
-              <td class="py-4 px-6 text-sm text-gray-800">{{ app.id }}</td>
-              <td class="py-4 px-6 text-sm text-gray-800">{{ app.fullName }}</td>
-              <td class="py-4 px-6 text-sm text-gray-800">{{ getRegistrationTypeLabel(app.type) }}</td>
-              <td class="py-4 px-6 text-sm text-gray-800">
-                <span :class="statusClasses(app.status)" class="px-3 py-1 rounded-full text-xs font-medium">
-                  {{ app.status }}
+          <tbody class="divide-y divide-gray-200 bg-white">
+            <tr v-for="app in paginatedApplications" :key="app.id" class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                #{{ app.id }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <img :src="app.passport_photo || '/placeholder-avatar.png'"
+                    class="h-8 w-8 rounded-full object-cover mr-3" @error="handleImageError">
+                  <div>
+                    <div class="text-sm font-medium text-gray-900">{{ app.full_name }}</div>
+                    <div class="text-sm text-gray-500">{{ app.email_address }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ app.registration_type?.name }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span :class="[
+            'px-3 py-1 rounded-full text-xs font-medium',
+            {
+              'bg-yellow-100 text-yellow-800': getStatus(app) === 'Pending',
+              'bg-green-100 text-green-800': getStatus(app) === 'Approved',
+              'bg-red-100 text-red-800': getStatus(app) === 'Rejected'
+            }
+          ]">
+                  {{ getStatus(app) }}
                 </span>
               </td>
-              <td class="py-4 px-6 text-sm text-gray-800">{{ app.submissionDate }}</td>
-              <td class="py-4 px-6 text-sm text-gray-800">
-                <button @click="viewDetails(app)" class="text-blue-600 hover:text-blue-800 hover:underline">View</button>
-                <button @click="approveApplication(app)" class="text-green-600 hover:text-green-800 hover:underline ml-2">Approve</button>
-                <button @click="rejectApplication(app)" class="text-red-600 hover:text-red-800 hover:underline ml-2">Reject</button>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ formatDate(app.registration_date) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <div class="flex space-x-3">
+                  <button @click="viewDetails(app)"
+                    class="text-blue-600 hover:text-blue-900 transition-colors">View</button>
+                  <button @click="approveApplication(app)"
+                    class="text-green-600 hover:text-green-900 transition-colors">Approve</button>
+                  <button @click="rejectApplication(app)"
+                    class="text-red-600 hover:text-red-900 transition-colors">Reject</button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -73,118 +103,151 @@
     </div>
 
     <!-- Pagination -->
-    <div class="mt-8 flex justify-center items-center space-x-6">
-      <button
-        @click="prevPage"
-        :disabled="currentPage === 1"
-        class="px-6 py-3 border rounded-lg shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Previous
-      </button>
-      <span class="text-sm text-gray-800">Page {{ currentPage }} of {{ totalPages }}</span>
-      <button
-        @click="nextPage"
-        :disabled="currentPage === totalPages"
-        class="px-6 py-3 border rounded-lg shadow-sm hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Next
-      </button>
+    <div class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+      <div class="flex-1 flex justify-between sm:hidden">
+        <button @click="prevPage" :disabled="currentPage === 1"
+          class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+          Previous
+        </button>
+        <button @click="nextPage" :disabled="currentPage === totalPages"
+          class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+          Next
+        </button>
+      </div>
+      <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm text-gray-700">
+            Showing
+            <span class="font-medium">{{ ((currentPage - 1) * itemsPerPage) + 1 }}</span>
+            to
+            <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredApplications.length) }}</span>
+            of
+            <span class="font-medium">{{ filteredApplications.length }}</span>
+            results
+          </p>
+        </div>
+        <div>
+          <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <button @click="prevPage" :disabled="currentPage === 1"
+              class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+              <span class="sr-only">Previous</span>
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+            <button @click="nextPage" :disabled="currentPage === totalPages"
+              class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+              <span class="sr-only">Next</span>
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+          </nav>
+        </div>
+      </div>
     </div>
 
-    <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="isModalOpen = false" />
+    <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
+      @approve="handleApprove" />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import services from '@/services/services';
-import ViewDetailsModal from './modals/ViewDetailsModal.vue'; // Import the modal component
-
-const tabs = ref([
-  { label: 'Registration', value: 2 },
-  { label: 'Renewal', value: 1 },
-  { label: 'Re-registration', value: 3 },
-]);
+import apiServices from '@/services/services';
+import ViewDetailsModal from './modals/ViewApplicationDetailsModal.vue';
 
 const applications = ref([]);
-const activeTab = ref(2); // Initialize activeTab to the *value* (2), not the label
 const filterStatus = ref('all');
+const searchQuery = ref('');
 const currentPage = ref(1);
-const itemsPerPage = 5;
+const itemsPerPage = 10;
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
+
+const pendingCount = computed(() => {
+  return applications.value.filter(app =>
+    app.user_qualifications?.[0]?.application_review_status === 'Pending'
+  ).length;
+});
+
+const getStatus = (app) => {
+  return app.user_qualifications?.[0]?.application_review_status || 'Pending';
+};
+
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+const handleImageError = (event) => {
+  event.target.src = '/placeholder-avatar.png';
+};
 
 // Fetch applications on component mount
 const fetchApplications = async () => {
   try {
-    const response = await services.getBhmcNewQualifications();
-    console.log('API Response:', response.data); // Log the raw API response
+    const response = await apiServices.getBhmcNewApplications();
+    console.log('API Response:', response.data);
 
     if (!response.data || !response.data.results || !Array.isArray(response.data.results)) {
       console.error('Invalid API response format. Expected response.data.results to be an array.');
       return;
     }
 
+    // Assign the results directly to the applications array
+    applications.value = response.data.results;
 
-    applications.value = response.data.results.map(app => {
-      const mappedApp = {
-        id: app.id,
-        type: app.registration_type, // Keep the original numeric type
-        fullName: app.qualification_name,
-        status: app.application_review_status,
-        submissionDate: app.registration_date,
-
-      };
-      console.log("Mapped App", mappedApp)
-      return mappedApp;
-    });
     console.log('Applications:', applications.value);
+
   } catch (error) {
     console.error('Error fetching applications:', error);
   }
-};
-
-// Helper function to get the label based on registration type
-const getRegistrationTypeLabel = (typeValue) => {
-    const tab = tabs.value.find(t => t.value === typeValue);
-    return tab ? tab.label : 'Unknown';
 };
 
 onMounted(() => {
   fetchApplications();
 });
 
-const filteredApplications = (type) => {
-  console.log("Filtering for type:", type, "Current applications:", applications.value);
-  return applications.value.filter(app => {
+const filteredApplications = computed(() => {
+  let filtered = applications.value;
 
-    const typeMatches = app.type === type;
-    const statusMatches = filterStatus.value === 'all' || app.status === filterStatus.value;
-    console.log(`App ${app.id}: typeMatches=${typeMatches}, statusMatches=${statusMatches}`);
-    return typeMatches && statusMatches;
-  });
-};
+  // Filter by registration_type
+  filtered = filtered.filter(app => app.registration_type && typeof app.registration_type === 'object' && app.registration_type.name === 'Registration');
 
-const paginatedApplications = (type) => {
-  const filtered = filteredApplications(type);
-  console.log("Filtered Apps for pagination", filtered)
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return filtered.slice(start, end);
-};
+  // Filter by status
+  if (filterStatus.value !== 'all') {
+    filtered = filtered.filter(app => app.user_qualifications && app.user_qualifications.length > 0 && app.user_qualifications[0].application_review_status === filterStatus.value);
+  }
 
-const totalPages = computed(() => {
-  const filtered = filteredApplications(activeTab.value);
-  return Math.ceil(filtered.length / itemsPerPage);
+  // Filter by search query
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(app =>
+      app.full_name.toLowerCase().includes(query) ||
+      app.cid_no.toLowerCase().includes(query)
+    );
+  }
+
+  return filtered;
 });
 
-const statusClasses = (status) => {
-  return {
-    'bg-yellow-100 text-yellow-800': status === 'Pending',
-    'bg-green-100 text-green-800': status === 'Approved',
-    'bg-red-100 text-red-800': status === 'Rejected',
-  };
-};
+const paginatedApplications = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return filteredApplications.value.slice(start, end);
+});
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredApplications.value.length / itemsPerPage);
+});
 
 const prevPage = () => {
   if (currentPage.value > 1) currentPage.value--;
@@ -199,16 +262,27 @@ const viewDetails = (application) => {
   isModalOpen.value = true;
 };
 
+const closeModal = () => {
+  isModalOpen.value = false;
+  selectedApplication.value = null;
+};
+
 const approveApplication = async (application) => {
   if (confirm('Are you sure you want to approve this application?')) {
     try {
-      const updatedApplication = { ...application, application_review_status: 'Approved' };
-      await services.updateBhmcNewQualification(updatedApplication.id, updatedApplication, {
+      // Assuming you want to update the user_qualifications[0].application_review_status
+      const qualificationId = application.user_qualifications[0].id;
+      const updatedApplication = { application_review_status: 'Approved' }; // Only send what needs updating
+
+      await apiServices.updateBhmcNewApplication(qualificationId, updatedApplication, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      application.registration_type = 'Approved';
+
+      // Optimistically update the UI
+      application.user_qualifications[0].application_review_status = 'Approved';
+
       alert('Application approved successfully.');
     } catch (error) {
       console.error('Error approving application:', error);
@@ -217,4 +291,31 @@ const approveApplication = async (application) => {
   }
 };
 
+const rejectApplication = async (application) => {
+  if (confirm('Are you sure you want to reject this application?')) {
+    try {
+      const qualificationId = application.user_qualifications[0].id;
+      const updatedApplication = { application_review_status: 'Rejected' };
+
+      await apiServices.updateBhmcNewApplication(qualificationId, updatedApplication, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      application.user_qualifications[0].application_review_status = 'Rejected';
+
+      alert('Application rejected successfully.');
+    } catch (error) {
+      console.error('Error rejecting application:', error);
+      alert('Failed to reject the application.');
+    }
+  }
+};
+
+const handleApprove = async (application) => {
+  console.log("Approving application:", application);
+  await approveApplication(application)
+
+};
 </script>

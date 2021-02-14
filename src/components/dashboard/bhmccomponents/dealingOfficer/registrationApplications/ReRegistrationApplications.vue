@@ -55,7 +55,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import services from '@/services/services'; // Adjust path as needed
-import ViewDetailsModal from '../modals/ViewDetailsModal.vue'; // Adjust path as needed
+import ViewDetailsModal from '../modals/ViewApplicationDetailsModal.vue'; // Adjust path as needed
 
 const title = ref('Re-Registration Applications'); // Change for each component
 const applications = ref([]);

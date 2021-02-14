@@ -1,8 +1,8 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-9xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <!-- Page Header -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10 shadow-md">
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Institute Management</h1>
         <p class="text-gray-600">Manage EOIs, DPRs, CAPAs, and generate reports for institutes.</p>
       </div>

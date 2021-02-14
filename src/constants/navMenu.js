@@ -508,17 +508,72 @@ const serviceSpecificMenuItems = {
       {
         name: 'Applications',
         icon: getIconComponent('FileText'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/application_lists`,
+        children: [
+          {
+            name: 'Application Lists',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/application_lists`,
+          },
+          {
+            name: 'Renewal Lists',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_lists`,
+          },
+          {
+            name: 'Reregistration Lists',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/reregistration_lists`,
+          },
+          {
+            name: 'CoGS Management',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cogs`,
+          },
+        ],
       },
       {
         name: 'CPD Management',
         icon: getIconComponent('BookOpen'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_management`,
+        children: [
+          {
+            name: 'Application Lists',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_management`,
+          },
+          {
+            name: 'Create Application',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_credits`,
+          },
+          {
+            name: 'Manage Providers',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_methodologies`,
+          },
+          {
+            name: 'Award Credits',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_methodologies`,
+          },
+          {
+            name: 'Reports',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_methodologies`,
+          },
+        ],
       },
       {
         name: 'Institute Management',
         icon: getIconComponent('Building2'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/institutes`,
+        children: [
+          {
+            name: 'EOI Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institutes`,
+          },
+          {
+            name: 'DPR Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_dept`,
+          },
+          {
+            name: 'CAPA Management',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/capa`,
+          },
+          {
+            name: 'Reports',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_workplace`,
+          },
+        ],
       },
       {
         name: 'Professional Profiles',
@@ -526,17 +581,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/profiles`,
       },
       {
-        name: 'CoGS Management',
-        icon: getIconComponent('Users'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/cogs`,
-      },
-      {
-        name: 'CAPA',
-        icon: getIconComponent('Users'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/capa`,
-      },
-      {
-        name: 'Payments',
+        name: 'Payment Records',
         icon: getIconComponent('CreditCard'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/payments`,
       },

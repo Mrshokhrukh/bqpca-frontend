@@ -177,6 +177,7 @@ export default {
     health_certification: {
       dashboard: bmhcDashboard,
       application_lists: bmhcDashboard,
+      renewal_lists: bmhcDashboard,
       cpd_management: bmhcDashboard,
       institutes: bmhcDashboard,
       profiles: bmhcDashboard,

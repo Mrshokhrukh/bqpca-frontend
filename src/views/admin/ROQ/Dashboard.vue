@@ -44,7 +44,7 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import ApplicationTable from '@/components/common/ROQUserApplicationsTable.vue';
+import ApplicationTable from '@/components/common/ROQApplicationsTable.vue';
 
 // Admin Components Import
 import AdminDashboard from '@/components/dashboard/roqcomponents/admin/AdminDashboard.vue';

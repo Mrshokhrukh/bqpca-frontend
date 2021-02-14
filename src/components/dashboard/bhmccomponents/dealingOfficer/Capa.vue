@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="p-4 md:p-6">
     <!-- Header -->
@@ -272,8 +273,8 @@
                   <button type="button" @click="closeCapaModal"
                     class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded mr-2">Cancel</button>
                   <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">{{
-                    isEditMode ? 'Update'
-                    : 'Create' }}</button>
+            isEditMode ? 'Update'
+              : 'Create' }}</button>
                 </div>
               </form>
             </div>
@@ -322,7 +323,6 @@ const capaForm = ref({
   institute: null,
 });
 
-const router = useRouter()
 // --- Computed Properties ---
 const filteredCapas = computed(() => {
   let filtered = capas.value;
