@@ -388,19 +388,19 @@ const services = [
     route: "/ecpf"
   },
   {
-    name: "Accreditation",
+    name: "Accreditation Service",
     description: "Systematic evaluation and accreditation of educational institutions.",
     icon: Building2,
     route: "/accreditation"
   },
   {
-    name: "Engineering Certification",
+    name: "Engineering Professionals Council (EPC)",
     description: "Professional certification and validation for engineering practitioners.",
     icon: BookOpen,
     route: "/engineering"
   },
   {
-    name: "Bhutan Medical & Health Certification (BMHC)",
+    name: "Medical & Health Professionals Council (MHPC)",
     description: "Official registration and certification for healthcare professionals.",
     icon: Users,
     route: "/bmhc"
@@ -435,7 +435,7 @@ const contacts = [
 const councils = [
   {
     name: 'MHPC',
-    description: 'Medical & Health Professional Council for healthcare certification',
+    description: 'Medical & Health Professionals Council for healthcare certification',
     icon: UsersIcon
   },
   {
@@ -450,7 +450,7 @@ const councils = [
   },
   {
     name: 'EPC',
-    description: 'Engineering Professional Council for engineering certifications',
+    description: 'Engineering Professionals Council for engineering certifications',
     icon: Building2
   }
 ]
