@@ -43,6 +43,7 @@ const iconMap = {
   Wrench,
   Award,
 }
+import { useHealthCertificationStore } from '@/stores/healthCertificationStore'
 
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
@@ -282,6 +283,7 @@ const serviceSpecificMenuItems = {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
+        alwaysShow: true,
       },
       {
         name: 'Certification',
@@ -290,24 +292,30 @@ const serviceSpecificMenuItems = {
           {
             name: 'Apply for Certification',
             route: (serviceType) => `/admin/user/${serviceType}/registration`,
+            showCondition: (store) => !store.hasSubmittedApplication,
           },
           {
             name: 'My Applications',
             route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+            showCondition: (store) => store.hasSubmittedApplication,
           },
           {
             name: 'Renewal',
             route: (serviceType) => `/admin/user/${serviceType}/renewal`,
+            showCondition: (store) => store.isRenewalPeriod && !store.isExpired,
           },
           {
             name: 'Re-Registration',
             route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
+            showCondition: (store) => store.isExpired,
           },
           {
             name: 'Additional Qualification',
             route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
+            showCondition: (store) => store.hasSubmittedApplication,
           },
         ],
+        alwaysShow: true,
       },
       {
         name: 'Apply for CPD',
@@ -316,12 +324,15 @@ const serviceSpecificMenuItems = {
           {
             name: 'Apply for CPD',
             route: (serviceType) => `/admin/user/${serviceType}/cpd`,
+            showCondition: (store) => store.hasSubmittedApplication,
           },
           {
             name: 'My Applications',
             route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+            showCondition: (store) => store.hasSubmittedApplication,
           },
         ],
+        showCondition: (store) => store.hasSubmittedApplication,
       },
       {
         name: 'Apply for CoGS',
@@ -330,22 +341,27 @@ const serviceSpecificMenuItems = {
           {
             name: 'Apply for CoGS',
             route: (serviceType) => `/admin/user/${serviceType}/CoGS`,
+            showCondition: (store) => store.hasSubmittedApplication,
           },
           {
             name: 'My Applications',
             route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+            showCondition: (store) => store.hasSubmittedApplication,
           },
         ],
+        showCondition: (store) => store.hasSubmittedApplication,
       },
       {
         name: 'Profile',
         icon: getIconComponent('Users'),
         route: (serviceType) => `/admin/user/${serviceType}/user_profile`,
+        alwaysShow: true,
       },
       {
         name: 'Reports',
         icon: getIconComponent('FileSearch'),
         route: (serviceType) => `/admin/user/${serviceType}/reports`,
+        showCondition: (store) => store.hasSubmittedApplication,
       },
     ],
     admin: [
@@ -815,17 +831,29 @@ export const generateNavigationItems = (role, serviceType) => {
   const serviceMenu = serviceSpecificMenuItems[serviceType]
   if (!serviceMenu || !serviceMenu[role]) return []
 
+  const healthStore = useHealthCertificationStore()
   // Process the menu items to resolve dynamic routes
   const processMenuItem = (item) => {
-    const newItem = {
-      ...item,
-      route: typeof item.route === 'function' ? item.route(serviceType) : item.route,
-    }
+    const newItem = { ...item }
+    newItem.route = typeof item.route === 'function' ? item.route(serviceType) : item.route
+
+    // Process children if they exist
     if (newItem.children) {
-      newItem.children = newItem.children.map((child) => processMenuItem(child))
+      newItem.children = newItem.children
+        .filter((child) => !child.showCondition || child.showCondition(healthStore))
+        .map((child) => processMenuItem(child))
+
+      // If all children are filtered out, don't show parent menu
+      if (newItem.children.length === 0 && !newItem.alwaysShow) {
+        return null
+      }
     }
+
     return newItem
   }
 
-  return serviceMenu[role].map(processMenuItem)
+  return serviceMenu[role]
+    .filter((item) => item.alwaysShow || !item.showCondition || item.showCondition(healthStore))
+    .map(processMenuItem)
+    .filter(Boolean) // Remove null items
 }
