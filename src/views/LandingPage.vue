@@ -76,8 +76,10 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div v-for="service in services" :key="service.name"
-            class="group relative bg-white rounded-xl hover:shadow-xl transition-all duration-300 border border-slate-200 overflow-hidden">
+          <!-- Wrap the entire service card content with router-link -->
+          <router-link v-for="service in services" :key="service.name" :to="service.route"
+            class="group relative bg-white rounded-xl hover:shadow-xl transition-all duration-300 border border-slate-200 overflow-hidden block">
+            <!-- Added 'block' class for proper link behavior -->
             <div
               class="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
             </div>
@@ -93,13 +95,13 @@
               <p class="text-slate-600 mb-6 min-h-[80px] leading-relaxed">
                 {{ service.description }}
               </p>
-              <router-link :to="service.route"
-                class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium group">
+              <!-- "Learn More" link (optional, can be kept or removed) -->
+              <span class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium group">
                 Learn More
                 <ArrowRight class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-2" />
-              </router-link>
+              </span>
             </div>
-          </div>
+          </router-link>
         </div>
       </div>
     </div>
@@ -232,7 +234,7 @@
 
     </div>
     <!-- Certificate Verification Section -->
-    <div class="py-24 bg-slate-100">
+    <div id="certificate-verification" class="py-24 bg-slate-100">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
           <h2 class="text-3xl font-serif font-bold text-slate-900">Certificate Verification</h2>
@@ -265,7 +267,8 @@
               <div class="relative">
                 <h3 class="text-xl font-semibold mb-4">Information</h3>
                 <p class="text-slate-300">
-                  Our online verification system provides secure and efficient authentication of certifications issued in Bhutan.
+                  Our online verification system provides secure and efficient authentication of certifications issued
+                  in Bhutan.
                 </p>
                 <div class="mt-6 flex items-center space-x-2 text-blue-300">
                   <ActivityIcon class="w-5 h-5" />
@@ -287,7 +290,8 @@
                   <SearchIcon class="w-8 h-8 text-blue-600" />
                 </div>
                 <h3 class="text-xl font-semibold text-slate-900">Certificate Verification</h3>
-                <p class="text-sm text-slate-600 mt-2">Proceed to verify the authenticity of a BQPCA issued certificate.</p>
+                <p class="text-sm text-slate-600 mt-2">Proceed to verify the authenticity of a BQPCA issued certificate.
+                </p>
               </div>
 
               <router-link to="/certification-validity"
