@@ -6,30 +6,29 @@
     <PaymentModal ref="paymentModal" @payment-completed="onPaymentCompleted" @close="onPaymentModalClose" />
 
     <form v-if="isCIDHolder !== null" @submit.prevent="handleSubmit" class="space-y-6 mt-6">
-  <!-- Personal Information Section - CID Holders -->
-  <div v-if="isCIDHolder" class="bg-white border p-6 rounded-lg shadow-sm">
-    <h3 class="text-xl font-semibold text-gray-900 mb-4">
-      Personal Information
-    </h3>
+      <!-- Personal Information Section - CID Holders -->
+      <div v-if="isCIDHolder" class="bg-white border p-6 rounded-lg shadow-sm">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">
+          Personal Information
+        </h3>
 
-    <!-- Caution Message -->
-    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
-      <p class="font-bold">Caution for CID Holders</p>
-      <p>
-        You are applying for your own certification using your CID.
-        <b>Do not use information of other people.</b> Applying with other people's information will
-        <b>overwrite your personal details in this system, and you will lose access.</b>
-        Please ensure all information is your own.
-      </p>
-    </div>
+        <!-- Caution Message -->
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 rounded text-yellow-700 p-4 mb-4" role="alert">
+          <p class="font-bold">Caution for CID Holders</p>
+          <p>
+            You are applying for your own certification using your CID.
+            <b>Do not use information of other people.</b> Applying with other people's information will
+            <b>overwrite your personal details in this system, and you will lose access.</b>
+            Please ensure all information is your own.
+          </p>
+        </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- CID No. -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- CID No. -->
           <div class="relative">
             <label for="cid" class="block text-sm font-medium text-gray-700">CID No.</label>
             <div class="mt-1 relative rounded-md shadow-sm">
-              <input type="text" id="cid" v-model="form.cid_no" @input="handleCIDInput"
-                maxlength="11"
+              <input type="text" id="cid" v-model="form.cid_no" @input="handleCIDInput" maxlength="11"
                 class="block w-full pr-24 rounded-md border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
                 placeholder="Enter 11-digit CID" />
             </div>
@@ -391,7 +390,7 @@
 import { ref, reactive, watch, computed, onMounted } from "vue";
 import { useAuthStore } from "@/stores/authStore";
 import apiService from "@/services/services";
-import FileUpload from "@/components/common/FileUpload.vue";  // Correct path
+import FileUpload from "@/components/common/FileUpload.vue";
 import { useToast } from "vue-toastification";
 import PaymentModal from "@/components/common/PaymentModal.vue";
 import CIDSelection from './CIDSelection.vue';
@@ -399,6 +398,7 @@ import EducationTypeSelection from './EducationTypeSelection.vue';
 
 const { user } = useAuthStore();
 const toast = useToast();
+const authStore = useAuthStore(); // Get the authStore instance
 
 const isLoadingDCRC = ref(false);
 const isLoadingRUB = ref(false);
@@ -407,7 +407,6 @@ const currentYear = new Date().getFullYear();
 const minYear = currentYear - 50;
 const isCIDHolder = ref(null);
 
-// Remove hardcoded options
 const qualificationOptions = ref([]);
 const courseTypeOptions = ref([]);
 
@@ -466,18 +465,16 @@ const onPaymentModalClose = () => {
 };
 
 const onPaymentCompleted = (paymentData) => {
-  form.is_payment_complete = paymentData.paymentDone;
+  form.is_payment_complete = false;
   form.payment_id = paymentData.paymentHash;
-  form.status = "applied";
+  form.status = "processing_payment";
   handleSubmitActual();
 };
 
-// Computed property to check if CID is valid
 const isCIDValid = computed(() => {
   return /^\d{11}$/.test(form.cid_no);
 });
 
-// Computed property to transform gender
 const genderDisplay = computed(() => {
   const genderMap = {
     M: "Male",
@@ -486,13 +483,11 @@ const genderDisplay = computed(() => {
   return genderMap[form.gender] || "";
 });
 
-// Watch for study_in_country changes
 watch(
   () => form.from_in_country,
   (newValue) => {
     if (newValue === true) {
       form.country = "Bhutan";
-      // Reset other fields except student_id_no when switching to in-country
       form.course_title = "";
       form.qualification = "";
       form.type_of_course = "";
@@ -502,17 +497,14 @@ watch(
       form.year_of_completion = "";
       form.website = "";
       form.location = "";
-      form.degree_certificate = null; // Clear file uploads
+      form.degree_certificate = null;
       form.academic_transcript = null;
     } else {
       form.country = "";
-      // form.student_id_no = ""; // Don't reset on switch to out-country
-
     }
   }
 );
 
-// Fetch dropdown options on component mount
 onMounted(async () => {
   try {
     const [qualificationsResponse, courseTypesResponse] = await Promise.all([
@@ -520,16 +512,15 @@ onMounted(async () => {
       apiService.getTypesOfCourse(),
     ]);
 
-    // Access the `results` array from the response
     qualificationOptions.value = qualificationsResponse.data.results.map(
       (qual) => ({
-        value: qual.id, // Assuming the API returns `id` and `name`
+        value: qual.id,
         label: qual.name,
       })
     );
 
     courseTypeOptions.value = courseTypesResponse.data.results.map((type) => ({
-      value: type.id, // Assuming the API returns `id` and `name`
+      value: type.id,
       label: type.name,
     }));
   } catch (error) {
@@ -539,7 +530,7 @@ onMounted(async () => {
 });
 
 const fetchDCRCData = async () => {
-  const authStore = useAuthStore();
+  //  const authStore = useAuthStore();  Removed: already defined
   const userId = authStore.userId;
 
   if (!isCIDValid.value) {
@@ -561,7 +552,6 @@ const fetchDCRCData = async () => {
       return `${year}-${month}-${day}`;
     };
 
-    // Assign the response data to the form
     Object.assign(form, {
       cid_no: response.data.cid_no,
       applicants_name: response.data.applicants_name,
@@ -572,7 +562,6 @@ const fetchDCRCData = async () => {
       village: response.data.village,
     });
 
-    // Only update auth store if changes were saved in the backend
     if (response.data.changes_saved) {
       toast.success("DCRC data fetched and user profile updated successfully");
     } else {
@@ -592,9 +581,7 @@ const fetchRUBData = async () => {
   try {
     const response = await apiService.fetchRubDetails(form.cid_no, form.student_id_no);
     if (response.data) {
-      console.log(response.data);
 
-      // 1. Populate form fields
       form.name_of_institute = response.data.organisationName || '';
       form.name_of_university = "Royal University of Bhutan";
       form.course_title = response.data.programmeName || '';
@@ -602,7 +589,6 @@ const fetchRUBData = async () => {
       form.website = response.data.website || 'https://rub.gov.bt';
       form.duration_of_course = response.data.duration || '';
 
-      // 2. Find or Add Course Type
       let courseTypeId = null;
       const newCourseTypeName = response.data.level;
 
@@ -611,11 +597,10 @@ const fetchRUBData = async () => {
       if (existingCourseType) {
         courseTypeId = existingCourseType.value;
       } else {
-        // Add new course type.  Using level for BOTH name and definition.
         try {
           const addCourseTypeResponse = await apiService.createTypeOfCourse({
             name: newCourseTypeName,
-            definition: newCourseTypeName, // Use level for definition too
+            definition: newCourseTypeName,
           });
 
           const newCourseType = addCourseTypeResponse.data;
@@ -628,11 +613,9 @@ const fetchRUBData = async () => {
           const errorMessage = addError.response?.data?.message || addError.message || "Unknown error";
           toast.error(`Failed to add course type "${newCourseTypeName}": ${errorMessage}`);
           isLoadingRUB.value = false;
-          return; // Exit if adding fails
+          return;
         }
       }
-
-      // 3. Set the course type
       form.type_of_course = courseTypeId;
       toast.success("RUB data fetched successfully");
     } else {
@@ -682,13 +665,13 @@ const handleSubmitActual = async (isDraft = false) => {
   try {
     const formData = new FormData();
 
-    // Build FormData RIGHT HERE, just before sending
+    // Build FormData
     for (const key in form) {
       if (Object.prototype.hasOwnProperty.call(form, key)) {
         let value = form[key];
 
         if (value instanceof File) {
-          formData.append(key, value); //append the files
+          formData.append(key, value);
         }
         else if (key === 'date_of_birth') {
           formData.append(key, formatDate(value));
@@ -701,12 +684,42 @@ const handleSubmitActual = async (isDraft = false) => {
       }
     }
 
-    // **ADD THESE LINES FOR DEBUGGING FormData RIGHT BEFORE API CALL**
-    console.log("FormData Contents BEFORE API CALL:");
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ": ", pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]);
+    // Only make the main request if it's not a draft, OR, if payment is complete.  Drafts should save even if no payment.
+    if (!isDraft) {
+      // Payment Request (only if not a draft)
+      const paymentData = {
+        platform: 'web',
+        refNo: form.payment_id,  // Use the payment_id from the form
+        taxPayerNo: form.cid_no,
+        taxPayerDocumentNo: 'BAOW', //AGENCYCODE replaced with literal as per instructions
+        payerEmail: form.email_address,
+        mobileNo: form.contact_no,
+        totalPayableAmount: 1000.00,
+        serviceCode: 'BAOW',    //AGENCYCODE replaced with literal as per instructions
+        description: 'Payment for ROQ',
+        payableAmount: 1000.00,
+        taxPayerName: form.applicants_name,
+        application_no: form.payment_id, // Use payment_id, consistent with refNo
+        app_type: 'ROQ',
+        user_id: authStore.userId,
+      };
+      try {
+        const paymentResponse = await apiService.makePayment(paymentData);
+        console.log("Payment Response:", paymentResponse);
+
+        //Check payment response status, if needed.
+
+        if (paymentResponse.status !== 201 && paymentResponse.status !== 200) { // Check success
+          throw new Error("Payment request failed"); // important - throw error to prevent main request.
+        }
+
+      } catch (paymentError) {
+        console.error("Error making payment:", paymentError);
+        toast.error("Payment request failed: " + (paymentError.response?.data?.message || paymentError.message));
+        isSubmitting.value = false; // Reset before returning.
+        return; // Stop execution if payment fails
+      }
     }
-    console.log("Is formData instanceof FormData?", formData instanceof FormData); // Check if it's actually FormData
 
     let response;
     if (props.mode === "edit") {
@@ -723,12 +736,13 @@ const handleSubmitActual = async (isDraft = false) => {
         if (isDraft) {
           toast.success("Application saved as draft");
         } else {
-          toast.success("Application submitted successfully");
+          toast.success("Application submitted successfully. Please check your email to complete the payment.");
           emit("application-submitted");
         }
       }
     }
     emit("submitted"); // Emit 'submitted' for both create and edit on success
+
   } catch (error) {
     console.error("Error submitting form:", error.response?.data || error);
     const errorMessage =

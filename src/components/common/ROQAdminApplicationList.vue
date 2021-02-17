@@ -217,6 +217,7 @@ const sortOrder = ref({ field: 'id', direction: 'asc' });
 
 const statusOptions = [
   'draft',
+  'processing_payment',
   'applied',
   'processing',
   'under_review',
@@ -261,6 +262,7 @@ const getStatusClass = (status) => {
     'inline-flex items-center px-3 py-1 text-sm rounded-full font-medium';
   const statusClasses = {
     draft: 'bg-gray-100 text-gray-800',
+    processing_payment: 'bg-gray-100 text-gray-800',
     applied: 'bg-blue-100 text-blue-800',
     processing: 'bg-yellow-100 text-yellow-800',
     under_review: 'bg-purple-100 text-purple-800',
@@ -275,6 +277,7 @@ const getStatusClass = (status) => {
 const getStatusDotClass = (status) => {
   const statusClasses = {
     draft: 'bg-gray-600',
+    processing_payment: 'bg-gray-600',
     applied: 'bg-blue-600',
     processing: 'bg-yellow-600',
     under_review: 'bg-purple-600',

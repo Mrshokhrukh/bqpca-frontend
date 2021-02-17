@@ -42,7 +42,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
-import ApplicationList from '@/components/common/ROQApplicationList.vue';
+import ApplicationList from '@/components/common/ROQAdminApplicationList.vue';
 import ApplicationModal from '@/components/common/ROQApplicationModal.vue';
 import RemarksModal from '@/components/common/ROQRemarksModal.vue';
 import ViewCertificateModal from '@/components/common/ROQViewCertificateModal.vue';

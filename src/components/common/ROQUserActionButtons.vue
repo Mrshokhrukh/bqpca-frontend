@@ -19,7 +19,7 @@
     <button v-if="status === 'approved'" @click="showCertificateModal = true"
       class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md">
       <EyeIcon class="w-4 h-4 mr-1.5" />
-      View &amp; Download Certificate
+      View & Download Certificate
     </button>
 
     <!-- Disabled State Button -->
@@ -99,11 +99,11 @@
                       ID: {{ application.id }}
                     </div>
                     <div :class="{
-                      'px-2 py-0.5 rounded-full text-sm': true,
-                      'bg-yellow-500/20': status === 'reprocess',
-                      'bg-red-500/20': status === 'regretted',
-                      'bg-purple-500/20': status === 'reupload'
-                    }">
+      'px-2 py-0.5 rounded-full text-sm': true,
+      'bg-yellow-500/20': status === 'reprocess',
+      'bg-red-500/20': status === 'regretted',
+      'bg-purple-500/20': status === 'reupload'
+    }">
                       {{ formatStatus(status) }}
                     </div>
                   </div>
@@ -239,8 +239,8 @@ defineProps({
 });
 
 const showEditModal = ref(false);
-const showReasonModal = ref(false);
-const showCertificateModal = ref(false); // Ref for certificate modal visibility
+const showReasonModal = ref(false); 
+const showCertificateModal = ref(false);
 
 const handleEditSubmit = () => {
   showEditModal.value = false;

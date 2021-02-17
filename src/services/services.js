@@ -10,6 +10,9 @@ export default {
   uploadFile(url, formData) {
     return apiClient.post(url, formData)
   },
+  makePayment(data) {
+    return apiClient.post('/payments/', data)
+  },
   ...userservices,
   ...bmhcServices,
   ...accreditationServices,

@@ -327,7 +327,7 @@
       </div>
     </form>
 
-    <SuccessModal v-model="showSuccessModal" :seconds="5" :onComplete="handleRedirect" />
+    <SuccessModal v-model="showSuccessModal" :seconds="300" :onComplete="handleRedirect" />
   </div>
 </template>
 
@@ -789,8 +789,8 @@ const handleSubmitActual = async () => {
     localFormData.documents.forEach((doc, index) => {
       if (doc.files && doc.files.length > 0) {
         doc.files.forEach(file => {
-          formData.append(`attachments[${index}][file]`, file);
-          formData.append(`attachments[${index}][file_type]`, doc.type);
+          formData.append(`user_qualification_attachments[${index}][file]`, file);
+          formData.append(`user_qualification_attachments[${index}][file_type]`, doc.type);
         });
       }
     });

@@ -292,6 +292,7 @@ import FileUpload from "@/components/common/FileUpload.vue";
 import { useToast } from "vue-toastification";
 import PaymentModal from "@/components/common/PaymentModal.vue";
 
+const authStore = useAuthStore(); // Use authStore
 const { userId } = useAuthStore();
 const toast = useToast();
 
@@ -305,6 +306,8 @@ const qualificationOptions = ref([]);
 const courseTypeOptions = ref([]);
 const isSubmitting = ref(false);
 const declaration = ref(false);
+const currentYear = new Date().getFullYear();
+const minYear = currentYear - 50;
 
 const form = reactive({
   cid_no: "",
@@ -331,9 +334,10 @@ const form = reactive({
   reason_for_issue_of_second_copy: "",
   second_copy_other: "",
   second_copy_supporting_document: null,
-  is_second_copy: true,
+  // is_second_copy: true, // Removed:  explicitly added to form data.
   is_payment_complete: false,
   payment_id: null,
+  status: "applied", // Initialize status
 });
 
 const paymentModal = ref(null);
@@ -347,36 +351,33 @@ const onPaymentModalClose = () => {
 };
 
 const onPaymentCompleted = (paymentData) => {
-  form.is_payment_complete = paymentData.paymentDone;
-  form.payment_id = paymentData.paymentHash;
-  handleSubmitActual();
+    form.is_payment_complete = false;
+    form.payment_id = paymentData.paymentHash;
+    form.status = "processing_payment";
+    handleSubmitActual();
 };
 
 // Fetch original applications and reasons for second copy
 onMounted(async () => {
   try {
-    // Fetch all required data concurrently
     const [
       applicationsResponse,
       reasonsResponse,
       qualificationsResponse,
       courseTypesResponse,
     ] = await Promise.all([
-      apiService.getRecognitionOfQualifications({ user_id: userId.value }),
+      apiService.getRecognitionOfQualifications({ user_id: userId }), // Remove .value
       apiService.getReasonsForIssueOfSecondCopy(),
       apiService.getQualifications(),
       apiService.getTypesOfCourse(),
     ]);
 
-    // Filter applications to include only those with status "approved" and is_second_copy false
     originalApplications.value = applicationsResponse.data.results.filter(
       (app) => app.status === "approved" && !app.is_second_copy
     );
 
-    // Set reasons for second copy
     reasonsForSecondCopy.value = reasonsResponse.data.results;
 
-    // Find the ID of the "Others" reason
     const othersReason = reasonsForSecondCopy.value.find(
       (reason) => reason.name.toLowerCase() === "others"
     );
@@ -384,7 +385,6 @@ onMounted(async () => {
       othersReasonId.value = othersReason.id;
     }
 
-    // Map the API responses to the dropdown options
     qualificationOptions.value = qualificationsResponse.data.results.map(
       (qual) => ({
         value: qual.id,
@@ -402,7 +402,6 @@ onMounted(async () => {
   }
 });
 
-// Autocomplete search
 const onSearchInput = () => {
   if (searchQuery.value) {
     filteredApplications.value = originalApplications.value.filter(
@@ -419,10 +418,8 @@ const onSearchInput = () => {
   }
 };
 
-// Auto-fill form when an original application is selected
 const onOriginalApplicationSelect = (app) => {
   selectedOriginalApplication.value = app;
-  // Auto-fill form fields
   Object.assign(form, {
     cid_no: app.cid_no,
     applicants_name: app.applicants_name,
@@ -450,7 +447,6 @@ const onOriginalApplicationSelect = (app) => {
   filteredApplications.value = [];
 };
 
-// Handle form submission - Initial handler to trigger payment modal
 const handleSubmit = () => {
   if (declaration.value) {
     openPaymentModal();
@@ -459,40 +455,99 @@ const handleSubmit = () => {
   }
 };
 
-// Actual submit handler after payment
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    return dateString;
+  }
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    console.error("Invalid date:", dateString);
+    return "";
+  }
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
 const handleSubmitActual = async () => {
   isSubmitting.value = true;
   try {
-    // Validate that an original application is selected
     if (!selectedOriginalApplication.value) {
       toast.error("Please select an original application");
-      return;
+      isSubmitting.value = false; // Re-enable button
+      return; // Stop execution
     }
 
     const formData = new FormData();
 
-    // Add original_application_id and is_second_copy
-    formData.append(
-      "original_application_id",
-      selectedOriginalApplication.value.id
-    );
-    formData.append("is_second_copy", "true"); // Explicitly include
+    formData.append("original_application_id", selectedOriginalApplication.value.id);
+    formData.append("is_second_copy", "true"); // Explicitly include is_second_copy
 
-    // Append other form fields
-    Object.entries(form).forEach(([key, value]) => {
-      if (value instanceof File) {
-        formData.append(key, value);
-      } else if (value !== null && value !== undefined) {
-        formData.append(key, value.toString());
+
+      // Payment Request
+        const paymentData = {
+            platform: 'web',
+            refNo: form.payment_id,  // Use the payment_id from the form
+            taxPayerNo: form.cid_no,
+            taxPayerDocumentNo: 'BAOW', //AGENCYCODE replaced with literal
+            payerEmail: form.email_address,
+            mobileNo: form.contact_no,
+            totalPayableAmount: 1000.00,
+            serviceCode: 'BAOW',    //AGENCYCODE replaced with literal
+            description: 'Payment for Second Copy ROQ', // Updated Description
+            payableAmount: 1000.00,
+            taxPayerName: form.applicants_name,
+            application_no: form.payment_id,
+            app_type: 'ROQ', // This might need adjustment for second copy
+            user_id: authStore.userId,
+        };
+
+      try {
+        const paymentResponse = await apiService.makePayment(paymentData);
+
+        if (paymentResponse.status !== 201 && paymentResponse.status !== 200) {
+            throw new Error("Payment request failed");
+        }
+
+      } catch (paymentError) {
+        console.error("Error making payment:", paymentError);
+        toast.error("Payment request failed: " + (paymentError.response?.data?.message || paymentError.message));
+        isSubmitting.value = false;
+        return; // Stop if payment fails
       }
-    });
+
+
+    // Append other form fields, including date formatting
+    for (const key in form) {
+        if (Object.prototype.hasOwnProperty.call(form, key)) {
+            let value = form[key];
+
+            if (value instanceof File) {
+              formData.append(key, value);
+            }
+            else if (key === 'date_of_birth') {
+              formData.append(key, formatDate(value));  // Format Date
+            } else if (typeof value === 'boolean') {
+              formData.append(key, value.toString());
+            }
+            else if (value !== null && value !== undefined) {
+              formData.append(key, value.toString());
+            }
+        }
+    }
 
     // Submit the form
-    await apiService.createRecognitionOfQualification(formData);
-    toast.success("Second copy application submitted successfully");
-    emit("application-submitted");
+    const response =  await apiService.createRecognitionOfQualification(formData); // Call the correct endpoint.
+     if (response.status === 201) {
+        toast.success("Second copy application submitted successfully. Please check your email to complete the payment.");
+        emit("application-submitted");
+      }
+
   } catch (error) {
-    toast.error("Failed to submit application:", error);
+    toast.error("Failed to submit application: " + (error.response?.data?.message || error.message ));
     console.error("Error submitting application:", error);
   } finally {
     isSubmitting.value = false;

@@ -53,7 +53,7 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import ApplicationTable from '@/components/common/ROQApplicationsTable.vue';
+import ApplicationTable from '@/components/common/ROQUserApplicationsList.vue';
 
 // BMHC Component Imports
 import BmhAdminDashboard from '@/components/dashboard/bhmccomponents/admin/BmhAdminDashboard.vue';

@@ -44,7 +44,7 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import ApplicationTable from '@/components/common/ROQApplicationsTable.vue';
+import ApplicationTable from '@/components/common/ROQUserApplicationsList.vue';
 
 // Admin Components Import
 import AdminDashboard from '@/components/dashboard/roqcomponents/admin/AdminDashboard.vue';
@@ -70,8 +70,8 @@ import ChiefReportTable from '@/components/dashboard/roqcomponents/chief/ChiefRe
 // User Components Import
 import UserDashboard from '@/components/dashboard/roqcomponents/user/UserDashboard.vue';
 import UserApplications from '@/components/dashboard/roqcomponents/user/UserRoqApplicationList.vue';
-import SecondCopyApplication from '@/components/dashboard/roqcomponents/user/SecondCopyApplication.vue'; // Added Import
-import ProfileView from '@/components/dashboard/roqcomponents/user/ProfileView.vue'; // Added Import
+import SecondCopyApplication from '@/components/dashboard/roqcomponents/user/UserSecondCopyApplicationList.vue'; // Added Import
+import ProfileView from '@/components/dashboard/roqcomponents/user/UserProfileView.vue'; // Added Import
 
 const { role, user } = useAuthStore();
 const route = useRoute();
