@@ -326,8 +326,6 @@
         </button>
       </div>
     </form>
-
-    <SuccessModal v-model="showSuccessModal" :seconds="300" :onComplete="handleRedirect" />
   </div>
 </template>
 
@@ -337,14 +335,14 @@ import apiService from '@/services/services';
 import { useToast } from 'vue-toastification';
 import PaymentModal from '@/components/common/PaymentModal.vue';
 import { useAuthStore } from '@/stores/authStore';
-import { useRouter } from 'vue-router';
-import SuccessModal from './SuccessModal.vue';
+// import { useRouter } from 'vue-router';
+// import SuccessModal from './SuccessModal.vue';
 
 const authStore = useAuthStore();
 const userId = authStore.userId;
 const user = authStore.user;
-const router = useRouter();
-const showSuccessModal = ref(false);
+// const router = useRouter();
+// const showSuccessModal = ref(false);
 
 const props = defineProps({
   selectedType: {
@@ -678,7 +676,7 @@ const onPaymentModalClose = () => {
 };
 
 const onPaymentCompleted = (paymentData) => {
-  localFormData.is_payment_complete = paymentData.paymentDone;
+  localFormData.is_payment_complete = false;
   localFormData.payment_id = paymentData.paymentHash;
   handleSubmitActual();
 };
@@ -779,7 +777,7 @@ const handleSubmitActual = async () => {
     formData.append('expiry_date', formatDateForAPI(new Date(new Date().setFullYear(new Date().getFullYear() + 5))));
     formData.append('is_payment_complete', localFormData.is_payment_complete);
     formData.append('payment_id', localFormData.payment_id);
-    formData.append('is_active', localFormData.is_active);
+    formData.append('is_active', false);
     formData.append('application', localFormData.application);
     formData.append('qualification_name', localFormData.qualification_name);
     formData.append('qualification_type', localFormData.qualification_type);
@@ -789,8 +787,8 @@ const handleSubmitActual = async () => {
     localFormData.documents.forEach((doc, index) => {
       if (doc.files && doc.files.length > 0) {
         doc.files.forEach(file => {
-          formData.append(`user_qualification_attachments[${index}][file]`, file);
-          formData.append(`user_qualification_attachments[${index}][file_type]`, doc.type);
+          formData.append(`attachments-${index}-file`, file);
+          formData.append(`attachments-${index}-file_type`, doc.type);
         });
       }
     });
@@ -799,7 +797,7 @@ const handleSubmitActual = async () => {
     await apiService.createBhmcNewQualification(formData);
 
     toast.success('Application submitted successfully!');
-    showSuccessModal.value = true;
+    // showSuccessModal.value = true;
     emit('submit', formData);
   } catch (error) {
     console.error('Error submitting application:', error);
@@ -807,10 +805,6 @@ const handleSubmitActual = async () => {
   } finally {
     isSubmitting.value = false;
   }
-};
-
-const handleRedirect = () => {
-  router.go(0);
 };
 </script>
 
