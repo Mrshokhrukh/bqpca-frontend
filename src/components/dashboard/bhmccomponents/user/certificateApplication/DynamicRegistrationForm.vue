@@ -464,8 +464,8 @@ const localFormData = reactive({
   passport_photo: null,
   documents: [],
   remarks: '',
-  declaration: false,
-  is_payment_complete: false,
+  declaration: 'False',
+  is_payment_complete: 'False',
   payment_id: null,
   registration_date: null,
   expiry_date: null,
@@ -473,7 +473,7 @@ const localFormData = reactive({
   qualification_name: '',
   institute: '',
   year_of_completion: null,
-  is_active: true,
+  is_active: 'False',
   application: null
 });
 
@@ -771,13 +771,13 @@ const handleSubmitActual = async () => {
 
     // Add all the regular fields to FormData
     formData.append('completion_year', new Date(localFormData.year_of_completion).getFullYear());
-    formData.append('declaration', localFormData.declaration);
+    formData.append('declaration', 'True');
     formData.append('remarks', localFormData.remarks);
     formData.append('registration_date', formatDateForAPI(new Date()));
     formData.append('expiry_date', formatDateForAPI(new Date(new Date().setFullYear(new Date().getFullYear() + 5))));
-    formData.append('is_payment_complete', localFormData.is_payment_complete);
+    formData.append('is_payment_complete', 'False');
     formData.append('payment_id', localFormData.payment_id);
-    formData.append('is_active', false);
+    formData.append('is_active', 'False');
     formData.append('application', localFormData.application);
     formData.append('qualification_name', localFormData.qualification_name);
     formData.append('qualification_type', localFormData.qualification_type);
