@@ -163,9 +163,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onBeforeMount, reactive } from 'vue';
+import { ref, computed, onBeforeMount, reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
+import { useHealthCertificationStore } from '@/stores/healthCertificationStore';
 import {
   Menu,
   X as XIcon,
@@ -188,10 +189,27 @@ const showProfileMenu = ref(false);
 const navigationItems = ref([]); // Now an array
 const showSubMenu = reactive({});
 
-// Lifecycle Hook
+// Lifecycle Hooks
 onBeforeMount(async () => {
   await router.isReady();
+  
+  // Initialize health certification store if needed
+  if (authStore.serviceType === 'health_certification' && authStore.role === 'user') {
+    const healthStore = useHealthCertificationStore();
+    await healthStore.initialize();
+  }
+
+  // Generate navigation items after store initialization
   navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType);
+});
+
+// Watch for route changes to update navigation
+onMounted(async () => {
+  if (authStore.serviceType === 'health_certification' && authStore.role === 'user') {
+    const healthStore = useHealthCertificationStore();
+    await healthStore.initialize();
+    navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType);
+  }
 });
 
 // Computed Properties
@@ -206,7 +224,17 @@ const serviceTypeLabel = computed(() => {
 });
 
 const filteredNavigationItems = computed(() => {
-  return navigationItems.value; // Directly return the array
+  if (authStore.serviceType === 'health_certification' && authStore.role === 'user') {
+    const healthStore = useHealthCertificationStore();
+    console.log('Health certification menu state:', {
+      hasSubmittedApplication: healthStore.hasSubmittedApplication,
+      hasApprovedApplication: healthStore.hasApprovedApplication,
+      isRenewalPeriod: healthStore.isRenewalPeriod,
+      isExpired: healthStore.isExpired,
+      navigationItems: navigationItems.value
+    });
+  }
+  return navigationItems.value;
 });
 
 const currentYear = computed(() => new Date().getFullYear());
@@ -262,7 +290,6 @@ const handleProfile = () => {
 .transition-all {
   transition-property: all;
 }
-
 
 /* menu notification */
 .notification-badge {
