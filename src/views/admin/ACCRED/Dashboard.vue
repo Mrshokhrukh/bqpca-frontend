@@ -85,11 +85,12 @@ import SiteVisitConfirmation from '@/components/dashboard/accredcomponent/users/
 
 // Import Dealing Officer Components
 import AccreDealingdashboard from '@/components/dashboard/accredcomponent/dealingOfficer/AccreDealingdashboard.vue';
-import InstitutionalAccreditation from '@/components/dashboard/accredcomponent/dealingOfficer/InstitutionalAccreditations.vue';
+import InstitutionalAccreditations from '@/components/dashboard/accredcomponent/dealingOfficer/InstitutionalAccreditations.vue';
 import Appeals from '@/components/dashboard/accredcomponent/dealingOfficer/Appeals.vue';
 import AssessorManagement from '@/components/dashboard/accredcomponent/dealingOfficer/AssessorManagement.vue';
 import SiteVisitScheduling from '@/components/dashboard/accredcomponent/dealingOfficer/SiteVisitScheduling.vue';
 import Reports from '@/components/dashboard/accredcomponent/dealingOfficer/Reports.vue';
+
 const route = useRoute();
 const { role } = useAuthStore();
 
@@ -176,7 +177,7 @@ const dealingOfficerComponent = computed(() => {
       return AccreDealingdashboard;
 
     case path.endsWith('/accreditation/institutional_accreditations'):  
-      return InstitutionalAccreditation;
+      return InstitutionalAccreditations;
     case path.endsWith('/accreditation/appeals'):
       return Appeals;  
     case path.endsWith('/accreditation/assessor_management'):
