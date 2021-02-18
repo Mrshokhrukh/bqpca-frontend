@@ -50,9 +50,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Fetch and set tokens from localStorage
   const initializeAuth = () => {
-    accessToken.value = localStorage.getItem('accessToken') || null;
-    refreshToken.value = localStorage.getItem('refreshToken') || null;
-    user.value = JSON.parse(localStorage.getItem('user')) || null;
+    try {
+      accessToken.value = localStorage.getItem('accessToken') || null;
+      refreshToken.value = localStorage.getItem('refreshToken') || null;
+      user.value = JSON.parse(localStorage.getItem('user')) || null;
+    } catch (error) {
+      console.error('Error initializing auth:', error);
+    }
   };
 
   // Actions
@@ -76,7 +80,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       // *** ROLE-BASED REDIRECTION LOGIC ***
       if (credentials.from === 'authSection') {
-        if (user.value.role !== 'user') {
+        if (user.value.role !== 'user' && user.value.role !== 'cpd_cme_provider' && user.value.role !== 'institutions') {
           toast.error("Admin/Internal role access is not permitted from the previous page. Please login from here");
           // Clear state
           accessToken.value = null;
@@ -91,8 +95,8 @@ export const useAuthStore = defineStore('auth', () => {
           return;
         }
       } else if (credentials.from === 'adminLogin') {
-        if (user.value.role === 'user') {
-          toast.error("User role access is not permitted from this page.");
+        if (user.value.role === 'user' || user.value.role === 'cpd_cme_provider' || user.value.role === 'institutions') {
+          toast.error("User role access is not permitted from the previous page.");
           // Clear state
           accessToken.value = null;
           refreshToken.value = null;

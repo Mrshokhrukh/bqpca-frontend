@@ -120,7 +120,6 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
 
 // Define the prop for user data
 defineProps({
