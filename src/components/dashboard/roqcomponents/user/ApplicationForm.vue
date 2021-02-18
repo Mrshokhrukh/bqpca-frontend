@@ -331,7 +331,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 required">Passport Size Photo</label>
             <div class="mt-2">
-              <FileUpload v-model="form.passport_photo" accept=".jpg,.jpeg,.png,.webp" :max-size="2"
+              <FileUpload v-model="form.passport_size_photo" accept=".jpg,.jpeg,.png,.webp" :max-size="2"
                 :initial-file-name="initialData?.passport_size_photo ? getFileNameFromUrl(initialData.passport_size_photo) : ''"
                 required />
               <p class="mt-1 text-sm text-gray-500">
@@ -444,7 +444,7 @@ const form = reactive({
   // Documents
   degree_certificate: null,
   academic_transcript: null,
-  passport_photo: null,
+  passport_size_photo: null,
 
   // Additional Fields
   remarks: props.initialData?.remarks || "",
