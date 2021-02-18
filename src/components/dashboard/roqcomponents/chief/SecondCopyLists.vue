@@ -198,7 +198,35 @@ const closeRemarksModal = () => {
 const handleApplicationUpdate = async (updateData) => {
   loading.value = true;
   try {
-    await apiService.updateRecognitionOfQualification(selectedApplication.value.id, updateData);
+    if (updateData.modal_action === 'addNote') {
+      await apiService.patchRecognitionOfQualification(selectedApplication.value.id, {
+        chief_remarks: updateData.remarks,
+        modal_action: updateData.modal_action,
+      })
+    } else if (updateData.modal_action === 'regret') {
+      await apiService.patchRecognitionOfQualification(selectedApplication.value.id, {
+        chief_remarks: updateData.chief_remarks,
+        status: updateData.status,
+        modal_action: updateData.modal_action
+      })
+    }
+    else if (updateData.modal_action === 'assignQEC') {
+      await apiService.patchRecognitionOfQualification(selectedApplication.value.id, {
+        qec_number: updateData.qec_number,
+        status: updateData.status,
+        modal_action: updateData.modal_action,
+      })
+    }
+    else if (updateData.modal_action === 'approve') {
+      await apiService.patchRecognitionOfQualification(selectedApplication.value.id, {
+        status: updateData.status,
+        modal_action: updateData.modal_action,
+        qec_number: 'None',
+      })
+    }
+    else {
+      await apiService.updateRecognitionOfQualification(selectedApplication.value.id, updateData);
+    }
     await loadData();
   } catch (e) {
     console.error('Error updating application:', e);
@@ -207,7 +235,6 @@ const handleApplicationUpdate = async (updateData) => {
     closeModal();
   }
 };
-
 onMounted(() => {
   loadData();
 });

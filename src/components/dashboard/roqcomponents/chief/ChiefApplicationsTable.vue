@@ -238,6 +238,7 @@ const handleApplicationUpdate = async (updateData) => {
       await apiService.patchRecognitionOfQualification(selectedApplication.value.id, {
         status: updateData.status,
         modal_action: updateData.modal_action,
+        qec_number: 'None',
       })
     }
     else {

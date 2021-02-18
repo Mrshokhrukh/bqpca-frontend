@@ -484,7 +484,7 @@ const handleSubmitActual = async () => {
     const formData = new FormData();
 
     formData.append("original_application_id", selectedOriginalApplication.value.id);
-    formData.append("is_second_copy", "true"); // Explicitly include is_second_copy
+    formData.append("is_second_copy", "true");
 
 
       // Payment Request
