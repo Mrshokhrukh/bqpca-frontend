@@ -1,289 +1,213 @@
-// stores/healthCertificationStore.js
+// src/stores/healthCertificationStore.js
 import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
 import bmhcServices from '@/services/bmhcservices'
 import { useAuthStore } from '@/stores/authStore'
-import { useToast } from 'vue-toastification'
 
-export const useHealthCertificationStore = defineStore('healthCertification', {
-  state: () => ({
-    applicationDetails: null,
-    certificateDetails: null,
-    loading: false,
-    error: null,
-    certificateNumber: null,
-    registrationDetails: null,
-    allApplications: [],
-    cpds: [],
-    cogs: [],
-  }),
+export const useHealthCertificationStore = defineStore('healthCertification', () => {
+  // State
+  const applicationDetails = ref({
+    results: []
+  })
+  const isLoading = ref(false)
+  const error = ref(null)
 
-  getters: {
-    // Application Status Getters
-    hasSubmittedApplication: (state) => {
-      return !!state.applicationDetails && state.applicationDetails.status !== 'draft'
-    },
+  // Getters (computed)
+  const currentUserApplication = computed(() => {
+    const authStore = useAuthStore()
+    if (!applicationDetails.value?.results || !authStore?.email) {
+      return null
+    }
 
-    hasApprovedApplication: (state) => {
-      if (!state.applicationDetails) return false
-      return state.applicationDetails.user_qualifications?.some(
-        (qual) => qual.endorsement_decision === 'Approved',
-      )
-    },
+    const userApplications = applicationDetails.value.results
+      .filter(app => app.email_address === authStore.email)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 
-    // Certificate Status Getters
-    isRenewalPeriod: (state) => {
-      if (!state.applicationDetails?.expiry_date) return false
-      const expiryDate = new Date(state.applicationDetails.expiry_date)
-      const today = new Date()
-      const monthsRemaining = (expiryDate - today) / (1000 * 60 * 60 * 24 * 30)
-      return monthsRemaining <= 3 && monthsRemaining > 0
-    },
+    return userApplications[0] || null
+  })
 
-    isExpired: (state) => {
-      if (!state.applicationDetails?.expiry_date) return false
-      const expiryDate = new Date(state.applicationDetails.expiry_date)
-      return new Date() > expiryDate
-    },
+  const hasApplication = computed(() => {
+    return Boolean(currentUserApplication.value)
+  })
 
-    isInReregistrationPeriod: (state) => {
-      if (!state.applicationDetails?.expiry_date) return false
-      const expiryDate = new Date(state.applicationDetails.expiry_date)
-      const today = new Date()
-      const monthsSinceExpiry = (today - expiryDate) / (1000 * 60 * 60 * 24 * 30)
-      return monthsSinceExpiry > 0 && monthsSinceExpiry <= 2
-    },
+  const hasSubmittedApplication = computed(() => {
+    const application = currentUserApplication.value
+    return Boolean(application?.user_qualifications?.length)
+  })
 
-    // Menu Visibility Getters
-    userMenuAccess: (state) => {
-      return {
-        showDashboard: true, // Always shown
-        showCertification: true, // Always shown
-        showMyApplications: state.hasSubmittedApplication,
-        showCPDManagement: state.hasApprovedApplication,
-        showCoGSManagement: state.hasApprovedApplication,
-        showRenewal: state.isRenewalPeriod,
-        showReRegistration: state.isInReregistrationPeriod,
-        showProfile: true, // Always shown
+  const hasApprovedQualification = computed(() => {
+    const application = currentUserApplication.value
+    if (!application?.user_qualifications) return false
+
+    return application.user_qualifications.some(
+      qual => qual.endorsement_decision === 'Approved'
+    )
+  })
+
+  const isRenewalPeriod = computed(() => {
+    const application = currentUserApplication.value
+    if (!application?.expiry_date || !hasApprovedQualification.value) return false
+
+    const expiryDate = new Date(application.expiry_date)
+    const today = new Date()
+    const monthsRemaining = (expiryDate - today) / (1000 * 60 * 60 * 24 * 30)
+
+    return monthsRemaining <= 3 && monthsRemaining > 0
+  })
+
+  const isInReregistrationPeriod = computed(() => {
+    const application = currentUserApplication.value
+    if (!application?.expiry_date || !hasApprovedQualification.value) return false
+
+    const expiryDate = new Date(application.expiry_date)
+    const today = new Date()
+    const monthsSinceExpiry = (today - expiryDate) / (1000 * 60 * 60 * 24 * 30)
+
+    return monthsSinceExpiry > 0 && monthsSinceExpiry <= 2
+  })
+    const visibleMenus = computed(() => {
+      // 1. After Registration (but before application):
+      if (!hasSubmittedApplication.value) {
+          return {
+              baseMenus: {
+                  dashboard: true,
+                  certification: true,
+                  cpdManagement: false,
+                  cogsManagement: false,
+                  profile: true,
+              },
+              certificationSubMenus: {
+                  applyForCertification: true,
+                  myApplications: false,
+                  renewal: false,
+                  reRegistration: false,
+                  additionalQualification: false, // Add it here, initially false
+              },
+          };
       }
-    },
 
-    // Application Details Getters
-    applicationStatus: (state) => {
-      return state.applicationDetails?.status || null
-    },
-
-    qualifications: (state) => {
-      return state.applicationDetails?.user_qualifications || []
-    },
-
-    // CPD and CoGS Getters
-    activeCPDs: (state) => {
-      return state.cpds.filter((cpd) => cpd.status === 'active')
-    },
-
-    activeCoGS: (state) => {
-      return state.cogs.filter((cog) => cog.status === 'active')
-    },
-  },
-
-  actions: {
-    // Initialize Store
-    async initialize() {
-      console.log('Initializing health certification store...')
-      await this.checkApplicationStatus()
-      if (this.hasApprovedApplication) {
-        await Promise.all([this.fetchCPDs(), this.fetchCoGS()])
+      // 2. Once Application is Applied (but not yet approved):
+      if (hasSubmittedApplication.value && !hasApprovedQualification.value) {
+          return {
+              baseMenus: {
+                  dashboard: true,
+                  certification: true,
+                  cpdManagement: false,
+                  cogsManagement: false,
+                  profile: true,
+              },
+              certificationSubMenus: {
+                  applyForCertification: true,
+                  myApplications: true,
+                  renewal: false,
+                  reRegistration: false,
+                  additionalQualification: false, // Also false here
+              },
+          };
       }
-    },
 
-    // Application Actions
-    async fetchApplicationDetails() {
-      try {
-        this.loading = true
-        const authStore = useAuthStore()
-        const response = await bmhcServices.getBhmcNewApplications()
+      // 3. Once Application is Approved:
+      if (hasApprovedQualification.value) {
+          let baseMenus = {
+              dashboard: true,
+              certification: true,
+              cpdManagement: true,
+              cogsManagement: true,
+              profile: true,
+          };
 
-        if (response.data && response.data.results) {
-          this.allApplications = response.data.results
-          const userApplication = response.data.results.find(
-            (app) => app.email_address === authStore.email,
-          )
+          let certificationSubMenus = {
+              applyForCertification: true,
+              myApplications: true,
+              renewal: false,
+              reRegistration: false,
+              additionalQualification: true, // Set to true when approved!
+          };
 
-          if (userApplication) {
-            this.applicationDetails = userApplication
+          // 4. Renewal Period:
+          if (isRenewalPeriod.value) {
+              certificationSubMenus.renewal = true;
           }
-        }
-      } catch (error) {
-        this.error = error.message
-        console.error('Error fetching application details:', error)
-      } finally {
-        this.loading = false
+
+          // 5. Re-registration Period:
+          if (isInReregistrationPeriod.value) {
+              certificationSubMenus.reRegistration = true;
+          }
+
+          return { baseMenus, certificationSubMenus };
       }
-    },
+      //default menus incase of an error
+      return {
+          baseMenus: {
+              dashboard: true,
+              certification: false,
+              cpdManagement: false,
+              cogsManagement: false,
+              profile: true,
+          },
+          certificationSubMenus: {
+              applyForCertification: false,
+              myApplications: false,
+              renewal: false,
+              reRegistration: false,
+              additionalQualification: false, // Add it here
+          },
+      };
+    })
 
-    async submitApplication(applicationData) {
-      try {
-        this.loading = true
-        const response = await bmhcServices.submitBhmcApplication(applicationData)
-        if (response.data) {
-          this.applicationDetails = response.data
-          useToast().success('Application submitted successfully')
-        }
-        return response.data
-      } catch (error) {
-        this.error = error.message
-        useToast().error('Failed to submit application')
-        throw error
-      } finally {
-        this.loading = false
+  // Actions
+  const fetchApplicationDetails = async () => {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const response = await bmhcServices.getBhmcNewApplications()
+      if (response?.data) {
+        applicationDetails.value = response.data
+      } else {
+        applicationDetails.value = { results: [] }
       }
-    },
+    } catch (err) {
+      console.error('Error fetching application details:', err)
+      error.value = err.response?.data?.message || 'Failed to fetch application details'
+      applicationDetails.value = { results: [] }
+    } finally {
+      isLoading.value = false
+    }
+  }
 
-    // Certificate Actions
-    async fetchCertificateDetails() {
-      if (!this.applicationDetails?.certificate_number) return
-      try {
-        this.loading = true
-        const response = await bmhcServices.getCertificateDetails(
-          this.applicationDetails.certificate_number,
-        )
-        if (response.data) {
-          this.certificateDetails = response.data
-        }
-      } catch (error) {
-        this.error = error.message
-        console.error('Error fetching certificate details:', error)
-      } finally {
-        this.loading = false
-      }
-    },
+  const initialize = async () => {
+    const authStore = useAuthStore()
+    if (authStore?.isAuthenticated) {
+      console.log('Initializing health certification store...')
+      await fetchApplicationDetails()
+    }
+  }
 
-    async submitRenewal(renewalData) {
-      try {
-        this.loading = true
-        const response = await bmhcServices.submitRenewal(renewalData)
-        if (response.data) {
-          useToast().success('Renewal submitted successfully')
-        }
-        return response.data
-      } catch (error) {
-        this.error = error.message
-        useToast().error('Failed to submit renewal')
-        throw error
-      } finally {
-        this.loading = false
-      }
-    },
+  const resetStore = () => {
+    applicationDetails.value = { results: [] }
+    isLoading.value = false
+    error.value = null
+  }
 
-    async submitReregistration(reregistrationData) {
-      try {
-        this.loading = true
-        const response = await bmhcServices.submitReregistration(reregistrationData)
-        if (response.data) {
-          useToast().success('Re-registration submitted successfully')
-        }
-        return response.data
-      } catch (error) {
-        this.error = error.message
-        useToast().error('Failed to submit re-registration')
-        throw error
-      } finally {
-        this.loading = false
-      }
-    },
+  return {
+    // State
+    applicationDetails,
+    isLoading,
+    error,
 
-    // CPD Actions
-    async fetchCPDs() {
-      try {
-        this.loading = true
-        const response = await bmhcServices.getCPDs()
-        if (response.data) {
-          this.cpds = response.data
-        }
-      } catch (error) {
-        this.error = error.message
-        console.error('Error fetching CPDs:', error)
-      } finally {
-        this.loading = false
-      }
-    },
+    // Getters
+    currentUserApplication,
+    hasApplication,
+    hasSubmittedApplication,
+    hasApprovedQualification,
+    isRenewalPeriod,
+    isInReregistrationPeriod,
+    visibleMenus,
 
-    async submitCPD(cpdData) {
-      try {
-        this.loading = true
-        const response = await bmhcServices.submitCPD(cpdData)
-        if (response.data) {
-          useToast().success('CPD submitted successfully')
-          await this.fetchCPDs()
-        }
-        return response.data
-      } catch (error) {
-        this.error = error.message
-        useToast().error('Failed to submit CPD')
-        throw error
-      } finally {
-        this.loading = false
-      }
-    },
-
-    // CoGS Actions
-    async fetchCoGS() {
-      try {
-        this.loading = true
-        const response = await bmhcServices.getCoGS()
-        if (response.data) {
-          this.cogs = response.data
-        }
-      } catch (error) {
-        this.error = error.message
-        console.error('Error fetching CoGS:', error)
-      } finally {
-        this.loading = false
-      }
-    },
-
-    async submitCoGS(cogsData) {
-      try {
-        this.loading = true
-        const response = await bmhcServices.submitCoGS(cogsData)
-        if (response.data) {
-          useToast().success('CoGS submitted successfully')
-          await this.fetchCoGS()
-        }
-        return response.data
-      } catch (error) {
-        this.error = error.message
-        useToast().error('Failed to submit CoGS')
-        throw error
-      } finally {
-        this.loading = false
-      }
-    },
-
-    // Status Check Actions
-    async checkApplicationStatus() {
-      await this.fetchApplicationDetails()
-      if (this.hasApprovedApplication) {
-        await this.fetchCertificateDetails()
-      }
-    },
-
-    // Error Handling
-    clearError() {
-      this.error = null
-    },
-
-    // Reset Store
-    resetStore() {
-      this.applicationDetails = null
-      this.certificateDetails = null
-      this.loading = false
-      this.error = null
-      this.certificateNumber = null
-      this.registrationDetails = null
-      this.allApplications = []
-      this.cpds = []
-      this.cogs = []
-    },
-  },
+    // Actions
+    fetchApplicationDetails,
+    initialize,
+    resetStore
+  }
 })

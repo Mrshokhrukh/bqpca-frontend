@@ -283,41 +283,47 @@ const serviceSpecificMenuItems = {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
+        hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.dashboard,
       },
       {
         name: 'Certification',
         icon: getIconComponent('Certificate'),
+        hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.certification,
         children: () => {
           const store = useHealthCertificationStore()
-          const items = [
-            {
+          const { certificationSubMenus } = store.visibleMenus
+
+          const items = []
+
+          if (certificationSubMenus.applyForCertification) {
+            items.push({
               name: 'Apply for Certification',
               route: (serviceType) => `/admin/user/${serviceType}/registration`,
-            },
-          ]
+            })
+          }
 
-          if (store.hasSubmittedApplication) {
+          if (certificationSubMenus.myApplications) {
             items.push({
               name: 'My Applications',
               route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
             })
           }
 
-          if (store.isRenewalPeriod) {
+          if (certificationSubMenus.renewal) {
             items.push({
               name: 'Renewal',
               route: (serviceType) => `/admin/user/${serviceType}/renewal`,
             })
           }
 
-          if (store.isInReregistrationPeriod) {
+          if (certificationSubMenus.reRegistration) {
             items.push({
               name: 'Re-Registration',
               route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
             })
           }
 
-          if (store.hasApprovedApplication) {
+          if (certificationSubMenus.additionalQualification) {
             items.push({
               name: 'Additional Qualification',
               route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
@@ -330,10 +336,7 @@ const serviceSpecificMenuItems = {
       {
         name: 'Apply for CPD',
         icon: getIconComponent('BookOpen'),
-        hidden: () => {
-          const store = useHealthCertificationStore()
-          return !store.hasApprovedApplication
-        },
+        hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.cpdManagement,
         children: [
           {
             name: 'Apply for CPD',
@@ -348,10 +351,7 @@ const serviceSpecificMenuItems = {
       {
         name: 'Apply for CoGS',
         icon: getIconComponent('Users'),
-        hidden: () => {
-          const store = useHealthCertificationStore()
-          return !store.hasApprovedApplication
-        },
+        hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.cogsManagement,
         children: [
           {
             name: 'Apply for CoGS',
@@ -367,15 +367,13 @@ const serviceSpecificMenuItems = {
         name: 'Profile',
         icon: getIconComponent('Users'),
         route: (serviceType) => `/admin/user/${serviceType}/user_profile`,
+        hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.profile,
       },
       {
         name: 'Reports',
         icon: getIconComponent('FileSearch'),
         route: (serviceType) => `/admin/user/${serviceType}/reports`,
-        hidden: () => {
-          const store = useHealthCertificationStore()
-          return !store.hasApprovedApplication
-        },
+        hidden: () => true, // Always hidden, not in your requirements
       },
     ],
     admin: [
@@ -890,15 +888,24 @@ export const generateNavigationItems = (role, serviceType) => {
   const serviceMenu = serviceSpecificMenuItems[serviceType]
   if (!serviceMenu || !serviceMenu[role]) return []
 
-  // Process the menu items to resolve dynamic routes
+  // Process the menu items to resolve dynamic routes and handle hidden properties
   const processMenuItem = (item) => {
-    // Skip hidden items
-    if (typeof item.hidden === 'function' && item.hidden()) {
+    // --- CRUCIAL CHANGE HERE ---
+    // Check if the item is hidden.  The hidden property can be:
+    // 1. A boolean (true/false)
+    // 2. A function that returns a boolean
+    let isHidden = false
+    if (typeof item.hidden === 'function') {
+      isHidden = item.hidden() // Execute the function to get the boolean value
+    } else if (typeof item.hidden === 'boolean') {
+      isHidden = item.hidden // Use the boolean value directly
+    }
+
+    // If the item is hidden, return null (don't include it in the menu)
+    if (isHidden) {
       return null
     }
-    if (item.hidden) {
-      return null
-    }
+    // --- END OF CRUCIAL CHANGE ---
 
     const newItem = {
       ...item,
@@ -910,9 +917,9 @@ export const generateNavigationItems = (role, serviceType) => {
       const childItems =
         typeof newItem.children === 'function' ? newItem.children() : newItem.children
 
-      // Process children and filter out null items
+      // Process children and filter out null items (recursively)
       newItem.children = childItems
-        .map((child) => processMenuItem(child))
+        .map((child) => processMenuItem(child)) // Recursively process child items
         .filter((child) => child !== null)
 
       // If all children are hidden, hide the parent item
