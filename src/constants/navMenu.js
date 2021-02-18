@@ -726,6 +726,38 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/profile`,
       },
     ],
+    dealing_officer: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/dealing_Officer/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Institutional Accreditation',
+        icon: getIconComponent('Folder'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/institutional_accreditations`,
+      },
+      {
+        name: 'Appeals',
+        icon: getIconComponent('CheckCircle'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/appeals`,
+      },
+      {
+        name: 'Assessor Management',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/assessor_management`,
+      },
+      {
+        name: 'Site Visit Scheduling',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/site_visit_scheduling`,
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('CreditCard'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
+      },
+    ],
     admin: [
       {
         name: 'Dashboard',
@@ -874,7 +906,6 @@ const serviceSpecificMenuItems = {
       },
     ],
     // Add dealing_officer to accreditation
-    dealing_officer: dealingOfficerMenuItems,
   },
 }
 

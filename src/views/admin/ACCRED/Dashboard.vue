@@ -82,6 +82,14 @@ import AccreApplyForAppeal from '@/components/dashboard/accredcomponent/users/Ac
 import AccreUserProfile from '@/components/dashboard/accredcomponent/users/AccreUserProfile.vue';
 import CoIConfirmation from '@/components/dashboard/accredcomponent/users/CoIConfirmation.vue';
 import SiteVisitConfirmation from '@/components/dashboard/accredcomponent/users/SiteVisitConfirmation.vue';
+
+// Import Dealing Officer Components
+import AccreDealingdashboard from '@/components/dashboard/accredcomponent/dealingOfficer/AccreDealingdashboard.vue';
+import InstitutionalAccreditation from '@/components/dashboard/accredcomponent/dealingOfficer/InstitutionalAccreditations.vue';
+import Appeals from '@/components/dashboard/accredcomponent/dealingOfficer/Appeals.vue';
+import AssessorManagement from '@/components/dashboard/accredcomponent/dealingOfficer/AssessorManagement.vue';
+import SiteVisitScheduling from '@/components/dashboard/accredcomponent/dealingOfficer/SiteVisitScheduling.vue';
+import Reports from '@/components/dashboard/accredcomponent/dealingOfficer/Reports.vue';
 const route = useRoute();
 const { role } = useAuthStore();
 
@@ -164,8 +172,21 @@ const adminComponent = computed(() => {
 const dealingOfficerComponent = computed(() => {
   const path = route.path;
   switch (true) {
-    case path.endsWith('/roq/dashboard'):
-      return null;
+    case path.endsWith('/accreditation/dashboard'):
+      return AccreDealingdashboard;
+
+    case path.endsWith('/accreditation/institutional_accreditations'):  
+      return InstitutionalAccreditation;
+    case path.endsWith('/accreditation/appeals'):
+      return Appeals;  
+    case path.endsWith('/accreditation/assessor_management'):
+      return AssessorManagement;  
+    case path.endsWith('/accreditation/site_visit_scheduling'):          
+      return SiteVisitScheduling;  
+      
+    case path.endsWith('/accreditation/reports'):
+      return Reports; 
+     
     default:
       return null;
   }
@@ -175,8 +196,10 @@ const dealingOfficerComponent = computed(() => {
 const chiefComponent = computed(() => {
   const path = route.path;
   switch (true) {
-    case path.endsWith('/roq/dashboard'):
+    case path.endsWith('/accreditation/dashboard'):  
       return null;
+    case path.endsWith('/accreditation/institutional_accreditations'):
+      return null;  
     default:
       return null;
   }

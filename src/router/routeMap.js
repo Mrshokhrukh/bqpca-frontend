@@ -161,12 +161,12 @@ export default {
       // ... other ECPF routes for dealing officer
     },
     accreditation: {
-      dashboard: () => import('@/views/admin/ACCRED/Dashboard.vue'),
-      // pending_applications: () => import('@/views/admin/ACCRED/PendingApplications.vue'),
-      // approved_applications: () => import('@/views/admin/ACCRED/ApprovedApplications.vue'),
-      // rejected_applications: () => import('@/views/admin/ACCRED/RejectedApplications.vue'),
-      // reports: () => import('@/views/admin/ACCRED/Reports.vue'),
-      // ... other Accreditation routes for dealing officer
+      dashboard: accredDashboard,
+      institutional_accreditations: accredDashboard,
+      appeals: accredDashboard,
+      assessor_management: accredDashboard,
+      site_visit_scheduling: accredDashboard,
+      reports: accredDashboard,
     },
     engineering_certification: {
       dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
