@@ -9,9 +9,10 @@
           trend="Based on approved applications" />
       </div>
       <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
-        <StatsCard title="Avg. Processing Time" count="14 days" :icon="Clock" color="purple"
-          trend="2 days faster than avg." />
-        <StatsCard title="Next Review Due" count="2 days" :icon="Calendar" color="amber" trend="Upcoming review" />
+        <StatsCard title="Avg. Processing Time"
+          :count="`${avgProcessingTime.days} days ${avgProcessingTime.hours} hours ${avgProcessingTime.seconds} seconds`"
+          :icon="Clock" color="purple" trend="Based on Days hours and Seconds " class="text-xl mb-2" />
+        <StatsCard title="Total Drafts" :count="stats.totalDraft" :icon="Pencil" color="amber" trend="Draft" />
       </div>
     </div>
 
@@ -40,7 +41,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import StatsCard from '../../../common/ROQStatsCard.vue';
 import StatusCard from '../../../common/ROQStatusCard.vue';
-import { FileText, CheckCircle, XCircle, Clock, TrendingUp, Calendar } from 'lucide-vue-next';
+import { FileText, CheckCircle, XCircle, Clock, TrendingUp, Pencil } from 'lucide-vue-next';
 import VueApexCharts from 'vue3-apexcharts'
 import apiService from '@/services/services';
 
@@ -49,18 +50,34 @@ const applications = ref([]);
 
 // Compute statistics
 const stats = computed(() => ({
-  totalApplied: applications.value.length,
+  totalApplied: applications.value.filter(app => app.status === 'applied').length,
   totalApproved: applications.value.filter(app => app.status === 'approved').length,
   totalRegretted: applications.value.filter(app => app.status === 'regretted').length,
-  totalPending: applications.value.filter(app => app.status === 'applied').length
+  totalPending: applications.value.filter(app => app.status === 'applied').length,
+  totalDraft: applications.value.filter(app => app.status === 'draft').length,
 }));
+
+// Calculate average processing time
+const avgProcessingTime = computed(() => {
+  if (applications.value.length === 0) return { days: 0, hours: 0, seconds: 0 };
+  const totalProcessingTime = applications.value.reduce((acc, app) => {
+    const createdAt = new Date(app.created_at);
+    const updatedAt = new Date(app.updated_at);
+    const processingTime = (updatedAt - createdAt); // Time in milliseconds
+    return acc + processingTime;
+  }, 0);
+  const avgProcessingTimeMs = totalProcessingTime / applications.value.length;
+  const days = Math.floor(avgProcessingTimeMs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((avgProcessingTimeMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const seconds = Math.floor((avgProcessingTimeMs % (1000 * 60 * 60)) / 1000);
+  return { days, hours, seconds };
+});
 
 const successRate = computed(() => {
   if (applications.value.length === 0) return 0;
   return ((stats.value.totalApproved / applications.value.length) * 100).toFixed(1);
 });
 
-// Chart configuration
 // Chart configuration
 const chartOptions = ref({
   chart: {
@@ -109,7 +126,7 @@ const chartOptions = ref({
 
 const chartSeries = ref([
   {
-    name: 'Applications',
+    name: 'Applied',
     data: []
   },
   {
@@ -129,7 +146,9 @@ const groupApplicationsByMonth = (applications) => {
     if (!grouped[monthYear]) {
       grouped[monthYear] = { applications: 0, approved: 0 };
     }
-    grouped[monthYear].applications += 1;
+    if (app.status === 'applied') {
+      grouped[monthYear].applications += 1;
+    }
     if (app.status === 'approved') {
       grouped[monthYear].approved += 1;
     }
@@ -169,7 +188,7 @@ const updateChartData = () => {
 
   chartSeries.value = [
     {
-      name: 'Applications',
+      name: 'Applied',
       data: applicationCounts
     },
     {

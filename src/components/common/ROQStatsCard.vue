@@ -1,7 +1,7 @@
 <!-- StatsCard.vue -->
 <template>
   <div
-    class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 border border-gray-100">
+    :class="['bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 border border-gray-100', customClass]">
     <div class="p-5">
       <div class="flex items-center justify-between mb-3">
         <div :class="`bg-${color}-50 text-${color}-500 rounded-xl p-3 shadow-md flex items-center justify-center`">
@@ -9,7 +9,7 @@
         </div>
         <div class="text-right">
           <p class="text-xs uppercase tracking-wider text-gray-500 mb-1">{{ title }}</p>
-          <p class="text-3xl font-extrabold text-gray-800">{{ formattedCount }}</p>
+          <p :class="['text-3xl font-extrabold text-gray-800', customClass]">{{ formattedCount }}</p>
         </div>
       </div>
 
@@ -54,6 +54,10 @@ const props = defineProps({
   trend: {
     type: String,
     default: ''
+  },
+  class: {
+    type: String,
+    default: ''
   }
 })
 
@@ -64,6 +68,8 @@ const formattedCount = computed(() => {
     ? (num / 1000).toFixed(1) + 'k'
     : props.count
 })
+
+const customClass = props.class;
 </script>
 
 <style scoped>
