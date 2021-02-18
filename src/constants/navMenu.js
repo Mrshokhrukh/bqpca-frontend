@@ -43,6 +43,7 @@ const iconMap = {
   Wrench,
   Award,
 }
+import { useHealthCertificationStore } from '@/stores/healthCertificationStore'
 
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
@@ -286,32 +287,53 @@ const serviceSpecificMenuItems = {
       {
         name: 'Certification',
         icon: getIconComponent('Certificate'),
-        children: [
-          {
-            name: 'Apply for Certification',
-            route: (serviceType) => `/admin/user/${serviceType}/registration`,
-          },
-          {
-            name: 'My Applications',
-            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
-          },
-          {
-            name: 'Renewal',
-            route: (serviceType) => `/admin/user/${serviceType}/renewal`,
-          },
-          {
-            name: 'Re-Registration',
-            route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
-          },
-          {
-            name: 'Additional Qualification',
-            route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
-          },
-        ],
+        children: () => {
+          const store = useHealthCertificationStore()
+          const items = [
+            {
+              name: 'Apply for Certification',
+              route: (serviceType) => `/admin/user/${serviceType}/registration`,
+            },
+          ]
+
+          if (store.hasSubmittedApplication) {
+            items.push({
+              name: 'My Applications',
+              route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+            })
+          }
+
+          if (store.isRenewalPeriod) {
+            items.push({
+              name: 'Renewal',
+              route: (serviceType) => `/admin/user/${serviceType}/renewal`,
+            })
+          }
+
+          if (store.isInReregistrationPeriod) {
+            items.push({
+              name: 'Re-Registration',
+              route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
+            })
+          }
+
+          if (store.hasApprovedApplication) {
+            items.push({
+              name: 'Additional Qualification',
+              route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
+            })
+          }
+
+          return items
+        },
       },
       {
         name: 'Apply for CPD',
         icon: getIconComponent('BookOpen'),
+        hidden: () => {
+          const store = useHealthCertificationStore()
+          return !store.hasApprovedApplication
+        },
         children: [
           {
             name: 'Apply for CPD',
@@ -326,6 +348,10 @@ const serviceSpecificMenuItems = {
       {
         name: 'Apply for CoGS',
         icon: getIconComponent('Users'),
+        hidden: () => {
+          const store = useHealthCertificationStore()
+          return !store.hasApprovedApplication
+        },
         children: [
           {
             name: 'Apply for CoGS',
@@ -346,6 +372,10 @@ const serviceSpecificMenuItems = {
         name: 'Reports',
         icon: getIconComponent('FileSearch'),
         route: (serviceType) => `/admin/user/${serviceType}/reports`,
+        hidden: () => {
+          const store = useHealthCertificationStore()
+          return !store.hasApprovedApplication
+        },
       },
     ],
     admin: [
@@ -862,15 +892,38 @@ export const generateNavigationItems = (role, serviceType) => {
 
   // Process the menu items to resolve dynamic routes
   const processMenuItem = (item) => {
+    // Skip hidden items
+    if (typeof item.hidden === 'function' && item.hidden()) {
+      return null
+    }
+    if (item.hidden) {
+      return null
+    }
+
     const newItem = {
       ...item,
       route: typeof item.route === 'function' ? item.route(serviceType) : item.route,
     }
+
     if (newItem.children) {
-      newItem.children = newItem.children.map((child) => processMenuItem(child))
+      // If children is a function, execute it to get the items
+      const childItems =
+        typeof newItem.children === 'function' ? newItem.children() : newItem.children
+
+      // Process children and filter out null items
+      newItem.children = childItems
+        .map((child) => processMenuItem(child))
+        .filter((child) => child !== null)
+
+      // If all children are hidden, hide the parent item
+      if (newItem.children.length === 0) {
+        return null
+      }
     }
+
     return newItem
   }
 
-  return serviceMenu[role].map(processMenuItem)
+  // Process and filter the menu items
+  return serviceMenu[role].map(processMenuItem).filter((item) => item !== null)
 }
