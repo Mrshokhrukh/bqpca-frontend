@@ -1,4 +1,4 @@
-import apiClient from './apiClient';
+import apiClient from './apiClient'
 
 export default {
   getMastersCmeActivities() {
@@ -535,5 +535,67 @@ export default {
   },
   deleteBmhcCapa(id) {
     return apiClient.delete(`/bmhc/bmhc-capa/${id}/`)
+  },
+
+  // --- New APIs (Institute Departments, Staff, and Institutes) ---
+
+  // BMHC Institute Departments
+  getBmhcInstituteDepartments() {
+    return apiClient.get('/bmhc/bmhc-institute-departments/')
+  },
+  createBmhcInstituteDepartment(data) {
+    return apiClient.post('/bmhc/bmhc-institute-departments/', data)
+  },
+  getBmhcInstituteDepartment(id) {
+    return apiClient.get(`/bmhc/bmhc-institute-departments/${id}/`)
+  },
+  updateBmhcInstituteDepartment(id, data) {
+    return apiClient.put(`/bmhc/bmhc-institute-departments/${id}/`, data)
+  },
+  patchBmhcInstituteDepartment(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-institute-departments/${id}/`, data)
+  },
+  deleteBmhcInstituteDepartment(id) {
+    return apiClient.delete(`/bmhc/bmhc-institute-departments/${id}/`)
+  },
+
+  // BMHC Institute Staff
+  getBmhcInstituteStaff() {
+    return apiClient.get('/bmhc/bmhc-institute-staff/')
+  },
+  createBmhcInstituteStaff(data) {
+    return apiClient.post('/bmhc/bmhc-institute-staff/', data)
+  },
+  // getBmhcInstituteStaff(id) {
+  //   return apiClient.get(`/bmhc/bmhc-institute-staff/${id}/`)
+  // },
+  updateBmhcInstituteStaff(id, data) {
+    return apiClient.put(`/bmhc/bmhc-institute-staff/${id}/`, data)
+  },
+  patchBmhcInstituteStaff(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-institute-staff/${id}/`, data)
+  },
+  deleteBmhcInstituteStaff(id) {
+    return apiClient.delete(`/bmhc/bmhc-institute-staff/${id}/`)
+  },
+
+  // BMHC Institutes
+  getBmhcInstitutes() {
+    return apiClient.get('/bmhc/bmhc-institutes/')
+  },
+  createBmhcInstitute(data) {
+    return apiClient.post('/bmhc/bmhc-institutes/', data)
+  },
+  getBmhcInstitute(id) {
+    return apiClient.get(`/bmhc/bmhc-institutes/${id}/`)
+  },
+  updateBmhcInstitute(id, data) {
+    return apiClient.put(`/bmhc/bmhc-institutes/${id}/`, data)
+  },
+  patchBmhcInstitute(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-institutes/${id}/`, data)
+  },
+  deleteBmhcInstitute(id) {
+    return apiClient.delete(`/bmhc/bmhc-institutes/${id}/`)
   },
 }
