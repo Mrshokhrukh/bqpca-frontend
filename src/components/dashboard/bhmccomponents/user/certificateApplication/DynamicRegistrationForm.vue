@@ -335,14 +335,10 @@ import apiService from '@/services/services';
 import { useToast } from 'vue-toastification';
 import PaymentModal from '@/components/common/PaymentModal.vue';
 import { useAuthStore } from '@/stores/authStore';
-// import { useRouter } from 'vue-router';
-// import SuccessModal from './SuccessModal.vue';
 
 const authStore = useAuthStore();
 const userId = authStore.userId;
 const user = authStore.user;
-// const router = useRouter();
-// const showSuccessModal = ref(false);
 
 const props = defineProps({
   selectedType: {
@@ -699,11 +695,13 @@ const handleNext = async () => {
       formDataStageOne.village = formDataStageOne.city;
       formDataStageOne.gewog = formDataStageOne.state;
       formDataStageOne.dzongkhag = formDataStageOne.country;
+      formDataStageOne.registration_type = 'registration';
 
       delete formDataStageOne.city;
       delete formDataStageOne.state;
       delete formDataStageOne.country;
       delete formDataStageOne.workPermitNo;
+      delete formDataStageOne.registration_type;
     }
     delete formDataStageOne.documents;
     delete formDataStageOne.remarks;

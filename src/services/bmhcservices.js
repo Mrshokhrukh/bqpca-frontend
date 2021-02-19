@@ -476,6 +476,12 @@ export default {
   deleteBhmcNewApplication(id) {
     return apiClient.delete(`/bmhc/bmhc-new-application/${id}/`)
   },
+  getApplicationsByCid(cid) {
+    return apiClient.get(`/bmhc/bmhc-get-application-list/get_by_cid/?cid=${cid}`)
+  },
+  getFullApplicationListByCid(cid) {
+    return apiClient.get(`/bmhc/bmhc-new-application/?cid=${cid}`)
+  },
 
   // BMHC Renewals Endpoints
   getBhmcRenewals() {
