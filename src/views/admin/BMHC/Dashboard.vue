@@ -85,7 +85,9 @@ import CogsManagement from '@/components/dashboard/bhmccomponents/dealingOfficer
 import Capa from '@/components/dashboard/bhmccomponents/dealingOfficer/Capa.vue';
 import PaymentManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/Payments.vue';
 import Reports from '@/components/dashboard/bhmccomponents/dealingOfficer/Reports.vue';
-
+import EoiApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/EoiApplication.vue';
+import DprApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/DprApplication.vue';
+import InstituteReport from '@/components/dashboard/bhmccomponents/dealingOfficer/InstituteReport.vue';
 //BMHC masters components
 import MastersCmeActivities from '@/components/dashboard/bhmccomponents/admin/MastersCmeActivities.vue'
 import MastersCmeCredits from '@/components/dashboard/bhmccomponents/admin/MastersCmeCredits.vue'
@@ -243,6 +245,13 @@ const bmhDealingOfficerComponent = computed(() => {
       return CounselorForm;
     case path.endsWith('/health_certification/reports'):
       return Reports;
+    case path.endsWith('/health_certification/eoi_application'):  
+      return EoiApplication;  
+
+    case path.endsWith('/health_certification/dpr_application'):        
+      return DprApplication;
+    case path.endsWith('/health_certification/institute_report'):        
+      return InstituteReport;  
     default:
       return null;
   }

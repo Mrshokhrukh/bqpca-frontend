@@ -571,11 +571,11 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'EOI Applications',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institutes`,
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/eoi_application`,
           },
           {
             name: 'DPR Applications',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_dept`,
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/dpr_application`,
           },
           {
             name: 'CAPA Management',
@@ -583,7 +583,7 @@ const serviceSpecificMenuItems = {
           },
           {
             name: 'Reports',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_workplace`,
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_report`,
           },
         ],
       },
