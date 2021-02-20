@@ -37,12 +37,14 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
 
   const hasApprovedQualification = computed(() => {
     const application = currentUserApplication.value
-    if (!application?.user_qualifications) return false
+    console.log('Current User Application:', application); // Debugging line
+    if (!application?.user_qualifications) return false;
 
+    console.log('User Qualifications:', application.user_qualifications); // Debugging line
     return application.user_qualifications.some(
       qual => qual.endorsement_decision === 'Approved'
-    )
-  })
+    );
+  });
 
   const isRenewalPeriod = computed(() => {
     const application = currentUserApplication.value

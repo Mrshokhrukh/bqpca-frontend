@@ -67,6 +67,7 @@ import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superA
 
 // BMH user
 import CPDcomponent from '@/components/dashboard/bhmccomponents/user/CPDApplication.vue';
+import CPDTracker from '@/components/dashboard/bhmccomponents/user/CPDTracker.vue';
 import CoGSComponet from '@/components/dashboard/bhmccomponents/user/CoGSApplication.vue';
 import PractitionerRegistration from '@/components/dashboard/bhmccomponents/user/certificateApplication/CertificateRegistrationComponent.vue';
 import PractitionerRenewal from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationRenewal.vue';
@@ -206,6 +207,8 @@ const bmhUserComponent = computed(() => {
       return ReRegistration;
     case path.endsWith('/health_certification/cpd'):
       return CPDcomponent;
+    case path.endsWith('/health_certification/track_cpd_applications'):
+      return CPDTracker;
     case path.endsWith('/health_certification/CoGS'):
       return CoGSComponet;
     case path.endsWith('/health_certification/profile'):

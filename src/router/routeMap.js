@@ -137,6 +137,7 @@ export default {
       additional_qualification: bmhcDashboard,
       cpd: bmhcDashboard,
       cpd_application: bmhcDashboard,
+      track_cpd_applications: bmhcDashboard,
       CoGS: bmhcDashboard,
       cogs_application: bmhcDashboard,
       user_profile: bmhcDashboard,

@@ -144,8 +144,4 @@ export default {
     return apiClient.delete(`/masters/roq-countries/${id}/`)
   },
 
-  // certificate verification
-  verifyCertificate(params) {
-    return apiClient.get(`/recognitions/recognition-of-qualifications/verify-certification/`, { params });
-  },
 }

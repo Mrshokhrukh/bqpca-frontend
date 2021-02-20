@@ -1,13 +1,17 @@
 <template>
-  <div v-if="showModal" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div v-if="showModal" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="closeModal"></div>
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="closeModal">
+      </div>
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
 
       <!-- Certificate Container -->
-      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+      <div
+        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
         <!-- Certificate Content -->
-        <div class="bg-white px-8 pt-8 pb-6 relative min-h-[842px]"> <!-- A4 proportions -->
+        <div id="certificate-content" class="bg-white px-8 pt-8 pb-6 relative min-h-[842px]">
+          <!-- A4 proportions -->
           <!-- Watermark -->
           <div class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
             <img src="@/assets/mhpc-logo.png" alt="Watermark" class="w-2/3 max-w-xl" />
@@ -42,7 +46,7 @@
 
           <!-- Main Content -->
           <div class="mt-8 relative">
-            <div v-if="qualification && application">
+            <div v-if="application">
               <!-- Certificate Details Grid -->
               <div class="grid grid-cols-[200px_1fr] gap-y-4 text-sm px-12">
                 <div class="font-semibold">Name:</div>
@@ -75,27 +79,26 @@
                 <div class="font-semibold">Qualification(s):</div>
                 <div class="space-y-1">
                   <div v-for="qual in application.user_qualifications" :key="qual.id">
-                    {{ qual.qualification_type_display }} | {{ qual.qualification_name_display }} | {{ qual.completion_year }}
+                    {{ qual.qualification_type_display }} | {{ qual.qualification_name_display }} | {{ qual.completion_year
+                    }}
                   </div>
                 </div>
               </div>
 
               <!-- Passport Photo -->
               <div class="absolute top-0 right-12">
-                <img
-                  v-if="application.passport_photo"
-                  :src="application.passport_photo"
-                  alt="Passport Photo"
-                  class="h-32 w-32 object-cover rounded-md border-2 border-gray-300 shadow-sm"
-                />
+                <img v-if="application.passport_photo" :src="application.passport_photo" alt="Passport Photo"
+                  class="h-32 w-32 object-cover rounded-md border-2 border-gray-300 shadow-sm" />
               </div>
 
               <!-- Certificate Text -->
               <div class="mt-8 px-12 space-y-4 text-sm">
                 <p>Valid till the expiry date until and unless suspend/revoked or de-registered by the Council.</p>
                 <p class="text-justify">
-                  It is hereby certified that the above description of the name, registration number, and date of registration
-                  of the registered Medical and/or Health Professional is a true copy of the entries in the register relating
+                  It is hereby certified that the above description of the name, registration number, and date of
+                  registration
+                  of the registered Medical and/or Health Professional is a true copy of the entries in the register
+                  relating
                   to the professional named above.
                 </p>
               </div>
@@ -104,33 +107,25 @@
               <div class="mt-12 px-12 flex justify-between items-end">
                 <!-- Signature Section -->
                 <div>
-                  <img
-                    v-if="qualification.e_signature"
-                    :src="qualification.e_signature"
-                    alt="Signature"
-                    class="h-16"
-                  />
+                  <img v-if="application.user_qualifications[0].e_signature"
+                    :src="application.user_qualifications[0].e_signature" alt="Signature" class="h-16" />
                   <div class="mt-2 text-sm">
                     <p class="font-medium">Dr. Ugyen Tshewang</p>
                     <p>Director</p>
-                    <p class="mt-1">Dated: {{ formatDate(qualification.updated_at) }}</p>
+                    <p class="mt-1">Dated: {{ formatDate(application.user_qualifications[0].updated_at) }}</p>
                   </div>
                 </div>
 
                 <!-- QR Code -->
                 <div class="text-center">
-                  <vue-qrcode
-                    :value="qrCodeData"
-                    :options="{
-                      width: 100,
-                      margin: 1,
-                      color: {
-                        dark: '#000000',
-                        light: '#ffffff'
-                      }
-                    }"
-                    class="border-4 border-gray-200 rounded-md p-2"
-                  />
+                  <vue-qrcode :value="qrCodeData" :options="{
+                    width: 100,
+                    margin: 1,
+                    color: {
+                      dark: '#000000',
+                      light: '#ffffff'
+                    }
+                  }" class="border-4 border-gray-200 rounded-md p-2" />
                   <p class="mt-2 text-xs text-gray-600">Scan to verify</p>
                 </div>
               </div>
@@ -150,12 +145,15 @@
         </div>
 
         <!-- Modal Footer -->
-        <div class="bg-gray-50 px-6 py-4 flex justify-end">
-          <button
-            type="button"
+        <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-2">
+          <button type="button"
+            class="inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-green-600 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+            @click="downloadCertificate">
+            Download
+          </button>
+          <button type="button"
             class="inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-            @click="closeModal"
-          >
+            @click="closeModal">
             Close
           </button>
         </div>
@@ -167,9 +165,10 @@
 <script setup>
 import { watch, defineProps, defineEmits, computed, onMounted } from 'vue';
 import VueQrcode from '@chenfengyuan/vue-qrcode';
+import html2pdf from 'html2pdf.js';
 
 const props = defineProps({
-  qualification: {
+  qualification: {  //This should now receive the entire API response, not just a qualification object
     type: Object,
     default: null
   },
@@ -186,13 +185,20 @@ const closeModal = () => {
 };
 
 const application = computed(() => {
-  return props.qualification ? props.qualification.application : null;
+  // Access the first result from the 'results' array.  Handle cases where 'results' might be empty.
+  return props.qualification && props.qualification.results && props.qualification.results.length > 0
+    ? props.qualification.results[0]
+    : null;
 });
 
+
 const qrCodeData = computed(() => {
-  const baseUrl = 'http://localhost:5173';
-  return `${baseUrl}/certification-validity/search?service_type=health_certification&cert_number=${props.qualification?.application?.registration_no}`;
+  const baseUrl = window.location.origin; // Get base URL dynamically
+  return application.value
+    ? `${baseUrl}/certification-validity/search?service_type=health_certification&cert_number=${application.value.registration_no}`
+    : ''; // Return empty string if application data is not available
 });
+
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -204,6 +210,19 @@ const formatDate = (dateString) => {
   }).replace(/\//g, '-');
 };
 
+const downloadCertificate = () => {
+  const element = document.getElementById('certificate-content');
+  const opt = {
+    margin: 0,
+    filename: `health_certification_${application.value.registration_no}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().from(element).set(opt).save();
+};
+
 onMounted(() => {
   watch(application, (newVal) => {
     if (newVal) {
@@ -211,4 +230,6 @@ onMounted(() => {
     }
   }, { immediate: true });
 });
+
+
 </script>

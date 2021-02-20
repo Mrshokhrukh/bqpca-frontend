@@ -357,33 +357,27 @@ export default {
     return apiClient.delete(`/bmhc/masters-university/${id}/`)
   },
 
-  // COGS Agencies
 
   // Get all COGS applications
   getBmhcCogs(params = {}) {
     return apiClient.get('/bmhc/bmhc-cogs/', { params })
   },
-
   // Create new COGS application
   createBmhcCogs(data) {
     return apiClient.post('/bmhc/bmhc-cogs/', data)
   },
-
   // Get single COGS application by ID
   getBmhcCogsById(id) {
     return apiClient.get(`/bmhc/bmhc-cogs/${id}/`)
   },
-
   // Update COGS application (full update)
   updateBmhcCogs(id, data) {
     return apiClient.put(`/bmhc/bmhc-cogs/${id}/`, data)
   },
-
   // Partial update COGS application
   patchBmhcCogs(id, data) {
     return apiClient.patch(`/bmhc/bmhc-cogs/${id}/`, data)
   },
-
   // Delete COGS application
   deleteBmhcCogs(id) {
     return apiClient.delete(`/bmhc/bmhc-cogs/${id}/`)
@@ -551,9 +545,6 @@ export default {
     return apiClient.get('/bmhc/bmhc-cpd-reasons-for-conducting/')
   },
 
-  
-  // --- New APIs (Institute Departments, Staff, and Institutes) ---
-
   // BMHC Institute Departments
   getBmhcInstituteDepartments() {
     return apiClient.get('/bmhc/bmhc-institute-departments/')
@@ -581,9 +572,6 @@ export default {
   createBmhcInstituteStaff(data) {
     return apiClient.post('/bmhc/bmhc-institute-staff/', data)
   },
-  // getBmhcInstituteStaff(id) {
-  //   return apiClient.get(`/bmhc/bmhc-institute-staff/${id}/`)
-  // },
   updateBmhcInstituteStaff(id, data) {
     return apiClient.put(`/bmhc/bmhc-institute-staff/${id}/`, data)
   },
@@ -612,5 +600,29 @@ export default {
   },
   deleteBmhcInstitute(id) {
     return apiClient.delete(`/bmhc/bmhc-institutes/${id}/`)
+  },
+  // BMHC CPD Records
+  getBmhcCpdRecords() {
+    return apiClient.get('/bmhc/bmhc-cpd-records/')
+  },
+  createBmhcCpdRecord(data) {
+    return apiClient.post('/bmhc/bmhc-cpd-records/', data)
+  },
+  getBmhcCpdRecord(id) {
+    return apiClient.get(`/bmhc/bmhc-cpd-records/${id}/`)
+  },
+  updateBmhcCpdRecord(id, data) {
+    return apiClient.put(`/bmhc/bmhc-cpd-records/${id}/`, data)
+  },
+  patchBmhcCpdRecord(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-cpd-records/${id}/`, data)
+  },
+  deleteBmhcCpdRecord(id) {
+    return apiClient.delete(`/bmhc/bmhc-cpd-records/${id}/`)
+  },
+
+  // get cpd records based on cid
+  getBmhcCpdRecordsByCid(cid) {
+    return apiClient.get(`/bmhc/bmhc-cpd-records/list-my-cpd/?cid=${cid}`)
   },
 }

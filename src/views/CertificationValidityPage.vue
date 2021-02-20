@@ -293,7 +293,6 @@ const isSearchActive = ref(false);
 
 // Computed
 const isSearchMode = computed(() => {
-  console.log('route.path:', route.path, 'isSearchActive:', isSearchActive.value); // ADD THIS LINE
   return route.path === '/certification-validity/search' || isSearchActive.value;
 });
 
@@ -309,7 +308,7 @@ const certificationTypeDetails = {
     label: 'Engineering Certification',
     description: 'Validate professional engineering licenses and qualifications'
   },
-  medical: {
+  health_certification: {
     icon: StethoscopeIcon,
     label: 'Medical Certification',
     description: 'Check medical practice licenses and specializations'

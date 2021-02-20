@@ -334,7 +334,7 @@ const serviceSpecificMenuItems = {
         },
       },
       {
-        name: 'Apply for CPD',
+        name: 'CPD Management',
         icon: getIconComponent('BookOpen'),
         hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.cpdManagement,
         children: [
@@ -343,13 +343,13 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/user/${serviceType}/cpd`,
           },
           {
-            name: 'My Applications',
-            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+            name: 'Track CPD Applications',
+            route: (serviceType) => `/admin/user/${serviceType}/track_cpd_applications`,
           },
         ],
       },
       {
-        name: 'Apply for CoGS',
+        name: 'CoGS Management',
         icon: getIconComponent('Users'),
         hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.cogsManagement,
         children: [
@@ -358,8 +358,8 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/user/${serviceType}/CoGS`,
           },
           {
-            name: 'My Applications',
-            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+            name: 'Track CoGS Applications',
+            route: (serviceType) => `/admin/user/${serviceType}/track_cogs_applications`,
           },
         ],
       },
@@ -624,11 +624,6 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/cpd_application_tracker`,
       },
-      // {
-      //   name: 'Reports',
-      //   icon: getIconComponent('ClipboardCheck'),
-      //   route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/reports`,
-      // },
     ],
     institutions: [
       {
@@ -683,7 +678,6 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/admin/${serviceType}/categories`,
       },
     ],
-    // Add dealing_officer to engineering_certification
     dealing_officer: dealingOfficerMenuItems,
   },
   accreditation: {
@@ -903,15 +897,14 @@ const serviceSpecificMenuItems = {
         ],
       },
     ],
-    // Add dealing_officer to accreditation
   },
 }
 
 /**
  * Generates navigation items based on the service type and role.
- * @param {string} role - The user's role (e.g., 'user', 'admin').
- * @param {string} serviceType - The service type (e.g., 'roq', 'ecpf').
- * @returns {Array} - An array of navigation items for the given role and service type.
+ * @param {string} resolveDirective
+ * @param {string} serviceType
+ * @returns {Array}
  */
 export const generateNavigationItems = (role, serviceType) => {
   if (!role || !serviceType) return []
@@ -921,22 +914,17 @@ export const generateNavigationItems = (role, serviceType) => {
 
   // Process the menu items to resolve dynamic routes and handle hidden properties
   const processMenuItem = (item) => {
-    // --- CRUCIAL CHANGE HERE ---
-    // Check if the item is hidden.  The hidden property can be:
-    // 1. A boolean (true/false)
-    // 2. A function that returns a boolean
     let isHidden = false
     if (typeof item.hidden === 'function') {
-      isHidden = item.hidden() // Execute the function to get the boolean value
+      isHidden = item.hidden()
     } else if (typeof item.hidden === 'boolean') {
-      isHidden = item.hidden // Use the boolean value directly
+      isHidden = item.hidden
     }
 
     // If the item is hidden, return null (don't include it in the menu)
     if (isHidden) {
       return null
     }
-    // --- END OF CRUCIAL CHANGE ---
 
     const newItem = {
       ...item,

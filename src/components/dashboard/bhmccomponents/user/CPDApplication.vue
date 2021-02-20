@@ -3,20 +3,20 @@
     <div class="max-w-6xl mx-auto px-4">
       <!-- Form Header with enhanced gradient and animation -->
       <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
-      <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
-        Continuous Professional Development (CPD) Application
-      </h2>
-      <p class="text-gray-600 text-center max-w-2xl mx-auto">
-        Please fill in all required fields marked with an asterisk (<span class="text-red-600">*</span>). Ensure all
-        information provided is accurate and up-to-date.
-      </p>
-    </div>
+        <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
+          Continuous Professional Development (CPD) Application
+        </h2>
+        <p class="text-gray-600 text-center max-w-2xl mx-auto">
+          Please fill in all required fields marked with an asterisk (<span class="text-red-600">*</span>). Ensure all
+          information provided is accurate and up-to-date.
+        </p>
+      </div>
 
       <form @submit.prevent="handleSubmit" class="bg-white border-0 rounded-2xl shadow-xl overflow-hidden">
         <!-- Hidden fields -->
-        <input type="hidden" v-model="form.registrationNumber" />
-        <input type="hidden" v-model="form.cidNumber" />
-        <input type="hidden" v-model="form.fullName" />
+        <input type="hidden" v-model="form.registration_no" />
+        <input type="hidden" v-model="form.cid_no" />
+        <input type="hidden" v-model="form.full_name" />
         <input type="hidden" v-model="form.gender" />
 
         <!-- CPD Details Section -->
@@ -30,26 +30,26 @@
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Title of CPD -->
             <div class="space-y-2">
-              <label for="cpdTitle" class="text-sm font-medium text-gray-700 flex items-center">
+              <label for="title_of_cpd" class="text-sm font-medium text-gray-700 flex items-center">
                 Title of CPD
                 <span class="text-red-500 ml-1">*</span>
               </label>
-              <input id="cpdTitle" v-model="form.cpdTitle" type="text"
+              <input id="title_of_cpd" v-model="form.title_of_cpd" type="text"
                 class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 required placeholder="Enter CPD title" />
-              <span v-if="errors.cpdTitle" class="text-sm text-red-500 block">{{ errors.cpdTitle }}</span>
+              <span v-if="errors.title_of_cpd" class="text-sm text-red-500 block">{{ errors.title_of_cpd }}</span>
             </div>
 
-            <!-- Relevance -->
+            <!-- relevance_to_profession -->
             <div class="space-y-2">
-              <label for="relevance" class="text-sm font-medium text-gray-700 flex items-center">
+              <label for="relevance_to_profession" class="text-sm font-medium text-gray-700 flex items-center">
                 Professional Relevance
                 <span class="text-red-500 ml-1">*</span>
               </label>
-              <input id="relevance" v-model="form.relevance" type="text"
+              <input id="relevance_to_profession" v-model="form.relevance_to_profession" type="text"
                 class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 required placeholder="Describe relevance to your profession" />
-              <span v-if="errors.relevance" class="text-sm text-red-500 block">{{ errors.relevance }}</span>
+              <span v-if="errors.relevance_to_profession" class="text-sm text-red-500 block">{{ errors.relevance_to_profession }}</span>
             </div>
 
             <!-- Participation Category -->
@@ -109,6 +109,18 @@
               </span>
             </div>
 
+            <!-- CPD Credit -->
+            <div class="space-y-2">
+              <label for="cpd_credit" class="text-sm font-medium text-gray-700 flex items-center">
+                CPD Credit
+                <span class="text-red-500 ml-1">*</span>
+              </label>
+              <input id="cpd_credit" v-model.number="form.cpd_credit" type="number"
+                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                required placeholder="Enter CPD credit" />
+              <span v-if="errors.cpd_credit" class="text-sm text-red-500 block">{{ errors.cpd_credit }}</span>
+            </div>
+
             <!-- File Upload -->
             <div class="space-y-2">
               <label for="attachment" class="text-sm font-medium text-gray-700">
@@ -150,11 +162,10 @@
 </template>
 
 <script setup>
-import { reactive, onMounted, ref, computed } from 'vue'
+import { reactive, onMounted, ref, computed } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useAuthStore } from '@/stores/authStore';
 import apiService from '@/services/services';
-
 
 const toast = useToast();
 const authStore = useAuthStore();
@@ -163,29 +174,29 @@ const cpdActivities = ref([]);
 const participationCategories = ref([]);
 const participationSubCategories = ref([]);
 
-
 const form = reactive({
-  registrationNumber: '',
-  cidNumber: '',
-  fullName: '',
+  registration_no: '',
+  cid_no: '',
+  full_name: '',
   gender: '',
-  cpdTitle: '',
-  relevance: '',
+  title_of_cpd: '',
+  relevance_to_profession: '',
   participationCategory: '',
   participantSubCategory: '',
   activityType: '',
+  cpd_credit: 1,
   attachment: null,
-})
+});
 
-const errors = reactive({})
+const errors = reactive({});
 
-// Computed property for filtered subcategories
+// Filter subcategories based on selected category ID
 const filteredSubCategories = computed(() => {
   if (!form.participationCategory) {
-    return []; // Return empty array if no category is selected
+    return [];
   }
   return participationSubCategories.value.filter(
-    subCategory => subCategory.participation_category_name === form.participationCategory
+    subCategory => subCategory.participation_category_name === form.participationCategory // Compare IDs
   );
 });
 
@@ -193,25 +204,25 @@ const validateForm = () => {
   Object.keys(errors).forEach(key => delete errors[key]);
   let isValid = true;
 
-  if (!form.cpdTitle) { errors.cpdTitle = 'CPD Title is required'; isValid = false; }
-  if (!form.relevance) { errors.relevance = 'Relevance is required'; isValid = false; }
+  if (!form.title_of_cpd) { errors.title_of_cpd = 'CPD Title is required'; isValid = false; }
+  if (!form.relevance_to_profession) { errors.relevance_to_profession = 'Relevance is required'; isValid = false; }
   if (!form.participationCategory) { errors.participationCategory = 'Participation Category is required'; isValid = false; }
   if (!form.participantSubCategory) { errors.participantSubCategory = 'Participant Sub-category is required'; isValid = false; }
   if (!form.activityType) { errors.activityType = 'Activity Type is required'; isValid = false; }
-
+  if (!form.cpd_credit) { errors.cpd_credit = 'CPD Credit is required'; isValid = false;} //cpd credit validation.
   if (form.attachment && form.attachment.size > 2 * 1024 * 1024) {
     errors.attachment = 'Attachment size should not exceed 2MB';
     isValid = false;
   }
 
   return isValid;
-}
+};
 
 const fetchRegistrationNumber = async (cid) => {
   try {
-    const response = await apiService.getApplicationsByCid(cid);
+    const response = await apiService.getApplicationsByCid(cid); // Ensure correct endpoint
     if (response.data && response.data.length > 0) {
-      return response.data[0].registration_no;
+      return response.data[0].id;
     }
     return null;
   } catch (error) {
@@ -222,96 +233,111 @@ const fetchRegistrationNumber = async (cid) => {
 };
 
 const handleSubmit = async () => {
-  if (validateForm()) {
-    const formData = new FormData();
+  if (!validateForm()) {
+    toast.error('Please correct the errors in the form.');
+    return; // Stop if validation fails
+  }
 
-    for (const key in form) {
-      if (form[key] instanceof File) {
-        formData.append(key, form[key]);
-      } else {
-        formData.append(key, form[key] || '');
+  const formData = new FormData();
+
+  // Correct gender mapping
+  const genderToSend = form.gender === 'male' ? 'male' : (form.gender === 'female' ? 'female' : 'others');
+
+    formData.append('registration_no', form.registration_no || '');
+    formData.append('cid_no', form.cid_no || '');
+    formData.append('full_name', form.full_name || '');
+    formData.append('gender', genderToSend); // Use the transformed gender
+    formData.append('title_of_cpd', form.title_of_cpd || '');
+    formData.append('relevance_to_profession', form.relevance_to_profession || '');
+    formData.append('participationCategory', form.participationCategory || '');
+    formData.append('participantSubCategory', form.participantSubCategory || '');
+    formData.append('activityType', form.activityType || '');
+    formData.append('cpd_credit', form.cpd_credit);
+  if (form.attachment) {
+    formData.append('attachment', form.attachment);
+  }
+
+
+  try {
+    const response = await apiService.createBmhcCpdRecord(formData);
+
+    if (response.status >= 200 && response.status < 300) {
+      toast.success('CPD Registration submitted successfully!');
+      console.log('Form submitted:', Object.fromEntries(formData));
+      handleCancel(); // Reset form
+    } else {
+      toast.error('Submission failed. Server returned an error.');
+      console.error("Server error:", response);
+
+      // Display server-side validation errors, if provided
+      if (response.data && response.data.errors) {
+        for (const field in response.data.errors) {
+          errors[field] = response.data.errors[field][0];
+        }
       }
     }
-
-    try {
-      // Simulate submission
-      // const response = await apiService.submitCPDApplication(formData);
-
-      setTimeout(() => {
-        toast.success('CPD Registration submitted successfully!');
-        console.log('Form submitted:', Object.fromEntries(formData));
-        handleCancel();
-      }, 500);
-
-    } catch (error) {
-      toast.error('Submission failed: ' + error.message);
-      console.error("Error submitting form:", error);
-    }
-  } else {
-    toast.error('Please correct the errors in the form.');
+  } catch (error) {
+    toast.error('Submission failed: ' + error.message);
+    console.error("Error submitting form:", error);
   }
-}
+};
 
 const handleCancel = () => {
-  form.cpdTitle = '';
-  form.relevance = '';
+  // Reset form fields
+  form.title_of_cpd = '';
+  form.relevance_to_profession = '';
   form.participationCategory = '';
   form.participantSubCategory = '';
   form.activityType = '';
+  form.cpd_credit = 1;
   form.attachment = null;
-  Object.keys(errors).forEach(key => delete errors[key]);
-}
+  Object.keys(errors).forEach(key => delete errors[key]); // Clear errors
+};
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   form.attachment = file;
   if (file && file.size > 2 * 1024 * 1024) {
     errors.attachment = 'Attachment size should not exceed 2MB';
-    form.attachment = null;
+    form.attachment = null; // Clear the file input
   } else {
     delete errors.attachment;
   }
-}
-
-const handleCategoryChange = () => {
-  // Reset subcategory when category changes
-  form.participantSubCategory = '';
 };
 
+const handleCategoryChange = () => {
+  form.participantSubCategory = ''; // Reset subcategory on category change
+};
 
 const fetchMasterData = async () => {
   try {
     const [activitiesResponse, categoriesResponse, subCategoriesResponse] = await Promise.all([
       apiService.getMastersCpdActivities(),
       apiService.getMastersParticipationCategories(),
-      apiService.getMastersParticipationSubCategories()
+      apiService.getMastersParticipationSubCategories(),
     ]);
 
-    cpdActivities.value = activitiesResponse.data.results;
+    cpdActivities.value = activitiesResponse.data.results;  // Verify .results structure
     participationCategories.value = categoriesResponse.data.results;
     participationSubCategories.value = subCategoriesResponse.data.results;
-
-
   } catch (error) {
-    toast.error("Failed to fetch master data: " + error.message);
-    console.error("Error fetching master data:", error);
+    toast.error('Failed to fetch master data: ' + error.message);
+    console.error('Error fetching master data:', error);
   }
 };
 
 onMounted(async () => {
-
   if (authStore.user) {
-    form.cidNumber = authStore.user.cid;
-    form.fullName = authStore.user.fullName;
-    form.gender = authStore.user.gender;
+    form.cid_no = authStore.user.cid;
+    form.full_name = `${authStore.user.first_name} ${authStore.user.middle_name?authStore.user.middle_name:''} ${authStore.user.last_name}`;
+    form.gender = authStore.user.gender; // Keep original gender for display
 
-    const registrationNumber = await fetchRegistrationNumber(form.cidNumber);
+    const registrationNumber = await fetchRegistrationNumber(form.cid_no);
     if (registrationNumber) {
-      form.registrationNumber = registrationNumber;
+      form.registration_no = registrationNumber;
     }
   }
   await fetchMasterData();
-
 });
 
 </script>

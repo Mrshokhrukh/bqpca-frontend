@@ -13,6 +13,16 @@ export default {
   makePayment(data) {
     return apiClient.post('/payments/', data)
   },
+
+  // certificate verification
+  verifyCertificate(params) {
+    if (params.service_type == 'roq') {
+      return apiClient.get(`/recognitions/recognition-of-qualifications/verify-certification/`, { params });
+    } else if (params.service_type == 'health_certification') {
+      return apiClient.get(`/bmhc/bmhc-new-application/verify-certification/`, { params });
+    }
+  },
+
   ...userservices,
   ...bmhcServices,
   ...accreditationServices,

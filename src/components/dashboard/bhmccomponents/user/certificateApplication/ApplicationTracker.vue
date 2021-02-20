@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 py-8">
-    <!-- Header Section (Same as before) -->
+    <!-- Header Section -->
     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         Track Your Application
@@ -10,7 +10,7 @@
       </p>
     </div>
 
-    <!-- Search Section (Same as before) -->
+    <!-- Search Section -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
       <div class="max-w-xl mx-auto">
         <div class="flex space-x-4 mb-4">
@@ -46,8 +46,7 @@
         <div class="relative">
           <!-- Moved button inside loop, added v-if -->
           <div class="absolute top-0 right-0 m-4">
-            <button v-if="application.user_qualifications.length > 0"
-              @click="openCertificateModal(application.user_qualifications[0])"
+            <button v-if="application.user_qualifications.length > 0" @click="openCertificateModal(application)"
               class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
               <FileText class="w-4 h-4 mr-2" />
               <span>View Certificate</span>
@@ -79,7 +78,7 @@
           </div>
         </div>
 
-        <!-- Contact & Registration Info (Same as before) -->
+        <!-- Contact & Registration Info -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 py-4 bg-gray-50 border-y border-gray-200">
           <div class="flex items-start space-x-3">
             <div class="mt-1">
@@ -145,10 +144,10 @@
                       <!-- Application Review -->
                       <div class="flex flex-col items-center">
                         <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
-            qualification.application_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
-              qualification.application_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
-                'bg-yellow-100 text-yellow-700'
-          ]">
+                          qualification.application_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
+                            qualification.application_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
+                              'bg-yellow-100 text-yellow-700'
+                        ]">
                           <CheckCircle v-if="qualification.application_review_status === 'Approved'" class="w-5 h-5" />
                           <XCircle v-else-if="qualification.application_review_status === 'Rejected'" class="w-5 h-5" />
                           <Clock v-else class="w-5 h-5" />
@@ -162,10 +161,10 @@
                       <!-- Physical Verification -->
                       <div class="flex flex-col items-center">
                         <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
-            qualification.physical_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
-              qualification.physical_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
-                'bg-yellow-100 text-yellow-700'
-          ]">
+                          qualification.physical_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
+                            qualification.physical_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
+                              'bg-yellow-100 text-yellow-700'
+                        ]">
                           <CheckCircle v-if="qualification.physical_review_status === 'Approved'" class="w-5 h-5" />
                           <XCircle v-else-if="qualification.physical_review_status === 'Rejected'" class="w-5 h-5" />
                           <Clock v-else class="w-5 h-5" />
@@ -179,10 +178,10 @@
                       <!-- Endorsement -->
                       <div class="flex flex-col items-center">
                         <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
-            qualification.endorsement_decision === 'Approved' ? 'bg-green-100 text-green-700' :
-              qualification.endorsement_decision === 'Rejected' ? 'bg-red-100 text-red-700' :
-                'bg-yellow-100 text-yellow-700'
-          ]">
+                          qualification.endorsement_decision === 'Approved' ? 'bg-green-100 text-green-700' :
+                            qualification.endorsement_decision === 'Rejected' ? 'bg-red-100 text-red-700' :
+                              'bg-yellow-100 text-yellow-700'
+                        ]">
                           <CheckCircle v-if="qualification.endorsement_decision === 'Approved'" class="w-5 h-5" />
                           <XCircle v-else-if="qualification.endorsement_decision === 'Rejected'" class="w-5 h-5" />
                           <Clock v-else class="w-5 h-5" />
@@ -202,7 +201,7 @@
                     <div>
                       <p class="text-sm font-medium text-gray-500">Institute</p>
                       <p class="text-sm font-semibold text-gray-900 mt-1">{{ qualification.institute_university_display
-                        }}</p>
+                      }}</p>
                     </div>
                   </div>
                 </div>
@@ -251,13 +250,13 @@
         </div>
       </div>
     </div>
-    <!-- No Results Message (Same as before)-->
+    <!-- No Results Message -->
     <div v-else-if="hasSearched && !apiError" class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
       <p class="text-gray-600">No applications found matching your search.</p>
     </div>
 
-    <!-- Certificate Modal (Using the new component) -->
-    <CertificateModal :qualification="selectedQualification" :showModal="showCertificateModal"
+    <!-- Certificate Modal -->
+    <CertificateModal :qualification="selectedApplication" :showModal="showCertificateModal"
       @close="closeCertificateModal" />
 
   </div>
@@ -266,7 +265,7 @@
 <script setup>
 import { ref } from 'vue';
 import apiService from '@/services/services';
-import CertificateModal from './CertificateModal.vue'; // Import the modal
+import CertificateModal from './CertificateModal.vue';
 import {
   FileText,
   IdCard,
@@ -292,7 +291,7 @@ const isLoading = ref(false);
 const hasSearched = ref(false);
 const apiError = ref(false);
 const showCertificateModal = ref(false);
-const selectedQualification = ref(null);
+const selectedApplication = ref(null); // Corrected variable name
 
 // Methods
 const fetchApplications = async () => {
@@ -326,23 +325,19 @@ const handleSearch = async () => {
   await fetchApplications();
 };
 
-//  Helper function for header status
 const isApplicationActive = (application) => {
   return application.user_qualifications.some(
     (qualification) => qualification.endorsement_decision === 'Approved'
   );
 };
 
-const openCertificateModal = (qualification) => {
-  selectedQualification.value = qualification;
+const openCertificateModal = (application) => {
+  selectedApplication.value = { results: [application] }; // Pass the entire application
   showCertificateModal.value = true;
-
 };
 
 const closeCertificateModal = () => {
   showCertificateModal.value = false;
-  selectedQualification.value = null;
-
+  selectedApplication.value = null; // Reset the selected application
 };
-
 </script>
