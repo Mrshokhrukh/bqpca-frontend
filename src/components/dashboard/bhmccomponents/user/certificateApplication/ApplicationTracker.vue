@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 py-8">
-    <!-- Header Section -->
+    <!-- Header Section (Same as before) -->
     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         Track Your Application
@@ -10,7 +10,7 @@
       </p>
     </div>
 
-    <!-- Search Section -->
+    <!-- Search Section (Same as before) -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
       <div class="max-w-xl mx-auto">
         <div class="flex space-x-4 mb-4">
@@ -44,8 +44,10 @@
         class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:border-blue-200 transition-all duration-300">
         <!-- Main Info Header -->
         <div class="relative">
+          <!-- Moved button inside loop, added v-if -->
           <div class="absolute top-0 right-0 m-4">
-            <button @click="openCertificateModal(application)"
+            <button v-if="application.user_qualifications.length > 0"
+              @click="openCertificateModal(application.user_qualifications[0])"
               class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
               <FileText class="w-4 h-4 mr-2" />
               <span>View Certificate</span>
@@ -57,9 +59,10 @@
             <div class="flex-1 pt-1">
               <div class="flex items-center space-x-3">
                 <h3 class="text-xl font-bold text-gray-900">{{ application.full_name }}</h3>
+                <!--  Header Status Logic  -->
                 <span class="px-3 py-1 rounded-full text-sm font-medium"
-                  :class="application.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
-                  {{ application.is_active ? 'Active' : 'Inactive' }}
+                  :class="isApplicationActive(application) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                  {{ isApplicationActive(application) ? 'Active' : 'Inactive' }}
                 </span>
               </div>
               <div class="mt-2 flex items-center space-x-4 text-gray-600">
@@ -76,7 +79,7 @@
           </div>
         </div>
 
-        <!-- Contact & Registration Info -->
+        <!-- Contact & Registration Info (Same as before) -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 py-4 bg-gray-50 border-y border-gray-200">
           <div class="flex items-start space-x-3">
             <div class="mt-1">
@@ -113,70 +116,132 @@
           </div>
         </div>
 
-        <!-- Qualifications -->
+        <!-- Qualifications Section -->
         <div class="p-6">
-          <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <h4 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
             <GraduationCap class="w-5 h-5 mr-2 text-blue-600" />
-            Qualifications
+            Qualifications & Certifications
           </h4>
-          <div class="grid grid-cols-1 gap-4">
+
+          <div class="grid grid-cols-1 gap-6">
             <div v-for="qualification in application.user_qualifications" :key="qualification.id"
-              class="relative bg-white rounded-lg border border-gray-200 p-5 hover:border-blue-200 transition-all duration-300">
-              <div class="flex items-start justify-between">
-                <div class="space-y-1">
-                  <div class="flex items-center space-x-2">
-                    <h5 class="text-lg font-semibold text-gray-900">
-                      {{ qualification.qualification_name_display }}
-                    </h5>
-                    <span class="px-2 py-0.5 rounded-full text-xs font-medium"
-                      :class="qualification.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
-                      {{ qualification.is_active ? 'Active' : 'Inactive' }}
-                    </span>
+              class="relative bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 transition-all duration-300 hover:shadow-lg">
+
+              <!-- Qualification Header -->
+              <div class="flex items-start justify-between mb-6">
+                <div class="space-y-2">
+                  <h5 class="text-xl font-semibold text-gray-900">
+                    {{ qualification.qualification_name_display }}
+                  </h5>
+                  <p class="text-gray-600 text-sm">
+                    {{ qualification.institute_university_display }}
+                  </p>
+                </div>
+
+                <!-- Review Status Timeline -->
+                <div class="flex items-center space-x-2">
+                  <div class="flex items-center">
+                    <div class="relative flex items-center">
+                      <!-- Application Review -->
+                      <div class="flex flex-col items-center">
+                        <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
+            qualification.application_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
+              qualification.application_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
+                'bg-yellow-100 text-yellow-700'
+          ]">
+                          <CheckCircle v-if="qualification.application_review_status === 'Approved'" class="w-5 h-5" />
+                          <XCircle v-else-if="qualification.application_review_status === 'Rejected'" class="w-5 h-5" />
+                          <Clock v-else class="w-5 h-5" />
+                        </span>
+                        <span class="text-xs font-medium mt-1 text-gray-600">Review</span>
+                      </div>
+
+                      <!-- Connecting Line -->
+                      <div class="w-8 h-0.5 bg-gray-200"></div>
+
+                      <!-- Physical Verification -->
+                      <div class="flex flex-col items-center">
+                        <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
+            qualification.physical_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
+              qualification.physical_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
+                'bg-yellow-100 text-yellow-700'
+          ]">
+                          <CheckCircle v-if="qualification.physical_review_status === 'Approved'" class="w-5 h-5" />
+                          <XCircle v-else-if="qualification.physical_review_status === 'Rejected'" class="w-5 h-5" />
+                          <Clock v-else class="w-5 h-5" />
+                        </span>
+                        <span class="text-xs font-medium mt-1 text-gray-600">Verify</span>
+                      </div>
+
+                      <!-- Connecting Line -->
+                      <div class="w-8 h-0.5 bg-gray-200"></div>
+
+                      <!-- Endorsement -->
+                      <div class="flex flex-col items-center">
+                        <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
+            qualification.endorsement_decision === 'Approved' ? 'bg-green-100 text-green-700' :
+              qualification.endorsement_decision === 'Rejected' ? 'bg-red-100 text-red-700' :
+                'bg-yellow-100 text-yellow-700'
+          ]">
+                          <CheckCircle v-if="qualification.endorsement_decision === 'Approved'" class="w-5 h-5" />
+                          <XCircle v-else-if="qualification.endorsement_decision === 'Rejected'" class="w-5 h-5" />
+                          <Clock v-else class="w-5 h-5" />
+                        </span>
+                        <span class="text-xs font-medium mt-1 text-gray-600">Endorse</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" :class="{
-            'bg-green-100 text-green-800': qualification.application_review_status === 'Approved',
-            'bg-yellow-100 text-yellow-800': qualification.application_review_status === 'Pending',
-            'bg-red-100 text-red-800': qualification.application_review_status === 'Rejected'
-          }">
-                  {{ qualification.application_review_status }}
-                </span>
               </div>
 
-              <div class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="flex items-center space-x-2">
-                  <Building2 class="w-4 h-4 text-gray-400" />
-                  <div>
-                    <p class="text-sm font-medium text-gray-700">Institute</p>
-                    <p class="text-sm text-gray-900">{{ qualification.institute_university_display }}</p>
+              <!-- Qualification Details Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <div class="flex items-start space-x-3">
+                    <Building2 class="w-5 h-5 text-blue-600 mt-1" />
+                    <div>
+                      <p class="text-sm font-medium text-gray-500">Institute</p>
+                      <p class="text-sm font-semibold text-gray-900 mt-1">{{ qualification.institute_university_display
+                        }}</p>
+                    </div>
                   </div>
                 </div>
-                <div class="flex items-center space-x-2">
-                  <GraduationCap class="w-4 h-4 text-gray-400" />
-                  <div>
-                    <p class="text-sm font-medium text-gray-700">Qualification Type</p>
-                    <p class="text-sm text-gray-900">{{ qualification.qualification_type_display }}</p>
+
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <div class="flex items-start space-x-3">
+                    <GraduationCap class="w-5 h-5 text-blue-600 mt-1" />
+                    <div>
+                      <p class="text-sm font-medium text-gray-500">Qualification Type</p>
+                      <p class="text-sm font-semibold text-gray-900 mt-1">{{ qualification.qualification_type_display }}
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div class="flex items-center space-x-2">
-                  <CalendarCheck class="w-4 h-4 text-gray-400" />
-                  <div>
-                    <p class="text-sm font-medium text-gray-700">Completion Year</p>
-                    <p class="text-sm text-gray-900">{{ qualification.completion_year }}</p>
+
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <div class="flex items-start space-x-3">
+                    <CalendarCheck class="w-5 h-5 text-blue-600 mt-1" />
+                    <div>
+                      <p class="text-sm font-medium text-gray-500">Completion Year</p>
+                      <p class="text-sm font-semibold text-gray-900 mt-1">{{ qualification.completion_year }}</p>
+                    </div>
                   </div>
                 </div>
-                <div class="flex items-center space-x-2">
-                  <CreditCard class="w-4 h-4 text-gray-400" />
-                  <div>
-                    <p class="text-sm font-medium text-gray-700">Payment Status</p>
-                    <div class="flex items-center space-x-2">
-                      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
-                        :class="qualification.is_payment_complete ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
-                        {{ qualification.is_payment_complete ? 'Paid' : 'Pending' }}
-                      </span>
-                      <span v-if="qualification.payment_id" class="text-xs text-gray-500">
-                        ID: {{ qualification.payment_id }}
-                      </span>
+
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <div class="flex items-start space-x-3">
+                    <CreditCard class="w-5 h-5 text-blue-600 mt-1" />
+                    <div>
+                      <p class="text-sm font-medium text-gray-500">Payment Status</p>
+                      <div class="flex items-center space-x-2 mt-1">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                          :class="qualification.is_payment_complete ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                          {{ qualification.is_payment_complete ? 'Paid' : 'Pending' }}
+                        </span>
+                        <span v-if="qualification.payment_id" class="text-xs text-gray-500">
+                          #{{ qualification.payment_id }}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -186,55 +251,22 @@
         </div>
       </div>
     </div>
-
-    <!-- No Results Message -->
+    <!-- No Results Message (Same as before)-->
     <div v-else-if="hasSearched && !apiError" class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
       <p class="text-gray-600">No applications found matching your search.</p>
     </div>
 
+    <!-- Certificate Modal (Using the new component) -->
+    <CertificateModal :qualification="selectedQualification" :showModal="showCertificateModal"
+      @close="closeCertificateModal" />
 
-    <!-- Certificate Modal -->
-    <div v-if="showCertificateModal" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
-      role="dialog" aria-modal="true">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
-          @click="closeCertificateModal"></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
-        <div
-          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div class="sm:flex sm:items-start">
-              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                  Certificate
-                </h3>
-                <div class="mt-2">
-                  <p class="text-sm text-gray-500">
-                    <!--  Display certificate details here. You'll need to adjust based on your actual certificate data. -->
-                    Certificate details for {{ selectedQualification?.remarks }}
-                  </p>
-                  <!-- Example: If you had a certificate URL -->
-                  <!-- <img v-if="selectedQualification && selectedQualification.certificateUrl" :src="selectedQualification.certificateUrl" alt="Certificate" class="mt-4 max-w-full" /> -->
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <button type="button"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-              @click="closeCertificateModal">
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import apiService from '@/services/services';
+import CertificateModal from './CertificateModal.vue'; // Import the modal
 import {
   FileText,
   IdCard,
@@ -247,6 +279,9 @@ import {
   CalendarCheck,
   CreditCard,
   Loader,
+  CheckCircle,
+  XCircle,
+  Clock
 } from 'lucide-vue-next';
 
 // State
@@ -259,7 +294,6 @@ const apiError = ref(false);
 const showCertificateModal = ref(false);
 const selectedQualification = ref(null);
 
-
 // Methods
 const fetchApplications = async () => {
   isLoading.value = true;
@@ -270,7 +304,7 @@ const fetchApplications = async () => {
     if (searchType.value === 'id') {
       response = await apiService.getFullApplicationListByCid(searchQuery.value);
     } else {
-      response = await apiService.getBhmcNewApplications(searchQuery.value); //consider changing api
+      response = await apiService.getBhmcNewApplications(searchQuery.value);
     }
 
     if (response && response.data && response.data.results) {
@@ -292,14 +326,23 @@ const handleSearch = async () => {
   await fetchApplications();
 };
 
+//  Helper function for header status
+const isApplicationActive = (application) => {
+  return application.user_qualifications.some(
+    (qualification) => qualification.endorsement_decision === 'Approved'
+  );
+};
+
 const openCertificateModal = (qualification) => {
   selectedQualification.value = qualification;
   showCertificateModal.value = true;
+
 };
 
 const closeCertificateModal = () => {
   showCertificateModal.value = false;
   selectedQualification.value = null;
+
 };
 
 </script>
