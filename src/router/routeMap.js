@@ -23,6 +23,7 @@ export default {
       genders: roqDashboard,
       countries: roqDashboard,
       user_profile: roqDashboard,
+      esign: roqDashboard,
     },
     ecpf: {
       dashboard: ecpfDashboard,

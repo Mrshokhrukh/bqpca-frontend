@@ -1,4 +1,4 @@
-import apiClient from './apiClient';
+import apiClient from './apiClient'
 
 export default {
   // Recognition of Qualifications endpoints (enhanced for file uploads)
@@ -20,7 +20,6 @@ export default {
   deleteRecognitionOfQualification(id) {
     return apiClient.delete(`/recognitions/recognition-of-qualifications/${id}/`)
   },
-
 
   // Decision CRUD operations
   getDecisions() {
@@ -149,13 +148,12 @@ export default {
     return apiClient.get('/masters/roq-e-sign/?status=true')
   },
   updateESignature(id, eSignatureData) {
-    return apiClient.put(`/masters/roq-e-signature/${id}/`, eSignatureData)
+    return apiClient.put(`/masters/roq-e-sign/${id}/`, eSignatureData)
   },
   createESignature(eSignatureData) {
-    return apiClient.post('/masters/roq-e-signature/', eSignatureData)
+    return apiClient.post('/masters/roq-e-sign/', eSignatureData)
   },
   deleteESignature(id) {
-    return apiClient.delete(`/masters/roq-e-signature/${id}/`)
+    return apiClient.delete(`/masters/roq-e-sign/${id}/`)
   },
-
 }

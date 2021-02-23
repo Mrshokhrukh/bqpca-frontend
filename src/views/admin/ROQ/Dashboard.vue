@@ -56,6 +56,7 @@ import AdminSecondCopyReason from '@/components/dashboard/roqcomponents/admin/Ad
 import AdminProfile from '@/components/dashboard/roqcomponents/admin/AdminProfile.vue'; // Added Import
 import AdminGender from '@/components/dashboard/roqcomponents/admin/AdminGender.vue';
 import AdminCountry from '@/components/dashboard/roqcomponents/admin/AdminCountry.vue';
+import AdminEsign from '@/components/dashboard/roqcomponents/admin/AdminEsign.vue';
 
 // Dealing Officer Components Import
 import DealingOfficerDashboard from '@/components/dashboard/roqcomponents/dealingOfficer/DealingOfficerDashboard.vue';
@@ -101,6 +102,9 @@ const adminComponent = computed(() => {
       return AdminCountry;
     case path.endsWith('/roq/user_profile'):
       return AdminProfile;
+    case path.endsWith('/roq/esign'):
+      return AdminEsign;
+
     default:
       return null;
   }

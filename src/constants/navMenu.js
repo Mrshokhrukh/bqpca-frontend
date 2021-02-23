@@ -136,6 +136,11 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/admin/${serviceType}/genders`,
       },
       {
+        name: 'Esignatures',
+        icon: getIconComponent('Users'),
+        route: (serviceType) => `/admin/admin/${serviceType}/esign`,
+      },
+      {
         name: 'Countries',
         icon: getIconComponent('Globe'),
         route: (serviceType) => `/admin/admin/${serviceType}/countries`,
@@ -727,7 +732,8 @@ const serviceSpecificMenuItems = {
       {
         name: 'Institutional Accreditation',
         icon: getIconComponent('Folder'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/institutional_accreditations`,
+        route: (serviceType) =>
+          `/admin/dealing_officer/${serviceType}/institutional_accreditations`,
       },
       {
         name: 'Appeals',
