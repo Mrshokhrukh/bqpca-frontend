@@ -1,5 +1,13 @@
+<!-- ChiefReport.vue -->
 <template>
   <div class="p-4">
+    <!-- Loading Overlay -->
+    <div v-if="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-4 rounded-lg shadow-lg">
+        <span class="text-lg">Loading...</span>
+      </div>
+    </div>
+
     <!-- Header with Export Button -->
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-bold text-gray-900">Chief's Report</h1>
@@ -115,7 +123,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useToast } from 'vue-toastification';
 import { Clock, CheckCircle, XCircle, ClipboardList } from 'lucide-vue-next';
 import { format, subDays, startOfWeek, startOfMonth, startOfYear, isWithinInterval } from 'date-fns';
@@ -123,9 +131,18 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import apiService from '@/services/services';
 
-const toast = useToast();
+// State variables
+const searchQuery = ref('');
+const dateRange = ref('all');
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+const sortKey = ref('submission_date');
+const sortOrder = ref('desc');
+const applications = ref([]) // Local state, no globalState
+const loading = ref(false); // Local loading state
 
-// Table headers configuration
+
+// Table configuration
 const tableHeaders = [
   { key: 'id', label: 'Application ID' },
   { key: 'applicant_name', label: 'Applicant Name' },
@@ -137,16 +154,6 @@ const tableHeaders = [
   { key: 'chief_remarks', label: 'Chief Remarks' },
   { key: 'processing_time', label: 'Processing Time' }
 ];
-
-// State
-const applications = ref([]);
-const searchQuery = ref('');
-const dateRange = ref('all');
-const loading = ref(true);
-const currentPage = ref(1);
-const itemsPerPage = ref(10);
-const sortKey = ref('submission_date');
-const sortOrder = ref('desc');
 
 // Computed properties
 const stats = computed(() => {
@@ -255,7 +262,48 @@ const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage.value);
 const endIndex = computed(() => Math.min(startIndex.value + itemsPerPage.value, filteredData.value.length));
 const paginatedData = computed(() => filteredData.value.slice(startIndex.value, endIndex.value));
 
-// Methods
+
+const toast = useToast();
+let refreshInterval;
+const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
+const fetchApplications = async () => {
+  loading.value = true; // Set loading to true *immediately*
+  try {
+    const response = await apiService.getRecognitionOfQualifications({
+      status: "under_review",
+      forward: true
+    });
+    // console.log("API Response:", response); // Log the full response
+
+    if (response?.data?.results) {  //  Check for response AND data AND results
+      applications.value = response.data.results;
+    } else {
+      applications.value = [] //set to empty to avoid errors.
+      console.error("Unexpected API response format:", response);
+      toast.error("Failed to load applications: Invalid response format.");
+    }
+
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    applications.value = [] //set to empty to avoid errors.
+    // More specific error handling:
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      toast.error(`API Error: ${error.response.status} - ${error.response.data}`);
+    } else if (error.request) {
+      // The request was made but no response was received
+      toast.error("Network Error: No response from server.");
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      toast.error("Request Error: " + error.message);
+    }
+  } finally {
+    loading.value = false; // Set loading to false in *all* cases
+  }
+};
+
 const sortBy = (key) => {
   if (sortKey.value === key) {
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
@@ -353,27 +401,16 @@ const downloadReport = () => {
   toast.success('Report downloaded successfully');
 };
 
-// Fetch Data
-const fetchApplications = async () => {
-  try {
-    loading.value = true;
-    const response = await apiService.getRecognitionOfQualifications({
-      status: "under_review",
-      forward: true
-    });
-    applications.value = response.data.results;
-  } catch (error) {
-    console.error('Error fetching applications:', error);
-    toast.error('Failed to load applications');
-  } finally {
-    loading.value = false;
-  }
-};
-
 // Lifecycle hooks
-onMounted(() => {
-  fetchApplications();
+onMounted(async () => {
+  await fetchApplications();
+  refreshInterval = setInterval(fetchApplications, AUTO_REFRESH_INTERVAL); // Simpler interval
 });
+
+onBeforeUnmount(() => {
+  clearInterval(refreshInterval);
+});
+
 </script>
 
 <style scoped>
