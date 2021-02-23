@@ -172,39 +172,6 @@
       </div>
     </div>
 
-    <!-- Admin Access Section -->
-    <div id="login" class="bg-slate-100 py-20">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white rounded-2xl shadow-xl p-12 relative overflow-hidden">
-          <!-- Decorative elements -->
-          <div class="absolute inset-0">
-            <div class="absolute top-0 right-0 w-40 h-40 bg-blue-50 rounded-full -translate-y-1/2 translate-x-1/2">
-            </div>
-            <div class="absolute bottom-0 left-0 w-40 h-40 bg-slate-50 rounded-full translate-y-1/2 -translate-x-1/2">
-            </div>
-          </div>
-
-          <div class="text-center relative">
-            <h2 class="text-2xl font-serif font-bold text-slate-900 mb-8">
-              Secure Administrative Access
-            </h2>
-            <div class="flex flex-col sm:flex-row justify-center gap-6">
-              <router-link to="/admin/login"
-                class="group inline-flex items-center px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl">
-                <span>BQPCA Admin Portal</span>
-                <LockIcon class="ml-3 h-5 w-5 transition-transform group-hover:rotate-12" />
-              </router-link>
-              <router-link to="/super-admin/login"
-                class="group inline-flex items-center px-8 py-4 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors shadow-lg hover:shadow-xl">
-                <span>Super Admin Portal</span>
-                <ShieldIcon class="ml-3 h-5 w-5 transition-transform group-hover:rotate-12" />
-              </router-link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Contact Section -->
     <div id="contact" class="py-24 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
