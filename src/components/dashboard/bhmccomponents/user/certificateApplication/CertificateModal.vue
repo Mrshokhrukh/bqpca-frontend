@@ -163,7 +163,7 @@
 </template>
 
 <script setup>
-import { watch, defineProps, defineEmits, computed, onMounted } from 'vue';
+import { watch, computed, onMounted } from 'vue';
 import VueQrcode from '@chenfengyuan/vue-qrcode';
 import html2pdf from 'html2pdf.js';
 

@@ -405,7 +405,7 @@ import {
   CheckIcon,
   CreditCardIcon,
   DocumentTextIcon,
-  // DocumentDownloadIcon,
+  DocumentDownloadIcon,
   PrinterIcon
 } from '@heroicons/vue/24/outline'
 
@@ -429,7 +429,7 @@ const form = reactive({
   recipientAddress: '',
   recipientPOBox: '',
   recipientZipCode: '',
-  declaration: false // Changed to boolean
+  declaration: false 
 });
 
 const errors = reactive({}); // Validation Errors
@@ -543,35 +543,79 @@ const validateForm = () => {
   return isValid;
 };
 
-const submitForm = () => {
+const submitForm = async () => { // Changed to async
   if (validateForm()) {
-    console.log('Submitting form:', form);
-
     // Validation: Declaration checkbox must be checked
     if (!form.declaration) {
-      message.value = 'Please agree to the declaration before submitting.';
-      messageClass.value = 'text-red-500';
-      return; // Prevent submission
+      toast.error('Please agree to the declaration before submitting.'); // Use toast for consistency
+      return;
     }
 
-    // Simulate successful submission
-    setTimeout(() => {
-      message.value =
-        'Application submitted successfully! You will receive a notification through email for payment.';
-      messageClass.value = 'text-green-500';
-      showPaymentSection.value = true; // Show payment section
+    // Prepare the data for the API request
+    const requestData = {
+      registration_no: form.registrationNumber,
+      cid_no: form.cidNo,
+      full_name: form.fullName,
+      gender: form.gender,
+      reason_for_application: form.reasonForApplication,
+      supervisor_name: form.supervisorName,
+      supervisor_designation: form.supervisorDesignation,
+      contact_number: form.supervisorContactNumber,
+      email_address: form.supervisorEmail,
+      recipient_name: isRecipientSelf.value ? form.fullName : form.recipientName, // Conditionally set recipient
+      recipient_contact_number: isRecipientSelf.value ? form.supervisorContactNumber : form.recipientContactNumber,  //  Conditional
+      recipient_email: isRecipientSelf.value ? form.supervisorEmail : form.recipientEmail,  //Conditional
+      address: isRecipientSelf.value ? '' : form.recipientAddress, // Conditional, you may need a user address
+      po_box: isRecipientSelf.value ? '' : form.recipientPOBox, // Conditional
+      zip_code: isRecipientSelf.value ? '' : form.recipientZipCode, // Conditional
+      declaration: form.declaration === 'agree' ? true : form.declaration,
+        //Include other fields from the request body that you dont collect in the form..
+      review_status: "Pending", // You'll likely want to set a default status
+      review_remark: "",
+      endorsement_decision: "Pending",
+      endorsement_remark: "",
+      is_payment_complete: false, // Set initial payment status
+      payment_id: "",  //No payment ID on initial submission
+      is_active: true, // Assuming you want to activate the record immediately
+    };
 
-      // Reset message after 5 seconds
-      setTimeout(() => {
-        message.value = '';
-        messageClass.value = '';
-      }, 5000);
+    try {
+      // Make the API call
+      const response = await apiService.createBmhcCogs(requestData);
 
-      // Here you would typically make an API call to your backend
-      // to save the form data.  For example:
-      // await axios.post('/api/cogs', form);
+      // Handle the response
+      if (response.status === 201) { // Check for the correct success status code (usually 201 for creation)
+        toast.success('Application submitted successfully! You will receive an email notification for payment.');
+        showPaymentSection.value = true; // Show payment section
 
-    }, 1000); // Simulate API delay
+      } else {
+        // Handle unexpected responses
+        toast.error('An unexpected error occurred. Please try again.');
+        console.error("Unexpected response status:", response.status);
+      }
+
+
+    } catch (error) {
+      // Handle API errors
+      console.error("Error submitting form:", error);
+
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error("Error data:", error.response.data);
+        console.error("Error status:", error.response.status);
+        console.error("Error headers:", error.response.headers);
+        toast.error(`Server error: ${error.response.status} - ${error.response.data.detail || 'See console for details'}`);
+      } else if (error.request) {
+        // The request was made but no response was received
+        toast.error('No response received from the server. Please check your network connection.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        toast.error('An error occurred: ' + error.message);
+      }
+    }
+
+
   } else {
     toast.error('Please correct the errors in the form.');
   }
