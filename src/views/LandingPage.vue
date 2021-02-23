@@ -97,7 +97,7 @@
               </p>
               <!-- "Learn More" link (optional, can be kept or removed) -->
               <span class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium group">
-                Learn More
+                Proceed to Login
                 <ArrowRight class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-2" />
               </span>
             </div>

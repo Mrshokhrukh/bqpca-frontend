@@ -11,7 +11,7 @@
     </div>
 
     <!-- Search Section -->
-    <div class="max-w-3xl mx-auto">
+    <div class="w-100 mx-auto mb-16">
       <div class="bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-lg border border-blue-100 p-8">
         <!-- Search Container -->
         <div class="relative">
@@ -97,226 +97,130 @@
       </div>
     </div>
 
-    <!-- Results Section -->
-    <div v-if="applications?.length > 0" class="space-y-6">
-      <div v-for="application in applications" :key="application.id"
-        class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:border-blue-200 transition-all duration-300">
-        <!-- Main Info Header -->
-        <div class="relative">
-          <!-- Moved button inside loop, added v-if -->
-          <div class="absolute top-0 right-0 m-4">
-            <button v-if="application.user_qualifications.length > 0" @click="openCertificateModal(application)"
-              class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
-              <FileText class="w-4 h-4 mr-2" />
-              <span>View Certificate</span>
-            </button>
-          </div>
-          <div class="p-6 flex items-start space-x-6">
-            <img :src="application.passport_photo" :alt="application.full_name"
-              class="h-24 w-24 rounded-lg object-cover ring-2 ring-white shadow-md" />
-            <div class="flex-1 pt-1">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <!-- Results Section -->
+      <div v-if="applications?.length > 0" class="space-y-6">
+        <div v-for="(record, index) in applications" :key="index"
+          class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:border-blue-200 transition-all duration-300">
+
+          <!-- Header Section with Status -->
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-xl font-bold text-gray-900">{{ record.title_of_cpd }}</h3>
+                <p class="text-gray-600 mt-1">Registration #{{ record.registration_no }}</p>
+              </div>
               <div class="flex items-center space-x-3">
-                <h3 class="text-xl font-bold text-gray-900">{{ application.full_name }}</h3>
-                <!--  Header Status Logic  -->
-                <span class="px-3 py-1 rounded-full text-sm font-medium"
-                  :class="isApplicationActive(application) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
-                  {{ isApplicationActive(application) ? 'Active' : 'Inactive' }}
+                <span :class="[
+            record.review_status === 'Approved' ? 'bg-green-100 text-green-800' :
+              record.review_status === 'Rejected' ? 'bg-red-100 text-red-800' :
+                'bg-yellow-100 text-yellow-700',
+            'px-4 py-2 rounded-full text-sm font-medium'
+          ]">
+                  {{ record.review_status }}
+                </span>
+                <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                  {{ record.cpd_credit }} Credits
                 </span>
               </div>
-              <div class="mt-2 flex items-center space-x-4 text-gray-600">
-                <div class="flex items-center">
-                  <IdCard class="w-4 h-4 mr-2" />
-                  <span>{{ application.cid_holder ? 'CID' : 'Work Permit' }}: {{ application.cid_no }}</span>
+            </div>
+          </div>
+
+          <!-- Main Content Grid -->
+          <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Personal Information -->
+            <div class="space-y-4">
+              <h4 class="text-lg font-semibold text-gray-900 flex items-center">
+                <User class="w-5 h-5 mr-2 text-blue-600" />
+                Personal Information
+              </h4>
+              <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div class="flex items-start space-x-3">
+                  <IdCard class="w-5 h-5 text-gray-400 mt-1" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-500">Full Name</p>
+                    <p class="text-sm font-semibold text-gray-900">{{ record.full_name }}</p>
+                  </div>
                 </div>
-                <div class="flex items-center">
-                  <BarChart class="w-4 h-4 mr-2" />
-                  <span>Reg No: {{ application.registration_no }}</span>
+                <div class="flex items-start space-x-3">
+                  <CreditCard class="w-5 h-5 text-gray-400 mt-1" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-500">CID Number</p>
+                    <p class="text-sm font-semibold text-gray-900">{{ record.cid_no }}</p>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Contact & Registration Info -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 py-4 bg-gray-50 border-y border-gray-200">
-          <div class="flex items-start space-x-3">
-            <div class="mt-1">
-              <Phone class="w-5 h-5 text-gray-400" />
-            </div>
-            <div>
-              <p class="text-sm font-medium text-gray-900">Contact</p>
-              <p class="text-sm text-gray-600">{{ application.contact_no }}</p>
-              <p class="text-sm text-gray-600">{{ application.email_address }}</p>
-            </div>
-          </div>
-          <div class="flex items-start space-x-3">
-            <div class="mt-1">
-              <MapPin class="w-5 h-5 text-gray-400" />
-            </div>
-            <div>
-              <p class="text-sm font-medium text-gray-900">Location</p>
-              <p class="text-sm text-gray-600">
-                {{ application.village }}, {{ application.gewog }}, {{ application.dzongkhag }}
-              </p>
-            </div>
-          </div>
-          <div class="flex items-start space-x-3">
-            <div class="mt-1">
-              <Calendar class="w-5 h-5 text-gray-400" />
-            </div>
-            <div>
-              <p class="text-sm font-medium text-gray-900">Registration Period</p>
-              <p class="text-sm text-gray-600">
-                {{ new Date(application.registration_date).toLocaleDateString() }} -
-                {{ new Date(application.expiry_date).toLocaleDateString() }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Qualifications Section -->
-        <div class="p-6">
-          <h4 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-            <GraduationCap class="w-5 h-5 mr-2 text-blue-600" />
-            Qualifications & Certifications
-          </h4>
-
-          <div class="grid grid-cols-1 gap-6">
-            <div v-for="qualification in application.user_qualifications" :key="qualification.id"
-              class="relative bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 transition-all duration-300 hover:shadow-lg">
-
-              <!-- Qualification Header -->
-              <div class="flex items-start justify-between mb-6">
-                <div class="space-y-2">
-                  <h5 class="text-xl font-semibold text-gray-900">
-                    {{ qualification.qualification_name_display }}
-                  </h5>
-                  <p class="text-gray-600 text-sm">
-                    {{ qualification.institute_university_display }}
-                  </p>
-                </div>
-
-                <!-- Review Status Timeline -->
-                <div class="flex items-center space-x-2">
-                  <div class="flex items-center">
-                    <div class="relative flex items-center">
-                      <!-- Application Review -->
-                      <div class="flex flex-col items-center">
-                        <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
-            qualification.application_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
-              qualification.application_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
-                'bg-yellow-100 text-yellow-700'
-          ]">
-                          <CheckCircle v-if="qualification.application_review_status === 'Approved'" class="w-5 h-5" />
-                          <XCircle v-else-if="qualification.application_review_status === 'Rejected'" class="w-5 h-5" />
-                          <Clock v-else class="w-5 h-5" />
-                        </span>
-                        <span class="text-xs font-medium mt-1 text-gray-600">Review</span>
-                      </div>
-
-                      <!-- Connecting Line -->
-                      <div class="w-8 h-0.5 bg-gray-200"></div>
-
-                      <!-- Physical Verification -->
-                      <div class="flex flex-col items-center">
-                        <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
-            qualification.physical_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
-              qualification.physical_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
-                'bg-yellow-100 text-yellow-700'
-          ]">
-                          <CheckCircle v-if="qualification.physical_review_status === 'Approved'" class="w-5 h-5" />
-                          <XCircle v-else-if="qualification.physical_review_status === 'Rejected'" class="w-5 h-5" />
-                          <Clock v-else class="w-5 h-5" />
-                        </span>
-                        <span class="text-xs font-medium mt-1 text-gray-600">Verify</span>
-                      </div>
-
-                      <!-- Connecting Line -->
-                      <div class="w-8 h-0.5 bg-gray-200"></div>
-
-                      <!-- Endorsement -->
-                      <div class="flex flex-col items-center">
-                        <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
-            qualification.endorsement_decision === 'Approved' ? 'bg-green-100 text-green-700' :
-              qualification.endorsement_decision === 'Rejected' ? 'bg-red-100 text-red-700' :
-                'bg-yellow-100 text-yellow-700'
-          ]">
-                          <CheckCircle v-if="qualification.endorsement_decision === 'Approved'" class="w-5 h-5" />
-                          <XCircle v-else-if="qualification.endorsement_decision === 'Rejected'" class="w-5 h-5" />
-                          <Clock v-else class="w-5 h-5" />
-                        </span>
-                        <span class="text-xs font-medium mt-1 text-gray-600">Endorse</span>
-                      </div>
-                    </div>
+                <div class="flex items-start space-x-3">
+                  <Users class="w-5 h-5 text-gray-400 mt-1" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-500">Gender</p>
+                    <p class="text-sm font-semibold text-gray-900 capitalize">{{ record.gender.toLowerCase() }}</p>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <!-- Qualification Details Grid -->
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-gray-50 rounded-lg p-4">
-                  <div class="flex items-start space-x-3">
-                    <Building2 class="w-5 h-5 text-blue-600 mt-1" />
-                    <div>
-                      <p class="text-sm font-medium text-gray-500">Institute</p>
-                      <p class="text-sm font-semibold text-gray-900 mt-1">{{ qualification.institute_university_display
-                        }}</p>
-                    </div>
+            <!-- CPD Activity Details -->
+            <div class="space-y-4">
+              <h4 class="text-lg font-semibold text-gray-900 flex items-center">
+                <GraduationCap class="w-5 h-5 mr-2 text-blue-600" />
+                Activity Details
+              </h4>
+              <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div class="flex items-start space-x-3">
+                  <BookOpen class="w-5 h-5 text-gray-400 mt-1" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-500">Activity Type</p>
+                    <p class="text-sm font-semibold text-gray-900">{{ record.type_of_cpd_activity || 'Not specified' }}
+                    </p>
                   </div>
                 </div>
-
-                <div class="bg-gray-50 rounded-lg p-4">
-                  <div class="flex items-start space-x-3">
-                    <GraduationCap class="w-5 h-5 text-blue-600 mt-1" />
-                    <div>
-                      <p class="text-sm font-medium text-gray-500">Qualification Type</p>
-                      <p class="text-sm font-semibold text-gray-900 mt-1">{{ qualification.qualification_type_display }}
-                      </p>
-                    </div>
+                <div class="flex items-start space-x-3">
+                  <Target class="w-5 h-5 text-gray-400 mt-1" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-500">Relevance to Profession</p>
+                    <p class="text-sm font-semibold text-gray-900">{{ record.relevance_to_profession }}</p>
                   </div>
                 </div>
-
-                <div class="bg-gray-50 rounded-lg p-4">
-                  <div class="flex items-start space-x-3">
-                    <CalendarCheck class="w-5 h-5 text-blue-600 mt-1" />
-                    <div>
-                      <p class="text-sm font-medium text-gray-500">Completion Year</p>
-                      <p class="text-sm font-semibold text-gray-900 mt-1">{{ qualification.completion_year }}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="bg-gray-50 rounded-lg p-4">
-                  <div class="flex items-start space-x-3">
-                    <CreditCard class="w-5 h-5 text-blue-600 mt-1" />
-                    <div>
-                      <p class="text-sm font-medium text-gray-500">Payment Status</p>
-                      <div class="flex items-center space-x-2 mt-1">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                          :class="qualification.is_payment_complete ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
-                          {{ qualification.is_payment_complete ? 'Paid' : 'Pending' }}
-                        </span>
-                        <span v-if="qualification.payment_id" class="text-xs text-gray-500">
-                          #{{ qualification.payment_id }}
-                        </span>
-                      </div>
-                    </div>
+                <div class="flex items-start space-x-3">
+                  <Calendar class="w-5 h-5 text-gray-400 mt-1" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-500">Submission Date</p>
+                    <p class="text-sm font-semibold text-gray-900">
+                      {{ new Date(record.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  }) }}
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
+          <!-- Attachment Section -->
+          <div class="border-t border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <FileText class="w-5 h-5 text-blue-600" />
+                <span class="font-medium text-gray-900">Supporting Document</span>
+              </div>
+              <a :href="record.attachment" target="_blank"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <Download class="w-4 h-4 mr-2" />
+                <span>Download</span>
+              </a>
+            </div>
+          </div>
+
         </div>
       </div>
-    </div>
-    <!-- No Results Message -->
-    <div v-else-if="hasSearched && !apiError" class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
-      <p class="text-gray-600">No applications found matching your search.</p>
-    </div>
 
-    <!-- Certificate Modal -->
-    <CertificateModal :qualification="selectedApplication" :showModal="showCertificateModal"
-      @close="closeCertificateModal" />
+      <!-- No Results Message -->
+      <div v-else-if="hasSearched && !apiError" class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
+        <p class="text-gray-600">No CPD records found matching your search.</p>
+      </div>
+    </div>
 
   </div>
 </template>
@@ -324,23 +228,22 @@
 <script setup>
 import { ref } from 'vue';
 import apiService from '@/services/services';
-import CertificateModal from './certificateApplication/CertificateModal.vue';
 import {
   FileText,
   IdCard,
-  BarChart,
-  Phone,
-  MapPin,
+  User,
+  Users,
+  CreditCard,
   Calendar,
   GraduationCap,
-  Building2,
-  CalendarCheck,
-  CreditCard,
+  BookOpen,
+  Target,
+  Download,
+  Search,
   Loader,
-  CheckCircle,
-  XCircle,
-  Clock,
-  Search, HelpCircle, Trash2,
+  HelpCircle,
+  Trash2,
+  Clock
 } from 'lucide-vue-next';
 
 // State
@@ -350,9 +253,7 @@ const searchType = ref('id');
 const isLoading = ref(false);
 const hasSearched = ref(false);
 const apiError = ref(false);
-const showCertificateModal = ref(false);
-const selectedApplication = ref(null);
-const recentSearches = ref(['11506002491', '21703001234']);
+const recentSearches = ref([]); // Initialize as empty
 
 const clearRecentSearches = () => {
   recentSearches.value = [];
@@ -364,18 +265,13 @@ const fetchApplications = async () => {
   apiError.value = false;
 
   try {
-    let response;
-    if (searchType.value === 'id') {
-      response = await apiService.getBmhcCpdRecordsByCid(searchQuery.value);
-    } else {
-      response = await apiService.getBhmcNewApplications(searchQuery.value);
-    }
-
-    if (response && response.data && response.data.results) {
-      applications.value = response.data.results;
-    } else {
-      applications.value = [];
-    }
+    const response = await apiService.getBmhcCpdRecordsByCid(searchQuery.value);
+     if (response && response.data && response.data.details && response.data.valid) { //check for validity
+          // Create a single-element array
+          applications.value = [response.data.details];
+        } else {
+          applications.value = []; // Set to an empty array if no details
+        }
   } catch (error) {
     console.error('Error fetching applications:', error);
     applications.value = [];
@@ -388,26 +284,16 @@ const fetchApplications = async () => {
 const handleSearch = async () => {
   hasSearched.value = true;
   await fetchApplications();
+
+  // Add to recent searches (if valid and not a duplicate)
+  if (searchQuery.value.trim() !== '' && !recentSearches.value.includes(searchQuery.value)) {
+    recentSearches.value.unshift(searchQuery.value); // Add to the beginning
+    recentSearches.value = recentSearches.value.slice(0, 5); // Limit to 5 recent searches (adjust as needed)
+  }
 };
 
 const setSearch = (search) => {
   searchQuery.value = search;
   handleSearch();
-};
-
-const isApplicationActive = (application) => {
-  return application.user_qualifications.some(
-    (qualification) => qualification.endorsement_decision === 'Approved'
-  );
-};
-
-const openCertificateModal = (application) => {
-  selectedApplication.value = { results: [application] }; // Pass the entire application
-  showCertificateModal.value = true;
-};
-
-const closeCertificateModal = () => {
-  showCertificateModal.value = false;
-  selectedApplication.value = null; // Reset the selected application
 };
 </script>

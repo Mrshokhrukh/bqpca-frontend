@@ -11,29 +11,88 @@
     </div>
 
     <!-- Search Section -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-      <div class="max-w-xl mx-auto">
-        <div class="flex space-x-4 mb-4">
-          <button @click="searchType = 'id'" :class="[
-            'px-4 py-2 rounded-lg text-sm font-medium flex-1',
-            searchType === 'id'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          ]">
-            CID/Work Permit Number
-          </button>
+    <div class="w-100 mx-auto mb-16">
+      <div class="bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-lg border border-blue-100 p-8">
+        <!-- Search Container -->
+        <div class="relative">
+          <!-- Search Icon Overlay -->
+          <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+            <Search class="h-5 w-5 text-blue-500" />
+          </div>
+
+          <!-- Main Search Input -->
+          <input v-model="searchQuery" type="text" class="w-full pl-12 pr-32 py-4 bg-white/70 backdrop-blur-sm rounded-xl border-2 border-blue-100
+                 text-gray-900 placeholder-gray-500 text-lg
+                 shadow-sm transition-all duration-200
+                 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 focus:outline-none
+                 hover:border-blue-200"
+            :placeholder="searchType === 'id' ? 'Enter CID or Work Permit number' : 'Enter Application ID'" />
+
+          <!-- Search Button (Absolutely Positioned) -->
+          <div class="absolute inset-y-1.5 right-1.5">
+            <button @click="handleSearch" :disabled="isLoading" class="px-6 py-2.5 bg-blue-600 text-white rounded-lg
+                   shadow-sm transition-all duration-200
+                   hover:bg-blue-700 hover:shadow-md
+                   disabled:bg-blue-400 disabled:cursor-not-allowed
+                   flex items-center space-x-2">
+              <Loader v-if="isLoading" class="animate-spin w-4 h-4" />
+              <span class="font-medium">{{ isLoading ? 'Searching...' : 'Search' }}</span>
+            </button>
+          </div>
         </div>
 
-        <div class="flex space-x-4">
-          <input v-model="searchQuery" type="text"
-            class="flex-1 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            :placeholder="searchType === 'id' ? 'Enter CID or Work Permit number' : 'Enter Application ID (e.g., c44df22e-53cf-4486-9)'" />
-          <button @click="handleSearch"
-            class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
-            :disabled="isLoading">
-            <Loader v-if="isLoading" class="animate-spin mr-2" />
-            {{ isLoading ? 'Searching...' : 'Search' }}
-          </button>
+        <!-- Search Type Indicator -->
+        <div class="mt-4 flex items-center justify-between text-sm">
+          <div class="flex items-center space-x-2">
+            <IdCard class="w-4 h-4 text-blue-500" />
+            <span class="text-gray-600 font-medium">Searching by:</span>
+            <span class="text-blue-600 font-semibold">CID/Work Permit Number</span>
+          </div>
+
+          <!-- Search Tips -->
+          <div class="flex items-center text-gray-500 hover:text-gray-700 transition-colors cursor-help group relative">
+            <HelpCircle class="w-4 h-4 mr-1" />
+            <span>Search Tips</span>
+
+            <!-- Tooltip -->
+            <div class="absolute bottom-full right-0 mb-2 w-64 hidden group-hover:block">
+              <div class="bg-gray-900 text-white p-3 rounded-lg shadow-lg text-xs">
+                <ul class="space-y-1">
+                  <li>• Enter your complete ID number</li>
+                  <li>• Ensure there are no extra spaces</li>
+                  <li>• Numbers only for Work Permit</li>
+                </ul>
+                <div class="absolute bottom-0 right-4 transform translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Searches (Optional) -->
+        <div v-if="recentSearches?.length" class="mt-6 pt-4 border-t border-blue-100">
+          <div class="flex items-center justify-between text-sm mb-2">
+            <span class="text-gray-600 font-medium">Recent Searches</span>
+            <button @click="clearRecentSearches" class="text-gray-400 hover:text-gray-600 transition-colors">
+              <Trash2 class="w-4 h-4" />
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button v-for="search in recentSearches" :key="search" @click="setSearch(search)" class="px-3 py-1 text-sm bg-white rounded-full border border-gray-200
+                   text-gray-600 hover:border-blue-300 hover:text-blue-600
+                   transition-colors flex items-center space-x-1">
+              <Clock class="w-3 h-3" />
+              <span>{{ search }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading Indicator (Optional) -->
+      <div v-if="isLoading" class="mt-4 flex justify-center">
+        <div class="flex items-center space-x-2 text-sm text-gray-500">
+          <span class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
+          <span class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-100"></span>
+          <span class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-200"></span>
         </div>
       </div>
     </div>
@@ -144,10 +203,10 @@
                       <!-- Application Review -->
                       <div class="flex flex-col items-center">
                         <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
-                          qualification.application_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
-                            qualification.application_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
-                              'bg-yellow-100 text-yellow-700'
-                        ]">
+            qualification.application_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
+              qualification.application_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
+                'bg-yellow-100 text-yellow-700'
+          ]">
                           <CheckCircle v-if="qualification.application_review_status === 'Approved'" class="w-5 h-5" />
                           <XCircle v-else-if="qualification.application_review_status === 'Rejected'" class="w-5 h-5" />
                           <Clock v-else class="w-5 h-5" />
@@ -161,10 +220,10 @@
                       <!-- Physical Verification -->
                       <div class="flex flex-col items-center">
                         <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
-                          qualification.physical_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
-                            qualification.physical_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
-                              'bg-yellow-100 text-yellow-700'
-                        ]">
+            qualification.physical_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
+              qualification.physical_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
+                'bg-yellow-100 text-yellow-700'
+          ]">
                           <CheckCircle v-if="qualification.physical_review_status === 'Approved'" class="w-5 h-5" />
                           <XCircle v-else-if="qualification.physical_review_status === 'Rejected'" class="w-5 h-5" />
                           <Clock v-else class="w-5 h-5" />
@@ -178,10 +237,10 @@
                       <!-- Endorsement -->
                       <div class="flex flex-col items-center">
                         <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
-                          qualification.endorsement_decision === 'Approved' ? 'bg-green-100 text-green-700' :
-                            qualification.endorsement_decision === 'Rejected' ? 'bg-red-100 text-red-700' :
-                              'bg-yellow-100 text-yellow-700'
-                        ]">
+            qualification.endorsement_decision === 'Approved' ? 'bg-green-100 text-green-700' :
+              qualification.endorsement_decision === 'Rejected' ? 'bg-red-100 text-red-700' :
+                'bg-yellow-100 text-yellow-700'
+          ]">
                           <CheckCircle v-if="qualification.endorsement_decision === 'Approved'" class="w-5 h-5" />
                           <XCircle v-else-if="qualification.endorsement_decision === 'Rejected'" class="w-5 h-5" />
                           <Clock v-else class="w-5 h-5" />
@@ -201,7 +260,7 @@
                     <div>
                       <p class="text-sm font-medium text-gray-500">Institute</p>
                       <p class="text-sm font-semibold text-gray-900 mt-1">{{ qualification.institute_university_display
-                      }}</p>
+                        }}</p>
                     </div>
                   </div>
                 </div>
@@ -291,7 +350,8 @@ const isLoading = ref(false);
 const hasSearched = ref(false);
 const apiError = ref(false);
 const showCertificateModal = ref(false);
-const selectedApplication = ref(null); // Corrected variable name
+const selectedApplication = ref(null);
+const recentSearches = ref(['11506002491', '21703001234']);
 
 // Methods
 const fetchApplications = async () => {

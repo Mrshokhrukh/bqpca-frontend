@@ -14,10 +14,10 @@
 
       <!-- Main Form -->
       <form @submit.prevent="submitForm" class="space-y-8">
-        <!-- Hidden Fields -->
-        <input type="hidden" v-model="form.registrationNumber" />
-        <input type="hidden" v-model="form.cidNo" />
-        <input type="hidden" v-model="form.fullName" />
+        <!-- Hidden Fields (Prefilled from Auth Store) -->
+        <input type="hidden" v-model="form.registration_no" />
+        <input type="hidden" v-model="form.cid_no" />
+        <input type="hidden" v-model="form.full_name" />
         <input type="hidden" v-model="form.gender" />
 
         <!-- Supervisor Details Section -->
@@ -37,29 +37,30 @@
 
           <div class="p-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <!-- Name -->
+              <!-- Supervisor Name -->
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700 required">Name</label>
-                <input type="text" v-model="form.supervisorName"
+                <label class="block text-sm font-medium text-gray-700 required">Supervisor's Name</label>
+                <input type="text" v-model="form.supervisor_name"
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter supervisor's name" />
-                <span v-if="errors.supervisorName" class="text-sm text-red-500 block">{{ errors.supervisorName }}</span>
+                <span v-if="errors.supervisor_name" class="text-sm text-red-500 block">{{ errors.supervisor_name
+                  }}</span>
               </div>
 
-              <!-- Designation -->
+              <!-- Supervisor Designation -->
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700 required">Designation</label>
-                <input type="text" v-model="form.supervisorDesignation"
+                <label class="block text-sm font-medium text-gray-700 required">Supervisor's Designation</label>
+                <input type="text" v-model="form.supervisor_designation"
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Enter designation" />
-                <span v-if="errors.supervisorDesignation" class="text-sm text-red-500 block">{{
-        errors.supervisorDesignation }}</span>
+                  placeholder="Enter supervisor's designation" />
+                <span v-if="errors.supervisor_designation" class="text-sm text-red-500 block">{{
+        errors.supervisor_designation }}</span>
               </div>
 
-              <!-- Agency Name -->
+              <!-- Agency -->
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700 required">Name of Agency</label>
-                <Listbox v-model="form.agencyName">
+                <label class="block text-sm font-medium text-gray-700 required">Agency</label>
+                <Listbox v-model="form.agency">
                   <div class="relative">
                     <ListboxButton
                       class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-left">
@@ -90,38 +91,40 @@
                     </transition>
                   </div>
                 </Listbox>
-                <span v-if="errors.agencyName" class="text-sm text-red-500 block">{{ errors.agencyName }}</span>
+                <span v-if="errors.agency" class="text-sm text-red-500 block">{{ errors.agency }}</span>
               </div>
 
-              <!-- Contact Number -->
+
+              <!-- Supervisor Contact Number -->
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700 required">Contact Number</label>
-                <input type="tel" v-model="form.supervisorContactNumber"
+                <label class="block text-sm font-medium text-gray-700 required">Supervisor's Contact Number</label>
+                <input type="tel" v-model="form.contact_number"
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Enter contact number" />
-                <span v-if="errors.supervisorContactNumber" class="text-sm text-red-500 block">{{
-        errors.supervisorContactNumber }}</span>
+                  placeholder="Enter supervisor's contact number" />
+                <span v-if="errors.contact_number" class="text-sm text-red-500 block">{{
+        errors.contact_number }}</span>
               </div>
 
-              <!-- Email -->
+              <!-- Supervisor Email Address -->
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700 required">Email Address</label>
-                <input type="email" v-model="form.supervisorEmail"
+                <label class="block text-sm font-medium text-gray-700 required">Supervisor's Email Address</label>
+                <input type="email" v-model="form.email_address"
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Enter email address" />
-                <span v-if="errors.supervisorEmail" class="text-sm text-red-500 block">{{ errors.supervisorEmail
+                  placeholder="Enter supervisor's email address" />
+                <span v-if="errors.email_address" class="text-sm text-red-500 block">{{ errors.email_address
                   }}</span>
               </div>
 
-              <!-- Reason -->
+              <!-- Reason for Application -->
               <div class="space-y-2">
                 <label class="block text-sm font-medium text-gray-700 required">Reason for Application</label>
-                <textarea v-model="form.reasonForApplication"
+                <textarea v-model="form.reason_for_application"
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   rows="3" placeholder="Enter reason for application"></textarea>
-                <span v-if="errors.reasonForApplication" class="text-sm text-red-500 block">{{
-        errors.reasonForApplication }}</span>
+                <span v-if="errors.reason_for_application" class="text-sm text-red-500 block">{{
+        errors.reason_for_application }}</span>
               </div>
+
             </div>
           </div>
         </div>
@@ -162,62 +165,63 @@
             <!-- Other Recipient Form -->
             <TransitionRoot as="template" :show="!isRecipientSelf">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Name -->
+                <!-- Recipient Name -->
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700 required">Name</label>
-                  <input type="text" v-model="form.recipientName"
+                  <label class="block text-sm font-medium text-gray-700 required">Recipient's Name</label>
+                  <input type="text" v-model="form.recipient_name"
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's name" />
-                  <span v-if="errors.recipientName" class="text-sm text-red-500 block">{{ errors.recipientName }}</span>
-                </div>
-
-                <!-- Contact Number -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700 required">Contact Number</label>
-                  <input type="tel" v-model="form.recipientContactNumber"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter contact number" />
-                  <span v-if="errors.recipientContactNumber" class="text-sm text-red-500 block">{{
-        errors.recipientContactNumber }}</span>
-                </div>
-
-                <!-- Email -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700 required">Email</label>
-                  <input type="email" v-model="form.recipientEmail"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter email address" />
-                  <span v-if="errors.recipientEmail" class="text-sm text-red-500 block">{{ errors.recipientEmail
+                  <span v-if="errors.recipient_name" class="text-sm text-red-500 block">{{ errors.recipient_name
                     }}</span>
                 </div>
 
-                <!-- Address -->
+                <!-- Recipient Contact Number -->
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700 required">Address</label>
-                  <input type="text" v-model="form.recipientAddress"
+                  <label class="block text-sm font-medium text-gray-700 required">Recipient's Contact Number</label>
+                  <input type="tel" v-model="form.recipient_contact_number"
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter full address" />
-                  <span v-if="errors.recipientAddress" class="text-sm text-red-500 block">{{ errors.recipientAddress
+                    placeholder="Enter recipient's contact number" />
+                  <span v-if="errors.recipient_contact_number" class="text-sm text-red-500 block">{{
+        errors.recipient_contact_number }}</span>
+                </div>
+
+                <!-- Recipient Email -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-gray-700 required">Recipient's Email</label>
+                  <input type="email" v-model="form.recipient_email"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Enter recipient's email address" />
+                  <span v-if="errors.recipient_email" class="text-sm text-red-500 block">{{ errors.recipient_email
                     }}</span>
                 </div>
 
-                <!-- PO Box -->
+                <!-- Recipient Address -->
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">PO. Box</label>
-                  <input type="text" v-model="form.recipientPOBox"
+                  <label class="block text-sm font-medium text-gray-700 required">Recipient's Address</label>
+                  <input type="text" v-model="form.address"
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter PO Box (optional)" />
-                  <span v-if="errors.recipientPOBox" class="text-sm text-red-500 block">{{ errors.recipientPOBox
+                    placeholder="Enter recipient's full address" />
+                  <span v-if="errors.address" class="text-sm text-red-500 block">{{ errors.address
                     }}</span>
                 </div>
 
-                <!-- Zip Code -->
+                <!-- Recipient PO Box -->
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Zip code</label>
-                  <input type="text" v-model="form.recipientZipCode"
+                  <label class="block text-sm font-medium text-gray-700">Recipient's PO. Box</label>
+                  <input type="text" v-model="form.po_box"
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter zip code (optional)" />
-                  <span v-if="errors.recipientZipCode" class="text-sm text-red-500 block">{{ errors.recipientZipCode
+                    placeholder="Enter recipient's PO Box (optional)" />
+                  <span v-if="errors.po_box" class="text-sm text-red-500 block">{{ errors.po_box
+                    }}</span>
+                </div>
+
+                <!-- Recipient Zip Code -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-gray-700">Recipient's Zip code</label>
+                  <input type="text" v-model="form.zip_code"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Enter recipient's zip code (optional)" />
+                  <span v-if="errors.zip_code" class="text-sm text-red-500 block">{{ errors.zip_code
                     }}</span>
                 </div>
               </div>
@@ -242,13 +246,18 @@
 
           <div class="p-8">
             <div class="flex items-start space-x-3">
-              <Checkbox v-model="form.declaration" value="agree"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-              <label class="text-sm text-gray-700">
+              <input type="checkbox" v-model="form.declaration" id="declarationCheckbox"
+                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4" />
+              <label for="declarationCheckbox" class="text-sm text-gray-700">
                 I declare that the information provided is true and accurate.
-                <button @click="openTermsModal" class="text-blue-600 hover:underline">Read More</button>
+                <button type="button" @click="openTermsModal" class="text-blue-600 hover:underline">
+                  Read More
+                </button>
               </label>
             </div>
+            <span v-if="errors.declaration" class="text-sm text-red-500 block">
+              {{ errors.declaration }}
+            </span>
           </div>
         </div>
 
@@ -258,7 +267,7 @@
             class="px-6 py-3 rounded-xl text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
             Cancel
           </button>
-          <button type="submit" :disabled="form.declaration !== 'agree'"
+          <button type="submit" :disabled="!form.declaration"
             class="px-6 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
             Submit Application
           </button>
@@ -274,7 +283,7 @@
               <DialogOverlay class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
             </TransitionChild>
 
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
 
             <TransitionChild as="template" enter="ease-out duration-300"
               enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -405,45 +414,38 @@ import {
   CheckIcon,
   CreditCardIcon,
   DocumentTextIcon,
-  DocumentDownloadIcon,
-  PrinterIcon
+  PrinterIcon,
 } from '@heroicons/vue/24/outline'
 
 const toast = useToast();
 const authStore = useAuthStore();
 
 const form = reactive({
-  registrationNumber: '',
-  cidNo: '',
-  fullName: '',
+  registration_no: '',
+  cid_no: '',
+  full_name: '',
   gender: '',
-  reasonForApplication: '',
-  supervisorName: '',
-  supervisorDesignation: '',
-  agencyName: '',
-  supervisorContactNumber: null,
-  supervisorEmail: '',
-  recipientName: '',
-  recipientContactNumber: null,
-  recipientEmail: '',
-  recipientAddress: '',
-  recipientPOBox: '',
-  recipientZipCode: '',
-  declaration: false 
+  reason_for_application: '',
+  supervisor_name: '',
+  supervisor_designation: '',
+  agency: null, // Use 'agency' to match the model, store the ID
+  contact_number: '', // Use generic name, as it's used for both supervisor and recipient
+  email_address: '',  //generic name as well
+  recipient_name: '',
+  recipient_contact_number: '',
+  recipient_email: '',
+  address: '', // Use generic names for recipient details
+  po_box: '',
+  zip_code: '',
+  declaration: false
 });
 
-const errors = reactive({}); // Validation Errors
-const isRecipientSelf = ref(true); // Initially set to "Self" - Corrected default
+const errors = reactive({});
+const isRecipientSelf = ref(true);
 const showTermsModal = ref(false);
-
-// Dropdown options
 const agencyOptions = ref([]);
-
-// Message display
 const message = ref('');
 const messageClass = ref('');
-
-// Conditional Sections
 const showPaymentSection = ref(false);
 const showCertificateSection = ref(false);
 const certificateGenerated = ref(false);
@@ -462,7 +464,6 @@ const fetchRegistrationNumber = async (cid) => {
   }
 };
 
-// Fetch Master Data - Added agency fetching back
 const fetchMasterData = async () => {
   try {
     const agenciesResponse = await apiService.getBmhcCogsAgencies();
@@ -475,147 +476,131 @@ const fetchMasterData = async () => {
 
 onMounted(async () => {
   if (authStore.user) {
-    form.cidNo = authStore.user.cid;
-    form.fullName = authStore.user.fullName;
+    form.cid_no = authStore.user.cid;
+    form.full_name = authStore.user.middle_name
+      ? `${authStore.user.first_name} ${authStore.user.middle_name} ${authStore.user.last_name}`
+      : `${authStore.user.first_name} ${authStore.user.last_name}`;
     form.gender = authStore.user.gender;
+    form.user_contact_number = authStore.user.contact_number;
+    form.user_email = authStore.user.email;
 
-    const registrationNumber = await fetchRegistrationNumber(form.cidNo);
+    const registrationNumber = await fetchRegistrationNumber(form.cid_no);
     if (registrationNumber) {
-      form.registrationNumber = registrationNumber;
+      form.registration_no = registrationNumber;
     }
     await fetchMasterData();
   }
-  // await fetchMasterData(); // Removed
-
-  updateRecipientDetails(); // Call this to initialize recipient fields
+  updateRecipientDetails();
 });
 
-
 const validateForm = () => {
-  Object.keys(errors).forEach(key => delete errors[key]); // Clear previous errors
+  Object.keys(errors).forEach(key => delete errors[key]);
   let isValid = true;
 
-  if (!form.reasonForApplication) {
-    errors.reasonForApplication = 'Reason for Application is required';
+  if (!form.reason_for_application) {
+    errors.reason_for_application = 'Reason for Application is required';
     isValid = false;
   }
-  if (!form.supervisorName) {
-    errors.supervisorName = 'Supervisor Name is required';
+  if (!form.supervisor_name) {
+    errors.supervisor_name = 'Supervisor Name is required';
     isValid = false;
   }
-  if (!form.supervisorDesignation) {
-    errors.supervisorDesignation = 'Supervisor Designation is required';
+  if (!form.supervisor_designation) {
+    errors.supervisor_designation = 'Supervisor Designation is required';
     isValid = false;
   }
-  if (!form.agencyName) {         // Added back agency validation
-    errors.agencyName = "Agency Name is required";
+  if (!form.agency) {
+    errors.agency = "Agency is required";
     isValid = false;
   }
-  if (!form.supervisorContactNumber) {
-    errors.supervisorContactNumber = 'Supervisor Contact Number is required';
+  if (!form.contact_number) {
+    errors.contact_number = 'Supervisor Contact Number is required';
     isValid = false;
   }
-  if (!form.supervisorEmail) {
-    errors.supervisorEmail = 'Supervisor Email is required';
+  if (!form.email_address) {
+    errors.email_address = 'Supervisor Email is required';
     isValid = false;
   }
 
-  // Only validate recipient details if "Other" is selected
   if (!isRecipientSelf.value) {
-    if (!form.recipientName) {
-      errors.recipientName = 'Recipient Name is required';
+    if (!form.recipient_name) {
+      errors.recipient_name = 'Recipient Name is required';
       isValid = false;
     }
-    if (!form.recipientContactNumber) {
-      errors.recipientContactNumber = 'Recipient Contact Number is required';
+    if (!form.recipient_contact_number) {
+      errors.recipient_contact_number = 'Recipient Contact Number is required';
       isValid = false;
     }
-    if (!form.recipientEmail) {
-      errors.recipientEmail = 'Recipient Email is required';
+    if (!form.recipient_email) {
+      errors.recipient_email = 'Recipient Email is required';
       isValid = false;
     }
-    if (!form.recipientAddress) {
-      errors.recipientAddress = 'Recipient Address is required';
+    if (!form.address) {
+      errors.address = 'Recipient Address is required';
       isValid = false;
     }
   }
-
+  if (!form.declaration) {
+    errors.declaration = 'You must agree to the declaration before submitting.';
+    isValid = false;
+  }
   return isValid;
 };
 
-const submitForm = async () => { // Changed to async
+const submitForm = async () => {
   if (validateForm()) {
-    // Validation: Declaration checkbox must be checked
-    if (!form.declaration) {
-      toast.error('Please agree to the declaration before submitting.'); // Use toast for consistency
-      return;
-    }
-
-    // Prepare the data for the API request
     const requestData = {
-      registration_no: form.registrationNumber,
-      cid_no: form.cidNo,
-      full_name: form.fullName,
+      registration_no: form.registration_no,
+      cid_no: form.cid_no,
+      full_name: form.full_name,
       gender: form.gender,
-      reason_for_application: form.reasonForApplication,
-      supervisor_name: form.supervisorName,
-      supervisor_designation: form.supervisorDesignation,
-      contact_number: form.supervisorContactNumber,
-      email_address: form.supervisorEmail,
-      recipient_name: isRecipientSelf.value ? form.fullName : form.recipientName, // Conditionally set recipient
-      recipient_contact_number: isRecipientSelf.value ? form.supervisorContactNumber : form.recipientContactNumber,  //  Conditional
-      recipient_email: isRecipientSelf.value ? form.supervisorEmail : form.recipientEmail,  //Conditional
-      address: isRecipientSelf.value ? '' : form.recipientAddress, // Conditional, you may need a user address
-      po_box: isRecipientSelf.value ? '' : form.recipientPOBox, // Conditional
-      zip_code: isRecipientSelf.value ? '' : form.recipientZipCode, // Conditional
-      declaration: form.declaration === 'agree' ? true : form.declaration,
-        //Include other fields from the request body that you dont collect in the form..
-      review_status: "Pending", // You'll likely want to set a default status
+      reason_for_application: form.reason_for_application,
+      supervisor_name: form.supervisor_name,
+      supervisor_designation: form.supervisor_designation,
+      agency: form.agency, // Send agency ID
+      department: null, // You might want to add department selection
+      workplace: null, //same case as above two
+      contact_number: form.contact_number, // Supervisor's contact
+      email_address: form.email_address, // Supervisor's email
+      recipient_name: isRecipientSelf.value ? form.full_name : form.recipient_name,
+      recipient_contact_number: isRecipientSelf.value ? form.user_contact_number : form.recipient_contact_number,
+      recipient_email: isRecipientSelf.value ? form.user_email : form.recipient_email,
+      address: isRecipientSelf.value ? '' : form.address,
+      po_box: isRecipientSelf.value ? '' : form.po_box,
+      zip_code: isRecipientSelf.value ? '' : form.zip_code,
+      declaration: form.declaration,
+      review_status: "Pending",
       review_remark: "",
       endorsement_decision: "Pending",
       endorsement_remark: "",
-      is_payment_complete: false, // Set initial payment status
-      payment_id: "",  //No payment ID on initial submission
-      is_active: true, // Assuming you want to activate the record immediately
+      is_payment_complete: false,
+      payment_id: "",
+      is_active: true,
     };
 
     try {
-      // Make the API call
       const response = await apiService.createBmhcCogs(requestData);
 
-      // Handle the response
-      if (response.status === 201) { // Check for the correct success status code (usually 201 for creation)
+      if (response.status === 201) {
         toast.success('Application submitted successfully! You will receive an email notification for payment.');
-        showPaymentSection.value = true; // Show payment section
-
+        showPaymentSection.value = true;
       } else {
-        // Handle unexpected responses
         toast.error('An unexpected error occurred. Please try again.');
         console.error("Unexpected response status:", response.status);
       }
-
-
     } catch (error) {
-      // Handle API errors
       console.error("Error submitting form:", error);
-
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
         console.error("Error data:", error.response.data);
         console.error("Error status:", error.response.status);
         console.error("Error headers:", error.response.headers);
         toast.error(`Server error: ${error.response.status} - ${error.response.data.detail || 'See console for details'}`);
       } else if (error.request) {
-        // The request was made but no response was received
         toast.error('No response received from the server. Please check your network connection.');
       } else {
-        // Something happened in setting up the request that triggered an Error
         toast.error('An error occurred: ' + error.message);
       }
     }
-
-
   } else {
     toast.error('Please correct the errors in the form.');
   }
@@ -623,27 +608,28 @@ const submitForm = async () => { // Changed to async
 
 const cancelForm = () => {
   Object.assign(form, {
-    registrationNumber: '',
-    cidNo: '',
-    fullName: '',
+    registration_no: '',
+    cid_no: '',
+    full_name: '',
     gender: '',
-    reasonForApplication: '',
-    supervisorName: '',
-    supervisorDesignation: '',
-    agencyName: '',  // Added Back
-    // departmentName: '', // Removed
-    // workingOrganisation: '', // Removed
-    supervisorContactNumber: null,
-    supervisorEmail: '',
-    recipientName: '',
-    recipientContactNumber: null,
-    recipientEmail: '',
-    recipientAddress: '',
-    recipientPOBox: '',
-    recipientZipCode: '',
+    reason_for_application: '',
+    supervisor_name: '',
+    supervisor_designation: '',
+    agency: null,
+    contact_number: '',
+    email_address: '',
+    recipient_name: '',
+    recipient_contact_number: '',
+    recipient_email: '',
+    address: '',
+    po_box: '',
+    zip_code: '',
     declaration: false
   });
-  isRecipientSelf.value = true; // Reset to "Self"
+
+  isRecipientSelf.value = true;
+  Object.keys(errors).forEach(key => delete errors[key]);
+
   message.value = 'Form has been cleared.';
   messageClass.value = 'text-blue-500';
   setTimeout(() => {
@@ -652,7 +638,7 @@ const cancelForm = () => {
   }, 3000);
 };
 
-// Removed handleAgencyChange and handleDepartmentChange
+
 
 const simulatePayment = () => {
   message.value = 'Processing payment...';
@@ -670,40 +656,32 @@ const simulatePayment = () => {
 };
 
 const generateCertificate = () => {
-  certificateGenerated.value = true;
+  certificateGenerated.value = true
 };
 
 const printCertificate = () => {
   window.print();
 };
 
-// Watcher for isRecipientSelf to update recipient details
 const updateRecipientDetails = () => {
   if (isRecipientSelf.value && authStore.user) {
-    form.recipientName = authStore.user.fullName;
-    form.recipientContactNumber = authStore.user.contactNumber;
-    form.recipientEmail = authStore.user.email;
-    // Assuming you have an address field in your user object.  If not, you might
-    // need to fetch it, or leave this blank.  The key is to *clear* the other
-    // fields when switching back to "self".
-    form.recipientAddress = authStore.user.address || '';
-    form.recipientPOBox = '';
-    form.recipientZipCode = '';
-  }
-  else {
-    //Clear the form when switched to other
-    form.recipientName = '';
-    form.recipientContactNumber = null;
-    form.recipientEmail = '';
-    form.recipientAddress = '';
-    form.recipientPOBox = '';
-    form.recipientZipCode = '';
-
+    form.recipient_name = authStore.user.fullName;
+    form.recipient_contact_number = authStore.user.contactNumber; // Assuming you have contactNumber in authStore.user
+    form.recipient_email = authStore.user.email; // Assuming you have email in authStore.user
+    form.address = '';  // Reset other fields
+    form.po_box = '';
+    form.zip_code = '';
+  } else {
+    form.recipient_name = '';
+    form.recipient_contact_number = '';
+    form.recipient_email = '';
+    form.address = '';
+    form.po_box = '';
+    form.zip_code = '';
   }
 };
 watch(isRecipientSelf, updateRecipientDetails);
 
-// Terms of Service Modal functions
 const openTermsModal = () => {
   showTermsModal.value = true;
 };
@@ -711,10 +689,11 @@ const openTermsModal = () => {
 const closeTermsModal = () => {
   showTermsModal.value = false;
 };
+
 const selectedAgencyName = computed(() => {
-  const agency = agencyOptions.value.find(a => a.id === form.agencyName)
-  return agency ? agency.name : ''
-})
+  const agency = agencyOptions.value.find(a => a.id === form.agency);
+  return agency ? agency.name : '';
+});
 
 </script>
 
@@ -722,5 +701,69 @@ const selectedAgencyName = computed(() => {
 .required::after {
   content: " *";
   color: #ef4444;
+}
+
+/* Custom checkbox styling */
+input[type="checkbox"] {
+  appearance: none;
+  /* Remove default appearance */
+  -webkit-appearance: none;
+  /* For older Safari/Chrome */
+  -moz-appearance: none;
+  /* For older Firefox */
+  height: 1.25rem;
+  width: 1.25rem;
+  border: 2px solid #9CA3AF;
+  /* border-gray-400 equivalent */
+  border-radius: 0.25rem;
+  /* rounded equivalent */
+  cursor: pointer;
+  display: inline-block;
+  /* Important for proper alignment */
+  position: relative;
+  /* Needed for the checkmark */
+  vertical-align: middle;
+  /* Aligns with the label text */
+}
+
+
+/* Checkmark styles (hidden by default) */
+input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  /* Initially hidden */
+  width: 0.75rem;
+  /* Smaller checkmark */
+  height: 0.75rem;
+  background-color: #3B82F6;
+  /* bg-blue-600 equivalent */
+  border-radius: 0.125rem;
+  /* Slightly smaller border-radius */
+  transition: transform 0.15s ease-in-out;
+  /* Smooth animation */
+}
+
+/* Show checkmark when checked */
+input[type="checkbox"]:checked::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Focus styles */
+input[type="checkbox"]:focus {
+  outline: none;
+  /* Remove default outline */
+  box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.5);
+  /* focus:ring-blue-500 equivalent */
+  border-color: #60A5FA;
+  /* Slightly darker blue for focus */
+}
+
+/*  Hover Style (Optional - Subtle change) */
+input[type="checkbox"]:hover {
+  border-color: #4B5563;
+  /* A slightly darker gray */
 }
 </style>

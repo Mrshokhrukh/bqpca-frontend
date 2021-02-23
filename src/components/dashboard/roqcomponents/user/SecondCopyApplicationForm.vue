@@ -293,7 +293,7 @@ import { useToast } from "vue-toastification";
 import PaymentModal from "@/components/common/PaymentModal.vue";
 
 const authStore = useAuthStore(); // Use authStore
-const { userId } = useAuthStore();
+const { user } = useAuthStore();
 const toast = useToast();
 
 const originalApplications = ref([]);
@@ -308,6 +308,8 @@ const isSubmitting = ref(false);
 const declaration = ref(false);
 const currentYear = new Date().getFullYear();
 const minYear = currentYear - 50;
+
+const userCid = user.cid
 
 const form = reactive({
   cid_no: "",
@@ -334,7 +336,6 @@ const form = reactive({
   reason_for_issue_of_second_copy: "",
   second_copy_other: "",
   second_copy_supporting_document: null,
-  // is_second_copy: true, // Removed:  explicitly added to form data.
   is_payment_complete: false,
   payment_id: null,
   status: "applied", // Initialize status
@@ -366,13 +367,13 @@ onMounted(async () => {
       qualificationsResponse,
       courseTypesResponse,
     ] = await Promise.all([
-      apiService.getRecognitionOfQualifications({ user_id: userId }), // Remove .value
+      apiService.getRecognitionOfQualification(userCid), // Remove .value
       apiService.getReasonsForIssueOfSecondCopy(),
       apiService.getQualifications(),
       apiService.getTypesOfCourse(),
     ]);
 
-    originalApplications.value = applicationsResponse.data.results.filter(
+    originalApplications.value = applicationsResponse.data.filter(
       (app) => app.status === "approved" && !app.is_second_copy
     );
 
