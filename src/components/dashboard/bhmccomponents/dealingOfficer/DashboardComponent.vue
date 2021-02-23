@@ -8,14 +8,6 @@
             <h1 class="text-3xl font-bold text-gray-900">Dealing Officer Dashboard</h1>
             <p class="text-gray-600">Overview of registration, renewals, and CPD management</p>
           </div>
-          <div class="flex gap-4">
-            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-              New Applications
-            </button>
-            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-              Process CPD
-            </button>
-          </div>
         </div>
       </div>
 
@@ -23,15 +15,20 @@
       <div class="bg-white rounded-xl p-6 shadow-md mb-8">
         <h2 class="text-xl font-bold text-gray-900 mb-4">Priority Tasks</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div v-for="task in priorityTasks" :key="task.id"
-               class="border rounded-lg p-4 flex items-center space-x-3"
-               :class="getTaskUrgencyClass(task.urgency)">
+          <div
+            v-for="task in priorityTasks"
+            :key="task.id"
+            class="border rounded-lg p-4 flex items-center space-x-3 cursor-pointer"
+            :class="getTaskUrgencyClass(task.urgency)"
+            @click="navigateToTask(task)"
+          >
             <div class="flex-shrink-0">
-              <component :is="task.icon" class="h-6 w-6" />
+              <!--  Use dynamic import or a mapping for the icons -->
+              <component :is="getIconComponent(task.icon)" class="h-6 w-6" />
             </div>
             <div class="flex-1">
               <p class="font-medium">{{ task.title }}</p>
-              <p class="text-sm">{{ task.deadline }}</p>
+              <p class="text-sm">{{ task.pending_Counts }}</p>
             </div>
           </div>
         </div>
@@ -39,6 +36,7 @@
 
       <!-- Stats Overview -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Pending Reviews Card -->
         <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-200">
           <div class="flex items-center space-x-4">
             <div class="flex items-center justify-center h-12 w-12 rounded-xl bg-blue-100 text-blue-600">
@@ -70,6 +68,7 @@
           </div>
         </div>
 
+        <!-- CPD Activities Card -->
         <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-200">
           <div class="flex items-center space-x-4">
             <div class="flex items-center justify-center h-12 w-12 rounded-xl bg-green-100 text-green-600">
@@ -97,6 +96,7 @@
           </div>
         </div>
 
+        <!-- CoGS Requests Card -->
         <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-200">
           <div class="flex items-center space-x-4">
             <div class="flex items-center justify-center h-12 w-12 rounded-xl bg-purple-100 text-purple-600">
@@ -125,165 +125,133 @@
       </div>
 
       <!-- Recent Applications Table -->
-      <div class="bg-white rounded-xl p-6 shadow-md mb-8">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold text-gray-900">Recent Applications</h2>
-          <button class="text-blue-600 hover:text-blue-800">View All</button>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="application in recentApplications" :key="application.id">
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
-                    <div class="text-sm font-medium text-gray-900">{{ application.name }}</div>
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                        :class="getApplicationTypeClass(application.type)">
-                    {{ application.type }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                        :class="getStatusClass(application.status)">
-                    {{ application.status }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ application.submittedDate }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <button class="text-blue-600 hover:text-blue-900">Review</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+     <DashboardTableRecentApp/>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import DashboardTableRecentApp from './DashboardTableRecentApp.vue'; // Ensure correct import
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import apiservice from '@/services/bmhcservices'; // Ensure correct import
 
-// Stats data
-const stats = ref({
-  pendingReviews: 25,
-  newRegistrations: 12,
-  renewals: 8,
-  additionalQuals: 5,
-  pendingCPD: 15,
-  selfDirectedCPD: 8,
-  programApprovals: 7,
-  cogsRequests: 10,
-  cogsCompletionRate: 85
-})
+// --- Icon Imports (Heroicons example) ---
+// You'll need to install heroicons:  npm install @heroicons/vue
+import { DocumentTextIcon, AcademicCapIcon, DocumentCheckIcon, CogIcon } from '@heroicons/vue/24/outline';
 
-// Priority tasks
+const router = useRouter();
+
+// --- Icon Mapping ---
+const iconMap = {
+  DocumentTextIcon: DocumentTextIcon,
+  AcademicCapIcon: AcademicCapIcon,
+  DocumentCheckIcon: DocumentCheckIcon,
+  CogIcon: CogIcon,
+};
+
+const getIconComponent = (iconName) => {
+  return iconMap[iconName] || null; // Returns null if not found
+};
+
+// --- Refs for counts ---
+const pendingApplicationCount = ref(0);
+const pendingPhysicalCount = ref(0);
+const pendingCpdCount = ref(0);
+const pendingCogsCount = ref(0);
+
+// --- Priority Tasks (Using Option 1: Direct Mapping in onMounted) ---
 const priorityTasks = ref([
   {
     id: 1,
-    title: 'Review CID Registration',
-    deadline: 'Due in 2 days',
+    title: 'Application Registration',
+    pending_Counts: 0,
     urgency: 'high',
-    icon: 'DocumentIcon'
+    icon: 'DocumentTextIcon', // Use string names now
+    route: '/admin/dealing_officer/health_certification/application_lists'
   },
   {
     id: 2,
     title: 'CPD Program Approval',
-    deadline: 'Due today',
+    pending_Counts: 0,
     urgency: 'critical',
-    icon: 'ClockIcon'
+    icon: 'AcademicCapIcon', // Use string names now
+    route: '/admin/dealing_officer/health_certification/cpd_management'
   },
   {
     id: 3,
     title: 'Verify Documents',
-    deadline: 'Due in 3 days',
+    pending_Counts: 0,
     urgency: 'medium',
-    icon: 'CheckCircleIcon'
+    icon: 'DocumentCheckIcon', // Use string names now
+    route: '/admin/dealing_officer/health_certification/application_lists'
   },
   {
     id: 4,
     title: 'Process CoGS Request',
-    deadline: 'Due tomorrow',
+    pending_Counts: 0,
     urgency: 'high',
-    icon: 'ShieldCheckIcon'
+    icon: 'CogIcon', // Use string names now
+    route: '/admin/dealing_officer/health_certification/cogs'
   }
-])
+]);
 
-// Recent applications
-const recentApplications = ref([
-  {
-    id: 1,
-    name: 'John Doe',
-    type: 'Registration',
-    status: 'Pending',
-    submittedDate: '2024-02-06'
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    type: 'Renewal',
-    status: 'In Review',
-    submittedDate: '2024-02-05'
-  },
-  {
-    id: 3,
-    name: 'Bob Wilson',
-    type: 'CPD',
-    status: 'Documents Required',
-    submittedDate: '2024-02-04'
-  },
-  {
-    id: 4,
-    name: 'Alice Brown',
-    type: 'CoGS',
-    status: 'Pending',
-    submittedDate: '2024-02-03'
+// Stats data (using computed properties for derived values)
+const stats = computed(() => ({
+  pendingReviews: pendingApplicationCount.value + pendingPhysicalCount.value,
+  newRegistrations: 0, // Replace with your calculation, based on API data
+  renewals: 0,        // Replace with your calculation
+  additionalQuals: 0,  // Replace with your calculation
+  pendingCPD: pendingCpdCount.value,
+  selfDirectedCPD: 0, //Replace
+  programApprovals: 0, //Replace
+  cogsRequests: pendingCogsCount.value,
+  cogsCompletionRate: 0 //Replace
+}));
+
+// Fetch data on mounted
+onMounted(async () => {
+  try {
+    const applicantsResponse = await apiservice.getBhmcNewQualifications();
+    const applicantsData = applicantsResponse.data.results || [];
+
+    pendingApplicationCount.value = applicantsData.filter(app => app.application_review_status === 'Pending').length;
+    pendingPhysicalCount.value = applicantsData.filter(app => app.physical_review_status === 'Pending').length;
+
+    const cpdRecordsResponse = await apiservice.getBmhcCpdRecords();
+    const cpdData = cpdRecordsResponse.data.results || [];
+    pendingCpdCount.value = cpdData.filter(cpd => cpd.review_status === 'Pending').length;
+
+    const cogsRecordsResponse = await apiservice.getBmhcCogs();
+    const cogsData = cogsRecordsResponse.data.results || [];
+    pendingCogsCount.value = cogsData.filter(cogs => cogs.review_status === 'Pending').length;
+
+    // Update priorityTasks pending_Counts (Option 1: Direct Mapping)
+    priorityTasks.value[0].pending_Counts = pendingApplicationCount.value;
+    priorityTasks.value[1].pending_Counts = pendingCpdCount.value;
+    priorityTasks.value[2].pending_Counts = pendingPhysicalCount.value;
+    priorityTasks.value[3].pending_Counts = pendingCogsCount.value;
+
+  } catch (error) {
+    console.error('Error fetching data:', error);
   }
-])
+});
 
-// Utility functions for styling
+// Navigation function
+const navigateToTask = (task) => {
+  router.push(task.route);
+};
+
+// Utility functions for styling (no changes here)
 const getTaskUrgencyClass = (urgency) => {
   const classes = {
     critical: 'border-red-500 bg-red-50',
     high: 'border-orange-500 bg-orange-50',
     medium: 'border-yellow-500 bg-yellow-50',
     low: 'border-green-500 bg-green-50'
-  }
-  return classes[urgency] || classes.medium
-}
+  };
+  return classes[urgency] || classes.medium;
+};
 
-const getApplicationTypeClass = (type) => {
-  const classes = {
-    'Registration': 'bg-blue-100 text-blue-800',
-    'Renewal': 'bg-green-100 text-green-800',
-    'CPD': 'bg-purple-100 text-purple-800',
-    'CoGS': 'bg-yellow-100 text-yellow-800'
-  }
-  return classes[type] || 'bg-gray-100 text-gray-800'
-}
 
-const getStatusClass = (status) => {
-  const classes = {
-    'Pending': 'bg-yellow-100 text-yellow-800',
-    'In Review': 'bg-blue-100 text-blue-800',
-    'Documents Required': 'bg-red-100 text-red-800',
-    'Approved': 'bg-green-100 text-green-800',
-    'Rejected': 'bg-gray-100 text-gray-800' // Consider adding a more visually distinct color for 'Rejected'
-  }
-  return classes[status] || 'bg-gray-100 text-gray-800'
-}
 </script>
