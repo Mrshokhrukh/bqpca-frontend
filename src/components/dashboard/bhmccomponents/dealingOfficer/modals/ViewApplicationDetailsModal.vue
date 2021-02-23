@@ -251,7 +251,7 @@
                           </div>
                           <div v-else>
                             <p class="text-sm text-gray-500 flex items-center space-x-2">
-                              <AlertCircle class="h-4 w-4" />
+                              <CircleAlert class="h-4 w-4" />
                               <span>No qualification details found for this application.</span>
                             </p>
                           </div>
@@ -308,7 +308,7 @@ import {
   GraduationCap,
   ClipboardCheck,
   MessageSquare,
-  AlertCircle,
+  CircleAlert,
   Circle,
   Check,
   X,

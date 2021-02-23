@@ -34,7 +34,7 @@
     <!-- Error State -->
     <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 md:mb-6">
       <div class="flex items-center">
-        <AlertCircleIcon class="w-5 h-5 text-red-500 mr-2" />
+        <CircleAlert class="w-5 h-5 text-red-500 mr-2" />
         <p class="text-red-700">{{ error }}</p>
       </div>
     </div>
@@ -291,7 +291,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import {
   Loader2Icon,
   SearchIcon,
-  AlertCircleIcon,
+  CircleAlert,
   InboxIcon,
   XIcon
 } from 'lucide-vue-next'

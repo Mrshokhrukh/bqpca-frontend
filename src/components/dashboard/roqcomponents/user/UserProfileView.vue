@@ -208,7 +208,7 @@
                   ]">
             <div class="flex items-center">
               <CheckCircle v-if="messageClass.includes('green')" class="w-5 h-5 mr-2 text-green-500" />
-              <AlertCircle v-else class="w-5 h-5 mr-2 text-red-500" />
+              <CircleAlert v-else class="w-5 h-5 mr-2 text-red-500" />
               {{ message }}
             </div>
           </div>
@@ -225,7 +225,7 @@ import apiService from '@/services/services';
 import { storeToRefs } from 'pinia';
 import { TransitionRoot } from '@headlessui/vue';
 import {
-  Mail, User, MapPin, Award, ScrollText, Edit, X, CheckCircle, AlertCircle, Save, Loader2, Phone
+  Mail, User, MapPin, Award, ScrollText, Edit, X, CheckCircle, CircleAlert, Save, Loader2, Phone
 } from 'lucide-vue-next';
 
 const authStore = useAuthStore();

@@ -11,7 +11,8 @@
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
         <div class="text-center">
-          <div class="inline-flex items-center px-3 py-1 rounded-full border border-purple-400/30 bg-purple-400/10 text-purple-200 mb-6">
+          <div
+            class="inline-flex items-center px-3 py-1 rounded-full border border-purple-400/30 bg-purple-400/10 text-purple-200 mb-6">
             <BookOpen class="w-4 h-4 mr-2" />
             <span class="text-sm">Professional Framework</span>
           </div>
@@ -41,15 +42,17 @@
           <div class="bg-white border-l-4 border-purple-600 rounded-xl p-8 shadow-lg">
             <div class="flex items-start">
               <div class="p-3 rounded-lg bg-purple-50">
-                <AlertCircle class="w-6 h-6 text-purple-600" />
+                <CircleAlert class="w-6 h-6 text-purple-600" />
               </div>
               <div class="ml-4">
                 <h2 class="text-xl font-serif font-bold text-slate-900 mb-4">
                   Official Notice
                 </h2>
                 <p class="text-slate-600 leading-relaxed">
-                  This is the official portal for professional certification services provided by the Bhutan Qualifications
-                  & Professional Certification Authority (BQPCA). All certification and validation processes are conducted
+                  This is the official portal for professional certification services provided by the Bhutan
+                  Qualifications
+                  & Professional Certification Authority (BQPCA). All certification and validation processes are
+                  conducted
                   in accordance with the Royal Government of Bhutan's regulations.
                 </p>
               </div>
@@ -68,15 +71,16 @@
             </div>
             <div class="p-8">
               <div class="space-y-8">
-                <div v-for="(step, index) in certificationSteps" :key="step.title"
-                     class="flex items-start group">
+                <div v-for="(step, index) in certificationSteps" :key="step.title" class="flex items-start group">
                   <div class="relative">
-                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-600 group-hover:bg-purple-700 transition-colors text-white flex items-center justify-center font-medium">
+                    <div
+                      class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-600 group-hover:bg-purple-700 transition-colors text-white flex items-center justify-center font-medium">
                       {{ index + 1 }}
                     </div>
                     <!-- Connection line -->
                     <div v-if="index < certificationSteps.length - 1"
-                         class="absolute top-10 left-1/2 bottom-0 w-px bg-purple-200 transform -translate-x-1/2 h-full"></div>
+                      class="absolute top-10 left-1/2 bottom-0 w-px bg-purple-200 transform -translate-x-1/2 h-full">
+                    </div>
                   </div>
                   <div class="ml-6">
                     <h3 class="text-lg font-medium text-slate-900 group-hover:text-purple-600 transition-colors">
@@ -102,9 +106,10 @@
             <div class="p-8">
               <div class="grid md:grid-cols-3 gap-8">
                 <div v-for="info in importantInfo" :key="info.title"
-                     class="group bg-slate-50 rounded-xl p-6 hover:bg-purple-50 transition-colors">
+                  class="group bg-slate-50 rounded-xl p-6 hover:bg-purple-50 transition-colors">
                   <div class="flex items-start">
-                    <component :is="info.icon" class="w-6 h-6 text-purple-600 mt-1 group-hover:scale-110 transition-transform" />
+                    <component :is="info.icon"
+                      class="w-6 h-6 text-purple-600 mt-1 group-hover:scale-110 transition-transform" />
                     <div class="ml-4">
                       <h3 class="font-medium text-slate-900">{{ info.title }}</h3>
                       <p class="mt-2 text-slate-600">{{ info.description }}</p>
@@ -118,11 +123,7 @@
 
         <!-- Authentication Section -->
         <div class="lg:sticky lg:top-8 self-start">
-          <AuthSection
-            :serviceType="serviceType"
-            @ndi-login="handleNDILogin"
-            @form-login="handleFormLogin"
-          />
+          <AuthSection :serviceType="serviceType" @ndi-login="handleNDILogin" @form-login="handleFormLogin" />
         </div>
       </div>
     </div>
@@ -136,7 +137,7 @@ import {
   FileText,
   ShieldCheck,
   BookOpen,
-  AlertCircle,
+  CircleAlert,
   ListChecks,
   Info as InfoIcon
 } from 'lucide-vue-next'

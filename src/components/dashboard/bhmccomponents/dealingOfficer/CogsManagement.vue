@@ -35,7 +35,7 @@
       <!-- Error State -->
       <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
         <div class="flex items-center">
-          <AlertCircleIcon class="w-5 h-5 text-red-500 mr-2" />
+          <CircleAlert class="w-5 h-5 text-red-500 mr-2" />
           <p class="text-red-700">{{ error }}</p>
         </div>
       </div>
@@ -45,9 +45,11 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration No.
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration
+                No.
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant Details
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant
+                Details
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Workplace Info
               </th>
@@ -90,11 +92,13 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="space-y-2">
-                  <button @click="reviewApplication(application)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
+                  <button @click="reviewApplication(application)"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                     Review
                   </button>
                   <button v-if="application.endorsement_decision === 'Approved'"
-                    @click="downloadCertificate(application.id)" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
+                    @click="downloadCertificate(application.id)"
+                    class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                     Download Certificate
                   </button>
                   <span v-if="!application.is_payment_complete" class="text-red-500 text-xs">
@@ -227,26 +231,28 @@
                         <span class="text-sm font-medium text-gray-500">Current Status</span>
                         <div class="mt-1 flex items-center gap-2">
                           <span :class="[
-                            'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
-                            getStatusClass(selectedApplication.review_status)
-                          ]">
+                'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
+                getStatusClass(selectedApplication.review_status)
+              ]">
                             {{ selectedApplication.review_status }}
                           </span>
                         </div>
-                        <p class="mt-2 text-sm text-gray-600">{{ selectedApplication.review_remark || 'No remarks' }}</p>
+                        <p class="mt-2 text-sm text-gray-600">{{ selectedApplication.review_remark || 'No remarks' }}
+                        </p>
                       </div>
 
                       <div class="rounded-lg bg-gray-50 p-4">
                         <span class="text-sm font-medium text-gray-500">Endorsement</span>
                         <div class="mt-1 flex items-center gap-2">
                           <span :class="[
-                            'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
-                            getStatusClass(selectedApplication.endorsement_decision)
-                          ]">
+                'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
+                getStatusClass(selectedApplication.endorsement_decision)
+              ]">
                             {{ selectedApplication.endorsement_decision }}
                           </span>
                         </div>
-                        <p class="mt-2 text-sm text-gray-600">{{ selectedApplication.endorsement_remark || 'No remarks' }}
+                        <p class="mt-2 text-sm text-gray-600">{{ selectedApplication.endorsement_remark || 'No remarks'
+                          }}
                         </p>
                       </div>
 
@@ -254,9 +260,9 @@
                         <span class="text-sm font-medium text-gray-500">Payment Status</span>
                         <div class="mt-1">
                           <span :class="[
-                            'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
-                            selectedApplication.is_payment_complete ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                          ]">
+                'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
+                selectedApplication.is_payment_complete ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+              ]">
                             {{ selectedApplication.is_payment_complete ? 'Paid' : 'Pending' }}
                           </span>
                           <p v-if="selectedApplication.is_payment_complete" class="mt-2 text-sm text-gray-600">
@@ -314,7 +320,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import {
   Loader2Icon,
   SearchIcon,
-  AlertCircleIcon,
+  CircleAlert,
   InboxIcon,
   XIcon,
   UserIcon,

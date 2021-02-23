@@ -382,6 +382,9 @@ export default {
   deleteBmhcCogs(id) {
     return apiClient.delete(`/bmhc/bmhc-cogs/${id}/`)
   },
+  getBmhcCogsByCid(cid) {
+    return apiClient.get(`/bmhc/bmhc-cogs/verify-cogs/?cid=${cid}`)
+  },
 
   // For pagination with full URLs
   getBmhcCogsWithUrl(url) {

@@ -187,10 +187,10 @@
                     <p class="text-sm font-medium text-gray-500">Submission Date</p>
                     <p class="text-sm font-semibold text-gray-900">
                       {{ new Date(record.created_at).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  }) }}
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }) }}
                     </p>
                   </div>
                 </div>
@@ -243,7 +243,8 @@ import {
   Loader,
   HelpCircle,
   Trash2,
-  Clock
+  Clock,
+
 } from 'lucide-vue-next';
 
 // State
@@ -266,12 +267,12 @@ const fetchApplications = async () => {
 
   try {
     const response = await apiService.getBmhcCpdRecordsByCid(searchQuery.value);
-     if (response && response.data && response.data.details && response.data.valid) { //check for validity
-          // Create a single-element array
-          applications.value = [response.data.details];
-        } else {
-          applications.value = []; // Set to an empty array if no details
-        }
+    if (response && response.data && response.data.details && response.data.valid) { //check for validity
+      // Create a single-element array
+      applications.value = [response.data.details];
+    } else {
+      applications.value = []; // Set to an empty array if no details
+    }
   } catch (error) {
     console.error('Error fetching applications:', error);
     applications.value = [];

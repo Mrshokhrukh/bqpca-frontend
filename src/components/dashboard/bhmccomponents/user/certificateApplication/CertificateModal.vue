@@ -79,8 +79,9 @@
                 <div class="font-semibold">Qualification(s):</div>
                 <div class="space-y-1">
                   <div v-for="qual in application.user_qualifications" :key="qual.id">
-                    {{ qual.qualification_type_display }} | {{ qual.qualification_name_display }} | {{ qual.completion_year
-                    }}
+                    {{ qual.qualification_type_display }} | {{ qual.qualification_name_display }} | {{
+    qual.completion_year
+  }}
                   </div>
                 </div>
               </div>
@@ -119,13 +120,13 @@
                 <!-- QR Code -->
                 <div class="text-center">
                   <vue-qrcode :value="qrCodeData" :options="{
-                    width: 100,
-                    margin: 1,
-                    color: {
-                      dark: '#000000',
-                      light: '#ffffff'
-                    }
-                  }" class="border-4 border-gray-200 rounded-md p-2" />
+    width: 100,
+    margin: 1,
+    color: {
+      dark: '#000000',
+      light: '#ffffff'
+    }
+  }" class="border-4 border-gray-200 rounded-md p-2" />
                   <p class="mt-2 text-xs text-gray-600">Scan to verify</p>
                 </div>
               </div>
@@ -163,7 +164,7 @@
 </template>
 
 <script setup>
-import { watch, computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import VueQrcode from '@chenfengyuan/vue-qrcode';
 import html2pdf from 'html2pdf.js';
 
@@ -222,14 +223,4 @@ const downloadCertificate = () => {
 
   html2pdf().from(element).set(opt).save();
 };
-
-onMounted(() => {
-  watch(application, (newVal) => {
-    if (newVal) {
-      console.log('Application data loaded:', newVal);
-    }
-  }, { immediate: true });
-});
-
-
 </script>

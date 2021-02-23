@@ -41,7 +41,7 @@
           <div class="bg-white border-l-4 border-red-600 rounded-xl p-8 shadow-lg">
             <div class="flex items-start">
               <div class="p-3 rounded-lg bg-red-50">
-                <AlertCircle class="w-6 h-6 text-red-600" />
+                <CircleAlert class="w-6 h-6 text-red-600" />
               </div>
               <div class="ml-4">
                 <h2 class="text-xl font-serif font-bold text-slate-900 mb-4">
@@ -315,7 +315,7 @@ import {
   FileText,
   ShieldCheck,
   BookOpen,
-  AlertCircle,
+  CircleAlert,
   ListChecks,
   Hospital,
   Info as InfoIcon,

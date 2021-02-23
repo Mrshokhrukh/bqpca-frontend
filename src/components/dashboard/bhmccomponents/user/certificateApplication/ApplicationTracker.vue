@@ -339,8 +339,14 @@ import {
   Loader,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  Trash2,
+  Search,
+  HelpCircle
 } from 'lucide-vue-next';
+import { useToast } from 'vue-toastification';
+
+const toast = useToast();
 
 // State
 const applications = ref([]);
@@ -360,10 +366,12 @@ const fetchApplications = async () => {
 
   try {
     let response;
-    if (searchType.value === 'id') {
+    if (!searchQuery.value) {
+      toast.warning('Please enter a CID or Work Permit Number to query.');
+      return
+    }
+    if (searchQuery.value && searchType.value === 'id') {
       response = await apiService.getFullApplicationListByCid(searchQuery.value);
-    } else {
-      response = await apiService.getBhmcNewApplications(searchQuery.value);
     }
 
     if (response && response.data && response.data.results) {

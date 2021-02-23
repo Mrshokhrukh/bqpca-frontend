@@ -81,7 +81,7 @@ import {
   BellOff,
   Loader2,
   Check,
-  AlertCircle,
+  CircleAlert,
   CheckCircle2,
   Info,
   AlertTriangle
@@ -183,7 +183,7 @@ const formatTimestamp = (timestamp) => {
 const getNotificationIcon = (type) => {
   const icons = {
     success: CheckCircle2,
-    error: AlertCircle,
+    error: CircleAlert,
     warning: AlertTriangle,
     info: Info,
   };

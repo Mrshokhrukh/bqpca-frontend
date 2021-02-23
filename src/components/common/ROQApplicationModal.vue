@@ -143,7 +143,7 @@
             <div class="bg-gray-50 rounded-xl p-6 shadow-sm">
               <div class="flex items-center gap-3 mb-6">
                 <div class="p-2 bg-blue-50 rounded-lg">
-                  <FileTextIcon class="w-5 h-5 text-blue-600" />
+                  <DocumentIcon class="w-5 h-5 text-blue-600" />
                 </div>
                 <h4 class="text-lg font-medium text-gray-900">Uploaded Documents</h4>
               </div>
@@ -184,7 +184,7 @@
                 </div>
                 <div v-if="modalApplication.second_copy_other"
                   class="flex items-start bg-white p-4 rounded-lg border border-gray-200">
-                  <FileTextIcon class="w-4 h-4 text-gray-400 mt-1 mr-3" />
+                  <DocumentIcon class="w-4 h-4 text-gray-400 mt-1 mr-3" />
                   <div class="flex-1">
                     <span class="text-sm font-medium text-gray-500 block mb-1">Other Reason</span>
                     <span class="text-gray-900">{{ modalApplication.second_copy_other || '-' }}</span>
@@ -285,7 +285,7 @@
 
             <!-- Forward Confirmation -->
             <div v-if="modalType === 'forward'" class="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
-              <AlertCircleIcon class="w-6 h-6 text-blue-600" />
+              <CircleAlert class="w-6 h-6 text-blue-600" />
               <p class="text-blue-700">Are you sure you want to forward this application?</p>
             </div>
             <!-- Approve Confirmation -->
@@ -322,13 +322,13 @@ import {
   User as UserIcon,
   MapPin as MapPinIcon,
   GraduationCap as GraduationCapIcon,
-  FileText as FileTextIcon,
+  FileText as DocumentIcon,
   File as FileIcon,
   Eye as EyeIcon,
   Activity as ActivityIcon,
   X as XIcon,
   ExternalLink as ExternalLinkIcon,
-  AlertCircle as AlertCircleIcon,
+  CircleAlert as CircleAlert,
   Clock as ClockIcon,
   Calendar as CalendarIcon,
   Phone as PhoneIcon,
@@ -420,12 +420,12 @@ const modalDescription = computed(() => {
 // Icons mapping
 const modalIcons = {
   view: UserIcon,
-  addNote: FileTextIcon,
+  addNote: DocumentIcon,
   reUpload: FileIcon,
   reProcess: ActivityIcon,
   forward: ArrowRightIcon,
   regret: XIcon,
-  viewCertificate: FileTextIcon,
+  viewCertificate: DocumentIcon,
   assignQEC: HashIcon,
   approve: CheckCircleIcon,
 };
@@ -436,7 +436,7 @@ const educationInfoIcons = [
   GraduationCapIcon, TimerIcon, SchoolIcon, BuildingIcon,
   MapPinIcon, GlobeIcon, HashIcon, CalendarIcon, GlobeIcon
 ];
-const statusInfoIcons = [CheckCircleIcon, ClockIcon, ClockIcon, FileTextIcon];
+const statusInfoIcons = [CheckCircleIcon, ClockIcon, ClockIcon, DocumentIcon];
 
 const actionButtonIcon = computed(() =>
   props.modalType === 'forward' ? ArrowRightIcon : props.modalType === 'approve' ? CheckCircleIcon : SaveIcon
