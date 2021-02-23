@@ -144,4 +144,18 @@ export default {
     return apiClient.delete(`/masters/roq-countries/${id}/`)
   },
 
+  // RoQ E Signature
+  getESignature() {
+    return apiClient.get('/masters/roq-e-sign/?status=true')
+  },
+  updateESignature(id, eSignatureData) {
+    return apiClient.put(`/masters/roq-e-signature/${id}/`, eSignatureData)
+  },
+  createESignature(eSignatureData) {
+    return apiClient.post('/masters/roq-e-signature/', eSignatureData)
+  },
+  deleteESignature(id) {
+    return apiClient.delete(`/masters/roq-e-signature/${id}/`)
+  },
+
 }
