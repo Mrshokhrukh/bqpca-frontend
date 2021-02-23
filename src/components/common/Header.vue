@@ -45,7 +45,7 @@
         <div class="flex items-center space-x-4">
           <router-link to="/user/login"
             class="hidden md:inline-flex items-center text-sm px-6 py-3 border-2 border-primary/20 rounded-xl text-primary hover:bg-primary/5 hover:border-primary hover:shadow-md transition-all duration-300 font-medium group">
-            <UserCircle class="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
+            <User class="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
             <span class="transition-transform duration-300 group-hover:translate-x-0.5">User Login</span>
           </router-link>
           <router-link to="/admin/login"
@@ -72,7 +72,7 @@
         </a>
         <router-link to="/user/login"
           class="flex items-center px-5 py-3 rounded-xl text-base font-medium text-primary hover:bg-primary/5 transition-all duration-300 mt-4 border-t border-gray-100 pt-4">
-          <UserCircle class="w-5 h-5 mr-2.5" />
+          <User class="w-5 h-5 mr-2.5" />
           User Login
         </router-link>
         <router-link to="/admin/login"
@@ -87,7 +87,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Menu, X, UserCircle } from 'lucide-vue-next'
+import { Menu, X, UserCircle, User } from 'lucide-vue-next'
 
 const isMenuOpen = ref(false)
 
