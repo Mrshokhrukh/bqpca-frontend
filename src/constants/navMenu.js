@@ -84,12 +84,12 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
       },
       {
-        name: 'Apply for RoQ',
+        name: 'Recognition of Qualification',
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
       },
       {
-        name: 'Apply for Second Copy',
+        name: 'Second Copy Applications',
         icon: getIconComponent('File'),
         route: (serviceType) => `/admin/user/${serviceType}/secondcopy_applications`,
       },

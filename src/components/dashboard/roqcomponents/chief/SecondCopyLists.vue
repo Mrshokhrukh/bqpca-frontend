@@ -81,9 +81,10 @@ const filteredApplications = computed(() => {
       )
       : true;
     const isSecondCopy = app.is_second_copy === true; // Ensure boolean true
-    const isForward = app.forward === true; // Ensure boolean true
+    const isForward = app.forward === true;
+    const isNotApproved = app.status !== 'approved';
 
-    return matchesStatus && matchesType && matchesSearch && isSecondCopy && isForward;
+    return matchesStatus && matchesType && matchesSearch && isSecondCopy && isForward && isNotApproved;
   });
 });
 

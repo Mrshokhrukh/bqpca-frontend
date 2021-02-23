@@ -82,8 +82,9 @@ const filteredApplications = computed(() => {
       : true;
     const isNotSecondCopy = !app.is_second_copy; // Exclude if is_second_copy is true
     const isNotDraft = app.status !== 'draft';
+    const isNotApproved = app.status !== 'approved';
 
-    return matchesType && matchesSearch && isNotSecondCopy && isNotDraft;
+    return matchesType && matchesSearch && isNotSecondCopy && isNotDraft && isNotApproved;
   });
 });
 

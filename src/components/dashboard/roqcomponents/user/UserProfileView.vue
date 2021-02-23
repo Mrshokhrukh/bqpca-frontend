@@ -40,9 +40,9 @@
                   <CheckCircle class="w-5 h-5 mr-2" />
                   <span class="font-medium">Verified</span>
                 </div>
-                <p class="text-2xl font-bold text-gray-800">{{userCertificates.filter(c => c.status ===
-                  'Verified').length
-                }} / {{ userCertificates.length }}</p>
+                <p class="text-2xl font-bold text-gray-800">{{ userCertificates.filter(c => c.status ===
+                    'approved').length
+                  }} / {{ userCertificates.length }}</p>
               </div>
             </div>
             <button @click="toggleEditMode"
@@ -72,14 +72,14 @@
                 <label class="block text-sm font-medium text-gray-700">First Name <span
                     class="text-red-500">*</span></label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                  profileData.first_name }}</div>
+                    profileData.first_name }}</div>
                 <input v-else v-model="profileData.first_name" type="text" required
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Middle Name</label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                  profileData.middle_name || '-' }}</div>
+                    profileData.middle_name || '-' }}</div>
                 <input v-else v-model="profileData.middle_name" type="text"
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
@@ -87,21 +87,21 @@
                 <label class="block text-sm font-medium text-gray-700">Last Name <span
                     class="text-red-500">*</span></label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                  profileData.last_name }}</div>
+                    profileData.last_name }}</div>
                 <input v-else v-model="profileData.last_name" type="text" required
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                  formatDate(profileData.date_of_birth) }}</div>
+                    formatDate(profileData.date_of_birth) }}</div>
                 <input v-else v-model="profileData.date_of_birth" type="date"
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Gender</label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1 capitalize">{{
-                  profileData.gender || '-' }}</div>
+                    profileData.gender || '-' }}</div>
                 <select v-else v-model="profileData.gender"
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                   <option value="">Select</option>
@@ -114,7 +114,7 @@
                 <label class="block text-sm font-medium text-gray-700">Contact Number <span
                     class="text-red-500">*</span></label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                  profileData.contact_number }}</div>
+                    profileData.contact_number }}</div>
                 <input v-else v-model="profileData.contact_number" type="tel" required
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
@@ -132,14 +132,14 @@
                 <label class="block text-sm font-medium text-gray-700">Dzongkhag <span
                     class="text-red-500">*</span></label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                  profileData.dzongkhag }}</div>
+                    profileData.dzongkhag }}</div>
                 <input v-else v-model="profileData.dzongkhag" type="text" required
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Gewog <span class="text-red-500">*</span></label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{ profileData.gewog
-                }}</div>
+                  }}</div>
                 <input v-else v-model="profileData.gewog" type="text" required
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
@@ -147,7 +147,7 @@
                 <label class="block text-sm font-medium text-gray-700">Village <span
                     class="text-red-500">*</span></label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                  profileData.village }}</div>
+                    profileData.village }}</div>
                 <input v-else v-model="profileData.village" type="text" required
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
@@ -159,7 +159,7 @@
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center">
                 <Award class="w-5 h-5 text-blue-500 mr-2" />
-                <h3 class="text-xl font-semibold text-gray-800">Approved Certificates</h3>
+                <h3 class="text-xl font-semibold text-gray-800">Certification History</h3>
               </div>
               <span class="text-sm text-gray-500">Total: {{ userCertificates.length }}</span>
             </div>
@@ -173,13 +173,13 @@
                     <h4 class="font-medium text-gray-800">{{ cert.title }}</h4>
                     <p class="text-sm text-gray-600">QEC Number: <span class="font-medium">{{ cert.qec_number }}</span>
                     </p>
-                    <p class="text-sm text-gray-600">Issued: {{ formatDate(cert.issued_date) }}</p>
+                    <p class="text-sm text-gray-600">Last Updated: {{ formatDate(cert.updated_at) }}</p>
                   </div>
                 </div>
                 <span :class="[
-                  'px-3 py-1 rounded-full text-xs font-medium',
-                  cert.status === 'Verified' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                ]">
+                    'px-3 py-1 rounded-full text-xs font-medium',
+                    cert.status === 'Verified' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                  ]">
                   {{ cert.status }}
                 </span>
               </div>
@@ -202,10 +202,10 @@
         <!-- Message Display -->
         <TransitionRoot appear :show="!!message" as="template">
           <div :class="[
-            'fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-all duration-300 transform max-w-md',
-            messageClass,
-            message ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
-          ]">
+                    'fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-all duration-300 transform max-w-md',
+                    messageClass,
+                    message ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+                  ]">
             <div class="flex items-center">
               <CheckCircle v-if="messageClass.includes('green')" class="w-5 h-5 mr-2 text-green-500" />
               <AlertCircle v-else class="w-5 h-5 mr-2 text-red-500" />
@@ -235,6 +235,8 @@ const message = ref('');
 const messageClass = ref('');
 const isEditing = ref(false);
 
+const userCid = authStore.user.cid
+
 const profileData = ref({
   first_name: '',
   middle_name: '',
@@ -252,19 +254,15 @@ const allCertificates = ref([]); // Store *all* certificates
 
 // Filtered certificates for the logged-in user
 const userCertificates = computed(() => {
-  // Access the certificates array correctly, and handle potential null/undefined
-  const certificates = allCertificates.value?.data?.results || [];
-
-  //added console logs to display the required output in console.
-  console.log('All Certificates:', certificates);
-  console.log('AuthStore User Email:', authStore.user?.email); // Log for debugging
+  const certificates = allCertificates.value || [];
+  console.log(certificates)
 
   if (!authStore.user || !authStore.user.email) {
     console.warn("User email is not available."); // Or handle appropriately
     return []; // No user logged in, so no certificates
   }
 
-  return certificates.filter(cert => cert.email_address === authStore.user.email && cert.status === 'applied');
+  return certificates
 });
 
 
@@ -291,8 +289,8 @@ const loadProfile = async () => {
 
     try {
       // Fetch *all* certificates
-      const certs = await apiService.getRecognitionOfQualifications();
-      allCertificates.value = certs;
+      const certs = await apiService.getRecognitionOfQualification(userCid);
+      allCertificates.value = certs.data;
     } catch (error) {
       showMessage('Failed to load certificates.', 'error');
       console.error('Error fetching certificates:', error);
