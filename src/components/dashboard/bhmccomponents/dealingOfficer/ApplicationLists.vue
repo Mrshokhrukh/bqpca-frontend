@@ -1,3 +1,4 @@
+<!-- ApplicationLists.vue -->
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <!-- Page Header -->
@@ -19,7 +20,7 @@
     <!-- Search and Filters -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
       <div class="relative">
-        <input v-model="searchQuery" type="text" placeholder="Search by name or ID..."
+        <input v-model="searchQuery" type="text" placeholder="Search by name, CID or registration number..."
           class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
           fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -47,7 +48,8 @@
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Applicant
               </th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Registration
+                No.</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
@@ -64,22 +66,15 @@
                     class="h-8 w-8 rounded-full object-cover mr-3" @error="handleImageError">
                   <div>
                     <div class="text-sm font-medium text-gray-900">{{ app.full_name }}</div>
-                    <div class="text-sm text-gray-500">{{ app.email_address }}</div>
+                    <div class="text-sm text-gray-500">{{ app.cid_no }}</div>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ app.registration_type?.name }}</div>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {{ app.registration_no }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="[
-            'px-3 py-1 rounded-full text-xs font-medium',
-            {
-              'bg-yellow-100 text-yellow-800': getStatus(app) === 'Pending',
-              'bg-green-100 text-green-800': getStatus(app) === 'Approved',
-              'bg-red-100 text-red-800': getStatus(app) === 'Rejected'
-            }
-          ]">
+                <span :class="getStatusClasses(app)">
                   {{ getStatus(app) }}
                 </span>
               </td>
@@ -90,10 +85,6 @@
                 <div class="flex space-x-3">
                   <button @click="viewDetails(app)"
                     class="text-blue-600 hover:text-blue-900 transition-colors">View</button>
-                  <button @click="approveApplication(app)"
-                    class="text-green-600 hover:text-green-900 transition-colors">Approve</button>
-                  <button @click="rejectApplication(app)"
-                    class="text-red-600 hover:text-red-900 transition-colors">Reject</button>
                 </div>
               </td>
             </tr>
@@ -104,23 +95,13 @@
 
     <!-- Pagination -->
     <div class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-      <div class="flex-1 flex justify-between sm:hidden">
-        <button @click="prevPage" :disabled="currentPage === 1"
-          class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-          Previous
-        </button>
-        <button @click="nextPage" :disabled="currentPage === totalPages"
-          class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-          Next
-        </button>
-      </div>
       <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
           <p class="text-sm text-gray-700">
             Showing
-            <span class="font-medium">{{ ((currentPage - 1) * itemsPerPage) + 1 }}</span>
+            <span class="font-medium">{{ paginationStart }}</span>
             to
-            <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredApplications.length) }}</span>
+            <span class="font-medium">{{ paginationEnd }}</span>
             of
             <span class="font-medium">{{ filteredApplications.length }}</span>
             results
@@ -129,20 +110,20 @@
         <div>
           <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
             <button @click="prevPage" :disabled="currentPage === 1"
-              class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+              class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
               <span class="sr-only">Previous</span>
               <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd"
-                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                  d="M12 1.586l-9.707 9.707a1 1 0 0 1-1.414-1.414l10.414-10.414a1 1 0 0 1 1.414 0l10.414 10.414a1 1 0 0 1-1.414 1.414L12 1.586z"
                   clip-rule="evenodd" />
               </svg>
             </button>
             <button @click="nextPage" :disabled="currentPage === totalPages"
-              class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+              class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
               <span class="sr-only">Next</span>
               <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  d="M12 18.414l9.707-9.707a1 1 0 0 0-1.414-1.414L12 15.586 3.707 7.293a1 1 0 0 0-1.414 1.414l9.707 9.707z"
                   clip-rule="evenodd" />
               </svg>
             </button>
@@ -152,7 +133,7 @@
     </div>
 
     <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
-      @approve="handleApprove" />
+      @update="handleUpdate" />
   </div>
 </template>
 
@@ -161,6 +142,7 @@ import { ref, computed, onMounted } from 'vue';
 import apiServices from '@/services/services';
 import ViewDetailsModal from './modals/ViewApplicationDetailsModal.vue';
 
+// State
 const applications = ref([]);
 const filterStatus = ref('all');
 const searchQuery = ref('');
@@ -169,71 +151,27 @@ const itemsPerPage = 10;
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
 
+// Computed properties
 const pendingCount = computed(() => {
-  return applications.value.filter(app =>
-    app.user_qualifications?.[0]?.application_review_status === 'Pending'
-  ).length;
-});
-
-const getStatus = (app) => {
-  return app.user_qualifications?.[0]?.application_review_status || 'Pending';
-};
-
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-};
-
-const handleImageError = (event) => {
-  event.target.src = '/placeholder-avatar.png';
-};
-
-// Fetch applications on component mount
-const fetchApplications = async () => {
-  try {
-    const response = await apiServices.getBhmcNewApplications();
-    console.log('API Response:', response.data);
-
-    if (!response.data || !response.data.results || !Array.isArray(response.data.results)) {
-      console.error('Invalid API response format. Expected response.data.results to be an array.');
-      return;
-    }
-
-    // Assign the results directly to the applications array
-    applications.value = response.data.results;
-
-    console.log('Applications:', applications.value);
-
-  } catch (error) {
-    console.error('Error fetching applications:', error);
-  }
-};
-
-onMounted(() => {
-  fetchApplications();
+  return applications.value.filter(app => getStatus(app) === 'Pending').length;
 });
 
 const filteredApplications = computed(() => {
   let filtered = applications.value;
 
-  // Filter by registration_type
-  filtered = filtered.filter(app => app.registration_type && typeof app.registration_type === 'object' && app.registration_type.name === 'Registration');
-
-  // Filter by status
   if (filterStatus.value !== 'all') {
-    filtered = filtered.filter(app => app.user_qualifications && app.user_qualifications.length > 0 && app.user_qualifications[0].application_review_status === filterStatus.value);
+    filtered = filtered.filter(app => getStatus(app) === filterStatus.value);
   }
 
-  // Filter by search query
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(app =>
-      app.full_name.toLowerCase().includes(query) ||
-      app.cid_no.toLowerCase().includes(query)
-    );
+    filtered = filtered.filter(app => {
+      return (
+        app.full_name?.toLowerCase().includes(query) ||
+        app.cid_no?.toLowerCase().includes(query) ||
+        app.registration_no?.toLowerCase().includes(query)
+      );
+    });
   }
 
   return filtered;
@@ -249,6 +187,111 @@ const totalPages = computed(() => {
   return Math.ceil(filteredApplications.value.length / itemsPerPage);
 });
 
+const paginationStart = computed(() => {
+  return ((currentPage.value - 1) * itemsPerPage) + 1;
+});
+
+const paginationEnd = computed(() => {
+  return Math.min(currentPage.value * itemsPerPage, filteredApplications.value.length);
+});
+
+// Methods
+const getStatus = (app) => {
+  if (!app.user_qualifications || app.user_qualifications.length === 0) {
+    return 'Pending';
+  }
+  return app.user_qualifications[0].application_review_status || 'Pending';
+};
+
+const getStatusClasses = (app) => {
+  const status = getStatus(app);
+  return [
+    'px-3 py-1 rounded-full text-xs font-medium',
+    {
+      'bg-yellow-100 text-yellow-800': status === 'Pending',
+      'bg-green-100 text-green-800': status === 'Approved',
+      'bg-red-100 text-red-800': status === 'Rejected'
+    }
+  ];
+};
+
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+const handleImageError = (event) => {
+  event.target.src = '/placeholder-avatar.png';
+};
+
+// API interactions
+const fetchApplications = async () => {
+  try {
+    const response = await apiServices.getBhmcNewApplications();
+    if (!response.data?.results || !Array.isArray(response.data.results)) {
+      console.error('Invalid API response format');
+      return;
+    }
+    applications.value = response.data.results;
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+  }
+};
+
+const viewDetails = async (application) => {
+  try {
+    // Fetch all users
+    const response = await apiServices.getAllUsers();
+
+    // Log the response to see its structure
+    console.log('Users response:', response);
+
+    // Check if response.data is an array, if not, use response.data.results if available
+    const users = Array.isArray(response.data) ? response.data :
+      (response.data?.results || []);
+
+    // Find matching user by CID
+    const matchingUser = users.find(user => user.cid === application.cid_no);
+
+    selectedApplication.value = {
+      ...application,
+      is_counselor: matchingUser?.is_counselor || false,
+      userDetails: matchingUser
+    };
+    isModalOpen.value = true;
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    // Still show the modal with available data
+    selectedApplication.value = {
+      ...application,
+      is_counselor: false
+    };
+    isModalOpen.value = true;
+  }
+};
+
+// In ApplicationLists.vue
+const handleUpdate = async (updatedApplication) => {
+  try {
+    // Find and update the application in the local array
+    const index = applications.value.findIndex(app => app.id === updatedApplication.id);
+    if (index !== -1) {
+      // Refresh the entire applications list to get the latest data
+      await fetchApplications();
+    }
+  } catch (error) {
+    console.error('Error updating application:', error);
+  }
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+  selectedApplication.value = null;
+};
+
 const prevPage = () => {
   if (currentPage.value > 1) currentPage.value--;
 };
@@ -257,65 +300,8 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++;
 };
 
-const viewDetails = (application) => {
-  selectedApplication.value = application;
-  isModalOpen.value = true;
-};
-
-const closeModal = () => {
-  isModalOpen.value = false;
-  selectedApplication.value = null;
-};
-
-const approveApplication = async (application) => {
-  if (confirm('Are you sure you want to approve this application?')) {
-    try {
-      // Assuming you want to update the user_qualifications[0].application_review_status
-      const qualificationId = application.user_qualifications[0].id;
-      const updatedApplication = { application_review_status: 'Approved' }; // Only send what needs updating
-
-      await apiServices.updateBhmcNewApplication(qualificationId, updatedApplication, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      // Optimistically update the UI
-      application.user_qualifications[0].application_review_status = 'Approved';
-
-      alert('Application approved successfully.');
-    } catch (error) {
-      console.error('Error approving application:', error);
-      alert('Failed to approve the application.');
-    }
-  }
-};
-
-const rejectApplication = async (application) => {
-  if (confirm('Are you sure you want to reject this application?')) {
-    try {
-      const qualificationId = application.user_qualifications[0].id;
-      const updatedApplication = { application_review_status: 'Rejected' };
-
-      await apiServices.updateBhmcNewApplication(qualificationId, updatedApplication, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      application.user_qualifications[0].application_review_status = 'Rejected';
-
-      alert('Application rejected successfully.');
-    } catch (error) {
-      console.error('Error rejecting application:', error);
-      alert('Failed to reject the application.');
-    }
-  }
-};
-
-const handleApprove = async (application) => {
-  console.log("Approving application:", application);
-  await approveApplication(application)
-
-};
+// Initialize
+onMounted(() => {
+  fetchApplications();
+});
 </script>
