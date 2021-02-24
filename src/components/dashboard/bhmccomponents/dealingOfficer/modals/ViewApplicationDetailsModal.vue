@@ -18,13 +18,13 @@
               <div class="relative">
                 <!-- Enhanced Status Banner -->
                 <div :class="[
-    'px-8 py-6 border-b relative overflow-hidden',
-    {
-      'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
-      'bg-green-50 border-green-100': overallStatus === 'Approved',
-      'bg-red-50 border-red-100': overallStatus === 'Regretted',
-    },
-  ]">
+                  'px-8 py-6 border-b relative overflow-hidden',
+                  {
+                    'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
+                    'bg-green-50 border-green-100': overallStatus === 'Approved',
+                    'bg-red-50 border-red-100': overallStatus === 'Regretted',
+                  },
+                ]">
                   <div class="flex items-center justify-between relative z-10">
                     <div class="flex items-center space-x-4">
                       <div class="p-3 bg-white rounded-lg shadow-sm">
@@ -39,18 +39,18 @@
                     </div>
                     <div class="flex items-center space-x-4">
                       <span :class="[
-    'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
-    {
-      'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
-      'bg-green-100 text-green-800': overallStatus === 'Approved',
-      'bg-red-100 text-red-800': overallStatus === 'Regretted',
-    },
-  ]">
+                        'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
+                        {
+                          'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
+                          'bg-green-100 text-green-800': overallStatus === 'Approved',
+                          'bg-red-100 text-red-800': overallStatus === 'Regretted',
+                        },
+                      ]">
                         <Circle class="h-4 w-4" :class="{
-    'text-yellow-500': overallStatus === 'Pending',
-    'text-green-500': overallStatus === 'Approved',
-    'text-red-500': overallStatus === 'Regretted',
-  }" />
+                          'text-yellow-500': overallStatus === 'Pending',
+                          'text-green-500': overallStatus === 'Approved',
+                          'text-red-500': overallStatus === 'Regretted',
+                        }" />
                         <span>{{ overallStatus }}</span>
                       </span>
                       <button type="button"
@@ -89,15 +89,15 @@
                               <span
                                 class="absolute bottom-0 right-0 h-5 w-5 rounded-full border-2 border-white shadow-sm"
                                 :class="{
-    'bg-yellow-400': overallStatus === 'Pending',
-    'bg-green-400': overallStatus === 'Approved',
-    'bg-red-400': overallStatus === 'Regretted',
-  }" />
+                                  'bg-yellow-400': overallStatus === 'Pending',
+                                  'bg-green-400': overallStatus === 'Approved',
+                                  'bg-red-400': overallStatus === 'Regretted',
+                                }" />
                             </div>
                             <div class="text-center">
                               <h5 class="text-xl font-semibold text-gray-900">{{ application.full_name }}</h5>
                               <p class="text-sm text-gray-500 mt-1">CID: {{ application.cid_no }}</p>
-                             </div>
+                            </div>
                             <div class="w-full grid grid-cols-2 gap-4 mt-4">
                               <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
                                 <UserCircle class="h-4 w-4 text-gray-400" />
@@ -121,11 +121,11 @@
                               </span>
                               <button v-if="isEditing && !application.is_counselor"
                                 @click="editableApplication.is_counselor = !editableApplication.is_counselor" :class="[
-     'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-     editableApplication.is_counselor
-       ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-   ]">
+                                  'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                                  editableApplication.is_counselor
+                                    ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ]">
                                 {{ editableApplication.is_counselor ? 'Cancel Registration' : 'Register as Counselor' }}
                               </button>
                               <span v-else-if="application.is_counselor"
@@ -168,7 +168,7 @@
                     <!-- Right Column -->
                     <div class="lg:col-span-2 space-y-6">
                       <!-- New Application Review Status Section -->
-                      <div v-if="isEditing"
+                      <div v-if="isEditing && editableQualification"
                         class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                         <div class="p-6">
                           <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
@@ -181,6 +181,7 @@
                               <div class="p-4 bg-gray-50 rounded-lg">
                                 <h5 class="font-medium text-gray-900 mb-3">Document Review</h5>
                                 <select v-model="editableQualification.application_review_status"
+                                  @change="() => console.log('application_review_status changed:', editableQualification.value)"
                                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                   <option value="Pending">Pending Review</option>
                                   <option value="Approved">Approve Documents</option>
@@ -200,11 +201,13 @@
                               <div class="p-4 bg-gray-50 rounded-lg">
                                 <h5 class="font-medium text-gray-900 mb-3">Physical Verification</h5>
                                 <select v-model="editableQualification.physical_review_status"
+                                  @change="() => console.log('physical_review_status changed:', editableQualification.value)"
                                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                   <option value="Pending">Pending Verification</option>
                                   <option value="Approved">Verify Documents</option>
                                   <option value="Regretted">Reject Verification</option>
                                 </select>
+
                                 <textarea v-if="editableQualification.physical_review_status === 'Regretted'"
                                   v-model="editableQualification.physical_review_remark"
                                   placeholder="Provide rejection reason..."
@@ -219,6 +222,7 @@
                               <div class="p-4 bg-gray-50 rounded-lg">
                                 <h5 class="font-medium text-gray-900 mb-3">Final Endorsement</h5>
                                 <select v-model="editableQualification.endorsement_decision"
+                                  @change="() => console.log('endorsement_decision changed:', editableQualification.value)"
                                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                   <option value="Pending">Pending Decision</option>
                                   <option value="Approved">Endorse Application</option>
@@ -285,7 +289,8 @@
                               <select v-model="editableApplication.personnel_category"
                                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 <option value="" disabled>Select Category</option>
-                                <option v-for="category in personnelCategories" :key="category.id" :value="category.name">
+                                <option v-for="category in personnelCategories" :key="category.id"
+                                  :value="category.name">
                                   {{ category.name }}
                                 </option>
                               </select>
@@ -398,15 +403,15 @@
                                     <h6 class="text-sm font-medium text-gray-700">Document Review</h6>
                                     <div class="flex items-center space-x-2">
                                       <span :class="[
-     'w-2 h-2 rounded-full',
-     {
-       'bg-yellow-400': qualification.application_review_status === 'Pending',
-       'bg-green-400': qualification.application_review_status === 'Approved',
-       'bg-red-400': qualification.application_review_status === 'Regretted'
-     }
-   ]"></span>
+                                        'w-2 h-2 rounded-full',
+                                        {
+                                          'bg-yellow-400': qualification.application_review_status === 'Pending',
+                                          'bg-green-400': qualification.application_review_status === 'Approved',
+                                          'bg-red-400': qualification.application_review_status === 'Regretted'
+                                        }
+                                      ]"></span>
                                       <span class="text-sm text-gray-600">{{ qualification.application_review_status
-                                        }}</span>
+                                      }}</span>
                                     </div>
                                     <p v-if="qualification.application_review_remark"
                                       class="text-sm text-gray-500 mt-1">
@@ -418,15 +423,15 @@
                                     <h6 class="text-sm font-medium text-gray-700">Physical Verification</h6>
                                     <div class="flex items-center space-x-2">
                                       <span :class="[
-     'w-2 h-2 rounded-full',
-     {
-       'bg-yellow-400': qualification.physical_review_status === 'Pending',
-       'bg-green-400': qualification.physical_review_status === 'Approved',
-       'bg-red-400': qualification.physical_review_status === 'Regretted'
-     }
-   ]"></span>
+                                        'w-2 h-2 rounded-full',
+                                        {
+                                          'bg-yellow-400': qualification.physical_review_status === 'Pending',
+                                          'bg-green-400': qualification.physical_review_status === 'Approved',
+                                          'bg-red-400': qualification.physical_review_status === 'Regretted'
+                                        }
+                                      ]"></span>
                                       <span class="text-sm text-gray-600">{{ qualification.physical_review_status
-                                        }}</span>
+                                      }}</span>
                                     </div>
                                     <p v-if="qualification.physical_review_remark" class="text-sm text-gray-500 mt-1">
                                       {{ qualification.physical_review_remark }}
@@ -437,15 +442,15 @@
                                     <h6 class="text-sm font-medium text-gray-700">Final Endorsement</h6>
                                     <div class="flex items-center space-x-2">
                                       <span :class="[
-     'w-2 h-2 rounded-full',
-     {
-       'bg-yellow-400': qualification.endorsement_decision === 'Pending',
-       'bg-green-400': qualification.endorsement_decision === 'Approved',
-       'bg-red-400': qualification.endorsement_decision === 'Regretted'
-     }
-   ]"></span>
+                                        'w-2 h-2 rounded-full',
+                                        {
+                                          'bg-yellow-400': qualification.endorsement_decision === 'Pending',
+                                          'bg-green-400': qualification.endorsement_decision === 'Approved',
+                                          'bg-red-400': qualification.endorsement_decision === 'Regretted'
+                                        }
+                                      ]"></span>
                                       <span class="text-sm text-gray-600">{{ qualification.endorsement_decision
-                                        }}</span>
+                                      }}</span>
                                     </div>
                                     <p v-if="qualification.endorsement_remarks" class="text-sm text-gray-500 mt-1">
                                       {{ qualification.endorsement_remarks }}
@@ -484,7 +489,7 @@
 
                       <button v-if="overallStatus === 'Approved' && !isEditing" type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 inline-flex items-center space-x-2"
-                        @click="openCertificateModal">  <!-- Changed to openCertificateModal -->
+                        @click="openCertificateModal"> <!-- Changed to openCertificateModal -->
                         <FileText class="h-4 w-4" />
                         <span>View Certificate</span>
                       </button>
@@ -519,7 +524,8 @@
       </div>
     </Dialog>
   </TransitionRoot>
-  <CertificateModal :isOpen="isCertificateModalOpen" :applicationId="application?.id" @close="closeCertificateModal" /> <!-- CertificateModal here -->
+  <CertificateModal :isOpen="isCertificateModalOpen" :applicationId="application?.id" @close="closeCertificateModal" />
+  <!-- CertificateModal here -->
 </template>
 
 <script setup>
@@ -563,12 +569,11 @@ const props = defineProps({
   },
   onDownloadCertificate: {
     type: Function,
-    default: () => {}
+    default: () => { }
   }
 });
 
-const emit = defineEmits(['close', 'update:application']);
-
+const emit = defineEmits(['close', 'update']);
 const isEditing = ref(false);
 const editableQualification = ref({});
 const editableApplication = ref({});
@@ -586,26 +591,18 @@ const practiceAddresses = ref([]);
 
 watch(() => props.application, (newApplication) => {
   if (newApplication) {
-    originalApplicationData.value = { ...newApplication }; // Deep copy original application
+    originalApplicationData.value = JSON.parse(JSON.stringify(newApplication)); // Deep copy application
     if (newApplication.user_qualifications && newApplication.user_qualifications.length > 0) {
-      editableQualification.value = { ...newApplication.user_qualifications[0] };
-      originalQualificationData.value = { ...newApplication.user_qualifications[0] }; // Deep copy original qualification
+      editableQualification.value = JSON.parse(JSON.stringify(newApplication.user_qualifications[0])); // Deep copy qualification
+      originalQualificationData.value = JSON.parse(JSON.stringify(newApplication.user_qualifications[0])); // Deep copy original qualification
     } else {
-      editableQualification.value = {};
+      editableQualification.value = {}; // <--- REVERT BACK TO EMPTY OBJECT
       originalQualificationData.value = null;
     }
-    editableApplication.value = { ...newApplication };
+    editableApplication.value = JSON.parse(JSON.stringify(newApplication)); // Deep copy editableApplication
   }
   errorMessage.value = '';
 }, { deep: true, immediate: true });
-
-const closeModal = () => {
-  emit('close');
-};
-
-const closeModalHandler = () => {
-  emit('close');
-};
 
 const handleImageError = (event) => {
   event.target.src = '/placeholder-avatar.png';
@@ -658,6 +655,9 @@ const cancelEditing = () => {
 
 // Helper function to get changed fields in application data
 const getChangedApplicationFields = () => {
+  console.log("getChangedApplicationFields - originalApplicationData.value:", originalApplicationData.value);
+  console.log("getChangedApplicationFields - editableApplication.value:", editableApplication.value);
+
   const changedFields = {};
   if (!originalApplicationData.value) return changedFields;
 
@@ -667,27 +667,34 @@ const getChangedApplicationFields = () => {
         changedFields[key] = editableApplication.value[key]; // Or compare nested fields if necessary
       }
     } else if (!isEqual(editableApplication.value[key], originalApplicationData.value[key])) {
-      changedFields[key] = editableApplication.value[key];
+        changedFields[key] = editableApplication.value[key];
     }
   }
+  console.log("Changed Application Fields:", changedFields);
   return changedFields;
 };
 
 // Helper function to get changed fields in qualification data
 const getChangedQualificationFields = () => {
+  console.log("getChangedQualificationFields - originalQualificationData.value:", originalQualificationData.value);
+  console.log("getChangedQualificationFields - editableQualification.value:", editableQualification.value);
+
   const changedFields = {};
   if (!originalQualificationData.value) return changedFields;
 
   for (const key in editableQualification.value) {
+    console.log(`Comparing key: ${key}`); // <--- ADD THIS LOG
+    console.log(`  originalQualificationData.value[${key}]:`, originalQualificationData.value[key]); // <--- ADD THIS LOG
+    console.log(`  editableQualification.value[${key}]:`, editableQualification.value[key]); // <--- ADD THIS LOG
     if (!isEqual(editableQualification.value[key], originalQualificationData.value[key])) {
       changedFields[key] = editableQualification.value[key];
     }
   }
+  console.log("Changed Qualification Fields:", changedFields);
   return changedFields;
 };
-
-
 const saveChanges = async () => {
+  console.log("saveChanges function called!");
   if (!props.application) return;
 
   isLoading.value = true;
@@ -704,8 +711,8 @@ const saveChanges = async () => {
     }
 
     const applicationUpdatePayload = { ...changedApplicationFields };
-    if (changedQualificationFields && Object.keys(changedQualificationFields).length > 0) {
-      applicationUpdatePayload.user_qualifications = [{ ...changedQualificationFields }]; // Send qualification changes
+  if (changedQualificationFields && Object.keys(changedQualificationFields).length > 0) {
+    applicationUpdatePayload.user_qualifications = [editableQualification.value] // Send qualification changes
     }
 
 
@@ -728,6 +735,7 @@ const saveChanges = async () => {
     // 3. Get fresh application data
     const response = await apiServices.getBhmcNewApplication(props.application.id);
     emit('update', response.data);
+    // close modal after save changes
     isEditing.value = false;
 
   } catch (error) {
