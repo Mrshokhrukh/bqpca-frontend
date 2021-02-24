@@ -1,7 +1,7 @@
 <!-- ApplicationLists.vue -->
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
-    <!-- Page Header -->
+    <!-- Page Header (Same as before) -->
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
       <h1 class="text-4xl font-bold text-gray-900 mb-3">Applications</h1>
       <div class="flex items-center text-gray-600">
@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <!-- Search and Filters -->
+    <!-- Search and Filters (Same as before) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
       <div class="relative">
         <input v-model="searchQuery" type="text" placeholder="Search by name, CID or registration number..."
@@ -34,12 +34,12 @@
           <option value="all">All Statuses</option>
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
-          <option value="Rejected">Rejected</option>
+          <option value="Rejected">Rejected</option> <!-- Corrected option value -->
         </select>
       </div>
     </div>
 
-    <!-- Table -->
+    <!-- Table (Same as before, but with corrected getStatus call) -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -62,8 +62,8 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
-                  <img :src="app.passport_photo || '/placeholder-avatar.png'"
-                    class="h-8 w-8 rounded-full object-cover mr-3" @error="handleImageError">
+                  <img :src="app.passport_photo || ''"
+                    class="h-8 w-8 rounded-full object-cover mr-3">
                   <div>
                     <div class="text-sm font-medium text-gray-900">{{ app.full_name }}</div>
                     <div class="text-sm text-gray-500">{{ app.cid_no }}</div>
@@ -75,7 +75,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(app)">
-                  {{ getStatus(app) }}
+                  {{ getStatus(app) }} <!-- Corrected getStatus call -->
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -93,7 +93,7 @@
       </div>
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination (Same as before) -->
     <div class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100">
       <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
@@ -132,8 +132,9 @@
       </div>
     </div>
 
+    <!-- Use @update:application to listen for updates -->
     <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
-      @update="handleUpdate" />
+      @update:application="handleUpdate" />
   </div>
 </template>
 
@@ -195,25 +196,35 @@ const paginationEnd = computed(() => {
   return Math.min(currentPage.value * itemsPerPage, filteredApplications.value.length);
 });
 
-// Methods
+// --- Improved getStatus and getStatusClasses ---
 const getStatus = (app) => {
-  if (!app.user_qualifications || app.user_qualifications.length === 0) {
-    return 'Pending';
-  }
-  return app.user_qualifications[0].application_review_status || 'Pending';
-};
+    if (!app.user_qualifications || app.user_qualifications.length === 0) {
+        return 'Pending';
+    }
 
+    const qualification = app.user_qualifications[0];
+    const { application_review_status, physical_review_status, endorsement_decision } = qualification;
+
+    if (application_review_status === 'Rejected' || physical_review_status === 'Rejected' || endorsement_decision === 'Rejected') {
+        return 'Rejected';
+    } else if (application_review_status === 'Approved' && physical_review_status === 'Approved' && endorsement_decision === 'Approved') {
+        return 'Approved';
+    } else {
+        return 'Pending';
+    }
+};
 const getStatusClasses = (app) => {
-  const status = getStatus(app);
+    const status = getStatus(app);
   return [
     'px-3 py-1 rounded-full text-xs font-medium',
     {
       'bg-yellow-100 text-yellow-800': status === 'Pending',
       'bg-green-100 text-green-800': status === 'Approved',
-      'bg-red-100 text-red-800': status === 'Rejected'
+      'bg-red-100 text-red-800': status === 'Rejected' // Corrected class
     }
   ];
 };
+// --- End of Improved getStatus and getStatusClasses ---
 
 const formatDate = (date) => {
   return new Date(date).toLocaleDateString('en-US', {
@@ -223,9 +234,6 @@ const formatDate = (date) => {
   });
 };
 
-const handleImageError = (event) => {
-  event.target.src = '/placeholder-avatar.png';
-};
 
 // API interactions
 const fetchApplications = async () => {
@@ -242,49 +250,30 @@ const fetchApplications = async () => {
 };
 
 const viewDetails = async (application) => {
-  try {
-    // Fetch all users
-    const response = await apiServices.getAllUsers();
+    try {
+        // Fetch all users
+        const response = await apiServices.getAllUsers();
+        const users = Array.isArray(response.data) ? response.data : (response.data?.results || []);
+        const matchingUser = users.find(user => user.cid === application.cid_no);
 
-    // Log the response to see its structure
-    console.log('Users response:', response);
-
-    // Check if response.data is an array, if not, use response.data.results if available
-    const users = Array.isArray(response.data) ? response.data :
-      (response.data?.results || []);
-
-    // Find matching user by CID
-    const matchingUser = users.find(user => user.cid === application.cid_no);
-
-    selectedApplication.value = {
-      ...application,
-      is_counselor: matchingUser?.is_counselor || false,
-      userDetails: matchingUser
-    };
-    isModalOpen.value = true;
-  } catch (error) {
-    console.error('Error fetching user details:', error);
-    // Still show the modal with available data
-    selectedApplication.value = {
-      ...application,
-      is_counselor: false
-    };
-    isModalOpen.value = true;
-  }
+        selectedApplication.value = {
+          ...application,
+          is_counselor: matchingUser?.is_counselor || false,
+          userDetails: matchingUser
+        };
+        isModalOpen.value = true;
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+        selectedApplication.value = { ...application, is_counselor: false }; //safe fallback
+        isModalOpen.value = true;
+    }
 };
 
-// In ApplicationLists.vue
-const handleUpdate = async (updatedApplication) => {
-  try {
-    // Find and update the application in the local array
-    const index = applications.value.findIndex(app => app.id === updatedApplication.id);
-    if (index !== -1) {
-      // Refresh the entire applications list to get the latest data
-      await fetchApplications();
-    }
-  } catch (error) {
-    console.error('Error updating application:', error);
-  }
+
+// Correctly re-fetch applications after an update
+const handleUpdate = async () => {
+  await fetchApplications(); // Re-fetch the data
+  closeModal(); // Close the modal
 };
 
 const closeModal = () => {

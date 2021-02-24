@@ -17,13 +17,13 @@
               <div class="relative">
                 <!-- Enhanced Status Banner -->
                 <div :class="[
-    'px-8 py-6 border-b relative overflow-hidden',
-    {
-      'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
-      'bg-green-50 border-green-100': overallStatus === 'Approved',
-      'bg-red-50 border-red-100': overallStatus === 'Regretted',
-    },
-  ]">
+                  'px-8 py-6 border-b relative overflow-hidden',
+                  {
+                    'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
+                    'bg-green-50 border-green-100': overallStatus === 'Approved',
+                    'bg-red-50 border-red-100': overallStatus === 'Regretted',
+                  },
+                ]">
                   <div class="flex items-center justify-between relative z-10">
                     <div class="flex items-center space-x-4">
                       <div class="p-3 bg-white rounded-lg shadow-sm">
@@ -38,18 +38,18 @@
                     </div>
                     <div class="flex items-center space-x-4">
                       <span :class="[
-    'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
-    {
-      'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
-      'bg-green-100 text-green-800': overallStatus === 'Approved',
-      'bg-red-100 text-red-800': overallStatus === 'Regretted',
-    },
-  ]">
+                        'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
+                        {
+                          'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
+                          'bg-green-100 text-green-800': overallStatus === 'Approved',
+                          'bg-red-100 text-red-800': overallStatus === 'Regretted',
+                        },
+                      ]">
                         <Circle class="h-4 w-4" :class="{
-    'text-yellow-500': overallStatus === 'Pending',
-    'text-green-500': overallStatus === 'Approved',
-    'text-red-500': overallStatus === 'Regretted',
-  }" />
+                          'text-yellow-500': overallStatus === 'Pending',
+                          'text-green-500': overallStatus === 'Approved',
+                          'text-red-500': overallStatus === 'Regretted',
+                        }" />
                         <span>{{ overallStatus }}</span>
                       </span>
                       <button type="button"
@@ -88,10 +88,10 @@
                               <span
                                 class="absolute bottom-0 right-0 h-5 w-5 rounded-full border-2 border-white shadow-sm"
                                 :class="{
-    'bg-yellow-400': overallStatus === 'Pending',
-    'bg-green-400': overallStatus === 'Approved',
-    'bg-red-400': overallStatus === 'Regretted',
-  }" />
+                                  'bg-yellow-400': overallStatus === 'Pending',
+                                  'bg-green-400': overallStatus === 'Approved',
+                                  'bg-red-400': overallStatus === 'Regretted',
+                                }" />
                             </div>
                             <div class="text-center">
                               <h5 class="text-xl font-semibold text-gray-900">{{ application.full_name }}</h5>
@@ -120,11 +120,11 @@
                               </span>
                               <button v-if="isEditing && !application.is_counselor"
                                 @click="editableApplication.is_counselor = !editableApplication.is_counselor" :class="[
-    'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-    editableApplication.is_counselor
-      ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-  ]">
+                                  'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                                  editableApplication.is_counselor
+                                    ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ]">
                                 {{ editableApplication.is_counselor ? 'Cancel Registration' : 'Register as Counselor' }}
                               </button>
                               <span v-else-if="application.is_counselor"
@@ -324,15 +324,15 @@
                                     <h6 class="text-sm font-medium text-gray-700">Document Review</h6>
                                     <div class="flex items-center space-x-2">
                                       <span :class="[
-    'w-2 h-2 rounded-full',
-    {
-      'bg-yellow-400': qualification.application_review_status === 'Pending',
-      'bg-green-400': qualification.application_review_status === 'Approved',
-      'bg-red-400': qualification.application_review_status === 'Regretted'
-    }
-  ]"></span>
+                                        'w-2 h-2 rounded-full',
+                                        {
+                                          'bg-yellow-400': qualification.application_review_status === 'Pending',
+                                          'bg-green-400': qualification.application_review_status === 'Approved',
+                                          'bg-red-400': qualification.application_review_status === 'Regretted'
+                                        }
+                                      ]"></span>
                                       <span class="text-sm text-gray-600">{{ qualification.application_review_status
-                                        }}</span>
+                                      }}</span>
                                     </div>
                                     <p v-if="qualification.application_review_remark"
                                       class="text-sm text-gray-500 mt-1">
@@ -344,15 +344,15 @@
                                     <h6 class="text-sm font-medium text-gray-700">Physical Verification</h6>
                                     <div class="flex items-center space-x-2">
                                       <span :class="[
-    'w-2 h-2 rounded-full',
-    {
-      'bg-yellow-400': qualification.physical_review_status === 'Pending',
-      'bg-green-400': qualification.physical_review_status === 'Approved',
-      'bg-red-400': qualification.physical_review_status === 'Regretted'
-    }
-  ]"></span>
+                                        'w-2 h-2 rounded-full',
+                                        {
+                                          'bg-yellow-400': qualification.physical_review_status === 'Pending',
+                                          'bg-green-400': qualification.physical_review_status === 'Approved',
+                                          'bg-red-400': qualification.physical_review_status === 'Regretted'
+                                        }
+                                      ]"></span>
                                       <span class="text-sm text-gray-600">{{ qualification.physical_review_status
-                                        }}</span>
+                                      }}</span>
                                     </div>
                                     <p v-if="qualification.physical_review_remark" class="text-sm text-gray-500 mt-1">
                                       {{ qualification.physical_review_remark }}
@@ -363,15 +363,15 @@
                                     <h6 class="text-sm font-medium text-gray-700">Final Endorsement</h6>
                                     <div class="flex items-center space-x-2">
                                       <span :class="[
-    'w-2 h-2 rounded-full',
-    {
-      'bg-yellow-400': qualification.endorsement_decision === 'Pending',
-      'bg-green-400': qualification.endorsement_decision === 'Approved',
-      'bg-red-400': qualification.endorsement_decision === 'Regretted'
-    }
-  ]"></span>
+                                        'w-2 h-2 rounded-full',
+                                        {
+                                          'bg-yellow-400': qualification.endorsement_decision === 'Pending',
+                                          'bg-green-400': qualification.endorsement_decision === 'Approved',
+                                          'bg-red-400': qualification.endorsement_decision === 'Regretted'
+                                        }
+                                      ]"></span>
                                       <span class="text-sm text-gray-600">{{ qualification.endorsement_decision
-                                        }}</span>
+                                      }}</span>
                                     </div>
                                     <p v-if="qualification.endorsement_remarks" class="text-sm text-gray-500 mt-1">
                                       {{ qualification.endorsement_remarks }}
@@ -507,10 +507,6 @@ const closeModalHandler = () => {
   emit('close');
 };
 
-const handleImageError = (event) => {
-  event.target.src = '/placeholder-avatar.png';
-};
-
 const formatDate = (date) => {
   if (!date) return 'N/A';
   try {
@@ -561,35 +557,48 @@ const saveChanges = async () => {
   errorMessage.value = '';
 
   try {
-    // 1. Update user counselor status
-    if (editableApplication.value.userDetails?.id &&
-      editableApplication.value.is_counselor !== props.application.is_counselor) {
+    // 1. Update user counselor status (if changed)
+    if (
+      editableApplication.value.userDetails?.id &&
+      editableApplication.value.is_counselor !== props.application.is_counselor
+    ) {
       await apiServices.patchUser(
         editableApplication.value.userDetails.id,
-        { is_counselor: editableApplication.value.is_counselor }
+        { is_counselor: editableApplication.value.is_counselor } // Only send the changed field
       );
     }
 
-    // 2. Update application with qualification changes
-    if (props.application.id && editableQualification.value) {
-      const applicationData = {
-        user_qualifications: [{
-          ...editableQualification.value,
-          application_review_status: editableQualification.value.application_review_status,
-          application_review_remark: editableQualification.value.application_review_remark,
-          physical_review_status: editableQualification.value.physical_review_status,
-          physical_review_remark: editableQualification.value.physical_review_remark,
-          endorsement_decision: editableQualification.value.endorsement_decision,
-          endorsement_remarks: editableQualification.value.endorsement_remarks
-        }]
+    // 2. Update qualification (if changed)
+    // if (props.application.id && props.application.user_qualifications?.[0]) {
+      const originalQualification = props.application.user_qualifications[0];
+      const updatedFields = {};
+
+      // Helper function to compare and add changed fields
+      const addIfChanged = (fieldName, originalValue, newValue) => {
+        if (originalValue !== newValue) {
+          updatedFields[fieldName] = newValue;
+        }
       };
 
-      await apiServices.patchBhmcNewApplication(props.application.id, applicationData);
-    }
+      // Compare each relevant field in editableQualification
+      addIfChanged('application_review_status', originalQualification.application_review_status, editableQualification.value.application_review_status);
+      addIfChanged('application_review_remark', originalQualification.application_review_remark, editableQualification.value.application_review_remark);
+      addIfChanged('physical_review_status', originalQualification.physical_review_status, editableQualification.value.physical_review_status);
+      addIfChanged('physical_review_remark', originalQualification.physical_review_remark, editableQualification.value.physical_review_remark);
+      addIfChanged('endorsement_decision', originalQualification.endorsement_decision, editableQualification.value.endorsement_decision);
+      addIfChanged('endorsement_remarks', originalQualification.endorsement_remarks, editableQualification.value.endorsement_remarks);
 
-    // 3. Get fresh application data
-    const response = await apiServices.getBhmcNewApplication(props.application.id);
-    emit('update', response.data);
+
+      // Only send the request if there are actual changes
+      // if (Object.keys(updatedFields).length > 0) {
+        //add the id.
+        updatedFields.id = originalQualification.id;
+        await apiServices.updateBhmcNewQualification(props.application.id, { user_qualifications: [updatedFields] });
+      // }
+    // }
+    //refresh
+    const response = await apiServices.getBhmcNewQualification(props.application.id); // Get updated application
+    emit('update:application', response.data); // use update:application
     isEditing.value = false;
 
   } catch (error) {

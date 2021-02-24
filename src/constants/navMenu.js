@@ -552,10 +552,10 @@ const serviceSpecificMenuItems = {
             name: 'Application Lists',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_application_review`,
           },
-          {
-            name: 'Create Application',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_create_application`,
-          },
+          // {
+          //   name: 'Create Application',
+          //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_create_application`,
+          // },
           {
             name: 'Manage Providers',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_provider_management`,
