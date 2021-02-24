@@ -480,7 +480,7 @@ export default {
     return apiClient.get(`/bmhc/bmhc-new-application/?cid=${cid}`)
   },
 
-  
+
   // BMHC Renewals Endpoints
   getBhmcRenewals() {
     return apiClient.get('/bmhc/bmhc-renewals/')
@@ -628,5 +628,10 @@ export default {
   // get cpd records based on cid
   getBmhcCpdRecordsByCid(cid) {
     return apiClient.get(`/bmhc/bmhc-cpd-records/list-my-cpd/?cid=${cid}`)
+  },
+
+   // BMHC CPD Records
+   getBmhcCpdTask() {
+    return apiClient.get('/bmhc/bmhc-cpd-tasks/')
   },
 }
