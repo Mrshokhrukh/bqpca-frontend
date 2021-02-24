@@ -480,7 +480,7 @@ export default {
     return apiClient.get(`/bmhc/bmhc-new-application/?cid=${cid}`)
   },
 
-  
+
   // BMHC Renewals Endpoints
   getBhmcRenewals() {
     return apiClient.get('/bmhc/bmhc-renewals/')

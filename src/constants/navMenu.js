@@ -536,7 +536,7 @@ const serviceSpecificMenuItems = {
           },
           {
             name: 'Reregistration Lists',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/reregistration_lists`,
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/re_registration_lists`,
           },
           {
             name: 'CoGS Management',
