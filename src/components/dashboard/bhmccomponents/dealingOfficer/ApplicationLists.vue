@@ -133,7 +133,8 @@
     </div>
 
     <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
-      @update="handleUpdate" />
+      @update="handleUpdate" :personnel-categories="personnelCategories"
+      :personnel-subcategories="personnelSubcategories" :sectors="sectors" :practice-addresses="practiceAddresses" />
   </div>
 </template>
 
@@ -150,7 +151,10 @@ const currentPage = ref(1);
 const itemsPerPage = 10;
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
-const registrationTypeName = "Registration"; // Define the registration type name to filter
+const registrationTypeName = "Registration";
+const personnelCategories = ref([]);
+const personnelSubcategories = ref([]);
+const sectors = ref([]);
 
 // Computed properties
 const pendingCount = computed(() => {
@@ -240,8 +244,15 @@ const fetchApplications = async () => {
       return;
     }
     applications.value = response.data.results;
+
+    // Fetch master data (only once)
+    personnelCategories.value = await apiServices.getMastersParticipationCategories();
+    personnelSubcategories.value = await apiServices.getMastersSubCategories();
+    sectors.value = await apiServices.getMastersSectors();
+
+
   } catch (error) {
-    console.error('Error fetching applications:', error);
+    console.error('Error fetching applications or master data:', error);
   }
 };
 

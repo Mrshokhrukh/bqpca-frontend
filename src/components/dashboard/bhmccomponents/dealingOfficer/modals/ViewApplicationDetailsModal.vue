@@ -25,6 +25,13 @@
                     'bg-red-50 border-red-100': overallStatus === 'Regretted',
                   },
                 ]">
+                  'px-8 py-6 border-b relative overflow-hidden',
+                  {
+                    'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
+                    'bg-green-50 border-green-100': overallStatus === 'Approved',
+                    'bg-red-50 border-red-100': overallStatus === 'Regretted',
+                  },
+                ]">
                   <div class="flex items-center justify-between relative z-10">
                     <div class="flex items-center space-x-4">
                       <div class="p-3 bg-white rounded-lg shadow-sm">
@@ -39,6 +46,13 @@
                     </div>
                     <div class="flex items-center space-x-4">
                       <span :class="[
+                        'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
+                        {
+                          'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
+                          'bg-green-100 text-green-800': overallStatus === 'Approved',
+                          'bg-red-100 text-red-800': overallStatus === 'Regretted',
+                        },
+                      ]">
                         'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
                         {
                           'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
@@ -97,6 +111,7 @@
                             <div class="text-center">
                               <h5 class="text-xl font-semibold text-gray-900">{{ application.full_name }}</h5>
                               <p class="text-sm text-gray-500 mt-1">CID: {{ application.cid_no }}</p>
+                            </div>
                             </div>
                             <div class="w-full grid grid-cols-2 gap-4 mt-4">
                               <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
@@ -291,6 +306,8 @@
                                 <option value="" disabled>Select Category</option>
                                 <option v-for="category in personnelCategories" :key="category.id"
                                   :value="category.name">
+                                <option v-for="category in personnelCategories" :key="category.id"
+                                  :value="category.name">
                                   {{ category.name }}
                                 </option>
                               </select>
@@ -316,22 +333,13 @@
                             </div>
 
                             <!-- Practice Address -->
-                            <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
+                            <div class="p-4 bg-gray-50 rounded-lg" >
                               <p class="text-sm font-medium text-gray-500">Practice Address</p>
-                              <p class="text-sm text-gray-900 mt-2">
-                                <span>{{ application.practice_address }}</span>
-                              </p>
+                              <input type="text" v-model="editableApplication.practice_address"
+                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter Practice Address" />
                             </div>
-                            <div class="p-4 bg-gray-50 rounded-lg" v-else>
-                              <p class="text-sm font-medium text-gray-500">Practice Address</p>
-                              <select v-model="editableApplication.practice_address"
-                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="" disabled>Select Practice Address</option>
-                                <option v-for="address in practiceAddresses" :key="address.id" :value="address.name">
-                                  {{ address.name }}
-                                </option>
-                              </select>
-                            </div>
+
 
                             <!-- Sector -->
                             <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
@@ -410,6 +418,13 @@
                                           'bg-red-400': qualification.application_review_status === 'Regretted'
                                         }
                                       ]"></span>
+                                        'w-2 h-2 rounded-full',
+                                        {
+                                          'bg-yellow-400': qualification.application_review_status === 'Pending',
+                                          'bg-green-400': qualification.application_review_status === 'Approved',
+                                          'bg-red-400': qualification.application_review_status === 'Regretted'
+                                        }
+                                      ]"></span>
                                       <span class="text-sm text-gray-600">{{ qualification.application_review_status
                                       }}</span>
                                     </div>
@@ -430,6 +445,13 @@
                                           'bg-red-400': qualification.physical_review_status === 'Regretted'
                                         }
                                       ]"></span>
+                                        'w-2 h-2 rounded-full',
+                                        {
+                                          'bg-yellow-400': qualification.physical_review_status === 'Pending',
+                                          'bg-green-400': qualification.physical_review_status === 'Approved',
+                                          'bg-red-400': qualification.physical_review_status === 'Regretted'
+                                        }
+                                      ]"></span>
                                       <span class="text-sm text-gray-600">{{ qualification.physical_review_status
                                       }}</span>
                                     </div>
@@ -442,6 +464,13 @@
                                     <h6 class="text-sm font-medium text-gray-700">Final Endorsement</h6>
                                     <div class="flex items-center space-x-2">
                                       <span :class="[
+                                        'w-2 h-2 rounded-full',
+                                        {
+                                          'bg-yellow-400': qualification.endorsement_decision === 'Pending',
+                                          'bg-green-400': qualification.endorsement_decision === 'Approved',
+                                          'bg-red-400': qualification.endorsement_decision === 'Regretted'
+                                        }
+                                      ]"></span>
                                         'w-2 h-2 rounded-full',
                                         {
                                           'bg-yellow-400': qualification.endorsement_decision === 'Pending',
@@ -490,6 +519,7 @@
                       <button v-if="overallStatus === 'Approved' && !isEditing" type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 inline-flex items-center space-x-2"
                         @click="openCertificateModal"> <!-- Changed to openCertificateModal -->
+                        @click="openCertificateModal"> <!-- Changed to openCertificateModal -->
                         <FileText class="h-4 w-4" />
                         <span>View Certificate</span>
                       </button>
@@ -526,6 +556,8 @@
   </TransitionRoot>
   <CertificateModal :isOpen="isCertificateModalOpen" :applicationId="application?.id" @close="closeCertificateModal" />
   <!-- CertificateModal here -->
+  <CertificateModal :isOpen="isCertificateModalOpen" :applicationId="application?.id" @close="closeCertificateModal" />
+  <!-- CertificateModal here -->
 </template>
 
 <script setup>
@@ -556,7 +588,7 @@ import {
   X,
   Pencil,
 } from 'lucide-vue-next';
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import apiServices from '@/services/services';
 import CertificateModal from './CertificateModal.vue';
 import isEqual from 'lodash/isEqual'; // Import lodash isEqual for deep object comparison
@@ -567,7 +599,7 @@ const props = defineProps({
     type: Object,
     default: () => null,
   },
-  onDownloadCertificate: {
+  onDownloadCertificate: {  // Keep this
     type: Function,
     default: () => { }
   }
@@ -583,11 +615,6 @@ const isLoading = ref(false);
 const errorMessage = ref('');
 const isCertificateModalOpen = ref(false);
 
-// Refs for dropdown options
-const personnelCategories = ref([]);
-const personnelSubcategories = ref([]);
-const sectors = ref([]);
-const practiceAddresses = ref([]);
 
 watch(() => props.application, (newApplication) => {
   if (newApplication) {
@@ -753,23 +780,6 @@ const openCertificateModal = () => {
 const closeCertificateModal = () => {
   isCertificateModalOpen.value = false;
 };
-
-
-// Fetch dropdown options on component mount
-onMounted(async () => {
-  isLoading.value = true;
-  try {
-    personnelCategories.value = await apiServices.getMasterData('personnel-categories');
-    personnelSubcategories.value = await apiServices.getMasterData('personnel-subcategories');
-    sectors.value = await apiServices.getMasterData('sectors');
-    practiceAddresses.value = await apiServices.getMasterData('practice-addresses');
-  } catch (error) {
-    console.error('Error fetching master data:', error);
-    errorMessage.value = 'Failed to load dropdown options.';
-  } finally {
-    isLoading.value = false;
-  }
-});
 </script>
 
 <style scoped>
