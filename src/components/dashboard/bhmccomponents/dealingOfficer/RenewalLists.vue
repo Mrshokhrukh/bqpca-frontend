@@ -89,11 +89,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
                   <button @click="viewDetails(app)"
-                    class="text-blue-600 hover:text-blue-900 transition-colors">View</button>
-                  <button @click="approveApplication(app)"
-                    class="text-green-600 hover:text-green-900 transition-colors">Approve</button>
-                  <button @click="rejectApplication(app)"
-                    class="text-red-600 hover:text-red-900 transition-colors">Reject</button>
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
                 </div>
               </td>
             </tr>
@@ -151,8 +147,7 @@
       </div>
     </div>
 
-    <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
-      @approve="handleApprove" />
+    <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal" />
   </div>
 </template>
 
@@ -267,55 +262,5 @@ const closeModal = () => {
   selectedApplication.value = null;
 };
 
-const approveApplication = async (application) => {
-  if (confirm('Are you sure you want to approve this application?')) {
-    try {
-      // Assuming you want to update the user_qualifications[0].application_review_status
-      const qualificationId = application.user_qualifications[0].id;
-      const updatedApplication = { application_review_status: 'Approved' }; // Only send what needs updating
 
-      await apiServices.updateBhmcNewApplication(qualificationId, updatedApplication, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      // Optimistically update the UI
-      application.user_qualifications[0].application_review_status = 'Approved';
-
-      alert('Application approved successfully.');
-    } catch (error) {
-      console.error('Error approving application:', error);
-      alert('Failed to approve the application.');
-    }
-  }
-};
-
-const rejectApplication = async (application) => {
-  if (confirm('Are you sure you want to reject this application?')) {
-    try {
-      const qualificationId = application.user_qualifications[0].id;
-      const updatedApplication = { application_review_status: 'Rejected' };
-
-      await apiServices.updateBhmcNewApplication(qualificationId, updatedApplication, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      application.user_qualifications[0].application_review_status = 'Rejected';
-
-      alert('Application rejected successfully.');
-    } catch (error) {
-      console.error('Error rejecting application:', error);
-      alert('Failed to reject the application.');
-    }
-  }
-};
-
-const handleApprove = async (application) => {
-  console.log("Approving application:", application);
-  await approveApplication(application)
-
-};
 </script>

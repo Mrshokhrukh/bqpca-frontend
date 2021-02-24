@@ -84,7 +84,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
                   <button @click="viewDetails(app)"
-                    class="text-blue-600 hover:text-blue-900 transition-colors">View</button>
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
                 </div>
               </td>
             </tr>

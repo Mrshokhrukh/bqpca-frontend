@@ -1,3 +1,4 @@
+<!-- ViewApplicationDetailsModal.vue -->
 <template>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModalHandler" class="relative z-50">
@@ -96,7 +97,7 @@
                             <div class="text-center">
                               <h5 class="text-xl font-semibold text-gray-900">{{ application.full_name }}</h5>
                               <p class="text-sm text-gray-500 mt-1">CID: {{ application.cid_no }}</p>
-                            </div>
+                             </div>
                             <div class="w-full grid grid-cols-2 gap-4 mt-4">
                               <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
                                 <UserCircle class="h-4 w-4 text-gray-400" />
@@ -120,11 +121,11 @@
                               </span>
                               <button v-if="isEditing && !application.is_counselor"
                                 @click="editableApplication.is_counselor = !editableApplication.is_counselor" :class="[
-    'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-    editableApplication.is_counselor
-      ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-  ]">
+     'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+     editableApplication.is_counselor
+       ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+   ]">
                                 {{ editableApplication.is_counselor ? 'Cancel Registration' : 'Register as Counselor' }}
                               </button>
                               <span v-else-if="application.is_counselor"
@@ -271,6 +272,79 @@
                                 <span>{{ formatDate(application.expiry_date) }}</span>
                               </p>
                             </div>
+
+                            <!-- Personnel Category -->
+                            <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
+                              <p class="text-sm font-medium text-gray-500">Personnel Category</p>
+                              <p class="text-sm text-gray-900 mt-2">
+                                <span>{{ application.personnel_category }}</span>
+                              </p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-lg" v-else>
+                              <p class="text-sm font-medium text-gray-500">Personnel Category</p>
+                              <select v-model="editableApplication.personnel_category"
+                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="" disabled>Select Category</option>
+                                <option v-for="category in personnelCategories" :key="category.id" :value="category.name">
+                                  {{ category.name }}
+                                </option>
+                              </select>
+                            </div>
+
+                            <!-- Personnel Subcategory -->
+                            <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
+                              <p class="text-sm font-medium text-gray-500">Personnel Subcategory</p>
+                              <p class="text-sm text-gray-900 mt-2">
+                                <span>{{ application.personnel_subcategory }}</span>
+                              </p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-lg" v-else>
+                              <p class="text-sm font-medium text-gray-500">Personnel Subcategory</p>
+                              <select v-model="editableApplication.personnel_subcategory"
+                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="" disabled>Select Subcategory</option>
+                                <option v-for="subcategory in personnelSubcategories" :key="subcategory.id"
+                                  :value="subcategory.name">
+                                  {{ subcategory.name }}
+                                </option>
+                              </select>
+                            </div>
+
+                            <!-- Practice Address -->
+                            <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
+                              <p class="text-sm font-medium text-gray-500">Practice Address</p>
+                              <p class="text-sm text-gray-900 mt-2">
+                                <span>{{ application.practice_address }}</span>
+                              </p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-lg" v-else>
+                              <p class="text-sm font-medium text-gray-500">Practice Address</p>
+                              <select v-model="editableApplication.practice_address"
+                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="" disabled>Select Practice Address</option>
+                                <option v-for="address in practiceAddresses" :key="address.id" :value="address.name">
+                                  {{ address.name }}
+                                </option>
+                              </select>
+                            </div>
+
+                            <!-- Sector -->
+                            <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
+                              <p class="text-sm font-medium text-gray-500">Sector</p>
+                              <p class="text-sm text-gray-900 mt-2">
+                                <span>{{ application.sector }}</span>
+                              </p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-lg" v-else>
+                              <p class="text-sm font-medium text-gray-500">Sector</p>
+                              <select v-model="editableApplication.sector"
+                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="" disabled>Select Sector</option>
+                                <option v-for="sector in sectors" :key="sector.id" :value="sector.name">
+                                  {{ sector.name }}
+                                </option>
+                              </select>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -324,13 +398,13 @@
                                     <h6 class="text-sm font-medium text-gray-700">Document Review</h6>
                                     <div class="flex items-center space-x-2">
                                       <span :class="[
-    'w-2 h-2 rounded-full',
-    {
-      'bg-yellow-400': qualification.application_review_status === 'Pending',
-      'bg-green-400': qualification.application_review_status === 'Approved',
-      'bg-red-400': qualification.application_review_status === 'Regretted'
-    }
-  ]"></span>
+     'w-2 h-2 rounded-full',
+     {
+       'bg-yellow-400': qualification.application_review_status === 'Pending',
+       'bg-green-400': qualification.application_review_status === 'Approved',
+       'bg-red-400': qualification.application_review_status === 'Regretted'
+     }
+   ]"></span>
                                       <span class="text-sm text-gray-600">{{ qualification.application_review_status
                                         }}</span>
                                     </div>
@@ -344,13 +418,13 @@
                                     <h6 class="text-sm font-medium text-gray-700">Physical Verification</h6>
                                     <div class="flex items-center space-x-2">
                                       <span :class="[
-    'w-2 h-2 rounded-full',
-    {
-      'bg-yellow-400': qualification.physical_review_status === 'Pending',
-      'bg-green-400': qualification.physical_review_status === 'Approved',
-      'bg-red-400': qualification.physical_review_status === 'Regretted'
-    }
-  ]"></span>
+     'w-2 h-2 rounded-full',
+     {
+       'bg-yellow-400': qualification.physical_review_status === 'Pending',
+       'bg-green-400': qualification.physical_review_status === 'Approved',
+       'bg-red-400': qualification.physical_review_status === 'Regretted'
+     }
+   ]"></span>
                                       <span class="text-sm text-gray-600">{{ qualification.physical_review_status
                                         }}</span>
                                     </div>
@@ -363,13 +437,13 @@
                                     <h6 class="text-sm font-medium text-gray-700">Final Endorsement</h6>
                                     <div class="flex items-center space-x-2">
                                       <span :class="[
-    'w-2 h-2 rounded-full',
-    {
-      'bg-yellow-400': qualification.endorsement_decision === 'Pending',
-      'bg-green-400': qualification.endorsement_decision === 'Approved',
-      'bg-red-400': qualification.endorsement_decision === 'Regretted'
-    }
-  ]"></span>
+     'w-2 h-2 rounded-full',
+     {
+       'bg-yellow-400': qualification.endorsement_decision === 'Pending',
+       'bg-green-400': qualification.endorsement_decision === 'Approved',
+       'bg-red-400': qualification.endorsement_decision === 'Regretted'
+     }
+   ]"></span>
                                       <span class="text-sm text-gray-600">{{ qualification.endorsement_decision
                                         }}</span>
                                     </div>
@@ -408,6 +482,13 @@
                         <span>Close</span>
                       </button>
 
+                      <button v-if="overallStatus === 'Approved' && !isEditing" type="button"
+                        class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 inline-flex items-center space-x-2"
+                        @click="openCertificateModal">  <!-- Changed to openCertificateModal -->
+                        <FileText class="h-4 w-4" />
+                        <span>View Certificate</span>
+                      </button>
+
                       <button v-if="!isEditing" type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center space-x-2"
                         @click="startEditing">
@@ -438,6 +519,7 @@
       </div>
     </Dialog>
   </TransitionRoot>
+  <CertificateModal :isOpen="isCertificateModalOpen" :applicationId="application?.id" @close="closeCertificateModal" /> <!-- CertificateModal here -->
 </template>
 
 <script setup>
@@ -468,8 +550,10 @@ import {
   X,
   Pencil,
 } from 'lucide-vue-next';
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import apiServices from '@/services/services';
+import CertificateModal from './CertificateModal.vue';
+import isEqual from 'lodash/isEqual'; // Import lodash isEqual for deep object comparison
 
 const props = defineProps({
   isOpen: Boolean,
@@ -477,6 +561,10 @@ const props = defineProps({
     type: Object,
     default: () => null,
   },
+  onDownloadCertificate: {
+    type: Function,
+    default: () => {}
+  }
 });
 
 const emit = defineEmits(['close', 'update:application']);
@@ -484,15 +572,27 @@ const emit = defineEmits(['close', 'update:application']);
 const isEditing = ref(false);
 const editableQualification = ref({});
 const editableApplication = ref({});
+const originalApplicationData = ref(null); // Store original application data
+const originalQualificationData = ref(null); // Store original qualification data
 const isLoading = ref(false);
 const errorMessage = ref('');
+const isCertificateModalOpen = ref(false);
+
+// Refs for dropdown options
+const personnelCategories = ref([]);
+const personnelSubcategories = ref([]);
+const sectors = ref([]);
+const practiceAddresses = ref([]);
 
 watch(() => props.application, (newApplication) => {
   if (newApplication) {
+    originalApplicationData.value = { ...newApplication }; // Deep copy original application
     if (newApplication.user_qualifications && newApplication.user_qualifications.length > 0) {
       editableQualification.value = { ...newApplication.user_qualifications[0] };
+      originalQualificationData.value = { ...newApplication.user_qualifications[0] }; // Deep copy original qualification
     } else {
       editableQualification.value = {};
+      originalQualificationData.value = null;
     }
     editableApplication.value = { ...newApplication };
   }
@@ -547,12 +647,45 @@ const startEditing = () => {
 
 const cancelEditing = () => {
   isEditing.value = false;
-  if (props.application && props.application.user_qualifications.length > 0) {
-    editableQualification.value = { ...props.application.user_qualifications[0] };
-    editableApplication.value = { ...props.application };
+  if (originalApplicationData.value) {
+    editableApplication.value = { ...originalApplicationData.value };
+  }
+  if (originalQualificationData.value) {
+    editableQualification.value = { ...originalQualificationData.value };
   }
   errorMessage.value = '';
 };
+
+// Helper function to get changed fields in application data
+const getChangedApplicationFields = () => {
+  const changedFields = {};
+  if (!originalApplicationData.value) return changedFields;
+
+  for (const key in editableApplication.value) {
+    if (key === 'userDetails') { // Special handling for nested userDetails if needed
+      if (!isEqual(editableApplication.value.userDetails, originalApplicationData.value.userDetails)) {
+        changedFields[key] = editableApplication.value[key]; // Or compare nested fields if necessary
+      }
+    } else if (!isEqual(editableApplication.value[key], originalApplicationData.value[key])) {
+      changedFields[key] = editableApplication.value[key];
+    }
+  }
+  return changedFields;
+};
+
+// Helper function to get changed fields in qualification data
+const getChangedQualificationFields = () => {
+  const changedFields = {};
+  if (!originalQualificationData.value) return changedFields;
+
+  for (const key in editableQualification.value) {
+    if (!isEqual(editableQualification.value[key], originalQualificationData.value[key])) {
+      changedFields[key] = editableQualification.value[key];
+    }
+  }
+  return changedFields;
+};
+
 
 const saveChanges = async () => {
   if (!props.application) return;
@@ -561,31 +694,36 @@ const saveChanges = async () => {
   errorMessage.value = '';
 
   try {
-    // 1. Update user counselor status
-    if (editableApplication.value.userDetails?.id &&
-      editableApplication.value.is_counselor !== props.application.is_counselor) {
+    const changedApplicationFields = getChangedApplicationFields();
+    const changedQualificationFields = getChangedQualificationFields();
+
+    // Prepare payloads for API calls, only include changed data
+    const userUpdatePayload = {};
+    if (changedApplicationFields.is_counselor !== undefined && editableApplication.value.userDetails?.id) {
+      userUpdatePayload.is_counselor = changedApplicationFields.is_counselor;
+    }
+
+    const applicationUpdatePayload = { ...changedApplicationFields };
+    if (changedQualificationFields && Object.keys(changedQualificationFields).length > 0) {
+      applicationUpdatePayload.user_qualifications = [{ ...changedQualificationFields }]; // Send qualification changes
+    }
+
+
+    // 1. Update user counselor status if changed
+    if (Object.keys(userUpdatePayload).length > 0 && editableApplication.value.userDetails?.id) {
       await apiServices.patchUser(
         editableApplication.value.userDetails.id,
-        { is_counselor: editableApplication.value.is_counselor }
+        userUpdatePayload
       );
     }
 
-    // 2. Update application with qualification changes
-    if (props.application.id && editableQualification.value) {
-      const applicationData = {
-        user_qualifications: [{
-          ...editableQualification.value,
-          application_review_status: editableQualification.value.application_review_status,
-          application_review_remark: editableQualification.value.application_review_remark,
-          physical_review_status: editableQualification.value.physical_review_status,
-          physical_review_remark: editableQualification.value.physical_review_remark,
-          endorsement_decision: editableQualification.value.endorsement_decision,
-          endorsement_remarks: editableQualification.value.endorsement_remarks
-        }]
-      };
-
-      await apiServices.patchBhmcNewApplication(props.application.id, applicationData);
+    // 2. Update application with qualification and application changes if any changes are detected
+    if (props.application.id && Object.keys(applicationUpdatePayload).length > 0) {
+      await apiServices.patchBhmcNewApplication(props.application.id, applicationUpdatePayload);
+    } else {
+      console.log("No application data changed, skipping application update API call."); // Debugging log
     }
+
 
     // 3. Get fresh application data
     const response = await apiServices.getBhmcNewApplication(props.application.id);
@@ -599,6 +737,31 @@ const saveChanges = async () => {
     isLoading.value = false;
   }
 };
+
+const openCertificateModal = () => {
+  isCertificateModalOpen.value = true;
+};
+
+const closeCertificateModal = () => {
+  isCertificateModalOpen.value = false;
+};
+
+
+// Fetch dropdown options on component mount
+onMounted(async () => {
+  isLoading.value = true;
+  try {
+    personnelCategories.value = await apiServices.getMasterData('personnel-categories');
+    personnelSubcategories.value = await apiServices.getMasterData('personnel-subcategories');
+    sectors.value = await apiServices.getMasterData('sectors');
+    practiceAddresses.value = await apiServices.getMasterData('practice-addresses');
+  } catch (error) {
+    console.error('Error fetching master data:', error);
+    errorMessage.value = 'Failed to load dropdown options.';
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>
 
 <style scoped>
