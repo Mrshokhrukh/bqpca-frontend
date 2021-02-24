@@ -14,9 +14,7 @@
             </div>
           </div>
         </div>
-        <button
-          class="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600"
-        >
+        <button class="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600">
           <Plus class="w-4 h-4" />
           <span>Propose New Training</span>
         </button>
@@ -24,7 +22,7 @@
     </div>
 
     <!-- Quick Stats -->
-   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div v-for="(stat, index) in quickStats" :key="index" class="bg-white p-6 rounded-lg shadow-md">
         <div class="flex items-center justify-between">
           <div>
@@ -74,10 +72,10 @@
                 session.status === 'Approved'
                   ? 'bg-green-100 text-green-800'
                   : session.status === 'Pending'
-                  ? 'bg-yellow-100 text-yellow-800'
-                  : session.status === 'Upcoming'
-                  ? 'bg-blue-100 text-blue-800'
-                  : 'bg-purple-100 text-purple-800',
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : session.status === 'Upcoming'
+                      ? 'bg-blue-100 text-blue-800'
+                      : 'bg-purple-100 text-purple-800',
               ]">
                 {{ session.status }}
               </span>
@@ -90,7 +88,7 @@
       <div class="bg-white p-6 rounded-lg shadow-md">
         <h3 class="font-semibold text-lg mb-4">Recent Feedback</h3>
         <div class="space-y-4">
-            <p v-if="recentFeedback.length === 0"  class="text-gray-600">No recent feedback available.</p>
+          <p v-if="recentFeedback.length === 0" class="text-gray-600">No recent feedback available.</p>
           <div v-for="feedback in recentFeedback" :key="feedback.id" class="border-b last:border-0 pb-4 last:pb-0">
             <div class="flex items-start space-x-3">
               <div class="bg-gray-100 p-2 rounded">
@@ -114,38 +112,38 @@
     </div>
 
     <!-- Upcoming Schedule -->
-   <div class="bg-white p-6 rounded-lg shadow-md">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="font-semibold text-lg">Upcoming Schedule</h3>
-            <button class="text-blue-600 text-sm hover:text-blue-700">View Calendar</button>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-semibold text-lg">Upcoming Schedule</h3>
+        <button class="text-blue-600 text-sm hover:text-blue-700">View Calendar</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div v-for="event in upcomingSchedule" :key="event.id" class="border rounded-lg p-4">
+          <div class="flex items-start space-x-3">
+            <div class="bg-gray-100 p-2 rounded text-center min-w-[3rem]">
+              <span class="text-sm font-bold block">{{ formatDate(event.date, 'dd') }}</span>
+              <span class="text-xs text-gray-600">{{ formatDate(event.date, 'MMM') }}</span>
+            </div>
+            <div class="flex-1">
+              <h4 class="font-medium">{{ event.title }}</h4>
+              <div class="space-y-1 mt-2">
+                <p class="text-sm text-gray-600 flex items-center">
+                  <Clock class="w-3 h-3 mr-1" />
+                  {{ event.time }}
+                </p>
+                <p class="text-sm text-gray-600 flex items-center">
+                  <Users class="w-3 h-3 mr-1" />
+                  {{ event.participants }} registered
+                </p>
+                <p class="text-sm text-gray-600 flex items-center">
+                  <MapPin class="w-3 h-3 mr-1" />
+                  {{ event.venue }}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-           <div v-for="event in upcomingSchedule" :key="event.id" class="border rounded-lg p-4">
-                <div class="flex items-start space-x-3">
-                    <div class="bg-gray-100 p-2 rounded text-center min-w-[3rem]">
-                         <span class="text-sm font-bold block">{{ formatDate(event.date, 'dd') }}</span>
-                         <span class="text-xs text-gray-600">{{ formatDate(event.date, 'MMM') }}</span>
-                    </div>
-                    <div class="flex-1">
-                      <h4 class="font-medium">{{ event.title }}</h4>
-                      <div class="space-y-1 mt-2">
-                        <p class="text-sm text-gray-600 flex items-center">
-                          <Clock class="w-3 h-3 mr-1" />
-                          {{ event.time }}
-                        </p>
-                        <p class="text-sm text-gray-600 flex items-center">
-                          <Users class="w-3 h-3 mr-1" />
-                          {{ event.participants }} registered
-                        </p>
-                        <p class="text-sm text-gray-600 flex items-center">
-                          <MapPin class="w-3 h-3 mr-1" />
-                          {{ event.venue }}
-                        </p>
-                      </div>
-                    </div>
-                </div>
-           </div>
-        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -207,7 +205,7 @@ onMounted(async () => {
     // --- Quick Stats ---
     const totalSessionsConducted = filteredData.length;
     const totalCpdCreditsAwarded = filteredData.reduce((total, item) => total + item.credit, 0);
-      const averageRating = 0; // Placeholder, need to calculate this.
+    const averageRating = 0; // Placeholder, need to calculate this.
 
     quickStats.value = [
       {
@@ -224,7 +222,7 @@ onMounted(async () => {
         bgColor: 'bg-purple-100',
         iconColor: 'text-purple-500'
       },
-       {
+      {
         label: "Average Rating",
         value: averageRating, // Use the calculated average
         icon: Star,
@@ -235,55 +233,55 @@ onMounted(async () => {
 
 
     // --- Training Sessions ---
-     trainingSessions.value = filteredData.map(item => ({
-          id: item.id,
-          title: item.title_of_cpd,
-          date: item.from_date,
-          duration: item.duration_in_hours,
-          participants: item.number_of_participants,
-          credits: item.credit,
-          status: item.is_cpd_approved ? "Approved" : "Pending"  //Simplified status
-        }));
+    trainingSessions.value = filteredData.map(item => ({
+      id: item.id,
+      title: item.title_of_cpd,
+      date: item.from_date,
+      duration: item.duration_in_hours,
+      participants: item.number_of_participants,
+      credits: item.credit,
+      status: item.is_cpd_approved ? "Approved" : "Pending"  //Simplified status
+    }));
 
     // --- Upcoming Schedule ---
-        upcomingSchedule.value = filteredData.filter(item => item.is_cpd_approved) //Filter for Approved ones.
-            .map(item => ({
-                id: item.id,
-                day: item.from_date, //You'll format this in template.
-                month: item.from_date, //You'll format this
-                title: item.title_of_cpd,
-                time: "Add time if available in API", //Add if your api give
-                participants: item.number_of_participants,
-                venue: item.venue
-        }));
+    upcomingSchedule.value = filteredData.filter(item => item.is_cpd_approved) //Filter for Approved ones.
+      .map(item => ({
+        id: item.id,
+        day: item.from_date, //You'll format this in template.
+        month: item.from_date, //You'll format this
+        title: item.title_of_cpd,
+        time: "Add time if available in API", //Add if your api give
+        participants: item.number_of_participants,
+        venue: item.venue
+      }));
 
-        // --- Recent Feedback --- (Assuming you have a separate endpoint for feedback)
-        //  const feedbackResponse = await apiservice.getFeedback(userCid); // Replace with your actual API call
-        // recentFeedback.value = feedbackResponse.data.results || [];
-        //For now, keep the mock data.
-        recentFeedback.value = [
-            {
-                id: 1,
-                sessionTitle: "Advanced Cardiac Life Support Update",
-                rating: 4.9,
-                comment: "Excellent practical demonstrations and very current information.",
-                date: "2024-02-20"  // Use a consistent date format
-              },
-              {
-                id: 2,
-                sessionTitle: "Emergency Response Workshop",
-                rating: 4.8,
-                comment: "Dr. Chen's experience really showed in the case studies.",
-                date: "2024-02-17"
-              },
-              {
-                id: 3,
-                sessionTitle: "Cardiovascular Care Seminar",
-                rating: 4.7,
-                comment: "Very informative session with great hands-on practice.",
-                date: "2024-02-10"
-              }
-        ];
+    // --- Recent Feedback --- (Assuming you have a separate endpoint for feedback)
+    //  const feedbackResponse = await apiservice.getFeedback(userCid); // Replace with your actual API call
+    // recentFeedback.value = feedbackResponse.data.results || [];
+    //For now, keep the mock data.
+    recentFeedback.value = [
+      {
+        id: 1,
+        sessionTitle: "Advanced Cardiac Life Support Update",
+        rating: 4.9,
+        comment: "Excellent practical demonstrations and very current information.",
+        date: "2024-02-20"  // Use a consistent date format
+      },
+      {
+        id: 2,
+        sessionTitle: "Emergency Response Workshop",
+        rating: 4.8,
+        comment: "Dr. Chen's experience really showed in the case studies.",
+        date: "2024-02-17"
+      },
+      {
+        id: 3,
+        sessionTitle: "Cardiovascular Care Seminar",
+        rating: 4.7,
+        comment: "Very informative session with great hands-on practice.",
+        date: "2024-02-10"
+      }
+    ];
 
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -294,12 +292,12 @@ onMounted(async () => {
 });
 
 const formatDate = (dateString, formatString = 'yyyy-MM-dd') => {
-    if (!dateString) return 'N/A';
-    try {
-      return format(new Date(dateString), formatString);
-    } catch (error) {
-      console.error("Error formatting date:", dateString, error);
-      return 'Invalid Date';
-    }
-  };
+  if (!dateString) return 'N/A';
+  try {
+    return format(new Date(dateString), formatString);
+  } catch (error) {
+    console.error("Error formatting date:", dateString, error);
+    return 'Invalid Date';
+  }
+};
 </script>
