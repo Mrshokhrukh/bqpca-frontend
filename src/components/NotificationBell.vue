@@ -76,6 +76,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/authStore'; // Import your authStore
 import {
   Bell,
   BellOff,
@@ -87,6 +88,7 @@ import {
   AlertTriangle
 } from 'lucide-vue-next';
 import { formatDistanceToNow } from 'date-fns';
+import apiService from '@/services/services'; // If you have an apiService setup (recommended)
 
 // State
 const notifications = ref([]);
@@ -94,6 +96,16 @@ const showNotifications = ref(false);
 const loading = ref(false);
 const socket = ref(null);
 const router = useRouter();
+const authStore = useAuthStore(); // Use authStore
+
+// **Service Type Mapping**
+const serviceTypeMap = {
+  roq: 'recognition_of_qualification',
+  ecpf: 'education_consultancy_placement_firm',
+  accreditation: 'specification_for_institute_accrediation',
+  engineering: 'specification_for_engineering_certification',
+  health_certification: 'specification_for_health_certification',
+};
 
 // Computed
 const unreadCount = computed(() => {
@@ -104,17 +116,34 @@ const hasUnread = computed(() => unreadCount.value > 0);
 
 // WebSocket Setup
 const setupWebSocket = () => {
-  const wsUrl = `${import.meta.env.VITE_WS_URL}/notifications/recognition_of_qualification/`;
+  if (!authStore.serviceType) {
+    console.warn("Service type not available. WebSocket not initialized.");
+    return;
+  }
+
+  const backendAppName = serviceTypeMap[authStore.serviceType];
+
+  if (!backendAppName) {
+    console.error(`No backend app name mapping found for service type: ${authStore.serviceType}`);
+    return; // Or handle the error appropriately, maybe default to a public channel
+  }
+
+  const wsChannel = backendAppName.replace(/_/g, '_'); // backend app names are already good for channel. if not replace with '-' to '_'
+  const wsUrl = `${import.meta.env.VITE_WS_URL}/notifications/${wsChannel}/`;
   socket.value = new WebSocket(wsUrl);
 
   socket.value.onmessage = (event) => {
-    const newNotification = JSON.parse(event.data);
-    notifications.value.unshift(newNotification);
+    // **Instead of directly using event data, fetch fresh notifications**
+    fetchNotifications(); // Re-fetch notifications when any event occurs
   };
 
   socket.value.onclose = () => {
     // Attempt to reconnect after 30 minutes
     setTimeout(setupWebSocket, 1800000);
+  };
+
+  socket.value.onerror = (error) => {
+    console.error('WebSocket error:', error);
   };
 };
 
@@ -129,11 +158,16 @@ const toggleNotifications = () => {
 const fetchNotifications = async () => {
   loading.value = true;
   try {
-    const response = await fetch('/api/notifications');
+    // **Fetch notifications using API - No email needed if backend uses token auth**
+    const response = await apiService.getNotificationn()
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const data = await response.json();
-    notifications.value = data;
+    notifications.value = data.results || []; // Assuming your API response has 'results' array
   } catch (error) {
     console.error('Failed to fetch notifications:', error);
+    // Handle error appropriately, maybe show a toast notification to the user
   } finally {
     loading.value = false;
   }
@@ -141,7 +175,7 @@ const fetchNotifications = async () => {
 
 const markAsRead = async (id) => {
   try {
-    await fetch(`/api/notifications/${id}/read`, { method: 'POST' });
+    await apiService.markNotificationAsRead(id);
     const notification = notifications.value.find(n => n.id === id);
     if (notification) {
       notification.read = true;
@@ -153,7 +187,7 @@ const markAsRead = async (id) => {
 
 const markAllAsRead = async () => {
   try {
-    await fetch('/api/notifications/mark-all-read', { method: 'POST' });
+    await apiService.markAllNotificationsAsRead();
     notifications.value = notifications.value.map(n => ({ ...n, read: true }));
   } catch (error) {
     console.error('Failed to mark all notifications as read:', error);
@@ -175,7 +209,7 @@ const viewAllNotifications = () => {
   showNotifications.value = false;
 };
 
-// Helper Functions
+// Helper Functions (remain the same)
 const formatTimestamp = (timestamp) => {
   return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
 };
@@ -202,7 +236,13 @@ const getNotificationIconColor = (type) => {
 
 // Lifecycle Hooks
 onMounted(() => {
-  setupWebSocket();
+  // Initialize auth first to get serviceType reliably
+  authStore.initializeAuth(); // Make sure auth is initialized
+  if (authStore.serviceType) {
+    setupWebSocket();
+  } else {
+    console.warn("Service type not yet available on mount. WebSocket setup deferred.");
+  }
 });
 
 onBeforeUnmount(() => {

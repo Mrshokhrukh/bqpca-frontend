@@ -3,11 +3,11 @@
   <div class="p-8 min-h-screen bg-gray-50">
     <!-- Page Header -->
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Applications</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">Registration Applications</h1>
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-          Total: {{ applications.length }}
+          Total: {{ filteredApplications.length }}
         </span>
         <span class="mx-4">|</span>
         <span class="flex items-center">
@@ -150,14 +150,18 @@ const currentPage = ref(1);
 const itemsPerPage = 10;
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
+const registrationTypeName = "Registration"; // Define the registration type name to filter
 
 // Computed properties
 const pendingCount = computed(() => {
-  return applications.value.filter(app => getStatus(app) === 'Pending').length;
+  return filteredApplications.value.filter(app => getStatus(app) === 'Pending').length;
 });
 
 const filteredApplications = computed(() => {
   let filtered = applications.value;
+
+  // Filter by registration type name
+  filtered = filtered.filter(app => app.registration_type.name === registrationTypeName);
 
   if (filterStatus.value !== 'all') {
     filtered = filtered.filter(app => getStatus(app) === filterStatus.value);
