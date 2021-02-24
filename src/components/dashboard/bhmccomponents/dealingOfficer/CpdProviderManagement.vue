@@ -1,361 +1,333 @@
 <template>
-    <div class="manage-providers">
-      <!-- Add Provider Card -->
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">Add CPD Provider</h2>
+  <div class="bg-gray-50 min-h-screen">
+    <div class="container">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-extrabold text-gray-900 mb-4">Manage CPD Providers</h2>
+        <p class="text-gray-600 text-lg">Add and manage CPD providers</p>
+      </div>
+
+      <!-- Add Provider Button -->
+      <div class="flex justify-end mb-4">
+        <button @click="openAddProviderModal"
+          class="bg-blue-600 text-white rounded-md py-3 px-6 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          Add Provider
+        </button>
+      </div>
+
+      <!-- Providers Table Card -->
+      <div class="bg-white rounded-2xl shadow-xl p-8">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">CPD Providers List</h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Provider Name
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Contact Information
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  CPD Activity Title
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Venue
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  From Date
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  To Date
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr v-for="(provider, index) in providers" :key="index" class="hover:bg-gray-100 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ provider.providerName
+                }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ provider.contactInfo }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ provider.cpdActivityTitle }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ provider.venue }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ provider.fromDate }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ provider.toDate }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div class="flex space-x-2">
+                    <button @click="openEditProviderModal(index)"
+                      class="text-blue-600 hover:text-blue-800 transition-colors">Edit</button>
+                    <button @click="deleteProvider(index)"
+                      class="text-red-600 hover:text-red-800 transition-colors">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="card-content">
-          <form @submit.prevent="submitProvider" class="provider-form">
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Provider Name</label>
-                <div class="input-with-icon">
-                  <i class="fas fa-user"></i>
-                  <input 
-                    v-model="formData.providerName" 
-                    type="text" 
-                    placeholder="Enter provider name"
-                    required 
-                  />
-                </div>
+      </div>
+
+      <!-- Add Provider Modal -->
+      <div v-if="isAddProviderModalOpen" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="add-modal-title"
+        role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <!-- Background overlay, when the modal is open -->
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+          <!-- Modal container -->
+          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"> </span>
+          <div
+            class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="sm:flex sm:items-start">
+              <div
+                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
               </div>
-  
-              <div class="form-group">
-                <label>Contact Information</label>
-                <div class="input-with-icon">
-                  <i class="fas fa-phone"></i>
-                  <input 
-                    v-model="formData.contactInfo" 
-                    type="text" 
-                    placeholder="Enter contact details"
-                    required 
-                  />
-                </div>
-              </div>
-  
-              <div class="form-group">
-                <label>CPD Activity Title</label>
-                <div class="input-with-icon">
-                  <i class="fas fa-book"></i>
-                  <input 
-                    v-model="formData.cpdActivityTitle" 
-                    type="text" 
-                    placeholder="Enter activity title"
-                    required 
-                  />
-                </div>
-              </div>
-  
-              <div class="form-group">
-                <label>Venue</label>
-                <div class="input-with-icon">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <input 
-                    v-model="formData.venue" 
-                    type="text" 
-                    placeholder="Enter venue"
-                    required 
-                  />
-                </div>
-              </div>
-  
-              <div class="form-group">
-                <label>From Date</label>
-                <div class="input-with-icon">
-                  <i class="fas fa-calendar"></i>
-                  <input 
-                    v-model="formData.fromDate" 
-                    type="date" 
-                    required 
-                  />
-                </div>
-              </div>
-  
-              <div class="form-group">
-                <label>To Date</label>
-                <div class="input-with-icon">
-                  <i class="fas fa-calendar"></i>
-                  <input 
-                    v-model="formData.toDate" 
-                    type="date" 
-                    required 
-                  />
+              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                <h3 class="text-lg leading-6 font-medium text-gray-900" id="add-modal-title">
+                  Add New CPD Provider
+                </h3>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-500">
+                    Fill in the details for the new CPD provider below.
+                  </p>
                 </div>
               </div>
             </div>
-  
-            <button type="submit" class="btn btn-primary">
-              <i class="fas fa-plus"></i> Add Provider
-            </button>
-          </form>
+            <div class="mt-4">
+              <form @submit.prevent="submitProvider" class="space-y-4">
+                <div>
+                  <label for="providerName" class="block text-sm font-medium text-gray-700">Provider Name</label>
+                  <input type="text" id="providerName" v-model="formData.providerName" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Enter provider name" />
+                </div>
+                <div>
+                  <label for="contactInfo" class="block text-sm font-medium text-gray-700">Contact
+                    Information</label>
+                  <input type="text" id="contactInfo" v-model="formData.contactInfo" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Enter contact details" />
+                </div>
+                <div>
+                  <label for="cpdActivityTitle" class="block text-sm font-medium text-gray-700">CPD Activity
+                    Title</label>
+                  <input type="text" id="cpdActivityTitle" v-model="formData.cpdActivityTitle" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Enter activity title" />
+                </div>
+                <div>
+                  <label for="venue" class="block text-sm font-medium text-gray-700">Venue</label>
+                  <input type="text" id="venue" v-model="formData.venue" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Enter venue" />
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label for="fromDate" class="block text-sm font-medium text-gray-700">From Date</label>
+                    <input type="date" id="fromDate" v-model="formData.fromDate" required
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  </div>
+                  <div>
+                    <label for="toDate" class="block text-sm font-medium text-gray-700">To Date</label>
+                    <input type="date" id="toDate" v-model="formData.toDate" required
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  </div>
+                </div>
+
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <button type="submit"
+                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Add Provider
+                  </button>
+                  <button type="button" @click="closeAddProviderModal"
+                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
-  
-      <!-- Providers Table Card -->
-      <div class="card mt-6">
-        <div class="card-header">
-          <h2 class="card-title">CPD Providers List</h2>
-        </div>
-        <div class="card-content">
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Provider Name</th>
-                  <th>Contact Information</th>
-                  <th>CPD Activity Title</th>
-                  <th>Venue</th>
-                  <th>From Date</th>
-                  <th>To Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(provider, index) in providers" :key="index">
-                  <td>{{ provider.providerName }}</td>
-                  <td>{{ provider.contactInfo }}</td>
-                  <td>{{ provider.cpdActivityTitle }}</td>
-                  <td>{{ provider.venue }}</td>
-                  <td>{{ provider.fromDate }}</td>
-                  <td>{{ provider.toDate }}</td>
-                  <td>
-                    <div class="action-buttons">
-                      <button @click="editProvider(index)" class="btn btn-edit">
-                        <i class="fas fa-edit"></i> Edit
-                      </button>
-                      <button @click="deleteProvider(index)" class="btn btn-delete">
-                        <i class="fas fa-trash"></i> Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+
+      <!-- Edit Provider Modal -->
+      <div v-if="isEditProviderModalOpen" class="fixed z-10 inset-0 overflow-y-auto"
+        aria-labelledby="edit-modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <!-- Background overlay, when the modal is open -->
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+          <!-- Modal container -->
+          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"> </span>
+          <div
+            class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="sm:flex sm:items-start">
+              <div
+                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </div>
+              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                <h3 class="text-lg leading-6 font-medium text-gray-900" id="edit-modal-title">
+                  Edit CPD Provider
+                </h3>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-500">
+                    Edit the details of the CPD provider below.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4">
+              <form @submit.prevent="updateProvider" class="space-y-4">
+                <div>
+                  <label for="editProviderName" class="block text-sm font-medium text-gray-700">Provider Name</label>
+                  <input type="text" id="editProviderName" v-model="editFormData.providerName" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Enter provider name" />
+                </div>
+                <div>
+                  <label for="editContactInfo" class="block text-sm font-medium text-gray-700">Contact
+                    Information</label>
+                  <input type="text" id="editContactInfo" v-model="editFormData.contactInfo" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Enter contact details" />
+                </div>
+                <div>
+                  <label for="editCpdActivityTitle" class="block text-sm font-medium text-gray-700">CPD Activity
+                    Title</label>
+                  <input type="text" id="editCpdActivityTitle" v-model="editFormData.cpdActivityTitle" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Enter activity title" />
+                </div>
+                <div>
+                  <label for="editVenue" class="block text-sm font-medium text-gray-700">Venue</label>
+                  <input type="text" id="editVenue" v-model="editFormData.venue" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Enter venue" />
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label for="editFromDate" class="block text-sm font-medium text-gray-700">From Date</label>
+                    <input type="date" id="editFromDate" v-model="editFormData.fromDate" required
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  </div>
+                  <div>
+                    <label for="editToDate" class="block text-sm font-medium text-gray-700">To Date</label>
+                    <input type="date" id="editToDate" v-model="editFormData.toDate" required
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  </div>
+                </div>
+
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <button type="submit"
+                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Update Provider
+                  </button>
+                  <button type="button" @click="closeEditProviderModal"
+                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, reactive } from 'vue'
-  
-  const formData = reactive({
-    providerName: '',
-    contactInfo: '',
-    cpdActivityTitle: '',
-    venue: '',
-    fromDate: '',
-    toDate: ''
-  })
-  
-  const providers = ref([
-    {
-      providerName: 'ABC Training Institute',
-      contactInfo: 'contact@abctraining.com',
-      cpdActivityTitle: 'Workshop on Microbiology',
-      venue: 'Conference Hall A',
-      fromDate: '2023-11-01',
-      toDate: '2023-11-03'
-    },
-    {
-      providerName: 'XYZ Seminars',
-      contactInfo: 'info@xyzseminars.com',
-      cpdActivityTitle: 'ISO Standards Seminar',
-      venue: 'Online',
-      fromDate: '2023-12-10',
-      toDate: '2023-12-12'
-    }
-  ])
-  
-  const submitProvider = () => {
-    providers.value.push({ ...formData })
-    // Reset form
-    Object.keys(formData).forEach(key => formData[key] = '')
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive } from 'vue';
+
+const formData = reactive({
+  providerName: '',
+  contactInfo: '',
+  cpdActivityTitle: '',
+  venue: '',
+  fromDate: '',
+  toDate: ''
+});
+
+const editFormData = reactive({
+  providerName: '',
+  contactInfo: '',
+  cpdActivityTitle: '',
+  venue: '',
+  fromDate: '',
+  toDate: ''
+});
+
+const providers = ref([
+  {
+    providerName: 'ABC Training Institute',
+    contactInfo: 'contact@abctraining.com',
+    cpdActivityTitle: 'Workshop on Microbiology',
+    venue: 'Conference Hall A',
+    fromDate: '2023-11-01',
+    toDate: '2023-11-03'
+  },
+  {
+    providerName: 'XYZ Seminars',
+    contactInfo: 'info@xyzseminars.com',
+    cpdActivityTitle: 'ISO Standards Seminar',
+    venue: 'Online',
+    fromDate: '2023-12-10',
+    toDate: '2023-12-12'
   }
-  
-  const editProvider = (index) => {
-    const provider = providers.value[index]
-    Object.keys(formData).forEach(key => formData[key] = provider[key])
-    providers.value.splice(index, 1)
+]);
+
+const isAddProviderModalOpen = ref(false);
+const isEditProviderModalOpen = ref(false);
+const editingIndex = ref(null);
+
+const openAddProviderModal = () => {
+  isAddProviderModalOpen.value = true;
+};
+
+const closeAddProviderModal = () => {
+  isAddProviderModalOpen.value = false;
+  Object.keys(formData).forEach(key => formData[key] = '');
+};
+
+const openEditProviderModal = (index) => {
+  editingIndex.value = index;
+  Object.assign(editFormData, providers.value[index]); // Load data into edit form
+  isEditProviderModalOpen.value = true;
+};
+
+const closeEditProviderModal = () => {
+  isEditProviderModalOpen.value = false;
+  editingIndex.value = null;
+};
+
+const submitProvider = () => {
+  providers.value.push({ ...formData });
+  closeAddProviderModal();
+  Object.keys(formData).forEach(key => formData[key] = '');
+};
+
+const updateProvider = () => {
+  if (editingIndex.value !== null) {
+    Object.assign(providers.value[editingIndex.value], editFormData);
+    closeEditProviderModal();
   }
-  
-  const deleteProvider = (index) => {
-    if (confirm('Are you sure you want to delete this provider?')) {
-      providers.value.splice(index, 1)
-    }
+};
+
+const deleteProvider = (index) => {
+  if (confirm('Are you sure you want to delete this provider?')) {
+    providers.value.splice(index, 1);
   }
-  </script>
-  
-  <style scoped>
-  .manage-providers {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  .card {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-  }
-  
-  .card-header {
-    padding: 20px;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .card-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin: 0;
-  }
-  
-  .card-content {
-    padding: 20px;
-  }
-  
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin-bottom: 20px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #4a5568;
-  }
-  
-  .input-with-icon {
-    position: relative;
-  }
-  
-  .input-with-icon i {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #718096;
-  }
-  
-  .input-with-icon input {
-    width: 100%;
-    padding: 10px 10px 10px 35px;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    transition: border-color 0.2s;
-  }
-  
-  .input-with-icon input:focus {
-    border-color: #4299e1;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
-  }
-  
-  .btn {
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s;
-  }
-  
-  .btn i {
-    font-size: 0.9em;
-  }
-  
-  .btn-primary {
-    background-color: #4299e1;
-    color: white;
-    border: none;
-  }
-  
-  .btn-primary:hover {
-    background-color: #3182ce;
-  }
-  
-  .btn-edit {
-    background-color: #48bb78;
-    color: white;
-    border: none;
-    margin-right: 8px;
-  }
-  
-  .btn-edit:hover {
-    background-color: #38a169;
-  }
-  
-  .btn-delete {
-    background-color: #f56565;
-    color: white;
-    border: none;
-  }
-  
-  .btn-delete:hover {
-    background-color: #e53e3e;
-  }
-  
-  .table-responsive {
-    overflow-x: auto;
-  }
-  
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .table th,
-  .table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #e2e8f0;
-  }
-  
-  .table th {
-    background-color: #f7fafc;
-    font-weight: 600;
-    color: #4a5568;
-  }
-  
-  .table tr:hover {
-    background-color: #f7fafc;
-  }
-  
-  .action-buttons {
-    display: flex;
-    gap: 8px;
-  }
-  
-  .mt-6 {
-    margin-top: 1.5rem;
-  }
-  
-  @media (max-width: 768px) {
-    .form-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .action-buttons {
-      flex-direction: column;
-    }
-    
-    .btn {
-      width: 100%;
-      justify-content: center;
-    }
-  }
-  </style>
+};
+</script>
+
+<style scoped>
+/* Any component specific styling can be placed here */
+</style>

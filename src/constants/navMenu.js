@@ -550,23 +550,23 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Application Lists',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_management`,
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_application_review`,
           },
           {
             name: 'Create Application',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_credits`,
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_create_application`,
           },
           {
             name: 'Manage Providers',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_methodologies`,
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_provider_management`,
           },
           {
             name: 'Award Credits',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_methodologies`,
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_award_credits`,
           },
           {
             name: 'Reports',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_methodologies`,
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_reports`,
           },
         ],
       },
