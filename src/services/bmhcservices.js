@@ -369,9 +369,6 @@ export default {
     case 'sectors':
       endpoint = '/bmhc/masters-sector/';
       break;
-    case 'practice-addresses':
-      endpoint = '/bmhc/masters-practice-address/'; // **IMPORTANT:** Please verify if this is the correct endpoint
-      break;
     default:
       console.error(`Master data type "${masterDataType}" is not supported in getMasterData function.`);
       return Promise.reject(`Master data type "${masterDataType}" is not supported.`);
