@@ -1,5 +1,6 @@
 <!-- ViewApplicationDetailsModal.vue -->
 <template>
+  <!-- (Your existing template code remains the same) -->
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModalHandler" class="relative z-50">
       <TransitionChild as="div" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
@@ -18,13 +19,13 @@
               <div class="relative">
                 <!-- Enhanced Status Banner -->
                 <div :class="[
-                  'px-8 py-6 border-b relative overflow-hidden',
-                  {
-                    'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
-                    'bg-green-50 border-green-100': overallStatus === 'Approved',
-                    'bg-red-50 border-red-100': overallStatus === 'Regretted',
-                  },
-                ]">
+    'px-8 py-6 border-b relative overflow-hidden',
+    {
+      'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
+      'bg-green-50 border-green-100': overallStatus === 'Approved',
+      'bg-red-50 border-red-100': overallStatus === 'Regretted',
+    },
+  ]">
                   <div class="flex items-center justify-between relative z-10">
                     <div class="flex items-center space-x-4">
                       <div class="p-3 bg-white rounded-lg shadow-sm">
@@ -34,23 +35,24 @@
                         <DialogTitle as="h3" class="text-2xl font-semibold text-gray-900">
                           Application Details
                         </DialogTitle>
-                        <p class="text-sm text-gray-600 mt-1">Review and manage application information</p>
+                        <p class="text-sm text-gray-600 mt-1">Review and manage application
+                          information</p>
                       </div>
                     </div>
                     <div class="flex items-center space-x-4">
                       <span :class="[
-                        'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
-                        {
-                          'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
-                          'bg-green-100 text-green-800': overallStatus === 'Approved',
-                          'bg-red-100 text-red-800': overallStatus === 'Regretted',
-                        },
-                      ]">
+    'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
+    {
+      'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
+      'bg-green-100 text-green-800': overallStatus === 'Approved',
+      'bg-red-100 text-red-800': overallStatus === 'Regretted',
+    },
+  ]">
                         <Circle class="h-4 w-4" :class="{
-                          'text-yellow-500': overallStatus === 'Pending',
-                          'text-green-500': overallStatus === 'Approved',
-                          'text-red-500': overallStatus === 'Regretted',
-                        }" />
+    'text-yellow-500': overallStatus === 'Pending',
+    'text-green-500': overallStatus === 'Approved',
+    'text-red-500': overallStatus === 'Regretted',
+  }" />
                         <span>{{ overallStatus }}</span>
                       </span>
                       <button type="button"
@@ -89,23 +91,27 @@
                               <span
                                 class="absolute bottom-0 right-0 h-5 w-5 rounded-full border-2 border-white shadow-sm"
                                 :class="{
-                                  'bg-yellow-400': overallStatus === 'Pending',
-                                  'bg-green-400': overallStatus === 'Approved',
-                                  'bg-red-400': overallStatus === 'Regretted',
-                                }" />
+    'bg-yellow-400': overallStatus === 'Pending',
+    'bg-green-400': overallStatus === 'Approved',
+    'bg-red-400': overallStatus === 'Regretted',
+  }" />
                             </div>
                             <div class="text-center">
-                              <h5 class="text-xl font-semibold text-gray-900">{{ application.full_name }}</h5>
-                              <p class="text-sm text-gray-500 mt-1">CID: {{ application.cid_no }}</p>
+                              <h5 class="text-xl font-semibold text-gray-900">{{
+    application.full_name }}</h5>
+                              <p class="text-sm text-gray-500 mt-1">CID: {{
+    application.cid_no }}</p>
                             </div>
                             <div class="w-full grid grid-cols-2 gap-4 mt-4">
                               <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
                                 <UserCircle class="h-4 w-4 text-gray-400" />
-                                <span class="text-sm text-gray-600">{{ application.gender }}</span>
+                                <span class="text-sm text-gray-600">{{
+    application.gender }}</span>
                               </div>
                               <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
                                 <Calendar class="h-4 w-4 text-gray-400" />
-                                <span class="text-sm text-gray-600">{{ formatDate(application.date_of_birth) }}</span>
+                                <span class="text-sm text-gray-600">{{
+    formatDate(application.date_of_birth) }}</span>
                               </div>
                             </div>
                           </div>
@@ -121,12 +127,13 @@
                               </span>
                               <button v-if="isEditing && !application.is_counselor"
                                 @click="editableApplication.is_counselor = !editableApplication.is_counselor" :class="[
-                                  'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-                                  editableApplication.is_counselor
-                                    ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                ]">
-                                {{ editableApplication.is_counselor ? 'Cancel Registration' : 'Register as Counselor' }}
+    'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+    editableApplication.is_counselor
+      ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+      : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+  ]">
+                                {{ editableApplication.is_counselor ? 'Cancel Registration' :
+    'Register as Counselor' }}
                               </button>
                               <span v-else-if="application.is_counselor"
                                 class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
@@ -148,16 +155,19 @@
                           <div class="space-y-4">
                             <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                               <Mail class="h-4 w-4 text-gray-400" />
-                              <span class="text-sm text-gray-600">{{ application.email_address }}</span>
+                              <span class="text-sm text-gray-600">{{
+    application.email_address }}</span>
                             </div>
                             <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                               <Phone class="h-4 w-4 text-gray-400" />
-                              <span class="text-sm text-gray-600">{{ application.contact_no }}</span>
+                              <span class="text-sm text-gray-600">{{
+    application.contact_no }}</span>
                             </div>
                             <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                               <MapPin class="h-4 w-4 text-gray-400" />
                               <span class="text-sm text-gray-600">
-                                {{ application.village }}, {{ application.gewog }}, {{ application.dzongkhag }}
+                                {{ application.village }}, {{ application.gewog }}, {{
+    application.dzongkhag }}
                               </span>
                             </div>
                           </div>
@@ -179,7 +189,8 @@
                             <!-- Application Review -->
                             <div class="space-y-4">
                               <div class="p-4 bg-gray-50 rounded-lg">
-                                <h5 class="font-medium text-gray-900 mb-3">Document Review</h5>
+                                <h5 class="font-medium text-gray-900 mb-3">Document Review
+                                </h5>
                                 <select v-model="editableQualification.application_review_status"
                                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                   <option value="Pending">Pending Review</option>
@@ -198,26 +209,30 @@
                             <!-- Physical Review -->
                             <div class="space-y-4">
                               <div class="p-4 bg-gray-50 rounded-lg">
-                                <h5 class="font-medium text-gray-900 mb-3">Physical Verification</h5>
+                                <h5 class="font-medium text-gray-900 mb-3">Physical
+                                  Verification</h5>
                                 <select v-model="editableQualification.physical_review_status"
                                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                  <option value="Pending">Pending Verification</option>
+                                  <option value="Pending">Pending Verification
+                                  </option>
                                   <option value="Approved">Verify Documents</option>
-                                  <option value="Regretted">Reject Verification</option>
+                                  <option value="Regretted">Reject Verification
+                                  </option>
                                 </select>
                                 <textarea v-if="editableQualification.physical_review_status === 'Regretted'"
                                   v-model="editableQualification.physical_review_remark"
                                   placeholder="Provide rejection reason..."
                                   class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                   rows="3">
-                                </textarea>
+                                                              </textarea>
                               </div>
                             </div>
 
                             <!-- Endorsement -->
                             <div class="space-y-4">
                               <div class="p-4 bg-gray-50 rounded-lg">
-                                <h5 class="font-medium text-gray-900 mb-3">Final Endorsement</h5>
+                                <h5 class="font-medium text-gray-900 mb-3">Final
+                                  Endorsement</h5>
                                 <select v-model="editableQualification.endorsement_decision"
                                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                   <option value="Pending">Pending Decision</option>
@@ -229,7 +244,7 @@
                                   placeholder="Provide rejection reason..."
                                   class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                   rows="3">
-                                </textarea>
+                                                              </textarea>
                               </div>
                             </div>
                           </div>
@@ -245,24 +260,28 @@
                           </h4>
                           <div class="grid grid-cols-2 gap-6">
                             <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Registration Type</p>
+                              <p class="text-sm font-medium text-gray-500">Registration Type
+                              </p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <FileCheck class="h-4 w-4 text-gray-400" />
                                 <span>{{ application.registration_type?.name }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Registration Number</p>
+                              <p class="text-sm font-medium text-gray-500">Registration
+                                Number</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Hash class="h-4 w-4 text-gray-400" />
                                 <span>{{ application.registration_no }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Registration Date</p>
+                              <p class="text-sm font-medium text-gray-500">Registration Date
+                              </p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Calendar class="h-4 w-4 text-gray-400" />
-                                <span>{{ formatDate(application.registration_date) }}</span>
+                                <span>{{ formatDate(application.registration_date)
+                                  }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
@@ -275,13 +294,15 @@
 
                             <!-- Personnel Category -->
                             <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
-                              <p class="text-sm font-medium text-gray-500">Personnel Category</p>
+                              <p class="text-sm font-medium text-gray-500">Personnel Category
+                              </p>
                               <p class="text-sm text-gray-900 mt-2">
                                 <span>{{ application.personnel_category }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg" v-else>
-                              <p class="text-sm font-medium text-gray-500">Personnel Category</p>
+                              <p class="text-sm font-medium text-gray-500">Personnel Category
+                              </p>
                               <select v-model="editableApplication.personnel_category"
                                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 <option value="" disabled>Select Category</option>
@@ -294,13 +315,15 @@
 
                             <!-- Personnel Subcategory -->
                             <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
-                              <p class="text-sm font-medium text-gray-500">Personnel Subcategory</p>
+                              <p class="text-sm font-medium text-gray-500">Personnel
+                                Subcategory</p>
                               <p class="text-sm text-gray-900 mt-2">
                                 <span>{{ application.personnel_subcategory }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg" v-else>
-                              <p class="text-sm font-medium text-gray-500">Personnel Subcategory</p>
+                              <p class="text-sm font-medium text-gray-500">Personnel
+                                Subcategory</p>
                               <select v-model="editableApplication.personnel_subcategory"
                                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 <option value="" disabled>Select Subcategory</option>
@@ -313,7 +336,8 @@
 
                             <!-- Practice Address -->
                             <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Practice Address</p>
+                              <p class="text-sm font-medium text-gray-500">Practice Address
+                              </p>
                               <input type="text" v-model="editableApplication.practice_address"
                                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="Enter Practice Address" />
@@ -354,28 +378,38 @@
                               class="bg-gray-50 rounded-lg p-6">
                               <div class="grid grid-cols-2 gap-6">
                                 <div>
-                                  <p class="text-sm font-medium text-gray-500">Qualification</p>
+                                  <p class="text-sm font-medium text-gray-500">
+                                    Qualification</p>
                                   <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                     <GraduationCap class="h-4 w-4 text-gray-400" />
-                                    <span>{{ qualification.qualification_name_display }}</span>
+                                    <span>{{
+    qualification.qualification_name_display
+  }}</span>
                                   </p>
                                 </div>
                                 <div>
-                                  <p class="text-sm font-medium text-gray-500">Qualification Type</p>
+                                  <p class="text-sm font-medium text-gray-500">
+                                    Qualification Type</p>
                                   <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                     <ClipboardCheck class="h-4 w-4 text-gray-400" />
-                                    <span>{{ qualification.qualification_type_display }}</span>
+                                    <span>{{
+      qualification.qualification_type_display
+    }}</span>
                                   </p>
                                 </div>
                                 <div>
-                                  <p class="text-sm font-medium text-gray-500">Institute/University</p>
+                                  <p class="text-sm font-medium text-gray-500">
+                                    Institute/University</p>
                                   <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                     <MapPin class="h-4 w-4 text-gray-400" />
-                                    <span>{{ qualification.institute_university_display }}</span>
+                                    <span>{{
+      qualification.institute_university_display
+    }}</span>
                                   </p>
                                 </div>
                                 <div>
-                                  <p class="text-sm font-medium text-gray-500">Completion Year</p>
+                                  <p class="text-sm font-medium text-gray-500">
+                                    Completion Year</p>
                                   <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                     <Calendar class="h-4 w-4 text-gray-400" />
                                     <span>{{ qualification.completion_year }}</span>
@@ -387,38 +421,55 @@
                               <div v-if="!isEditing" class="mt-6 pt-6 border-t border-gray-200">
                                 <div class="grid grid-cols-3 gap-6">
                                   <div class="space-y-2">
-                                    <h6 class="text-sm font-medium text-gray-700">Document Review</h6>
+                                    <h6 class="text-sm font-medium text-gray-700">
+                                      Document Review</h6>
                                     <div class="flex items-center space-x-2">
                                       <span :class="[
-                                        'w-2 h-2 rounded-full',
-                                        {
-                                          'bg-yellow-400': qualification.application_review_status === 'Pending',
-                                          'bg-green-400': qualification.application_review_status === 'Approved',
-                                          'bg-red-400': qualification.application_review_status === 'Regretted'
-                                        }
-                                      ]"></span>
-                                      <span class="text-sm text-gray-600">{{ qualification.application_review_status
-                                      }}</span>
+    'w-2 h-2 rounded-full',
+    {
+      'bg-yellow-400':
+        qualification.application_review_status ===
+        'Pending',
+      'bg-green-400':
+        qualification.application_review_status ===
+        'Approved',
+      'bg-red-400':
+        qualification.application_review_status ===
+        'Regretted',
+    },
+  ]"></span>
+                                      <span class="text-sm text-gray-600">{{
+    qualification.application_review_status
+  }}</span>
                                     </div>
                                     <p v-if="qualification.application_review_remark"
                                       class="text-sm text-gray-500 mt-1">
-                                      {{ qualification.application_review_remark }}
+                                      {{
+    qualification.application_review_remark }}
                                     </p>
                                   </div>
 
                                   <div class="space-y-2">
-                                    <h6 class="text-sm font-medium text-gray-700">Physical Verification</h6>
+                                    <h6 class="text-sm font-medium text-gray-700">
+                                      Physical Verification</h6>
                                     <div class="flex items-center space-x-2">
                                       <span :class="[
-                                        'w-2 h-2 rounded-full',
-                                        {
-                                          'bg-yellow-400': qualification.physical_review_status === 'Pending',
-                                          'bg-green-400': qualification.physical_review_status === 'Approved',
-                                          'bg-red-400': qualification.physical_review_status === 'Regretted'
-                                        }
-                                      ]"></span>
-                                      <span class="text-sm text-gray-600">{{ qualification.physical_review_status
-                                      }}</span>
+    'w-2 h-2 rounded-full',
+    {
+      'bg-yellow-400':
+        qualification.physical_review_status ===
+        'Pending',
+      'bg-green-400':
+        qualification.physical_review_status ===
+        'Approved',
+      'bg-red-400':
+        qualification.physical_review_status ===
+        'Regretted',
+    },
+  ]"></span>
+                                      <span class="text-sm text-gray-600">{{
+    qualification.physical_review_status
+  }}</span>
                                     </div>
                                     <p v-if="qualification.physical_review_remark" class="text-sm text-gray-500 mt-1">
                                       {{ qualification.physical_review_remark }}
@@ -426,18 +477,26 @@
                                   </div>
 
                                   <div class="space-y-2">
-                                    <h6 class="text-sm font-medium text-gray-700">Final Endorsement</h6>
+                                    <h6 class="text-sm font-medium text-gray-700">
+                                      Final Endorsement</h6>
                                     <div class="flex items-center space-x-2">
                                       <span :class="[
-                                        'w-2 h-2 rounded-full',
-                                        {
-                                          'bg-yellow-400': qualification.endorsement_decision === 'Pending',
-                                          'bg-green-400': qualification.endorsement_decision === 'Approved',
-                                          'bg-red-400': qualification.endorsement_decision === 'Regretted'
-                                        }
-                                      ]"></span>
-                                      <span class="text-sm text-gray-600">{{ qualification.endorsement_decision
-                                      }}</span>
+    'w-2 h-2 rounded-full',
+    {
+      'bg-yellow-400':
+        qualification.endorsement_decision ===
+        'Pending',
+      'bg-green-400':
+        qualification.endorsement_decision ===
+        'Approved',
+      'bg-red-400':
+        qualification.endorsement_decision ===
+        'Regretted',
+    },
+  ]"></span>
+                                      <span class="text-sm text-gray-600">{{
+                                        qualification.endorsement_decision
+                                        }}</span>
                                     </div>
                                     <p v-if="qualification.endorsement_remarks" class="text-sm text-gray-500 mt-1">
                                       {{ qualification.endorsement_remarks }}
@@ -543,10 +602,10 @@ import {
   X,
   Pencil,
 } from 'lucide-vue-next';
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import apiServices from '@/services/services';
 import CertificateModal from './CertificateModal.vue';
-import isEqual from 'lodash/isEqual'; // Import lodash isEqual for deep object comparison
+import isEqual from 'lodash/isEqual';
 
 const props = defineProps({
   isOpen: Boolean,
@@ -572,11 +631,14 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['close', 'update:application']);
+const emit = defineEmits(['close', 'update']);
 
 const isEditing = ref(false);
 const editableQualification = ref({});
 const editableApplication = ref({});
+// Add editableUserDetails and originalUserDetails
+const editableUserDetails = ref({});
+const originalUserDetailsData = ref(null);
 const originalApplicationData = ref(null); // Store original application data
 const originalQualificationData = ref(null); // Store original qualification data
 const isLoading = ref(false);
@@ -586,15 +648,25 @@ const isCertificateModalOpen = ref(false);
 
 watch(() => props.application, (newApplication) => {
   if (newApplication) {
-    originalApplicationData.value = { ...newApplication }; // Deep copy original application
+    originalApplicationData.value = JSON.parse(JSON.stringify(newApplication)); // Deep copy original application
+
     if (newApplication.user_qualifications && newApplication.user_qualifications.length > 0) {
       editableQualification.value = { ...newApplication.user_qualifications[0] };
-      originalQualificationData.value = { ...newApplication.user_qualifications[0] }; // Deep copy original qualification
+      originalQualificationData.value = JSON.parse(JSON.stringify(newApplication.user_qualifications[0])); // Deep copy original qualification
     } else {
       editableQualification.value = {};
       originalQualificationData.value = null;
     }
     editableApplication.value = { ...newApplication };
+
+    // Handle userDetails
+    if (newApplication.userDetails) {
+      originalUserDetailsData.value = JSON.parse(JSON.stringify(newApplication.userDetails));
+      editableUserDetails.value = { ...newApplication.userDetails };
+    } else {
+      originalUserDetailsData.value = null;
+      editableUserDetails.value = {};
+    }
   }
   errorMessage.value = '';
 }, { deep: true, immediate: true });
@@ -605,6 +677,10 @@ const closeModal = () => {
 
 const closeModalHandler = () => {
   emit('close');
+};
+
+const handleImageError = (event) => {
+  event.target.src = '/placeholder-avatar.png';
 };
 
 const formatDate = (date) => {
@@ -643,11 +719,15 @@ const startEditing = () => {
 
 const cancelEditing = () => {
   isEditing.value = false;
+  // Reset all editable data to their original values
   if (originalApplicationData.value) {
-    editableApplication.value = { ...originalApplicationData.value };
+    editableApplication.value = JSON.parse(JSON.stringify(originalApplicationData.value));
   }
   if (originalQualificationData.value) {
-    editableQualification.value = { ...originalQualificationData.value };
+    editableQualification.value = JSON.parse(JSON.stringify(originalQualificationData.value));
+  }
+  if (originalUserDetailsData.value) {
+    editableUserDetails.value = JSON.parse(JSON.stringify(originalUserDetailsData.value));
   }
   errorMessage.value = '';
 };
@@ -658,11 +738,10 @@ const getChangedApplicationFields = () => {
   if (!originalApplicationData.value) return changedFields;
 
   for (const key in editableApplication.value) {
-    if (key === 'userDetails') { // Special handling for nested userDetails if needed
-      if (!isEqual(editableApplication.value.userDetails, originalApplicationData.value.userDetails)) {
-        changedFields[key] = editableApplication.value[key]; // Or compare nested fields if necessary
-      }
-    } else if (!isEqual(editableApplication.value[key], originalApplicationData.value[key])) {
+    // Skip userDetails and user_qualifications, as they are handled separately
+    if (key === 'userDetails' || key === "user_qualifications") continue;
+
+    if (!isEqual(editableApplication.value[key], originalApplicationData.value[key])) {
       changedFields[key] = editableApplication.value[key];
     }
   }
@@ -682,6 +761,19 @@ const getChangedQualificationFields = () => {
   return changedFields;
 };
 
+// NEW: Helper function to get changed fields in userDetails
+const getChangedUserDetailsFields = () => {
+  const changedFields = {};
+  if (!originalUserDetailsData.value) return changedFields;
+
+  for (const key in editableUserDetails.value) {
+    if (!isEqual(editableUserDetails.value[key], originalUserDetailsData.value[key])) {
+      changedFields[key] = editableUserDetails.value[key];
+    }
+  }
+  return changedFields;
+};
+
 
 const saveChanges = async () => {
   if (!props.application) return;
@@ -692,44 +784,85 @@ const saveChanges = async () => {
   try {
     const changedApplicationFields = getChangedApplicationFields();
     const changedQualificationFields = getChangedQualificationFields();
+    const changedUserDetailsFields = getChangedUserDetailsFields(); // Get changed user details
 
-    // Prepare payloads for API calls, only include changed data
-    const userUpdatePayload = {};
-    if (changedApplicationFields.is_counselor !== undefined && editableApplication.value.userDetails?.id) {
-      userUpdatePayload.is_counselor = changedApplicationFields.is_counselor;
+
+// --- User Update (is_counselor AND other user details) ---
+if (Object.keys(changedUserDetailsFields).length > 0 && editableApplication.value.userDetails?.id) {
+  // If is_counselor is part of changedUserDetailsFields, include it. Otherwise, don't.
+  if (changedApplicationFields.is_counselor !== undefined) {
+    changedUserDetailsFields.is_counselor = changedApplicationFields.is_counselor;
+  }
+
+  // Send user details update as FormData
+  const userFormData = new FormData();
+  for (const key in changedUserDetailsFields) {
+    if (Object.prototype.hasOwnProperty.call(changedUserDetailsFields, key)) {
+      const value = changedUserDetailsFields[key];
+      userFormData.append(key, value === null || value === undefined ? '' : value);
+    }
+  }
+  await apiServices.patchUser(editableApplication.value.userDetails.id, userFormData);
+} else if (changedApplicationFields.is_counselor !== undefined && editableApplication.value.userDetails?.id) {
+  // Handle is_counselor separately if it's the ONLY user detail changed.
+  const userFormData = new FormData();
+  userFormData.append('is_counselor', changedApplicationFields.is_counselor);
+  await apiServices.patchUser(editableApplication.value.userDetails.id, userFormData);
+}
+
+
+    // --- Application and Qualification Update ---
+    const formData = new FormData();
+
+    // Add changed *application* fields to formData
+    for (const key in changedApplicationFields) {
+      if (Object.prototype.hasOwnProperty.call(changedApplicationFields, key)) {
+        // Skip is_counselor here, it's handled with user details
+        if (key === 'is_counselor') continue;
+        const value = changedApplicationFields[key];
+        // Handle null/undefined values appropriately for FormData
+        formData.append(key, value === null || value === undefined ? '' : value);
+      }
     }
 
-    // send the below as formdata and not as application/json
-    const applicationUpdatePayload = { ...changedApplicationFields };
-    if (changedQualificationFields && Object.keys(changedQualificationFields).length > 0) {
-      applicationUpdatePayload.user_qualifications = [{ ...changedQualificationFields }]; // Send qualification changes
+    // Add changed *qualification* fields directly to formData (no nesting)
+    for (const key in changedQualificationFields) {
+      if (Object.prototype.hasOwnProperty.call(changedQualificationFields, key)) {
+        const value = changedQualificationFields[key];
+        formData.append(key, value === null || value === undefined ? '' : value);
+      }
     }
 
 
-    // 1. Update user counselor status if changed
-    if (Object.keys(userUpdatePayload).length > 0 && editableApplication.value.userDetails?.id) {
-      await apiServices.patchUser(
-        editableApplication.value.userDetails.id,
-        userUpdatePayload
-      );
+    // Only send the application update if there are changes.
+    if (props.application.id && (Object.keys(changedApplicationFields).length > 0 || Object.keys(changedQualificationFields).length > 0)) {
+      await apiServices.patchBhmcNewQualification(props.application.user_qualifications[0].id, formData);
     }
 
-    // 2. Update application with qualification and application changes if any changes are detected
-    if (props.application.id && Object.keys(applicationUpdatePayload).length > 0) {
-      await apiServices.patchBhmcNewQualification(props.application.id, applicationUpdatePayload);
-    } else {
-      console.log("No application data changed, skipping application update API call."); // Debugging log
-    }
-
-
-    // 3. Get fresh application data
+    // --- Refresh and Cleanup ---
     const response = await apiServices.getBhmcNewApplication(props.application.id);
     emit('update', response.data);
+    await nextTick();
     isEditing.value = false;
 
   } catch (error) {
     console.error('Error saving changes:', error);
-    errorMessage.value = 'Failed to save changes. Please try again.';
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+      errorMessage.value = `Server error: ${error.response.status} - ${error.response.data?.detail || 'Unknown error'}`;
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.error("No response received:", error.request);
+      errorMessage.value = "No response received from server. Please check your network connection.";
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.error('Error', error.message);
+      errorMessage.value = `Request error: ${error.message}`;
+    }
   } finally {
     isLoading.value = false;
   }

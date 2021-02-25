@@ -17,13 +17,13 @@
               <div class="relative">
                 <!-- Enhanced Status Banner -->
                 <div :class="[
-                  'px-8 py-6 border-b relative overflow-hidden',
-                  {
-                    'bg-yellow-50 border-yellow-100': application.status === 'Pending',
-                    'bg-green-50 border-green-100': application.status === 'Approved',
-                    'bg-red-50 border-red-100': application.status === 'Rejected',
-                  },
-                ]">
+    'px-8 py-6 border-b relative overflow-hidden',
+    {
+      'bg-yellow-50 border-yellow-100': application.status === 'Pending',
+      'bg-green-50 border-green-100': application.status === 'Approved',
+      'bg-red-50 border-red-100': application.status === 'Rejected',
+    },
+  ]">
                   <div class="flex items-center justify-between relative z-10">
                     <div class="flex items-center space-x-4">
                       <div class="p-3 bg-white rounded-lg shadow-sm">
@@ -38,18 +38,18 @@
                     </div>
                     <div class="flex items-center space-x-4">
                       <span :class="[
-                        'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
-                        {
-                          'bg-yellow-100 text-yellow-800': application.status === 'Pending',
-                          'bg-green-100 text-green-800': application.status === 'Approved',
-                          'bg-red-100 text-red-800': application.status === 'Rejected',
-                        },
-                      ]">
+    'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
+    {
+      'bg-yellow-100 text-yellow-800': application.status === 'Pending',
+      'bg-green-100 text-green-800': application.status === 'Approved',
+      'bg-red-100 text-red-800': application.status === 'Rejected',
+    },
+  ]">
                         <Circle class="h-4 w-4" :class="{
-                          'text-yellow-500': application.status === 'Pending',
-                          'text-green-500': application.status === 'Approved',
-                          'text-red-500': application.status === 'Rejected',
-                        }" />
+    'text-yellow-500': application.status === 'Pending',
+    'text-green-500': application.status === 'Approved',
+    'text-red-500': application.status === 'Rejected',
+  }" />
                         <span>{{ application.status || 'Pending' }}</span>
                       </span>
                       <button type="button"
@@ -445,6 +445,7 @@ const approveApplication = () => {
   });
   showApprovalForm.value = false;
   approvalMessage.value = '';
+  emit('close')
 };
 
 const rejectApplication = () => {
@@ -460,6 +461,7 @@ const rejectApplication = () => {
   showRejectionForm.value = false;
   rejectionMessage.value = '';
   rejectionError.value = '';
+  emit('close')
 };
 </script>
 

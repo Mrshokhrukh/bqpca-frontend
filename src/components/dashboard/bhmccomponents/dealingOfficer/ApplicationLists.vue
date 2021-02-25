@@ -34,7 +34,7 @@
           <option value="all">All Statuses</option>
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
-          <option value="Rejected">Rejected</option> <!-- Corrected option value -->
+          <option value="Regretted">Regretted</option> <!-- Corrected option value -->
         </select>
       </div>
     </div>
@@ -213,8 +213,8 @@ const getStatus = (app) => {
     const qualification = app.user_qualifications[0];
     const { application_review_status, physical_review_status, endorsement_decision } = qualification;
 
-    if (application_review_status === 'Rejected' || physical_review_status === 'Rejected' || endorsement_decision === 'Rejected') {
-        return 'Rejected';
+    if (application_review_status === 'Regretted' || physical_review_status === 'Regretted' || endorsement_decision === 'Regretted') {
+        return 'Regretted';
     } else if (application_review_status === 'Approved' && physical_review_status === 'Approved' && endorsement_decision === 'Approved') {
         return 'Approved';
     } else {
@@ -228,7 +228,7 @@ const getStatusClasses = (app) => {
     {
       'bg-yellow-100 text-yellow-800': status === 'Pending',
       'bg-green-100 text-green-800': status === 'Approved',
-      'bg-red-100 text-red-800': status === 'Rejected' // Corrected class
+      'bg-red-100 text-red-800': status === 'Regretted' // Corrected class
     }
   ];
 };
@@ -265,11 +265,16 @@ const fetchApplications = async () => {
 };
 
 const viewDetails = async (application) => {
-    try {
-        // Fetch all users
-        const response = await apiServices.getAllUsers();
-        const users = Array.isArray(response.data) ? response.data : (response.data?.results || []);
-        const matchingUser = users.find(user => user.cid === application.cid_no);
+  try {
+    // Fetch all users
+    const response = await apiServices.getAllUsers();
+
+    // Check if response.data is an array, if not, use response.data.results if available
+    const users = Array.isArray(response.data) ? response.data :
+      (response.data?.results || []);
+
+    // Find matching user by CID
+    const matchingUser = users.find(user => user.cid === application.cid_no);
 
         selectedApplication.value = {
           ...application,
