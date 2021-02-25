@@ -333,7 +333,7 @@
                             </div>
 
                             <!-- Practice Address -->
-                            <div class="p-4 bg-gray-50 rounded-lg" >
+                            <div class="p-4 bg-gray-50 rounded-lg">
                               <p class="text-sm font-medium text-gray-500">Practice Address</p>
                               <input type="text" v-model="editableApplication.practice_address"
                                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -753,7 +753,7 @@ const saveChanges = async () => {
 
     // 2. Update application with qualification and application changes if any changes are detected
     if (props.application.id && Object.keys(applicationUpdatePayload).length > 0) {
-      await apiServices.patchBhmcNewApplication(props.application.id, applicationUpdatePayload);
+      await apiServices.patchBhmcNewQualification(props.application.user_qualifications[0].id, applicationUpdatePayload);
     } else {
       console.log("No application data changed, skipping application update API call."); // Debugging log
     }
