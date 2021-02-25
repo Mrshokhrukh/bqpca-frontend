@@ -9,63 +9,76 @@
         class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
         <!-- Certificate Content -->
         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-          <div id="certificate-content" class="relative bg-cover bg-center a4-page p-8"
+          <div id="certificate-content" class="relative bg-cover bg-center a4-page px-16 py-12"
             :style="{ backgroundImage: `url(${BackGround})` }">
 
             <!-- Header Section -->
             <header class="mb-8 border-b pb-4">
               <!-- Header Logos and Text Row -->
-              <div class="flex w-full justify-between items-center mb-2">
+              <div class="flex w-full justify-between items-center">
                 <!-- Left Logo -->
-                <div class="relative h-40 w-40 overflow-hidden rounded-xl">
+                <div class="relative h-32 w-32 overflow-hidden rounded-xl">
                   <img src="@/assets/rgob.png" alt="RGoB Logo" class="h-full w-full object-contain" />
                 </div>
 
                 <!-- Center Text -->
-                <div class="flex flex-col items-center">
-                  <span class="text-xl font-dzongkha leading-tight text-gray-700 text-center">
+                <div class="flex flex-col items-center -mt-8">
+                  <span class="text-l font-bold font-dzongkha leading-tight text-gray-700 text-center">
+                    འབྲུག་ཤེས་་སྦྱོར་དབང་འཛིན། <br>
+                    འབྲུག་ཤེས་ཚད་དང་ག་ངོ་སྦྱོར་དབང་འཛིན། <br>
                     འབྲུག་ཤེས་ཚད་དང་ཁྱད་རིག་ངོ་སྦྱོར་དབང་འཛིན།
-                  </span>
-                  <span class="text-xl font-semibold tracking-wide text-gray-700 text-center">
-                    HIGHER EDUCATION QUALITY COUNCIL
-                  </span>
-                  <span class="text-md font-semibold tracking-wide text-gray-700 text-center">
-                    Bhutan Qualifications and Professionals Certification Authority
                   </span>
                 </div>
 
                 <!-- Right Logo -->
-                <div class="relative h-40 w-40 overflow-hidden rounded-xl">
+                <div class="relative h-32 w-32 overflow-hidden rounded-xl">
                   <img src="@/assets/heqc-logo.png" alt="HEQC Logo" class="h-full w-full object-contain" />
+                </div>
+              </div>
+              <!-- Title and Subtitle Row -->
+              <div class="flex w-full justify-center items-center -mt-4">
+                <div class="text-center">
+                  <p class="text-l uppercase font-bold font-serif text-gray-800">Bhutan Qualifications Council</p>
+                  <p class="text-xs uppercase font-semibold font-serif text-gray-700">
+                    Bhutan Qualifications and Professional Certification Authority
+                  </p>
                 </div>
               </div>
 
               <!-- Reference Number and Date Row -->
-              <div class="flex w-full justify-between mt-4">
+              <div class="flex w-full justify-between mt-8">
                 <div class="text-start">
-                  <p class="text-md font-semibold text-gray-700">QEC No. {{ application.qec_number }}</p>
+                  <p class="text-sm font-semibold font-serif text-gray-700">Registration Service No. {{
+              application.qec_number }}
+                  </p>
                 </div>
                 <div class="text-end">
-                  <p class="text-md font-semibold text-gray-700">{{ formatDate(application.updated_at) }}</p>
+                  <p class="text-sm font-semibold font-serif text-gray-700">{{ formatDate(application.updated_at) }}</p>
                 </div>
               </div>
             </header>
 
             <!-- Certificate Title -->
             <div class="text-center mb-6">
-              <h2 class="text-xl font-bold text-gray-800 font-serif">
+              <h2 class="text-l font-bold text-gray-800 font-serif underline">
                 Qualification Endorsement Certificate
+              </h2>
+            </div>
+            <!-- Certificate Subtitle -->
+            <div class="mb-6">
+              <h2 class="font-serif">
+                The qualification pertaining to:
               </h2>
             </div>
 
             <!-- Applicant and Qualification Details -->
-            <div class="content-margins">
-              <div class="mb-4">
+            <div class="content">
+              <div class="mb-8">
                 <div class="grid grid-cols-1 gap-y-2">
                   <div v-for="(field, index) in fields" :key="index">
                     <div class="grid grid-cols-2">
-                      <div class="text-left pr-2 font-semibold text-gray-800">{{ field.label }}:</div>
-                      <div class="text-left text-gray-700">{{ field.value }}</div>
+                      <div class="text-left pr-2 font-serif text-gray-800">{{ field.label }}:</div>
+                      <div class="text-left font-serif text-gray-700">{{ field.value }}</div>
                     </div>
                   </div>
                 </div>
@@ -73,10 +86,10 @@
             </div>
 
             <!-- Verification Statement -->
-            <div class="mb-6 text-center italic text-gray-800">
-              <p>"The above qualification has been verified as genuine and legitimate based on the procedure prescribed
+            <div class="mb-6 text-left font-serif text-gray-800">
+              <p>The above qualification has been verified as genuine and legitimate based on the procedure prescribed
                 in the
-                Guidelines for Recognition of Qualification and the provisions of the Bhutan Qualification Framework."
+                Guidelines for Recognition of Qualifications and the provisions of the Bhutan Qualifications Framework.
               </p>
             </div>
 
@@ -85,8 +98,7 @@
               <!-- Signature Area -->
               <div v-if="eSignatureData" class="flex flex-col items-start">
                 <img :src="eSignatureData.signature" alt="Signature" class="w-32 mb-1">
-                <p class="font-bold text-gray-800">{{ eSignatureData.name }}</p>
-                <p class="text-gray-800">{{ eSignatureData.designation }}</p>
+                <p class="text-gray-800 font-bold font-serif">{{ eSignatureData.designation }}</p>
               </div>
 
               <!-- QR Code (Centered) -->

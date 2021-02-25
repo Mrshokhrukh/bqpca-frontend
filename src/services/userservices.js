@@ -51,6 +51,7 @@ export default {
     return apiClient.get(`/users/fetch-citizen-details/${cid}/`, config);
   },
 
+  
   fetchRubDetails(cid, stUid) {
     return apiClient.get(`/masters/fetch-rub-details/${cid}/${stUid}/`);
   },

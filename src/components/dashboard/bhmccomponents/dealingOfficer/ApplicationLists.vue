@@ -3,11 +3,11 @@
   <div class="p-8 min-h-screen bg-gray-50">
     <!-- Page Header (Same as before) -->
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Applications</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">Registration Applications</h1>
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-          Total: {{ applications.length }}
+          Total: {{ filteredApplications.length }}
         </span>
         <span class="mx-4">|</span>
         <span class="flex items-center">
@@ -84,7 +84,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
                   <button @click="viewDetails(app)"
-                    class="text-blue-600 hover:text-blue-900 transition-colors">View</button>
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
                 </div>
               </td>
             </tr>
@@ -134,7 +134,8 @@
 
     <!-- Use @update:application to listen for updates -->
     <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
-      @update:application="handleUpdate" />
+      @update="handleUpdate" :personnel-categories="personnelCategories"
+      :personnel-subcategories="personnelSubcategories" :sectors="sectors" :practice-addresses="practiceAddresses" />
   </div>
 </template>
 
@@ -151,14 +152,21 @@ const currentPage = ref(1);
 const itemsPerPage = 10;
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
+const registrationTypeName = "Registration";
+const personnelCategories = ref([]);
+const personnelSubcategories = ref([]);
+const sectors = ref([]);
 
 // Computed properties
 const pendingCount = computed(() => {
-  return applications.value.filter(app => getStatus(app) === 'Pending').length;
+  return filteredApplications.value.filter(app => getStatus(app) === 'Pending').length;
 });
 
 const filteredApplications = computed(() => {
   let filtered = applications.value;
+
+  // Filter by registration type name
+  filtered = filtered.filter(app => app.registration_type.name === registrationTypeName);
 
   if (filterStatus.value !== 'all') {
     filtered = filtered.filter(app => getStatus(app) === filterStatus.value);
@@ -244,8 +252,15 @@ const fetchApplications = async () => {
       return;
     }
     applications.value = response.data.results;
+
+    // Fetch master data (only once)
+    personnelCategories.value = await apiServices.getMastersParticipationCategories();
+    personnelSubcategories.value = await apiServices.getMastersSubCategories();
+    sectors.value = await apiServices.getMastersSectors();
+
+
   } catch (error) {
-    console.error('Error fetching applications:', error);
+    console.error('Error fetching applications or master data:', error);
   }
 };
 
