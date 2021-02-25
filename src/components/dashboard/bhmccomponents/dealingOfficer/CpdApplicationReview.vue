@@ -1,136 +1,181 @@
 <template>
-  <div class="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Inline Notification -->
+    <Transition name="notification">
+      <div v-if="notification.show" :class="[
+        'fixed right-4 top-4 p-4 rounded-md shadow-lg flex items-center z-50 max-w-md',
+        notification.type === 'success' ? 'bg-green-50 border-l-4 border-green-500' :
+          notification.type === 'error' ? 'bg-red-50 border-l-4 border-red-500' :
+            'bg-blue-50 border-l-4 border-blue-500'
+      ]">
+        <div :class="[
+          'flex-shrink-0 w-6 h-6',
+          notification.type === 'success' ? 'text-green-500' :
+            notification.type === 'error' ? 'text-red-500' :
+              'text-blue-500'
+        ]">
+          <svg v-if="notification.type === 'success'" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <svg v-else-if="notification.type === 'error'" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <svg v-else class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 :class="[
+            'text-sm font-medium',
+            notification.type === 'success' ? 'text-green-800' :
+              notification.type === 'error' ? 'text-red-800' :
+                'text-blue-800'
+          ]">
+            {{ notification.title }}
+          </h3>
+          <p :class="[
+            'text-sm mt-1',
+            notification.type === 'success' ? 'text-green-700' :
+              notification.type === 'error' ? 'text-red-700' :
+                'text-blue-700'
+          ]">
+            {{ notification.message }}
+          </p>
+        </div>
+        <button @click="closeNotification" class="ml-4 text-gray-500 hover:text-gray-600">
+          <span class="sr-only">Close</span>
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </Transition>
+
+    <!-- Header Card -->
     <div class="max-w-7xl mx-auto">
-      <!-- Header -->
-      <div class="mb-8">
-        <h2 class="text-2xl font-bold text-gray-800">Review CPD Applications</h2>
-        <p class="mt-1 text-sm text-gray-500">Manage and review continuing professional development applications</p>
+      <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">CPD Applications</h1>
+        <div class="flex mt-4 space-x-6">
+          <div class="flex items-center">
+            <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+            <span class="text-gray-600">Total: {{ applications.length }}</span>
+          </div>
+          <div class="flex items-center">
+            <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+            <span class="text-gray-600">Pending: {{ pendingCount }}</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Main Content -->
-      <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+      <!-- Search and Filter -->
+      <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 mb-6">
+        <div class="relative flex-grow">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <input v-model="searchQuery" type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="Search by name, CID or registration number...">
+        </div>
+        <select v-model="statusFilter" class="w-full md:w-64 block pl-3 pr-10 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          <option value="All">All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
+
+      <!-- Loading State -->
+      <div v-if="loading" class="flex justify-center items-center py-16">
+        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+        <span class="ml-3 text-gray-600">Loading applications...</span>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="filteredApplications.length === 0" class="bg-white shadow-sm rounded-lg py-16 text-center border border-gray-200">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="mt-2 text-base font-medium text-gray-900">No applications found</h3>
+        <p class="mt-1 text-sm text-gray-500">
+          {{ applications.length > 0 ? 'No applications match your current filters.' : 'No CPD applications have been submitted for review.' }}
+        </p>
+      </div>
+
+      <!-- Applications Table -->
+      <div v-else class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  CPD ID</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Title</th>
+                  ID</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Applicant</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  CPD Title</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Date</th>
-                <th scope="col"
-                  class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="app in applications" :key="app.id" class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ app.id }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ app.title }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ app.applicantName }}</td>
+              <tr v-for="app in paginatedApplications" :key="app.id" class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">{{ app.id }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{{ app.applicantName }}</div>
+                  <div class="text-xs text-gray-500">{{ app.cidNumber }}</div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-sm text-gray-900">{{ app.title }}</div>
+                  <div class="text-xs text-gray-500">{{ app.activityType }}</div>
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span :class="[getStatusColor(app.status), 'px-2 py-1 text-xs font-medium rounded-full']">
                     {{ app.status }}
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ app.date }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center justify-center space-x-2">
-                    <!-- View Button -->
-                    <button @click="openViewModal(app)"
-                      class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors">
-                      <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                      View
-                    </button>
-
-                    <!-- Approve Button -->
-                    <button @click="openApproveModal(app)"
-                      class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-green-700 hover:bg-green-50 rounded-md transition-colors">
-                      <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      Approve
-                    </button>
-
-                    <!-- Reject Button -->
-                    <button @click="openRejectModal(app)"
-                      class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors">
-                      <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                      Reject
-                    </button>
-                  </div>
+                  <div class="text-sm text-gray-500">{{ app.date }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                  <button @click="openViewModal(app)" class="text-blue-600 hover:text-blue-900 font-medium text-sm">
+                    View
+                  </button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
-
-    <!-- View/Edit Modal -->
-    <CpdViewApplicationsModal v-if="isViewModalOpen" :application="selectedApplication" @edit="openEditModal"
-      @close="closeViewModal" />
-
-    <!-- Edit Modal -->
-    <CpdEditApplicationModal v-if="isEditModalOpen" :application="selectedApplication" @save="saveApplication"
-      @close="closeEditModal" />
-
-    <!-- Approve Modal -->
-    <div v-if="isApproveModalOpen" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity">
-      <div class="fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <div
-            class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-            <div class="absolute right-0 top-0 pr-4 pt-4">
-              <button @click="closeApproveModal" class="rounded-md bg-white text-gray-400 hover:text-gray-500">
-                <span class="sr-only">Close</span>
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+        
+        <!-- Pagination -->
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+          <div class="flex-1 flex justify-between items-center">
+            <div>
+              <p class="text-sm text-gray-700">
+                Showing <span class="font-medium">{{ paginationStart + 1 }}</span> to <span class="font-medium">{{ paginationEnd }}</span> of <span class="font-medium">{{ filteredApplications.length }}</span> results
+              </p>
             </div>
-
-            <div class="sm:flex sm:items-start">
-              <div
-                class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            <div class="flex">
+              <button @click="prevPage" :disabled="currentPage === 1" :class="[currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50', 'relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white']">
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
-              </div>
-              <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                <h3 class="text-base font-semibold leading-6 text-gray-900">Approve Application</h3>
-                <div class="mt-2">
-                  <p class="text-sm text-gray-500">Please provide any notes or comments for this approval.</p>
-                </div>
-                <div class="mt-4">
-                  <textarea v-model="approvalMessage" rows="4"
-                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"
-                    placeholder="Enter approval notes..."></textarea>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-              <button @click="approveApplication"
-                class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">
-                Approve Application
+                Previous
               </button>
-              <button @click="closeApproveModal"
-                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
-                Cancel
+              <button @click="nextPage" :disabled="currentPage === totalPages" :class="[currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50', 'ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white']">
+                Next
+                <svg class="h-5 w-5 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
               </button>
             </div>
           </div>
@@ -138,81 +183,146 @@
       </div>
     </div>
 
-    <!-- Reject Modal -->
-    <div v-if="isRejectModalOpen" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity">
-      <div class="fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <div
-            class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-            <div class="absolute right-0 top-0 pr-4 pt-4">
-              <button @click="closeRejectModal" class="rounded-md bg-white text-gray-400 hover:text-gray-500">
-                <span class="sr-only">Close</span>
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div class="sm:flex sm:items-start">
-              <div
-                class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                </svg>
-              </div>
-              <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                <h3 class="text-base font-semibold leading-6 text-gray-900">Reject Application</h3>
-                <div class="mt-2">
-                  <p class="text-sm text-gray-500">Please provide a reason for rejecting this application. This message
-                    will be sent to the applicant.</p>
-                </div>
-                <div class="mt-4">
-                  <textarea v-model="rejectionMessage" rows="4"
-                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6"
-                    placeholder="Enter rejection reason..."></textarea>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-              <button @click="rejectApplication"
-                class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">
-                Reject Application
-              </button>
-              <button @click="closeRejectModal"
-                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- View Modal -->
+    <CpdViewApplicationsModal v-if="isViewModalOpen" :application="selectedApplication" @save="saveApplication"
+      @approve="approveApplication" @reject="rejectApplication" @close="closeViewModal" />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import CpdViewApplicationsModal from './modals/CpdViewApplicationsModal.vue';
-import CpdEditApplicationModal from './modals/CpdEditApplicationModal.vue';
 import apiServices from '@/services/services';
 
-const applications = ref([]); // Initialize as empty array
+const applications = ref([]);
 const selectedApplication = ref(null);
 const isViewModalOpen = ref(false);
-const isEditModalOpen = ref(false);
-const isRejectModalOpen = ref(false);
-const isApproveModalOpen = ref(false);
-const rejectionMessage = ref('');
-const approvalMessage = ref('');
+const loading = ref(true);
+const searchQuery = ref('');
+const statusFilter = ref('All');
+const currentPage = ref(1);
+const pageSize = ref(10);
+
+// Notification state
+const notification = ref({
+  show: false,
+  type: 'info',
+  title: '',
+  message: '',
+  timeout: null
+});
+
+// Calculate pending applications count
+const pendingCount = computed(() => {
+  return applications.value.filter(app => app.status === 'Pending').length;
+});
+
+// Filter applications based on search query and status filter
+const filteredApplications = computed(() => {
+  let filtered = applications.value;
+  
+  // Apply status filter if not "All"
+  if (statusFilter.value !== 'All') {
+    filtered = filtered.filter(app => app.status === statusFilter.value);
+  }
+  
+  // Apply search filter if there's a search query
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase().trim();
+    filtered = filtered.filter(app => 
+      app.applicantName.toLowerCase().includes(query) || 
+      app.cidNumber.toString().includes(query) || 
+      app.title.toLowerCase().includes(query) ||
+      (app.registrationNumber && app.registrationNumber.toString().includes(query))
+    );
+  }
+  
+  return filtered;
+});
+
+// Pagination logic
+const totalPages = computed(() => {
+  return Math.ceil(filteredApplications.value.length / pageSize.value) || 1;
+});
+
+const paginationStart = computed(() => {
+  return (currentPage.value - 1) * pageSize.value;
+});
+
+const paginationEnd = computed(() => {
+  return Math.min(paginationStart.value + pageSize.value, filteredApplications.value.length);
+});
+
+const paginatedApplications = computed(() => {
+  return filteredApplications.value.slice(paginationStart.value, paginationEnd.value);
+});
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+};
+
+// Reset pagination when filters change
+const resetPagination = () => {
+  currentPage.value = 1;
+};
+
+// Watch for changes in filters to reset pagination
+const watchFilters = () => {
+  // This would be better with watch() but using a simple solution for now
+  const previousQuery = searchQuery.value;
+  const previousStatus = statusFilter.value;
+  
+  setInterval(() => {
+    if (previousQuery !== searchQuery.value || previousStatus !== statusFilter.value) {
+      resetPagination();
+    }
+  }, 200);
+};
+
+const showNotification = (type, title, message, duration = 5000) => {
+  // Clear any existing timeout
+  if (notification.value.timeout) {
+    clearTimeout(notification.value.timeout);
+  }
+
+  // Set notification values
+  notification.value = {
+    show: true,
+    type,
+    title,
+    message,
+    timeout: null
+  };
+
+  // Auto close after duration
+  if (duration > 0) {
+    notification.value.timeout = setTimeout(() => {
+      closeNotification();
+    }, duration);
+  }
+};
+
+const closeNotification = () => {
+  notification.value.show = false;
+  if (notification.value.timeout) {
+    clearTimeout(notification.value.timeout);
+    notification.value.timeout = null;
+  }
+};
 
 const getStatusColor = (status) => {
   return {
-    'Pending': 'bg-yellow-100 text-yellow-900',
-    'Approved': 'bg-green-100 text-green-900',
-    'Rejected': 'bg-red-100 text-red-900'
+    'Pending': 'bg-yellow-100 text-yellow-800',
+    'Approved': 'bg-green-100 text-green-800',
+    'Rejected': 'bg-red-100 text-red-800'
   }[status] || 'bg-gray-100 text-gray-800';
 };
 
@@ -226,158 +336,163 @@ const closeViewModal = () => {
   selectedApplication.value = null;
 };
 
-const openEditModal = (app) => {
-  selectedApplication.value = { ...app }; // Create a copy of the application
-  isEditModalOpen.value = true;
-};
-
-const closeEditModal = () => {
-  isEditModalOpen.value = false;
-  selectedApplication.value = null;
-};
-
-const saveApplication = (updatedApp) => {
-  const index = applications.value.findIndex((a) => a.id === updatedApp.id);
-  if (index !== -1) {
-    applications.value[index] = updatedApp;
-  }
-  closeEditModal();
-};
-
-const openApproveModal = (app) => {
-  selectedApplication.value = app;
-  isApproveModalOpen.value = true;
-};
-
-const closeApproveModal = () => {
-  isApproveModalOpen.value = false;
-  approvalMessage.value = '';
-  selectedApplication.value = null;
-};
-
-const approveApplication = () => {
-  const index = applications.value.findIndex((a) => a.id === selectedApplication.value.id);
-  if (index !== -1) {
-    applications.value[index].status = 'Approved';
-    applications.value[index].remarks = approvalMessage.value || 'Application approved';
-  }
-  closeApproveModal();
-};
-
-const openRejectModal = (app) => {
-  selectedApplication.value = app;
-  isRejectModalOpen.value = true;
-};
-
-const closeRejectModal = () => {
-  isRejectModalOpen.value = false;
-  rejectionMessage.value = '';
-  selectedApplication.value = null;
-};
-
-const rejectApplication = () => {
-  const index = applications.value.findIndex((a) => a.id === selectedApplication.value.id);
-  if (index !== -1) {
-    applications.value[index].status = 'Rejected';
-    applications.value[index].remarks = rejectionMessage.value || 'Application rejected without remarks.';
-  }
-  closeRejectModal();
-};
-
-onMounted(async () => {
+const saveApplication = async (updatedApp) => {
   try {
+    loading.value = true;
+
+    await apiServices.patchBmhcCpdRecord(updatedApp.id, {
+      cpd_credit: updatedApp.cpdCredits
+    });
+
+    const index = applications.value.findIndex((a) => a.id === updatedApp.id);
+    if (index !== -1) {
+      applications.value[index] = { ...applications.value[index], ...updatedApp };
+    }
+
+    showNotification('success', 'Application Updated', 'The CPD credits have been updated successfully.');
+
+    // Refresh the data to ensure we have the latest state
+    await fetchApplications();
+  } catch (err) {
+    console.error('Failed to save application:', err);
+    showNotification('error', 'Update Failed', 'There was an error updating the application. Please try again.');
+  } finally {
+    loading.value = false;
+  }
+};
+
+const approveApplication = async (approvalData) => {
+  try {
+    loading.value = true;
+
+    await apiServices.patchBmhcCpdRecord(approvalData.id, {
+      review_status: 'Approved',
+      cpd_credit: approvalData.cpdCredits,
+      remark: approvalData.remarks
+    });
+
+    const index = applications.value.findIndex((a) => a.id === approvalData.id);
+    if (index !== -1) {
+      applications.value[index].status = 'Approved';
+      applications.value[index].cpdCredits = approvalData.cpdCredits;
+      applications.value[index].remarks = approvalData.remarks;
+    }
+
+    showNotification('success', 'Application Approved', 'The CPD application has been approved successfully.');
+
+    // Close the modal
+    closeViewModal();
+
+    // Refresh the data to ensure we have the latest state
+    await fetchApplications();
+  } catch (err) {
+    console.error('Failed to approve application:', err);
+    showNotification('error', 'Approval Failed', 'There was an error approving the application. Please try again.');
+  } finally {
+    loading.value = false;
+  }
+};
+
+const rejectApplication = async (rejectionData) => {
+  try {
+    loading.value = true;
+
+    await apiServices.patchBmhcCpdRecord(rejectionData.id, {
+      review_status: 'Rejected',
+      remark: rejectionData.remarks
+    });
+
+    const index = applications.value.findIndex((a) => a.id === rejectionData.id);
+    if (index !== -1) {
+      applications.value[index].status = 'Rejected';
+      applications.value[index].remarks = rejectionData.remarks;
+    }
+
+    showNotification('success', 'Application Rejected', 'The CPD application has been rejected.');
+
+    // Close the modal
+    closeViewModal();
+
+    // Refresh the data to ensure we have the latest state
+    await fetchApplications();
+  } catch (err) {
+    console.error('Failed to reject application:', err);
+    showNotification('error', 'Rejection Failed', 'There was an error rejecting the application. Please try again.');
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Function to fetch applications (can be reused for refreshing data)
+const fetchApplications = async () => {
+  try {
+    loading.value = true;
     const response = await apiServices.getBmhcCpdRecords();
-    if (response && response.results) {
-      // Map the API response to the structure expected by your component
-      applications.value = response.results.map(item => ({
-        id: item.id, // or item.registration_no if you prefer to use registration number as ID
-        title: item.title_of_cpd,
-        applicantName: item.full_name,
-        status: item.review_status,
-        date: new Date(item.created_at).toLocaleDateString(), // Format date as needed
-        registrationNumber: item.registration_no,
-        cidNumber: item.cid_no,
-        fullName: item.full_name,
-        gender: item.gender,
-        cpdTitle: item.title_of_cpd,
-        relevance: item.relevance_to_profession,
-        participationCategory: item.participation_category?.participation_category_name, // Safe access in case of null
-        participantSubCategory: item.participant_sub_category?.participation_sub_category_name, // Safe access in case of null
-        activityType: item.type_of_cpd_activity?.cpd_activity_name, // Safe access in case of null
-        attachment: item.attachment ? { name: item.attachment } : null, // Handle attachment structure
-        cpdCredits: item.cpd_credit,
-        reviewStatus: item.review_status,
-        remarks: item.remark,
-      }));
+
+    if (response.data && response.data.results && Array.isArray(response.data.results)) {
+      processApiResponse(response.data.results);
+    } else if (response.results && Array.isArray(response.results)) {
+      processApiResponse(response.results);
     } else {
-      console.error('Error fetching CPD records: Unexpected response format', response);
-      // Optionally set applications.value to an empty array or display an error message to the user
       applications.value = [];
     }
-  } catch (error) {
-    console.error('Error fetching CPD records:', error);
-    // Optionally set applications.value to an empty array or display an error message to the user
+  } catch (err) {
+    console.error('Failed to fetch applications:', err);
+    showNotification('error', 'Load Failed', 'There was an error loading the CPD applications.');
     applications.value = [];
+  } finally {
+    loading.value = false;
   }
+};
+
+// Function to process API response data
+const processApiResponse = (results) => {
+  applications.value = results.map(item => ({
+    id: item.id,
+    title: item.title_of_cpd,
+    applicantName: item.full_name,
+    status: item.review_status || 'Pending',
+    date: item.created_at ? new Date(item.created_at).toLocaleDateString() : 'N/A',
+    registrationNumber: item.registration_no,
+    cidNumber: item.cid_no,
+    fullName: item.full_name,
+    gender: item.gender,
+    cpdTitle: item.title_of_cpd,
+    relevance: item.relevance_to_profession,
+    participationCategory: item.participation_category?.participation_category_name || 'Not specified',
+    participantSubCategory: item.participant_sub_category?.participation_sub_category_name || 'Not specified',
+    activityType: item.type_of_cpd_activity?.cpd_activity_name || 'Not specified',
+    attachment: item.attachment ? {
+      name: item.attachment.split('/').pop(),
+      url: item.attachment
+    } : null,
+    cpdCredits: item.cpd_credit,
+    reviewStatus: item.review_status,
+    remarks: item.remark,
+    createdAt: item.created_at,
+    updatedAt: item.updated_at
+  }));
+};
+
+onMounted(() => {
+  fetchApplications();
+  watchFilters();
 });
 </script>
+
 <style scoped>
-.review-application {
-  overflow-x: auto;
+.notification-enter-active,
+.notification-leave-active {
+  transition: all 0.3s ease;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+.notification-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
 }
 
-th,
-td {
-  padding: 10px;
-  text-align: left;
-}
-
-button {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 400px;
-  width: 100%;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-textarea {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-  resize: vertical;
+.notification-leave-to {
+  transform: translateY(-30px);
+  opacity: 0;
 }
 </style>
