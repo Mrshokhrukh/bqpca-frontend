@@ -455,8 +455,15 @@ const deleteProvider = async (index) => {
 const fetchProviders = async () => {
   try {
     const response = await apiService.getAllUsers();
-    // Filter for CPD providers only
-    providers.value = response.data.filter(user => user.role === 'cpd_cme_provider');
+
+    // Access the users from the results array
+    if (response && response.data && Array.isArray(response.data.results)) {
+      // Filter for CPD providers only
+      providers.value = response.data.results.filter(user => user.role === 'cpd_cme_provider');
+    } else {
+      console.error('Unexpected API response structure:', response);
+      providers.value = [];
+    }
   } catch (error) {
     console.error('Error fetching providers:', error);
     toast.error('Failed to load providers. Please try again.');
