@@ -17,7 +17,7 @@
 
     <form @submit.prevent="handleNext" class="bg-white border rounded-xl shadow-sm p-6" v-if="stage === 1">
       <!-- add header as step 2 -->
-      <h3 class="text-lg font-semibold text-gray-900 my-4">Step 1: Medical Institution Registration</h3>
+      <h3 class="text-lg font-semibold text-gray-900 my-4">Step 1: Registration</h3>
       <!-- Form Sections -->
       <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
         <h3 class="text-lg font-semibold text-gray-900">Personal Information</h3>
@@ -139,8 +139,13 @@
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Gender</label>
-            <input type="text" v-model="localFormData.gender"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
+            <select v-model="localFormData.gender"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
             <span v-if="errors.gender" class="text-sm text-red-500 mt-1">{{ errors.gender }}</span>
           </div>
 
@@ -206,8 +211,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
-      errors.qualification_type
-    }}</span>
+                errors.qualification_type
+              }}</span>
             </div>
 
             <div class="col-span-1">
@@ -220,8 +225,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
-      errors.qualification_name
-    }}</span>
+                errors.qualification_name
+              }}</span>
             </div>
 
             <div class="col-span-1">
@@ -242,8 +247,8 @@
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
                 placeholder="YYYY" />
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
-      errors.year_of_completion
-    }}</span>
+                errors.year_of_completion
+              }}</span>
             </div>
           </div>
         </div>
@@ -635,12 +640,12 @@ const fetchDCRCData = async () => {
     toast.success('DCRC data fetched successfully');
   } catch (error) {
     console.error('Error fetching DCRC data:', error);
-     if (error.response && error.response.data && error.response.data.error) {
-            toast.error(error.response.data.error);
-        } else {
-            // Generic error message
-            toast.error('Failed to fetch DCRC data. Please enter details manually.');
-        }
+    if (error.response && error.response.data && error.response.data.error) {
+      toast.error(error.response.data.error);
+    } else {
+      // Generic error message
+      toast.error('Failed to fetch DCRC data. Please enter details manually.');
+    }
 
     // Clear fetched data if the API call fails
     localFormData.full_name = '';

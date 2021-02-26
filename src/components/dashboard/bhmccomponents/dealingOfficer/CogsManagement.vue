@@ -94,7 +94,7 @@
                 <div class="space-y-2">
                   <button @click="reviewApplication(application)"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
-                    Review
+                    View  <!-- Changed from Review to View -->
                   </button>
                   <button v-if="application.endorsement_decision === 'Approved'"
                     @click="downloadCertificate(application.id)"
@@ -144,7 +144,7 @@
               <!-- Modal Header -->
               <div class="bg-gray-50 px-8 py-4 border-b border-gray-200 flex justify-between items-center">
                 <div>
-                  <h2 class="text-2xl font-bold text-gray-900">Application Review</h2>
+                  <h2 class="text-2xl font-bold text-gray-900">Application Details <!-- Changed from Application Review to Application Details --></h2>
                   <p class="text-sm text-gray-500 mt-1">Registration No: {{ selectedApplication.registration_no }}</p>
                 </div>
                 <button @click="closeReviewModal"
@@ -224,11 +224,11 @@
                   <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                     <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
                       <ClipboardIcon class="w-5 h-5 text-blue-500" />
-                      Review Status
+                      Status & Review <!-- Changed from Review Status to Status & Review -->
                     </h3>
                     <div class="space-y-4">
                       <div class="rounded-lg bg-gray-50 p-4">
-                        <span class="text-sm font-medium text-gray-500">Current Status</span>
+                        <span class="text-sm font-medium text-gray-500">Review Status</span> <!-- Changed from Current Status to Review Status -->
                         <div class="mt-1 flex items-center gap-2">
                           <span :class="[
                 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',

@@ -6,7 +6,7 @@
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-          Total: {{ applications.length }}
+          Total: {{ filteredApplications.length }}
         </span>
         <span class="mx-4">|</span>
         <span class="flex items-center">
@@ -83,7 +83,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
                   <button @click="viewDetails(app)"
-                    class="text-blue-600 hover:text-blue-900 transition-colors">View</button>
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
                 </div>
               </td>
             </tr>

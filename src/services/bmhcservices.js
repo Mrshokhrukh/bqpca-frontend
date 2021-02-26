@@ -356,7 +356,26 @@ export default {
   deleteMastersUniversity(id) {
     return apiClient.delete(`/bmhc/masters-university/${id}/`)
   },
-
+ // Generic function to fetch master data
+ getMasterData(masterDataType) {
+  let endpoint = '';
+  switch (masterDataType) {
+    case 'personnel-categories':
+      endpoint = '/bmhc/masters-personnel-categories/';
+      break;
+    case 'personnel-subcategories':
+      endpoint = '/bmhc/masters-sub-categories/';
+      break;
+    case 'sectors':
+      endpoint = '/bmhc/masters-sector/';
+      break;
+    default:
+      console.error(`Master data type "${masterDataType}" is not supported in getMasterData function.`);
+      return Promise.reject(`Master data type "${masterDataType}" is not supported.`);
+  }
+  return apiClient.get(endpoint);
+},
+//
 
   // Get all COGS applications
   getBmhcCogs(params = {}) {

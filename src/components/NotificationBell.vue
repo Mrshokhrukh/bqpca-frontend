@@ -129,11 +129,10 @@ const setupWebSocket = () => {
   }
 
   const wsChannel = backendAppName.replace(/_/g, '_'); // backend app names are already good for channel. if not replace with '-' to '_'
-  const wsUrl = `${import.meta.env.VITE_WS_URL}/notifications/${wsChannel}/`;
+  const wsUrl = `ws://127.0.0.1:8000/ws/notifications/${wsChannel}/`;
   socket.value = new WebSocket(wsUrl);
 
-  socket.value.onmessage = (event) => {
-    // **Instead of directly using event data, fetch fresh notifications**
+  socket.value.onmessage = () => {
     fetchNotifications(); // Re-fetch notifications when any event occurs
   };
 
@@ -159,7 +158,7 @@ const fetchNotifications = async () => {
   loading.value = true;
   try {
     // **Fetch notifications using API - No email needed if backend uses token auth**
-    const response = await apiService.getNotificationn()
+    const response = await apiService.getNotification()
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

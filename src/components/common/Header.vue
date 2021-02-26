@@ -70,11 +70,11 @@
           class="block px-5 py-3 rounded-xl text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50/80 transition-all duration-300">
           {{ item.name }}
         </a>
-        <a href="#services" @click="scrollToServices"
+        <router-link to="/#services" @click="navigateToServices"
           class="flex items-center px-5 py-3 rounded-xl text-base font-medium text-primary hover:bg-primary/5 transition-all duration-300 mt-4 border-t border-gray-100 pt-4">
           <User class="w-5 h-5 mr-2.5" />
           User Login
-        </a>
+        </router-link>
         <router-link to="/admin/login"
           class="flex items-center px-5 py-3 rounded-xl text-base font-medium text-primary hover:bg-primary/5 transition-all duration-300">
           <UserCircle class="w-5 h-5 mr-2.5" />
@@ -99,11 +99,15 @@ const navItems = [
   { name: 'Verification', route: '#certificate-verification' },
 ]
 
-// Smooth scroll function
-const scrollToServices = () => {
-  const servicesSection = document.querySelector('#services')
-  if (servicesSection) {
-    servicesSection.scrollIntoView({ behavior: 'smooth' })
+// Navigation and scroll function
+const navigateToServices = () => {
+  if (window.location.pathname !== '/') {
+    window.location.href = '/#services'
+  } else {
+    const servicesSection = document.querySelector('#services')
+    if (servicesSection) {
+      servicesSection.scrollIntoView({ behavior: 'smooth' })
+    }
   }
   isMenuOpen.value = false // Close mobile menu if open
 }
