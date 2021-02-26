@@ -21,142 +21,143 @@
         </div>
       </div>
 
-      <!-- Table -->
+      <!-- Table Container with Fixed Height -->
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th v-for="header in headers" :key="header.key"
-                class="group px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 cursor-pointer transition-colors duration-200"
-                @click="sortBy(header.key)">
-                <div class="flex items-center space-x-1">
-                  <span>{{ header.label }}</span>
-                  <div class="flex flex-col">
-                    <ChevronUpIcon class="h-3 w-3" :class="getSortIconClass(header.key, 'asc')" />
-                    <ChevronDownIcon class="h-3 w-3" :class="getSortIconClass(header.key, 'desc')" />
-                  </div>
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <template v-if="!noResults">
-              <tr v-for="application in sortedApplications" :key="application.id"
-                class="hover:bg-gray-50 transition-colors duration-200">
-                <!-- Applicant Details -->
-                <td class="px-6 py-4">
-                  <div class="flex items-start space-x-4">
-                    <div class="flex-shrink-0 h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center">
-                      <UserIcon class="h-6 w-6 text-blue-600" />
+        <div class="max-h-[70vh] overflow-y-auto">
+          <table class="min-w-full divide-y divide-gray-200 table-fixed border-collapse">
+            <thead class="bg-gray-50 sticky top-0 z-10">
+              <tr>
+                <th v-for="header in headers" :key="header.key"
+                  class="group px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 cursor-pointer transition-colors duration-200 border-r border-gray-200 last:border-r-0"
+                  @click="sortBy(header.key)">
+                  <div class="flex items-center space-x-1">
+                    <span>{{ header.label }}</span>
+                    <div class="flex flex-col">
+                      <ChevronUpIcon class="h-3 w-3" :class="getSortIconClass(header.key, 'asc')" />
+                      <ChevronDownIcon class="h-3 w-3" :class="getSortIconClass(header.key, 'desc')" />
                     </div>
-                    <div>
-                      <div class="text-sm font-medium text-gray-900">
-                        {{ application.fullName }}
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <template v-if="!noResults">
+                <tr v-for="application in sortedApplications" :key="application.id"
+                  class="hover:bg-gray-50 transition-colors duration-200">
+                  <!-- Applicant Details -->
+                  <td class="px-6 py-4 max-w-xs border-r border-gray-200">
+                    <div class="flex items-start space-x-4">
+                      <div class="flex-shrink-0 h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center">
+                        <UserIcon class="h-6 w-6 text-blue-600" />
                       </div>
-                      <div class="text-sm text-gray-500 mt-1">
-                        <div class="flex items-center space-x-2">
-                          <EnvelopeIcon class="h-4 w-4" />
-                          <span>{{ application.emailAddress }}</span>
+                      <div class="truncate">
+                        <div class="text-sm font-medium text-gray-900">
+                          {{ application.fullName }}
+                        </div>
+                        <div class="text-sm text-gray-500 mt-1">
+                          <div class="flex items-center space-x-2 truncate">
+                            <EnvelopeIcon class="h-4 w-4 flex-shrink-0" />
+                            <span class="truncate">{{ application.emailAddress }}</span>
+                          </div>
+                          <div class="flex items-center space-x-2 mt-1">
+                            <PhoneIcon class="h-4 w-4 flex-shrink-0" />
+                            <span>{{ application.contactNumber }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Course Details -->
+                  <td class="px-6 py-4 max-w-xs border-r border-gray-200">
+                    <div class="space-y-2">
+                      <div class="text-sm font-medium text-gray-900 truncate">
+                        {{ application.courseTitle }}
+                      </div>
+                      <div class="text-sm text-gray-500">
+                        <div class="flex items-center space-x-2 truncate">
+                          <AcademicCapIcon class="h-4 w-4 flex-shrink-0" />
+                          <span class="truncate">{{ application.nameOfInstitute }}</span>
                         </div>
                         <div class="flex items-center space-x-2 mt-1">
-                          <PhoneIcon class="h-4 w-4" />
-                          <span>{{ application.contactNumber }}</span>
+                          <MapPinIcon class="h-4 w-4 flex-shrink-0" />
+                          <span>{{ application.country }}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 mt-1">
+                          <CalendarIcon class="h-4 w-4 flex-shrink-0" />
+                          <span>{{ application.courseDuration }} years</span>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </td>
+                  </td>
 
-                <!-- Course Details -->
-                <td class="px-6 py-4">
-                  <div class="space-y-2">
-                    <div class="text-sm font-medium text-gray-900">
-                      {{ application.courseTitle }}
-                    </div>
-                    <div class="text-sm text-gray-500">
-                      <div class="flex items-center space-x-2">
-                        <AcademicCapIcon class="h-4 w-4" />
-                        <span>{{ application.nameOfInstitute }}</span>
-                      </div>
-                      <div class="flex items-center space-x-2 mt-1">
-                        <MapPinIcon class="h-4 w-4" />
-                        <span>{{ application.country }}</span>
-                      </div>
-                      <div class="flex items-center space-x-2 mt-1">
-                        <CalendarIcon class="h-4 w-4" />
-                        <span>{{ application.courseDuration }} years</span>
-                      </div>
-                    </div>
-                  </div>
-                </td>
-
-                <!-- Status -->
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex flex-col space-y-2">
-                    <span :class="getStatusClass(application.status)">
-                      <span class="flex items-center">
-                        <span class="h-2 w-2 rounded-full" :class="getStatusDotClass(application.status)"></span>
-                        <span class="ml-2">{{
-                          formatStatus(application.status)
-                          }}</span>
+                  <!-- Status -->
+                  <td class="px-6 py-4 whitespace-nowrap w-40 border-r border-gray-200">
+                    <div class="flex flex-col space-y-2">
+                      <span :class="getStatusClass(application.status)">
+                        <span class="flex items-center">
+                          <span class="h-2 w-2 rounded-full" :class="getStatusDotClass(application.status)"></span>
+                          <span class="ml-2">{{
+                            formatStatus(application.status)
+                            }}</span>
+                        </span>
                       </span>
-                    </span>
-                    <span class="text-xs text-gray-500">
-                      Updated: {{ formatDate(application.updated_at) }}
-                    </span>
-                  </div>
-                </td>
-                <!-- Roq  letter status  -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex flex-col space-y-2 rounded-full ">
-                  <span
-                    :class="application.roq_status_letter ? 'bg-green-100 text-green-800 rounded-full' : 'bg-red-100 text-red-800 rounded-full'">
-                    <span class="flex items-center">
-                      <span class="ml-2 h-2 w-2 rounded-full"
-                        :class="application.roq_status_letter ? 'bg-green-600' : 'bg-red-600'"></span>
-                      <span class="ml-2">{{ application.roq_status_letter ? 'Email Sent' : 'Processing' }}</span>
-                    </span>
-                  </span>
-                  <span class="text-xs text-gray-500">
-                    Updated: {{ formatDate(application.roq_status_letter_sent_date) }}
-                  </span>
-                </div>
-              </td>
+                      <span class="text-xs text-gray-500">
+                        Updated: {{ formatDate(application.updated_at) }}
+                      </span>
+                    </div>
+                  </td>
 
-              <!-- Roq  Regret letter status  -->
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex flex-col space-y-2">
-                  <span
-                    :class="application.roq_regret_letter ? 'bg-green-100 text-green-800rounded-full ' : 'bg-red-100 text-red-800 rounded-full'">
-                    <span class="flex items-center">
-                      <span class="ml-2 h-2 w-2 rounded-full"
-                        :class="application.roq_regret_letter ? 'bg-green-600' : 'bg-red-600'"></span>
-                      <span class="ml-2">{{ application.roq_regret_letter ? 'Email Sent' : 'Processing' }}</span>
-                    </span>
-                  </span>
-                  <span class="text-xs text-gray-500">
-                    Updated: {{ formatDate(application.roq_regret_letter_send_date) }}
-                  </span>
-                </div>
-              </td>
+                  <!-- ROQ letter status -->
+                  <td class="px-6 py-4 whitespace-nowrap w-40 border-r border-gray-200">
+                    <div class="flex flex-col space-y-2">
+                      <span
+                        :class="application.roq_status_letter ? 'bg-green-100 text-green-800 rounded-full' : 'bg-red-100 text-red-800 rounded-full'">
+                        <span class="flex items-center">
+                          <span class="h-2 w-2 rounded-full ml-2"
+                            :class="application.roq_status_letter ? 'bg-green-600' : 'bg-red-600'"></span>
+                          <span class="ml-2">{{ application.roq_status_letter ? 'Email Sent' : 'Processing' }}</span>
+                        </span>
+                      </span>
+                      <span class="text-xs text-gray-500">
+                        Updated: {{ formatDate(application.roq_status_letter_sent_date) }}
+                      </span>
+                    </div>
+                  </td>
 
+                  <!-- ROQ Regret letter status -->
+                  <td class="px-6 py-4 whitespace-nowrap w-40 border-r border-gray-200">
+                    <div class="flex flex-col space-y-2">
+                      <span
+                        :class="application.roq_regret_letter ? 'bg-green-100 text-green-800 rounded-full' : 'bg-red-100 text-red-800 rounded-full'">
+                        <span class="flex items-center">
+                          <span class="h-2 w-2 rounded-full ml-2"
+                            :class="application.roq_regret_letter ? 'bg-green-600' : 'bg-red-600'"></span>
+                          <span class="ml-2">{{ application.roq_regret_letter ? 'Email Sent' : 'Processing' }}</span>
+                        </span>
+                      </span>
+                      <span class="text-xs text-gray-500">
+                        Updated: {{ formatDate(application.roq_regret_letter_send_date) }}
+                      </span>
+                    </div>
+                  </td>
 
-
-                <!-- Actions -->
-                <td class="px-6 py-4 whitespace-nowrap text-right">
-                  <ActionButtons :application="application" @action="handleAction" :user-role="userRole" />
-                </td>
-              </tr>
-            </template>
-            <template v-else>
-              <tr>
-                <td colspan="4" class="py-12 text-center text-gray-500">
-                  No applications found
-                </td>
-              </tr>
-            </template>
-          </tbody>
-        </table>
+                  <!-- Actions -->
+                  <td class="px-6 py-4 whitespace-nowrap text-right w-32">
+                    <ActionButtons :application="application" @action="handleAction" :user-role="userRole" />
+                  </td>
+                </tr>
+              </template>
+              <template v-else>
+                <tr>
+                  <td colspan="6" class="py-12 text-center text-gray-500 border-r border-gray-200">
+                    No applications found
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Pagination -->
@@ -266,8 +267,8 @@ const headers = [
   { key: 'applicant', label: 'Applicant Details' },
   { key: 'course', label: 'Course Information' },
   { key: 'status', label: 'Status' },
-  { key: 'status', label: 'ROQ Status' },
-  { key: 'status', label: 'ROQ Regret Letter' },
+  { key: 'roq_status', label: 'ROQ Status' },
+  { key: 'roq_regret', label: 'ROQ Regret Letter' },
   { key: 'actions', label: 'Actions' },
 ];
 

@@ -353,3 +353,27 @@ const sortedApplications = computed(() => {
   });
 });
 </script>
+
+<style scoped>
+/* Add responsive styles */
+@media (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  th,
+  td {
+    text-align: left;
+  }
+}
+</style>
