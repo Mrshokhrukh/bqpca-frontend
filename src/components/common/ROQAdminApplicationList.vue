@@ -106,6 +106,41 @@
                     </span>
                   </div>
                 </td>
+                <!-- Roq  letter status  -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex flex-col space-y-2 rounded-full ">
+                  <span
+                    :class="application.roq_status_letter ? 'bg-green-100 text-green-800 rounded-full' : 'bg-red-100 text-red-800 rounded-full'">
+                    <span class="flex items-center">
+                      <span class="ml-2 h-2 w-2 rounded-full"
+                        :class="application.roq_status_letter ? 'bg-green-600' : 'bg-red-600'"></span>
+                      <span class="ml-2">{{ application.roq_status_letter ? 'Email Sent' : 'Processing' }}</span>
+                    </span>
+                  </span>
+                  <span class="text-xs text-gray-500">
+                    Updated: {{ formatDate(application.roq_status_letter_sent_date) }}
+                  </span>
+                </div>
+              </td>
+
+              <!-- Roq  Regret letter status  -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex flex-col space-y-2">
+                  <span
+                    :class="application.roq_regret_letter ? 'bg-green-100 text-green-800rounded-full ' : 'bg-red-100 text-red-800 rounded-full'">
+                    <span class="flex items-center">
+                      <span class="ml-2 h-2 w-2 rounded-full"
+                        :class="application.roq_regret_letter ? 'bg-green-600' : 'bg-red-600'"></span>
+                      <span class="ml-2">{{ application.roq_regret_letter ? 'Email Sent' : 'Processing' }}</span>
+                    </span>
+                  </span>
+                  <span class="text-xs text-gray-500">
+                    Updated: {{ formatDate(application.roq_regret_letter_send_date) }}
+                  </span>
+                </div>
+              </td>
+
+
 
                 <!-- Actions -->
                 <td class="px-6 py-4 whitespace-nowrap text-right">
@@ -231,6 +266,8 @@ const headers = [
   { key: 'applicant', label: 'Applicant Details' },
   { key: 'course', label: 'Course Information' },
   { key: 'status', label: 'Status' },
+  { key: 'status', label: 'ROQ Status' },
+  { key: 'status', label: 'ROQ Regret Letter' },
   { key: 'actions', label: 'Actions' },
 ];
 

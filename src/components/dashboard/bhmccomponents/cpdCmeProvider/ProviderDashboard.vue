@@ -158,7 +158,7 @@ import {
   Plus,
   MessageSquare,
   Star,
-  MapPin,
+  MapPin, 
   Presentation,
 } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
