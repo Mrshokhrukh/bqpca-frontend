@@ -94,25 +94,26 @@ import CpdProviderManagement from '@/components/dashboard/bhmccomponents/dealing
 import CpdAwardCredits from '@/components/dashboard/bhmccomponents/dealingOfficer/CpdAwardCredits.vue';
 import CpdReports from '@/components/dashboard/bhmccomponents/dealingOfficer/CpdReports.vue';
 import ReRegistrationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/ReRegistrationLists.vue';
+import AdditionalApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/AdditionalApplication.vue';
 //BMHC masters components
-import MastersCmeActivities from '@/components/dashboard/bhmccomponents/admin/MastersCmeActivities.vue'
-import MastersCmeCredits from '@/components/dashboard/bhmccomponents/admin/MastersCmeCredits.vue'
-import MastersCmeMethodologies from '@/components/dashboard/bhmccomponents/admin/MastersCmeMethodologies.vue'
-import MastersCpdActivity from '@/components/dashboard/bhmccomponents/admin/MastersCpdActivity.vue'
-import MastersDocumentTypes from '@/components/dashboard/bhmccomponents/admin/MastersDocumentTypes.vue'
-import MastersESignatures from '@/components/dashboard/bhmccomponents/admin/MastersESignatures.vue'
-import MastersFeeStructures from '@/components/dashboard/bhmccomponents/admin/MastersFeeStructures.vue'
-import MastersFeesAssociatedFor from '@/components/dashboard/bhmccomponents/admin/MastersFeesAssociatedFor.vue'
-import MastersFileTypes from '@/components/dashboard/bhmccomponents/admin/MastersFileTypes.vue'
-import MastersParticipationCategory from '@/components/dashboard/bhmccomponents/admin/MastersParticipationCategory.vue'
-import MastersParticipationSubCategory from '@/components/dashboard/bhmccomponents/admin/MastersParticipationSubCategory.vue'
-import MastersPersonnelCategories from '@/components/dashboard/bhmccomponents/admin/MastersPersonnelCategories.vue'
-import MastersQualificationTypes from '@/components/dashboard/bhmccomponents/admin/MastersQualificationTypes.vue'
-import MastersQualifications from '@/components/dashboard/bhmccomponents/admin/MastersQualifications.vue'
-import MastersRegistrationType from '@/components/dashboard/bhmccomponents/admin/MastersRegistrationType.vue'
-import MastersSector from '@/components/dashboard/bhmccomponents/admin/MastersSector.vue'
-import MastersSubCategories from '@/components/dashboard/bhmccomponents/admin/MastersSubCategories.vue'
-import MastersUniversity from '@/components/dashboard/bhmccomponents/admin/MastersUniversity.vue'
+import MastersCmeActivities from '@/components/dashboard/bhmccomponents/admin/MastersCmeActivities.vue';
+import MastersCmeCredits from '@/components/dashboard/bhmccomponents/admin/MastersCmeCredits.vue';
+import MastersCmeMethodologies from '@/components/dashboard/bhmccomponents/admin/MastersCmeMethodologies.vue';
+import MastersCpdActivity from '@/components/dashboard/bhmccomponents/admin/MastersCpdActivity.vue';
+import MastersDocumentTypes from '@/components/dashboard/bhmccomponents/admin/MastersDocumentTypes.vue';
+import MastersESignatures from '@/components/dashboard/bhmccomponents/admin/MastersESignatures.vue';
+import MastersFeeStructures from '@/components/dashboard/bhmccomponents/admin/MastersFeeStructures.vue';
+import MastersFeesAssociatedFor from '@/components/dashboard/bhmccomponents/admin/MastersFeesAssociatedFor.vue';
+import MastersFileTypes from '@/components/dashboard/bhmccomponents/admin/MastersFileTypes.vue';
+import MastersParticipationCategory from '@/components/dashboard/bhmccomponents/admin/MastersParticipationCategory.vue';
+import MastersParticipationSubCategory from '@/components/dashboard/bhmccomponents/admin/MastersParticipationSubCategory.vue';
+import MastersPersonnelCategories from '@/components/dashboard/bhmccomponents/admin/MastersPersonnelCategories.vue';
+import MastersQualificationTypes from '@/components/dashboard/bhmccomponents/admin/MastersQualificationTypes.vue';
+import MastersQualifications from '@/components/dashboard/bhmccomponents/admin/MastersQualifications.vue';
+import MastersRegistrationType from '@/components/dashboard/bhmccomponents/admin/MastersRegistrationType.vue';
+import MastersSector from '@/components/dashboard/bhmccomponents/admin/MastersSector.vue';
+import MastersSubCategories from '@/components/dashboard/bhmccomponents/admin/MastersSubCategories.vue';
+import MastersUniversity from '@/components/dashboard/bhmccomponents/admin/MastersUniversity.vue';
 import CogsAgency from '@/components/dashboard/bhmccomponents/admin/CogsAgency.vue';
 import CogsDepartment from '@/components/dashboard/bhmccomponents/admin/CogsDepartment.vue';
 import CogsWorkplace from '@/components/dashboard/bhmccomponents/admin/CogsWorkplace.vue';
@@ -271,6 +272,8 @@ const bmhDealingOfficerComponent = computed(() => {
       return DprApplication;
     case path.endsWith('/health_certification/institute_report'):
       return InstituteReport;
+    case path.endsWith('/health_certification/additional_application'):
+      return AdditionalApplication;
     default:
       return null;
   }

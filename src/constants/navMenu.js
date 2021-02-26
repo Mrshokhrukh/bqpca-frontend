@@ -531,6 +531,10 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/application_lists`,
           },
           {
+            name: 'Additional Application Lists',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/additional_application`,
+          },
+          {
             name: 'Renewal Lists',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_lists`,
           },

@@ -1,4 +1,3 @@
-<!-- ViewApplicationDetailsModal.vue -->
 <template>
   <!-- (Your existing template code remains the same) -->
   <TransitionRoot appear :show="isOpen" as="template">
@@ -224,7 +223,7 @@
                                   placeholder="Provide rejection reason..."
                                   class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                   rows="3">
-                                                              </textarea>
+                                  </textarea>
                               </div>
                             </div>
 
@@ -244,7 +243,7 @@
                                   placeholder="Provide rejection reason..."
                                   class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                   rows="3">
-                                                              </textarea>
+                                  </textarea>
                               </div>
                             </div>
                           </div>
@@ -293,74 +292,76 @@
                             </div>
 
                             <!-- Personnel Category -->
-                            <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
-                              <p class="text-sm font-medium text-gray-500">Personnel Category
-                              </p>
-                              <p class="text-sm text-gray-900 mt-2">
-                                <span>{{ application.personnel_category }}</span>
-                              </p>
-                            </div>
-                            <div class="p-4 bg-gray-50 rounded-lg" v-else>
-                              <p class="text-sm font-medium text-gray-500">Personnel Category
-                              </p>
-                              <select v-model="editableApplication.personnel_category"
-                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="" disabled>Select Category</option>
-                                <option v-for="category in personnelCategories" :key="category.id"
-                                  :value="category.name">
-                                  {{ category.name }}
-                                </option>
-                              </select>
-                            </div>
+                            <template v-if="overallStatus === 'Approved'">
+                              <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
+                                <p class="text-sm font-medium text-gray-500">Personnel Category
+                                </p>
+                                <p class="text-sm text-gray-900 mt-2">
+                                  <span>{{ application.personnel_category }}</span>
+                                </p>
+                              </div>
+                              <div class="p-4 bg-gray-50 rounded-lg" v-else>
+                                <p class="text-sm font-medium text-gray-500">Personnel Category
+                                </p>
+                                <select v-model="editableApplication.personnel_category"
+                                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                  <option value="" disabled>Select Category</option>
+                                  <option v-for="category in personnelCategories" :key="category.id"
+                                    :value="category.name">
+                                    {{ category.name }}
+                                  </option>
+                                </select>
+                              </div>
 
-                            <!-- Personnel Subcategory -->
-                            <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
-                              <p class="text-sm font-medium text-gray-500">Personnel
-                                Subcategory</p>
-                              <p class="text-sm text-gray-900 mt-2">
-                                <span>{{ application.personnel_subcategory }}</span>
-                              </p>
-                            </div>
-                            <div class="p-4 bg-gray-50 rounded-lg" v-else>
-                              <p class="text-sm font-medium text-gray-500">Personnel
-                                Subcategory</p>
-                              <select v-model="editableApplication.personnel_subcategory"
-                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="" disabled>Select Subcategory</option>
-                                <option v-for="subcategory in personnelSubcategories" :key="subcategory.id"
-                                  :value="subcategory.name">
-                                  {{ subcategory.name }}
-                                </option>
-                              </select>
-                            </div>
+                              <!-- Personnel Subcategory -->
+                              <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
+                                <p class="text-sm font-medium text-gray-500">Personnel
+                                  Subcategory</p>
+                                <p class="text-sm text-gray-900 mt-2">
+                                  <span>{{ application.personnel_subcategory }}</span>
+                                </p>
+                              </div>
+                              <div class="p-4 bg-gray-50 rounded-lg" v-else>
+                                <p class="text-sm font-medium text-gray-500">Personnel
+                                  Subcategory</p>
+                                <select v-model="editableApplication.personnel_subcategory"
+                                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                  <option value="" disabled>Select Subcategory</option>
+                                  <option v-for="subcategory in personnelSubcategories" :key="subcategory.id"
+                                    :value="subcategory.name">
+                                    {{ subcategory.name }}
+                                  </option>
+                                </select>
+                              </div>
 
-                            <!-- Practice Address -->
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Practice Address
-                              </p>
-                              <input type="text" v-model="editableApplication.practice_address"
-                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Enter Practice Address" />
-                            </div>
+                              <!-- Practice Address -->
+                              <div class="p-4 bg-gray-50 rounded-lg">
+                                <p class="text-sm font-medium text-gray-500">Practice Address
+                                </p>
+                                <input type="text" v-model="editableApplication.practice_address"
+                                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                  placeholder="Enter Practice Address" />
+                              </div>
 
 
-                            <!-- Sector -->
-                            <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
-                              <p class="text-sm font-medium text-gray-500">Sector</p>
-                              <p class="text-sm text-gray-900 mt-2">
-                                <span>{{ application.sector }}</span>
-                              </p>
-                            </div>
-                            <div class="p-4 bg-gray-50 rounded-lg" v-else>
-                              <p class="text-sm font-medium text-gray-500">Sector</p>
-                              <select v-model="editableApplication.sector"
-                                class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="" disabled>Select Sector</option>
-                                <option v-for="sector in sectors" :key="sector.id" :value="sector.name">
-                                  {{ sector.name }}
-                                </option>
-                              </select>
-                            </div>
+                              <!-- Sector -->
+                              <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
+                                <p class="text-sm font-medium text-gray-500">Sector</p>
+                                <p class="text-sm text-gray-900 mt-2">
+                                  <span>{{ application.sector }}</span>
+                                </p>
+                              </div>
+                              <div class="p-4 bg-gray-50 rounded-lg" v-else>
+                                <p class="text-sm font-medium text-gray-500">Sector</p>
+                                <select v-model="editableApplication.sector"
+                                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                  <option value="" disabled>Select Sector</option>
+                                  <option v-for="sector in sectors" :key="sector.id" :value="sector.name">
+                                    {{ sector.name }}
+                                  </option>
+                                </select>
+                              </div>
+                            </template>
                           </div>
                         </div>
                       </div>
@@ -535,7 +536,7 @@
 
                       <button v-if="overallStatus === 'Approved' && !isEditing" type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 inline-flex items-center space-x-2"
-                        @click="openCertificateModal"> <!-- Changed to openCertificateModal -->
+                        @click="openCertificateModal">
                         <FileText class="h-4 w-4" />
                         <span>View Certificate</span>
                       </button>
@@ -573,7 +574,6 @@
   <CertificateModal :isOpen="isCertificateModalOpen" :applicationId="application?.id" @close="closeCertificateModal" />
   <!-- CertificateModal here -->
 </template>
-
 <script setup>
 import {
   Dialog,
@@ -659,275 +659,278 @@ watch(() => props.application, (newApplication) => {
     }
     editableApplication.value = { ...newApplication };
 
-    // Handle userDetails
-    if (newApplication.userDetails) {
-      originalUserDetailsData.value = JSON.parse(JSON.stringify(newApplication.userDetails));
-      editableUserDetails.value = { ...newApplication.userDetails };
-    } else {
-      originalUserDetailsData.value = null;
-      editableUserDetails.value = {};
-    }
-  }
-  errorMessage.value = '';
+// Handle userDetails
+if (newApplication.userDetails) {
+  originalUserDetailsData.
+  value = JSON.parse(JSON.stringify(newApplication.userDetails));
+  editableUserDetails.value = { ...newApplication.userDetails };
+} else {
+  originalUserDetailsData.value = null;
+  editableUserDetails.value = {};
+}
+}
+errorMessage.value = '';
 }, { deep: true, immediate: true });
 
 const closeModal = () => {
-  emit('close');
+emit('close');
 };
 
 const closeModalHandler = () => {
-  emit('close');
+emit('close');
 };
 
 const handleImageError = (event) => {
-  event.target.src = '/placeholder-avatar.png';
+event.target.src = '/placeholder-avatar.png';
 };
 
 const formatDate = (date) => {
-  if (!date) return 'N/A';
-  try {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  } catch (error) {
-    console.error('Error formatting date:', error);
-    return 'Invalid Date';
-  }
+if (!date) return 'N/A';
+try {
+return new Date(date).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+} catch (error) {
+console.error('Error formatting date:', error);
+return 'Invalid Date';
+}
 };
 
 const overallStatus = computed(() => {
-  if (!props.application?.user_qualifications?.[0]) return 'Pending';
+if (!props.application?.user_qualifications?.[0]) return 'Pending';
 
-  const appReview = props.application.user_qualifications[0].application_review_status;
-  const physReview = props.application.user_qualifications[0].physical_review_status;
-  const endorse = props.application.user_qualifications[0].endorsement_decision;
+const appReview = props.application.user_qualifications[0].application_review_status;
+const physReview = props.application.user_qualifications[0].physical_review_status;
+const endorse = props.application.user_qualifications[0].endorsement_decision;
 
-  if (appReview === 'Regretted' || physReview === 'Regretted' || endorse === 'Regretted') {
-    return 'Regretted';
-  } else if (appReview === 'Approved' && physReview === 'Approved' && endorse === 'Approved') {
-    return 'Approved';
-  } else {
-    return 'Pending';
-  }
+if (appReview === 'Regretted' || physReview === 'Regretted' || endorse === 'Regretted') {
+return 'Regretted';
+} else if (appReview === 'Approved' && physReview === 'Approved' && endorse === 'Approved') {
+return 'Approved';
+} else {
+return 'Pending';
+}
 });
 
 const startEditing = () => {
-  isEditing.value = true;
+isEditing.value = true;
 };
 
 const cancelEditing = () => {
-  isEditing.value = false;
-  // Reset all editable data to their original values
-  if (originalApplicationData.value) {
-    editableApplication.value = JSON.parse(JSON.stringify(originalApplicationData.value));
-  }
-  if (originalQualificationData.value) {
-    editableQualification.value = JSON.parse(JSON.stringify(originalQualificationData.value));
-  }
-  if (originalUserDetailsData.value) {
-    editableUserDetails.value = JSON.parse(JSON.stringify(originalUserDetailsData.value));
-  }
-  errorMessage.value = '';
+isEditing.value = false;
+// Reset all editable data to their original values
+if (originalApplicationData.value) {
+editableApplication.value = JSON.parse(JSON.stringify(originalApplicationData.value));
+}
+if (originalQualificationData.value) {
+editableQualification.value = JSON.parse(JSON.stringify(originalQualificationData.value));
+}
+if (originalUserDetailsData.value) {
+editableUserDetails.value = JSON.parse(JSON.stringify(originalUserDetailsData.value));
+}
+errorMessage.value = '';
 };
 
 // Helper function to get changed fields in application data
 const getChangedApplicationFields = () => {
-  const changedFields = {};
-  if (!originalApplicationData.value) return changedFields;
+const changedFields = {};
+if (!originalApplicationData.value) return changedFields;
 
-  for (const key in editableApplication.value) {
-    // Skip userDetails and user_qualifications, as they are handled separately
-    if (key === 'userDetails' || key === "user_qualifications") continue;
+for (const key in editableApplication.value) {
+// Skip userDetails and user_qualifications, as they are handled separately
+if (key === 'userDetails' || key === "user_qualifications") continue;
 
-    if (!isEqual(editableApplication.value[key], originalApplicationData.value[key])) {
-      changedFields[key] = editableApplication.value[key];
-    }
-  }
-  return changedFields;
+if (!isEqual(editableApplication.value[key], originalApplicationData.value[key])) {
+  changedFields[key] = editableApplication.value[key];
+}
+}
+return changedFields;
 };
 
 // Helper function to get changed fields in qualification data
 const getChangedQualificationFields = () => {
-  const changedFields = {};
-  if (!originalQualificationData.value) return changedFields;
+const changedFields = {};
+if (!originalQualificationData.value) return changedFields;
 
-  for (const key in editableQualification.value) {
-    if (!isEqual(editableQualification.value[key], originalQualificationData.value[key])) {
-      changedFields[key] = editableQualification.value[key];
-    }
-  }
-  return changedFields;
+for (const key in editableQualification.value) {
+if (!isEqual(editableQualification.value[key], originalQualificationData.value[key])) {
+  changedFields[key] = editableQualification.value[key];
+}
+}
+return changedFields;
 };
 
 // NEW: Helper function to get changed fields in userDetails
 const getChangedUserDetailsFields = () => {
-  const changedFields = {};
-  if (!originalUserDetailsData.value) return changedFields;
+const changedFields = {};
+if (!originalUserDetailsData.value) return changedFields;
 
-  for (const key in editableUserDetails.value) {
-    if (!isEqual(editableUserDetails.value[key], originalUserDetailsData.value[key])) {
-      changedFields[key] = editableUserDetails.value[key];
-    }
-  }
-  return changedFields;
+for (const key in editableUserDetails.value) {
+if (!isEqual(editableUserDetails.value[key], originalUserDetailsData.value[key])) {
+  changedFields[key] = editableUserDetails.value[key];
+}
+}
+return changedFields;
 };
 
 
 const saveChanges = async () => {
-  if (!props.application) return;
+if (!props.application) return;
 
-  isLoading.value = true;
-  errorMessage.value = '';
+isLoading.value = true;
+errorMessage.value = '';
 
-  try {
-    const changedApplicationFields = getChangedApplicationFields();
-    const changedQualificationFields = getChangedQualificationFields();
-    const changedUserDetailsFields = getChangedUserDetailsFields(); // Get changed user details
+try {
+const changedApplicationFields = getChangedApplicationFields();
+const changedQualificationFields = getChangedQualificationFields();
+const changedUserDetailsFields = getChangedUserDetailsFields(); // Get changed user details
 
 
 // --- User Update (is_counselor AND other user details) ---
 if (Object.keys(changedUserDetailsFields).length > 0 && editableApplication.value.userDetails?.id) {
-  // If is_counselor is part of changedUserDetailsFields, include it. Otherwise, don't.
-  if (changedApplicationFields.is_counselor !== undefined) {
-    changedUserDetailsFields.is_counselor = changedApplicationFields.is_counselor;
-  }
+// If is_counselor is part of changedUserDetailsFields, include it. Otherwise, don't.
+if (changedApplicationFields.is_counselor !== undefined) {
+changedUserDetailsFields.is_counselor = changedApplicationFields.is_counselor;
+}
 
-  // Send user details update as FormData
-  const userFormData = new FormData();
-  for (const key in changedUserDetailsFields) {
-    if (Object.prototype.hasOwnProperty.call(changedUserDetailsFields, key)) {
-      const value = changedUserDetailsFields[key];
-      userFormData.append(key, value === null || value === undefined ? '' : value);
-    }
-  }
-  await apiServices.patchUser(editableApplication.value.userDetails.id, userFormData);
+// Send user details update as FormData
+const userFormData = new FormData();
+for (const key in changedUserDetailsFields) {
+if (Object.prototype.hasOwnProperty.call(changedUserDetailsFields, key)) {
+  const value = changedUserDetailsFields[key];
+  userFormData.append(key, value === null || value === undefined ? '' : value);
+}
+}
+await apiServices.patchUser(editableApplication.value.userDetails.id, userFormData);
 } else if (changedApplicationFields.is_counselor !== undefined && editableApplication.value.userDetails?.id) {
-  // Handle is_counselor separately if it's the ONLY user detail changed.
-  const userFormData = new FormData();
-  userFormData.append('is_counselor', changedApplicationFields.is_counselor);
-  await apiServices.patchUser(editableApplication.value.userDetails.id, userFormData);
+// Handle is_counselor separately if it's the ONLY user detail changed.
+const userFormData = new FormData();
+userFormData.append('is_counselor', changedApplicationFields.is_counselor);
+await apiServices.patchUser(editableApplication.value.userDetails.id, userFormData);
 }
 
 
-    // --- Application and Qualification Update ---
-    const formData = new FormData();
+// --- Application and Qualification Update ---
+const formData = new FormData();
 
-    // Add changed *application* fields to formData
-    for (const key in changedApplicationFields) {
-      if (Object.prototype.hasOwnProperty.call(changedApplicationFields, key)) {
-        // Skip is_counselor here, it's handled with user details
-        if (key === 'is_counselor') continue;
-        const value = changedApplicationFields[key];
-        // Handle null/undefined values appropriately for FormData
-        formData.append(key, value === null || value === undefined ? '' : value);
-      }
-    }
-
-    // Add changed *qualification* fields directly to formData (no nesting)
-    for (const key in changedQualificationFields) {
-      if (Object.prototype.hasOwnProperty.call(changedQualificationFields, key)) {
-        const value = changedQualificationFields[key];
-        formData.append(key, value === null || value === undefined ? '' : value);
-      }
-    }
-
-
-    // Only send the application update if there are changes.
-    if (props.application.id && (Object.keys(changedApplicationFields).length > 0 || Object.keys(changedQualificationFields).length > 0)) {
-      await apiServices.patchBhmcNewQualification(props.application.user_qualifications[0].id, formData);
-    }
-
-    // --- Refresh and Cleanup ---
-    const response = await apiServices.getBhmcNewApplication(props.application.id);
-    emit('update', response.data);
-    await nextTick();
-    isEditing.value = false;
-
-  } catch (error) {
-    console.error('Error saving changes:', error);
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.error("Response data:", error.response.data);
-      console.error("Response status:", error.response.status);
-      console.error("Response headers:", error.response.headers);
-      errorMessage.value = `Server error: ${error.response.status} - ${error.response.data?.detail || 'Unknown error'}`;
-    } else if (error.request) {
-      // The request was made but no response was received
-      console.error("No response received:", error.request);
-      errorMessage.value = "No response received from server. Please check your network connection.";
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.error('Error', error.message);
-      errorMessage.value = `Request error: ${error.message}`;
-    }
-  } finally {
-    isLoading.value = false;
+// Add changed *application* fields to formData
+for (const key in changedApplicationFields) {
+  if (Object.prototype.hasOwnProperty.call(changedApplicationFields, key)) {
+    // Skip is_counselor here, it's handled with user details
+    if (key === 'is_counselor') continue;
+    const value = changedApplicationFields[key];
+    // Handle null/undefined values appropriately for FormData
+    formData.append(key, value === null || value === undefined ? '' : value);
   }
+}
+
+// Add changed *qualification* fields directly to formData (no nesting)
+for (const key in changedQualificationFields) {
+  if (Object.prototype.hasOwnProperty.call(changedQualificationFields, key)) {
+    const value = changedQualificationFields[key];
+    formData.append(key, value === null || value === undefined ? '' : value);
+  }
+}
+
+
+// Only send the application update if there are changes.
+if (props.application.id && (Object.keys(changedApplicationFields).length > 0 || Object.keys(changedQualificationFields).length > 0)) {
+  await apiServices.patchBhmcNewQualification(props.application.user_qualifications[0].id, formData);
+}
+
+// --- Refresh and Cleanup ---
+const response = await apiServices.getBhmcNewApplication(props.application.id);
+emit('update', response.data);
+await nextTick();
+isEditing.value = false;
+
+} catch (error) {
+console.error('Error saving changes:', error);
+if (error.response) {
+  // The request was made and the server responded with a status code
+  // that falls out of the range of 2xx
+  console.error("Response data:", error.response.data);
+  console.error("Response status:", error.response.status);
+  console.error("Response headers:", error.response.headers);
+  errorMessage.value = `Server error: ${error.response.status} - ${error.response.data?.detail || 'Unknown error'}`;
+} else if (error.request) {
+  // The request was made but no response was received
+  console.error("No response received:", error.request);
+  errorMessage.value = "No response received from server. Please check your network connection.";
+} else {
+  // Something happened in setting up the request that triggered an Error
+  console.error('Error', error.message);
+  errorMessage.value = `Request error: ${error.message}`;
+}
+} finally {
+isLoading.value = false;
+}
 };
 
 const openCertificateModal = () => {
-  isCertificateModalOpen.value = true;
+isCertificateModalOpen.value = true;
 };
 
 const closeCertificateModal = () => {
-  isCertificateModalOpen.value = false;
+isCertificateModalOpen.value = false;
 };
+
+// Remove the unused computed property
 </script>
 
 <style scoped>
 /* Enhanced scrollbar styles */
 .overflow-y-auto {
-  scrollbar-width: thin;
-  scrollbar-color: #CBD5E1 transparent;
+scrollbar-width: thin;
+scrollbar-color: #CBD5E1 transparent;
 }
 
 .overflow-y-auto::-webkit-scrollbar {
-  width: 6px;
+width: 6px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-track {
-  background: transparent;
+background: transparent;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background-color: #CBD5E1;
-  border-radius: 3px;
+background-color: #CBD5E1;
+border-radius: 3px;
 }
 
 /* Enhanced transitions */
 .transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 200ms;
+transition-property: all;
+transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+transition-duration: 200ms;
 }
 
 /* Enhanced card hover effects */
 .rounded-xl {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .rounded-xl:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+transform: translateY(-2px);
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* Status indicator animations */
 @keyframes pulse {
 
-  0%,
-  100% {
-    opacity: 1;
-  }
+0%,
+100% {
+opacity: 1;
+}
 
-  50% {
-    opacity: 0.5;
-  }
+50% {
+opacity: 0.5;
+}
 }
 
 .animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style>
