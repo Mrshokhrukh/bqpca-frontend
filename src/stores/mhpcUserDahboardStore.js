@@ -28,8 +28,8 @@ export const useDashboardStore = defineStore('dashboard', {
       this.isLoading = true;
       try {
         const [cogsData, applicationsData, cpdData] = await Promise.all([
-          apiServices.getBmhcCogsByCid(cid),
           apiServices.getFullApplicationListByCid(cid),
+          apiServices.getBmhcCogsByCid(cid),
           apiServices.getBmhcCpdRecordsByCid(cid),
         ]);
 

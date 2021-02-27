@@ -224,16 +224,6 @@ const serviceTypeLabel = computed(() => {
 });
 
 const filteredNavigationItems = computed(() => {
-  if (authStore.serviceType === 'health_certification' && authStore.role === 'user') {
-    const healthStore = useHealthCertificationStore();
-    console.log('Health certification menu state:', {
-      hasSubmittedApplication: healthStore.hasSubmittedApplication,
-      hasApprovedApplication: healthStore.hasApprovedApplication,
-      isRenewalPeriod: healthStore.isRenewalPeriod,
-      isExpired: healthStore.isExpired,
-      navigationItems: navigationItems.value
-    });
-  }
   return navigationItems.value;
 });
 

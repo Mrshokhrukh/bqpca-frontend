@@ -6,96 +6,19 @@
         Track Your Application
       </h2>
       <p class="text-gray-600 text-center max-w-2xl mx-auto">
-        Search your application status by CID/Work Permit Number.
+        Your application status is displayed below.
       </p>
     </div>
 
-    <!-- Search Section -->
-    <div class="w-100 mx-auto mb-16">
-      <div class="bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-lg border border-blue-100 p-8">
-        <!-- Search Container -->
-        <div class="relative">
-          <!-- Search Icon Overlay -->
-          <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-            <Search class="h-5 w-5 text-blue-500" />
-          </div>
-
-          <!-- Main Search Input -->
-          <input v-model="searchQuery" type="text" class="w-full pl-12 pr-32 py-4 bg-white/70 backdrop-blur-sm rounded-xl border-2 border-blue-100
-                 text-gray-900 placeholder-gray-500 text-lg
-                 shadow-sm transition-all duration-200
-                 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 focus:outline-none
-                 hover:border-blue-200"
-            :placeholder="searchType === 'id' ? 'Enter CID or Work Permit number' : 'Enter Application ID'" />
-
-          <!-- Search Button (Absolutely Positioned) -->
-          <div class="absolute inset-y-1.5 right-1.5">
-            <button @click="handleSearch" :disabled="isLoading" class="px-6 py-2.5 bg-blue-600 text-white rounded-lg
-                   shadow-sm transition-all duration-200
-                   hover:bg-blue-700 hover:shadow-md
-                   disabled:bg-blue-400 disabled:cursor-not-allowed
-                   flex items-center space-x-2">
-              <Loader v-if="isLoading" class="animate-spin w-4 h-4" />
-              <span class="font-medium">{{ isLoading ? 'Searching...' : 'Search' }}</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Search Type Indicator -->
-        <div class="mt-4 flex items-center justify-between text-sm">
-          <div class="flex items-center space-x-2">
-            <IdCard class="w-4 h-4 text-blue-500" />
-            <span class="text-gray-600 font-medium">Searching by:</span>
-            <span class="text-blue-600 font-semibold">CID/Work Permit Number</span>
-          </div>
-
-          <!-- Search Tips -->
-          <div class="flex items-center text-gray-500 hover:text-gray-700 transition-colors cursor-help group relative">
-            <HelpCircle class="w-4 h-4 mr-1" />
-            <span>Search Tips</span>
-
-            <!-- Tooltip -->
-            <div class="absolute bottom-full right-0 mb-2 w-64 hidden group-hover:block">
-              <div class="bg-gray-900 text-white p-3 rounded-lg shadow-lg text-xs">
-                <ul class="space-y-1">
-                  <li>• Enter your complete ID number</li>
-                  <li>• Ensure there are no extra spaces</li>
-                  <li>• Numbers only for Work Permit</li>
-                </ul>
-                <div class="absolute bottom-0 right-4 transform translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Searches (Optional) -->
-        <div v-if="recentSearches?.length" class="mt-6 pt-4 border-t border-blue-100">
-          <div class="flex items-center justify-between text-sm mb-2">
-            <span class="text-gray-600 font-medium">Recent Searches</span>
-            <button @click="clearRecentSearches" class="text-gray-400 hover:text-gray-600 transition-colors">
-              <Trash2 class="w-4 h-4" />
-            </button>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <button v-for="search in recentSearches" :key="search" @click="setSearch(search)" class="px-3 py-1 text-sm bg-white rounded-full border border-gray-200
-                   text-gray-600 hover:border-blue-300 hover:text-blue-600
-                   transition-colors flex items-center space-x-1">
-              <Clock class="w-3 h-3" />
-              <span>{{ search }}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Loading Indicator (Optional) -->
-      <div v-if="isLoading" class="mt-4 flex justify-center">
-        <div class="flex items-center space-x-2 text-sm text-gray-500">
-          <span class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
-          <span class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-100"></span>
-          <span class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-200"></span>
-        </div>
+    <!-- Loading Indicator (Optional) -->
+    <div v-if="isLoading" class="mt-4 flex justify-center">
+      <div class="flex items-center space-x-2 text-sm text-gray-500">
+        <span class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
+        <span class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-100"></span>
+        <span class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-200"></span>
       </div>
     </div>
+
 
     <!-- Results Section -->
     <div v-if="applications?.length > 0" class="space-y-6">
@@ -104,8 +27,18 @@
         <!-- Main Info Header -->
         <div class="relative">
           <!-- Moved button inside loop, added v-if -->
-          <div class="absolute top-0 right-0 m-4">
-            <button v-if="application.user_qualifications.length > 0" @click="openCertificateModal(application)"
+          <div class="absolute top-0 right-0 m-4 flex space-x-2">
+            <!-- Awaiting Payment Button -->
+            <button
+              v-if="application.user_qualifications.some(q => q.physical_review_status === 'Approved' && q.endorsement_decision === 'Pending')"
+              @click="initiatePayment(application)"
+              class="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors shadow-sm animate-pulse">
+              <CreditCard class="w-4 h-4 mr-2" />
+              <span>Awaiting Payment, Proceed to Payment</span>
+            </button>
+            <!-- View Certificate Button -->
+            <button v-if="application.user_qualifications.some(q => q.endorsement_decision === 'Approved')"
+              @click="openCertificateModal(application)"
               class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
               <FileText class="w-4 h-4 mr-2" />
               <span>View Certificate</span>
@@ -203,10 +136,10 @@
                       <!-- Application Review -->
                       <div class="flex flex-col items-center">
                         <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
-            qualification.application_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
-              qualification.application_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
-                'bg-yellow-100 text-yellow-700'
-          ]">
+      qualification.application_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
+        qualification.application_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
+          'bg-yellow-100 text-yellow-700'
+    ]">
                           <CheckCircle v-if="qualification.application_review_status === 'Approved'" class="w-5 h-5" />
                           <XCircle v-else-if="qualification.application_review_status === 'Rejected'" class="w-5 h-5" />
                           <Clock v-else class="w-5 h-5" />
@@ -220,10 +153,10 @@
                       <!-- Physical Verification -->
                       <div class="flex flex-col items-center">
                         <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
-            qualification.physical_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
-              qualification.physical_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
-                'bg-yellow-100 text-yellow-700'
-          ]">
+      qualification.physical_review_status === 'Approved' ? 'bg-green-100 text-green-700' :
+        qualification.physical_review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
+          'bg-yellow-100 text-yellow-700'
+    ]">
                           <CheckCircle v-if="qualification.physical_review_status === 'Approved'" class="w-5 h-5" />
                           <XCircle v-else-if="qualification.physical_review_status === 'Rejected'" class="w-5 h-5" />
                           <Clock v-else class="w-5 h-5" />
@@ -234,13 +167,29 @@
                       <!-- Connecting Line -->
                       <div class="w-8 h-0.5 bg-gray-200"></div>
 
+                      <!-- Payment -->
+                      <div class="flex flex-col items-center">
+                        <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
+      qualification.is_payment_complete ? 'bg-green-100 text-green-700' :
+        'bg-yellow-100 text-yellow-700'
+    ]">
+                          <CheckCircle v-if="qualification.is_payment_complete" class="w-5 h-5" />
+                          <Clock v-else class="w-5 h-5" />
+                        </span>
+                        <span class="text-xs font-medium mt-1 text-gray-600">Payment</span>
+                      </div>
+
+
+                      <!-- Connecting Line -->
+                      <div class="w-8 h-0.5 bg-gray-200"></div>
+
                       <!-- Endorsement -->
                       <div class="flex flex-col items-center">
                         <span class="w-8 h-8 rounded-full flex items-center justify-center" :class="[
-            qualification.endorsement_decision === 'Approved' ? 'bg-green-100 text-green-700' :
-              qualification.endorsement_decision === 'Rejected' ? 'bg-red-100 text-red-700' :
-                'bg-yellow-100 text-yellow-700'
-          ]">
+      qualification.endorsement_decision === 'Approved' ? 'bg-green-100 text-green-700' :
+        qualification.endorsement_decision === 'Rejected' ? 'bg-red-100 text-red-700' :
+          'bg-yellow-100 text-yellow-700'
+    ]">
                           <CheckCircle v-if="qualification.endorsement_decision === 'Approved'" class="w-5 h-5" />
                           <XCircle v-else-if="qualification.endorsement_decision === 'Rejected'" class="w-5 h-5" />
                           <Clock v-else class="w-5 h-5" />
@@ -311,7 +260,11 @@
     </div>
     <!-- No Results Message -->
     <div v-else-if="hasSearched && !apiError" class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
-      <p class="text-gray-600">No applications found matching your search.</p>
+      <p class="text-gray-600">No applications found.</p>
+    </div>
+    <!-- API Error Message -->
+    <div v-else-if="apiError" class="text-center py-12 bg-red-50 rounded-xl border border-red-200">
+      <p class="text-red-600">An error occurred while fetching your application. Please try again later.</p>
     </div>
 
     <!-- Certificate Modal -->
@@ -322,7 +275,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';  // Import onMounted and computed
 import apiService from '@/services/services';
 import CertificateModal from './CertificateModal.vue';
 import {
@@ -336,43 +289,42 @@ import {
   Building2,
   CalendarCheck,
   CreditCard,
-  Loader,
   CheckCircle,
   XCircle,
   Clock,
-  Trash2,
-  Search,
-  HelpCircle
 } from 'lucide-vue-next';
 import { useToast } from 'vue-toastification';
+import { useAuthStore } from '@/stores/authStore';
 
 const toast = useToast();
+const authStore = useAuthStore();
 
 // State
 const applications = ref([]);
-const searchQuery = ref('');
-const searchType = ref('id');
 const isLoading = ref(false);
 const hasSearched = ref(false);
 const apiError = ref(false);
 const showCertificateModal = ref(false);
 const selectedApplication = ref(null);
-const recentSearches = ref(['11506002491', '21703001234']);
+
+// Computed property for CID
+const userCid = computed(() => {
+  return authStore.user?.cid;
+});
+
 
 // Methods
 const fetchApplications = async () => {
   isLoading.value = true;
   apiError.value = false;
+  hasSearched.value = true;
 
   try {
     let response;
-    if (!searchQuery.value) {
-      toast.warning('Please enter a CID or Work Permit Number to query.');
-      return
+    if (userCid.value) {
+      response = await apiService.getFullApplicationListByCid(userCid.value);
     }
-    if (searchQuery.value && searchType.value === 'id') {
-      response = await apiService.getFullApplicationListByCid(searchQuery.value);
-    }
+
 
     if (response && response.data && response.data.results) {
       applications.value = response.data.results;
@@ -383,14 +335,10 @@ const fetchApplications = async () => {
     console.error('Error fetching applications:', error);
     applications.value = [];
     apiError.value = true;
+    toast.error('Failed to load application data. Please check your connection or try again later.'); // Show a user-friendly error
   } finally {
     isLoading.value = false;
   }
-};
-
-const handleSearch = async () => {
-  hasSearched.value = true;
-  await fetchApplications();
 };
 
 const isApplicationActive = (application) => {
@@ -400,12 +348,31 @@ const isApplicationActive = (application) => {
 };
 
 const openCertificateModal = (application) => {
-  selectedApplication.value = { results: [application] }; // Pass the entire application
+  selectedApplication.value = { results: [application] };
   showCertificateModal.value = true;
 };
 
 const closeCertificateModal = () => {
   showCertificateModal.value = false;
-  selectedApplication.value = null; // Reset the selected application
+  selectedApplication.value = null;
 };
+
+//New function for payment
+const initiatePayment = (application) => {
+  //Implement Payment
+  console.log("Payment initiated:", application)
+  toast.info('Payment processing not yet implemented');
+}
+
+
+onMounted(() => {
+  if (userCid.value) {
+    fetchApplications();
+  } else {
+    console.warn('User CID not available.');
+    toast.warning("Please log in to view your application status.");
+    apiError.value = true; // Optionally set an error state
+  }
+
+});
 </script>

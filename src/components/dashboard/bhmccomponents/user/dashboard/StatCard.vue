@@ -1,4 +1,4 @@
-// components/dashboard/StatCard.vue
+
 <template>
   <div class="bg-white p-6 rounded-lg shadow-md">
     <div class="flex items-center justify-between mb-4">

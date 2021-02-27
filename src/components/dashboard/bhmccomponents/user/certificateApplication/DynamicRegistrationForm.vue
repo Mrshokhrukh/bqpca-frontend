@@ -1,7 +1,59 @@
 <template>
   <div class="max-w-6xl mx-auto px-4 py-8">
-    <!-- Payment Modal -->
-    <PaymentModal ref="paymentModal" @payment-completed="onPaymentCompleted" @close="onPaymentModalClose" />
+    <!-- Confirmation Modal -->
+    <TransitionRoot as="template" :show="isConfirmationModalOpen">
+      <Dialog as="div" class="relative z-10" @close="isConfirmationModalOpen = false">
+        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+          leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <TransitionChild as="template" enter="ease-out duration-300"
+              enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
+              leave-from="opacity-100 translate-y-0 sm:scale-100"
+              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+              <DialogPanel
+                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                <div>
+                  <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <div class="mt-3 text-center sm:mt-5">
+                    <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">
+                      Confirm Submission
+                    </DialogTitle>
+                    <div class="mt-2">
+                      <p class="text-sm text-gray-500">
+                        Are you sure you want to submit the application? Please review all information before
+                        proceeding.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                  <button type="button"
+                    class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
+                    @click="handleSubmitActual">
+                    Confirm
+                  </button>
+                  <button type="button"
+                    class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                    @click="isConfirmationModalOpen = false">
+                    Cancel
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
 
     <!-- Form Header -->
     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
@@ -193,7 +245,7 @@
         </div>
       </div>
     </form>
-    <form @submit.prevent="handleSubmit" class="bg-white border rounded-xl shadow-sm p-6" v-else-if="stage === 2">
+    <form  class="bg-white border rounded-xl shadow-sm p-6" v-else-if="stage === 2">
       <!-- add header as step 2 -->
       <h3 class="text-lg font-semibold text-gray-900 my-4">Step 2: Medical Institution Registration</h3>
       <!-- Qualification Details Section -->
@@ -325,7 +377,7 @@
           class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
           Back to Previous Step
         </button>
-        <button type="button" @click="handleSubmit"
+        <button type="button" @click="openConfirmationModal"
           class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           Submit Registration
         </button>
@@ -334,20 +386,21 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, reactive, watch, computed, onMounted } from 'vue';
 import apiService from '@/services/services';
 import { useToast } from 'vue-toastification';
-import PaymentModal from '@/components/common/PaymentModal.vue';
+// import PaymentModal from '@/components/common/PaymentModal.vue';  Removed PaymentModal
 import { useAuthStore } from '@/stores/authStore';
+import { useRouter } from 'vue-router'; // Import useRouter
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 
-// import { useRouter } from 'vue-router';
-// import SuccessModal from './SuccessModal.vue';
 
 const authStore = useAuthStore();
 const userId = authStore.userId;
 const user = authStore.user;
+const router = useRouter(); // Use useRouter
+
 
 const props = defineProps({
   selectedType: {
@@ -470,7 +523,7 @@ const localFormData = reactive({
   documents: [],
   remarks: '',
   declaration: 'False',
-  is_payment_complete: 'False',
+  payment_status: 'False',
   payment_id: null,
   registration_date: null,
   expiry_date: null,
@@ -479,11 +532,13 @@ const localFormData = reactive({
   institute: '',
   year_of_completion: null,
   is_active: 'False',
-  application: null
+  application: null,
+  registration_type: '1',
 });
 
 const errors = reactive({});
-const paymentModal = ref(null);
+// const paymentModal = ref(null); // Removed paymentModal reference
+const isConfirmationModalOpen = ref(false); // Added confirmation modal
 const isSubmitting = ref(false);
 const toast = useToast();
 const isLoadingDCRC = ref(false);
@@ -596,6 +651,11 @@ const validateForm = () => {
     isValid = false;
   }
 
+    if (!localFormData.declaration) {
+        toast.error("Please accept the declaration.");
+        return false
+    }
+
   return isValid;
 };
 
@@ -672,19 +732,19 @@ const handlePassportPhotoSelect = (event) => {
   }
 };
 
-const openPaymentModal = () => {
-  paymentModal.value.openModal();
-};
+// const openPaymentModal = () => { // Removed openPaymentModal
+//   paymentModal.value.openModal();
+// };
 
-const onPaymentModalClose = () => {
-  console.log('Payment modal closed');
-};
+// const onPaymentModalClose = () => { // Removed onPaymentModalClose
+//   console.log('Payment modal closed');
+// };
 
-const onPaymentCompleted = (paymentData) => {
-  localFormData.is_payment_complete = false;
-  localFormData.payment_id = paymentData.paymentHash;
-  handleSubmitActual();
-};
+// const onPaymentCompleted = (paymentData) => { // Removed onPaymentCompleted
+//   localFormData.payment_status = false;
+//   localFormData.payment_id = paymentData.paymentHash;
+//   handleSubmitActual();
+// };
 
 const formatDateForAPI = (date) => {
   const year = date.getFullYear();
@@ -704,7 +764,7 @@ const handleNext = async () => {
       formDataStageOne.village = formDataStageOne.city;
       formDataStageOne.gewog = formDataStageOne.state;
       formDataStageOne.dzongkhag = formDataStageOne.country;
-      formDataStageOne.registration_type = 'registration';
+      formDataStageOne.registration_type = '1';
 
       delete formDataStageOne.city;
       delete formDataStageOne.state;
@@ -715,7 +775,7 @@ const handleNext = async () => {
     delete formDataStageOne.documents;
     delete formDataStageOne.remarks;
     delete formDataStageOne.declaration;
-    delete formDataStageOne.is_payment_complete;
+    delete formDataStageOne.payment_status;
     delete formDataStageOne.payment_id;
     delete formDataStageOne.qualification_type;
     delete formDataStageOne.qualification_name;
@@ -759,19 +819,21 @@ const handleNext = async () => {
       stage.value = 2;
     } catch (error) {
       console.error('Error submitting personal information:', error);
-      toast.error(`Failed to save personal information: ${error.message}`);
+      toast.error(`Failed to save personal information: ${error.response.data.cid_no}`);
     }
   }
 };
 
-const handleSubmit = async () => {
-  if (validateForm()) {
-    openPaymentModal();
-  }
+const openConfirmationModal = () => { // Added confirmation modal function
+    if(validateForm()){
+        isConfirmationModalOpen.value = true;
+    }
 };
 
-const handleSubmitActual = async () => {
+const handleSubmitActual = async () => { // Modified to submit and redirect
+  isConfirmationModalOpen.value = false; // Close modal on submit
   isSubmitting.value = true;
+
   try {
     // Create the FormData object
     const formData = new FormData();
@@ -782,7 +844,7 @@ const handleSubmitActual = async () => {
     formData.append('remarks', localFormData.remarks);
     formData.append('registration_date', formatDateForAPI(new Date()));
     formData.append('expiry_date', formatDateForAPI(new Date(new Date().setFullYear(new Date().getFullYear() + 5))));
-    formData.append('is_payment_complete', 'False');
+    formData.append('payment_status', 'pending');
     formData.append('payment_id', '');
     formData.append('is_active', 'False');
     formData.append('application', localFormData.application);
@@ -790,6 +852,8 @@ const handleSubmitActual = async () => {
     formData.append('qualification_type', localFormData.qualification_type);
     formData.append('institute_university', localFormData.institute);
     formData.append('is_primary_qualification', 'True');
+    formData.append('registration_type', 1);
+
 
     // Handle file attachments
     localFormData.documents.forEach((doc, index) => {
@@ -805,8 +869,9 @@ const handleSubmitActual = async () => {
     await apiService.createBhmcNewQualification(formData);
 
     toast.success('Application submitted successfully!');
-    // showSuccessModal.value = true;
-    emit('submit', formData);
+    // Redirect to the dashboard after successful submission
+    router.push('/admin/user/health_certification/dashboard');
+
   } catch (error) {
     console.error('Error submitting application:', error);
     toast.error(`Application submission failed: ${error.message}`);
@@ -814,6 +879,12 @@ const handleSubmitActual = async () => {
     isSubmitting.value = false;
   }
 };
+
+// const handleSubmit = async () => { // Replaced by openConfirmationModal
+//   if (validateForm()) {
+//     openPaymentModal();
+//   }
+// };
 </script>
 
 <style scoped>
