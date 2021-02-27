@@ -300,7 +300,8 @@ const serviceSpecificMenuItems = {
 
           const items = []
 
-          if (certificationSubMenus.applyForCertification) {
+          // Only add "Apply for Certification" if "My Applications" is not visible
+          if (certificationSubMenus.applyForCertification && !certificationSubMenus.myApplications) {
             items.push({
               name: 'Apply for Certification',
               route: (serviceType) => `/admin/user/${serviceType}/registration`,

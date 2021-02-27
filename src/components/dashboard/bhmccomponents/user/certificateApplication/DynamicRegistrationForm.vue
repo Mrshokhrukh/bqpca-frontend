@@ -211,8 +211,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
-                errors.qualification_type
-              }}</span>
+      errors.qualification_type
+    }}</span>
             </div>
 
             <div class="col-span-1">
@@ -225,8 +225,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
-                errors.qualification_name
-              }}</span>
+      errors.qualification_name
+    }}</span>
             </div>
 
             <div class="col-span-1">
@@ -247,8 +247,8 @@
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
                 placeholder="YYYY" />
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
-                errors.year_of_completion
-              }}</span>
+      errors.year_of_completion
+    }}</span>
             </div>
           </div>
         </div>
@@ -783,12 +783,13 @@ const handleSubmitActual = async () => {
     formData.append('registration_date', formatDateForAPI(new Date()));
     formData.append('expiry_date', formatDateForAPI(new Date(new Date().setFullYear(new Date().getFullYear() + 5))));
     formData.append('is_payment_complete', 'False');
-    formData.append('payment_id', localFormData.payment_id);
+    formData.append('payment_id', '');
     formData.append('is_active', 'False');
     formData.append('application', localFormData.application);
     formData.append('qualification_name', localFormData.qualification_name);
     formData.append('qualification_type', localFormData.qualification_type);
     formData.append('institute_university', localFormData.institute);
+    formData.append('is_primary_qualification', 'True');
 
     // Handle file attachments
     localFormData.documents.forEach((doc, index) => {
