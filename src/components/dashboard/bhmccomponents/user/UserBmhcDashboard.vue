@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import { storeToRefs } from 'pinia';
 import { useDashboardStore } from '@/stores/mhpcUserDahboardStore';
@@ -63,7 +63,7 @@ const {
   selectedApplications,
   modalTitle,
   isLoading,
-  selectedApplication, // Get the selected application from the store
+  selectedApplication, 
   showCertificateModal
 } = storeToRefs(dashboardStore);
 
@@ -103,7 +103,7 @@ const visitApplication = (app) => {
 
 const openCertificateModal = async () => {
   try {
-     // The store action now handles setting the selected application
+    // The store action now handles setting the selected application
     dashboardStore.setShowCertificateModal(true);
   } catch (error) {
     console.error('Error fetching certificate data:', error);
@@ -115,4 +115,22 @@ const closeCertificateModal = () => {
 };
 
 onMounted(fetchDashboardData);
+
+// Watch for changes in applications array to determine enablement of DPR
+watch(applications, (newApplications) => {
+  // Check for approved EOI applications
+  const approvedEoi = newApplications.find(app => app.type === 'EOI' && app.status === 'Approved');
+
+  if (approvedEoi) {
+    // Enable DPR - logic depends on how this is reflected in your UI
+    console.log('DPR is enabled for application:', approvedEoi.id);
+    // Implement whatever logic enables the DPR form, e.g., set a reactive variable
+    // that controls the visibility of the DPR button/form.
+  } else {
+    // Disable DPR
+    console.log('DPR is disabled');
+    // Disable the DPR form, e.g., set the reactive variable to false.
+  }
+}, { deep: true });
+
 </script>

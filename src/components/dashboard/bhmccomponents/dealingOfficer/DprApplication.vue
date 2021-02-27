@@ -1,4 +1,3 @@
-<!-- ApplicationLists.vue -->
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <!-- Page Header -->
@@ -60,14 +59,14 @@
                 #{{ application.id }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {{ application.applicantName }}
+                {{ application.full_name }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ formatDate(application.dateSubmitted) }}
+                {{ formatDate(application.commencement_date) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(application)">
-                  {{ application.status }}
+                  {{ application.review_decision }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -84,36 +83,56 @@
       </div>
     </div>
 
-    <ApplicationModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeApplication"
-      @save="saveApplication" @approve="approveApplication" @reject="rejectApplication" />
-
-    <ConfirmationModal :isOpen="isConfirmationOpen" :actionType="confirmationAction"
-      :application="confirmationApplication" @close="closeConfirmation" @confirm="processAction" />
+    <!-- Modal -->
+    <DprModal
+      v-if="isModalOpen"
+      :isOpen="isModalOpen"
+      :application="selectedApplication"
+      @close="closeApplication"
+      @save="saveApplication"
+      @approve="onApplicationApproved"
+      @reject="onApplicationRejected"
+      :key="selectedApplication ? selectedApplication.id : 'no-application'"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import ApplicationModal from './DprModal.vue';
-import ConfirmationModal from './DprConfirmationModal.vue';
+import { ref, computed, onMounted } from 'vue';
+import DprModal from './DprModal.vue';
+import apiService from '@/services/services'; // Import your API service
 
-const applications = ref([
-  { id: 1, applicantName: 'John Doe', dateSubmitted: '2023-10-26', status: 'Pending', details: 'Some long description', proposedName: 'Test University', landArea: 1000, visionMission: 'test', projectScheduling: 'Test', grossNationalHappiness: 'Test', conceptualMasterPlan: 'Test', academicPlan: 'Test', affiliationDetails: 'Test', teachingHospitalDetails: 'Test', researchPolicyDetails: 'Test', humanResourcesDetails: 'Test', qualityAssuranceSystemDetails: 'Test', governanceStructureDetails: 'Test', businessPlanDetails: 'Test', projectCostAnalysisDetails: 'Test', facilitiesStudentServicesDetails: 'Test', admissionPolicyScholarshipsDetails: 'Test', serviceConditionsDetails: 'Test', safetySecurityDetails: 'Test', publicInformationSystemDetails: 'Test', otherDetails: 'Test' },
-  { id: 2, applicantName: 'Jane Smith', dateSubmitted: '2023-10-25', status: 'Approved', details: 'Another long description', proposedName: 'Test University', landArea: 1000, visionMission: 'test', projectScheduling: 'Test', grossNationalHappiness: 'Test', conceptualMasterPlan: 'Test', academicPlan: 'Test', affiliationDetails: 'Test', teachingHospitalDetails: 'Test', researchPolicyDetails: 'Test', humanResourcesDetails: 'Test', qualityAssuranceSystemDetails: 'Test', governanceStructureDetails: 'Test', businessPlanDetails: 'Test', projectCostAnalysisDetails: 'Test', facilitiesStudentServicesDetails: 'Test', admissionPolicyScholarshipsDetails: 'Test', serviceConditionsDetails: 'Test', safetySecurityDetails: 'Test', publicInformationSystemDetails: 'Test', otherDetails: 'Test' },
-  { id: 3, applicantName: 'Peter Jones', dateSubmitted: '2023-10-24', status: 'Rejected', details: 'Yet another long description', proposedName: 'Test University', landArea: 1000, visionMission: 'test', projectScheduling: 'Test', grossNationalHappiness: 'Test', conceptualMasterPlan: 'Test', academicPlan: 'Test', affiliationDetails: 'Test', teachingHospitalDetails: 'Test', researchPolicyDetails: 'Test', humanResourcesDetails: 'Test', qualityAssuranceSystemDetails: 'Test', governanceStructureDetails: 'Test', businessPlanDetails: 'Test', projectCostAnalysisDetails: 'Test', facilitiesStudentServicesDetails: 'Test', admissionPolicyScholarshipsDetails: 'Test', serviceConditionsDetails: 'Test', safetySecurityDetails: 'Test', publicInformationSystemDetails: 'Test', otherDetails: 'Test' },
-  { id: 4, applicantName: 'Ali Khan', dateSubmitted: '2023-10-23', status: 'Pending', details: 'Another long description', proposedName: 'Test University', landArea: 1000, visionMission: 'test', projectScheduling: 'Test', grossNationalHappiness: 'Test', conceptualMasterPlan: 'Test', academicPlan: 'Test', affiliationDetails: 'Test', teachingHospitalDetails: 'Test', researchPolicyDetails: 'Test', humanResourcesDetails: 'Test', qualityAssuranceSystemDetails: 'Test', governanceStructureDetails: 'Test', businessPlanDetails: 'Test', projectCostAnalysisDetails: 'Test', facilitiesStudentServicesDetails: 'Test', admissionPolicyScholarshipsDetails: 'Test', serviceConditionsDetails: 'Test', safetySecurityDetails: 'Test', publicInformationSystemDetails: 'Test', otherDetails: 'Test' },
-]);
-
+const applications = ref([]); // Initialize as an empty array
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
-const isConfirmationOpen = ref(false);
-const confirmationAction = ref('');
-const confirmationApplication = ref(null);
 const searchQuery = ref('');
+const loading = ref(false);
+const error = ref(null);
+
+onMounted(async () => {
+  await fetchApplications();
+});
+
+const fetchApplications = async () => {
+  loading.value = true;
+  error.value = null;
+  try {
+    const response = await apiService.getBmhcInstitutes(); // Use apiService
+    applications.value = response.data.results;
+    console.log(applications.value)
+  } catch (err) {
+    error.value = err;
+    console.error("Error fetching applications:", err);
+  } finally {
+    loading.value = false;
+  }
+};
 
 const openApplication = (application) => {
-  selectedApplication.value = { ...application };
+  console.log('Opening application:', application);
+  selectedApplication.value = application;  // Direct Assignment
   isModalOpen.value = true;
+  console.log("isModalOpen:", isModalOpen.value); // ADD THIS LOG
 };
 
 const closeApplication = () => {
@@ -121,41 +140,38 @@ const closeApplication = () => {
   selectedApplication.value = null;
 };
 
-const saveApplication = (applicationId, updatedApplication) => {
+const saveApplication = async (applicationId, updatedApplication) => {
   console.log("Saving application", applicationId, "with updates:", updatedApplication);
-  const application = applications.value.find(app => app.id === applicationId);
-  if (application) {
-    Object.assign(application, updatedApplication);
+  try {
+    await apiService.patchBmhcInstitute(applicationId, updatedApplication); // Use apiService
+    // Optionally, refresh the application list after saving
+    await fetchApplications();
     closeApplication();
+  } catch (error) {
+    console.error("Error updating application:", error);
+    // Handle the error appropriately (e.g., show an error message to the user)
+    error.value = error;
   }
 };
 
-const openConfirmation = (action, application) => {
-  confirmationAction.value = action;
-  confirmationApplication.value = application;
-  isConfirmationOpen.value = true;
-};
-
-const closeConfirmation = () => {
-  isConfirmationOpen.value = false;
-  confirmationAction.value = '';
-  confirmationApplication.value = null;
-};
-
-const processAction = (applicationId, message, actionType) => {
-  console.log(`Performing ${actionType} on application ${applicationId} with message: ${message}`);
-  const applicationIndex = applications.value.findIndex(app => app.id === applicationId);
-
-  if (applicationIndex !== -1) {
-    applications.value[applicationIndex] = {
-      ...applications.value[applicationIndex],
-      status: actionType === 'approve' ? 'Approved' : 'Rejected'
-    };
-    closeConfirmation();
-    closeApplication(); // Close the main application modal after approval/rejection
-  } else {
-    console.error(`Application with ID ${applicationId} not found.`);
+const onApplicationApproved = (approvedApplication) => {
+  // Handle the approved application here (e.g., update the status in the list)
+  const index = applications.value.findIndex(app => app.id === approvedApplication.id);
+  if (index !== -1) {
+    applications.value[index] = { ...approvedApplication };
   }
+  fetchApplications()
+  closeApplication()
+};
+
+const onApplicationRejected = (rejectedApplication) => {
+  // Handle the rejected application here (e.g., update the status in the list)
+  const index = applications.value.findIndex(app => app.id === rejectedApplication.id);
+  if (index !== -1) {
+    applications.value[index] = { ...rejectedApplication };
+  }
+  fetchApplications()
+  closeApplication()
 };
 
 const formatDate = (dateString) => {
@@ -170,7 +186,7 @@ const formatDate = (dateString) => {
 const filteredApplications = computed(() => {
   const query = searchQuery.value.toLowerCase();
   return applications.value.filter(application => {
-    return String(application.id).includes(query) || application.applicantName.toLowerCase().includes(query);
+    return String(application.id).includes(query) || application.full_name.toLowerCase().includes(query); // Use backend field names
   });
 });
 
@@ -178,22 +194,14 @@ const getStatusClasses = (application) => {
   return [
     'px-3 py-1 rounded-full text-xs font-medium',
     {
-      'bg-yellow-100 text-yellow-800': application.status === 'Pending',
-      'bg-green-100 text-green-800': application.status === 'Approved',
-      'bg-red-100 text-red-800': application.status === 'Rejected'
+      'bg-yellow-100 text-yellow-800': application.review_decision === 'Pending',
+      'bg-green-100 text-green-800': application.review_decision === 'Approved',
+      'bg-red-100 text-red-800': application.review_decision === 'Rejected'
     }
   ];
 };
 
 const pendingCount = computed(() => {
-  return filteredApplications.value.filter(app => app.status === 'Pending').length;
+  return filteredApplications.value.filter(app => app.review_decision === 'Pending').length;
 });
-
-const approveApplication = (application) => {
-  openConfirmation('approve', application);
-};
-
-const rejectApplication = (application) => {
-  openConfirmation('reject', application);
-};
 </script>

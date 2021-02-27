@@ -8,7 +8,9 @@
       <div>
         <button
           class="inline-flex items-center px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-          @click="handleApplicationSubmitted" :disabled="loading">
+          @click="fetchInstitutes"
+          :disabled="loading"
+        >
           <RefreshCw class="w-4 h-4 mr-2" :class="{ 'animate-spin': loading }" />
           {{ loading ? 'Refreshing...' : 'Refresh Application List' }}
         </button>
@@ -18,12 +20,26 @@
     <!-- Search Input -->
     <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mb-8">
       <div class="relative">
-        <input v-model="searchQuery" type="text" placeholder="Search by App ID or Institute Name..."
-          class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
-          fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search by App ID or Institute Name..."
+          class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          @input="debouncedSearch"
+        />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
         </svg>
       </div>
     </div>
@@ -61,37 +77,43 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="eoi in filteredEois" :key="eoi.applicationId" class="hover:bg-gray-50 transition-colors">
+            <tr
+              v-for="institute in filteredEois"
+              :key="institute.id"
+              class="hover:bg-gray-50 transition-colors"
+            >
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {{ eoi.applicationId }}
+                {{ institute.CID }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {{ eoi.instituteName }}
+                {{ institute.full_name }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {{ eoi.programType }}
+                {{ institute.type_of_programme }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ formatDate(eoi.dateSubmitted) }}
+                {{ formatDate(institute.commencement_date) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="getStatusClasses(eoi)">
-                  {{ eoi.status }}
-                  <span v-if="eoi.status === 'Rejected' && eoi.rejectionReason">
-                    (Reason: {{ eoi.rejectionReason }})
+                <span :class="getStatusClasses(institute)">
+                  {{ institute.review_decision }}
+                  <span v-if="institute.review_decision === 'Rejected' && institute.reason_if_rejected">
+                    (Reason: {{ institute.reason_if_rejected }})
                   </span>
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
-                  <button @click="openModal(eoi)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
+                  <button
+                    @click="openModal(institute)"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+                  >
                     View
                   </button>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                <span v-if="eoi.approvalNotes">{{ eoi.approvalNotes }}</span>
+                <span v-if="institute.approvalNotes">{{ institute.approvalNotes }}</span>
               </td>
             </tr>
           </tbody>
@@ -99,9 +121,14 @@
       </div>
     </div>
 
-    <!-- EOI Application Modal -->
-    <EoiApplicationModal :isOpen="isModalOpen" :application="selectedEoi" @close="closeModal" @approve="approveEoi"
-      @reject="rejectEoi" />
+    <!-- EOI Application Modal with approval and rejection handlers -->
+    <EoiApplicationsModal
+      :isOpen="isModalOpen"
+      :application="selectedInstitute"
+      @close="closeModal"
+      @application-updated="handleApplicationUpdated"
+      :key="selectedInstitute ? selectedInstitute.id : 'no-institute'"
+    />
   </div>
 </template>
 
@@ -109,136 +136,69 @@
 import { ref, onMounted, computed } from 'vue';
 import { RefreshCw } from 'lucide-vue-next';
 import { useToast } from 'vue-toastification';
-import EoiApplicationModal from './EoiApplicationsModal.vue'
+import EoiApplicationsModal from './EoiApplicationsModal.vue';
+import { debounce } from 'lodash';
+import apiService from '@/services/services'; // Adjust the import path as needed
 
 const toast = useToast();
 
-const eois = ref([]);
+const institutes = ref([]);
 const isModalOpen = ref(false);
-const selectedEoi = ref(null);
+const selectedInstitute = ref(null);
 const loading = ref(false);
 const searchQuery = ref('');
 
-onMounted(async () => {
-  // Fetch EOIs from API here (replace with your actual API call)
-  // Example data (same as before, for demonstration)
-  eois.value = [
-    {
-      applicationId: 'AP100',
-      instituteName: 'Test Institute',
-      instituteAddress: 'Some Address',
-      correspondenceAddress: 'Corr Address',
-      location: 'Some Location',
-      phoneOffice: '123-456-7890',
-      mobile: '987-654-3210',
-      fax: 'N/A',
-      email: 'test@example.com',
-      webpage: 'www.example.com',
-      courseTitle: 'Medical Course',
-      duration: '4 years',
-      proposedDate: '2024-12-01',
-      programType: 'Bachelor',
-      dateSubmitted: '10/10/2024',
-      status: 'Submitted',
-    },
-    {
-      applicationId: 'AP101',
-      instituteName: 'Test Institute 2',
-      instituteAddress: 'Another Address',
-      correspondenceAddress: 'Another Corr Address',
-      location: 'Another Location',
-      phoneOffice: '111-222-3333',
-      mobile: '444-555-6666',
-      fax: 'N/A',
-      email: 'test2@example.com',
-      webpage: 'www.example2.com',
-      courseTitle: 'Nursing Program',
-      duration: '3 years',
-      proposedDate: '2025-01-15',
-      programType: 'Diploma',
-      dateSubmitted: '10/10/2024',
-      status: 'Approved',
-    },
-  ];
-});
-
-const openModal = (eoi) => {
-  selectedEoi.value = { ...eoi }; // Create a copy to avoid direct mutation
-  isModalOpen.value = true;
-};
-
-const closeModal = () => {
-  isModalOpen.value = false;
-  selectedEoi.value = null; // Clear the selected EOI after closing.  Important!
-};
-
-const approveEoi = (eoi) => {
-  const index = eois.value.findIndex((e) => e.applicationId === eoi.applicationId);
-  if (index !== -1) {
-    const notes = prompt('Enter approval notes:');
-    if (notes !== null) {
-      // Use spread operator to create a new object and update the array reactively
-      eois.value = [
-        ...eois.value.slice(0, index),
-        { ...eois.value[index], status: 'Approved', approvalNotes: notes },
-        ...eois.value.slice(index + 1),
-      ];
-      closeModal();
-      toast.success("Application approved successfully!"); //added toast messages
-    } else {
-      toast.error("Approval notes are required.");
-    }
-  }
-};
-
-const rejectEoi = (eoi) => {
-  const index = eois.value.findIndex((e) => e.applicationId === eoi.applicationId);
-  if (index !== -1) {
-    const reason = prompt('Enter rejection reason:');
-    if (reason !== null) {
-      // Use spread operator to create a new object and update the array reactively
-      eois.value = [
-        ...eois.value.slice(0, index),
-        { ...eois.value[index], status: 'Rejected', rejectionReason: reason },
-        ...eois.value.slice(index + 1),
-      ];
-      closeModal();
-      toast.success("Application rejected."); //added toast messages
-    } else {
-      toast.error("Rejection reason is required.");
-    }
-  }
-};
-
-const handleApplicationSubmitted = async () => {
-  if (loading.value) return;
-
+const fetchInstitutes = async () => {
   loading.value = true;
-  toast.info('Refreshing application list', {
-    timeout: 2000,
-  });
-  // Simulate an API call (replace with your actual API call)
   try {
-    //  const response = await fetch('/api/eois');
-    //  eois.value = await response.json();
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate delay
-    toast.success('Application List refreshed', {
-      timeout: 2000,
-    });
+    const response = await apiService.getBmhcInstitutes();
+    if (response && response.data && response.data.results) {
+      institutes.value = response.data.results; // Extract the "results" array
+    } else {
+      console.error('Invalid API response:', response);
+      toast.error('Failed to fetch institute applications: Invalid API response.');
+    }
   } catch (error) {
-    toast.error('Failed to refresh application list'); //added error handling
-    console.error('Error refreshing applications:', error);
+    console.error('Error fetching institutes:', error);
+    toast.error('Failed to fetch institute applications.');
   } finally {
     loading.value = false;
   }
 };
 
+onMounted(fetchInstitutes);
+
+const debouncedSearch = debounce(fetchInstitutes, 300);
+
+const openModal = (institute) => {
+  selectedInstitute.value = { ...institute };
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+  selectedInstitute.value = null;
+};
+
+const handleApplicationUpdated = (updatedApplication) => {
+  // Update the institutes array with the new application data
+  institutes.value = institutes.value.map((institute) => {
+    if (institute.id === updatedApplication.id) {
+      return updatedApplication; // Replace with updated data
+    }
+    return institute;
+  });
+
+  // Optionally, re-fetch the institutes to ensure data is up-to-date
+  // fetchInstitutes();
+};
+
 const filteredEois = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  return eois.value.filter((eoi) => {
+  return institutes.value.filter((institute) => {
     return (
-      String(eoi.applicationId).toLowerCase().includes(query) ||
-      eoi.instituteName.toLowerCase().includes(query)
+      String(institute.CID).toLowerCase().includes(query) ||
+      institute.full_name.toLowerCase().includes(query)
     );
   });
 });
@@ -256,18 +216,18 @@ const formatDate = (date) => {
   }
 };
 
-const getStatusClasses = (eoi) => {
+const getStatusClasses = (institute) => {
   return [
     'px-3 py-1 rounded-full text-xs font-medium',
     {
-      'bg-yellow-100 text-yellow-800': eoi.status === 'Submitted',
-      'bg-green-100 text-green-800': eoi.status === 'Approved',
-      'bg-red-100 text-red-800': eoi.status === 'Rejected',
+      'bg-yellow-100 text-yellow-800': institute.review_decision === 'Pending',
+      'bg-green-100 text-green-800': institute.review_decision === 'Approved',
+      'bg-red-100 text-red-800': institute.review_decision === 'Rejected',
     },
   ];
 };
 </script>
 
 <style scoped>
-/* Tailwind styles - no need for custom styles, Tailwind classes are used */
+/* Tailwind styles - no need for custom styles here, Tailwind classes are used */
 </style>
