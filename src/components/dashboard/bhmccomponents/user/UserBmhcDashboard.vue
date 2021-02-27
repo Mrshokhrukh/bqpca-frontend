@@ -52,8 +52,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue';
-import { onMounted, watch } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import { storeToRefs } from 'pinia';
 import { useDashboardStore } from '@/stores/mhpcUserDahboardStore';
