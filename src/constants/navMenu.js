@@ -676,6 +676,11 @@ const serviceSpecificMenuItems = {
   engineering_certification: {
     user: [
       {
+        name: 'dashboard',
+        icon: getIconComponent('Wrench'),
+        route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
+      },
+      {
         name: 'Engineering Certification',
         icon: getIconComponent('Wrench'),
         route: (serviceType) => `/admin/user/${serviceType}/my_applications`,

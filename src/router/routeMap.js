@@ -123,10 +123,10 @@ export default {
     },
     engineering_certification: {
       dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
-      // my_applications: () => import('@/views/admin/Engineering/MyApplications.vue'),
-      // new_application: () => import('@/views/admin/Engineering/NewApplication.vue'),
-      // application_status: () => import('@/views/admin/Engineering/ApplicationStatus.vue'),
-      // profile: () => import('@/views/admin/Engineering/Profile.vue'),
+      my_applications: () => import('@/views/admin/Engineering/Dashboard.vue'),
+      new_application: () => import('@/views/admin/Engineering/Dashboard.vue'),
+      application_status: () => import('@/views/admin/Engineering/Dashboard.vue'),
+      profile: () => import('@/views/admin/Engineering/Dashboard.vue'),
       // ... other Engineering routes for a regular user
     },
     health_certification: {
