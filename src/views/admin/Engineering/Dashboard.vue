@@ -73,7 +73,12 @@ import CoGSComponet from '@/components/dashboard/engineeringcomponents/user/CoGS
 import PractitionerCertification from '@/components/dashboard/engineeringcomponents/user/pracitioner_reg_and_cert/PractitionerCertification.vue';
 import PractitionerRegistration from '@/components/dashboard/engineeringcomponents/user/pracitioner_reg_and_cert/PractitionerRegistration.vue';
 import PractitionerRenewal from '@/components/dashboard/engineeringcomponents/user/pracitioner_reg_and_cert/PractitionerRenewal.vue';
-
+import ReRegistrationComponent from '@/components/dashboard/engineeringcomponents/user/pracitioner_reg_and_cert/ReRegistrationComponent.vue';
+import AdditionalQualificationComponent from '@/components/dashboard/engineeringcomponents/user/pracitioner_reg_and_cert/AdditionalQualificationComponent.vue';
+import PaymentComponent from '@/components/dashboard/engineeringcomponents/user/PaymentComponent.vue';
+import PaymentHistoryComponent from '@/components/dashboard/engineeringcomponents/user/PaymentHistoryComponent.vue';
+import ReportsComponent from '@/components/dashboard/engineeringcomponents/user/ReportsComponent.vue';
+import UserProfileComponent from '@/components/dashboard/engineeringcomponents/user/UserProfileComponent.vue';
 
 // Dealing Officer Components
 import ApplicationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/ApplicationLists.vue';
@@ -109,20 +114,48 @@ const engineeringAdminComponent = computed(() => {
 const engineeringUserComponent = computed(() => {
   const path = route.path;
   switch (true) {
+    // Dashboard
     case path.endsWith('/engineering_certification/dashboard'):
       return EngineeringUserDashboard;
+
+    // Profile Management
+    case path.endsWith('/engineering_certification/profile'):
+      return UserProfileComponent; // You'll need to import this component
+
+    // Registration Services
+    case path.endsWith('/engineering_certification/registration'):
+      return PractitionerRegistration;
+    case path.endsWith('/engineering_certification/renewal'):
+      return PractitionerRenewal;
+    case path.endsWith('/engineering_certification/re_registration'):
+      return ReRegistrationComponent;
+    case path.endsWith('/engineering_certification/additional_qualification'):
+      return AdditionalQualificationComponent; // You'll need to create and import this component
+    case path.endsWith('/engineering_certification/CoGS'):
+      return CoGSComponet;
+
+    // CPD Management
+    case path.endsWith('/engineering_certification/cpd'):
+      return CPDcomponent;
+
+    // Payment
+    case path.endsWith('/engineering_certification/payment'):
+      return PaymentComponent; // You'll need to create and import this component
+    case path.endsWith('/engineering_certification/payment_history'):
+      return PaymentHistoryComponent; // You'll need to create and import this component
+
+    // Reports
+    case path.endsWith('/engineering_certification/reports'):
+      return ReportsComponent; // You'll need to create and import this component
+
+    // Keep backward compatibility with existing routes
     case path.endsWith('/engineering_certification/practitioner_reg_and_cert/registration'):
       return PractitionerRegistration;
     case path.endsWith('/engineering_certification/practitioner_reg_and_cert/certificate'):
       return PractitionerCertification;
     case path.endsWith('/engineering_certification/practitioner_reg_and_cert/renewal'):
       return PractitionerRenewal;
-    case path.endsWith('/engineering_certification/cpd'):
-      return CPDcomponent;
-    case path.endsWith('/engineering_certification/CoGS'):
-      return CoGSComponet;
-    case path.endsWith('/engineering_certification/profile'):
-      return CoGSComponet;
+
     default:
       return null;
   }
