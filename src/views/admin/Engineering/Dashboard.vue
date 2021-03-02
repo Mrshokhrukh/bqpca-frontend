@@ -55,7 +55,7 @@ import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 // import StatsGrid from '@/components/dashboard/roqcomponents/user/StatsGrid.vue';
-import ApplicationTable from '@/components/dashboard/roqcomponents/user/ApplicationsTable.vue';
+// import ApplicationTable from '@/components/dashboard/roqcomponents/user/ApplicationsTable.vue';
 
 // Engineering Component Imports
 import EngineeringAdminDashboard from '@/components/dashboard/engineeringcomponents/admin/EngineeringAdminDashboard.vue';
@@ -81,10 +81,10 @@ import CpdManagement from '@/components/dashboard/engineeringcomponents/dealingO
 import InstituteManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/InstituteManagement.vue';
 import ProfessionalProfiles from '@/components/dashboard/engineeringcomponents/dealingOfficer/ProfessionalProfiles.vue';
 import CogsManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CogsManagement.vue';
-import Capa from '@/components/dashboard/engineeringcomponents/dealingOfficer/Capa.vue';
+import Capa from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringCapa.vue';
 
-import PaymentManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/Payments.vue';
-import Reports from '@/components/dashboard/engineeringcomponents/dealingOfficer/Reports.vue';
+import PaymentManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringPayments.vue';
+import Reports from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringReports.vue';
 
 const { role, user } = useAuthStore();
 const route = useRoute();
@@ -96,9 +96,9 @@ const perPage = ref(10);
 const engineeringAdminComponent = computed(() => {
   const path = route.path;
   switch (true) {
-    case path.endsWith('/engineering/dashboard'):
+    case path.endsWith('/engineering_certification/dashboard'):
       return EngineeringAdminDashboard;
-    case path.endsWith('/engineering/user_management'):
+    case path.endsWith('/engineering_certification/user_management'):
       return EngineeringUserManagement;
     default:
       return null;
@@ -109,19 +109,19 @@ const engineeringAdminComponent = computed(() => {
 const engineeringUserComponent = computed(() => {
   const path = route.path;
   switch (true) {
-    case path.endsWith('/engineering/dashboard'):
+    case path.endsWith('/engineering_certification/dashboard'):
       return EngineeringUserDashboard;
-    case path.endsWith('/engineering/practitioner_reg_and_cert/registration'):
+    case path.endsWith('/engineering_certification/practitioner_reg_and_cert/registration'):
       return PractitionerRegistration;
-    case path.endsWith('/engineering/practitioner_reg_and_cert/certificate'):
+    case path.endsWith('/engineering_certification/practitioner_reg_and_cert/certificate'):
       return PractitionerCertification;
-    case path.endsWith('/engineering/practitioner_reg_and_cert/renewal'):
+    case path.endsWith('/engineering_certification/practitioner_reg_and_cert/renewal'):
       return PractitionerRenewal;
-    case path.endsWith('/engineering/cpd'):
+    case path.endsWith('/engineering_certification/cpd'):
       return CPDcomponent;
-    case path.endsWith('/engineering/CoGS'):
+    case path.endsWith('/engineering_certification/CoGS'):
       return CoGSComponet;
-    case path.endsWith('/engineering/profile'):
+    case path.endsWith('/engineering_certification/profile'):
       return CoGSComponet;
     default:
       return null;
@@ -132,23 +132,23 @@ const engineeringUserComponent = computed(() => {
 const engineeringDealingOfficerComponent = computed(() => {
   const path = route.path;
   switch (true) {
-    case path.endsWith('/engineering/dashboard'):
+    case path.endsWith('/engineering_certification/dashboard'):
       return EngineeringDealingOfficerDashboard;
-    case path.endsWith('/engineering/application_lists'):
+    case path.endsWith('/engineering_certification/application_lists'):
       return ApplicationLists;
-    case path.endsWith('/engineering/cpd_management'):
+    case path.endsWith('/engineering_certification/cpd_management'):
       return CpdManagement;
-    case path.endsWith('/engineering/institutes'):
+    case path.endsWith('/engineering_certification/institutes'):
       return InstituteManagement;
-    case path.endsWith('/engineering/profiles'):
+    case path.endsWith('/engineering_certification/profiles'):
       return ProfessionalProfiles;
-    case path.endsWith('/engineering/cogs'):
+    case path.endsWith('/engineering_certification/cogs'):
       return CogsManagement;
-    case path.endsWith('/engineering/capa'):
+    case path.endsWith('/engineering_certification/capa'):
       return Capa;
-    case path.endsWith('/engineering/payments'):
+    case path.endsWith('/engineering_certification/payments'):
       return PaymentManagement;
-    case path.endsWith('/engineering/reports'):
+    case path.endsWith('/engineering_certification/reports'):
       return Reports;
     default:
       return null;
@@ -159,7 +159,7 @@ const engineeringDealingOfficerComponent = computed(() => {
 const engineeringChiefComponent = computed(() => {
   const path = route.path;
   switch (true) {
-    case path.endsWith('/engineering/dashboard'):
+    case path.endsWith('/engineering_certification/dashboard'):
       return EngineeringChiefDashboard;
     default:
       return null;
@@ -170,7 +170,7 @@ const engineeringChiefComponent = computed(() => {
 const engineeringDirectorComponent = computed(() => {
   const path = route.path;
   switch (true) {
-    case path.endsWith('/engineering/dashboard'):
+    case path.endsWith('/engineering_certification/dashboard'):
       return EngineeringDirectorDashboard;
     default:
       return null;
@@ -181,7 +181,7 @@ const engineeringDirectorComponent = computed(() => {
 const engineeringCpdCmeProviderComponent = computed(() => {
   const path = route.path;
   switch (true) {
-    case path.endsWith('/engineering/dashboard'):
+    case path.endsWith('/engineering_certification/dashboard'):
       return EngineeringCpdCmeProviderDashboard;
     default:
       return null;
@@ -192,7 +192,7 @@ const engineeringCpdCmeProviderComponent = computed(() => {
 const engineeringInstitutionsComponent = computed(() => {
   const path = route.path;
   switch (true) {
-    case path.endsWith('/engineering/dashboard'):
+    case path.endsWith('/engineering_certification/dashboard'):
       return EngineeringInstitutionsDashboard;
     default:
       return null;
@@ -203,7 +203,7 @@ const engineeringInstitutionsComponent = computed(() => {
 const engineeringSuperAdminComponent = computed(() => {
   const path = route.path;
   switch (true) {
-    case path.endsWith('/engineering/dashboard'):
+    case path.endsWith('/engineering_certification/dashboard'):
       return EngineeringSuperAdminDashboard;
     default:
       return null;

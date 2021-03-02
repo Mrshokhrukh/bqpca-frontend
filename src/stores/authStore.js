@@ -68,25 +68,10 @@ export const useAuthStore = defineStore('auth', () => {
         service_type: credentials.service_type,
       });
 
-      // Map backend "engineering" to frontend "engineering_certification" if needed
-      const mappedServiceType = response.data.service_type === 'engineering'
-        ? 'engineering_certification'
-        : response.data.service_type;
-
-      console.log('Original service type:', response.data.service_type);
-      console.log('Mapped service type:', mappedServiceType);
-
       // Update state
       accessToken.value = response.data.access;
       refreshToken.value = response.data.refresh;
-      user.value = {
-        id: response.data.user_id,
-        email: response.data.email,
-        username: response.data.username,
-        full_name: response.data.full_name,
-        service_type: mappedServiceType, // Use the mapped service type here
-        role: response.data.role,
-      };
+      user.value = response.data.user;
 
       // Save to localStorage
       localStorage.setItem('accessToken', response.data.access);
@@ -128,14 +113,9 @@ export const useAuthStore = defineStore('auth', () => {
 
       // Default redirection (if no role-based restrictions)
       toast.success('Login successful!');
+      router.push(`/admin/${user.value.role}/${user.value.service_type}/dashboard`);
 
-      // Log the redirect path for debugging
-      const redirectPath = `/admin/${user.value.role}/${user.value.service_type}/dashboard`;
-      console.log('Redirecting to:', redirectPath);
-
-      router.push(redirectPath);
     } catch (error) {
-      console.error('Login error details:', error);
       toast.error(error.response?.data?.message || 'Login failed. Please try again.');
       throw error;
     }
