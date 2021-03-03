@@ -74,17 +74,24 @@
       <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 mb-6">
         <div class="relative flex-grow">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+              fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd"
+                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                clip-rule="evenodd" />
             </svg>
           </div>
-          <input v-model="searchQuery" type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="Search by name, CID or registration number...">
+          <input v-model="searchQuery" type="text"
+            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            placeholder="Search by name, CID or registration number...">
         </div>
-        <select v-model="statusFilter" class="w-full md:w-64 block pl-3 pr-10 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        <select v-model="statusFilter"
+          class="w-full md:w-64 block pl-3 pr-10 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
           <option value="All">All Statuses</option>
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
           <option value="Rejected">Rejected</option>
+          <option value="Draft">Draft</option>
         </select>
       </div>
 
@@ -95,13 +102,18 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="filteredApplications.length === 0" class="bg-white shadow-sm rounded-lg py-16 text-center border border-gray-200">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      <div v-else-if="filteredApplications.length === 0"
+        class="bg-white shadow-sm rounded-lg py-16 text-center border border-gray-200">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
         <h3 class="mt-2 text-base font-medium text-gray-900">No applications found</h3>
         <p class="mt-1 text-sm text-gray-500">
-          {{ applications.length > 0 ? 'No applications match your current filters.' : 'No CPD applications have been submitted for review.' }}
+          {{ applications.length > 0
+            ? 'No applications match your current filters.'
+            : 'No CPD applications have been submitted for review.' }}
         </p>
       </div>
 
@@ -121,7 +133,8 @@
                   Status</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Date</th>
-                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col"
+                  class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions</th>
               </tr>
             </thead>
@@ -155,26 +168,35 @@
             </tbody>
           </table>
         </div>
-        
+
         <!-- Pagination -->
         <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
           <div class="flex-1 flex justify-between items-center">
             <div>
               <p class="text-sm text-gray-700">
-                Showing <span class="font-medium">{{ paginationStart + 1 }}</span> to <span class="font-medium">{{ paginationEnd }}</span> of <span class="font-medium">{{ filteredApplications.length }}</span> results
+                Showing <span class="font-medium">{{ paginationStart + 1 }}</span> to <span class="font-medium">{{
+                  paginationEnd }}</span> of <span class="font-medium">{{ filteredApplications.length }}</span> results
               </p>
             </div>
             <div class="flex">
-              <button @click="prevPage" :disabled="currentPage === 1" :class="[currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50', 'relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white']">
-                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+              <button @click="prevPage" :disabled="currentPage === 1"
+                :class="[currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50', 'relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white']">
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                  aria-hidden="true">
+                  <path fill-rule="evenodd"
+                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
                 </svg>
                 Previous
               </button>
-              <button @click="nextPage" :disabled="currentPage === totalPages" :class="[currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50', 'ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white']">
+              <button @click="nextPage" :disabled="currentPage === totalPages"
+                :class="[currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50', 'ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white']">
                 Next
-                <svg class="h-5 w-5 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                <svg class="h-5 w-5 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                  aria-hidden="true">
+                  <path fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd" />
                 </svg>
               </button>
             </div>
@@ -190,7 +212,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import CpdViewApplicationsModal from './modals/CpdViewApplicationsModal.vue';
 import apiServices from '@/services/services';
 
@@ -220,25 +242,29 @@ const pendingCount = computed(() => {
 // Filter applications based on search query and status filter
 const filteredApplications = computed(() => {
   let filtered = applications.value;
-  
+
   // Apply status filter if not "All"
   if (statusFilter.value !== 'All') {
     filtered = filtered.filter(app => app.status === statusFilter.value);
   }
-  
+
+  //Exclude draft applications
+  filtered = filtered.filter(app => app.status !== 'Draft');
+
   // Apply search filter if there's a search query
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase().trim();
-    filtered = filtered.filter(app => 
-      app.applicantName.toLowerCase().includes(query) || 
-      app.cidNumber.toString().includes(query) || 
+    filtered = filtered.filter(app =>
+      app.applicantName.toLowerCase().includes(query) ||
+      app.cidNumber.toString().includes(query) ||
       app.title.toLowerCase().includes(query) ||
       (app.registrationNumber && app.registrationNumber.toString().includes(query))
     );
   }
-  
+
   return filtered;
 });
+
 
 // Pagination logic
 const totalPages = computed(() => {
@@ -274,18 +300,10 @@ const resetPagination = () => {
   currentPage.value = 1;
 };
 
-// Watch for changes in filters to reset pagination
-const watchFilters = () => {
-  // This would be better with watch() but using a simple solution for now
-  const previousQuery = searchQuery.value;
-  const previousStatus = statusFilter.value;
-  
-  setInterval(() => {
-    if (previousQuery !== searchQuery.value || previousStatus !== statusFilter.value) {
-      resetPagination();
-    }
-  }, 200);
-};
+// Use watch to reset pagination when searchQuery or statusFilter changes
+watch([searchQuery, statusFilter], () => {
+  resetPagination();
+});
 
 const showNotification = (type, title, message, duration = 5000) => {
   // Clear any existing timeout
@@ -322,7 +340,8 @@ const getStatusColor = (status) => {
   return {
     'Pending': 'bg-yellow-100 text-yellow-800',
     'Approved': 'bg-green-100 text-green-800',
-    'Rejected': 'bg-red-100 text-red-800'
+    'Rejected': 'bg-red-100 text-red-800',
+    'Draft': 'bg-gray-100 text-gray-800'
   }[status] || 'bg-gray-100 text-gray-800';
 };
 
@@ -340,8 +359,9 @@ const saveApplication = async (updatedApp) => {
   try {
     loading.value = true;
 
-    await apiServices.patchBmhcCpdRecord(updatedApp.id, {
-      cpd_credit: updatedApp.cpdCredits
+    // Changed to use the CPD Task API endpoint
+    await apiServices.patchBmhcCpdTask(updatedApp.id, {
+      credit: updatedApp.cpdCredits
     });
 
     const index = applications.value.findIndex((a) => a.id === updatedApp.id);
@@ -361,21 +381,49 @@ const saveApplication = async (updatedApp) => {
   }
 };
 
-const approveApplication = async (approvalData) => {
+const approveApplication = async (applicationData) => {
   try {
     loading.value = true;
 
-    await apiServices.patchBmhcCpdRecord(approvalData.id, {
-      review_status: 'Approved',
-      cpd_credit: approvalData.cpdCredits,
-      remark: approvalData.remarks
-    });
+    // Check if participants is iterable before proceeding
+    if (!applicationData.participants || !Array.isArray(applicationData.participants)) {
+      console.error("Participants is not an array or is null/undefined.");
+      showNotification('error', 'Approval Failed', 'The application has no participant data. Please try again.');
+      return; // Exit the function
+    }
 
-    const index = applications.value.findIndex((a) => a.id === approvalData.id);
-    if (index !== -1) {
-      applications.value[index].status = 'Approved';
-      applications.value[index].cpdCredits = approvalData.cpdCredits;
-      applications.value[index].remarks = approvalData.remarks;
+    // Create a copy to avoid directly modifying the original application
+    const updatedApplication = { ...applicationData };
+
+    // Iterate through the participants
+    for (const participant of updatedApplication.participants) {
+      // Check if the participant's review status is not 'Pending'
+      if (participant.review_status !== 'Pending') {
+
+        // Prepare the data for the PATCH request
+        const patchData = {
+          participants: [{
+            id: participant.id,
+            review_status: participant.review_status,
+            review_remarks: participant.review_remarks,
+            cpd_credits_for_participant: participant.cpd_credits_for_participant
+          }]
+        };
+
+        // Send the PATCH request to update the CPD task in the database
+        await apiServices.patchBmhcCpdTask(updatedApplication.id, patchData);
+
+        // Update the application data in the component's state
+        const appIndex = applications.value.findIndex(app => app.id === updatedApplication.id);
+        if (appIndex !== -1) {
+          const participantIndex = applications.value[appIndex].participants.findIndex(p => p.id === participant.id);
+          if (participantIndex !== -1) {
+            applications.value[appIndex].participants[participantIndex].review_status = participant.review_status;
+            applications.value[appIndex].participants[participantIndex].review_remarks = participant.review_remarks;
+            applications.value[appIndex].participants[participantIndex].cpd_credits_for_participant = participant.cpd_credits_for_participant;
+          }
+        }
+      }
     }
 
     showNotification('success', 'Application Approved', 'The CPD application has been approved successfully.');
@@ -397,15 +445,38 @@ const rejectApplication = async (rejectionData) => {
   try {
     loading.value = true;
 
-    await apiServices.patchBmhcCpdRecord(rejectionData.id, {
-      review_status: 'Rejected',
-      remark: rejectionData.remarks
-    });
+    // Create a copy to avoid directly modifying the original application
+    const updatedApplication = { ...rejectionData };
 
-    const index = applications.value.findIndex((a) => a.id === rejectionData.id);
-    if (index !== -1) {
-      applications.value[index].status = 'Rejected';
-      applications.value[index].remarks = rejectionData.remarks;
+    // Iterate through the participants
+    for (const participant of updatedApplication.participants) {
+      // Check if the participant's review status is not 'Pending'
+      if (participant.review_status !== 'Pending') {
+
+        // Prepare the data for the PATCH request
+        const patchData = {
+          participants: [{
+            id: participant.id,
+            review_status: participant.review_status,
+            review_remarks: participant.review_remarks,
+            cpd_credits_for_participant: participant.cpd_credits_for_participant
+          }]
+        };
+
+        // Send the PATCH request to update the CPD task in the database
+        await apiServices.patchBmhcCpdTask(updatedApplication.id, patchData);
+
+        // Update the application data in the component's state
+        const appIndex = applications.value.findIndex(app => app.id === updatedApplication.id);
+        if (appIndex !== -1) {
+          const participantIndex = applications.value[appIndex].participants.findIndex(p => p.id === participant.id);
+          if (participantIndex !== -1) {
+            applications.value[appIndex].participants[participantIndex].review_status = participant.review_status;
+            applications.value[appIndex].participants[participantIndex].review_remarks = participant.review_remarks;
+            applications.value[appIndex].participants[participantIndex].cpd_credits_for_participant = participant.cpd_credits_for_participant;
+          }
+        }
+      }
     }
 
     showNotification('success', 'Application Rejected', 'The CPD application has been rejected.');
@@ -427,7 +498,8 @@ const rejectApplication = async (rejectionData) => {
 const fetchApplications = async () => {
   try {
     loading.value = true;
-    const response = await apiServices.getBmhcCpdRecords();
+    // Changed to use the CPD Task API endpoint
+    const response = await apiServices.getBmhcCpdTask();
 
     if (response.data && response.data.results && Array.isArray(response.data.results)) {
       processApiResponse(response.data.results);
@@ -449,34 +521,73 @@ const fetchApplications = async () => {
 const processApiResponse = (results) => {
   applications.value = results.map(item => ({
     id: item.id,
-    title: item.title_of_cpd,
-    applicantName: item.full_name,
-    status: item.review_status || 'Pending',
+    title: item.title_of_cpd || 'N/A',
+    applicantName: item.full_name || 'Unknown',
+    // For CPD tasks, we need to check different status fields
+    status: getTaskStatus(item),
     date: item.created_at ? new Date(item.created_at).toLocaleDateString() : 'N/A',
     registrationNumber: item.registration_no,
-    cidNumber: item.cid_no,
-    fullName: item.full_name,
-    gender: item.gender,
-    cpdTitle: item.title_of_cpd,
-    relevance: item.relevance_to_profession,
-    participationCategory: item.participation_category?.participation_category_name || 'Not specified',
-    participantSubCategory: item.participant_sub_category?.participation_sub_category_name || 'Not specified',
-    activityType: item.type_of_cpd_activity?.cpd_activity_name || 'Not specified',
+    cidNumber: item.cid_no || 'N/A',
+    fullName: item.full_name || 'Unknown',
+    gender: item.gender || 'Not specified',
+    cpdTitle: item.title_of_cpd || 'N/A',
+    relevance: item.relevance_to_topic || 'Not specified',
+    // For CPD tasks, we need to check fields differently
+    participationCategory: getParticipationCategory(item),
+    participantSubCategory: getParticipantSubcategory(item),
+    activityType: getActivityType(item),
     attachment: item.attachment ? {
       name: item.attachment.split('/').pop(),
       url: item.attachment
     } : null,
-    cpdCredits: item.cpd_credit,
-    reviewStatus: item.review_status,
-    remarks: item.remark,
+    // Credit may be stored differently in CPD tasks
+    cpdCredits: item.credit || 0,
+    reviewStatus: item.review_status || 'Pending',
+    remarks: item.remark || '',
+    // Additional CPD task specific fields
+    isDraft: item.is_draft || false,
+    expected_outcome: item.expected_outcome || '',
+    venue: item.venue || '',
+    fromDate: item.from_date ? new Date(item.from_date).toLocaleDateString() : 'N/A',
+    toDate: item.to_date ? new Date(item.to_date).toLocaleDateString() : 'N/A',
     createdAt: item.created_at,
-    updatedAt: item.updated_at
+    updatedAt: item.updated_at,
+    participants: item.participants || []
   }));
+};
+
+// Helper functions to extract and format data from CPD tasks
+const getTaskStatus = (item) => {
+  if (item.is_draft) return 'Draft';
+  return item.review_status || 'Pending';
+};
+
+const getParticipationCategory = (item) => {
+  if (item.participation_category) {
+    return typeof item.participation_category === 'object' ?
+      item.participation_category.participation_category_name : 'Not specified';
+  }
+  return 'Not specified';
+};
+
+const getParticipantSubcategory = (item) => {
+  if (item.participant_sub_category) {
+    return typeof item.participant_sub_category === 'object' ?
+      item.participant_sub_category.participation_sub_category_name : 'Not specified';
+  }
+  return 'Not specified';
+};
+
+const getActivityType = (item) => {
+  if (item.type_of_cpd) {
+    return typeof item.type_of_cpd === 'object' ?
+      item.type_of_cpd.cme_activity_name : 'Not specified';
+  }
+  return 'Not specified';
 };
 
 onMounted(() => {
   fetchApplications();
-  watchFilters();
 });
 </script>
 

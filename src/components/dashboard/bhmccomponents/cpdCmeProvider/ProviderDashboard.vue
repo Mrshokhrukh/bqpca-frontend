@@ -14,7 +14,8 @@
             </div>
           </div>
         </div>
-        <button class="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600">
+        <button @click="proposeNewTraining"
+          class="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600">
           <Plus class="w-4 h-4" />
           <span>Propose New Training</span>
         </button>
@@ -158,7 +159,7 @@ import {
   Plus,
   MessageSquare,
   Star,
-  MapPin, 
+  MapPin,
   Presentation,
 } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
@@ -186,6 +187,9 @@ const recentFeedback = ref([]); // Add ref for feedback
 const upcomingSchedule = ref([]);
 const loading = ref(false);
 
+const proposeNewTraining = () => {
+  window.location.href = 'http://localhost:5173/admin/cpd_cme_provider/health_certification/cpd_application_details';
+};
 
 onMounted(async () => {
   loading.value = true;
@@ -230,7 +234,6 @@ onMounted(async () => {
         iconColor: 'text-yellow-500'
       },
     ];
-
 
     // --- Training Sessions ---
     trainingSessions.value = filteredData.map(item => ({

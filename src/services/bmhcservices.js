@@ -356,26 +356,28 @@ export default {
   deleteMastersUniversity(id) {
     return apiClient.delete(`/bmhc/masters-university/${id}/`)
   },
- // Generic function to fetch master data
- getMasterData(masterDataType) {
-  let endpoint = '';
-  switch (masterDataType) {
-    case 'personnel-categories':
-      endpoint = '/bmhc/masters-personnel-categories/';
-      break;
-    case 'personnel-subcategories':
-      endpoint = '/bmhc/masters-sub-categories/';
-      break;
-    case 'sectors':
-      endpoint = '/bmhc/masters-sector/';
-      break;
-    default:
-      console.error(`Master data type "${masterDataType}" is not supported in getMasterData function.`);
-      return Promise.reject(`Master data type "${masterDataType}" is not supported.`);
-  }
-  return apiClient.get(endpoint);
-},
-//
+  // Generic function to fetch master data
+  getMasterData(masterDataType) {
+    let endpoint = ''
+    switch (masterDataType) {
+      case 'personnel-categories':
+        endpoint = '/bmhc/masters-personnel-categories/'
+        break
+      case 'personnel-subcategories':
+        endpoint = '/bmhc/masters-sub-categories/'
+        break
+      case 'sectors':
+        endpoint = '/bmhc/masters-sector/'
+        break
+      default:
+        console.error(
+          `Master data type "${masterDataType}" is not supported in getMasterData function.`,
+        )
+        return Promise.reject(`Master data type "${masterDataType}" is not supported.`)
+    }
+    return apiClient.get(endpoint)
+  },
+  //
 
   // Get all COGS applications
   getBmhcCogs(params = {}) {
@@ -498,7 +500,6 @@ export default {
   getFullApplicationListByCid(cid) {
     return apiClient.get(`/bmhc/bmhc-new-application/?cid=${cid}`)
   },
-
 
   // BMHC Renewals Endpoints
   getBhmcRenewals() {
@@ -649,8 +650,24 @@ export default {
     return apiClient.get(`/bmhc/bmhc-cpd-records/list-my-cpd/?cid=${cid}`)
   },
 
-   // BMHC CPD Records
-   getBmhcCpdTask() {
+  // BMHC CPD Records
+  getBmhcCpdTask() {
     return apiClient.get('/bmhc/bmhc-cpd-tasks/')
+  },
+  // BMHC CPD Tasks endpoints
+  createBmhcCpdTask(data) {
+    return apiClient.post('/bmhc/bmhc-cpd-tasks/', data)
+  },
+  getBmhcCpdTaskById(id) {
+    return apiClient.get(`/bmhc/bmhc-cpd-tasks/${id}/`)
+  },
+  updateBmhcCpdTask(id, data) {
+    return apiClient.put(`/bmhc/bmhc-cpd-tasks/${id}/`, data)
+  },
+  patchBmhcCpdTask(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-cpd-tasks/${id}/`, data)
+  },
+  deleteBmhcCpdTask(id) {
+    return apiClient.delete(`/bmhc/bmhc-cpd-tasks/${id}/`)
   },
 }
