@@ -622,6 +622,7 @@ export default {
   patchBmhcInstitute(id, data) {
     return apiClient.patch(`/bmhc/bmhc-institutes/${id}/`, data)
   },
+  
   deleteBmhcInstitute(id) {
     return apiClient.delete(`/bmhc/bmhc-institutes/${id}/`)
   },

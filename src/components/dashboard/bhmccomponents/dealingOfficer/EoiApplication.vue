@@ -166,6 +166,7 @@ const fetchInstitutes = async () => {
   }
 };
 
+
 onMounted(fetchInstitutes);
 
 const debouncedSearch = debounce(fetchInstitutes, 300);
