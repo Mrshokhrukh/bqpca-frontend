@@ -301,7 +301,10 @@ const serviceSpecificMenuItems = {
           const items = []
 
           // Only add "Apply for Certification" if "My Applications" is not visible
-          if (certificationSubMenus.applyForCertification && !certificationSubMenus.myApplications) {
+          if (
+            certificationSubMenus.applyForCertification &&
+            !certificationSubMenus.myApplications
+          ) {
             items.push({
               name: 'Apply for Certification',
               route: (serviceType) => `/admin/user/${serviceType}/registration`,
@@ -681,11 +684,6 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
       },
       {
-        name: 'Profile Management',
-        icon: getIconComponent('UserCircle'),
-        route: (serviceType) => `/admin/user/${serviceType}/profile`,
-      },
-      {
         name: 'Registration Services',
         icon: getIconComponent('ClipboardCheck'),
         children: [
@@ -734,6 +732,11 @@ const serviceSpecificMenuItems = {
         name: 'Reports',
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/user/${serviceType}/reports`,
+      },
+      {
+        name: 'Profile',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/user/${serviceType}/profile`,
       },
     ],
     admin: [

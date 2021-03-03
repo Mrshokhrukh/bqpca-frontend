@@ -104,6 +104,7 @@ const serviceTypeMap = {
   ecpf: 'education_consultancy_placement_firm',
   accreditation: 'specification_for_institute_accrediation',
   engineering: 'specification_for_engineering_certification',
+  engineering_certification: 'specification_for_engineering_certification',
   health_certification: 'specification_for_health_certification',
 };
 
@@ -158,12 +159,8 @@ const fetchNotifications = async () => {
   loading.value = true;
   try {
     // **Fetch notifications using API - No email needed if backend uses token auth**
-    const response = await apiService.getNotification()
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    notifications.value = data.results || []; // Assuming your API response has 'results' array
+    const response = await apiService.getNotificationn()
+    notifications.value = response.data || []; // Assuming your API response has 'results' array
   } catch (error) {
     console.error('Failed to fetch notifications:', error);
     // Handle error appropriately, maybe show a toast notification to the user
