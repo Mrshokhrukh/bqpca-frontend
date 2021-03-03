@@ -1,4 +1,4 @@
-// components/dashboard/ApplicationsModal.vue
+
 <template>
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg w-3/4 max-h-[80vh] overflow-hidden">

@@ -676,9 +676,64 @@ const serviceSpecificMenuItems = {
   engineering_certification: {
     user: [
       {
-        name: 'Engineering Certification',
-        icon: getIconComponent('Wrench'),
-        route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Profile Management',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/user/${serviceType}/profile`,
+      },
+      {
+        name: 'Registration Services',
+        icon: getIconComponent('ClipboardCheck'),
+        children: [
+          {
+            name: 'Registration',
+            route: (serviceType) => `/admin/user/${serviceType}/registration`,
+          },
+          {
+            name: 'Renewal',
+            route: (serviceType) => `/admin/user/${serviceType}/renewal`,
+          },
+          {
+            name: 'Re-registration',
+            route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
+          },
+          {
+            name: 'Additional Qualification',
+            route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
+          },
+          {
+            name: 'Certificate of Good Standing',
+            route: (serviceType) => `/admin/user/${serviceType}/CoGS`,
+          },
+        ],
+      },
+      {
+        name: 'CPD Management',
+        icon: getIconComponent('BookOpen'),
+        route: (serviceType) => `/admin/user/${serviceType}/cpd`,
+      },
+      {
+        name: 'Payment',
+        icon: getIconComponent('CreditCard'),
+        children: [
+          {
+            name: 'Payment Link',
+            route: (serviceType) => `/admin/user/${serviceType}/payment`,
+          },
+          {
+            name: 'Payment History',
+            route: (serviceType) => `/admin/user/${serviceType}/payment_history`,
+          },
+        ],
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('FileText'),
+        route: (serviceType) => `/admin/user/${serviceType}/reports`,
       },
     ],
     admin: [

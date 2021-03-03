@@ -1,4 +1,4 @@
-// components/dashboard/ApplicationHistoryCard.vue
+
 <template>
   <div class="bg-white p-6 rounded-lg shadow-md">
     <div class="flex items-center space-x-3 mb-4">

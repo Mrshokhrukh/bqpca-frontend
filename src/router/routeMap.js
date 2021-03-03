@@ -2,6 +2,7 @@ const roqDashboard = () => import('@/views/admin/ROQ/Dashboard.vue')
 const ecpfDashboard = () => import('@/views/admin/ECPF/Dashboard.vue')
 const bmhcDashboard = () => import('@/views/admin/BMHC/Dashboard.vue')
 const accredDashboard = () => import('@/views/admin/ACCRED/Dashboard.vue')
+const engineeringDashboard = () => import('@/views/admin/Engineering/Dashboard.vue')
 export default {
   super_admin: {
     dashboard: () => import('@/views/admin/SuperAdmin/Dashboard.vue'),
@@ -60,14 +61,11 @@ export default {
       standard: accredDashboard,
     },
     engineering_certification: {
-      dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
-      // applications: () => import('@/views/admin/Engineering/Applications.vue'),
-      // new_application: () => import('@/views/admin/Engineering/NewApplication.vue'),
-      // pending_applications: () => import('@/views/admin/Engineering/PendingApplications.vue'),
-      // approved_applications: () => import('@/views/admin/Engineering/ApprovedApplications.vue'),
-      // clients: () => import('@/views/admin/Engineering/Clients.vue'),
-      // reports: () => import('@/views/admin/Engineering/Reports.vue'),
-      // ... all other Engineering related routes for admin
+      dashboard: engineeringDashboard,
+      applications: engineeringDashboard,
+      clients: engineeringDashboard,
+      reports: engineeringDashboard
+
     },
     health_certification: {
       dashboard: bmhcDashboard,
@@ -122,12 +120,31 @@ export default {
       profile: accredDashboard,
     },
     engineering_certification: {
-      dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
-      // my_applications: () => import('@/views/admin/Engineering/MyApplications.vue'),
-      // new_application: () => import('@/views/admin/Engineering/NewApplication.vue'),
-      // application_status: () => import('@/views/admin/Engineering/ApplicationStatus.vue'),
-      // profile: () => import('@/views/admin/Engineering/Profile.vue'),
-      // ... other Engineering routes for a regular user
+      // Existing routes
+      dashboard: engineeringDashboard,
+      profile: engineeringDashboard,
+
+      // Registration services routes
+      registration: engineeringDashboard,
+      renewal: engineeringDashboard,
+      re_registration: engineeringDashboard,
+      additional_qualification: engineeringDashboard,
+      CoGS: engineeringDashboard,
+
+      // CPD route
+      cpd: engineeringDashboard,
+
+      // Payment routes
+      payment: engineeringDashboard,
+      payment_history: engineeringDashboard,
+
+      // Reports route
+      reports: engineeringDashboard,
+
+      // Keep existing routes that weren't in our navigation but might be used elsewhere
+      my_applications: engineeringDashboard,
+      new_application: engineeringDashboard,
+      application_status: () => engineeringDashboard,
     },
     health_certification: {
       dashboard: bmhcDashboard,
