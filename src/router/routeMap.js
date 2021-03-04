@@ -98,6 +98,9 @@ export default {
       ecpf_ownership_change: ecpfDashboard,
       ecpf_linkage_establishment: ecpfDashboard,
       ecpf_education_fair: ecpfDashboard,
+      ecpf_inhouse_event: ecpfDashboard,
+      ecpf_massmedia: ecpfDashboard,
+      ecpf_hei_visit: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,
