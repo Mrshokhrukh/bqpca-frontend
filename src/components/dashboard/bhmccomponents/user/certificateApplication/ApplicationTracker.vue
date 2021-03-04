@@ -293,12 +293,14 @@
               <button
                 v-if="qualification.physical_review_status === 'Approved' && qualification.endorsement_decision === 'Pending' && qualification.payment_status !== 'completed' && qualification.payment_status !== 'processing_payment'"
                 @click="initiatePayment(application, qualification)"
-                class="mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white rounded-lg hover:from-teal-600 hover:to-blue-700 transition-all shadow-md relative overflow-hidden"
+                class="relative mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-lg hover:from-teal-600 hover:to-cyan-700 transition-all shadow-lg overflow-hidden"
                 :class="{ 'animate-pulse': qualification.payment_status !== 'failed' }">
-                <!-- Custom Border Animation -->
-                <span class="absolute inset-0 rounded-lg pointer-events-none animate-wave-border"></span>
-                <CreditCard class="w-4 h-4 mr-2 relative z-10" />
-                <span class="relative z-10">{{ getPaymentButtonText(application, qualification) }}</span>
+                <!-- Animated Border Effect -->
+                <div class="absolute inset-0 border-4 border-transparent animate-border-pulse pointer-events-none">
+                </div>
+
+                <CreditCard class="w-4 h-4 mr-2" />
+                <span>{{ getPaymentButtonText(application, qualification) }}</span>
               </button>
             </div>
           </div>
@@ -550,3 +552,27 @@ onMounted(() => {
 
 });
 </script>
+
+<style scoped>
+@keyframes border-pulse {
+
+  0%,
+  100% {
+    border-color: rgba(20, 184, 166, 0.3);
+    /* Teal with opacity */
+    transform: scale(1);
+  }
+
+  50% {
+    border-color: rgba(6, 182, 212, 0.6);
+    /* Cyan with higher opacity */
+    transform: scale(1.05);
+  }
+}
+
+.animate-border-pulse {
+  animation: border-pulse 2s ease-in-out infinite;
+  border-radius: 0.5rem;
+  /* Match the button's rounded-lg */
+}
+</style>

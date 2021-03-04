@@ -50,7 +50,8 @@ import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superA
 // BMH user
 import CPDcomponent from '@/components/dashboard/bhmccomponents/user/cpdApplication/CPDApplication.vue';
 import CPDTracker from '@/components/dashboard/bhmccomponents/user/cpdApplication/CPDTracker.vue';
-import CoGSComponet from '@/components/dashboard/bhmccomponents/user/CoGSApplication.vue';
+import CoGSApplication from '@/components/dashboard/bhmccomponents/user/CoGSApplication.vue';
+import CoGSTracker from '@/components/dashboard/bhmccomponents/user/CoGSTracker.vue';
 import PractitionerRegistration from '@/components/dashboard/bhmccomponents/user/certificateApplication/CertificateRegistrationComponent.vue';
 import PractitionerRenewal from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationRenewal.vue';
 import ApplicationTracker from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationTracker.vue';
@@ -197,9 +198,9 @@ const bmhUserComponent = computed(() => {
     case path.endsWith('/health_certification/track_cpd_applications'):
       return CPDTracker;
     case path.endsWith('/health_certification/CoGS'):
-      return CoGSComponet;
-    case path.endsWith('/health_certification/profile'):
-      return CoGSComponet;
+      return CoGSApplication;
+    case path.endsWith('/health_certification/track_cogs_applications'):
+      return CoGSTracker;
     case path.endsWith('/health_certification/reports'):
       return BMHCUserReports;
     case path.endsWith('/health_certification/counselor_application'):
