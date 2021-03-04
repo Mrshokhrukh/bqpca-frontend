@@ -19,13 +19,13 @@ import {
   Heart,
   Wrench,
   Award,
-  FilePlus,  // Added for 'FilePlus'
-  List,      // Added for 'List'
+  FilePlus, // Added for 'FilePlus'
+  List, // Added for 'List'
   RefreshCw, // Added for 'RefreshCw'
-  Edit,      // Added for 'Edit'
-  Link,    //Added for Linkage
+  Edit, // Added for 'Edit'
+  Link, //Added for Linkage
   Users2, //Added for Group
-  Monitor,  //Added for screen
+  Monitor, //Added for screen
 } from 'lucide-vue-next'
 
 // Icon mapping for dynamic icon selection
@@ -49,13 +49,13 @@ const iconMap = {
   Heart,
   Wrench,
   Award,
-  FilePlus,  // Include in the map
-  List,      // Include in the map
+  FilePlus, // Include in the map
+  List, // Include in the map
   RefreshCw, // Include in the map
   Edit,
-  Link,    //Added for Linkage
+  Link, //Added for Linkage
   Users2, //Added for Group
-  Monitor,     // Include in the map
+  Monitor, // Include in the map
 }
 import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
 import { useAuthStore } from '@/stores/authStore'
@@ -271,7 +271,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Student Management',
-        icon: getIconComponent('Users'),  // 'Users' for Student Management
+        icon: getIconComponent('Users'), // 'Users' for Student Management
         route: (serviceType) => `/admin/user/${serviceType}/profile`, // Consider a more specific route like /students
       },
       {
@@ -418,14 +418,23 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Counselling Form',
+        name: 'Counselor Management',
         icon: getIconComponent('FileText'),
-        route: (serviceType) => `/admin/user/${serviceType}/counselor_application`,
-        // Only show this menu item if the user is a counselor
+        // Show this parent menu if the user is a counselor
         hidden: () => {
           const authStore = useAuthStore()
           return !authStore.user?.is_counselor
         },
+        children: [
+          {
+            name: 'Submit Application',
+            route: (serviceType) => `/admin/user/${serviceType}/counselor_application`,
+          },
+          {
+            name: 'Track Counselor Applications',
+            route: (serviceType) => `/user/${serviceType}/track_counselor_application`,
+          },
+        ],
       },
       {
         name: 'Profile',

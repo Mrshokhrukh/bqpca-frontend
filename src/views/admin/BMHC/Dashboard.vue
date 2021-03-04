@@ -76,6 +76,7 @@ import AdditionalQualification from '@/components/dashboard/bhmccomponents/user/
 import ReRegistration from '@/components/dashboard/bhmccomponents/user/certificateApplication/ReRegistration.vue';
 import BMHCUserReports from '@/components/dashboard/bhmccomponents/user/ReportsComponent.vue';
 import CounselorApplicationFrom from '@/components/dashboard/bhmccomponents/user/CounselorApplicationFrom.vue';
+import CounselorApplicationTracker from '@/components/dashboard/bhmccomponents/user/CounselorApplicationTracker.vue';
 // Dealing Officer Components
 import ApplicationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/ApplicationLists.vue';
 import RenewalLists from '@/components/dashboard/bhmccomponents/dealingOfficer/RenewalLists.vue';
@@ -226,6 +227,8 @@ const bmhUserComponent = computed(() => {
       return CounselorApplicationFrom;
     case path.endsWith('/health_certification/user_profile'):
       return BMHCUserProfile;
+    case path.endsWith('/health_certification/counselor_application_tracker'):
+      return CounselorApplicationTracker;
     default:
       return null;
   }

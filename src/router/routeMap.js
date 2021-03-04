@@ -162,6 +162,7 @@ export default {
       user_profile: bmhcDashboard,
       reports: bmhcDashboard,
       counselor_application: bmhcDashboard,
+      track_counselor_application: bmhcDashboard,
     },
   },
   dealing_officer: {
