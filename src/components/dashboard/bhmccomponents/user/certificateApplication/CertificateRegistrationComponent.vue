@@ -22,7 +22,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import RegistrationTypeSelector from './RegistrationTypeSelector.vue';
-import DynamicRegistrationForm from './DynamicRegistrationForm.vue';
+import DynamicRegistrationForm from './ApplicationForm.vue';
 import ConfirmationModal from './ConfirmationModal.vue';
 import { useToast } from 'vue-toastification';  // Import useToast
 

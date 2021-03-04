@@ -1,6 +1,59 @@
 <template>
+  <!-- Confirmation Modal -->
+  <TransitionRoot as="template" :show="isConfirmationModalOpen">
+    <Dialog as="div" class="relative z-10" @close="isConfirmationModalOpen = false">
+      <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+        leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+      </TransitionChild>
 
-  <PaymentModal ref="paymentModal" @payment-completed="onPaymentCompleted" @close="onPaymentModalClose" />
+      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <TransitionChild as="template" enter="ease-out duration-300"
+            enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
+            leave-from="opacity-100 translate-y-0 sm:scale-100"
+            leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+            <DialogPanel
+              class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+              <div>
+                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                  <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                </div>
+                <div class="mt-3 text-center sm:mt-5">
+                  <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">
+                    Confirm Submission
+                  </DialogTitle>
+                  <div class="mt-2">
+                    <p class="text-sm text-gray-500">
+                      Are you sure you want to submit the application? Please review all information before
+                      proceeding.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                <button type="button"
+                  class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
+                  @click="handleSubmitActual">
+                  Confirm
+                </button>
+                <button type="button"
+                  class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                  @click="isConfirmationModalOpen = false">
+                  Cancel
+                </button>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+
   <form @submit.prevent="handleSubmit" class="bg-white border rounded-xl shadow-sm p-6">
     <!-- Step Header -->
     <h3 class="text-lg font-semibold text-gray-900 my-4">Addition Qualification Registration</h3>
@@ -164,9 +217,10 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
+import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 import apiService from '@/services/services';
-import PaymentModal from '@/components/common/PaymentModal.vue';
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 
 
 defineProps({
@@ -184,7 +238,7 @@ const emit = defineEmits(['back', 'submit']);
 
 const toast = useToast();
 const authStore = useAuthStore();
-const paymentModal = ref(null);
+const router = useRouter();
 
 const isSubmitting = ref(false);
 const applications = ref([]);
@@ -194,6 +248,7 @@ const qualifications = ref([]);
 const universities = ref([]);
 const errors = reactive({});
 const fetchedDocumentTypes = ref([]);
+const isConfirmationModalOpen = ref(false); // Add this line
 
 const localFormData = reactive({
   qualification_type: '',
@@ -206,8 +261,6 @@ const localFormData = reactive({
   application: '', // Add application field
   payment_id: null, //for payment
 });
-
-
 
 // Fetch applications
 const fetchApplications = async () => {
@@ -275,16 +328,10 @@ const formatDateForAPI = (date) => {
 };
 
 
-// Form Validation
+// Form Validation (remains largely the same)
 const validateForm = () => {
   Object.keys(errors).forEach(key => delete errors[key]); // Clear previous errors
   let isValid = true;
-
-  // No need to check selectedApplication.value anymore
-  // if (!selectedApplication.value) {
-  //   errors.application = "Please select an application.";
-  //   isValid = false;
-  // }
 
   if (!localFormData.application) {
     errors.application = "Application information is missing.";
@@ -331,30 +378,19 @@ const validateForm = () => {
   return isValid;
 };
 
-// Form Submission with payment
-const openPaymentModal = () => {
-  paymentModal.value.openModal();
-};
-
-const onPaymentCompleted = (paymentData) => {
-  localFormData.is_payment_complete = false;
-  localFormData.payment_id = paymentData.paymentHash;
-  handleSubmitActual();
-};
-
-const onPaymentModalClose = () => {
-  console.log("Modal closed");
-};
-const handleSubmit = async () => {
+// Form Submission (modified to show confirmation modal)
+const handleSubmit = () => {
   if (validateForm()) {
-    openPaymentModal();
+    isConfirmationModalOpen.value = true; // Open the confirmation modal
   }
 };
 
+// Actual submission logic (triggered by confirmation modal)
 const handleSubmitActual = async () => {
-  isSubmitting.value = true;
+  isConfirmationModalOpen.value = false; // Close modal immediately
+  isSubmitting.value = true; // Show loading state
+
   try {
-    // Create the FormData object
     const formData = new FormData();
 
     // Add all the regular fields to FormData
@@ -363,23 +399,12 @@ const handleSubmitActual = async () => {
     formData.append('remarks', localFormData.remarks);
     formData.append('registration_date', formatDateForAPI(new Date()));
     formData.append('expiry_date', formatDateForAPI(new Date(new Date().setFullYear(new Date().getFullYear() + 5))));
-    formData.append('is_payment_complete', 'True'); //payment is completed.
-    formData.append('payment_id', localFormData.payment_id);
+    formData.append('payment_id', '');
     formData.append('is_active', 'False');
     formData.append('application', localFormData.application); // Use localFormData.application
     formData.append('qualification_name', localFormData.qualification_name);
     formData.append('qualification_type', localFormData.qualification_type);
     formData.append('institute_university', localFormData.institute);
-
-    // Handle file attachments
-    localFormData.documents.forEach((doc, index) => {
-      if (doc.files && doc.files.length > 0) {
-        doc.files.forEach(file => {
-          formData.append(`attachments-${index}-file`, file);
-          formData.append(`attachments-${index}-file_type`, doc.type);
-        });
-      }
-    });
 
     // Handle file attachments for supportingDocuments
     supportingDocuments.value.forEach((doc, index) => {
@@ -391,16 +416,33 @@ const handleSubmitActual = async () => {
       }
     });
 
-
     // Send everything in a single request
-    await apiService.createBhmcNewQualification(formData);
+    const response = await apiService.createBhmcNewQualification(formData);
 
-    toast.success('Application submitted successfully!');
-    // showSuccessModal.value = true;
-    emit('submit', formData);
+    if (response.status >= 200 && response.status < 300) {
+      toast.success('Application submitted successfully!');
+      emit('submit', formData);
+      router.push('/admin/user/health_certification/dashboard'); // Redirect on success
+    } else {
+      // Handle server-side validation errors or other issues
+      toast.error(`Application submission failed: ${response.data.message || 'Unknown error'}`);
+    }
+
   } catch (error) {
     console.error('Error submitting application:', error);
-    toast.error(`Application submission failed: ${error.message}`);
+    if (error.response) {
+      // Handle server-side validation errors
+      if (error.response.status === 400 && error.response.data) {
+        Object.keys(error.response.data).forEach(field => {
+          errors[field] = error.response.data[field].join(', ');
+        });
+        toast.error("Please correct the errors in the form.");
+      } else {
+        toast.error(`Application submission failed: ${error.response.data.message || 'Unknown error'}`);
+      }
+    } else {
+      toast.error(`Application submission failed: ${error.message}`);
+    }
   } finally {
     isSubmitting.value = false;
   }
@@ -427,6 +469,7 @@ onMounted(async () => {
     toast.error('Failed to fetch master data.  Please try again.');
   }
 });
+
 </script>
 
 <style scoped>

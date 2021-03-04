@@ -11,16 +11,6 @@
       <component :is="bmhDealingOfficerComponent" />
     </template>
 
-    <!-- Chief Section -->
-    <template v-else-if="role === 'chief'">
-      <component :is="bmhChiefComponent" />
-    </template>
-
-    <!-- Director Section -->
-    <template v-else-if="role === 'director'">
-      <component :is="bmhDirectorComponent" />
-    </template>
-
     <!-- Admin Section -->
     <template v-else-if="role === 'admin'">
       <component :is="bmhAdminComponent" />
@@ -40,28 +30,20 @@
     <template v-else-if="role === 'institutions'">
       <component :is="bmhInstitutionsComponent" />
     </template>
-
-    <!-- Default Section (fallback) -->
-    <template v-else>
-      <ApplicationTable :applications="paginatedApplications" :current-page="currentPage" :total-results="filteredTotal"
-        :per-page="perPage" @page-change="handlePageChange" />
-    </template>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import ApplicationTable from '@/components/common/ROQUserApplicationsList.vue';
+// import ApplicationTable from '@/components/common/ROQUserApplicationsList.vue';
 
 // BMHC Component Imports
 import BmhAdminDashboard from '@/components/dashboard/bhmccomponents/admin/BmhAdminDashboard.vue';
 import BmhUserManagement from '@/components/dashboard/bhmccomponents/admin/BmhUserManagement.vue';
 import BmhUserDashboard from '@/components/dashboard/bhmccomponents/user/UserBmhcDashboard.vue';
 import BmhDealingOfficerDashboard from '@/components/dashboard/bhmccomponents/dealingOfficer/DashboardComponent.vue';
-import BmhChiefDashboard from '@/components/dashboard/bhmccomponents/chief/BmhChiefDashboard.vue';
-import BmhDirectorDashboard from '@/components/dashboard/bhmccomponents/director/BmhDirectorDashboard.vue';
 import BmhInstitutionsDashboard from '@/components/dashboard/bhmccomponents/institutions/InstitutionsDashboard.vue';
 import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superAdmin/BmhSuperAdminDashboard.vue';
 
@@ -136,11 +118,8 @@ import DraftApplications from '@/components/dashboard/bhmccomponents/institution
 import ViewCertificates from '@/components/dashboard/bhmccomponents/institutions/ViewCertificates.vue';
 
 
-const { role, user } = useAuthStore();
+const { role } = useAuthStore();
 const route = useRoute();
-const applications = ref([]);
-const currentPage = ref(1);
-const perPage = ref(10);
 
 // BMHC Admin Route-Based Components
 const bmhAdminComponent = computed(() => {
@@ -227,7 +206,7 @@ const bmhUserComponent = computed(() => {
       return CounselorApplicationFrom;
     case path.endsWith('/health_certification/user_profile'):
       return BMHCUserProfile;
-    case path.endsWith('/health_certification/counselor_application_tracker'):
+    case path.endsWith('/health_certification/track_counselor_application'):
       return CounselorApplicationTracker;
     default:
       return null;
@@ -284,28 +263,6 @@ const bmhDealingOfficerComponent = computed(() => {
   }
 });
 
-// BMHC Chief Route-Based Components
-const bmhChiefComponent = computed(() => {
-  const path = route.path;
-  switch (true) {
-    case path.endsWith('/health_certification/dashboard'):
-      return BmhChiefDashboard;
-    default:
-      return null;
-  }
-});
-
-// BMHC Director Route-Based Components
-const bmhDirectorComponent = computed(() => {
-  const path = route.path;
-  switch (true) {
-    case path.endsWith('/health_certification/dashboard'):
-      return BmhDirectorDashboard;
-    default:
-      return null;
-  }
-});
-
 // BMHC CPD/CME Provider Route-Based Components
 const bmhCpdCmeProviderComponent = computed(() => {
   const path = route.path;
@@ -356,60 +313,4 @@ const bmhSuperAdminComponent = computed(() => {
       return null;
   }
 });
-
-// Filter applications based on role
-const filteredApplications = computed(() => {
-  switch (role) {
-    case 'user':
-      return applications.value.filter(app => app.email_address === user.email);
-
-    case 'dealing_officer':
-      return applications.value.filter(app =>
-        !app.dealing_officer_decision ||
-        (!app.chief_approved && !app.chief_regret)
-      );
-
-    case 'chief':
-      return applications.value.filter(app =>
-        app.forward &&
-        !app.chief_approved &&
-        !app.chief_regret
-      );
-
-    case 'director':
-      return applications.value;
-
-    default:
-      return [];
-  }
-});
-
-// Compute total for pagination
-const filteredTotal = computed(() => filteredApplications.value.length);
-
-// Get paginated data
-const paginatedApplications = computed(() => {
-  const start = (currentPage.value - 1) * perPage.value;
-  const end = start + perPage.value;
-
-  // Transform the data to match the table structure
-  return filteredApplications.value.slice(start, end).map(app => ({
-    id: app.id,
-    date: app.date_of_birth,
-    type: app.type_of_course,
-    status: getApplicationStatus(app),
-  }));
-});
-
-// Helper function to determine application status
-const getApplicationStatus = (application) => {
-  if (application.chief_approved) return 'Approved';
-  if (application.chief_regret) return 'Regretted';
-  if (application.dealing_officer_regret) return 'Regretted';
-  return 'Pending';
-};
-
-const handlePageChange = (newPage) => {
-  currentPage.value = newPage;
-};
 </script>

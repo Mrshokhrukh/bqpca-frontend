@@ -1,4 +1,3 @@
-// Example: RegistrationApplications.vue
 
 <template>
   <div class="p-6 min-h-screen">

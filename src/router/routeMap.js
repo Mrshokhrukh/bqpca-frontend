@@ -6,12 +6,6 @@ const engineeringDashboard = () => import('@/views/admin/Engineering/Dashboard.v
 export default {
   super_admin: {
     dashboard: () => import('@/views/admin/SuperAdmin/Dashboard.vue'),
-    // users: () => import('@/views/admin/SuperAdmin/Users.vue'),
-    // user_management: () => import('@/views/admin/SuperAdmin/UserManagement.vue'),
-    // settings: () => import('@/views/admin/SuperAdmin/Settings.vue'),
-    // activity_logs: () => import('@/views/admin/SuperAdmin/ActivityLogs.vue'),
-    // reports: () => import('@/views/admin/SuperAdmin/Reports.vue'),
-    // ... any other Super Admin specific routes
   },
   admin: {
     roq: {
@@ -28,13 +22,6 @@ export default {
     },
     ecpf: {
       dashboard: ecpfDashboard,
-      // applications: () => import('@/views/admin/ECPF/Applications.vue'),
-      // new_application: () => import('@/views/admin/ECPF/NewApplication.vue'),
-      // pending_applications: () => import('@/views/admin/ECPF/PendingApplications.vue'),
-      // approved_applications: () => import('@/views/admin/ECPF/ApprovedApplications.vue'),
-      // clients: () => import('@/views/admin/ECPF/Clients.vue'),
-      // reports: () => import('@/views/admin/ECPF/Reports.vue'),
-      // ... all other ECPF related routes for admin
     },
     accreditation: {
       dashboard: accredDashboard,
@@ -99,7 +86,6 @@ export default {
       application_lists: roqDashboard,
       application_details: roqDashboard,
       profile: roqDashboard,
-      // ... other ROQ routes for a regular user
     },
     ecpf: {
       dashboard: ecpfDashboard,
@@ -173,8 +159,6 @@ export default {
       application_lists: roqDashboard,
       second_copy_lists: roqDashboard,
       application_details: roqDashboard,
-      // reports: () => import('@/views/admin/ROQ/Reports.vue'),
-      // ... other ROQ routes for dealing officer
     },
     ecpf: {
       dashboard: ecpfDashboard,

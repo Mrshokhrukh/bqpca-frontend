@@ -432,7 +432,7 @@ const serviceSpecificMenuItems = {
           },
           {
             name: 'Track Counselor Applications',
-            route: (serviceType) => `/user/${serviceType}/track_counselor_application`,
+            route: (serviceType) => `/admin/user/${serviceType}/track_counselor_application`,
           },
         ],
       },

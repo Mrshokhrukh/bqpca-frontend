@@ -2,22 +2,14 @@
   <div class="bg-gray-50 p-6 min-h-screen">
     <div class="max-w-7xl mx-auto space-y-6">
       <!-- Empty state when no approved applications -->
-      <FirstDashboardState
-        v-if="hasNoApplications && !isLoading"
-        message="You don't have any approved applications yet. Once approved, you will have access to the dashboard."
-      />
-      <EmptyDashboardState
-        v-else-if="!hasApprovedApplications && !isLoading"
-        message="You don't have any approved applications yet. Once approved, you will have access to the dashboard."
-      />
+      <FirstDashboardState v-if="hasNoApplications && !isLoading"
+        message="You don't have any approved applications yet.  Once approved, you will have access to the dashboard." />
+      <EmptyDashboardState v-else-if="!hasApprovedApplications && !isLoading"
+        message="You don't have any approved applications yet.  Once approved, you will have access to the dashboard." />
 
       <template v-else>
-        <ProfileHeader
-          :user-detail="userDetail"
-          :renewal-message="renewalMessage"
-          :show-certificate="showViewCertificateButton"
-          @view-certificate="openCertificateModal"
-        />
+        <ProfileHeader :user-detail="userDetail" :renewal-message="renewalStatus"
+          :qualifications="getPrimaryQualifications" @view-certificate="handleViewCertificate" />
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <StatCard title="CPD Credits" icon="Award" :progress="cpdCredits" :total="50" type="progress" />
@@ -30,20 +22,12 @@
           <DeadlinesList title="Upcoming Deadlines" :deadlines="upcomingDeadlines" />
         </div>
 
-        <ApplicationsModal
-          v-if="selectedApplications.length"
-          :applications="selectedApplications"
-          :title="modalTitle"
-          @close="closeApplicationsModal"
-          @visit="visitApplication"
-        />
+        <ApplicationsModal v-if="selectedApplications.length" :applications="selectedApplications" :title="modalTitle"
+          @close="closeApplicationsModal" @visit="visitApplication" />
 
         <!-- Pass selectedApplication to the modal -->
-        <CertificateModal
-          v-if="showCertificateModal"
-          :application="selectedApplication"
-          @close="closeCertificateModal"
-        />
+        <CertificateModal v-if="showCertificateModal" :application="selectedApplication"
+          @close="closeCertificateModal" />
       </template>
 
       <LoadingSpinner v-if="isLoading" />
@@ -82,8 +66,8 @@ const {
   cpdCredits,
   licenseExpiryDate,
   licenseStatus,
-  renewalMessage,
-  showViewCertificateButton,
+  // renewalMessage,
+  // showViewCertificateButton, // No longer needed, computed in ProfileHeader
   recentActivities,
   upcomingDeadlines,
   selectedApplications,
@@ -92,6 +76,17 @@ const {
   selectedApplication,
   showCertificateModal
 } = storeToRefs(dashboardStore);
+
+// Computed property to get primary qualifications for the ProfileHeader
+const getPrimaryQualifications = computed(() => {
+  if (!applications.value) return [];
+
+  // Flatten all qualifications from all applications into a single array.  Much more robust.
+  const allQualifications = applications.value.flatMap(app => app.user_qualifications || []);
+
+  //Filter and return
+  return allQualifications.filter(q => q.is_primary_qualification && q.endorsement_decision === 'Approved');
+});
 
 // Computed property to check if user has any approved applications
 const hasApprovedApplications = computed(() => {
@@ -102,17 +97,14 @@ const hasApprovedApplications = computed(() => {
     if (!app.user_qualifications || !Array.isArray(app.user_qualifications)) return false;
 
     // Check if any qualification meets the criteria
-    return app.user_qualifications.some(qualification => 
-      qualification.endorsement_decision === 'Approved' &&
-      qualification.is_primary_qualification === true
+    return app.user_qualifications.some(qualification =>
+      qualification.endorsement_decision === 'Approved'
     );
   });
 });
 
 const hasNoApplications = computed(() => {
-  return (
-    (!applications.value && applications.value.length === 0)
-  );
+  return applications.value?.length === 0;  // Correct and concise check
 });
 
 // Methods
@@ -148,16 +140,34 @@ const visitApplication = (app) => {
   }
 };
 
-const openCertificateModal = async () => {
-  try {
-    dashboardStore.setShowCertificateModal(true);
-  } catch (error) {
-    console.error('Error fetching certificate data:', error);
+// Renamed to handleViewCertificate for clarity and consistency
+const handleViewCertificate = () => {
+  // Trigger the logic to show the certificate modal, likely by setting a reactive variable.
+  dashboardStore.setShowCertificateModal(true);
+  //find the primary and approved qualification
+  const primaryApprovedQualification = getPrimaryQualifications.value[0] //get the first one
+
+  if (primaryApprovedQualification) {
+    //find the application from which the qualification belongs to, important since selectedApplication expects application object
+    const applicationForCertificate = applications.value.find(app =>
+      app.user_qualifications.some(q => q.id === primaryApprovedQualification.id)
+    );
+
+    if (applicationForCertificate) {
+      dashboardStore.setSelectedApplication({ results: [applicationForCertificate] }); //set the selected application to the store, since that's what's used in the template
+    }
+    else {
+      console.error('Application not found for the primary qualification');
+    }
+  }
+  else {
+    console.error('No primary and approved qualification found to display certificate.');
   }
 };
 
 const closeCertificateModal = () => {
   dashboardStore.setShowCertificateModal(false);
+  dashboardStore.setSelectedApplication(null); //clear selected application
 };
 
 onMounted(fetchDashboardData);
@@ -179,4 +189,10 @@ watch(applications, (newApplications) => {
   }
 }, { deep: true });
 
+//Watch for changes in userDetail
+watch(userDetail, (newUserDetails) => {
+  if (newUserDetails && newUserDetails.username) {
+    fetchDashboardData()
+  }
+}, { deep: true })
 </script>

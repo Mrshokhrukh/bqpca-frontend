@@ -1,4 +1,3 @@
-
 <template>
   <div class="bg-white p-6 rounded-lg shadow-md">
     <h3 class="font-semibold mb-4">{{ title }}</h3>

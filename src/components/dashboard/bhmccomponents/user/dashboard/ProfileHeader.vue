@@ -41,7 +41,7 @@
           </div>
 
           <!-- Certificate Button -->
-          <button v-if="showCertificate" @click="$emit('view-certificate')"
+          <button v-if="shouldShowViewCertificateButton" @click="$emit('view-certificate')"
             class="relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-2.5 px-6 rounded-full transition-all duration-300 hover:shadow-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:-translate-y-0.5">
             <span class="relative z-10">View Certificate</span>
           </button>
@@ -53,8 +53,9 @@
 
 <script setup>
 import { UserIcon } from '@heroicons/vue/24/outline';
+import { computed } from 'vue';
 
-defineProps({
+const props = defineProps({
   userDetail: {
     type: Object,
     required: true
@@ -63,10 +64,15 @@ defineProps({
     type: String,
     default: ''
   },
-  showCertificate: {
-    type: Boolean,
-    default: false
-  }
+    //REMOVING showCertificate prop
+//  showCertificate: {
+//    type: Boolean,
+//    default: false
+//  }
+    qualifications:{ //new prop
+        type: Array,
+        required: true
+    }
 });
 
 defineEmits(['view-certificate']);
@@ -94,4 +100,11 @@ const getStatusDotClass = (message) => {
   return Object.entries(classes).find(([key]) => message.toLowerCase().includes(key))?.[1]
     || 'bg-gray-500';
 };
+
+//Computed property for certificate button visibility
+const shouldShowViewCertificateButton = computed(() => {
+    return props.qualifications.some(
+        (q) => q.is_primary_qualification && q.endorsement_decision === 'Approved'
+    )
+});
 </script>
