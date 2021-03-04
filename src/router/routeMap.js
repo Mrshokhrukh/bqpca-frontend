@@ -104,11 +104,9 @@ export default {
     },
     ecpf: {
       dashboard: ecpfDashboard,
-      // my_applications: () => import('@/views/admin/ECPF/MyApplications.vue'),
-      // new_application: () => import('@/views/admin/ECPF/NewApplication.vue'),
-      // application_status: () => import('@/views/admin/ECPF/ApplicationStatus.vue'),
-      // profile: () => import('@/views/admin/ECPF/Profile.vue'),
-      // ... other ECPF routes for a regular user
+      individual_ecpf: ecpfDashboard,
+      collaborated_ecpf: ecpfDashboard,
+      new_branch_ecpf: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,
