@@ -42,6 +42,10 @@ import ECPFUserDashboard from '@/components/dashboard/ecpfcomponents/user/ECPFUs
 import IndividualECPF from '@/components/dashboard/ecpfcomponents/user/IndividualECPF.vue';
 import CollaboratedECPF from '@/components/dashboard/ecpfcomponents/user/CollaboratedECPF.vue';
 import NewBranchECPF from '@/components/dashboard/ecpfcomponents/user/NewBranchECPF.vue';
+import ECPFRenewal from '@/components/dashboard/ecpfcomponents/user/ECPFRenewal.vue';
+import ECPFNameChange from '@/components/dashboard/ecpfcomponents/user/ECPFNameChange.vue';
+import ECPFLocationChange from '@/components/dashboard/ecpfcomponents/user/ECPFLocationChange.vue';
+import ECPFOwnershipChange from '@/components/dashboard/ecpfcomponents/user/ECPFOwnershipChange.vue';
 // Other ECPF Components
 import ECPFDealingOfficerDashboard from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFDealingOfficerDashboard.vue';
 import ECPFApplicationLists from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFApplicationLists.vue';
@@ -69,7 +73,14 @@ const ecpfUserComponent = computed(() => {
       return CollaboratedECPF;
     case path.endsWith('/ecpf/new_branch_ecpf'):
       return NewBranchECPF;
-
+    case path.endsWith('/ecpf/ecpf_renewal'):
+      return ECPFRenewal;
+    case path.endsWith('/ecpf/ecpf_name_change'):
+      return ECPFNameChange;
+    case path.endsWith('/ecpf/ecpf_location_change'):
+      return ECPFLocationChange;
+    case path.endsWith('/ecpf/ecpf_ownership_change'):
+      return ECPFOwnershipChange
     default:
       return null;
   }
