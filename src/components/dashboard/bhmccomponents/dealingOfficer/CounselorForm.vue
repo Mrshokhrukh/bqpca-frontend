@@ -33,7 +33,7 @@
                 <option value="All Statuses">All Statuses</option>
                 <option value="Approved">Approved</option>
                 <option value="Pending">Pending</option>
-                <option value="Rejected">Rejected</option>
+                <option value="Regretted">Rejected</option>
             </select>
         </div>
 
@@ -78,7 +78,7 @@
                             <span :class="[
                                 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
                                 counsellor.review_decision === 'Approved' ? 'bg-green-100 text-green-800' :
-                                    counsellor.review_decision === 'Rejected' ? 'bg-red-100 text-red-800' :
+                                    counsellor.review_decision === 'Regretted' ? 'bg-red-100 text-red-800' :
                                         'bg-yellow-100 text-yellow-800'
                             ]">
                                 {{ counsellor.review_decision }}
@@ -180,6 +180,27 @@
                             </div>
                         </div>
 
+                        <!-- Attachments -->
+                        <div class="border-b pb-4">
+                            <h3 class="font-medium text-gray-900 mb-2">Attachments</h3>
+                            <div v-if="selectedCounsellor.Counselling_attachments && selectedCounsellor.Counselling_attachments.length > 0"
+                                class="space-y-2">
+                                <div v-for="attachment in selectedCounsellor.Counselling_attachments"
+                                    :key="attachment.id" class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                    </svg>
+                                    <a :href="attachment.file" target="_blank"
+                                        class="text-blue-600 hover:underline text-sm">
+                                        {{ getFileName(attachment.file) }}
+                                    </a>
+                                </div>
+                            </div>
+                            <p v-else class="text-sm text-gray-500">No attachments</p>
+                        </div>
+
                         <!-- Additional Information -->
                         <div class="border-b pb-4">
                             <h3 class="font-medium text-gray-900 mb-2">Additional Information</h3>
@@ -201,7 +222,7 @@
                                         <span :class="[
                                             'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
                                             selectedCounsellor.review_decision === 'Approved' ? 'bg-green-100 text-green-800' :
-                                                selectedCounsellor.review_decision === 'Rejected' ? 'bg-red-100 text-red-800' :
+                                                selectedCounsellor.review_decision === 'Regretted' ? 'bg-red-100 text-red-800' :
                                                     'bg-yellow-100 text-yellow-800'
                                         ]">
                                             {{ selectedCounsellor.review_decision }}
@@ -276,7 +297,7 @@
 
                         <!-- Action Buttons -->
                         <div v-else class="flex justify-end space-x-3 mt-4">
-                            <button v-if="selectedCounsellor.review_decision !== 'Rejected'"
+                            <button v-if="selectedCounsellor.review_decision !== 'Regretted'"
                                 @click="promptConfirmation('reject')"
                                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none">
                                 Reject
@@ -311,7 +332,7 @@ const reviewRemarks = ref('')
 
 // Computed properties
 const totalApplications = computed(() => counsellors.value.length)
-const pendingApplications = computed(() => counsellors.value.filter(c => c.review_decision !== 'Approved' && c.review_decision !== 'Rejected').length)
+const pendingApplications = computed(() => counsellors.value.filter(c => c.review_decision !== 'Approved' && c.review_decision !== 'Regretted').length)
 
 const filteredCounsellors = computed(() => {
     let result = [...counsellors.value]
@@ -363,6 +384,12 @@ const formatDate = (date) => {
     }).format(date)
 }
 
+const getFileName = (url) => {
+    if (!url) return 'File'
+    const parts = url.split('/')
+    return parts[parts.length - 1]
+}
+
 const promptConfirmation = (action) => {
     confirmAction.value = action
     reviewRemarks.value = ''
@@ -377,16 +404,16 @@ const cancelConfirmation = () => {
 const confirmUpdateStatus = async () => {
     if (!selectedCounsellor.value || !confirmAction.value) return
 
-    const status = confirmAction.value === 'approve' ? 'Approved' : 'Rejected'
+    const status = confirmAction.value === 'approve' ? 'Approved' : 'Regretted'
 
     try {
-        await apiService.patchBmhcCounsellor(selectedCounsellor.value.cid, {
+        await apiService.patchBmhcCounsellor(selectedCounsellor.value.id, {
             review_decision: status,
             review_remarks: reviewRemarks.value || null
         })
 
         // Update local state
-        const index = counsellors.value.findIndex(c => c.cid === selectedCounsellor.value.cid)
+        const index = counsellors.value.findIndex(c => c.id === selectedCounsellor.value.id)
         if (index !== -1) {
             counsellors.value[index].review_decision = status
             counsellors.value[index].review_remarks = reviewRemarks.value || null
