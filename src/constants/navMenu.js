@@ -238,12 +238,12 @@ const serviceSpecificMenuItems = {
       {
         name: 'Linkage Establishment',
         icon: getIconComponent('Link'), // Use a suitable 'link' icon
-        route: (serviceType) => `/admin/user/${serviceType}/linkage_establishment`,
+        route: (serviceType) => `/admin/user/${serviceType}/ecpf_linkage_establishment`,
       },
       {
         name: 'Education Fair',
         icon: getIconComponent('Briefcase'), // Briefcase is good for fairs/events
-        route: (serviceType) => `/admin/user/${serviceType}/education_fair`,
+        route: (serviceType) => `/admin/user/${serviceType}/ecpf_education_fair`,
       },
       {
         name: 'Promotional Event',
