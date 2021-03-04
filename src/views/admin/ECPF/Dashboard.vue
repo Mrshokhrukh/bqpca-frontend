@@ -46,6 +46,8 @@ import ECPFRenewal from '@/components/dashboard/ecpfcomponents/user/ECPFRenewal.
 import ECPFNameChange from '@/components/dashboard/ecpfcomponents/user/ECPFNameChange.vue';
 import ECPFLocationChange from '@/components/dashboard/ecpfcomponents/user/ECPFLocationChange.vue';
 import ECPFOwnershipChange from '@/components/dashboard/ecpfcomponents/user/ECPFOwnershipChange.vue';
+import ECPFLinkageEstablishment from '@/components/dashboard/ecpfcomponents/user/ECPFLinkageEstablishment.vue';
+import ECPFEducationFair from '@/components/dashboard/ecpfcomponents/user/ECPFEducationFair.vue';
 // Other ECPF Components
 import ECPFDealingOfficerDashboard from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFDealingOfficerDashboard.vue';
 import ECPFApplicationLists from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFApplicationLists.vue';
@@ -81,6 +83,10 @@ const ecpfUserComponent = computed(() => {
       return ECPFLocationChange;
     case path.endsWith('/ecpf/ecpf_ownership_change'):
       return ECPFOwnershipChange
+    case path.endsWith('/ecpf/ecpf_linkage_establishment'):
+      return ECPFLinkageEstablishment;
+    case path.endsWith('/ecpf/ecpf_education_fair'):
+      return ECPFEducationFair;
     default:
       return null;
   }

@@ -110,6 +110,8 @@ export default {
       ecpf_name_change: ecpfDashboard,
       ecpf_location_change: ecpfDashboard,
       ecpf_ownership_change: ecpfDashboard,
+      ecpf_linkage_establishment: ecpfDashboard,
+      ecpf_education_fair: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,

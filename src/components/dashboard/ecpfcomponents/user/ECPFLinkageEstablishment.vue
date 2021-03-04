@@ -1,278 +1,205 @@
 <template>
-    <div class="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md">
-      <div class="p-6 border-b border-gray-200">
-        <h1 class="text-2xl font-bold text-gray-900">Linkage Establishment Form</h1>
-      </div>
-  
-      <div class="p-6">
-        <form @submit.prevent="handleSubmit" class="space-y-6">
-          <div v-for="(linkage, index) in linkages" :key="index" 
-               class="p-4 border rounded-lg bg-gray-50">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <!-- Institution Name -->
-              <div>
-                <label class="text-sm font-medium mb-1 block text-gray-700">
-                  Institution Name *
-                </label>
-                <input
-                  v-model="linkage.name"
-                  type="text"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter institution name"
-                  required
-                />
-              </div>
-  
-              <!-- Location -->
-              <div>
-                <label class="text-sm font-medium mb-1 block text-gray-700">
-                  Location *
-                </label>
-                <input
-                  v-model="linkage.location"
-                  type="text"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter location"
-                  required
-                />
-              </div>
-  
-              <!-- Country -->
-              <div>
-                <label class="text-sm font-medium mb-1 block text-gray-700">
-                  Country *
-                </label>
-                <select
-                  v-model="linkage.country"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                >
-                  <option value="">Select country</option>
-                  <option v-for="country in countries" 
-                          :key="country.value" 
-                          :value="country.value">
-                    {{ country.label }}
-                  </option>
-                </select>
-              </div>
-            </div>
-  
-            <!-- File Uploads -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <!-- Recognition Document -->
-              <div>
-                <label class="text-sm font-medium mb-1 block text-gray-700">
-                  Recognition/Accreditation *
-                </label>
-                <div class="flex items-center gap-2">
-                  <input
-                    type="file"
-                    @change="(e) => handleFileChange(e, index, 'recognition')"
-                    accept=".pdf,.doc,.docx"
-                    class="flex-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 
-                           file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 
-                           hover:file:bg-violet-100"
-                  />
-                  <a v-if="linkage.recognitionUrl"
-                     :href="linkage.recognitionUrl"
-                     target="_blank"
-                     class="px-3 py-1 text-sm border rounded-md hover:bg-gray-50">
-                    View
-                  </a>
-                </div>
-              </div>
-  
-              <!-- Approval Document -->
-              <div>
-                <label class="text-sm font-medium mb-1 block text-gray-700">
-                  University Approval *
-                </label>
-                <div class="flex items-center gap-2">
-                  <input
-                    type="file"
-                    @change="(e) => handleFileChange(e, index, 'approval')"
-                    accept=".pdf,.doc,.docx"
-                    class="flex-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 
-                           file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 
-                           hover:file:bg-violet-100"
-                  />
-                  <a v-if="linkage.approvalUrl"
-                     :href="linkage.approvalUrl"
-                     target="_blank"
-                     class="px-3 py-1 text-sm border rounded-md hover:bg-gray-50">
-                    View
-                  </a>
-                </div>
-              </div>
-            </div>
-  
-            <!-- Delete Button -->
-            <button v-if="linkages.length > 1"
-                    type="button"
-                    @click="deleteLinkage(index)"
-                    class="mt-2 px-4 py-2 text-sm text-red-600 bg-red-50 rounded-md 
-                           hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 
-                           inline-flex items-center">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-              Remove Linkage
-            </button>
-          </div>
-  
-          <!-- Form Actions -->
-          <div class="flex flex-col gap-4">
-            <button
-              type="button"
-              @click="addLinkage"
-              class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 
-                     rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 
-                     focus:ring-blue-500 inline-flex items-center justify-center">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Add Another Linkage
-            </button>
-  
-            <div class="flex gap-4">
-              <button
-                type="submit"
-                :disabled="isSubmitting"
-                class="flex-1 px-4 py-2 text-white bg-blue-600 rounded-md 
-                       hover:bg-blue-700 focus:outline-none focus:ring-2 
-                       focus:ring-blue-500 disabled:bg-blue-300">
-                {{ isSubmitting ? 'Submitting...' : 'Submit Form' }}
-              </button>
-              <button
-                type="button"
-                @click="resetForm"
-                class="flex-1 px-4 py-2 text-gray-700 bg-white border border-gray-300 
-                       rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 
-                       focus:ring-blue-500">
-                Reset Form
-              </button>
-            </div>
-          </div>
-  
-          <!-- Status Messages -->
-          <div v-if="status.message" 
-               :class="[
-                 'p-4 rounded-md', 
-                 status.type === 'error' ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'
-               ]">
-            {{ status.message }}
-          </div>
-        </form>
-      </div>
+  <div class="p-8 min-h-screen bg-gray-50">
+    <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">ECPF Linkage Establishment</h1>
+      <p class="text-gray-600">
+        Submit details for establishing a linkage with a Higher Education Institution (HEI).
+      </p>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  
-  const countries = [
-      { label: 'United States', value: 'US' },
-      { label: 'Canada', value: 'CA' },
-      { label: 'United Kingdom', value: 'UK' },
-      { label: 'Bhutan', value: 'BT' },
-      { label: 'India', value: 'IN' }
-    ];
-  
-    const INITIAL_LINKAGE = {
-    name: '',
-    location: '',
-    country: '',
-    recognition: null,
-    approval: null,
-    recognitionUrl: null,
-    approvalUrl: null
-  };
-  
-  const linkages = ref([{ ...INITIAL_LINKAGE }]);
-  const isSubmitting = ref(false);
-  const status = ref({ type: '', message: '' });
-  
-  const addLinkage = () => {
-    linkages.value.push({ ...INITIAL_LINKAGE });
-  };
-  
-  const deleteLinkage = (index) => {
-    linkages.value = linkages.value.filter((_, i) => i !== index);
-  };
-  
-  const handleFileChange = async (event, index, type) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-  
+
+    <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+      <form @submit.prevent="submitForm">
+        <section class="mb-8">
+          <h2 class="text-lg font-medium mb-4 text-gray-700">ECPF Details (Read-Only)</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Name of the ECPF</label>
+              <input type="text" :value="ecpfDetails.name" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Proprietor of the ECPF</label>
+              <input type="text" :value="ecpfDetails.proprietor" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">CID of the Proprietor</label>
+              <input type="text" :value="ecpfDetails.cid" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Location of ECPF</label>
+              <input type="text" :value="ecpfDetails.location" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Contact No.</label>
+              <input type="text" :value="ecpfDetails.contactNo" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Email Address</label>
+              <input type="email" :value="ecpfDetails.email" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-lg font-medium mb-4 text-gray-700">Institute Linkage Details (HEI)</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Name of HEI</label>
+              <input type="text" v-model="linkageDetails.name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Official Website</label>
+              <input type="url" v-model="linkageDetails.website" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Location</label>
+              <input type="text" v-model="linkageDetails.location" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Country</label>
+              <select v-model="linkageDetails.country" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                <option value="">Select Country</option>
+                <option v-for="country in countryOptions" :key="country.code" :value="country.code">{{ country.name }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Year of Establishment</label>
+              <input type="number" v-model.number="linkageDetails.yearEstablished" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Recognised By</label>
+              <input type="text" v-model="linkageDetails.recognizedBy" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Accredited By</label>
+              <input type="text" v-model="linkageDetails.accreditedBy" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Affiliation to (if applicable)</label>
+              <input type="text" v-model="linkageDetails.affiliation" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Approval from relevant professional bodies (if relevant)</label>
+              <input type="text" v-model="linkageDetails.approval" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+                 <label class="block text-sm font-medium text-gray-700">Report on visit/collaboration</label>
+                <div class="flex items-center space-x-2">
+                  <input type="text" v-model="linkageDetails.report" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+                  <label class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                    <input type="file" @change="handleReportUpload" class="hidden" />
+                    <span>Upload</span>
+                  </label>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Auto (File upload, Provision to edit)</p>
+              </div>
+          </div>
+        </section>
+          <!-- Submit Section -->
+        <div class="mt-6 flex justify-end space-x-4">
+          <button type="button" @click="saveAsDraft" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">Save as Draft</button>
+          <button type="submit"  class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { reactive, ref, onMounted } from 'vue';
+import { useToast } from 'vue-toastification';
+import apiService from '@/services/services'; //  import your service
+
+
+const toast = useToast();
+
+const ecpfDetails = reactive({
+  name: 'Example ECPF',
+  proprietor: 'John Doe',
+  cid: '1234567890',
+  location: 'Thimphu',
+  contactNo: '+975-17123456',
+  email: 'john.doe@example.com',
+});
+
+const linkageDetails = reactive({
+  name: '',
+  website: '',
+  location: '',
+  country: '',
+  yearEstablished: null,
+  recognizedBy: '',
+  accreditedBy: '',
+  affiliation: '',
+  approval: '',
+  report: null,
+});
+
+const countryOptions = ref([]); // Populate with country data
+const reportFile = ref(null);
+
+onMounted(async () => {
+  // Fetch country list (replace with your actual API)
     try {
-      // Simulate file upload
-      const url = await simulateFileUpload(file);
-      linkages.value[index][type] = file;
-      linkages.value[index][`${type}Url`] = url;
+        const response = await apiService.getCountries();
+        countryOptions.value = response.data;
     } catch (error) {
-      status.value = {
-        type: 'error',
-        message: `Error uploading ${type} document: ${error.message}`
-      };
+        console.error('Error fetching countries:', error);
+         toast.error('Failed to load countries.');
     }
-  };
-  
-  const simulateFileUpload = (file) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(`https://example.com/uploads/${file.name}`);
-      }, 500);
-    });
-  };
-  
-  const validateForm = () => {
-    return linkages.value.every(linkage => 
-      linkage.name && 
-      linkage.location && 
-      linkage.country && 
-      linkage.recognition && 
-      linkage.approval
-    );
-  };
-  
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      status.value = {
-        type: 'error',
-        message: 'Please fill in all required fields for each linkage.'
-      };
-      return;
+});
+
+const handleReportUpload = (event) => {
+  const file = event.target.files[0];
+    if (file) {
+        linkageDetails.report = file.name; // Just store the name for now
+        reportFile.value = file; // Keep the actual File object
+         //  Upload file using a service, and store the returned URL
+    } else {
+        linkageDetails.report = null;
+         reportFile.value = null;
     }
-  
-    isSubmitting.value = true;
-    status.value = { type: '', message: '' };
-  
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      status.value = {
-        type: 'success',
-        message: 'Linkage establishment request submitted successfully!'
-      };
-      resetForm();
-    } catch (error) {
-      status.value = {
-        type: 'error',
-        message: `Failed to submit request: ${error.message}`
-      };
-    } finally {
-      isSubmitting.value = false;
-    }
-  };
-  
-  const resetForm = () => {
-    linkages.value = [{ ...INITIAL_LINKAGE }];
-    status.value = { type: '', message: '' };
-  };
-  </script>
-  
-  <style scoped>
-  /* Additional custom styles can be added here if needed */
-  </style>
+};
+
+const submitForm = () => {
+  // Basic validation
+  if (!linkageDetails.name || !linkageDetails.website || !linkageDetails.location || !linkageDetails.country) {
+    toast.error("Please fill in all required fields.");
+    return;
+  }
+
+    // Prepare data for submission (add ecpfDetails too)
+    const formData = {
+        ecpfDetails: ecpfDetails,
+        linkageDetails: linkageDetails,
+        // Include the report file if you're doing direct upload
+        reportFile: reportFile.value //  Only if direct upload
+    };
+
+  console.log("Submitting:", formData);
+
+    //  API call to submit the linkage application (replace with actual API)
+    //   try {
+    //     const response = await axios.post('/api/linkage', formData);
+    //     toast.success("Linkage application submitted successfully!");
+    //     //  Redirect or update UI
+    //   } catch (error) {
+    //        console.error("Error submitting form:", error);
+    //        toast.error("An error occurred while submitting the application.");
+    //      }
+      toast.success("Linkage application submitted successfully!");
+};
+
+const saveAsDraft = () => {
+  //  Save as draft (either local storage or API call)
+   const draftData = {
+        ecpfDetails,  // Include ecpfDetails here
+        linkageDetails
+    };
+    console.log("Saving draft:", draftData);
+     toast.info("Draft saved.");
+}
+
+
+</script>
