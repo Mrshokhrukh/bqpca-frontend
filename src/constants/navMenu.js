@@ -251,15 +251,15 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'In-house Event',
-            route: (serviceType) => `/admin/user/${serviceType}/in_house_event`,
+            route: (serviceType) => `/admin/user/${serviceType}/ecpf_inhouse_event`,
           },
           {
             name: 'Mass Media Event',
-            route: (serviceType) => `/admin/user/${serviceType}/mass_media_event`,
+            route: (serviceType) => `/admin/user/${serviceType}/ecpf_massmedia`,
           },
           {
             name: 'HEI Visit',
-            route: (serviceType) => `/admin/user/${serviceType}/hei_visit`,
+            route: (serviceType) => `/admin/user/${serviceType}/ecpf_hei_visit`,
           },
         ],
       },

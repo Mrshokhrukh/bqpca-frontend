@@ -48,6 +48,9 @@ import ECPFLocationChange from '@/components/dashboard/ecpfcomponents/user/ECPFL
 import ECPFOwnershipChange from '@/components/dashboard/ecpfcomponents/user/ECPFOwnershipChange.vue';
 import ECPFLinkageEstablishment from '@/components/dashboard/ecpfcomponents/user/ECPFLinkageEstablishment.vue';
 import ECPFEducationFair from '@/components/dashboard/ecpfcomponents/user/ECPFEducationFair.vue';
+import ECPFInhouseEvent from '@/components/dashboard/ecpfcomponents/user/ECPFInhouseEvent.vue';
+import ECPFMassmedia from '@/components/dashboard/ecpfcomponents/user/ECPFMassmedia.vue';
+import ECPFHeiVisit from '@/components/dashboard/ecpfcomponents/user/ECPFHeiVisit.vue';
 // Other ECPF Components
 import ECPFDealingOfficerDashboard from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFDealingOfficerDashboard.vue';
 import ECPFApplicationLists from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFApplicationLists.vue';
@@ -87,6 +90,12 @@ const ecpfUserComponent = computed(() => {
       return ECPFLinkageEstablishment;
     case path.endsWith('/ecpf/ecpf_education_fair'):
       return ECPFEducationFair;
+    case path.endsWith('/ecpf/ecpf_inhouse_event'):
+      return ECPFInhouseEvent;
+    case path.endsWith('/ecpf/ecpf_massmedia'):
+      return ECPFMassmedia;
+    case path.endsWith('/ecpf/ecpf_hei_visit'):
+      return ECPFHeiVisit;  
     default:
       return null;
   }
