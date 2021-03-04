@@ -1,6 +1,5 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
-    <!-- Page Header -->
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
       <h1 class="text-4xl font-bold text-gray-900 mb-3">Re-registration Applications</h1>
       <div class="flex items-center text-gray-600">
@@ -16,7 +15,6 @@
       </div>
     </div>
 
-    <!-- Search and Filters -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
       <div class="relative">
         <input v-model="searchQuery" type="text" placeholder="Search by name, CID or registration number..."
@@ -33,12 +31,11 @@
           <option value="all">All Statuses</option>
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
-          <option value="Rejected">Rejected</option>
+          <option value="Regretted">Regretted</option>
         </select>
       </div>
     </div>
 
-    <!-- Table -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -61,8 +58,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
-                  <img :src="app.passport_photo || '/placeholder-avatar.png'"
-                    class="h-8 w-8 rounded-full object-cover mr-3" @error="handleImageError">
+                  <img :src="app.passport_photo || ''" class="h-8 w-8 rounded-full object-cover mr-3">
                   <div>
                     <div class="text-sm font-medium text-gray-900">{{ app.full_name }}</div>
                     <div class="text-sm text-gray-500">{{ app.cid_no }}</div>
@@ -92,7 +88,6 @@
       </div>
     </div>
 
-    <!-- Pagination -->
     <div class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100">
       <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
@@ -132,7 +127,8 @@
     </div>
 
     <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
-      @update="handleUpdate" />
+      @update="handleUpdate" :personnel-categories="personnelCategories"
+      :personnel-subcategories="personnelSubcategories" :sectors="sectors" :practice-addresses="practiceAddresses" />
   </div>
 </template>
 
@@ -141,7 +137,6 @@ import { ref, computed, onMounted } from 'vue';
 import apiServices from '@/services/services';
 import ViewDetailsModal from './modals/ViewApplicationDetailsModal.vue';
 
-// State
 const applications = ref([]);
 const filterStatus = ref('all');
 const searchQuery = ref('');
@@ -149,34 +144,34 @@ const currentPage = ref(1);
 const itemsPerPage = 10;
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
+const personnelCategories = ref([]);
+const personnelSubcategories = ref([]);
+const sectors = ref([]);
 
-// Computed properties
 const pendingCount = computed(() => {
-  return filteredApplications.value.filter(app => getStatus(app) === 'Pending').length; // Use filteredApplications here
+  return filteredApplications.value.filter(app => getStatus(app) === 'Pending').length;
 });
 
+// Filter for "Re-registration"
 const filteredApplications = computed(() => {
-  let filtered = applications.value;
-
-  // Filter by registration type "Re-registration" (id: 1)
-  filtered = filtered.filter(app => app.registration_type.id === 1);
-
-  if (filterStatus.value !== 'all') {
-    filtered = filtered.filter(app => getStatus(app) === filterStatus.value);
-  }
-
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(app => {
-      return (
-        app.full_name?.toLowerCase().includes(query) ||
-        app.cid_no?.toLowerCase().includes(query) ||
-        app.registration_no?.toLowerCase().includes(query)
-      );
+  return applications.value.filter(app => app.registration_type_name === 'Re-Registration')
+    .filter(app => {
+      if (filterStatus.value !== 'all') {
+        return getStatus(app) === filterStatus.value;
+      }
+      return true;
+    })
+    .filter(app => {
+      if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        return (
+          app.full_name?.toLowerCase().includes(query) ||
+          app.cid_no?.toLowerCase().includes(query) ||
+          app.registration_no?.toLowerCase().includes(query)
+        );
+      }
+      return true;
     });
-  }
-
-  return filtered;
 });
 
 const paginatedApplications = computed(() => {
@@ -197,12 +192,30 @@ const paginationEnd = computed(() => {
   return Math.min(currentPage.value * itemsPerPage, filteredApplications.value.length);
 });
 
-// Methods
 const getStatus = (app) => {
-  if (!app.user_qualifications || app.user_qualifications.length === 0) {
+  if (!Array.isArray(app.user_qualifications) || app.user_qualifications.length === 0) {
     return 'Pending';
   }
-  return app.user_qualifications[0].application_review_status || 'Pending';
+
+  for (const qualification of app.user_qualifications) {
+    const { application_review_status, physical_review_status, endorsement_decision } = qualification;
+
+    if (application_review_status === 'Regretted' || physical_review_status === 'Regretted' || endorsement_decision === 'Regretted') {
+      return 'Regretted';
+    }
+  }
+
+  const allApproved = app.user_qualifications.every(qualification =>
+    qualification.application_review_status === 'Approved' &&
+    qualification.physical_review_status === 'Approved' &&
+    qualification.endorsement_decision === 'Approved'
+  );
+
+  if (allApproved) {
+    return 'Approved';
+  }
+
+  return 'Pending';
 };
 
 const getStatusClasses = (app) => {
@@ -212,12 +225,13 @@ const getStatusClasses = (app) => {
     {
       'bg-yellow-100 text-yellow-800': status === 'Pending',
       'bg-green-100 text-green-800': status === 'Approved',
-      'bg-red-100 text-red-800': status === 'Rejected'
+      'bg-red-100 text-red-800': status === 'Regretted'
     }
   ];
 };
 
 const formatDate = (date) => {
+  if (!date) return '';
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -225,38 +239,30 @@ const formatDate = (date) => {
   });
 };
 
-const handleImageError = (event) => {
-  event.target.src = '/placeholder-avatar.png';
-};
-
-// API interactions
 const fetchApplications = async () => {
   try {
     const response = await apiServices.getBhmcNewApplications();
-    if (!response.data?.results || !Array.isArray(response.data.results)) {
-      console.error('Invalid API response format');
-      return;
-    }
-    // Directly assign and filter in computed property `filteredApplications`
-    applications.value = response.data.results;
+    applications.value = Array.isArray(response.data) ? response.data : (response.data?.results || []);
+
+    const categories = await apiServices.getMastersParticipationCategories();
+    personnelCategories.value = Array.isArray(categories.data) ? categories.data : (categories.data?.results || []);
+
+    const subcategories = await apiServices.getMastersSubCategories();
+    personnelSubcategories.value = Array.isArray(subcategories.data) ? subcategories.data : (subcategories.data?.results || [])
+
+    const sectorData = await apiServices.getMastersSectors();
+    sectors.value = Array.isArray(sectorData.data) ? sectorData.data : (sectorData.data?.results || []);
+
+
   } catch (error) {
-    console.error('Error fetching applications:', error);
+    console.error('Error fetching applications or master data:', error);
   }
 };
 
 const viewDetails = async (application) => {
   try {
-    // Fetch all users
     const response = await apiServices.getAllUsers();
-
-    // Log the response to see its structure
-    console.log('Users response:', response);
-
-    // Check if response.data is an array, if not, use response.data.results if available
-    const users = Array.isArray(response.data) ? response.data :
-      (response.data?.results || []);
-
-    // Find matching user by CID
+    const users = Array.isArray(response.data) ? response.data : (response.data?.results || []);
     const matchingUser = users.find(user => user.cid === application.cid_no);
 
     selectedApplication.value = {
@@ -267,27 +273,14 @@ const viewDetails = async (application) => {
     isModalOpen.value = true;
   } catch (error) {
     console.error('Error fetching user details:', error);
-    // Still show the modal with available data
-    selectedApplication.value = {
-      ...application,
-      is_counselor: false
-    };
+    selectedApplication.value = { ...application, is_counselor: false }; //safe fallback
     isModalOpen.value = true;
   }
 };
 
-// In ApplicationLists.vue
-const handleUpdate = async (updatedApplication) => {
-  try {
-    // Find and update the application in the local array
-    const index = applications.value.findIndex(app => app.id === updatedApplication.id);
-    if (index !== -1) {
-      // Refresh the entire applications list to get the latest data
-      await fetchApplications();
-    }
-  } catch (error) {
-    console.error('Error updating application:', error);
-  }
+const handleUpdate = async () => {
+  await fetchApplications();
+  closeModal();
 };
 
 const closeModal = () => {
@@ -303,7 +296,6 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++;
 };
 
-// Initialize
 onMounted(() => {
   fetchApplications();
 });
