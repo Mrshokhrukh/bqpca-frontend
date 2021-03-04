@@ -218,22 +218,22 @@ const serviceSpecificMenuItems = {
       {
         name: 'ECPF Renewal',
         icon: getIconComponent('List'), //List icon
-        route: (serviceType) => `/admin/user/${serviceType}/renewal`,
+        route: (serviceType) => `/admin/user/${serviceType}/ecpf_renewal`,
       },
       {
-        name: 'Name Change',
+        name: 'ECPF Name Change',
         icon: getIconComponent('RefreshCw'), // Icon for refresh/change
-        route: (serviceType) => `/admin/user/${serviceType}/name_change`,
+        route: (serviceType) => `/admin/user/${serviceType}/ecpf_name_change`,
       },
       {
         name: 'Location Change',
         icon: getIconComponent('Edit'), // Icon for editing/location
-        route: (serviceType) => `/admin/user/${serviceType}/location_change`,
+        route: (serviceType) => `/admin/user/${serviceType}/ecpf_location_change`,
       },
       {
         name: 'Change in Ownership',
         icon: getIconComponent('Users2'), // Icon representing multiple users
-        route: (serviceType) => `/admin/user/${serviceType}/change_in_ownership`,
+        route: (serviceType) => `/admin/user/${serviceType}/ecpf_ownership_change`,
       },
       {
         name: 'Linkage Establishment',

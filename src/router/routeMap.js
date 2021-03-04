@@ -106,6 +106,10 @@ export default {
       individual_ecpf: ecpfDashboard,
       collaborated_ecpf: ecpfDashboard,
       new_branch_ecpf: ecpfDashboard,
+      ecpf_renewal: ecpfDashboard,
+      ecpf_name_change: ecpfDashboard,
+      ecpf_location_change: ecpfDashboard,
+      ecpf_ownership_change: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,
