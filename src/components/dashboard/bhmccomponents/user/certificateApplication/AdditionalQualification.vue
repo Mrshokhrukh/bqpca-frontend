@@ -7,19 +7,24 @@
 
     <!-- Application Selection -->
     <div class="mb-6">
-      <label for="application" class="block text-sm font-medium text-gray-700 required">Select Application:</label>
-      <select id="application" v-model="selectedApplication"
+      <label for="application" class="block text-sm font-medium text-gray-700 required">Your Application:</label>
+
+      <!-- Option 1: Using an <input type="text"> (Recommended) -->
+      <input type="text" id="application"
         class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-        required>
-        <option value="">Select an Application</option>
-        <option v-for="app in applications" :key="app.id" :value="app.id">
-          {{ app.registration_no }} - {{ app.full_name }}
-        </option>
-      </select>
+        :value="applications.length === 1 ? `${applications[0].registration_no} - ${applications[0].full_name}` : ''"
+        readonly required />
+
+      <p v-if="applications.length > 1" class="mt-1 text-gray-700">
+        <input type="text" id="application"
+          class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+          :value="`${application.registration_no} - ${application.full_name}`" readonly required
+          v-for="application in applications" :key="application.id" v-show="application.cid === authStore.user?.cid" />
+      </p>
+
       <span v-if="errors.application" class="text-sm text-red-500 mt-1">{{ errors.application }}</span>
     </div>
 
-    <!-- Qualification Details Section -->
     <div class="mt-12">
       <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Qualification Details</h3>
@@ -183,7 +188,7 @@ const paymentModal = ref(null);
 
 const isSubmitting = ref(false);
 const applications = ref([]);
-const selectedApplication = ref('');
+// const selectedApplication = ref('');  <-- Remove this line
 const qualificationTypes = ref([]);
 const qualifications = ref([]);
 const universities = ref([]);
@@ -209,14 +214,30 @@ const fetchApplications = async () => {
   try {
     const cid = authStore.user?.cid;
     if (!cid) {
-      toast.error("CID not found. Please ensure you are logged in.");
+      toast.error("CID not found.  Please ensure you are logged in.");
       return;
     }
     const response = await apiService.getApplicationsByCid(cid);
     applications.value = response.data;
+
+    // Set the application ID in localFormData *if* we have one application
+    if (applications.value.length === 1) {
+      localFormData.application = applications.value[0].id;
+    } else if (applications.value.length > 1) {
+      applications.value.forEach((application) => {
+        if (application.cid === authStore.user?.cid) {
+          localFormData.application = application.id
+        }
+      })
+    } else {
+      // Handle the case where no applications are found.
+      errors.application = "No application found for this user.";
+    }
+
   } catch (error) {
     toast.error(error.response?.data?.message || "Failed to fetch applications.");
     console.error("Error fetching applications:", error);
+    errors.application = "Failed to fetch application."; // Set error message
   }
 };
 
@@ -259,8 +280,14 @@ const validateForm = () => {
   Object.keys(errors).forEach(key => delete errors[key]); // Clear previous errors
   let isValid = true;
 
-  if (!selectedApplication.value) {
-    errors.application = "Please select an application.";
+  // No need to check selectedApplication.value anymore
+  // if (!selectedApplication.value) {
+  //   errors.application = "Please select an application.";
+  //   isValid = false;
+  // }
+
+  if (!localFormData.application) {
+    errors.application = "Application information is missing.";
     isValid = false;
   }
   if (!localFormData.qualification_type) {
@@ -339,7 +366,7 @@ const handleSubmitActual = async () => {
     formData.append('is_payment_complete', 'True'); //payment is completed.
     formData.append('payment_id', localFormData.payment_id);
     formData.append('is_active', 'False');
-    formData.append('application', selectedApplication.value); // Use selectedApplication
+    formData.append('application', localFormData.application); // Use localFormData.application
     formData.append('qualification_name', localFormData.qualification_name);
     formData.append('qualification_type', localFormData.qualification_type);
     formData.append('institute_university', localFormData.institute);
@@ -397,7 +424,7 @@ onMounted(async () => {
 
   } catch (error) {
     console.error('Error fetching master data:', error);
-    toast.error('Failed to fetch master data. Please try again.');
+    toast.error('Failed to fetch master data.  Please try again.');
   }
 });
 </script>

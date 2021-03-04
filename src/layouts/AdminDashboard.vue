@@ -166,7 +166,7 @@
 import { ref, computed, onBeforeMount, reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import { useHealthCertificationStore } from '@/stores/healthCertificationStore';
+import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore';
 import {
   Menu,
   X as XIcon,

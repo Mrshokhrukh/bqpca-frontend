@@ -145,8 +145,6 @@ const visitApplication = (app) => {
 
 const openCertificateModal = async () => {
   try {
-    // The store action now handles setting the selected application
-    // The store action now handles setting the selected application
     dashboardStore.setShowCertificateModal(true);
   } catch (error) {
     console.error('Error fetching certificate data:', error);

@@ -57,7 +57,7 @@ const iconMap = {
   Users2, //Added for Group
   Monitor,     // Include in the map
 }
-import { useHealthCertificationStore } from '@/stores/healthCertificationStore'
+import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
 import { useAuthStore } from '@/stores/authStore'
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {

@@ -1,4 +1,4 @@
-// src/stores/healthCertificationStore.js
+// src/stores/mhpcNavigationStore.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import bmhcServices from '@/services/bmhcservices'
@@ -37,10 +37,7 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
 
   const hasApprovedQualification = computed(() => {
     const application = currentUserApplication.value
-    console.log('Current User Application:', application); // Debugging line
     if (!application?.user_qualifications) return false;
-
-    console.log('User Qualifications:', application.user_qualifications); // Debugging line
     return application.user_qualifications.some(
       qual => qual.endorsement_decision === 'Approved'
     );
@@ -67,95 +64,95 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
 
     return monthsSinceExpiry > 0 && monthsSinceExpiry <= 2
   })
-    const visibleMenus = computed(() => {
-      // 1. After Registration (but before application):
-      if (!hasSubmittedApplication.value) {
-          return {
-              baseMenus: {
-                  dashboard: true,
-                  certification: true,
-                  cpdManagement: false,
-                  cogsManagement: false,
-                  profile: true,
-              },
-              certificationSubMenus: {
-                  applyForCertification: true,
-                  myApplications: false,
-                  renewal: false,
-                  reRegistration: false,
-                  additionalQualification: false, // Add it here, initially false
-              },
-          };
-      }
-
-      // 2. Once Application is Applied (but not yet approved):
-      if (hasSubmittedApplication.value && !hasApprovedQualification.value) {
-          return {
-              baseMenus: {
-                  dashboard: true,
-                  certification: true,
-                  cpdManagement: false,
-                  cogsManagement: false,
-                  profile: true,
-              },
-              certificationSubMenus: {
-                  applyForCertification: true,
-                  myApplications: true,
-                  renewal: false,
-                  reRegistration: false,
-                  additionalQualification: false, // Also false here
-              },
-          };
-      }
-
-      // 3. Once Application is Approved:
-      if (hasApprovedQualification.value) {
-          let baseMenus = {
-              dashboard: true,
-              certification: true,
-              cpdManagement: true,
-              cogsManagement: true,
-              profile: true,
-          };
-
-          let certificationSubMenus = {
-              applyForCertification: true,
-              myApplications: true,
-              renewal: false,
-              reRegistration: false,
-              additionalQualification: true, // Set to true when approved!
-          };
-
-          // 4. Renewal Period:
-          if (isRenewalPeriod.value) {
-              certificationSubMenus.renewal = true;
-          }
-
-          // 5. Re-registration Period:
-          if (isInReregistrationPeriod.value) {
-              certificationSubMenus.reRegistration = true;
-          }
-
-          return { baseMenus, certificationSubMenus };
-      }
-      //default menus incase of an error
+  const visibleMenus = computed(() => {
+    // 1. After Registration (but before application):
+    if (!hasSubmittedApplication.value) {
       return {
-          baseMenus: {
-              dashboard: true,
-              certification: false,
-              cpdManagement: false,
-              cogsManagement: false,
-              profile: true,
-          },
-          certificationSubMenus: {
-              applyForCertification: false,
-              myApplications: false,
-              renewal: false,
-              reRegistration: false,
-              additionalQualification: false, // Add it here
-          },
+        baseMenus: {
+          dashboard: true,
+          certification: true,
+          cpdManagement: false,
+          cogsManagement: false,
+          profile: true,
+        },
+        certificationSubMenus: {
+          applyForCertification: true,
+          myApplications: false,
+          renewal: false,
+          reRegistration: false,
+          additionalQualification: false, // Add it here, initially false
+        },
       };
-    })
+    }
+
+    // 2. Once Application is Applied (but not yet approved):
+    if (hasSubmittedApplication.value && !hasApprovedQualification.value) {
+      return {
+        baseMenus: {
+          dashboard: true,
+          certification: true,
+          cpdManagement: false,
+          cogsManagement: false,
+          profile: true,
+        },
+        certificationSubMenus: {
+          applyForCertification: true,
+          myApplications: true,
+          renewal: false,
+          reRegistration: false,
+          additionalQualification: false, // Also false here
+        },
+      };
+    }
+
+    // 3. Once Application is Approved:
+    if (hasApprovedQualification.value) {
+      let baseMenus = {
+        dashboard: true,
+        certification: true,
+        cpdManagement: true,
+        cogsManagement: true,
+        profile: true,
+      };
+
+      let certificationSubMenus = {
+        applyForCertification: true,
+        myApplications: true,
+        renewal: false,
+        reRegistration: false,
+        additionalQualification: true, // Set to true when approved!
+      };
+
+      // 4. Renewal Period:
+      if (isRenewalPeriod.value) {
+        certificationSubMenus.renewal = true;
+      }
+
+      // 5. Re-registration Period:
+      if (isInReregistrationPeriod.value) {
+        certificationSubMenus.reRegistration = true;
+      }
+
+      return { baseMenus, certificationSubMenus };
+    }
+    //default menus incase of an error
+    return {
+      baseMenus: {
+        dashboard: true,
+        certification: false,
+        cpdManagement: false,
+        cogsManagement: false,
+        profile: true,
+      },
+      certificationSubMenus: {
+        applyForCertification: false,
+        myApplications: false,
+        renewal: false,
+        reRegistration: false,
+        additionalQualification: false, // Add it here
+      },
+    };
+  })
 
   // Actions
   const fetchApplicationDetails = async () => {
