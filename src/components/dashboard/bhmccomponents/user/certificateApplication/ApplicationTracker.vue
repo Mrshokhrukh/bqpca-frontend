@@ -479,15 +479,19 @@ const handlePaymentCompleted = async (paymentData) => {
 
     // 1. Initiate Payment (Actual payment processing) - Using FormData
     const paymentInitiationFormData = new FormData();
-    paymentInitiationFormData.append('refNo', paymentId); // Corrected: Use paymentId as refNo
+    paymentInitiationFormData.append('refNo', paymentId);
     paymentInitiationFormData.append('serviceCode', 'registration_fee_for_health_professional');
-    paymentInitiationFormData.append('taxPayerName', user.cid);  // Corrected: Use user.cid
-    paymentInitiationFormData.append('totalPayableAmount', 1000); // Use the actual amount
-    paymentInitiationFormData.append('description', 'BHMC Qualification Registration Fee'); // Example description
-    paymentInitiationFormData.append('mobileNo', user.contact_number); // Corrected: Use user.contact_number
-    paymentInitiationFormData.append('payerEmail', user.email);  // Corrected: Use user.email
-    paymentInitiationFormData.append('user', user.id); //Still send user ID for backend reference
-    paymentInitiationFormData.append('amount', 1000); // Ensure 'amount' is still sent for clarity.
+    paymentInitiationFormData.append('taxPayerName', user.cid);
+    paymentInitiationFormData.append('taxPayerNo', user.cid);
+    paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);
+    paymentInitiationFormData.append('totalPayableAmount', 1000);
+    paymentInitiationFormData.append('description', 'BHMC Qualification Registration Fee');
+    paymentInitiationFormData.append('mobileNo', user.contact_number);
+    paymentInitiationFormData.append('payerEmail', user.email);
+    paymentInitiationFormData.append('user', user.id);
+    paymentInitiationFormData.append('payableAmount', 1000);
+    paymentInitiationFormData.append('application_no', selectedQualification.value.id);
+    paymentInitiationFormData.append('app_type', 'specification_for_health_certification');
 
     // Make the payment *before* updating the qualification
     await apiService.makePayment(paymentInitiationFormData);

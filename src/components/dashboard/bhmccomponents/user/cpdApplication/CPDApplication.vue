@@ -57,10 +57,10 @@
 
             <!-- Participation Category -->
             <div class="space-y-2">
-              <label for="participationCategory" class="text-sm font-medium text-gray-700 flex items-center">
+              <label for="participation_category" class="text-sm font-medium text-gray-700 flex items-center">
                 Participation Category <span class="text-red-500 ml-1">*</span>
               </label>
-              <select id="participationCategory" v-model="form.participationCategory" @change="handleCategoryChange"
+              <select id="participation_category" v-model="form.participation_category" @change="handleCategoryChange"
                 class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300 appearance-none"
                 required>
                 <option value="" disabled selected>Select category</option>
@@ -68,16 +68,16 @@
                   {{ category.participation_category_name }}
                 </option>
               </select>
-              <span v-if="errors.participationCategory" class="text-sm text-red-500 block">{{
-        errors.participationCategory }}</span>
+              <span v-if="errors.participation_category" class="text-sm text-red-500 block">{{
+        errors.participation_category }}</span>
             </div>
 
             <!-- Participant Sub-category -->
             <div class="space-y-2">
-              <label for="participantSubCategory" class="text-sm font-medium text-gray-700 flex items-center">
+              <label for="participant_sub_category" class="text-sm font-medium text-gray-700 flex items-center">
                 Participant Sub-category <span class="text-red-500 ml-1">*</span>
               </label>
-              <select id="participantSubCategory" v-model="form.participantSubCategory"
+              <select id="participant_sub_category" v-model="form.participant_sub_category"
                 class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300 appearance-none"
                 required>
                 <option value="" disabled selected>Select sub-category</option>
@@ -85,16 +85,16 @@
                   {{ subCategory.participation_sub_category_name }}
                 </option>
               </select>
-              <span v-if="errors.participantSubCategory" class="text-sm text-red-500 block">{{
-        errors.participantSubCategory }}</span>
+              <span v-if="errors.participant_sub_category" class="text-sm text-red-500 block">{{
+        errors.participant_sub_category }}</span>
             </div>
 
             <!-- Activity Type -->
             <div class="space-y-2">
-              <label for="activityType" class="text-sm font-medium text-gray-700 flex items-center">
+              <label for="type_of_cpd_activity" class="text-sm font-medium text-gray-700 flex items-center">
                 CPD Activity Type <span class="text-red-500 ml-1">*</span>
               </label>
-              <select id="activityType" v-model="form.activityType"
+              <select id="type_of_cpd_activity" v-model="form.type_of_cpd_activity"
                 class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300 appearance-none"
                 required>
                 <option value="" disabled selected>Select activity type</option>
@@ -102,7 +102,7 @@
                   {{ activity.cpd_activity_name }}
                 </option>
               </select>
-              <span v-if="errors.activityType" class="text-sm text-red-500 block">{{ errors.activityType }}</span>
+              <span v-if="errors.type_of_cpd_activity" class="text-sm text-red-500 block">{{ errors.type_of_cpd_activity }}</span>
             </div>
 
             <!-- File Upload -->
@@ -165,9 +165,9 @@ const form = reactive({
   gender: '',
   title_of_cpd: '',
   relevance_to_profession: '',
-  participationCategory: '',
-  participantSubCategory: '',
-  activityType: '',
+  participation_category: '',
+  participant_sub_category: '',
+  type_of_cpd_activity: '',
   cpd_credit: 1,
   attachment: null,
 });
@@ -176,11 +176,11 @@ const errors = reactive({});
 
 // Filter subcategories based on selected category ID
 const filteredSubCategories = computed(() => {
-  if (!form.participationCategory) {
+  if (!form.participation_category) {
     return [];
   }
   return participationSubCategories.value.filter(
-    subCategory => subCategory.participation_category_name === form.participationCategory // Compare IDs
+    subCategory => subCategory.participation_category_name === form.participation_category // Compare IDs
   );
 });
 
@@ -190,9 +190,9 @@ const validateForm = () => {
 
   if (!form.title_of_cpd) { errors.title_of_cpd = 'CPD Title is required'; isValid = false; }
   if (!form.relevance_to_profession) { errors.relevance_to_profession = 'Relevance is required'; isValid = false; }
-  if (!form.participationCategory) { errors.participationCategory = 'Participation Category is required'; isValid = false; }
-  if (!form.participantSubCategory) { errors.participantSubCategory = 'Participant Sub-category is required'; isValid = false; }
-  if (!form.activityType) { errors.activityType = 'Activity Type is required'; isValid = false; }
+  if (!form.participation_category) { errors.participation_category = 'Participation Category is required'; isValid = false; }
+  if (!form.participant_sub_category) { errors.participant_sub_category = 'Participant Sub-category is required'; isValid = false; }
+  if (!form.type_of_cpd_activity) { errors.type_of_cpd_activity = 'Activity Type is required'; isValid = false; }
   if (form.attachment && form.attachment.size > 2 * 1024 * 1024) {
     errors.attachment = 'Attachment size should not exceed 2MB';
     isValid = false;
@@ -234,9 +234,9 @@ const handleSubmit = async () => {
   formData.append('gender', genderToSend); // Use the transformed gender
   formData.append('title_of_cpd', form.title_of_cpd || '');
   formData.append('relevance_to_profession', form.relevance_to_profession || '');
-  formData.append('participationCategory', form.participationCategory || '');
-  formData.append('participantSubCategory', form.participantSubCategory || '');
-  formData.append('activityType', form.activityType || '');
+  formData.append('participation_category', form.participation_category || '');
+  formData.append('participant_sub_category', form.participant_sub_category || '');
+  formData.append('type_of_cpd_activity', form.type_of_cpd_activity || '');
   formData.append('cpd_credit', form.cpd_credit);
   if (form.attachment) {
     formData.append('attachment', form.attachment);
@@ -274,9 +274,9 @@ const handleCancel = () => {
   // Reset form fields
   form.title_of_cpd = '';
   form.relevance_to_profession = '';
-  form.participationCategory = '';
-  form.participantSubCategory = '';
-  form.activityType = '';
+  form.participation_category = '';
+  form.participant_sub_category = '';
+  form.type_of_cpd_activity = '';
   form.cpd_credit = 1;
   form.attachment = null;
   Object.keys(errors).forEach(key => delete errors[key]); // Clear errors
@@ -294,7 +294,7 @@ const handleFileUpload = (event) => {
 };
 
 const handleCategoryChange = () => {
-  form.participantSubCategory = ''; // Reset subcategory on category change
+  form.participant_sub_category = ''; // Reset subcategory on category change
 };
 
 const fetchMasterData = async () => {

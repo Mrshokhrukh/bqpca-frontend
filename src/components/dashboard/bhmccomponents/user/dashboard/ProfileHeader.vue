@@ -64,11 +64,6 @@ const props = defineProps({
     type: String,
     default: ''
   },
-    //REMOVING showCertificate prop
-//  showCertificate: {
-//    type: Boolean,
-//    default: false
-//  }
     qualifications:{ //new prop
         type: Array,
         required: true
