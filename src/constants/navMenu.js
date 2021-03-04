@@ -44,7 +44,7 @@ const iconMap = {
   Award,
 }
 import { useHealthCertificationStore } from '@/stores/healthCertificationStore'
-
+import { useAuthStore } from '@/stores/authStore'
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
   return iconMap[iconName] || File
@@ -371,6 +371,16 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/user/${serviceType}/track_cogs_applications`,
           },
         ],
+      },
+      {
+        name: 'Counselor Application Form',
+        icon: getIconComponent('FileText'),
+        route: (serviceType) => `/admin/user/${serviceType}/counselor_application`,
+        // Only show this menu item if the user is a counselor
+        hidden: () => {
+          const authStore = useAuthStore()
+          return !authStore.user?.is_counselor
+        },
       },
       {
         name: 'Profile',

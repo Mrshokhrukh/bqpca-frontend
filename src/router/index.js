@@ -96,6 +96,11 @@ router.beforeEach((to, from, next) => {
   }
 
   next()
+
+  if (to.meta.requiresCounselor && !authStore.user?.is_counselor) {
+    next('/unauthorized')
+    return
+  }
 })
 
 export default router

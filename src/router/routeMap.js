@@ -64,8 +64,7 @@ export default {
       dashboard: engineeringDashboard,
       applications: engineeringDashboard,
       clients: engineeringDashboard,
-      reports: engineeringDashboard
-
+      reports: engineeringDashboard,
     },
     health_certification: {
       dashboard: bmhcDashboard,
@@ -160,6 +159,7 @@ export default {
       cogs_application: bmhcDashboard,
       user_profile: bmhcDashboard,
       reports: bmhcDashboard,
+      counselor_application: bmhcDashboard,
     },
   },
   dealing_officer: {

@@ -622,7 +622,7 @@ export default {
   patchBmhcInstitute(id, data) {
     return apiClient.patch(`/bmhc/bmhc-institutes/${id}/`, data)
   },
-  
+
   deleteBmhcInstitute(id) {
     return apiClient.delete(`/bmhc/bmhc-institutes/${id}/`)
   },
@@ -670,5 +670,24 @@ export default {
   },
   deleteBmhcCpdTask(id) {
     return apiClient.delete(`/bmhc/bmhc-cpd-tasks/${id}/`)
+  },
+  // BMHC Counselor endpoints
+  getBmhcCounsellors() {
+    return apiClient.get('/bmhc/bmhc-counsellors/')
+  },
+  createBmhcCounsellor(data) {
+    return apiClient.post('/bmhc/bmhc-counsellors/', data)
+  },
+  getBmhcCounsellorById(id) {
+    return apiClient.get(`/bmhc/bmhc-counsellors/${id}/`)
+  },
+  updateBmhcCounsellor(id, data) {
+    return apiClient.put(`/bmhc/bmhc-counsellors/${id}/`, data)
+  },
+  patchBmhcCounsellor(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-counsellors/${id}/`, data)
+  },
+  deleteBmhcCounsellor(id) {
+    return apiClient.delete(`/bmhc/bmhc-counsellors/${id}/`)
   },
 }
