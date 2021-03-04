@@ -194,9 +194,9 @@
             <select v-model="localFormData.gender"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
               <option value="">Select Gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+              <option value="M">Male</option> <!-- Use "M" -->
+              <option value="F">Female</option> <!-- Use "F" -->
+              <option value="O">Other</option> <!-- Use "O" (or whatever is appropriate) -->
             </select>
             <span v-if="errors.gender" class="text-sm text-red-500 mt-1">{{ errors.gender }}</span>
           </div>
@@ -245,7 +245,7 @@
         </div>
       </div>
     </form>
-    <form  class="bg-white border rounded-xl shadow-sm p-6" v-else-if="stage === 2">
+    <form class="bg-white border rounded-xl shadow-sm p-6" v-else-if="stage === 2">
       <!-- add header as step 2 -->
       <h3 class="text-lg font-semibold text-gray-900 my-4">Step 2: Medical Institution Registration</h3>
       <!-- Qualification Details Section -->
@@ -651,10 +651,10 @@ const validateForm = () => {
     isValid = false;
   }
 
-    if (!localFormData.declaration) {
-        toast.error("Please accept the declaration.");
-        return false
-    }
+  if (!localFormData.declaration) {
+    toast.error("Please accept the declaration.");
+    return false
+  }
 
   return isValid;
 };
@@ -683,8 +683,9 @@ const fetchDCRCData = async () => {
     const response = await apiService.fetchCitizenDetails(localFormData.cid_no, { params: { user_id: userId } });
 
     const genderMap = {
-      'F': 'Female',
-      'M': 'Male'
+      'F': 'F', // Map to itself
+      'M': 'M', // Map to itself
+      'O': 'O'  // Add 'O' if you have an "Other" option in your API
     };
 
     Object.assign(localFormData, {
@@ -825,9 +826,9 @@ const handleNext = async () => {
 };
 
 const openConfirmationModal = () => { // Added confirmation modal function
-    if(validateForm()){
-        isConfirmationModalOpen.value = true;
-    }
+  if (validateForm()) {
+    isConfirmationModalOpen.value = true;
+  }
 };
 
 const handleSubmitActual = async () => { // Modified to submit and redirect
