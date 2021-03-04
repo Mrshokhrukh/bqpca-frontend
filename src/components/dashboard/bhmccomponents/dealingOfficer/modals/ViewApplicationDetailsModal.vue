@@ -135,7 +135,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import apiServices from '@/services/services';
-// import ViewDetailsModal from './ViewApplicationDetailsModal.vue';
+// import ViewDetailsModal from './modals/ViewApplicationDetailsModal.vue';
 
 const applications = ref([]);
 const filterStatus = ref('all');

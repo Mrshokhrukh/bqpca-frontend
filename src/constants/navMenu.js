@@ -418,7 +418,7 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Counselor Application Form',
+        name: 'Counselling Form',
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/user/${serviceType}/counselor_application`,
         // Only show this menu item if the user is a counselor

@@ -95,13 +95,18 @@ const {
 
 // Computed property to check if user has any approved applications
 const hasApprovedApplications = computed(() => {
-  return (
-    (applications.value && applications.value.some(app => app.status === 'Approved')) ||
-    licenseStatus.value === 'Active' ||
-    (cpdCredits.value > 0) ||
-    (recentActivities.value && recentActivities.value.length > 0) ||
-    (upcomingDeadlines.value && upcomingDeadlines.value.length > 0)
-  );
+  if (!applications.value || applications.value.length === 0) return false;
+
+  return applications.value.some(app => {
+    // Check if application has user_qualifications array
+    if (!app.user_qualifications || !Array.isArray(app.user_qualifications)) return false;
+
+    // Check if any qualification meets the criteria
+    return app.user_qualifications.some(qualification => 
+      qualification.endorsement_decision === 'Approved' &&
+      qualification.is_primary_qualification === true
+    );
+  });
 });
 
 const hasNoApplications = computed(() => {

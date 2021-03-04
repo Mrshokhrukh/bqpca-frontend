@@ -178,7 +178,6 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
   const initialize = async () => {
     const authStore = useAuthStore()
     if (authStore?.isAuthenticated) {
-      console.log('Initializing health certification store...')
       await fetchApplicationDetails()
     }
   }

@@ -4,7 +4,7 @@
             <!-- Form Header with gradient -->
             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
                 <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
-                    Counselor Registration Form
+                    Counselling Form
                 </h2>
                 <p class="text-gray-600 text-center max-w-2xl mx-auto">
                     Please fill in all required fields marked with an asterisk (<span class="text-red-600">*</span>).

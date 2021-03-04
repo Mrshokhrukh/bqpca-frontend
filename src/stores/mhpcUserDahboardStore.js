@@ -19,77 +19,127 @@ export const useDashboardStore = defineStore('dashboard', {
     selectedApplications: [],
     modalTitle: '',
     isLoading: false,
-    selectedApplication: null, // Changed: Store the *entire* selected application
+    selectedApplication: null,
     showCertificateModal: false,
+    error: null, // Added to track errors
   }),
 
   actions: {
+    /** Fetch all dashboard data with proper error handling */
     async fetchAllData(cid) {
       this.isLoading = true;
-      try {
-        const [cogsData, applicationsData, cpdData] = await Promise.all([
-          apiServices.getFullApplicationListByCid(cid),
-          apiServices.getBmhcCogsByCid(cid),
-          apiServices.getBmhcCpdRecordsByCid(cid),
-        ]);
+      this.error = null;
 
-        this.processCogsData(cogsData);
-        this.processApplicationsData(applicationsData);
-        this.processCpdData(cpdData);
+      try {
+        // Run each API call independently with its own error handling
+        const cogsData = await apiServices.getBmhcCogsByCid(cid)
+          .catch(error => {
+            console.error('Error fetching COGS data:', error);
+            return null;
+          });
+
+        const applicationsData = await apiServices.getFullApplicationListByCid(cid)
+          .catch(error => {
+            console.error('Error fetching applications data:', error);
+            return null;
+          });
+
+        const cpdData = await apiServices.getBmhcCpdRecordsByCid(cid)
+          .catch(error => {
+            console.error('Error fetching CPD data:', error);
+            return null;
+          });
+
+        // Process data only if it exists
+        if (cogsData) this.processCogsData(cogsData);
+        if (applicationsData) this.processApplicationsData(applicationsData);
+        if (cpdData) this.processCpdData(cpdData);
+
         this.updateActivitiesAndDeadlines();
+      } catch (error) {
+        console.error('Error in fetchAllData:', error);
+        this.error = 'An unexpected error occurred. Some data may be incomplete.';
       } finally {
         this.isLoading = false;
       }
     },
 
+    /** Process COGS data with null safety */
     processCogsData(response) {
-      if (response.data.valid && response.data.details) {
+      if (response?.data?.valid && response.data.details?.full_name) {
         this.userDetail.username = response.data.details.full_name;
+      } else {
+        console.warn('Invalid or missing COGS data');
+        this.userDetail.username = 'Unknown User';
       }
     },
 
+    /** Process applications data with null safety and empty case handling */
     processApplicationsData(response) {
-      if (response.data.results?.length) {
-        const latestApp = response.data.results[0];
+      const results = response?.data?.results;
+      if (Array.isArray(results) && results.length > 0) {
+        const latestApp = results[0];
         this.updateUserDetails(latestApp);
         this.updateLicenseStatus(latestApp);
-        this.processApplicationsList(response.data.results);
+        this.processApplicationsList(results);
         this.checkExpiration(latestApp.expiry_date);
+      } else {
+        console.warn('No applications found');
+        this.renewalMessage = 'No applications available';
       }
     },
 
+    /** Process CPD data with null safety */
     processCpdData(response) {
-      if (response.data.valid && response.data.details) {
-        this.cpdCredits = response.data.details.cpd_credit || 0;
-        this.addCpdApplication(response.data.details);
+      const cpdDetails = response?.data?.details;
+      if (response?.data?.valid && cpdDetails) {
+        this.cpdCredits = cpdDetails.cpd_credit || 0;
+        this.addCpdApplication(cpdDetails);
+      } else {
+        console.warn('Invalid or missing CPD data');
+        this.cpdCredits = 0;
       }
     },
 
+    /** Update user details with null checks */
     updateUserDetails(app) {
-      this.userDetail.registration_no = app.registration_no;
-      this.licenseExpiryDate = app.expiry_date;
-      this.licenseStatus = app.user_qualifications[0]?.application_review_status;
+      if (app) {
+        this.userDetail.registration_no = app.registration_no || '';
+        this.licenseExpiryDate = app.expiry_date || null;
+        this.licenseStatus = app.user_qualifications?.[0]?.application_review_status || 'Unknown';
+      }
     },
 
+    /** Update license status with null safety */
     updateLicenseStatus(app) {
-      this.showViewCertificateButton = app.user_qualifications.every(q =>
-        q.application_review_status === 'Approved' &&
-        q.physical_review_status === 'Approved' &&
-        q.endorsement_decision === 'Approved'
-      );
+      if (app?.user_qualifications && Array.isArray(app.user_qualifications)) {
+        this.showViewCertificateButton = app.user_qualifications.every(q =>
+          q?.application_review_status === 'Approved' &&
+          q?.physical_review_status === 'Approved' &&
+          q?.endorsement_decision === 'Approved'
+        );
+      } else {
+        this.showViewCertificateButton = false;
+      }
     },
 
+    /** Process applications list with null safety */
     processApplicationsList(results) {
-      this.applications = results.map(app => ({
-        ...app, // Store the *entire* application object.  This is crucial!
-        name: app.registration_type?.name || 'Unknown Application',
-        type: this.determineApplicationType(app.registration_type?.name),
-        date: app.created_at,
-        status: app.user_qualifications[0]?.application_review_status || 'Status Unavailable',
-        remarks: app.user_qualifications[0]?.application_review_remark || '',
-      }));
+      if (Array.isArray(results)) {
+        this.applications = results.map(app => ({
+          ...app,
+          name: app?.registration_type?.name || 'Unknown Application',
+          type: this.determineApplicationType(app?.registration_type?.name),
+          date: app?.created_at || '',
+          status: app?.user_qualifications?.[0]?.application_review_status || 'Status Unavailable',
+          remarks: app?.user_qualifications?.[0]?.application_review_remark || '',
+        }));
+      } else {
+        this.applications = [];
+      }
     },
 
+    /** Determine application type with null check */
     determineApplicationType(name) {
       if (!name) return 'Other';
       if (name.includes('Registration')) return 'License';
@@ -97,19 +147,23 @@ export const useDashboardStore = defineStore('dashboard', {
       return 'Other';
     },
 
+    /** Add CPD application with null safety */
     addCpdApplication(cpdDetails) {
-      this.applications.push({
-        ...cpdDetails, // Store the *entire* CPD details object
-        name: cpdDetails.title_of_cpd || 'CPD Record',
-        type: 'CPD',
-        date: cpdDetails.created_at,
-        status: cpdDetails.review_status || 'Pending',
-        remarks: cpdDetails.remark || '',
-      });
+      if (cpdDetails) {
+        this.applications.push({
+          ...cpdDetails,
+          name: cpdDetails.title_of_cpd || 'CPD Record',
+          type: 'CPD',
+          date: cpdDetails.created_at || '',
+          status: cpdDetails.review_status || 'Pending',
+          remarks: cpdDetails.remark || '',
+        });
+      }
     },
 
+    /** Check expiration with date validation */
     checkExpiration(expiryDate) {
-      if (!expiryDate) {
+      if (!expiryDate || !dayjs(expiryDate).isValid()) {
         this.renewalMessage = 'Expiry date not available';
         return;
       }
@@ -130,47 +184,58 @@ export const useDashboardStore = defineStore('dashboard', {
       }
     },
 
+    /** Update activities and deadlines with null safety */
     updateActivitiesAndDeadlines() {
-      this.recentActivities = this.applications
-        .slice(0, 5)
-        .map(app => ({
-          type: app.type.toLowerCase(),
-          title: app.name,
-          date: app.date
-        }));
+      if (Array.isArray(this.applications)) {
+        this.recentActivities = this.applications
+          .slice(0, 5)
+          .map(app => ({
+            type: (app.type || 'other').toLowerCase(),
+            title: app.name || 'Untitled',
+            date: app.date || ''
+          }));
 
-      this.upcomingDeadlines = [
-        {
-          title: 'CPD Points Target',
-          date: dayjs().endOf('year').format('YYYY-MM-DD')
-        },
-        {
-          title: 'License Renewal',
-          date: this.licenseExpiryDate
-        }
-      ].filter(deadline => deadline.date);
+        this.upcomingDeadlines = [
+          {
+            title: 'CPD Points Target',
+            date: dayjs().endOf('year').format('YYYY-MM-DD'),
+          },
+          {
+            title: 'License Renewal',
+            date: this.licenseExpiryDate || null,
+          },
+        ].filter(deadline => deadline.date);
+      } else {
+        this.recentActivities = [];
+        this.upcomingDeadlines = [];
+      }
     },
 
+    /** Set selected applications with null safety */
     setSelectedApplications(status) {
-      this.selectedApplications = this.applications.filter(app => app.status === status);
-      this.modalTitle = `${status} Applications`;
+      if (Array.isArray(this.applications)) {
+        this.selectedApplications = this.applications.filter(app => app.status === status);
+        this.modalTitle = `${status} Applications`;
+      } else {
+        this.selectedApplications = [];
+        this.modalTitle = '';
+      }
     },
 
+    /** Clear selected applications */
     clearSelectedApplications() {
       this.selectedApplications = [];
       this.modalTitle = '';
     },
 
-    // NO fetchCertificateData needed!
-
+    /** Toggle certificate modal with null safety */
     setShowCertificateModal(show) {
       this.showCertificateModal = show;
-       // Find and store the relevant application when showing the modal
-        if (show) {
-          this.selectedApplication = this.applications.find(app => app.registration_no === this.userDetail.registration_no);
-        } else {
-          this.selectedApplication = null; // Clear it when closing
-        }
-    }
-  }
+      if (show && Array.isArray(this.applications)) {
+        this.selectedApplication = this.applications.find(app => app.registration_no === this.userDetail.registration_no) || null;
+      } else {
+        this.selectedApplication = null;
+      }
+    },
+  },
 });
