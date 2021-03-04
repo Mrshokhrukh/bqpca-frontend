@@ -39,16 +39,9 @@ import ApplicationTable from '@/components/dashboard/roqcomponents/dealingOffice
 
 // ECPF User Components
 import ECPFUserDashboard from '@/components/dashboard/ecpfcomponents/user/ECPFUserDashboard.vue';
-import ECPFNewApplication from '@/components/dashboard/ecpfcomponents/user/ECPFNewApplication.vue';
-import ECPFLicenseRenewal from '@/components/dashboard/ecpfcomponents/user/ECPFLicenseRenewal.vue';
-import ECPFPromotionalEvents from '@/components/dashboard/ecpfcomponents/user/ECPFPromotionalEvents.vue';
-import ECPFHRManagement from '@/components/dashboard/ecpfcomponents/user/ECPFHRManagement.vue';
-import ECPFStudentData from '@/components/dashboard/ecpfcomponents/user/ECPFStudentData.vue';
-import ECPFPaymentHistory from '@/components/dashboard/ecpfcomponents/user/ECPFPaymentHistory.vue';
-import ECPFUserProfile from '@/components/dashboard/ecpfcomponents/user/ECPFUserProfile.vue';
-import ECPFMyApplications from '@/components/dashboard/ecpfcomponents/user/ECPFMyApplications.vue';
-import ECPFChangeRequest from '@/components/dashboard/ecpfcomponents/user/ECPFChangeRequest.vue'; 
-import ECPFLinkageEstablishment from '@/components/dashboard/ecpfcomponents/user/ECPFLinkageEstablishment.vue';
+import IndividualECPF from '@/components/dashboard/ecpfcomponents/user/IndividualECPF.vue';
+import CollaboratedECPF from '@/components/dashboard/ecpfcomponents/user/CollaboratedECPF.vue';
+import NewBranchECPF from '@/components/dashboard/ecpfcomponents/user/NewBranchECPF.vue';
 // Other ECPF Components
 import ECPFDealingOfficerDashboard from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFDealingOfficerDashboard.vue';
 import ECPFApplicationLists from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFApplicationLists.vue';
@@ -70,26 +63,13 @@ const ecpfUserComponent = computed(() => {
   switch (true) {
     case path.endsWith('/ecpf/dashboard'):
       return ECPFUserDashboard;
-    case path.endsWith('/ecpf/my_applications'):
-      return ECPFMyApplications;
-    case path.endsWith('/ecpf/new_application'):
-      return ECPFNewApplication;
-    case path.endsWith('/ecpf/license_renewal'):
-      return ECPFLicenseRenewal;
-    case path.endsWith('/ecpf/promotion_events'):
-      return ECPFPromotionalEvents; 
-    case path.endsWith('/ecpf/hr_management'):
-      return ECPFHRManagement;
-    case path.endsWith('/ecpf/student_data'):
-      return ECPFStudentData;  
-    case path.endsWith('/ecpf/payment_history'):
-      return ECPFPaymentHistory; 
-    case path.endsWith('/ecpf/user_profile'):
-      return ECPFUserProfile;
-    case path.endsWith('/ecpf/change_request'):
-      return ECPFChangeRequest;  
-    case path.endsWith('/ecpf/institutional_linkage'):
-      return ECPFLinkageEstablishment;   
+    case path.endsWith('/ecpf/individual_ecpf'):
+      return IndividualECPF;
+    case path.endsWith('/ecpf/collaborated_ecpf'):
+      return CollaboratedECPF;
+    case path.endsWith('/ecpf/new_branch_ecpf'):
+      return NewBranchECPF;
+
     default:
       return null;
   }

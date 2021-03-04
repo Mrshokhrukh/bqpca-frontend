@@ -1,9 +1,7 @@
-<!-- ApplicationLists.vue -->
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
-    <!-- Page Header -->
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Additional Application Lists</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">Additional Qualification Applications</h1>
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
@@ -17,14 +15,12 @@
       </div>
     </div>
 
-    <!-- Search and Filters -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
       <div class="relative">
         <input v-model="searchQuery" type="text" placeholder="Search by name, CID or registration number..."
           class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-        <svg xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24"
-          stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
@@ -40,26 +36,19 @@
       </div>
     </div>
 
-    <!-- Table -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Applicant
               </th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Applicant
-              </th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Registration
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Registration
                 No.</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Status</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Date</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Actions</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
@@ -99,7 +88,6 @@
       </div>
     </div>
 
-    <!-- Pagination -->
     <div class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100">
       <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
@@ -140,8 +128,7 @@
 
     <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
       @update="handleUpdate" :personnel-categories="personnelCategories"
-      :personnel-subcategories="personnelSubcategories" :sectors="sectors"
-      :practice-addresses="practiceAddresses" />
+      :personnel-subcategories="personnelSubcategories" :sectors="sectors" :practice-addresses="practiceAddresses" />
   </div>
 </template>
 
@@ -150,7 +137,6 @@ import { ref, computed, onMounted } from 'vue';
 import apiServices from '@/services/services';
 import ViewDetailsModal from './modals/ViewApplicationDetailsModal.vue';
 
-// State
 const applications = ref([]);
 const filterStatus = ref('all');
 const searchQuery = ref('');
@@ -158,38 +144,34 @@ const currentPage = ref(1);
 const itemsPerPage = 10;
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
-const registrationTypeName = "Additional Qualification"; // Filter only 'Additional' types
 const personnelCategories = ref([]);
 const personnelSubcategories = ref([]);
 const sectors = ref([]);
 
-// Computed properties
 const pendingCount = computed(() => {
   return filteredApplications.value.filter(app => getStatus(app) === 'Pending').length;
 });
 
+// Filter for "Additional Qualification"
 const filteredApplications = computed(() => {
-  let filtered = applications.value;
-
-  // Filter by registration type name
-  filtered = filtered.filter(app => app.registration_type.name === registrationTypeName);
-
-  if (filterStatus.value !== 'all') {
-    filtered = filtered.filter(app => getStatus(app) === filterStatus.value);
-  }
-
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(app => {
-      return (
-        app.full_name?.toLowerCase().includes(query) ||
-        app.cid_no?.toLowerCase().includes(query) ||
-        app.registration_no?.toLowerCase().includes(query)
-      );
+  return applications.value.filter(app => app.registration_type_name === 'Additional Qualification')
+    .filter(app => {
+      if (filterStatus.value !== 'all') {
+        return getStatus(app) === filterStatus.value;
+      }
+      return true;
+    })
+    .filter(app => {
+      if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        return (
+          app.full_name?.toLowerCase().includes(query) ||
+          app.cid_no?.toLowerCase().includes(query) ||
+          app.registration_no?.toLowerCase().includes(query)
+        );
+      }
+      return true;
     });
-  }
-
-  return filtered;
 });
 
 const paginatedApplications = computed(() => {
@@ -210,25 +192,32 @@ const paginationEnd = computed(() => {
   return Math.min(currentPage.value * itemsPerPage, filteredApplications.value.length);
 });
 
-// --- Improved getStatus and getStatusClasses ---
 const getStatus = (app) => {
-  if (!app.user_qualifications || app.user_qualifications.length === 0) {
+  if (!Array.isArray(app.user_qualifications) || app.user_qualifications.length === 0) {
     return 'Pending';
   }
 
-  const qualification = app.user_qualifications[0];
-  const { application_review_status, physical_review_status, endorsement_decision } = qualification;
+  for (const qualification of app.user_qualifications) {
+    const { application_review_status, physical_review_status, endorsement_decision } = qualification;
 
-  if (application_review_status === 'Regretted' || physical_review_status === 'Regretted' || endorsement_decision ===
-    'Regretted') {
-    return 'Regretted';
-  } else if (application_review_status === 'Approved' && physical_review_status === 'Approved' &&
-    endorsement_decision === 'Approved') {
+    if (application_review_status === 'Regretted' || physical_review_status === 'Regretted' || endorsement_decision === 'Regretted') {
+      return 'Regretted';
+    }
+  }
+
+  const allApproved = app.user_qualifications.every(qualification =>
+    qualification.application_review_status === 'Approved' &&
+    qualification.physical_review_status === 'Approved' &&
+    qualification.endorsement_decision === 'Approved'
+  );
+
+  if (allApproved) {
     return 'Approved';
-  } else {
-    return 'Pending';
   }
+
+  return 'Pending';
 };
+
 const getStatusClasses = (app) => {
   const status = getStatus(app);
   return [
@@ -236,13 +225,13 @@ const getStatusClasses = (app) => {
     {
       'bg-yellow-100 text-yellow-800': status === 'Pending',
       'bg-green-100 text-green-800': status === 'Approved',
-      'bg-red-100 text-red-800': status === 'Regretted' // Corrected class
+      'bg-red-100 text-red-800': status === 'Regretted'
     }
   ];
 };
-// --- End of Improved getStatus and getStatusClasses ---
 
 const formatDate = (date) => {
+  if (!date) return '';
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -250,20 +239,19 @@ const formatDate = (date) => {
   });
 };
 
-// API interactions
 const fetchApplications = async () => {
   try {
     const response = await apiServices.getBhmcNewApplications();
-    if (!response.data?.results || !Array.isArray(response.data.results)) {
-      console.error('Invalid API response format');
-      return;
-    }
-    applications.value = response.data.results;
+    applications.value = Array.isArray(response.data) ? response.data : (response.data?.results || []);
 
-    // Fetch master data (only once)
-    personnelCategories.value = await apiServices.getMastersParticipationCategories();
-    personnelSubcategories.value = await apiServices.getMastersSubCategories();
-    sectors.value = await apiServices.getMastersSectors();
+    const categories = await apiServices.getMastersParticipationCategories();
+    personnelCategories.value = Array.isArray(categories.data) ? categories.data : (categories.data?.results || []);
+
+    const subcategories = await apiServices.getMastersSubCategories();
+    personnelSubcategories.value = Array.isArray(subcategories.data) ? subcategories.data : (subcategories.data?.results || [])
+
+    const sectorData = await apiServices.getMastersSectors();
+    sectors.value = Array.isArray(sectorData.data) ? sectorData.data : (sectorData.data?.results || []);
 
 
   } catch (error) {
@@ -273,14 +261,8 @@ const fetchApplications = async () => {
 
 const viewDetails = async (application) => {
   try {
-    // Fetch all users
     const response = await apiServices.getAllUsers();
-
-    // Check if response.data is an array, if not, use response.data.results if available
-    const users = Array.isArray(response.data) ? response.data :
-      (response.data?.results || []);
-
-    // Find matching user by CID
+    const users = Array.isArray(response.data) ? response.data : (response.data?.results || []);
     const matchingUser = users.find(user => user.cid === application.cid_no);
 
     selectedApplication.value = {
@@ -296,11 +278,9 @@ const viewDetails = async (application) => {
   }
 };
 
-
-// Correctly re-fetch applications after an update
 const handleUpdate = async () => {
-  await fetchApplications(); // Re-fetch the data
-  closeModal(); // Close the modal
+  await fetchApplications();
+  closeModal();
 };
 
 const closeModal = () => {
@@ -316,7 +296,6 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++;
 };
 
-// Initialize
 onMounted(() => {
   fetchApplications();
 });

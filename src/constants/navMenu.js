@@ -19,6 +19,13 @@ import {
   Heart,
   Wrench,
   Award,
+  FilePlus,  // Added for 'FilePlus'
+  List,      // Added for 'List'
+  RefreshCw, // Added for 'RefreshCw'
+  Edit,      // Added for 'Edit'
+  Link,    //Added for Linkage
+  Users2, //Added for Group
+  Monitor,  //Added for screen
 } from 'lucide-vue-next'
 
 // Icon mapping for dynamic icon selection
@@ -42,6 +49,13 @@ const iconMap = {
   Heart,
   Wrench,
   Award,
+  FilePlus,  // Include in the map
+  List,      // Include in the map
+  RefreshCw, // Include in the map
+  Edit,
+  Link,    //Added for Linkage
+  Users2, //Added for Group
+  Monitor,     // Include in the map
 }
 import { useHealthCertificationStore } from '@/stores/healthCertificationStore'
 import { useAuthStore } from '@/stores/authStore'
@@ -180,58 +194,89 @@ const serviceSpecificMenuItems = {
     user: [
       {
         name: 'Dashboard',
-        icon: getIconComponent('FilePlus'),
+        icon: getIconComponent('LayoutDashboard'), // More specific dashboard icon
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
       },
       {
-        name: 'New Application',
-        icon: getIconComponent('FilePlus'),
-        route: (serviceType) => `/admin/user/${serviceType}/new_application`,
+        name: 'New Applications',
+        icon: getIconComponent('FilePlus'), // Icon for adding new things
+        children: [
+          {
+            name: 'Individual ECPF',
+            route: (serviceType) => `/admin/user/${serviceType}/individual_ecpf`,
+          },
+          {
+            name: 'Collaborated ECPF',
+            route: (serviceType) => `/admin/user/${serviceType}/collaborated_ecpf`,
+          },
+          {
+            name: 'New Branch',
+            route: (serviceType) => `/admin/user/${serviceType}/new_branch_ecpf`,
+          },
+        ],
       },
       {
-        name: 'My Applications',
-        icon: getIconComponent('List'),
-        route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+        name: 'ECPF Renewal',
+        icon: getIconComponent('List'), //List icon
+        route: (serviceType) => `/admin/user/${serviceType}/renewal`,
       },
       {
-        name: 'License Renewal',
-        icon: getIconComponent('RefreshCw'),
-        route: (serviceType) => `/admin/user/${serviceType}/license_renewal`,
+        name: 'Name Change',
+        icon: getIconComponent('RefreshCw'), // Icon for refresh/change
+        route: (serviceType) => `/admin/user/${serviceType}/name_change`,
       },
       {
-        name: 'Institutional Linkages',
-        icon: getIconComponent('CreditCard'),
-        route: (serviceType) => `/admin/user/${serviceType}/institutional_linkage`,
+        name: 'Location Change',
+        icon: getIconComponent('Edit'), // Icon for editing/location
+        route: (serviceType) => `/admin/user/${serviceType}/location_change`,
       },
       {
-        name: 'Change Requests',
-        icon: getIconComponent('Edit'),
-        route: (serviceType) => `/admin/user/${serviceType}/change_request`,
+        name: 'Change in Ownership',
+        icon: getIconComponent('Users2'), // Icon representing multiple users
+        route: (serviceType) => `/admin/user/${serviceType}/change_in_ownership`,
       },
       {
-        name: 'Events',
-        icon: getIconComponent('CreditCard'),
-        route: (serviceType) => `/admin/user/${serviceType}/promotion_events`,
+        name: 'Linkage Establishment',
+        icon: getIconComponent('Link'), // Use a suitable 'link' icon
+        route: (serviceType) => `/admin/user/${serviceType}/linkage_establishment`,
       },
       {
-        name: 'HR Management',
-        icon: getIconComponent('Briefcase'),
-        route: (serviceType) => `/admin/user/${serviceType}/hr_management`,
+        name: 'Education Fair',
+        icon: getIconComponent('Briefcase'), // Briefcase is good for fairs/events
+        route: (serviceType) => `/admin/user/${serviceType}/education_fair`,
       },
       {
-        name: 'Student Data',
-        icon: getIconComponent('Briefcase'),
-        route: (serviceType) => `/admin/user/${serviceType}/student_data`,
-      },
-      {
-        name: 'Payment History',
-        icon: getIconComponent('CreditCard'),
-        route: (serviceType) => `/admin/user/${serviceType}/payment_history`,
+        name: 'Promotional Event',
+        icon: getIconComponent('Activity'), //Use activity
+        children: [
+          {
+            name: 'In-house Event',
+            route: (serviceType) => `/admin/user/${serviceType}/in_house_event`,
+          },
+          {
+            name: 'Mass Media Event',
+            route: (serviceType) => `/admin/user/${serviceType}/mass_media_event`,
+          },
+          {
+            name: 'HEI Visit',
+            route: (serviceType) => `/admin/user/${serviceType}/hei_visit`,
+          },
+        ],
       },
 
       {
+        name: 'HR Management',
+        icon: getIconComponent('Users'), // 'Users' for HR
+        route: (serviceType) => `/admin/user/${serviceType}/profile`, // Consider a more specific route like /hr
+      },
+      {
+        name: 'Student Management',
+        icon: getIconComponent('Users'),  // 'Users' for Student Management
+        route: (serviceType) => `/admin/user/${serviceType}/profile`, // Consider a more specific route like /students
+      },
+      {
         name: 'Profile',
-        icon: getIconComponent('CreditCard'),
+        icon: getIconComponent('UserCircle'), // 'UserCircle' for profile
         route: (serviceType) => `/admin/user/${serviceType}/profile`,
       },
     ],

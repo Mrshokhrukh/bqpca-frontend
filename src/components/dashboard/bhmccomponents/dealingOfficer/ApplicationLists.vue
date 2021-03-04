@@ -1,10 +1,8 @@
-<!-- ApplicationLists.vue -->
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
-    <!-- Page Header (Same as before) -->
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Registration Applications</h1>
-      <div class="flex items-center text-gray-600">
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">New Applications</h1>
+       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
           Total: {{ filteredApplications.length }}
@@ -17,7 +15,6 @@
       </div>
     </div>
 
-    <!-- Search and Filters (Same as before) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
       <div class="relative">
         <input v-model="searchQuery" type="text" placeholder="Search by name, CID or registration number..."
@@ -34,12 +31,11 @@
           <option value="all">All Statuses</option>
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
-          <option value="Regretted">Regretted</option> <!-- Corrected option value -->
+          <option value="Regretted">Regretted</option>
         </select>
       </div>
     </div>
 
-    <!-- Table (Same as before, but with corrected getStatus call) -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -62,8 +58,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
-                  <img :src="app.passport_photo || ''"
-                    class="h-8 w-8 rounded-full object-cover mr-3">
+                  <img :src="app.passport_photo || ''" class="h-8 w-8 rounded-full object-cover mr-3">
                   <div>
                     <div class="text-sm font-medium text-gray-900">{{ app.full_name }}</div>
                     <div class="text-sm text-gray-500">{{ app.cid_no }}</div>
@@ -75,7 +70,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(app)">
-                  {{ getStatus(app) }} <!-- Corrected getStatus call -->
+                  {{ getStatus(app) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -93,7 +88,6 @@
       </div>
     </div>
 
-    <!-- Pagination (Same as before) -->
     <div class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100">
       <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
@@ -132,7 +126,6 @@
       </div>
     </div>
 
-    <!-- Use @update:application to listen for updates -->
     <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
       @update="handleUpdate" :personnel-categories="personnelCategories"
       :personnel-subcategories="personnelSubcategories" :sectors="sectors" :practice-addresses="practiceAddresses" />
@@ -144,7 +137,6 @@ import { ref, computed, onMounted } from 'vue';
 import apiServices from '@/services/services';
 import ViewDetailsModal from './modals/ViewApplicationDetailsModal.vue';
 
-// State
 const applications = ref([]);
 const filterStatus = ref('all');
 const searchQuery = ref('');
@@ -152,38 +144,39 @@ const currentPage = ref(1);
 const itemsPerPage = 10;
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
-const registrationTypeName = "Registration";
 const personnelCategories = ref([]);
 const personnelSubcategories = ref([]);
 const sectors = ref([]);
 
-// Computed properties
 const pendingCount = computed(() => {
   return filteredApplications.value.filter(app => getStatus(app) === 'Pending').length;
 });
 
+// Filter out Renewals, Additional Qualifications, and Re-registrations
 const filteredApplications = computed(() => {
-  let filtered = applications.value;
-
-  // Filter by registration type name
-  filtered = filtered.filter(app => app.registration_type.name === registrationTypeName);
-
-  if (filterStatus.value !== 'all') {
-    filtered = filtered.filter(app => getStatus(app) === filterStatus.value);
-  }
-
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(app => {
-      return (
-        app.full_name?.toLowerCase().includes(query) ||
-        app.cid_no?.toLowerCase().includes(query) ||
-        app.registration_no?.toLowerCase().includes(query)
-      );
+  return applications.value
+    .filter(app =>
+      app.registration_type_name !== 'Renewal' &&
+      app.registration_type_name !== 'Additional Qualification' &&
+      app.registration_type_name !== 'Re-Registration'
+    )
+    .filter(app => {
+      if (filterStatus.value !== 'all') {
+        return getStatus(app) === filterStatus.value;
+      }
+      return true;
+    })
+    .filter(app => {
+      if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        return (
+          app.full_name?.toLowerCase().includes(query) ||
+          app.cid_no?.toLowerCase().includes(query) ||
+          app.registration_no?.toLowerCase().includes(query)
+        );
+      }
+      return true;
     });
-  }
-
-  return filtered;
 });
 
 const paginatedApplications = computed(() => {
@@ -204,37 +197,46 @@ const paginationEnd = computed(() => {
   return Math.min(currentPage.value * itemsPerPage, filteredApplications.value.length);
 });
 
-// --- Improved getStatus and getStatusClasses ---
 const getStatus = (app) => {
-    if (!app.user_qualifications || app.user_qualifications.length === 0) {
-        return 'Pending';
-    }
+  if (!Array.isArray(app.user_qualifications) || app.user_qualifications.length === 0) {
+    return 'Pending';
+  }
 
-    const qualification = app.user_qualifications[0];
+  for (const qualification of app.user_qualifications) {
     const { application_review_status, physical_review_status, endorsement_decision } = qualification;
 
     if (application_review_status === 'Regretted' || physical_review_status === 'Regretted' || endorsement_decision === 'Regretted') {
-        return 'Regretted';
-    } else if (application_review_status === 'Approved' && physical_review_status === 'Approved' && endorsement_decision === 'Approved') {
-        return 'Approved';
-    } else {
-        return 'Pending';
+      return 'Regretted';
     }
+  }
+
+  const allApproved = app.user_qualifications.every(qualification =>
+    qualification.application_review_status === 'Approved' &&
+    qualification.physical_review_status === 'Approved' &&
+    qualification.endorsement_decision === 'Approved'
+  );
+
+  if (allApproved) {
+    return 'Approved';
+  }
+
+  return 'Pending';
 };
+
 const getStatusClasses = (app) => {
-    const status = getStatus(app);
+  const status = getStatus(app);
   return [
     'px-3 py-1 rounded-full text-xs font-medium',
     {
       'bg-yellow-100 text-yellow-800': status === 'Pending',
       'bg-green-100 text-green-800': status === 'Approved',
-      'bg-red-100 text-red-800': status === 'Regretted' // Corrected class
+      'bg-red-100 text-red-800': status === 'Regretted'
     }
   ];
 };
-// --- End of Improved getStatus and getStatusClasses ---
 
 const formatDate = (date) => {
+  if (!date) return '';
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -242,21 +244,19 @@ const formatDate = (date) => {
   });
 };
 
-
-// API interactions
 const fetchApplications = async () => {
   try {
     const response = await apiServices.getBhmcNewApplications();
-    if (!response.data?.results || !Array.isArray(response.data.results)) {
-      console.error('Invalid API response format');
-      return;
-    }
-    applications.value = response.data.results;
+    applications.value = Array.isArray(response.data) ? response.data : (response.data?.results || []);
 
-    // Fetch master data (only once)
-    personnelCategories.value = await apiServices.getMastersParticipationCategories();
-    personnelSubcategories.value = await apiServices.getMastersSubCategories();
-    sectors.value = await apiServices.getMastersSectors();
+    const categories = await apiServices.getMastersParticipationCategories();
+    personnelCategories.value = Array.isArray(categories.data) ? categories.data : (categories.data?.results || []);
+
+    const subcategories = await apiServices.getMastersSubCategories();
+    personnelSubcategories.value = Array.isArray(subcategories.data) ? subcategories.data : (subcategories.data?.results || [])
+
+    const sectorData = await apiServices.getMastersSectors();
+    sectors.value = Array.isArray(sectorData.data) ? sectorData.data : (sectorData.data?.results || []);
 
 
   } catch (error) {
@@ -266,34 +266,26 @@ const fetchApplications = async () => {
 
 const viewDetails = async (application) => {
   try {
-    // Fetch all users
     const response = await apiServices.getAllUsers();
-
-    // Check if response.data is an array, if not, use response.data.results if available
-    const users = Array.isArray(response.data) ? response.data :
-      (response.data?.results || []);
-
-    // Find matching user by CID
+    const users = Array.isArray(response.data) ? response.data : (response.data?.results || []);
     const matchingUser = users.find(user => user.cid === application.cid_no);
 
-        selectedApplication.value = {
-          ...application,
-          is_counselor: matchingUser?.is_counselor || false,
-          userDetails: matchingUser
-        };
-        isModalOpen.value = true;
-    } catch (error) {
-      console.error('Error fetching user details:', error);
-        selectedApplication.value = { ...application, is_counselor: false }; //safe fallback
-        isModalOpen.value = true;
-    }
+    selectedApplication.value = {
+      ...application,
+      is_counselor: matchingUser?.is_counselor || false,
+      userDetails: matchingUser
+    };
+    isModalOpen.value = true;
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    selectedApplication.value = { ...application, is_counselor: false }; //safe fallback
+    isModalOpen.value = true;
+  }
 };
 
-
-// Correctly re-fetch applications after an update
 const handleUpdate = async () => {
-  await fetchApplications(); // Re-fetch the data
-  closeModal(); // Close the modal
+  await fetchApplications();
+  closeModal();
 };
 
 const closeModal = () => {
@@ -309,7 +301,6 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++;
 };
 
-// Initialize
 onMounted(() => {
   fetchApplications();
 });
