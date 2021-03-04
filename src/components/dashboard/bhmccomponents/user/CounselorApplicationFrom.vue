@@ -429,7 +429,7 @@ const handleSubmit = async () => {
         });
 
         // Submit the form
-        const response = await apiService.createBmhcCounsellor(formData);
+        // const response = await apiService.createBmhcCounsellor(formData);
 
         toast.success('Counselor application submitted successfully!');
         router.push('/admin/user/health_certification/dashboard');

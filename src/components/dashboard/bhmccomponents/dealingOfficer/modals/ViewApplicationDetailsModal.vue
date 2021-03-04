@@ -2,7 +2,7 @@
   <div class="p-8 min-h-screen bg-gray-50">
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
       <h1 class="text-4xl font-bold text-gray-900 mb-3">New Applications</h1>
-       <div class="flex items-center text-gray-600">
+      <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
           Total: {{ filteredApplications.length }}
@@ -135,7 +135,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import apiServices from '@/services/services';
-import ViewDetailsModal from './modals/ViewApplicationDetailsModal.vue';
+// import ViewDetailsModal from './ViewApplicationDetailsModal.vue';
 
 const applications = ref([]);
 const filterStatus = ref('all');
