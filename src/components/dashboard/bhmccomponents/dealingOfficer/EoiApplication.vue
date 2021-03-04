@@ -138,7 +138,7 @@ import { RefreshCw } from 'lucide-vue-next';
 import { useToast } from 'vue-toastification';
 import EoiApplicationsModal from './EoiApplicationsModal.vue';
 import { debounce } from 'lodash';
-import apiService from '@/services/services'; // Adjust the import path as needed
+import apiService from '@/services/services';
 
 const toast = useToast();
 
@@ -232,3 +232,5 @@ const getStatusClasses = (institute) => {
 <style scoped>
 /* Tailwind styles - no need for custom styles here, Tailwind classes are used */
 </style>
+
+

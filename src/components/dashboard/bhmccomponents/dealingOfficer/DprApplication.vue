@@ -66,7 +66,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(application)">
-                  {{ application.review_decision }}
+                  {{ application.do_dpr_review_decision }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">

@@ -17,13 +17,13 @@
               <div class="relative">
                 <!-- Enhanced Status Banner -->
                 <div :class="[
-                  'px-8 py-6 border-b relative overflow-hidden',
-                  {
-                    'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
-                    'bg-green-50 border-green-100': overallStatus === 'Approved',
-                    'bg-red-50 border-red-100': overallStatus === 'Regretted',
-                  },
-                ]">
+    'px-8 py-6 border-b relative overflow-hidden',
+    {
+      'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
+      'bg-green-50 border-green-100': overallStatus === 'Approved',
+      'bg-red-50 border-red-100': overallStatus === 'Regretted',
+    },
+  ]">
                   <div class="flex items-center justify-between relative z-10">
                     <div class="flex items-center space-x-4">
                       <div class="p-3 bg-white rounded-lg shadow-sm">
@@ -39,18 +39,18 @@
                     </div>
                     <div class="flex items-center space-x-4">
                       <span :class="[
-                        'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
-                        {
-                          'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
-                          'bg-green-100 text-green-800': overallStatus === 'Approved',
-                          'bg-red-100 text-red-800': overallStatus === 'Regretted',
-                        },
-                      ]">
+    'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
+    {
+      'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
+      'bg-green-100 text-green-800': overallStatus === 'Approved',
+      'bg-red-100 text-red-800': overallStatus === 'Regretted',
+    },
+  ]">
                         <Circle class="h-4 w-4" :class="{
-                          'text-yellow-500': overallStatus === 'Pending',
-                          'text-green-500': overallStatus === 'Approved',
-                          'text-red-500': overallStatus === 'Regretted',
-                        }" />
+    'text-yellow-500': overallStatus === 'Pending',
+    'text-green-500': overallStatus === 'Approved',
+    'text-red-500': overallStatus === 'Regretted',
+  }" />
                         <span>{{ overallStatus }}</span>
                       </span>
                       <button type="button"
@@ -83,16 +83,12 @@
                           </h4>
                           <div class="flex flex-col items-start space-y-4">
                             <div>
-                              <h5 class="text-xl font-semibold text-gray-900">{{ application.instituteName }}</h5>
+                              <h5 class="text-xl font-semibold text-gray-900">{{ application.name_of_institution }}</h5>
                             </div>
                             <div class="w-full grid grid-cols-1 gap-4 mt-4">
                               <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
                                 <UserCircle class="h-4 w-4 text-gray-400" />
-                                <span class="text-sm text-gray-600">{{ application.instituteAddress }}</span>
-                              </div>
-                              <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
-                                <Calendar class="h-4 w-4 text-gray-400" />
-                                <span class="text-sm text-gray-600">{{ application.correspondenceAddress }}</span>
+                                <span class="text-sm text-gray-600">{{ application.address }}</span>
                               </div>
                             </div>
                           </div>
@@ -109,29 +105,22 @@
                           <div class="space-y-4">
                             <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                               <Mail class="h-4 w-4 text-gray-400" />
-                              <span class="text-sm text-gray-600">{{ application.email }}</span>
+                              <span class="text-sm text-gray-600">{{ application.email_address }}</span>
                             </div>
                             <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                               <Phone class="h-4 w-4 text-gray-400" />
-                              <span class="text-sm text-gray-600">{{ application.phoneOffice }}</span>
+                              <span class="text-sm text-gray-600">{{ application.contact_no }}</span>
                             </div>
-                            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                              <Phone class="h-4 w-4 text-gray-400" />
-                              <span class="text-sm text-gray-600">{{ application.mobile }}</span>
-                            </div>
-                            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                              <Phone class="h-4 w-4 text-gray-400" />
-                              <span class="text-sm text-gray-600">{{ application.fax }}</span>
-                            </div>
+
                             <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                               <MapPin class="h-4 w-4 text-gray-400" />
                               <span class="text-sm text-gray-600">
-                                {{ application.location }}
+                                {{ application.village }}, {{ application.dzongkhag }}
                               </span>
                             </div>
                             <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                               <UserCircle class="h-4 w-4 text-gray-400" />
-                              <span class="text-sm text-gray-600">{{ application.webpage }}</span>
+                              <span class="text-sm text-gray-600">{{ application.website }}</span>
                             </div>
                           </div>
                         </div>
@@ -153,41 +142,41 @@
                               <p class="text-sm font-medium text-gray-500">Application ID</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <FileCheck class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.applicationId }}</span>
+                                <span>{{ application.CID }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
                               <p class="text-sm font-medium text-gray-500">Program Type</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Hash class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.programType }}</span>
+                                <span>{{ application.type_of_programme }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
                               <p class="text-sm font-medium text-gray-500">Date Submitted</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Calendar class="h-4 w-4 text-gray-400" />
-                                <span>{{ formatDate(application.dateSubmitted) }}</span>
+                                <span>{{ formatDate(application.created_at) }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
                               <p class="text-sm font-medium text-gray-500">Proposed Date</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Clock class="h-4 w-4 text-gray-400" />
-                                <span>{{ formatDate(application.proposedDate) }}</span>
+                                <span>{{ formatDate(application.commencement_date) }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
                               <p class="text-sm font-medium text-gray-500">Course Title</p>
                               <p class="text-sm text-gray-900 mt-2">
-                                <span>{{ application.courseTitle }}</span>
+                                <span>{{ application.title_of_course }}</span>
                               </p>
                             </div>
 
                             <div class="p-4 bg-gray-50 rounded-lg">
                               <p class="text-sm font-medium text-gray-500">Duration</p>
                               <p class="text-sm text-gray-900 mt-2">
-                                <span>{{ application.duration }}</span>
+                                <span>{{ application.course_duration }}</span>
                               </p>
                             </div>
 
@@ -195,24 +184,9 @@
                             <div class="p-4 bg-gray-50 rounded-lg">
                               <p class="text-sm font-medium text-gray-500">Institute Address</p>
                               <p class="text-sm text-gray-900 mt-2">
-                                <span>{{ application.instituteAddress }}</span>
+                                <span>{{ application.address }}</span>
                               </p>
                             </div>
-
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Correspondence Address</p>
-                              <p class="text-sm text-gray-900 mt-2">
-                                <span>{{ application.correspondenceAddress }}</span>
-                              </p>
-                            </div>
-
-                            <!-- Documents (Placeholder) -->
-                            <h4 class="text-lg font-semibold text-gray-900 mt-6">Documents</h4>
-                            <p class="text-gray-600">No documents uploaded (Placeholder)</p>
-
-                            <!-- Declaration (Placeholder) -->
-                            <h4 class="text-lg font-semibold text-gray-900 mt-6">Declaration</h4>
-                            <p class="text-gray-600">Declaration Text Here (Placeholder)</p>
                           </div>
                         </div>
                       </div>
@@ -283,6 +257,11 @@ import {
   X,
 } from 'lucide-vue-next';
 import { defineProps, defineEmits, computed, ref } from 'vue';
+import apiService from '@/services/services';
+import { useToast } from 'vue-toastification';
+
+const toast = useToast()
+
 const props = defineProps({
   isOpen: Boolean,
   application: {
@@ -291,7 +270,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['close', 'approve', 'reject']);
+const emit = defineEmits(['close', 'application-updated']);
 
 const errorMessage = ref('');
 
@@ -303,12 +282,58 @@ const closeModalHandler = () => {
   emit('close');
 };
 
-const approveApplication = () => {
-  emit('approve', props.application);
+const approveApplication = async () => {
+  const notes = prompt('Enter approval notes:');
+  if (!notes) {
+    errorMessage.value = 'Approval notes are required.';
+    return;
+  }
+
+  try {
+    const response = await apiService.patchBmhcInstitute(props.application.id, {
+      status: 'Approved',
+      approvalNotes: notes,
+    });
+
+    if (response && response.status === 200 && response.data) {
+      // Emit the application-updated event with the updated data
+      emit('application-updated', response.data); // Send the whole updated application
+      toast.success('Application Approved!');
+      closeModal();
+    } else {
+      errorMessage.value = 'Failed to approve application.';
+    }
+  } catch (error) {
+    console.error('Error approving application:', error);
+    errorMessage.value = 'Failed to approve application due to an error.';
+  }
 };
 
-const rejectApplication = () => {
-  emit('reject', props.application);
+const rejectApplication = async () => {
+  const reason = prompt('Enter rejection reason:');
+  if (!reason) {
+    errorMessage.value = 'Rejection reason is required.';
+    return;
+  }
+
+  try {
+    const response = await apiService.patchBmhcInstitute(props.application.id, {
+      status: 'Rejected',
+      reason_if_rejected: reason, //use this reason
+    });
+
+    if (response && response.status === 200 && response.data) {
+      // Emit the application-updated event with the updated data
+      emit('application-updated', response.data); // Send the whole updated application
+      toast.success('Application Rejected!');
+      closeModal();
+    } else {
+      errorMessage.value = 'Failed to reject application.';
+    }
+  } catch (error) {
+    console.error('Error rejecting application:', error);
+    errorMessage.value = 'Failed to reject application due to an error.';
+  }
 };
 
 const formatDate = (date) => {
@@ -328,7 +353,7 @@ const formatDate = (date) => {
 const overallStatus = computed(() => {
   // Replace this logic with your actual status determination
   // based on the EOI application's properties
-  return props.application.status || 'Pending';
+  return props.application.review_decision || 'Pending';
 });
 </script>
 
@@ -362,9 +387,6 @@ const overallStatus = computed(() => {
 /* Enhanced card hover effects */
 .rounded-xl {
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.rounded-xl:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
