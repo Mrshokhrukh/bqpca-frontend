@@ -149,10 +149,10 @@
                     <!-- Application Review -->
                     <div class="flex flex-col items-center mb-4 sm:mb-0">
                       <span class="w-10 h-10 rounded-full flex items-center justify-center shadow-md" :class="[
-                          qualification.application_review_status === 'Approved' ? 'bg-green-100 text-green-700 ring-1 ring-green-200' :
-                            qualification.application_review_status === 'Rejected' ? 'bg-red-100 text-red-700 ring-1 ring-red-200' :
-                              'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200'
-                        ]">
+      qualification.application_review_status === 'Approved' ? 'bg-green-100 text-green-700 ring-1 ring-green-200' :
+        qualification.application_review_status === 'Rejected' ? 'bg-red-100 text-red-700 ring-1 ring-red-200' :
+          'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200'
+    ]">
                         <CheckCircle v-if="qualification.application_review_status === 'Approved'" class="w-5 h-5" />
                         <XCircle v-else-if="qualification.application_review_status === 'Rejected'" class="w-5 h-5" />
                         <Clock v-else class="w-5 h-5" />
@@ -167,10 +167,10 @@
                     <!-- Physical Verification -->
                     <div class="flex flex-col items-center mb-4 sm:mb-0">
                       <span class="w-10 h-10 rounded-full flex items-center justify-center shadow-md" :class="[
-                          qualification.physical_review_status === 'Approved' ? 'bg-green-100 text-green-700 ring-1 ring-green-200' :
-                            qualification.physical_review_status === 'Rejected' ? 'bg-red-100 text-red-700 ring-1 ring-red-200' :
-                              'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200'
-                        ]">
+      qualification.physical_review_status === 'Approved' ? 'bg-green-100 text-green-700 ring-1 ring-green-200' :
+        qualification.physical_review_status === 'Rejected' ? 'bg-red-100 text-red-700 ring-1 ring-red-200' :
+          'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200'
+    ]">
                         <CheckCircle v-if="qualification.physical_review_status === 'Approved'" class="w-5 h-5" />
                         <XCircle v-else-if="qualification.physical_review_status === 'Rejected'" class="w-5 h-5" />
                         <Clock v-else class="w-5 h-5" />
@@ -185,11 +185,11 @@
                     <!-- Payment -->
                     <div class="flex flex-col items-center mb-4 sm:mb-0">
                       <span class="w-10 h-10 rounded-full flex items-center justify-center shadow-md" :class="{
-                          'bg-green-100 text-green-700 ring-1 ring-green-200': qualification.payment_status === 'completed',
-                          'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200': qualification.payment_status === 'processing_payment',
-                          'bg-red-100 text-red-700 ring-1 ring-red-200': qualification.payment_status === 'failed',
-                          'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200': qualification.payment_status === 'pending',
-                        }">
+      'bg-green-100 text-green-700 ring-1 ring-green-200': qualification.payment_status === 'completed',
+      'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200': qualification.payment_status === 'processing_payment',
+      'bg-red-100 text-red-700 ring-1 ring-red-200': qualification.payment_status === 'failed',
+      'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200': qualification.payment_status === 'pending',
+    }">
                         <CheckCircle v-if="qualification.payment_status === 'completed'" class="w-5 h-5" />
                         <XCircle v-else-if="qualification.payment_status === 'failed'" class="w-5 h-5" />
                         <Clock v-else class="w-5 h-5" />
@@ -204,10 +204,10 @@
                     <!-- Endorsement -->
                     <div class="flex flex-col items-center">
                       <span class="w-10 h-10 rounded-full flex items-center justify-center shadow-md" :class="[
-                          qualification.endorsement_decision === 'Approved' ? 'bg-green-100 text-green-700 ring-1 ring-green-200' :
-                            qualification.endorsement_decision === 'Rejected' ? 'bg-red-100 text-red-700 ring-1 ring-red-200' :
-                              'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200'
-                        ]">
+      qualification.endorsement_decision === 'Approved' ? 'bg-green-100 text-green-700 ring-1 ring-green-200' :
+        qualification.endorsement_decision === 'Rejected' ? 'bg-red-100 text-red-700 ring-1 ring-red-200' :
+          'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200'
+    ]">
                         <CheckCircle v-if="qualification.endorsement_decision === 'Approved'" class="w-5 h-5" />
                         <XCircle v-else-if="qualification.endorsement_decision === 'Rejected'" class="w-5 h-5" />
                         <Clock v-else class="w-5 h-5" />
@@ -272,14 +272,14 @@
                       <div class="flex items-center space-x-2 mt-2">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium shadow-sm"
                           :class="{
-                            'bg-green-100 text-green-800 border border-green-200': qualification.payment_status === 'completed',
-                            'bg-red-100 text-red-800 border border-red-200': qualification.payment_status === 'failed',
-                            'bg-yellow-100 text-yellow-800 border border-yellow-200': qualification.payment_status === 'processing_payment', // Correct Order
-                            'bg-yellow-100 text-yellow-800 border border-yellow-200': qualification.payment_status === 'pending',  // Correct Order
-                          }">
+      'bg-green-100 text-green-800 border border-green-200': qualification.payment_status === 'completed',
+      'bg-red-100 text-red-800 border border-red-200': qualification.payment_status === 'failed',
+      'bg-yellow-100 text-yellow-800 border border-yellow-200': qualification.payment_status === 'processing_payment', // Correct Order
+      'bg-yellow-100 text-yellow-800 border border-yellow-200': qualification.payment_status === 'pending',  // Correct Order
+    }">
                           {{ qualification.payment_status === 'completed' ? 'Paid' : qualification.payment_status ===
-                          'processing_payment' ? 'Processing' : qualification.payment_status === 'failed' ? 'Failed' :
-                          'Pending' }}
+      'processing_payment' ? 'Processing' : qualification.payment_status === 'failed' ? 'Failed' :
+      'Pending' }}
                         </span>
                         <span v-if="qualification.payment_id" class="text-xs text-gray-500">
                           #{{ qualification.payment_id }}
@@ -289,14 +289,16 @@
                   </div>
                 </div>
               </div>
-              
+
               <button
                 v-if="qualification.physical_review_status === 'Approved' && qualification.endorsement_decision === 'Pending' && qualification.payment_status !== 'completed' && qualification.payment_status !== 'processing_payment'"
                 @click="initiatePayment(application, qualification)"
-                class="mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg hover:from-yellow-600 hover:to-amber-700 transition-all shadow-md"
+                class="mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white rounded-lg hover:from-teal-600 hover:to-blue-700 transition-all shadow-md relative overflow-hidden"
                 :class="{ 'animate-pulse': qualification.payment_status !== 'failed' }">
-                <CreditCard class="w-4 h-4 mr-2" />
-                <span>{{ getPaymentButtonText(application, qualification) }}</span>
+                <!-- Custom Border Animation -->
+                <span class="absolute inset-0 rounded-lg pointer-events-none animate-wave-border"></span>
+                <CreditCard class="w-4 h-4 mr-2 relative z-10" />
+                <span class="relative z-10">{{ getPaymentButtonText(application, qualification) }}</span>
               </button>
             </div>
           </div>

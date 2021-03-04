@@ -220,6 +220,10 @@
       <div v-else-if="hasSearched && !apiError" class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
         <p class="text-gray-600">No CPD records found matching your search.</p>
       </div>
+      <!-- API Error Message (Optional) -->
+      <div v-else-if="apiError" class="text-center py-12 bg-red-50 rounded-xl border border-red-200">
+        <p class="text-red-600">An error occurred while fetching data. Please try again later.</p>
+      </div>
     </div>
 
   </div>
@@ -267,11 +271,14 @@ const fetchApplications = async () => {
 
   try {
     const response = await apiService.getBmhcCpdRecordsByCid(searchQuery.value);
-    if (response && response.data && response.data.details && response.data.valid) { //check for validity
-      // Create a single-element array
-      applications.value = [response.data.details];
+    // Check if the response is an array and assign it directly
+    if (Array.isArray(response.data)) {
+      applications.value = response.data;
     } else {
-      applications.value = []; // Set to an empty array if no details
+      // Handle cases where the API might return something other than an array
+      applications.value = [];
+      console.error("API did not return an array:", response.data);
+      apiError.value = true; // Set apiError if it's not the expected format
     }
   } catch (error) {
     console.error('Error fetching applications:', error);

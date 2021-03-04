@@ -48,8 +48,8 @@ import BmhInstitutionsDashboard from '@/components/dashboard/bhmccomponents/inst
 import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superAdmin/BmhSuperAdminDashboard.vue';
 
 // BMH user
-import CPDcomponent from '@/components/dashboard/bhmccomponents/user/CPDApplication.vue';
-import CPDTracker from '@/components/dashboard/bhmccomponents/user/CPDTracker.vue';
+import CPDcomponent from '@/components/dashboard/bhmccomponents/user/cpdApplication/CPDApplication.vue';
+import CPDTracker from '@/components/dashboard/bhmccomponents/user/cpdApplication/CPDTracker.vue';
 import CoGSComponet from '@/components/dashboard/bhmccomponents/user/CoGSApplication.vue';
 import PractitionerRegistration from '@/components/dashboard/bhmccomponents/user/certificateApplication/CertificateRegistrationComponent.vue';
 import PractitionerRenewal from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationRenewal.vue';
@@ -57,8 +57,8 @@ import ApplicationTracker from '@/components/dashboard/bhmccomponents/user/certi
 import AdditionalQualification from '@/components/dashboard/bhmccomponents/user/certificateApplication/AdditionalQualification.vue';
 import ReRegistration from '@/components/dashboard/bhmccomponents/user/certificateApplication/ReRegistration.vue';
 import BMHCUserReports from '@/components/dashboard/bhmccomponents/user/ReportsComponent.vue';
-import CounselorApplicationFrom from '@/components/dashboard/bhmccomponents/user/CounselorApplicationFrom.vue';
-import CounselorApplicationTracker from '@/components/dashboard/bhmccomponents/user/CounselorApplicationTracker.vue';
+import CounselorApplicationFrom from '@/components/dashboard/bhmccomponents/user/counselorApplication/CounselorApplicationFrom.vue';
+import CounselorApplicationTracker from '@/components/dashboard/bhmccomponents/user/counselorApplication/CounselorApplicationTracker.vue';
 // Dealing Officer Components
 import ApplicationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/ApplicationLists.vue';
 import RenewalLists from '@/components/dashboard/bhmccomponents/dealingOfficer/RenewalLists.vue';

@@ -49,8 +49,8 @@ import ApplicationHistoryCard from './dashboard/ApplicationHistoryCard.vue';
 import ActivityFeed from './dashboard/ActivityFeed.vue';
 import DeadlinesList from './dashboard/DeadlinesList.vue';
 import ApplicationsModal from './dashboard/ApplicationsModal.vue';
-import CertificateModal from './modals/CertificateModal.vue';
-import LoadingSpinner from './common/LoadingSpinner.vue';
+import CertificateModal from '../../../common/MHPCCertificateModal.vue';
+import LoadingSpinner from '../../../common/MHPCLoadingSpinner.vue';
 import EmptyDashboardState from './dashboard/EmptyDashboardState.vue';
 import FirstDashboardState from './dashboard/FirstDashboardState.vue';
 

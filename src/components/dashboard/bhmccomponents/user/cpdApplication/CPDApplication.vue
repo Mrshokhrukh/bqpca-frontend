@@ -1,135 +1,117 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-12">
-    <div class="max-w-6xl mx-auto px-4">
-      <!-- Form Header with enhanced gradient and animation -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
-        <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
+  <div class="min-h-screen bg-gradient-to-b from-gray-100 to-gray-50 py-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Form Header -->
+      <div
+        class="relative bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-2xl p-8 mb-12 shadow-lg overflow-hidden">
+        <div class="absolute inset-0 bg-indigo-200 opacity-10 animate-pulse-slow"></div>
+        <h2 class="relative text-3xl font-extrabold text-gray-900 mb-4 text-center tracking-tight">
           Continuous Professional Development (CPD) Application
         </h2>
-        <p class="text-gray-600 text-center max-w-2xl mx-auto">
-          Please fill in all required fields marked with an asterisk (<span class="text-red-600">*</span>). Ensure all
-          information provided is accurate and up-to-date.
+        <p class="relative text-gray-600 text-center max-w-2xl mx-auto text-sm sm:text-base">
+          Complete all required fields marked with an <span class="text-red-600 font-semibold">*</span>. Ensure your
+          information is accurate and current.
         </p>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="bg-white border-0 rounded-2xl shadow-xl overflow-hidden">
-        <!-- Hidden fields -->
+      <form @submit.prevent="handleSubmit"
+        class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <!-- Hidden Fields -->
         <input type="hidden" v-model="form.registration_no" />
         <input type="hidden" v-model="form.cid_no" />
         <input type="hidden" v-model="form.full_name" />
         <input type="hidden" v-model="form.gender" />
+        <input type="hidden" v-model="form.cpd_credit" /> <!-- Hidden CPD Credit (score) -->
 
         <!-- CPD Details Section -->
-        <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8">
-          <h3 class="text-xl font-bold text-gray-900">CPD Details</h3>
-          <p class="mt-2 text-gray-600">Please provide detailed information about your CPD activity</p>
+        <div class="bg-gradient-to-r from-gray-50 to-indigo-50 p-8">
+          <h3 class="text-xl font-semibold text-gray-900">CPD Details</h3>
+          <p class="mt-2 text-gray-600 text-sm">Provide detailed information about your CPD activity.</p>
         </div>
 
-        <div class="p-8 space-y-8">
+        <div class="p-8 space-y-10">
           <!-- Form Grid -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
             <!-- Title of CPD -->
             <div class="space-y-2">
               <label for="title_of_cpd" class="text-sm font-medium text-gray-700 flex items-center">
-                Title of CPD
-                <span class="text-red-500 ml-1">*</span>
+                Title of CPD <span class="text-red-500 ml-1">*</span>
               </label>
               <input id="title_of_cpd" v-model="form.title_of_cpd" type="text"
-                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300"
                 required placeholder="Enter CPD title" />
               <span v-if="errors.title_of_cpd" class="text-sm text-red-500 block">{{ errors.title_of_cpd }}</span>
             </div>
 
-            <!-- relevance_to_profession -->
+            <!-- Professional Relevance -->
             <div class="space-y-2">
               <label for="relevance_to_profession" class="text-sm font-medium text-gray-700 flex items-center">
-                Professional Relevance
-                <span class="text-red-500 ml-1">*</span>
+                Professional Relevance <span class="text-red-500 ml-1">*</span>
               </label>
               <input id="relevance_to_profession" v-model="form.relevance_to_profession" type="text"
-                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300"
                 required placeholder="Describe relevance to your profession" />
-              <span v-if="errors.relevance_to_profession" class="text-sm text-red-500 block">{{ errors.relevance_to_profession }}</span>
+              <span v-if="errors.relevance_to_profession" class="text-sm text-red-500 block">{{
+        errors.relevance_to_profession }}</span>
             </div>
 
             <!-- Participation Category -->
             <div class="space-y-2">
               <label for="participationCategory" class="text-sm font-medium text-gray-700 flex items-center">
-                Participation Category
-                <span class="text-red-500 ml-1">*</span>
+                Participation Category <span class="text-red-500 ml-1">*</span>
               </label>
               <select id="participationCategory" v-model="form.participationCategory" @change="handleCategoryChange"
-                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+                class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300 appearance-none"
                 required>
                 <option value="" disabled selected>Select category</option>
                 <option v-for="category in participationCategories" :key="category.id" :value="category.id">
                   {{ category.participation_category_name }}
                 </option>
               </select>
-              <span v-if="errors.participationCategory" class="text-sm text-red-500 block">
-                {{ errors.participationCategory }}
-              </span>
+              <span v-if="errors.participationCategory" class="text-sm text-red-500 block">{{
+        errors.participationCategory }}</span>
             </div>
 
-            <!-- Sub Category -->
+            <!-- Participant Sub-category -->
             <div class="space-y-2">
               <label for="participantSubCategory" class="text-sm font-medium text-gray-700 flex items-center">
-                Participant Sub-category
-                <span class="text-red-500 ml-1">*</span>
+                Participant Sub-category <span class="text-red-500 ml-1">*</span>
               </label>
               <select id="participantSubCategory" v-model="form.participantSubCategory"
-                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+                class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300 appearance-none"
                 required>
                 <option value="" disabled selected>Select sub-category</option>
                 <option v-for="subCategory in filteredSubCategories" :key="subCategory.id" :value="subCategory.id">
                   {{ subCategory.participation_sub_category_name }}
                 </option>
               </select>
-              <span v-if="errors.participantSubCategory" class="text-sm text-red-500 block">
-                {{ errors.participantSubCategory }}
-              </span>
+              <span v-if="errors.participantSubCategory" class="text-sm text-red-500 block">{{
+        errors.participantSubCategory }}</span>
             </div>
 
             <!-- Activity Type -->
             <div class="space-y-2">
               <label for="activityType" class="text-sm font-medium text-gray-700 flex items-center">
-                CPD Activity Type
-                <span class="text-red-500 ml-1">*</span>
+                CPD Activity Type <span class="text-red-500 ml-1">*</span>
               </label>
               <select id="activityType" v-model="form.activityType"
-                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+                class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300 appearance-none"
                 required>
                 <option value="" disabled selected>Select activity type</option>
                 <option v-for="activity in cpdActivities" :key="activity.id" :value="activity.id">
                   {{ activity.cpd_activity_name }}
                 </option>
               </select>
-              <span v-if="errors.activityType" class="text-sm text-red-500 block">
-                {{ errors.activityType }}
-              </span>
-            </div>
-
-            <!-- CPD Credit -->
-            <div class="space-y-2">
-              <label for="cpd_credit" class="text-sm font-medium text-gray-700 flex items-center">
-                CPD Credit
-                <span class="text-red-500 ml-1">*</span>
-              </label>
-              <input id="cpd_credit" v-model.number="form.cpd_credit" type="number"
-                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                required placeholder="Enter CPD credit" />
-              <span v-if="errors.cpd_credit" class="text-sm text-red-500 block">{{ errors.cpd_credit }}</span>
+              <span v-if="errors.activityType" class="text-sm text-red-500 block">{{ errors.activityType }}</span>
             </div>
 
             <!-- File Upload -->
             <div class="space-y-2">
-              <label for="attachment" class="text-sm font-medium text-gray-700">
-                Supporting Documents
-              </label>
+              <label for="attachment" class="text-sm font-medium text-gray-700">Supporting Documents</label>
               <div class="relative">
                 <input id="attachment" type="file" @change="handleFileUpload"
-                  class="w-full px-4 py-3 rounded-xl border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors focus:outline-none" />
-                <p class="mt-2 text-sm text-gray-500 flex items-center">
+                  class="w-full px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 hover:border-indigo-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-indigo-100 file:text-indigo-700 hover:file:bg-indigo-200" />
+                <p class="mt-2 text-xs text-gray-500 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -138,22 +120,20 @@
                   PDF, DOC, JPG, PNG (Max: 2MB)
                 </p>
               </div>
-              <span v-if="errors.attachment" class="text-sm text-red-500 block">
-                {{ errors.attachment }}
-              </span>
+              <span v-if="errors.attachment" class="text-sm text-red-500 block">{{ errors.attachment }}</span>
             </div>
           </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="bg-gray-50 px-8 py-6 flex justify-end space-x-4">
+        <div class="bg-gray-50 px-8 py-6 flex justify-end space-x-4 border-t border-gray-100">
           <button type="button" @click="handleCancel"
-            class="px-6 py-3 rounded-xl text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+            class="px-6 py-3 rounded-lg bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">
             Cancel
           </button>
-          <button type="submit"
-            class="px-6 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-            Submit Application
+          <button type="submit" :disabled="isSubmitting"
+            class="px-6 py-3 rounded-lg bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
           </button>
         </div>
       </form>
@@ -166,13 +146,17 @@ import { reactive, onMounted, ref, computed } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useAuthStore } from '@/stores/authStore';
 import apiService from '@/services/services';
+import { useRouter } from 'vue-router';  // Import useRouter
 
 const toast = useToast();
 const authStore = useAuthStore();
+const router = useRouter(); // Initialize useRouter
 
 const cpdActivities = ref([]);
 const participationCategories = ref([]);
 const participationSubCategories = ref([]);
+const isSubmitting = ref(false); // Track submission status
+
 
 const form = reactive({
   registration_no: '',
@@ -209,7 +193,6 @@ const validateForm = () => {
   if (!form.participationCategory) { errors.participationCategory = 'Participation Category is required'; isValid = false; }
   if (!form.participantSubCategory) { errors.participantSubCategory = 'Participant Sub-category is required'; isValid = false; }
   if (!form.activityType) { errors.activityType = 'Activity Type is required'; isValid = false; }
-  if (!form.cpd_credit) { errors.cpd_credit = 'CPD Credit is required'; isValid = false;} //cpd credit validation.
   if (form.attachment && form.attachment.size > 2 * 1024 * 1024) {
     errors.attachment = 'Attachment size should not exceed 2MB';
     isValid = false;
@@ -238,21 +221,23 @@ const handleSubmit = async () => {
     return; // Stop if validation fails
   }
 
+  isSubmitting.value = true; // Set submitting to true
+
   const formData = new FormData();
 
   // Correct gender mapping
   const genderToSend = form.gender === 'male' ? 'male' : (form.gender === 'female' ? 'female' : 'others');
 
-    formData.append('registration_no', form.registration_no || '');
-    formData.append('cid_no', form.cid_no || '');
-    formData.append('full_name', form.full_name || '');
-    formData.append('gender', genderToSend); // Use the transformed gender
-    formData.append('title_of_cpd', form.title_of_cpd || '');
-    formData.append('relevance_to_profession', form.relevance_to_profession || '');
-    formData.append('participationCategory', form.participationCategory || '');
-    formData.append('participantSubCategory', form.participantSubCategory || '');
-    formData.append('activityType', form.activityType || '');
-    formData.append('cpd_credit', form.cpd_credit);
+  formData.append('registration_no', form.registration_no || '');
+  formData.append('cid_no', form.cid_no || '');
+  formData.append('full_name', form.full_name || '');
+  formData.append('gender', genderToSend); // Use the transformed gender
+  formData.append('title_of_cpd', form.title_of_cpd || '');
+  formData.append('relevance_to_profession', form.relevance_to_profession || '');
+  formData.append('participationCategory', form.participationCategory || '');
+  formData.append('participantSubCategory', form.participantSubCategory || '');
+  formData.append('activityType', form.activityType || '');
+  formData.append('cpd_credit', form.cpd_credit);
   if (form.attachment) {
     formData.append('attachment', form.attachment);
   }
@@ -264,7 +249,8 @@ const handleSubmit = async () => {
     if (response.status >= 200 && response.status < 300) {
       toast.success('CPD Registration submitted successfully!');
       console.log('Form submitted:', Object.fromEntries(formData));
-      handleCancel(); // Reset form
+      // handleCancel(); // Reset form  -- No longer needed, we redirect.
+      router.push('/admin/user/health_certification/dashboard'); // Redirect on success
     } else {
       toast.error('Submission failed. Server returned an error.');
       console.error("Server error:", response);
@@ -279,6 +265,8 @@ const handleSubmit = async () => {
   } catch (error) {
     toast.error('Submission failed: ' + error.message);
     console.error("Error submitting form:", error);
+  } finally {
+    isSubmitting.value = false; // Reset submitting status
   }
 };
 
@@ -329,7 +317,7 @@ const fetchMasterData = async () => {
 onMounted(async () => {
   if (authStore.user) {
     form.cid_no = authStore.user.cid;
-    form.full_name = `${authStore.user.first_name} ${authStore.user.middle_name?authStore.user.middle_name:''} ${authStore.user.last_name}`;
+    form.full_name = `${authStore.user.first_name} ${authStore.user.middle_name ? authStore.user.middle_name : ''} ${authStore.user.last_name}`;
     form.gender = authStore.user.gender; // Keep original gender for display
 
     const registrationNumber = await fetchRegistrationNumber(form.cid_no);
