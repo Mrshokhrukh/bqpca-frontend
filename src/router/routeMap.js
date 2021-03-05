@@ -104,6 +104,7 @@ export default {
       hr_biodata: ecpfDashboard,
       student_biodata: ecpfDashboard,
       profile: ecpfDashboard,
+      track_applications: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,
