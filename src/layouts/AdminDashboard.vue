@@ -118,7 +118,7 @@
       </header>
 
       <!-- Main Content -->
-      <main class="flex-1 overflow-auto bg-slate-50 p-6">
+      <main class="flex-1 overflow-auto bg-slate-50 p-6" style="overflow-y: auto;">
         <router-view />
       </main>
 
@@ -222,6 +222,7 @@ const handleLogout = async () => {
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
+  height: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -231,6 +232,23 @@ const handleLogout = async () => {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 20px;
+}
+
+/* Fix for macOS scrollbar issues */
+@media screen and (min-width: 0) and (min-resolution: 72dpi) {
+  .custom-scrollbar {
+    overflow: auto !important;
+  }
+}
+
+/* Hide default scrollbar on macOS */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) {
+    .custom-scrollbar {
+      -webkit-appearance: none;
+      appearance: none;
+    }
+  }
 }
 
 /* Smooth transitions */
