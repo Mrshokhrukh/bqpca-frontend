@@ -2,7 +2,7 @@
   <div class="min-h-screen">
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <!-- Dashboard Header -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10 shadow-md">
+      <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md">
         <div class="flex justify-between items-center">
           <div>
             <h1 class="text-3xl font-bold text-gray-900">Dealing Officer Dashboard</h1>
@@ -15,13 +15,9 @@
       <div class="bg-white rounded-xl p-6 shadow-md mb-8">
         <h2 class="text-xl font-bold text-gray-900 mb-4">Priority Tasks</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div
-            v-for="task in priorityTasks"
-            :key="task.id"
+          <div v-for="task in priorityTasks" :key="task.id"
             class="border rounded-lg p-4 flex items-center space-x-3 cursor-pointer"
-            :class="getTaskUrgencyClass(task.urgency)"
-            @click="navigateToTask(task)"
-          >
+            :class="getTaskUrgencyClass(task.urgency)" @click="navigateToTask(task)">
             <div class="flex-shrink-0">
               <!--  Use dynamic import or a mapping for the icons -->
               <component :is="getIconComponent(task.icon)" class="h-6 w-6" />
@@ -40,8 +36,10 @@
         <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-200">
           <div class="flex items-center space-x-4">
             <div class="flex items-center justify-center h-12 w-12 rounded-xl bg-blue-100 text-blue-600">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512m0 6.375V19.5a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021 19.5V12.417m-9 .375a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512m0 6.375V19.5a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021 19.5V12.417m-9 .375a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
               </svg>
             </div>
             <div>
@@ -72,8 +70,10 @@
         <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-200">
           <div class="flex items-center space-x-4">
             <div class="flex items-center justify-center h-12 w-12 rounded-xl bg-green-100 text-green-600">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001l-.628-.349m-1.263-.52V4.046c0-1.26-1.517-1.867-2.583-1.513m-3.764 1.088c-1.031.888-1.951 2.274-2.227 4.141m-1.29-3.801c-.051.49-.186 1.08-1.504 1.979m9.583-.302v.003h4.992M15 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M16.023 9.348h4.992v-.001l-.628-.349m-1.263-.52V4.046c0-1.26-1.517-1.867-2.583-1.513m-3.764 1.088c-1.031.888-1.951 2.274-2.227 4.141m-1.29-3.801c-.051.49-.186 1.08-1.504 1.979m9.583-.302v.003h4.992M15 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
               </svg>
             </div>
             <div>
@@ -100,8 +100,10 @@
         <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-200">
           <div class="flex items-center space-x-4">
             <div class="flex items-center justify-center h-12 w-12 rounded-xl bg-purple-100 text-purple-600">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
               </svg>
             </div>
             <div>
@@ -125,7 +127,7 @@
       </div>
 
       <!-- Recent Applications Table -->
-     <DashboardTableRecentApp/>
+      <DashboardTableRecentApp />
     </div>
   </div>
 </template>

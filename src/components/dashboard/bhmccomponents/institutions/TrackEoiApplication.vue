@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Header Section -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         Track EOI Application Status
       </h2>
@@ -57,9 +57,9 @@
               <h3 class="text-lg font-semibold text-gray-900 mb-2">
                 {{ application.name_of_institution }}
                 <span :class="[
-                  'ml-2 px-2 py-1 text-xs rounded-full',
-                  getStatusColor(application.review_decision)
-                ]">
+            'ml-2 px-2 py-1 text-xs rounded-full',
+            getStatusColor(application.review_decision)
+          ]">
                   {{ application.review_decision }}
                 </span>
               </h3>

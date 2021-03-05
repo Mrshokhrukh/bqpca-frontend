@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-6xl mx-auto px-4 py-8">
     <!-- Form Header -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         Accreditation Application Form
       </h2>
@@ -227,7 +227,8 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700">Number of Programme through Mixed mode (if any)</label>
+            <label class="block text-sm font-medium text-gray-700">Number of Programme through Mixed mode (if
+              any)</label>
             <input type="text" v-model="application.numberOfProgrammesThroughMixedMode"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
           </div>
@@ -429,7 +430,8 @@
               class="bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm px-4 py-2">Remove</button>
           </div>
           <button @click="addStandard" type="button"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-4 py-2">Add Standard</button>
+            class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-4 py-2">Add
+            Standard</button>
         </div>
 
         <!-- 9. Supporting Documents -->
@@ -455,8 +457,7 @@
             class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
             Save as Draft
           </button>
-          <button type="submit"
-            class="px-6 py-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+          <button type="submit" class="px-6 py-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
             Submit Application
           </button>
         </div>
@@ -464,7 +465,7 @@
     </div>
   </div>
 </template>
-  
+
 <script setup>
 import { reactive, ref, computed, onMounted } from 'vue';
 
@@ -562,8 +563,8 @@ const totalNonTeachingStaff = computed(() => {
 });
 
 const onFileChange = (event) => {
-    const files = event.target.files;
-    application.supportingDocuments = Array.from(files); // Ensure files is an array
+  const files = event.target.files;
+  application.supportingDocuments = Array.from(files); // Ensure files is an array
 };
 
 const submitApplication = () => {

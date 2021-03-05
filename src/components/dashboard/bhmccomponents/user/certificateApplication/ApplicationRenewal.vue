@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-6xl mx-auto px-4 py-8">
     <!-- Form Header -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         Renewal Application
       </h2>
@@ -28,8 +28,7 @@
               :class="{
                 'bg-gray-50 border border-gray-200': fetchedData,
                 'border border-gray-300': !fetchedData,
-              }" placeholder="Enter CID number" @input="resetFetchedData"
-              :disabled="isFetchingData || fetchedData" />
+              }" placeholder="Enter CID number" @input="resetFetchedData" :disabled="isFetchingData || fetchedData" />
             <button @click="fetchCitizenData" type="button" :disabled="isFetchingData || fetchedData"
               class="absolute right-2.5 top-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed">
               <span v-if="isFetchingData">Fetching...</span>
@@ -83,7 +82,8 @@
 
         <!-- Credits Information -->
         <div class="col-span-1">
-          <div :class="['rounded-xl p-4',
+          <div
+            :class="['rounded-xl p-4',
               creditStatus === 'red' ? 'bg-red-50 border border-red-200' :
                 creditStatus === 'blue' ? 'bg-blue-50 border border-blue-200' : 'bg-green-50 border border-green-200']">
             <div class="flex items-center">
@@ -125,9 +125,8 @@
           class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
           Cancel
         </button>
-        <button @click="handleSubmit"
-          :class="['px-6 py-3 rounded-lg text-white transition-colors',
-            isEligibleForRenewal ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed']"
+        <button @click="handleSubmit" :class="['px-6 py-3 rounded-lg text-white transition-colors',
+          isEligibleForRenewal ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed']"
           :disabled="!isEligibleForRenewal">
           {{ buttonText }}
         </button>
@@ -344,3 +343,51 @@ const resetFetchedData = () => {
 
 watch(() => formData.value.credits, validateEligibility);
 </script>
+
+<style>
+html,
+body {
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Make sure only one container handles scrolling */
+.max-w-6xl {
+  height: calc(100vh - 60px);
+  /* Adjust based on your header/footer height */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scrolling on iOS/macOS */
+}
+
+/* Safari-specific fixes */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) {
+    .max-w-6xl {
+      overflow-y: auto !important;
+    }
+
+    .fixed.inset-0 {
+      overflow: hidden !important;
+    }
+
+    /* Clean up any nested scrollable elements */
+    .p-8,
+    .bg-white.border.rounded-xl {
+      overflow: visible !important;
+    }
+  }
+}
+
+/* Fix for the confirmation modal */
+.fixed.inset-0 {
+  position: fixed;
+  overflow: hidden;
+}
+
+/* Ensure modal content doesn't cause scrolling issues */
+.fixed.inset-0>div {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+</style>

@@ -29,10 +29,10 @@
                 <div @click="navigate"
                   class="flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer"
                   :class="[
-        isActive
-          ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
-          : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
-      ]">
+                    isActive
+                      ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
+                      : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
+                  ]">
                   <component :is="item.icon" class="h-5 w-5 mr-3" :class="{ 'text-primary': isActive }" />
                   {{ item.name }}
                 </div>
@@ -44,10 +44,10 @@
               <button @click="toggleSubMenu(item)"
                 class="flex items-center justify-between w-full px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer group"
                 :class="[
-        isChildActive(item.children)
-          ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
-          : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
-      ]">
+                  isChildActive(item.children)
+                    ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
+                    : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
+                ]">
                 <div class="flex items-center">
                   <component :is="item.icon" class="h-5 w-5 mr-3" />
                   {{ item.name }}
@@ -66,10 +66,10 @@
                     v-slot="{ isActive, navigate }" custom>
                     <div @click="navigate"
                       class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors duration-200" :class="[
-        isActive
-          ? 'bg-slate-700/50 text-white font-medium'
-          : 'text-slate-300 hover:bg-slate-700/30 hover:text-white',
-      ]">
+                        isActive
+                          ? 'bg-slate-700/50 text-white font-medium'
+                          : 'text-slate-300 hover:bg-slate-700/30 hover:text-white',
+                      ]">
                       <span class="w-2 h-2 mr-3 rounded-full bg-slate-400/50"></span>
                       {{ child.name }}
 
@@ -108,47 +108,17 @@
           <div class="flex items-center space-x-6">
             <NotificationBell />
 
-            <!-- User Profile -->
-            <div class="relative flex items-center space-x-4">
-              <div class="text-right hidden sm:block">
-                <p class="text-sm font-medium text-slate-700">{{ authStore.fullName }}</p>
-                <p class="text-xs text-slate-500">{{ serviceTypeLabel }}</p>
-              </div>
-              <div class="relative">
-                <button @click="toggleProfileMenu"
-                  class="flex items-center p-1.5 rounded-xl border-2 border-slate-200 hover:border-primary transition-colors duration-200">
-                  <UserCircle class="h-8 w-8 text-slate-600" />
-                </button>
-
-                <!-- Profile Dropdown -->
-                <div v-if="showProfileMenu"
-                  class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg py-2 border border-slate-200 z-50"
-                  v-click-outside="() => (showProfileMenu = false)">
-                  <div class="px-4 py-2 border-b border-slate-100">
-                    <p class="text-sm font-medium text-slate-700">{{ authStore.fullName }}</p>
-                    <p class="text-xs text-slate-500">{{ authStore.email }}</p>
-                  </div>
-                  <a href="#"
-                    class="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                    @click="handleProfile">
-                    <Settings class="h-4 w-4 mr-2" />
-                    Go to Profile
-                  </a>
-                  <a href="#"
-                    class="flex items-center px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors"
-                    @click="handleLogout">
-                    <LogOut class="h-4 w-4 mr-2" />
-                    Logout
-                  </a>
-                </div>
-              </div>
+            <!-- User Info (without icon and popup) -->
+            <div class="text-right">
+              <p class="text-sm font-medium text-slate-700">{{ authStore.fullName }}</p>
+              <p class="text-xs text-slate-500">{{ serviceTypeLabel }}</p>
             </div>
           </div>
         </div>
       </header>
 
       <!-- Main Content -->
-      <main class="flex-1 overflow-auto bg-slate-50 p-6">
+      <main class="flex-1 overflow-auto bg-slate-50 p-6" style="overflow-y: auto;">
         <router-view />
       </main>
 
@@ -171,8 +141,6 @@ import {
   Menu,
   X as XIcon,
   LogOut,
-  UserCircle,
-  Settings,
   ChevronDown,
 } from 'lucide-vue-next';
 import { SERVICE_TYPE_CHOICES } from '@/router/constants';
@@ -185,7 +153,6 @@ const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 const sidebarOpen = ref(true);
-const showProfileMenu = ref(false);
 const navigationItems = ref([]); // Now an array
 const showSubMenu = reactive({});
 
@@ -238,22 +205,12 @@ const toggleSidebar = () => {
   sidebarOpen.value = !sidebarOpen.value;
 };
 
-const toggleProfileMenu = () => {
-  showProfileMenu.value = !showProfileMenu.value;
-};
-
 const toggleSubMenu = (item) => {
   showSubMenu[item.name] = !showSubMenu[item.name];
 };
 
 const handleLogout = async () => {
   await authStore.logout();
-};
-
-const handleProfile = () => {
-  showProfileMenu.value = false;
-  const profileRoute = `/admin/${authStore.role}/${authStore.serviceType}/user_profile`;
-  router.push(profileRoute);
 };
 </script>
 
@@ -265,6 +222,7 @@ const handleProfile = () => {
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
+  height: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -274,6 +232,23 @@ const handleProfile = () => {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 20px;
+}
+
+/* Fix for macOS scrollbar issues */
+@media screen and (min-width: 0) and (min-resolution: 72dpi) {
+  .custom-scrollbar {
+    overflow: auto !important;
+  }
+}
+
+/* Hide default scrollbar on macOS */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) {
+    .custom-scrollbar {
+      -webkit-appearance: none;
+      appearance: none;
+    }
+  }
 }
 
 /* Smooth transitions */
@@ -292,4 +267,4 @@ const handleProfile = () => {
   margin-left: 0.5em;
   vertical-align: top;
 }
-</style>@/stores/mhpcUserMenuStore
+</style>

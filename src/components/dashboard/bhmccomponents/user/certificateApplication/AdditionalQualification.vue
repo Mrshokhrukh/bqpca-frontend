@@ -1,12 +1,12 @@
 <template>
   <div class="max-w-6xl mx-auto px-4 py-8 h-full flex flex-col">
     <!-- Form Header -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
-        Renewal Application
+        Additional Qualification
       </h2>
       <p class="text-gray-600 text-center max-w-2xl mx-auto">
-        Please review your personal details and BQPCA credits to ensure your eligibility for renewal.
+        Complete the form below to apply for additional qualification.
       </p>
     </div>
     <!-- Confirmation Modal -->
@@ -103,8 +103,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
-      errors.qualification_type
-    }}</span>
+                errors.qualification_type
+              }}</span>
             </div>
 
             <div class="col-span-1">
@@ -117,8 +117,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
-      errors.qualification_name
-    }}</span>
+                errors.qualification_name
+              }}</span>
             </div>
 
             <div class="col-span-1">
@@ -139,8 +139,8 @@
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
                 placeholder="YYYY" />
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
-      errors.year_of_completion
-    }}</span>
+                errors.year_of_completion
+              }}</span>
             </div>
           </div>
         </div>
@@ -488,5 +488,68 @@ onMounted(async () => {
 .required::after {
   content: " *";
   color: #ef4444;
+}
+
+/* Add this to your global CSS file or component's <style> section */
+
+/* Fix for macOS scrollbar issues */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  /* Prevent body scrollbar */
+}
+
+/* Make the main container the only scrollable element */
+.max-w-6xl {
+  height: calc(100vh - 80px);
+  /* Adjust based on your header/footer height */
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  /* For smooth scrolling */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Keep flex layout for form content */
+.max-w-6xl>form {
+  flex: 1;
+  overflow: visible !important;
+  /* Remove nested scrollbars */
+}
+
+/* Fix for any direct flex-1 with overflow-y-auto */
+.flex-1.overflow-y-auto,
+.overflow-auto {
+  overflow: visible !important;
+}
+
+/* Modal specific fixes */
+.fixed.inset-0.z-10.w-screen.overflow-y-auto {
+  overflow: hidden !important;
+}
+
+.fixed.inset-0.z-10.w-screen.overflow-y-auto>div {
+  max-height: 90vh;
+  overflow-y: auto !important;
+}
+
+/* Safari-specific fixes using media query */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) {
+
+    /* Target only webkit browsers (Safari) */
+    .max-w-6xl {
+      position: relative;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Remove all other scrollbars */
+    .p-8,
+    .bg-white.border,
+    .bg-gray-50 {
+      overflow: visible !important;
+    }
+  }
 }
 </style>

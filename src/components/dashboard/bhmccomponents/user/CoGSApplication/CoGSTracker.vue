@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Header Section -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         Track Your Application
       </h2>
@@ -16,7 +16,7 @@
         <div v-for="application in filteredApplications" :key="application.id"
           class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <!-- Header with Registration Number and Status -->
-          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 flex items-center justify-between">
+          <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 p-6 flex items-center justify-between">
             <div>
               <h3 class="text-xl font-bold text-gray-900 flex items-center">
                 <span>Application #{{ application.registration_no }}</span>

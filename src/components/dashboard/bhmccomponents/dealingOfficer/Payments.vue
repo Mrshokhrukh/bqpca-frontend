@@ -3,7 +3,7 @@
   <div class="min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <!-- Header with Gradient -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10 shadow-md">
+      <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Payment History</h1>
         <p class="text-gray-600">View your payment records for BMHC certifications, renewals, CPDs, and more.</p>
       </div>
@@ -13,9 +13,12 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <!-- Search by Transaction ID -->
           <div>
-            <label for="transaction-search" class="block text-sm font-medium text-gray-700">Search by Transaction ID</label>
+            <label for="transaction-search" class="block text-sm font-medium text-gray-700">Search by Transaction
+              ID</label>
             <div class="mt-1">
-              <input id="transaction-search" v-model="transactionSearch" type="text" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Enter Transaction ID...">
+              <input id="transaction-search" v-model="transactionSearch" type="text"
+                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                placeholder="Enter Transaction ID...">
             </div>
           </div>
 
@@ -23,7 +26,8 @@
           <div>
             <label for="payment-type-filter" class="block text-sm font-medium text-gray-700">Payment Type</label>
             <div class="mt-1">
-              <select id="payment-type-filter" v-model="paymentTypeFilter" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+              <select id="payment-type-filter" v-model="paymentTypeFilter"
+                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                 <option value="all">All Payment Types</option>
                 <option value="certification">Certification</option>
                 <option value="renewal">Renewal</option>
@@ -38,8 +42,10 @@
           <div>
             <label for="payment-date-range" class="block text-sm font-medium text-gray-700">Payment Date Range</label>
             <div class="mt-1 flex gap-2">
-              <input id="date-start" v-model="dateRange.start" type="date" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-1/2 sm:text-sm border-gray-300 rounded-md">
-              <input id="date-end" v-model="dateRange.end" type="date" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-1/2 sm:text-sm border-gray-300 rounded-md">
+              <input id="date-start" v-model="dateRange.start" type="date"
+                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-1/2 sm:text-sm border-gray-300 rounded-md">
+              <input id="date-end" v-model="dateRange.end" type="date"
+                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-1/2 sm:text-sm border-gray-300 rounded-md">
             </div>
           </div>
         </div>
@@ -51,11 +57,16 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction ID</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payer Name</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Type</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount (Nu.)</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction
+                  ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payer Name
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Type
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount (Nu.)
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Date
+                </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               </tr>
             </thead>
@@ -64,17 +75,20 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ record.transactionId }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ record.payerName }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ record.paymentType }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ record.amount.toLocaleString('en-IN') }}</td> <!-- Formats amount as currency -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ record.amount.toLocaleString('en-IN')
+                  }}</td> <!-- Formats amount as currency -->
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatDate(record.paymentDate) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <span :class="`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadge(record.status)}`">{{ record.status }}</span>
+                  <span
+                    :class="`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadge(record.status)}`">{{
+                record.status }}</span>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
         <div v-if="filteredPayments.length === 0" class="p-4 text-gray-500 text-center">
-            No payment records found.
+          No payment records found.
         </div>
       </div>
     </div>

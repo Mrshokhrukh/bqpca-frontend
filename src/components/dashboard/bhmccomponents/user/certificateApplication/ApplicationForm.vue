@@ -2,7 +2,7 @@
   <div class="max-w-6xl mx-auto px-4 py-8">
     <!-- Confirmation Modal -->
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
-      <Dialog as="div" class="relative z-10" @close="isConfirmationModalOpen = false">
+      <Dialog as="div" class="relative z-10 fixed.inset-0.z-10.w-screen" @close="isConfirmationModalOpen = false">
         <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
           leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
@@ -56,7 +56,7 @@
     </TransitionRoot>
 
     <!-- Form Header -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         {{ selectedType === 'cid' ? 'CID Holder Registration' : 'Non-CID Holder Registration' }}
       </h2>
@@ -263,8 +263,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
-      errors.qualification_type
-    }}</span>
+                errors.qualification_type
+              }}</span>
             </div>
 
             <div class="col-span-1">
@@ -277,8 +277,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
-      errors.qualification_name
-    }}</span>
+                errors.qualification_name
+              }}</span>
             </div>
 
             <div class="col-span-1">
@@ -299,8 +299,8 @@
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
                 placeholder="YYYY" />
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
-      errors.year_of_completion
-    }}</span>
+                errors.year_of_completion
+              }}</span>
             </div>
           </div>
         </div>
@@ -892,5 +892,48 @@ const handleSubmitActual = async () => { // Modified to submit and redirect
 .required::after {
   content: " *";
   color: #ef4444;
+}
+
+html,
+body {
+  overflow: hidden;
+  /* Prevent body scrollbar */
+  height: 100%;
+  width: 100%;
+}
+
+/* Target specific scrollable containers */
+.max-w-6xl {
+  overflow-y: auto;
+  height: calc(100vh - 4rem);
+  /* Adjust based on your header/footer height */
+  -webkit-overflow-scrolling: touch;
+  /* For smooth scrolling on iOS */
+}
+
+/* Fix for macOS double scrollbars */
+@supports (-webkit-appearance:none) {
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 8px !important;
+    background: transparent !important;
+  }
+
+  /* Hide default scrollbar on wrapper elements */
+  .fixed.inset-0.z-10.w-screen {
+    overflow: hidden !important;
+  }
+}
+
+.fixed.inset-0.z-10.w-screen {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure only one container handles scrolling */
+.max-w-6xl {
+  overflow-y: auto;
+}
+
+.max-w-6xl>* {
+  overflow: visible;
 }
 </style>

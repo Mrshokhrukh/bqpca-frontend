@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <!-- Header Section with Gradient -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10 shadow-md">
+      <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md">
         <div class="flex justify-between items-center">
           <div>
             <h1 class="text-3xl font-bold text-gray-900">Certificate of Good Standing Applications</h1>
@@ -94,7 +94,7 @@
                 <div class="space-y-2">
                   <button @click="reviewApplication(application)"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
-                    View  <!-- Changed from Review to View -->
+                    View <!-- Changed from Review to View -->
                   </button>
                   <button v-if="application.endorsement_decision === 'Approved'"
                     @click="downloadCertificate(application.id)"
@@ -144,7 +144,8 @@
               <!-- Modal Header -->
               <div class="bg-gray-50 px-8 py-4 border-b border-gray-200 flex justify-between items-center">
                 <div>
-                  <h2 class="text-2xl font-bold text-gray-900">Application Details <!-- Changed from Application Review to Application Details --></h2>
+                  <h2 class="text-2xl font-bold text-gray-900">Application Details
+                    <!-- Changed from Application Review to Application Details --></h2>
                   <p class="text-sm text-gray-500 mt-1">Registration No: {{ selectedApplication.registration_no }}</p>
                 </div>
                 <button @click="closeReviewModal"
@@ -228,7 +229,8 @@
                     </h3>
                     <div class="space-y-4">
                       <div class="rounded-lg bg-gray-50 p-4">
-                        <span class="text-sm font-medium text-gray-500">Review Status</span> <!-- Changed from Current Status to Review Status -->
+                        <span class="text-sm font-medium text-gray-500">Review Status</span>
+                        <!-- Changed from Current Status to Review Status -->
                         <div class="mt-1 flex items-center gap-2">
                           <span :class="[
                 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
