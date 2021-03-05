@@ -154,8 +154,9 @@ export default {
       cogs_application: bmhcDashboard,
       user_profile: bmhcDashboard,
       reports: bmhcDashboard,
-      counselor_application: bmhcDashboard,
       track_cogs_applications: bmhcDashboard,
+      counselor_application: bmhcDashboard,
+      track_counselor_application: bmhcDashboard,
     },
   },
   dealing_officer: {

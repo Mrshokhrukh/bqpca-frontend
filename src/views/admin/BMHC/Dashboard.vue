@@ -50,8 +50,8 @@ import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superA
 // BMH user
 import CPDcomponent from '@/components/dashboard/bhmccomponents/user/cpdApplication/CPDApplication.vue';
 import CPDTracker from '@/components/dashboard/bhmccomponents/user/cpdApplication/CPDTracker.vue';
-import CoGSApplication from '@/components/dashboard/bhmccomponents/user/CoGSApplication.vue';
-import CoGSTracker from '@/components/dashboard/bhmccomponents/user/CoGSTracker.vue';
+import CoGSApplication from '@/components/dashboard/bhmccomponents/user/CoGSApplication/CoGSApplication.vue';
+import CoGSTracker from '@/components/dashboard/bhmccomponents/user/CoGSApplication/CoGSTracker.vue';
 import PractitionerRegistration from '@/components/dashboard/bhmccomponents/user/certificateApplication/CertificateRegistrationComponent.vue';
 import PractitionerRenewal from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationRenewal.vue';
 import ApplicationTracker from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationTracker.vue';
