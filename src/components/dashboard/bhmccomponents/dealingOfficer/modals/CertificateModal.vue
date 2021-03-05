@@ -296,12 +296,12 @@ ViewApplicationDetailsModal.vue
                             <div class="p-4 bg-gray-50 rounded-lg" v-if="!isEditing">
                               <p class="text-sm font-medium text-gray-500">Personnel Subcategory</p>
                               <p class="text-sm text-gray-900 mt-2">
-                                <span>{{ application.personnel_subcategory }}</span>
+                                <span>{{ application.personnel_sub_category }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg" v-else>
                               <p class="text-sm font-medium text-gray-500">Personnel Subcategory</p>
-                              <select v-model="editableApplication.personnel_subcategory"
+                              <select v-model="editableApplication.personnel_sub_category"
                                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 <option value="" disabled>Select Subcategory</option>
                                 <option v-for="subcategory in personnelSubcategories" :key="subcategory.id"
@@ -710,7 +710,7 @@ onMounted(async () => {
     personnelCategories.value = await apiServices.getMasterData('personnel-categories'); // Replace 'personnel-categories' with your actual endpoint
     personnelSubcategories.value = await apiServices.getMasterData('personnel-subcategories'); // Replace 'personnel-subcategories' with your actual endpoint
     sectors.value = await apiServices.getMasterData('sectors'); // Replace 'sectors' with your actual endpoint
-    practiceAddresses.value = await apiServices.getMasterData('practice-addresses'); // Replace 'practice-addresses' with your actual endpoint, NEW LINE
+
   } catch (error) {
     console.error('Error fetching master data:', error);
     errorMessage.value = 'Failed to load dropdown options.';

@@ -136,6 +136,7 @@
 import { ref, computed, onMounted } from 'vue';
 import apiServices from '@/services/services';
 import ViewDetailsModal from './modals/ViewApplicationDetailsModal.vue';
+import { useToast } from 'vue-toastification';
 
 const applications = ref([]);
 const filterStatus = ref('all');
@@ -147,6 +148,7 @@ const selectedApplication = ref(null);
 const personnelCategories = ref([]);
 const personnelSubcategories = ref([]);
 const sectors = ref([]);
+const toast = useToast();
 
 const pendingCount = computed(() => {
   return filteredApplications.value.filter(app => getStatus(app) === 'Pending').length;
@@ -246,13 +248,12 @@ const formatDate = (date) => {
 const fetchMasterData = async () => {
   try {
     const [categoriesRes, subcategoriesRes, sectorsRes] = await Promise.all([
-      apiServices.getMastersParticipationCategories(),
+      apiServices.getMastersPersonnelCategories(),
       apiServices.getMastersSubCategories(),
       apiServices.getMastersSectors(),
     ]);
 
     personnelCategories.value = categoriesRes.data.results || [];
-    console.log('Categories:', personnelCategories.value); 
     personnelSubcategories.value = subcategoriesRes.data.results || [];
     sectors.value = sectorsRes.data.results || [];
   } catch (error) {
@@ -294,6 +295,7 @@ const viewDetails = async (application) => {
 const handleUpdate = async () => {
   await fetchApplications();
   closeModal();
+  toast.success('Application updated successfully');
 };
 
 const closeModal = () => {
