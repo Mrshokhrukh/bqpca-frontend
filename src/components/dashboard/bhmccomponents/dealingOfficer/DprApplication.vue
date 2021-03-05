@@ -194,14 +194,14 @@ const getStatusClasses = (application) => {
   return [
     'px-3 py-1 rounded-full text-xs font-medium',
     {
-      'bg-yellow-100 text-yellow-800': application.review_decision === 'Pending',
-      'bg-green-100 text-green-800': application.review_decision === 'Approved',
-      'bg-red-100 text-red-800': application.review_decision === 'Rejected'
+      'bg-yellow-100 text-yellow-800': application.do_dpr_review_decision === 'Pending',
+      'bg-green-100 text-green-800': application.do_dpr_review_decision === 'Approved',
+      'bg-red-100 text-red-800': application.do_dpr_review_decision === 'Regretted'
     }
   ];
 };
 
 const pendingCount = computed(() => {
-  return filteredApplications.value.filter(app => app.review_decision === 'Pending').length;
+  return filteredApplications.value.filter(app => app.do_dpr_review_decision === 'Pending').length;
 });
 </script>
