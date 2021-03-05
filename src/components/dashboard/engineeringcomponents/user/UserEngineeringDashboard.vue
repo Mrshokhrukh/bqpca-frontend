@@ -1,7 +1,7 @@
 <template>
   <div class="bg-gray-50 p-6 min-h-screen">
     <h1 class="text-2xl font-bold text-center mb-6">Engineering Dashboard</h1>
-    <div class="container mx-auto space-y-6">
+    <div class="max-w-7xl mx-auto space-y-6">
       <!-- Empty state when no approved applications -->
       <FirstDashboardState v-if="hasNoApplications && !isLoading"
         message="You don't have any approved applications yet. Once approved, you will have access to the dashboard." />

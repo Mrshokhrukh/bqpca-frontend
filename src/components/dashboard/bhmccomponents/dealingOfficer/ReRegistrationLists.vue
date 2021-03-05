@@ -128,7 +128,7 @@
 
     <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
       @update="handleUpdate" :personnel-categories="personnelCategories"
-      :personnel-subcategories="personnelSubcategories" :sectors="sectors" :practice-addresses="practiceAddresses" />
+      :personnel-subcategories="personnelSubcategories" :sectors="sectors" />
   </div>
 </template>
 

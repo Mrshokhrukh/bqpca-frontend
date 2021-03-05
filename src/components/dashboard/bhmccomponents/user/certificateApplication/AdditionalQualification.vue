@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-4 py-8 h-full flex flex-col">
+  <div class="max-w-7xl mx-auto px-4 py-8 h-full flex flex-col">
     <!-- Form Header -->
     <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
@@ -103,8 +103,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
-                errors.qualification_type
-              }}</span>
+      errors.qualification_type
+    }}</span>
             </div>
 
             <div class="col-span-1">
@@ -117,8 +117,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
-                errors.qualification_name
-              }}</span>
+      errors.qualification_name
+    }}</span>
             </div>
 
             <div class="col-span-1">
@@ -139,8 +139,8 @@
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
                 placeholder="YYYY" />
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
-                errors.year_of_completion
-              }}</span>
+      errors.year_of_completion
+    }}</span>
             </div>
           </div>
         </div>

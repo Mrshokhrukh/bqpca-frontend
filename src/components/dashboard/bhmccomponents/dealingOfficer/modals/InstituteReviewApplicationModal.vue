@@ -17,31 +17,19 @@
         </div>
         <div v-if="showRejectReason">
           <label class="block text-sm font-medium text-gray-700">Rejection Reason</label>
-          <textarea
-            v-model="rejectionReason"
+          <textarea v-model="rejectionReason"
             class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            rows="4"
-            placeholder="Enter rejection reason..."
-          ></textarea>
+            rows="4" placeholder="Enter rejection reason..."></textarea>
         </div>
       </div>
       <div class="mt-6 flex justify-end space-x-2">
-        <button
-          @click="approve"
-          class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
-        >
+        <button @click="approve" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
           Approve
         </button>
-        <button
-          @click="reject"
-          class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-        >
-          Reject
+        <button @click="reject" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+          Regret
         </button>
-        <button
-          @click="closeModal"
-          class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
-        >
+        <button @click="closeModal" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
           Cancel
         </button>
       </div>

@@ -1,7 +1,7 @@
 <template>
   <div
     class="mt-16 min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="container w-full space-y-8">
+    <div class="max-w-7xl w-full space-y-8">
       <!-- Header -->
       <div class="text-center">
         <div class="flex justify-center mb-6">
@@ -103,10 +103,10 @@
         'Name Loading...' }}</h3>
                     <div class="flex items-center space-x-2 mt-1">
                       <span class="text-sm text-gray-500">QEC: {{ result.details ? result.details.qec_number :
-                        'QEC Loading...' }}</span>
+        'QEC Loading...' }}</span>
                       <span class="text-gray-300">|</span>
                       <span class="text-sm text-gray-500">CID: {{ result.details ? result.details.cid_no :
-                        'CID Loading...' }}</span>
+        'CID Loading...' }}</span>
                     </div>
                   </div>
                 </div>

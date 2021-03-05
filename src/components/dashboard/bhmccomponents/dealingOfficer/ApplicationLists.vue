@@ -128,7 +128,7 @@
 
     <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
       @update="handleUpdate" :personnel-categories="personnelCategories"
-      :personnel-subcategories="personnelSubcategories" :sectors="sectors" :practice-addresses="practiceAddresses" />
+      :personnel-subcategories="personnelSubcategories" :sectors="sectors" />
   </div>
 </template>
 
@@ -136,6 +136,7 @@
 import { ref, computed, onMounted } from 'vue';
 import apiServices from '@/services/services';
 import ViewDetailsModal from './modals/ViewApplicationDetailsModal.vue';
+import { useToast } from 'vue-toastification';
 
 const applications = ref([]);
 const filterStatus = ref('all');
@@ -147,12 +148,12 @@ const selectedApplication = ref(null);
 const personnelCategories = ref([]);
 const personnelSubcategories = ref([]);
 const sectors = ref([]);
+const toast = useToast();
 
 const pendingCount = computed(() => {
   return filteredApplications.value.filter(app => getStatus(app) === 'Pending').length;
 });
 
-// Filter out Renewals, Additional Qualifications, and Re-registrations
 const filteredApplications = computed(() => {
   return applications.value
     .filter(app =>
@@ -244,48 +245,57 @@ const formatDate = (date) => {
   });
 };
 
+const fetchMasterData = async () => {
+  try {
+    const [categoriesRes, subcategoriesRes, sectorsRes] = await Promise.all([
+      apiServices.getMastersPersonnelCategories(),
+      apiServices.getMastersSubCategories(),
+      apiServices.getMastersSectors(),
+    ]);
+
+    personnelCategories.value = categoriesRes.data.results || [];
+    personnelSubcategories.value = subcategoriesRes.data.results || [];
+    sectors.value = sectorsRes.data.results || [];
+  } catch (error) {
+    console.error('Error fetching master data:', error);
+  }
+};
+
 const fetchApplications = async () => {
   try {
     const response = await apiServices.getBhmcNewApplications();
-    applications.value = Array.isArray(response.data) ? response.data : (response.data?.results || []);
-
-    const categories = await apiServices.getMastersParticipationCategories();
-    personnelCategories.value = Array.isArray(categories.data) ? categories.data : (categories.data?.results || []);
-
-    const subcategories = await apiServices.getMastersSubCategories();
-    personnelSubcategories.value = Array.isArray(subcategories.data) ? subcategories.data : (subcategories.data?.results || [])
-
-    const sectorData = await apiServices.getMastersSectors();
-    sectors.value = Array.isArray(sectorData.data) ? sectorData.data : (sectorData.data?.results || []);
-
-
+    applications.value = response.data.results || []; // Use .results directly
   } catch (error) {
-    console.error('Error fetching applications or master data:', error);
+    console.error('Error fetching applications:', error);
   }
 };
 
 const viewDetails = async (application) => {
   try {
+    // Fetch user details along with the application details
     const response = await apiServices.getAllUsers();
-    const users = Array.isArray(response.data) ? response.data : (response.data?.results || []);
+    const users = response.data.results || [];
     const matchingUser = users.find(user => user.cid === application.cid_no);
 
     selectedApplication.value = {
       ...application,
       is_counselor: matchingUser?.is_counselor || false,
-      userDetails: matchingUser
+      userDetails: matchingUser,
     };
+
     isModalOpen.value = true;
   } catch (error) {
-    console.error('Error fetching user details:', error);
-    selectedApplication.value = { ...application, is_counselor: false }; //safe fallback
-    isModalOpen.value = true;
+    console.error('Error fetching details:', error);
+    // Still open the modal, but with a fallback
+        selectedApplication.value = { ...application, is_counselor: false, userDetails: null };
+        isModalOpen.value = true;
   }
 };
 
 const handleUpdate = async () => {
   await fetchApplications();
   closeModal();
+  toast.success('Application updated successfully');
 };
 
 const closeModal = () => {
@@ -301,7 +311,7 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++;
 };
 
-onMounted(() => {
-  fetchApplications();
+onMounted(async () => {
+  await Promise.all([fetchApplications(), fetchMasterData()]);
 });
 </script>

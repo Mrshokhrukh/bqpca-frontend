@@ -55,7 +55,7 @@
     </Transition>
 
     <!-- Header Card -->
-    <div class="container mx-auto">
+    <div class="max-w-7xl mx-auto">
       <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
         <h1 class="text-2xl font-bold text-gray-900">CPD Applications</h1>
         <div class="flex mt-4 space-x-6">

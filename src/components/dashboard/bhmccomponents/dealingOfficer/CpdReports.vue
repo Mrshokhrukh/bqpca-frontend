@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8"> <!-- Added padding and mx-auto -->
+    <div class="max-w-7xl mx-auto px-4 py-8"> <!-- Added padding and mx-auto -->
       <!-- Header -->
       <div class="text-center mb-8">
         <h2 class="text-3xl font-extrabold text-gray-900 mb-4">CPD Activity Reports</h2>
@@ -84,11 +84,11 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ report.applicantName }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span :class="[
-                    { 'bg-yellow-100 text-yellow-800': report.reviewStatus === 'Pending' },
-                    { 'bg-green-100 text-green-800': report.reviewStatus === 'Approved' },
-                    { 'bg-red-100 text-red-800': report.reviewStatus === 'Rejected' },
-                    'px-2 py-1 text-xs font-medium rounded-full'
-                  ]">
+          { 'bg-yellow-100 text-yellow-800': report.reviewStatus === 'Pending' },
+          { 'bg-green-100 text-green-800': report.reviewStatus === 'Approved' },
+          { 'bg-red-100 text-red-800': report.reviewStatus === 'Rejected' },
+          'px-2 py-1 text-xs font-medium rounded-full'
+        ]">
                     {{ report.reviewStatus }}
                   </span>
                 </td>

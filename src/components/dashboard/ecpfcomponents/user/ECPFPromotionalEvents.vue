@@ -1,7 +1,7 @@
 <template>
-    <div class="container">
+    <div class="max-w-7xl">
       <h1>Application Form</h1>
-  
+
       <!-- Event Type Selection -->
       <div>
         <label for="eventType">Event Type:</label>
@@ -12,17 +12,17 @@
           <option value="heiVisit">Promotional Event - HEI Visit</option>
         </select>
       </div>
-  
+
       <!-- Education Fair Form -->
       <div v-if="eventType === 'fair'" class="form-container">
         <h2>Participation in Education Fair</h2>
-  
+
         <h3>Current ECPF Details</h3>
         <div v-for="(value, key) in ecpfDetails" :key="key">
           <label>{{ key }}:</label>
           <input type="text" :value="value" readonly />
         </div>
-  
+
         <h3>Proposed Fair Details</h3>
         <div>
           <label for="fairName">Fair Name:</label>
@@ -41,7 +41,7 @@
           <label for="fairLocation">Fair Location:</label>
           <input type="text" id="fairLocation" v-model="formData.fair.fairLocation" required />
         </div>
-  
+
         <h3>Representative Details (Maximum 2)</h3>
         <div v-for="(rep, index) in formData.fair.representatives" :key="index">
           <h4>Representative {{ index + 1 }}</h4>
@@ -103,7 +103,7 @@
         <button v-if="formData.fair.representatives.length < 2" @click="addFairRepresentative">
           Add Representative
         </button>
-  
+
         <h3>Participating Institute Details</h3>
         <div v-for="(institute, index) in formData.fair.institutes" :key="index">
           <h4>Institute {{ index + 1 }}</h4>
@@ -182,7 +182,7 @@
               v-model="institute.recognitionCode"
             />
           </div>
-  
+
           <h4>Course Offered Details</h4>
           <div v-for="(course, cIndex) in institute.courses" :key="cIndex">
             <div>
@@ -213,30 +213,30 @@
               <span v-if="course.authLetterFile && course.authLetterFile.name">Selected: {{ course.authLetterFile.name }}</span>
             </div>
             <button @click.prevent="removeFairCourse(index, cIndex)">Remove Course</button>
-  
+
           </div>
           <button @click.prevent="addFairCourse(index)">Add Course</button>
            <button @click.prevent="removeFairInstitute(index)">Remove Institute</button>
-  
+
         </div>
         <button @click="addFairInstitute">Add Institute</button>
-  
+
         <div>
           <label for="remarks">Remarks:</label>
           <textarea id="remarks" v-model="formData.fair.remarks" rows="3"></textarea>
         </div>
       </div>
-  
+
       <!-- In-House Event Form -->
       <div v-if="eventType === 'inHouse'" class="form-container">
         <h2>Promotional Event - In-House</h2>
-  
+
         <h3>Current ECPF Details</h3>
         <div v-for="(value, key) in ecpfDetails" :key="key">
           <label>{{ key }}:</label>
           <input type="text" :value="value" readonly />
         </div>
-  
+
         <div>
           <label for="eventTypeInHouse">Promotional Event Type:</label>
           <select
@@ -250,7 +250,7 @@
             <option value="Other">Other</option>
           </select>
         </div>
-  
+
         <div>
           <label for="instituteInHouse">Institute:</label>
           <select id="instituteInHouse" v-model="formData.inHouse.institute" required>
@@ -259,7 +259,7 @@
             </option>
           </select>
         </div>
-  
+
         <h3>Proposed In-House Event Details</h3>
         <div>
           <label for="eventNameInHouse">Event Name:</label>
@@ -297,7 +297,7 @@
             required
           />
         </div>
-  
+
         <h3>Representative Details (Maximum 2)</h3>
         <div v-for="(rep, index) in formData.inHouse.representatives" :key="index">
           <h4>Representative {{ index + 1 }}</h4>
@@ -380,7 +380,7 @@
         >
           Add Representative
         </button>
-  
+
         <div>
           <label for="remarksInHouse">Remarks:</label>
           <textarea
@@ -390,17 +390,17 @@
           ></textarea>
         </div>
       </div>
-  
+
       <!-- Mass Media Event Form -->
       <div v-if="eventType === 'massMedia'" class="form-container">
         <h2>Promotional Event - Mass Media</h2>
-  
+
         <h3>Current ECPF Details</h3>
         <div v-for="(value, key) in ecpfDetails" :key="key">
           <label>{{ key }}:</label>
           <input type="text" :value="value" readonly />
         </div>
-  
+
         <div>
           <label for="eventTypeMassMedia">Promotional Event Type:</label>
           <select
@@ -415,7 +415,7 @@
             <option value="Other">Other</option>
           </select>
         </div>
-  
+
         <div>
           <label for="institutesMassMedia">Institutes:</label>
           <select
@@ -429,7 +429,7 @@
             </option>
           </select>
         </div>
-  
+
         <h3>Proposed Promotion Event - Mass Media</h3>
         <div>
           <label for="promotionNameMassMedia">Mass Media Promotional Name:</label>
@@ -484,7 +484,7 @@
             v-model="formData.massMedia.others"
           />
         </div>
-  
+
         <div>
           <label for="remarksMassMedia">Remarks:</label>
           <textarea
@@ -494,17 +494,17 @@
           ></textarea>
         </div>
       </div>
-  
+
       <!-- HEI Visit Form -->
        <div v-if="eventType === 'heiVisit'" class="form-container">
         <h2>Promotional Event - HEI Visit</h2>
-  
+
         <h3>Current ECPF Details</h3>
         <div v-for="(value, key) in ecpfDetails" :key="key">
           <label>{{ key }}:</label>
           <input type="text" :value="value" readonly />
         </div>
-  
+
         <div>
           <label for="eventTypeHeiVisit">Promotional Event Type:</label>
           <select
@@ -517,7 +517,7 @@
             <option value="Other">Other</option>
           </select>
         </div>
-  
+
         <div>
           <label for="institutesHeiVisit">Institutes:</label>
           <select
@@ -531,7 +531,7 @@
             </option>
           </select>
         </div>
-  
+
         <h3>Proposed Promotion Event - HEI Visit</h3>
         <div>
           <label for="programmeDetailHeiVisit">Programme Detail (visit detail):</label>
@@ -586,7 +586,7 @@
             v-model="formData.heiVisit.others"
           />
         </div>
-  
+
         <div>
           <label for="remarksHeiVisit">Remarks:</label>
           <textarea
@@ -595,7 +595,7 @@
             rows="3"
           ></textarea>
         </div>
-  
+
         <div>
           <label for="supportingDocumentHeiVisit">Supporting Document:</label>
           <input
@@ -606,11 +606,11 @@
            <span v-if="formData.heiVisit.supportingDocumentFile && formData.heiVisit.supportingDocumentFile.name">Selected: {{ formData.heiVisit.supportingDocumentFile.name }}</span>
         </div>
       </div>
-  
+
       <button @click="submitForm">Submit</button>
       <button @click="editForm">Edit</button>
       <button @click="viewForm">View</button>
-  
+
       <!-- Display Submitted Data (For Testing)
       <div v-if="submittedData">
         <h2>Submitted Data:</h2>
@@ -618,10 +618,10 @@
       </div> -->
     </div>
   </template>
-  
+
   <script>
   import { ref, onMounted } from 'vue';
-  
+
   export default {
     name: 'App',
     setup() {
@@ -635,7 +635,7 @@
         contactNo: '1234567890',
         emailAddress: 'example@example.com',
       };
-  
+
       const formData = ref({
         fair: {
           fairName: '',
@@ -712,9 +712,9 @@
           supportingDocumentFile: null,
         },
       });
-  
+
       const availableInstitutes = ref(['Institute A', 'Institute B', 'Institute C']);
-  
+
       // Education Fair Form Functions
       const addFairRepresentative = () => {
         if (formData.value.fair.representatives.length < 2) {
@@ -731,7 +731,7 @@
       const removeFairRepresentative = (index) => {
         formData.value.fair.representatives.splice(index, 1);
       };
-  
+
       const addFairInstitute = () => {
         formData.value.fair.institutes.push({
           name: '',
@@ -749,11 +749,11 @@
         const removeFairInstitute = (index) => {
             formData.value.fair.institutes.splice(index, 1);
       };
-  
+
        const addFairCourse = (instituteIndex) => {
           formData.value.fair.institutes[instituteIndex].courses.push({ name: '', accreditedBy: '',authLetterFile:null });
       };
-  
+
       const removeFairCourse = (instituteIndex, courseIndex) => {
           formData.value.fair.institutes[instituteIndex].courses.splice(courseIndex, 1);
       };
@@ -766,7 +766,7 @@
           formData.value.fair.institutes[index].courses[courseIndex].authLetterFile = file;
           }
       };
-  
+
       // In-House Event Form Functions
       const addInHouseRepresentative = () => {
         if (formData.value.inHouse.representatives.length < 2) {
@@ -785,7 +785,7 @@
       const removeInHouseRepresentative = (index) => {
         formData.value.inHouse.representatives.splice(index, 1);
       };
-  
+
       const handleInHouseFileChange = (index, type, event) => {
         const file = event.target.files[0];
         if (type === 'cv') {
@@ -796,31 +796,31 @@
           formData.value.inHouse.representatives[index].authorizationFile = file;
         }
       };
-  
+
       // Mass Media Event Form Functions
       const handleMassMediaFileChange = (event) => {
         formData.value.massMedia.promotionalContentsFile = event.target.files[0];
       };
-  
+
       // HEI Visit Form Functions
       const handleHeiVisitFileChange = (event) => {
         formData.value.heiVisit.supportingDocumentFile = event.target.files[0];
       };
-  
+
       // Common Form Functions
       const submitForm = () => {
         submittedData.value = { ...formData.value };
         console.log('Form Data:', formData.value);
       };
-  
+
       const editForm = () => {
         console.log('Edit form');
       };
-  
+
       const viewForm = () => {
         console.log('View form');
       };
-  
+
        onMounted(() => {
           // Simulate fetching institute details based on the selected name
           formData.value.fair.institutes.forEach((institute) => {
@@ -846,15 +846,15 @@
           }
         });
       });
-  
-  
+
+
       return {
         eventType,
         submittedData,
         ecpfDetails,
         formData,
         availableInstitutes,
-  
+
         addFairRepresentative,
         removeFairRepresentative,
         addFairInstitute,
@@ -862,14 +862,14 @@
         addFairCourse,
         removeFairCourse,
         removeFairInstitute,
-  
+
         addInHouseRepresentative,
         handleInHouseFileChange,
         removeInHouseRepresentative,
-  
+
         handleMassMediaFileChange,
         handleHeiVisitFileChange,
-  
+
         submitForm,
         editForm,
         viewForm,
@@ -877,27 +877,27 @@
     },
   };
   </script>
-  
+
   <style scoped>
   .container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
   }
-  
+
   .form-container {
     margin-bottom: 20px;
     padding: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
   }
-  
+
   label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
   }
-  
+
   input[type="text"],
   select,
   textarea,
@@ -910,7 +910,7 @@
     border-radius: 4px;
     box-sizing: border-box; /* Important for width: 100% */
   }
-  
+
   button {
     background-color: #3271a5;
     color: white;
@@ -920,21 +920,21 @@
     cursor: pointer;
     margin-right: 5px; /* added for spacing */
   }
-  
+
   button:hover {
     background-color:     #46a2da;
     ;
   }
-  
+
   /* Style for individual form sections within each event type */
   .form-container h2 {
     margin-top: 0;
   }
-  
+
   .form-container h3 {
     margin-top: 15px;
   }
-  
+
   .form-container div {
     margin-bottom: 10px;
   }

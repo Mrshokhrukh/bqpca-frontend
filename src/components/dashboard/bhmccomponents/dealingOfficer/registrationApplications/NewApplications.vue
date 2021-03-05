@@ -1,14 +1,11 @@
-
 <template>
   <div class="p-6 min-h-screen">
     <h2 class="text-3xl font-bold mb-8 text-gray-900">{{ title }}</h2>
 
     <!-- Status Filter -->
     <div class="mb-8">
-      <select
-        v-model="filterStatus"
-        class="p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
+      <select v-model="filterStatus"
+        class="p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
         <option value="all">All Statuses</option>
         <option value="Pending">Pending</option>
         <option value="Approved">Approved</option>
@@ -28,11 +25,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-300">
-          <tr
-            v-for="app in filteredApplications"
-            :key="app.id"
-            class="hover:bg-gray-100 transition-colors"
-          >
+          <tr v-for="app in filteredApplications" :key="app.id" class="hover:bg-gray-100 transition-colors">
             <td class="py-4 px-6 text-sm text-gray-800">{{ app.id }}</td>
             <td class="py-4 px-6 text-sm text-gray-800">{{ app.fullName }}</td>
             <td class="py-4 px-6 text-sm text-gray-800">
@@ -43,8 +36,10 @@
             <td class="py-4 px-6 text-sm text-gray-800">{{ app.submissionDate }}</td>
             <td class="py-4 px-6 text-sm text-gray-800">
               <button @click="viewDetails(app)" class="text-blue-600 hover:text-blue-800 hover:underline">View</button>
-              <button @click="approveApplication(app)" class="text-green-600 hover:text-green-800 hover:underline ml-2">Approve</button>
-              <button @click="rejectApplication(app)" class="text-red-600 hover:text-red-800 hover:underline ml-2">Reject</button>
+              <button @click="approveApplication(app)"
+                class="text-green-600 hover:text-green-800 hover:underline ml-2">Approve</button>
+              <button @click="rejectApplication(app)"
+                class="text-red-600 hover:text-red-800 hover:underline ml-2">Regret</button>
             </td>
           </tr>
         </tbody>

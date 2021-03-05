@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 p-6">
-    <div class="container mx-auto">
+    <div class="max-w-7xl mx-auto">
       <!-- Header -->
       <div class="mb-8">
         <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>

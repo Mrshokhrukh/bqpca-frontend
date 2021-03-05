@@ -260,7 +260,7 @@
                             class="p-6 bg-red-50 rounded-xl border border-red-200 mb-4 transition-all">
                             <h5 class="text-base font-medium text-red-800 mb-4 flex items-center space-x-2">
                               <XCircle class="h-4 w-4 text-red-600" />
-                              <span>Reject Application</span>
+                              <span>Regret Application</span>
                             </h5>
                             <div class="space-y-4">
                               <div>
@@ -298,7 +298,7 @@
                             <button @click="showRejectionForm = true; showApprovalForm = false"
                               class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors flex items-center space-x-2">
                               <XCircle class="h-4 w-4" />
-                              <span>Reject Application</span>
+                              <span>Regret Application</span>
                             </button>
                           </div>
                         </div>

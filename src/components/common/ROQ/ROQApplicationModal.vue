@@ -270,7 +270,7 @@
               </div>
             </div>
 
-            <!-- Process/Reject Forms -->
+            <!-- Process/Regret Forms -->
             <div v-if="modalType === 'reProcess' || modalType === 'regret'" class="space-y-4">
               <label class="block">
                 <span class="text-sm font-medium text-gray-700">
@@ -409,7 +409,7 @@ const modalDescription = computed(() => {
     reUpload: 'Request document re-upload',
     reProcess: 'Reprocess this application',
     forward: 'Forward to next stage',
-    regret: 'Reject this application',
+    regret: 'Regret this application',
     viewCertificate: 'View certificate details',
     assignQEC: 'Assign QEC Number to the application',
     approve: 'Approve this application'

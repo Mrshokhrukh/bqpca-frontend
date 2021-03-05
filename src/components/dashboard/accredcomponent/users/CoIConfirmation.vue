@@ -28,7 +28,7 @@
           <div class="flex justify-end">
             <button @click="rejectCOI"
               class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors mr-4">
-              Reject
+              Regret
             </button>
             <button @click="acceptCOI"
               class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">

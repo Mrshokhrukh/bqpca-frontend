@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto p-4">
+  <div class="max-w-7xl mx-auto p-4">
     <h1 class="text-2xl font-bold mb-4">Institutional Accreditation Applications</h1>
 
     <div class="overflow-x-auto">

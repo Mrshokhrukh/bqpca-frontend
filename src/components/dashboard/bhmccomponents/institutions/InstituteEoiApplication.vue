@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-8">
-    <div class="container mx-auto px-4 max-w-3xl">
+    <div class="max-w-7xl mx-auto px-4">
       <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center">
           Application for Expression of Interest
@@ -135,22 +135,22 @@
 
             <div class="grid gap-6 md:grid-cols-2">
               <div class="col-span-2 flex gap-4">
-  <div class="w-1/2">
-    <label for="title_of_course" class="block text-sm font-medium text-gray-700 mb-1">
-      Title of Course *
-    </label>
-    <input type="text" id="title_of_course" v-model="formData.title_of_course"
-      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
-  </div>
+                <div class="w-1/2">
+                  <label for="title_of_course" class="block text-sm font-medium text-gray-700 mb-1">
+                    Title of Course *
+                  </label>
+                  <input type="text" id="title_of_course" v-model="formData.title_of_course"
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                </div>
 
-  <div class="w-1/2">
-    <label for="teaching_institute" class="block text-sm font-medium text-gray-700 mb-1">
-      Teaching Institution
-    </label>
-    <input type="text" id="teaching_institute" v-model="formData.teaching_institute"
-      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
-  </div>
-</div>
+                <div class="w-1/2">
+                  <label for="teaching_institute" class="block text-sm font-medium text-gray-700 mb-1">
+                    Teaching Institution
+                  </label>
+                  <input type="text" id="teaching_institute" v-model="formData.teaching_institute"
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                </div>
+              </div>
 
 
               <div>
@@ -277,7 +277,7 @@
               class="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
               Save as Draft
             </button>
-			<!-- Submit button modified for partial submission -->
+            <!-- Submit button modified for partial submission -->
             <button type="button" @click="submitPartial" :disabled="isSubmitting"
               class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50">
               {{ isSubmitting ? 'Submitting...' : 'Submit Partial Application' }}
@@ -374,26 +374,26 @@ const handleFileUpload = (event, fieldName) => {
 
 // Form validation for partial submission - Adjust as needed
 const validatePartialForm = () => {
-    const requiredFields = {
-        CID: 'CID',
-        full_name: 'Full Name',
-        gender: 'Gender',
-        contact_no: 'Contact Number',
-        email_address: 'Email Address',
-        name_of_institution: 'Name of Institution',
-        dzongkhag: 'Dzongkhag',
-        address: 'Address',
-        title_of_course: 'Title of Course',
-        course_duration: 'Course Duration',
-        commencement_date: 'Commencement Date',
-        type_of_programme: 'Type of Programme',
-        head_of_institution_name: 'Head of Institution Name',
-        head_of_institution_gender: 'Head of Institution Gender',
-        head_of_institution_phone_number: 'Head of Institution Phone Number',
-        head_of_institution_email: 'Head of Institution Email',
-        teaching_institute: 'Teaching Institute', //Keep this required for now
-        // supporting_documents: 'Supporting Documents' //Might not be required for a partial submit
-    };
+  const requiredFields = {
+    CID: 'CID',
+    full_name: 'Full Name',
+    gender: 'Gender',
+    contact_no: 'Contact Number',
+    email_address: 'Email Address',
+    name_of_institution: 'Name of Institution',
+    dzongkhag: 'Dzongkhag',
+    address: 'Address',
+    title_of_course: 'Title of Course',
+    course_duration: 'Course Duration',
+    commencement_date: 'Commencement Date',
+    type_of_programme: 'Type of Programme',
+    head_of_institution_name: 'Head of Institution Name',
+    head_of_institution_gender: 'Head of Institution Gender',
+    head_of_institution_phone_number: 'Head of Institution Phone Number',
+    head_of_institution_email: 'Head of Institution Email',
+    teaching_institute: 'Teaching Institute', //Keep this required for now
+    // supporting_documents: 'Supporting Documents' //Might not be required for a partial submit
+  };
 
   for (const [field, label] of Object.entries(requiredFields)) {
     if (!formData.value[field]) {
@@ -403,9 +403,9 @@ const validatePartialForm = () => {
   }
 
   if (!formData.value.declaration) {
-        errorMessage.value = "Please accept the declaration";
-        return false;
-    }
+    errorMessage.value = "Please accept the declaration";
+    return false;
+  }
 
   return true;
 };
@@ -413,91 +413,91 @@ const validatePartialForm = () => {
 
 // Partial Form Submission
 const submitPartial = async () => {
-    try {
-        isSubmitting.value = true;
-        errorMessage.value = '';
-        successMessage.value = '';
+  try {
+    isSubmitting.value = true;
+    errorMessage.value = '';
+    successMessage.value = '';
 
-        if (!validatePartialForm()) {
-            isSubmitting.value = false;
-            return;
-        }
-
-        //Create an object containing ONLY the fields you want to submit.
-        const partialData = {
-            CID: formData.value.CID,
-            full_name: formData.value.full_name,
-            gender: formData.value.gender,
-            contact_no: formData.value.contact_no,
-            email_address: formData.value.email_address,
-            name_of_institution: formData.value.name_of_institution,
-            country: formData.value.country, //Keep this
-            gewog: formData.value.gewog,
-            dzongkhag: formData.value.dzongkhag,
-            village: formData.value.village,
-            address: formData.value.address,
-            chiwog: formData.value.chiwog,
-            teaching_institute: formData.value.teaching_institute,
-            website: formData.value.website,
-            title_of_course: formData.value.title_of_course,
-            course_duration: formData.value.course_duration,
-            commencement_date: formData.value.commencement_date,
-            type_of_programme: formData.value.type_of_programme,
-            remarks: formData.value.remarks,
-            head_of_institution_name: formData.value.head_of_institution_name,
-            head_of_institution_gender: formData.value.head_of_institution_gender,
-            head_of_institution_phone_number: formData.value.head_of_institution_phone_number,
-            head_of_institution_email: formData.value.head_of_institution_email,
-            declaration: formData.value.declaration,
-            review_decision: 'Pending', //Keep this
-            reason_if_rejected: '',      //Keep this.
-        };
-
-        // Handle file upload separately, if needed
-        const submitData = new FormData();
-        for (const key in partialData) {
-            if (partialData[key] !== null && partialData[key] !== undefined) {
-                if (key === 'course_duration') {
-                    submitData.append(key, parseInt(partialData[key])); // Ensure course duration is integer
-                }
-                else {
-                    submitData.append(key, partialData[key]);
-                }
-            }
-        }
-
-        if(formData.value.supporting_documents) {
-          submitData.append('supporting_documents', formData.value.supporting_documents);
-        }
-
-
-        //Use your API service to send the data.
-        const response = await bmhcService.createBmhcInstitute(submitData);
-
-
-        if (response.data) {
-            successMessage.value = 'Partial application submitted successfully!';
-             clearDraft();
-            setTimeout(() => {
-                router.push('/dashboard/institutions');
-            }, 2000);
-        }
-    } catch (error) {
-        console.error('Error submitting partial form:', error);
-        errorMessage.value = 'Error submitting partial application. Please try again.';
-        if (error.response?.data) {
-            const errors = error.response.data;
-            if (typeof errors === 'object') {
-                errorMessage.value = Object.entries(errors)
-                    .map(([field, message]) => `${field}: ${message}`)
-                    .join(', ');
-            } else {
-                errorMessage.value = errors;
-            }
-        }
-    } finally {
-        isSubmitting.value = false;
+    if (!validatePartialForm()) {
+      isSubmitting.value = false;
+      return;
     }
+
+    //Create an object containing ONLY the fields you want to submit.
+    const partialData = {
+      CID: formData.value.CID,
+      full_name: formData.value.full_name,
+      gender: formData.value.gender,
+      contact_no: formData.value.contact_no,
+      email_address: formData.value.email_address,
+      name_of_institution: formData.value.name_of_institution,
+      country: formData.value.country, //Keep this
+      gewog: formData.value.gewog,
+      dzongkhag: formData.value.dzongkhag,
+      village: formData.value.village,
+      address: formData.value.address,
+      chiwog: formData.value.chiwog,
+      teaching_institute: formData.value.teaching_institute,
+      website: formData.value.website,
+      title_of_course: formData.value.title_of_course,
+      course_duration: formData.value.course_duration,
+      commencement_date: formData.value.commencement_date,
+      type_of_programme: formData.value.type_of_programme,
+      remarks: formData.value.remarks,
+      head_of_institution_name: formData.value.head_of_institution_name,
+      head_of_institution_gender: formData.value.head_of_institution_gender,
+      head_of_institution_phone_number: formData.value.head_of_institution_phone_number,
+      head_of_institution_email: formData.value.head_of_institution_email,
+      declaration: formData.value.declaration,
+      review_decision: 'Pending', //Keep this
+      reason_if_rejected: '',      //Keep this.
+    };
+
+    // Handle file upload separately, if needed
+    const submitData = new FormData();
+    for (const key in partialData) {
+      if (partialData[key] !== null && partialData[key] !== undefined) {
+        if (key === 'course_duration') {
+          submitData.append(key, parseInt(partialData[key])); // Ensure course duration is integer
+        }
+        else {
+          submitData.append(key, partialData[key]);
+        }
+      }
+    }
+
+    if (formData.value.supporting_documents) {
+      submitData.append('supporting_documents', formData.value.supporting_documents);
+    }
+
+
+    //Use your API service to send the data.
+    const response = await bmhcService.createBmhcInstitute(submitData);
+
+
+    if (response.data) {
+      successMessage.value = 'Partial application submitted successfully!';
+      clearDraft();
+      setTimeout(() => {
+        router.push('/dashboard/institutions');
+      }, 2000);
+    }
+  } catch (error) {
+    console.error('Error submitting partial form:', error);
+    errorMessage.value = 'Error submitting partial application. Please try again.';
+    if (error.response?.data) {
+      const errors = error.response.data;
+      if (typeof errors === 'object') {
+        errorMessage.value = Object.entries(errors)
+          .map(([field, message]) => `${field}: ${message}`)
+          .join(', ');
+      } else {
+        errorMessage.value = errors;
+      }
+    }
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 
 
@@ -509,7 +509,7 @@ const handleSubmit = async () => {
     errorMessage.value = '';
     successMessage.value = '';
 
-    if (!validateForm()) {
+    if (!validatePartialForm()) {
       isSubmitting.value = false;
       return;
     }

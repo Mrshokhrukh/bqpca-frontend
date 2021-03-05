@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-50 p-6 min-h-screen">
-    <div class="container mx-auto space-y-6">
+    <div class="max-w-7xl mx-auto space-y-6">
       <!-- Empty state when no approved applications -->
       <FirstDashboardState v-if="hasNoApplications && !isLoading"
         message="You don't have any approved applications yet.  Once approved, you will have access to the dashboard." />

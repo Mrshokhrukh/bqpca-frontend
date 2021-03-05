@@ -1,7 +1,7 @@
 # EmployeeTypeManager.vue
 
 <template>
-    <div class="p-6 container mx-auto">
+    <div class="p-6 max-w-7xl mx-auto">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Employee Type Management</h1>
 
         <!-- Success/Error Notifications -->

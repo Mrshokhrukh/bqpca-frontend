@@ -9,7 +9,7 @@
         <div class="absolute bottom-0 left-0 w-96 h-96 bg-green-600/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
         <div class="text-center">
           <div
             class="inline-flex items-center px-3 py-1 rounded-full border border-green-400/30 bg-green-400/10 text-green-200 mb-6">
@@ -34,7 +34,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Information Section -->
         <div class="lg:col-span-2 space-y-8">
