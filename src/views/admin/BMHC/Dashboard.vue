@@ -298,7 +298,7 @@ const bmhInstitutionsComponent = computed(() => {
       return DraftApplications;
     case path.endsWith('/health_certification/view_certificates'):
       return ViewCertificates;
-    case path.endsWith('/health_certification/institute_profile'):
+    case path.endsWith('/health_certification/institution_profile'):
       return InstituteProfile;
     default:
       return null;
