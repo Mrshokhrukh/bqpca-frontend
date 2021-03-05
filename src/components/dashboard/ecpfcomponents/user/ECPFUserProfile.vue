@@ -485,7 +485,7 @@
                 </div>
           </div>
 
-            <!-- Declaration -->
+            Declaration
           <div class="bg-white rounded-xl shadow-lg p-6">
             <div class="flex items-center mb-4">
               <CheckCircle class="w-5 h-5 text-blue-500 mr-2" />

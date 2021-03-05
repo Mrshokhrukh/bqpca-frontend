@@ -279,6 +279,11 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('UserCircle'), 
         route: (serviceType) => `/admin/user/${serviceType}/profile`,
       },
+      {
+        name: 'Track My Applications',
+        icon: getIconComponent('UserCircle'), 
+        route: (serviceType) => `/admin/user/${serviceType}/track_applications`,
+      },
     ],
     admin: [
       {
