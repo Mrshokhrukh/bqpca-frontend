@@ -101,6 +101,8 @@ export default {
       ecpf_inhouse_event: ecpfDashboard,
       ecpf_massmedia: ecpfDashboard,
       ecpf_hei_visit: ecpfDashboard,
+      hr_biodata: ecpfDashboard,
+      student_biodata: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,
@@ -152,8 +154,9 @@ export default {
       cogs_application: bmhcDashboard,
       user_profile: bmhcDashboard,
       reports: bmhcDashboard,
-      counselor_application: bmhcDashboard,
       track_cogs_applications: bmhcDashboard,
+      counselor_application: bmhcDashboard,
+      track_counselor_application: bmhcDashboard,
     },
   },
   dealing_officer: {
@@ -319,6 +322,7 @@ export default {
       track_eoi: bmhcDashboard,
       track_dpr: bmhcDashboard,
       draft_applications: bmhcDashboard,
+      institution_profile: bmhcDashboard,
       // ... other Health Certification routes for director
     },
   },

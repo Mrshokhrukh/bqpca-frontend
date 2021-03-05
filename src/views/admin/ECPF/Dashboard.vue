@@ -51,6 +51,9 @@ import ECPFEducationFair from '@/components/dashboard/ecpfcomponents/user/ECPFEd
 import ECPFInhouseEvent from '@/components/dashboard/ecpfcomponents/user/ECPFInhouseEvent.vue';
 import ECPFMassmedia from '@/components/dashboard/ecpfcomponents/user/ECPFMassmedia.vue';
 import ECPFHeiVisit from '@/components/dashboard/ecpfcomponents/user/ECPFHeiVisit.vue';
+import HrBiodata from '@/components/dashboard/ecpfcomponents/user/HrBiodata.vue';
+import StudentBiodata from '@/components/dashboard/ecpfcomponents/user/StudentBiodata.vue';
+
 // Other ECPF Components
 import ECPFDealingOfficerDashboard from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFDealingOfficerDashboard.vue';
 import ECPFApplicationLists from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFApplicationLists.vue';
@@ -96,6 +99,10 @@ const ecpfUserComponent = computed(() => {
       return ECPFMassmedia;
     case path.endsWith('/ecpf/ecpf_hei_visit'):
       return ECPFHeiVisit;  
+    case path.endsWith('/ecpf/hr_biodata'):
+      return HrBiodata; 
+    case path.endsWith('/ecpf/student_biodata'):
+      return StudentBiodata;   
     default:
       return null;
   }

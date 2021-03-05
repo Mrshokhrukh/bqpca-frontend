@@ -42,17 +42,17 @@ import { storeToRefs } from 'pinia';
 import { useDashboardStore } from '@/stores/mhpcUserDahboardStore';
 
 // Components
-import ProfileHeader from './dashboard/ProfileHeader.vue';
-import StatCard from './dashboard/StatCard.vue';
-import LicenseStatusCard from './dashboard/LicenseStatusCard.vue';
-import ApplicationHistoryCard from './dashboard/ApplicationHistoryCard.vue';
-import ActivityFeed from './dashboard/ActivityFeed.vue';
-import DeadlinesList from './dashboard/DeadlinesList.vue';
-import ApplicationsModal from './dashboard/ApplicationsModal.vue';
+import ProfileHeader from './dashBoardComponents/ProfileHeaders.vue';
+import StatCard from './dashBoardComponents/StatCards.vue';
+import LicenseStatusCard from './dashBoardComponents/LicenseStatusCards.vue';
+import ApplicationHistoryCard from './dashBoardComponents/ApplicationHistoryCards.vue';
+import ActivityFeed from './dashBoardComponents/ActivityFeeds.vue';
+import DeadlinesList from './dashBoardComponents/DeadlinesLists.vue';
+import ApplicationsModal from './dashBoardComponents/ApplicationModal.vue';
 import CertificateModal from '../../../common/MHPCCertificateModal.vue';
 import LoadingSpinner from '../../../common/MHPCLoadingSpinner.vue';
-import EmptyDashboardState from './dashboard/EmptyDashboardState.vue';
-import FirstDashboardState from './dashboard/FirstDashboardState.vue';
+import EmptyDashboardState from './dashBoardComponents/EmptyDashboardStates.vue';
+import FirstDashboardState from './dashBoardComponents/FirstDashboardStates.vue';
 
 // Store setup
 const authStore = useAuthStore();

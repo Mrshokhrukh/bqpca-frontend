@@ -50,8 +50,8 @@ import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superA
 // BMH user
 import CPDcomponent from '@/components/dashboard/bhmccomponents/user/cpdApplication/CPDApplication.vue';
 import CPDTracker from '@/components/dashboard/bhmccomponents/user/cpdApplication/CPDTracker.vue';
-import CoGSApplication from '@/components/dashboard/bhmccomponents/user/CoGSApplication.vue';
-import CoGSTracker from '@/components/dashboard/bhmccomponents/user/CoGSTracker.vue';
+import CoGSApplication from '@/components/dashboard/bhmccomponents/user/CoGSApplication/CoGSApplication.vue';
+import CoGSTracker from '@/components/dashboard/bhmccomponents/user/CoGSApplication/CoGSTracker.vue';
 import PractitionerRegistration from '@/components/dashboard/bhmccomponents/user/certificateApplication/CertificateRegistrationComponent.vue';
 import PractitionerRenewal from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationRenewal.vue';
 import ApplicationTracker from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationTracker.vue';
@@ -117,8 +117,7 @@ import TrackEoiApplication from '@/components/dashboard/bhmccomponents/instituti
 import TrackDPRApplication from '@/components/dashboard/bhmccomponents/institutions/TrackDPRApplication.vue';
 import DraftApplications from '@/components/dashboard/bhmccomponents/institutions/DraftApplications.vue';
 import ViewCertificates from '@/components/dashboard/bhmccomponents/institutions/ViewCertificates.vue';
-
-
+import InstituteProfile from '@/components/dashboard/bhmccomponents/institutions/InstitutionProfile.vue';
 const { role } = useAuthStore();
 const route = useRoute();
 
@@ -299,6 +298,8 @@ const bmhInstitutionsComponent = computed(() => {
       return DraftApplications;
     case path.endsWith('/health_certification/view_certificates'):
       return ViewCertificates;
+    case path.endsWith('/health_certification/institution_profile'):
+      return InstituteProfile;
     default:
       return null;
   }

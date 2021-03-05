@@ -1,217 +1,229 @@
 <template>
-  <!-- Confirmation Modal -->
-  <TransitionRoot as="template" :show="isConfirmationModalOpen">
-    <Dialog as="div" class="relative z-10" @close="isConfirmationModalOpen = false">
-      <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
-        leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-      </TransitionChild>
+  <div class="max-w-6xl mx-auto px-4 py-8 h-full flex flex-col">
+    <!-- Form Header -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+      <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
+        Renewal Application
+      </h2>
+      <p class="text-gray-600 text-center max-w-2xl mx-auto">
+        Please review your personal details and BQPCA credits to ensure your eligibility for renewal.
+      </p>
+    </div>
+    <!-- Confirmation Modal -->
+    <TransitionRoot as="template" :show="isConfirmationModalOpen">
+      <Dialog as="div" class="relative z-10" @close="isConfirmationModalOpen = false">
+        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+          leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+        </TransitionChild>
 
-      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <TransitionChild as="template" enter="ease-out duration-300"
-            enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
-            leave-from="opacity-100 translate-y-0 sm:scale-100"
-            leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-            <DialogPanel
-              class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-              <div>
-                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                  <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                </div>
-                <div class="mt-3 text-center sm:mt-5">
-                  <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">
-                    Confirm Submission
-                  </DialogTitle>
-                  <div class="mt-2">
-                    <p class="text-sm text-gray-500">
-                      Are you sure you want to submit the application? Please review all information before
-                      proceeding.
-                    </p>
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <TransitionChild as="template" enter="ease-out duration-300"
+              enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
+              leave-from="opacity-100 translate-y-0 sm:scale-100"
+              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+              <DialogPanel
+                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                <div>
+                  <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <div class="mt-3 text-center sm:mt-5">
+                    <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">
+                      Confirm Submission
+                    </DialogTitle>
+                    <div class="mt-2">
+                      <p class="text-sm text-gray-500">
+                        Are you sure you want to submit the application? Please review all information before
+                        proceeding.
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                <button type="button"
-                  class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                  @click="handleSubmitActual">
-                  Confirm
-                </button>
-                <button type="button"
-                  class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-                  @click="isConfirmationModalOpen = false">
-                  Cancel
-                </button>
-              </div>
-            </DialogPanel>
-          </TransitionChild>
+                <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                  <button type="button"
+                    class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
+                    @click="handleSubmitActual">
+                    Confirm
+                  </button>
+                  <button type="button"
+                    class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                    @click="isConfirmationModalOpen = false">
+                    Cancel
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
         </div>
-      </div>
-    </Dialog>
-  </TransitionRoot>
+      </Dialog>
+    </TransitionRoot>
 
-  <form @submit.prevent="handleSubmit" class="bg-white border rounded-xl shadow-sm p-6">
-    <!-- Step Header -->
-    <h3 class="text-lg font-semibold text-gray-900 my-4">Addition Qualification Registration</h3>
+    <form @submit.prevent="handleSubmit" class="bg-white border rounded-xl shadow-sm p-6 flex-1 overflow-y-auto">
+      <!-- Step Header -->
+      <h3 class="text-lg font-semibold text-gray-900 my-4">Addition Qualification Registration</h3>
 
-    <!-- Application Selection -->
-    <div class="mb-6">
-      <label for="application" class="block text-sm font-medium text-gray-700 required">Your Application:</label>
+      <!-- Application Selection -->
+      <div class="mb-6">
+        <label for="application" class="block text-sm font-medium text-gray-700 required">Your Application:</label>
 
-      <!-- Option 1: Using an <input type="text"> (Recommended) -->
-      <input type="text" id="application"
-        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-        :value="applications.length === 1 ? `${applications[0].registration_no} - ${applications[0].full_name}` : ''"
-        readonly required />
-
-      <p v-if="applications.length > 1" class="mt-1 text-gray-700">
+        <!-- Option 1: Using an <input type="text"> (Recommended) -->
         <input type="text" id="application"
           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-          :value="`${application.registration_no} - ${application.full_name}`" readonly required
-          v-for="application in applications" :key="application.id" v-show="application.cid === authStore.user?.cid" />
-      </p>
+          :value="applications.length === 1 ? `${applications[0].registration_no} - ${applications[0].full_name}` : ''"
+          readonly required />
 
-      <span v-if="errors.application" class="text-sm text-red-500 mt-1">{{ errors.application }}</span>
-    </div>
+        <p v-if="applications.length > 1" class="mt-1 text-gray-700">
+          <input type="text" id="application"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+            :value="`${application.registration_no} - ${application.full_name}`" readonly required
+            v-for="application in applications" :key="application.id"
+            v-show="application.cid === authStore.user?.cid" />
+        </p>
 
-    <div class="mt-12">
-      <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Qualification Details</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-          <div class="col-span-1">
-            <label class="block text-sm font-medium text-gray-700 required">Qualification Type</label>
-            <select v-model="localFormData.qualification_type"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
-              <option value="">Select Qualification Type</option>
-              <option v-for="type in qualificationTypes" :key="type.id" :value="type.id">
-                {{ type.qualification_type_name }}
-              </option>
-            </select>
-            <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
-    errors.qualification_type
-  }}</span>
-          </div>
-
-          <div class="col-span-1">
-            <label class="block text-sm font-medium text-gray-700 required">Qualification Name</label>
-            <select v-model="localFormData.qualification_name"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
-              <option value="">Select Qualification Name</option>
-              <option v-for="qualification in qualifications" :key="qualification.id" :value="qualification.id">
-                {{ qualification.qualification }}
-              </option>
-            </select>
-            <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
-    errors.qualification_name
-  }}</span>
-          </div>
-
-          <div class="col-span-1">
-            <label class="block text-sm font-medium text-gray-700 required">Institute/University</label>
-            <select v-model="localFormData.institute"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
-              <option value="">Select Institute/University</option>
-              <option v-for="university in universities" :key="university.id" :value="university.id">
-                {{ university.country }}, {{ university.university }}, {{ university.institute_name }}
-              </option>
-            </select>
-            <span v-if="errors.institute" class="text-sm text-red-500 mt-1">{{ errors.institute }}</span>
-          </div>
-
-          <div class="col-span-1">
-            <label class="block text-sm font-medium text-gray-700 required">Year of Completion</label>
-            <input type="month" v-model="localFormData.year_of_completion"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              placeholder="YYYY" />
-            <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
-    errors.year_of_completion
-  }}</span>
-          </div>
-        </div>
+        <span v-if="errors.application" class="text-sm text-red-500 mt-1">{{ errors.application }}</span>
       </div>
-    </div>
 
-    <!-- Documents Section with new design -->
-    <div class="mt-12">
-      <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Supporting Documents</h3>
-        <div class="space-y-4">
-          <div v-for="(doc, index) in supportingDocuments" :key="index"
-            class="flex items-start space-x-4 bg-white p-4 rounded-lg border border-gray-100">
-            <div class="w-1/3">
-              <select v-model="doc.type"
-                class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
-                <option value="">Select Document Type</option>
-                <option v-for="type in fetchedDocumentTypes" :key="type.id" :value="type.id">
-                  {{ type.document_name }}
+      <div class="mt-12">
+        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Qualification Details</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+            <div class="col-span-1">
+              <label class="block text-sm font-medium text-gray-700 required">Qualification Type</label>
+              <select v-model="localFormData.qualification_type"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                <option value="">Select Qualification Type</option>
+                <option v-for="type in qualificationTypes" :key="type.id" :value="type.id">
+                  {{ type.qualification_type_name }}
                 </option>
               </select>
+              <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
+      errors.qualification_type
+    }}</span>
             </div>
-            <div class="flex-1 flex items-center space-x-2">
-              <input type="file" @change="(e) => handleFileSelect(e, index)" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4
-                           file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                           file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple />
-              <button @click="removeDocument(index)" type="button"
-                class="p-2 text-gray-400 hover:text-red-500 transition-colors">
-                <span class="sr-only">Remove</span>
-                ✕
-              </button>
+
+            <div class="col-span-1">
+              <label class="block text-sm font-medium text-gray-700 required">Qualification Name</label>
+              <select v-model="localFormData.qualification_name"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                <option value="">Select Qualification Name</option>
+                <option v-for="qualification in qualifications" :key="qualification.id" :value="qualification.id">
+                  {{ qualification.qualification }}
+                </option>
+              </select>
+              <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
+      errors.qualification_name
+    }}</span>
+            </div>
+
+            <div class="col-span-1">
+              <label class="block text-sm font-medium text-gray-700 required">Institute/University</label>
+              <select v-model="localFormData.institute"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                <option value="">Select Institute/University</option>
+                <option v-for="university in universities" :key="university.id" :value="university.id">
+                  {{ university.country }}, {{ university.university }}, {{ university.institute_name }}
+                </option>
+              </select>
+              <span v-if="errors.institute" class="text-sm text-red-500 mt-1">{{ errors.institute }}</span>
+            </div>
+
+            <div class="col-span-1">
+              <label class="block text-sm font-medium text-gray-700 required">Year of Completion</label>
+              <input type="month" v-model="localFormData.year_of_completion"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                placeholder="YYYY" />
+              <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
+      errors.year_of_completion
+    }}</span>
             </div>
           </div>
-
-          <button type="button" @click="addDocument"
-            class="mt-4 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center">
-            <span class="mr-2">+</span>
-            Add Another Document
-          </button>
-        </div>
-        <p class="text-sm text-gray-500 mt-2">
-          Required documents are graduation certificate, cid copy, security clarance, roq certificate, class 10, 12
-          and graduation marksheets.
-        </p>
-      </div>
-    </div>
-
-    <!-- Declaration Section -->
-    <div class="mt-12 bg-gray-50 p-6 rounded-xl border border-gray-200">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">Declaration</h3>
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Remarks</label>
-          <textarea v-model="localFormData.remarks" rows="3"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            placeholder="Enter any additional remarks or comments"></textarea>
-        </div>
-
-        <div class="flex items-start space-x-3 bg-white p-4 rounded-lg">
-          <input type="checkbox" v-model="localFormData.declaration"
-            class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-          <label class="text-sm text-gray-700">
-            I hereby declare that all the information provided above is true and correct to the best of my
-            knowledge.
-            I understand that any false statements may result in the rejection of my registration.
-          </label>
         </div>
       </div>
-    </div>
 
-    <!-- Form Actions -->
-    <div class="mt-12 flex justify-end space-x-4">
-      <button type="button" @click="$emit('back')"
-        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-        Back to Previous Step
-      </button>
-      <button type="button" @click="handleSubmit"
-        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-        Submit Registration
-      </button>
-    </div>
-  </form>
+      <!-- Documents Section with new design -->
+      <div class="mt-12">
+        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Supporting Documents</h3>
+          <div class="space-y-4">
+            <div v-for="(doc, index) in supportingDocuments" :key="index"
+              class="flex items-start space-x-4 bg-white p-4 rounded-lg border border-gray-100">
+              <div class="w-1/3">
+                <select v-model="doc.type"
+                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                  <option value="">Select Document Type</option>
+                  <option v-for="type in fetchedDocumentTypes" :key="type.id" :value="type.id">
+                    {{ type.document_name }}
+                  </option>
+                </select>
+              </div>
+              <div class="flex-1 flex items-center space-x-2">
+                <input type="file" @change="(e) => handleFileSelect(e, index)" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4
+                           file:rounded-lg file:border-0 file:text-sm file:font-semibold
+                           file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple />
+                <button @click="removeDocument(index)" type="button"
+                  class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                  <span class="sr-only">Remove</span>
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <button type="button" @click="addDocument"
+              class="mt-4 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center">
+              <span class="mr-2">+</span>
+              Add Another Document
+            </button>
+          </div>
+          <p class="text-sm text-gray-500 mt-2">
+            Required documents are graduation certificate, cid copy, security clarance, roq certificate, class 10, 12
+            and graduation marksheets.
+          </p>
+        </div>
+      </div>
+
+      <!-- Declaration Section -->
+      <div class="mt-12 bg-gray-50 p-6 rounded-xl border border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Declaration</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Remarks</label>
+            <textarea v-model="localFormData.remarks" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+              placeholder="Enter any additional remarks or comments"></textarea>
+          </div>
+
+          <div class="flex items-start space-x-3 bg-white p-4 rounded-lg">
+            <input type="checkbox" v-model="localFormData.declaration"
+              class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+            <label class="text-sm text-gray-700">
+              I hereby declare that all the information provided above is true and correct to the best of my
+              knowledge.
+              I understand that any false statements may result in the rejection of my registration.
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="mt-12 flex justify-end space-x-4">
+        <button type="button" @click="$emit('back')"
+          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+          Back to Previous Step
+        </button>
+        <button type="button" @click="handleSubmit"
+          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          Submit Registration
+        </button>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script setup>
