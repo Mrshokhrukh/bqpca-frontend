@@ -7,7 +7,7 @@
       <EmptyDashboardState v-else-if="!hasApprovedApplications && !isLoading"
         message="You don't have any approved applications yet.  Once approved, you will have access to the dashboard." />
 
-      <template v-else>
+      <template v-else >
         <ProfileHeader :user-detail="userDetail" :renewal-message="renewalStatus"
           :qualifications="getPrimaryQualifications" @view-certificate="handleViewCertificate" />
 
@@ -44,7 +44,7 @@ import { useDashboardStore } from '@/stores/mhpcUserDahboardStore';
 // Components
 import ProfileHeader from './dashBoardComponents/ProfileHeaders.vue';
 import StatCard from './dashBoardComponents/StatCards.vue';
-import LicenseStatusCard from './dashBoardComponents/LicenseStatusCards.vue';
+import LicenseStatusCard from './dashBoardComponents/CogsStatusCards.vue';
 import ApplicationHistoryCard from './dashBoardComponents/ApplicationHistoryCards.vue';
 import ActivityFeed from './dashBoardComponents/ActivityFeeds.vue';
 import DeadlinesList from './dashBoardComponents/DeadlinesLists.vue';
