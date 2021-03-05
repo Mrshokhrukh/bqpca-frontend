@@ -1,7 +1,8 @@
 <template>
   <div class="max-w-6xl mx-auto px-4 py-8">
     <!-- Not Available Status -->
-    <div v-if="reviewDecision === 'Regretted'" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+    <div v-if="reviewDecision === 'Regretted'" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4"
+      role="alert">
       <p class="font-bold">Application Status: Not Available</p>
       <p>You cannot submit a DPR until your EOI application has been approved.</p>
     </div>
@@ -12,7 +13,8 @@
     </div>
 
     <!-- Pending Status -->
-    <div v-else-if="reviewDecision === 'Pending'" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+    <div v-else-if="reviewDecision === 'Pending'" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4"
+      role="alert">
       <p class="font-bold">Application Status: Pending</p>
       <p>Your application is currently under review. You will be notified once a decision has been made.</p>
     </div>
@@ -20,7 +22,7 @@
     <!-- Approved Status with Form -->
     <div v-else-if="reviewDecision === 'Approved'">
       <!-- Form Header -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+      <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
         <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
           Detailed Project Proposal
         </h2>
@@ -70,7 +72,8 @@
             <label for="institute_eoi_supporting_documents" class="block text-sm font-medium text-gray-700">
               EOI Supporting Documents:
             </label>
-            <input type="file" id="institute_eoi_supporting_documents" @change="handleFileUpload('institute_eoi_supporting_documents')"
+            <input type="file" id="institute_eoi_supporting_documents"
+              @change="handleFileUpload('institute_eoi_supporting_documents')"
               class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
           </div>
 
@@ -126,7 +129,8 @@
         <!-- Project Scheduling Section -->
         <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
           <h3 class="text-lg font-semibold text-gray-900">4. Project Scheduling, Implementation, and Management</h3>
-          <p class="mt-1 text-sm text-gray-500">Provide the project schedule, implementation plan, and management details.</p>
+          <p class="mt-1 text-sm text-gray-500">Provide the project schedule, implementation plan, and management
+            details.</p>
         </div>
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
@@ -140,7 +144,8 @@
         <!-- Gross National Happiness Section -->
         <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
           <h3 class="text-lg font-semibold text-gray-900">5. Values of Gross National Happiness</h3>
-          <p class="mt-1 text-sm text-gray-500">Describe how the institution will contribute to Gross National Happiness.</p>
+          <p class="mt-1 text-sm text-gray-500">Describe how the institution will contribute to Gross National
+            Happiness.</p>
         </div>
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
@@ -184,7 +189,8 @@
         <!-- Academic Plan Section -->
         <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
           <h3 class="text-lg font-semibold text-gray-900">8. Academic Plan/Profile</h3>
-          <p class="mt-1 text-sm text-gray-500">Describe the intent and purpose of the institute in terms of its academic character.</p>
+          <p class="mt-1 text-sm text-gray-500">Describe the intent and purpose of the institute in terms of its
+            academic character.</p>
         </div>
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
@@ -198,7 +204,8 @@
         <!-- Affiliation -->
         <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
           <h3 class="text-lg font-semibold text-gray-900">9. Affiliation</h3>
-          <p class="mt-1 text-sm text-gray-500">Provide details on the affiliation of the training institute with a recognized university.</p>
+          <p class="mt-1 text-sm text-gray-500">Provide details on the affiliation of the training institute with a
+            recognized university.</p>
         </div>
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
@@ -215,7 +222,8 @@
         </div>
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
-            <label for="teachingHospitalDetails" class="block text-sm font-medium text-gray-700">Teaching Hospital Details:</label>
+            <label for="teachingHospitalDetails" class="block text-sm font-medium text-gray-700">Teaching Hospital
+              Details:</label>
             <textarea id="teachingHospitalDetails" v-model="formData.teaching_hospital" rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
           </div>
@@ -254,7 +262,8 @@
         </div>
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
-            <label for="qualityAssurance" class="block text-sm font-medium text-gray-700">Quality Assurance System Details:</label>
+            <label for="qualityAssurance" class="block text-sm font-medium text-gray-700">Quality Assurance System
+              Details:</label>
             <textarea id="qualityAssurance" v-model="formData.quality_assurance" rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
           </div>
@@ -267,7 +276,8 @@
         </div>
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
-            <label for="governanceStructure" class="block text-sm font-medium text-gray-700">Governance Structure Details:</label>
+            <label for="governanceStructure" class="block text-sm font-medium text-gray-700">Governance Structure
+              Details:</label>
             <textarea id="governanceStructure" v-model="formData.governance_structure" rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
           </div>
@@ -293,7 +303,8 @@
         </div>
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
-            <label for="projectCostAnalysis" class="block text-sm font-medium text-gray-700">Project Cost Analysis Details:</label>
+            <label for="projectCostAnalysis" class="block text-sm font-medium text-gray-700">Project Cost Analysis
+              Details:</label>
             <textarea id="projectCostAnalysis" v-model="formData.project_cost_analysis" rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
           </div>
@@ -302,11 +313,13 @@
         <!-- Facilities and Student Services -->
         <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
           <h3 class="text-lg font-semibold text-gray-900">17. Facilities and Student Services</h3>
-          <p class="mt-1 text-sm text-gray-500">Provide details on the facilities and student services offered by the institution.</p>
+          <p class="mt-1 text-sm text-gray-500">Provide details on the facilities and student services offered by the
+            institution.</p>
         </div>
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
-            <label for="facilitiesAndServices" class="block text-sm font-medium text-gray-700">Facilities and Services Details:</label>
+            <label for="facilitiesAndServices" class="block text-sm font-medium text-gray-700">Facilities and Services
+              Details:</label>
             <textarea id="facilitiesAndServices" v-model="formData.facilities_student_services" rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
           </div>
@@ -319,7 +332,8 @@
         </div>
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
-            <label for="admissionPolicy" class="block text-sm font-medium text-gray-700">Admission Policy Details:</label>
+            <label for="admissionPolicy" class="block text-sm font-medium text-gray-700">Admission Policy
+              Details:</label>
             <textarea id="admissionPolicy" v-model="formData.admission_policy" rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
           </div>
@@ -332,7 +346,8 @@
         </div>
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
-            <label for="serviceConditions" class="block text-sm font-medium text-gray-700">Service Conditions Details:</label>
+            <label for="serviceConditions" class="block text-sm font-medium text-gray-700">Service Conditions
+              Details:</label>
             <textarea id="serviceConditions" v-model="formData.service_conditions" rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
           </div>
@@ -345,7 +360,8 @@
         </div>
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
-            <label for="safetyAndSecurity" class="block text-sm font-medium text-gray-700">Safety and Security Details:</label>
+            <label for="safetyAndSecurity" class="block text-sm font-medium text-gray-700">Safety and Security
+              Details:</label>
             <textarea id="safetyAndSecurity" v-model="formData.safety_security" rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
           </div>
@@ -358,7 +374,8 @@
         </div>
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
-            <label for="publicInformationSystem" class="block text-sm font-medium text-gray-700">Public Information System Details:</label>
+            <label for="publicInformationSystem" class="block text-sm font-medium text-gray-700">Public Information
+              System Details:</label>
             <textarea id="publicInformationSystem" v-model="formData.public_information_system" rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
           </div>
@@ -427,16 +444,16 @@ const reviewDecision = ref(''); // Add a ref for reviewDecision
 const isLoading = ref(true); // Add loading state
 
 const formData = ref({
-    dpr_name: '',
-    executive_summary: '',
-    institute_eoi_supporting_documents: null,
-    institute_dpr_remarks: '',
-    do_dpr_review_report: '',
-    do_dpr_review_summary: '',
-    do_dpr_report: null,
-    vision_mission_strategies: '',
-    project_scheduling: '',
-      gross_national_happiness: '',
+  dpr_name: '',
+  executive_summary: '',
+  institute_eoi_supporting_documents: null,
+  institute_dpr_remarks: '',
+  do_dpr_review_report: '',
+  do_dpr_review_summary: '',
+  do_dpr_report: null,
+  vision_mission_strategies: '',
+  project_scheduling: '',
+  gross_national_happiness: '',
   land_details: '',
   conceptual_master_plan: '',
   academic_plan: '',
@@ -478,10 +495,10 @@ onMounted(async () => {
     return;
   }
 
-    if (!userObject || !userObject.cid) {
-        console.error("User object is invalid or cid is missing:", userObject);
-        isLoading.value = false;
-        return;
+  if (!userObject || !userObject.cid) {
+    console.error("User object is invalid or cid is missing:", userObject);
+    isLoading.value = false;
+    return;
   }
   const userCID = userObject.cid;
   console.log("userCID:", userCID);
@@ -505,8 +522,8 @@ onMounted(async () => {
 
     // Only fetch data IF the review is approved
     if (reviewDecision.value === 'Approved') {
-        await fetchDprData();
-        fetchInstituteName();
+      await fetchDprData();
+      fetchInstituteName();
     }
 
 
@@ -541,24 +558,24 @@ const fetchDprData = async () => {
       formData.value.do_dpr_review_summary = response.data.do_dpr_review_summary || '';
       formData.value.vision_mission_strategies = response.data.vision_mission_strategies || '';
       formData.value.project_scheduling = response.data.project_scheduling || '';
-        formData.value.gross_national_happiness = response.data.gross_national_happiness || '';
-        formData.value.land_details = response.data.land_details || '';
-        formData.value.conceptual_master_plan = response.data.conceptual_master_plan || '';
-        formData.value.academic_plan = response.data.academic_plan || '';
-        formData.value.affiliation_details = response.data.affiliation_details || '';
-        formData.value.teaching_hospital = response.data.teaching_hospital || '';
-        formData.value.research_policy = response.data.research_policy || '';
-        formData.value.human_resource = response.data.human_resource || '';
-        formData.value.quality_assurance = response.data.quality_assurance || '';
-        formData.value.governance_structure = response.data.governance_structure || '';
-        formData.value.business_plan = response.data.business_plan || '';
-        formData.value.project_cost_analysis = response.data.project_cost_analysis || '';
-        formData.value.facilities_student_services = response.data.facilities_student_services || '';
-        formData.value.admission_policy = response.data.admission_policy || '';
-        formData.value.service_conditions = response.data.service_conditions || '';
-        formData.value.safety_security = response.data.safety_security || '';
-        formData.value.public_information_system = response.data.public_information_system || '';
-        formData.value.other_details = response.data.other_details || '';
+      formData.value.gross_national_happiness = response.data.gross_national_happiness || '';
+      formData.value.land_details = response.data.land_details || '';
+      formData.value.conceptual_master_plan = response.data.conceptual_master_plan || '';
+      formData.value.academic_plan = response.data.academic_plan || '';
+      formData.value.affiliation_details = response.data.affiliation_details || '';
+      formData.value.teaching_hospital = response.data.teaching_hospital || '';
+      formData.value.research_policy = response.data.research_policy || '';
+      formData.value.human_resource = response.data.human_resource || '';
+      formData.value.quality_assurance = response.data.quality_assurance || '';
+      formData.value.governance_structure = response.data.governance_structure || '';
+      formData.value.business_plan = response.data.business_plan || '';
+      formData.value.project_cost_analysis = response.data.project_cost_analysis || '';
+      formData.value.facilities_student_services = response.data.facilities_student_services || '';
+      formData.value.admission_policy = response.data.admission_policy || '';
+      formData.value.service_conditions = response.data.service_conditions || '';
+      formData.value.safety_security = response.data.safety_security || '';
+      formData.value.public_information_system = response.data.public_information_system || '';
+      formData.value.other_details = response.data.other_details || '';
       // Do *NOT* populate other fields.
     }
   } catch (error) {
@@ -603,9 +620,9 @@ const handleSubmit = async () => {
   if (formData.value.do_dpr_report) {
     submitData.append('do_dpr_report', formData.value.do_dpr_report);
   }
-    submitData.append('vision_mission_strategies', formData.value.vision_mission_strategies);
-    submitData.append('project_scheduling', formData.value.project_scheduling);
-      submitData.append('gross_national_happiness', formData.value.gross_national_happiness);
+  submitData.append('vision_mission_strategies', formData.value.vision_mission_strategies);
+  submitData.append('project_scheduling', formData.value.project_scheduling);
+  submitData.append('gross_national_happiness', formData.value.gross_national_happiness);
   submitData.append('land_details', formData.value.land_details);
   submitData.append('conceptual_master_plan', formData.value.conceptual_master_plan);
   submitData.append('academic_plan', formData.value.academic_plan);
@@ -622,7 +639,7 @@ const handleSubmit = async () => {
   submitData.append('service_conditions', formData.value.service_conditions);
   submitData.append('safety_security', formData.value.safety_security);
   submitData.append('public_information_system', formData.value.public_information_system);
-    submitData.append('other_details', formData.value.other_details);
+  submitData.append('other_details', formData.value.other_details);
   // Do *NOT* append other fields.
 
   try {
@@ -643,40 +660,40 @@ const handleSaveDraft = async () => {
     console.error("Institute ID is missing.");
     return;
   }
-    const draftData = new FormData();
+  const draftData = new FormData();
 
-    // *ONLY* append the fields you want to update (same as handleSubmit):
-    draftData.append('dpr_name', formData.value.dpr_name);
-    draftData.append('executive_summary', formData.value.executive_summary);
-    if (formData.value.institute_eoi_supporting_documents) {
-        draftData.append('institute_eoi_supporting_documents', formData.value.institute_eoi_supporting_documents);
-    }
-    draftData.append('institute_dpr_remarks', formData.value.institute_dpr_remarks);
-    draftData.append('do_dpr_review_report', formData.value.do_dpr_review_report);
-    draftData.append('do_dpr_review_summary', formData.value.do_dpr_review_summary);
-    if (formData.value.do_dpr_report) {
-        draftData.append('do_dpr_report', formData.value.do_dpr_report);
-    }
-    draftData.append('vision_mission_strategies', formData.value.vision_mission_strategies);
-    draftData.append('project_scheduling', formData.value.project_scheduling);
-    draftData.append('gross_national_happiness', formData.value.gross_national_happiness);
-    draftData.append('land_details', formData.value.land_details);
-    draftData.append('conceptual_master_plan', formData.value.conceptual_master_plan);
-    draftData.append('academic_plan', formData.value.academic_plan);
-    draftData.append('affiliation_details', formData.value.affiliation_details);
-    draftData.append('teaching_hospital', formData.value.teaching_hospital);
-    draftData.append('research_policy', formData.value.research_policy);
-    draftData.append('human_resource', formData.value.human_resource);
-    draftData.append('quality_assurance', formData.value.quality_assurance);
-    draftData.append('governance_structure', formData.value.governance_structure);
-    draftData.append('business_plan', formData.value.business_plan);
-    draftData.append('project_cost_analysis', formData.value.project_cost_analysis);
-    draftData.append('facilities_student_services', formData.value.facilities_student_services);
-    draftData.append('admission_policy', formData.value.admission_policy);
-    draftData.append('service_conditions', formData.value.service_conditions);
-    draftData.append('safety_security', formData.value.safety_security);
-    draftData.append('public_information_system', formData.value.public_information_system);
-    draftData.append('other_details', formData.value.other_details);
+  // *ONLY* append the fields you want to update (same as handleSubmit):
+  draftData.append('dpr_name', formData.value.dpr_name);
+  draftData.append('executive_summary', formData.value.executive_summary);
+  if (formData.value.institute_eoi_supporting_documents) {
+    draftData.append('institute_eoi_supporting_documents', formData.value.institute_eoi_supporting_documents);
+  }
+  draftData.append('institute_dpr_remarks', formData.value.institute_dpr_remarks);
+  draftData.append('do_dpr_review_report', formData.value.do_dpr_review_report);
+  draftData.append('do_dpr_review_summary', formData.value.do_dpr_review_summary);
+  if (formData.value.do_dpr_report) {
+    draftData.append('do_dpr_report', formData.value.do_dpr_report);
+  }
+  draftData.append('vision_mission_strategies', formData.value.vision_mission_strategies);
+  draftData.append('project_scheduling', formData.value.project_scheduling);
+  draftData.append('gross_national_happiness', formData.value.gross_national_happiness);
+  draftData.append('land_details', formData.value.land_details);
+  draftData.append('conceptual_master_plan', formData.value.conceptual_master_plan);
+  draftData.append('academic_plan', formData.value.academic_plan);
+  draftData.append('affiliation_details', formData.value.affiliation_details);
+  draftData.append('teaching_hospital', formData.value.teaching_hospital);
+  draftData.append('research_policy', formData.value.research_policy);
+  draftData.append('human_resource', formData.value.human_resource);
+  draftData.append('quality_assurance', formData.value.quality_assurance);
+  draftData.append('governance_structure', formData.value.governance_structure);
+  draftData.append('business_plan', formData.value.business_plan);
+  draftData.append('project_cost_analysis', formData.value.project_cost_analysis);
+  draftData.append('facilities_student_services', formData.value.facilities_student_services);
+  draftData.append('admission_policy', formData.value.admission_policy);
+  draftData.append('service_conditions', formData.value.service_conditions);
+  draftData.append('safety_security', formData.value.safety_security);
+  draftData.append('public_information_system', formData.value.public_information_system);
+  draftData.append('other_details', formData.value.other_details);
 
 
   try {

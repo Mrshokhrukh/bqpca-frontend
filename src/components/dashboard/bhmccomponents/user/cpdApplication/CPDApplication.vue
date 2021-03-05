@@ -3,7 +3,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Form Header -->
       <div
-        class="relative bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-2xl p-8 mb-12 shadow-lg overflow-hidden">
+        class="relative bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-2xl p-8 mb-12  overflow-hidden">
         <div class="absolute inset-0 bg-indigo-200 opacity-10 animate-pulse-slow"></div>
         <h2 class="relative text-3xl font-extrabold text-gray-900 mb-4 text-center tracking-tight">
           Continuous Professional Development (CPD) Application

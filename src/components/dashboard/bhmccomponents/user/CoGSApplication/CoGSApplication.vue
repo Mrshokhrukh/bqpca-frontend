@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50 py-12">
     <div class="max-w-6xl mx-auto px-4">
       <!-- Enhanced Header with Animation -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+      <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
         <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
           Certificate of Goods Standing (CoGS) Application
         </h2>
@@ -353,7 +353,7 @@
       <!-- Certificate Section -->
       <TransitionRoot as="template" :show="showCertificateSection">
         <div class="mt-8 bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-8">
+          <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 p-8">
             <div class="flex items-center space-x-3">
               <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                 <DocumentTextIcon class="h-6 w-6 text-blue-600" />

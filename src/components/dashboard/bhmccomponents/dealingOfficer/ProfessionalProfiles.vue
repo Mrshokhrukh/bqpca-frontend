@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <!-- Header with Gradient -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10 shadow-md">
+      <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Search Records</h1>
         <p class="text-gray-600">Find and manage professional records within the system.</p>
       </div>
@@ -112,15 +112,24 @@
           <table class="min-w-full divide-y divide-gray-200 table-fixed">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Ref. No.</th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Reg. Dt.</th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Name</th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">CID/Permit</th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Gender</th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Category</th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Facility</th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Status</th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">Action</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Ref. No.
+                </th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Reg. Dt.
+                </th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Name
+                </th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                  CID/Permit</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Gender
+                </th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Category
+                </th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Facility
+                </th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Status
+                </th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">Action
+                </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -129,35 +138,41 @@
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ formatDate(record.regDate) }}</td>
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 truncate">{{ record.name }}</td>
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ record.cid }}</td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ record.gender === 'M' ? 'Male' : 'Female' }}</td>
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ record.gender === 'M' ? 'Male' :
+            'Female' }}</td>
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ record.category }}</td>
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 truncate">{{ record.healthFacility }}</td>
                 <td class="px-3 py-2 whitespace-nowrap text-sm">
-                  <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusClass(record.status)}`">
+                  <span
+                    :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusClass(record.status)}`">
                     {{ record.status }}
                   </span>
                 </td>
                 <td class="px-3 py-2 whitespace-nowrap text-sm space-x-1">
-                  <button @click="viewRecord(record)" 
+                  <button @click="viewRecord(record)"
                     class="inline-flex items-center p-1 text-blue-600 hover:text-blue-800">
                     <span class="sr-only">View</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </button>
-                  <button @click="editRecord(record)" 
+                  <button @click="editRecord(record)"
                     class="inline-flex items-center p-1 text-green-600 hover:text-green-800">
                     <span class="sr-only">Edit</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
-                  <button @click="deleteRecord(record.cid)" 
+                  <button @click="deleteRecord(record.cid)"
                     class="inline-flex items-center p-1 text-red-600 hover:text-red-800">
                     <span class="sr-only">Delete</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   </button>
                 </td>

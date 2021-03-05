@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50 py-12">
     <div class="max-w-6xl mx-auto px-4">
       <!-- Enhanced Header with Animation -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+      <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
         <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
           Certificate of Goods Standing (CoGS) Application
         </h2>
@@ -44,7 +44,7 @@
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter supervisor's name" />
                 <span v-if="errors.supervisor_name" class="text-sm text-red-500 block">{{ errors.supervisor_name
-                }}</span>
+                  }}</span>
               </div>
 
               <!-- Supervisor Designation -->
@@ -54,7 +54,7 @@
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter supervisor's designation" />
                 <span v-if="errors.supervisor_designation" class="text-sm text-red-500 block">{{
-                  errors.supervisor_designation }}</span>
+        errors.supervisor_designation }}</span>
               </div>
 
               <!-- Agency -->
@@ -73,16 +73,16 @@
                         <ListboxOption v-for="agency in agencyOptions" :key="agency.id" :value="agency.id"
                           v-slot="{ active, selected }">
                           <div :class="[
-                            active ? 'text-white bg-blue-600' : 'text-gray-900',
-                            'cursor-default select-none relative py-2 pl-10 pr-4'
-                          ]">
+        active ? 'text-white bg-blue-600' : 'text-gray-900',
+        'cursor-default select-none relative py-2 pl-10 pr-4'
+      ]">
                             <span :class="[selected ? 'font-medium' : 'font-normal', 'block truncate']">
                               {{ agency.name }}
                             </span>
                             <span v-if="selected" :class="[
-                              active ? 'text-white' : 'text-blue-600',
-                              'absolute inset-y-0 left-0 flex items-center pl-3'
-                            ]">
+        active ? 'text-white' : 'text-blue-600',
+        'absolute inset-y-0 left-0 flex items-center pl-3'
+      ]">
                               <CheckIcon class="h-5 w-5" aria-hidden="true" />
                             </span>
                           </div>
@@ -102,7 +102,7 @@
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter supervisor's contact number" />
                 <span v-if="errors.contact_number" class="text-sm text-red-500 block">{{
-                  errors.contact_number }}</span>
+        errors.contact_number }}</span>
               </div>
 
               <!-- Supervisor Email Address -->
@@ -112,7 +112,7 @@
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter supervisor's email address" />
                 <span v-if="errors.email_address" class="text-sm text-red-500 block">{{ errors.email_address
-                }}</span>
+                  }}</span>
               </div>
 
               <!-- Reason for Application -->
@@ -122,7 +122,7 @@
                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   rows="3" placeholder="Enter reason for application"></textarea>
                 <span v-if="errors.reason_for_application" class="text-sm text-red-500 block">{{
-                  errors.reason_for_application }}</span>
+        errors.reason_for_application }}</span>
               </div>
 
             </div>
@@ -150,13 +150,13 @@
               <Switch v-model="isRecipientSelf" class="relative inline-flex items-center">
                 <span class="sr-only">Toggle recipient</span>
                 <div :class="[
-                  isRecipientSelf ? 'bg-blue-600' : 'bg-gray-200',
-                  'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out'
-                ]">
+        isRecipientSelf ? 'bg-blue-600' : 'bg-gray-200',
+        'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out'
+      ]">
                   <span :class="[
-                    isRecipientSelf ? 'translate-x-6' : 'translate-x-1',
-                    'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out mt-1'
-                  ]" />
+        isRecipientSelf ? 'translate-x-6' : 'translate-x-1',
+        'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out mt-1'
+      ]" />
                 </div>
                 <span class="ml-3 text-sm font-medium text-gray-900">{{ isRecipientSelf ? 'Self' : 'Other' }}</span>
               </Switch>
@@ -172,7 +172,7 @@
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's name" />
                   <span v-if="errors.recipient_name" class="text-sm text-red-500 block">{{ errors.recipient_name
-                  }}</span>
+                    }}</span>
                 </div>
 
                 <!-- Recipient Contact Number -->
@@ -182,7 +182,7 @@
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's contact number" />
                   <span v-if="errors.recipient_contact_number" class="text-sm text-red-500 block">{{
-                    errors.recipient_contact_number }}</span>
+        errors.recipient_contact_number }}</span>
                 </div>
 
                 <!-- Recipient Email -->
@@ -192,7 +192,7 @@
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's email address" />
                   <span v-if="errors.recipient_email" class="text-sm text-red-500 block">{{ errors.recipient_email
-                  }}</span>
+                    }}</span>
                 </div>
 
                 <!-- Recipient Address -->
@@ -202,7 +202,7 @@
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's full address" />
                   <span v-if="errors.address" class="text-sm text-red-500 block">{{ errors.address
-                  }}</span>
+                    }}</span>
                 </div>
 
                 <!-- Recipient PO Box -->
@@ -212,7 +212,7 @@
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's PO Box (optional)" />
                   <span v-if="errors.po_box" class="text-sm text-red-500 block">{{ errors.po_box
-                  }}</span>
+                    }}</span>
                 </div>
 
                 <!-- Recipient Zip Code -->
@@ -222,7 +222,7 @@
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's zip code (optional)" />
                   <span v-if="errors.zip_code" class="text-sm text-red-500 block">{{ errors.zip_code
-                  }}</span>
+                    }}</span>
                 </div>
               </div>
             </TransitionRoot>
@@ -354,7 +354,7 @@
       <!-- Certificate Section -->
       <TransitionRoot as="template" :show="showCertificateSection">
         <div class="mt-8 bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-8">
+          <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 p-8">
             <div class="flex items-center space-x-3">
               <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                 <DocumentTextIcon class="h-6 w-6 text-blue-600" />

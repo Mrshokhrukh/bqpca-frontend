@@ -1,12 +1,12 @@
 <template>
   <div class="max-w-6xl mx-auto px-4 py-8 h-full flex flex-col">
     <!-- Form Header -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
-        Renewal Application
+        Additional Qualification
       </h2>
       <p class="text-gray-600 text-center max-w-2xl mx-auto">
-        Please review your personal details and BQPCA credits to ensure your eligibility for renewal.
+        Complete the form below to apply for additional qualification.
       </p>
     </div>
     <!-- Confirmation Modal -->

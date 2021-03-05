@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <div class="max-w-9xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <!-- Page Header -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+      <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Institute Management</h1>
         <p class="text-gray-600">Manage EOIs, DPRs, CAPAs, and generate reports for institutes.</p>
       </div>
@@ -37,7 +37,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <span
                     :class="`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass(institute.eoiStatus)}`">{{
-                    institute.eoiStatus }}</span>
+          institute.eoiStatus }}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 space-x-2">
                   <button @click="viewDetails(institute)"
@@ -73,7 +73,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <span
                     :class="`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass(institute.dprStatus)}`">{{
-                    institute.dprStatus }}</span>
+          institute.dprStatus }}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 space-x-2">
                   <button @click="viewDetails(institute)"
@@ -180,7 +180,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <span
                     :class="`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass(institute.eoiStatus)}`">{{
-                    institute.eoiStatus }}</span>
+          institute.eoiStatus }}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <span :class="statusClass(institute.dprStatus)">{{ institute.dprStatus }}</span>

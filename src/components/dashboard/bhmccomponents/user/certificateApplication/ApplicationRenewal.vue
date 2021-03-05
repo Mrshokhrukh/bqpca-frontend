@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-6xl mx-auto px-4 py-8">
     <!-- Form Header -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         Renewal Application
       </h2>
@@ -26,10 +26,9 @@
             <input type="text" v-model="formData.cidNo"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
               :class="{
-                'bg-gray-50 border border-gray-200': fetchedData,
-                'border border-gray-300': !fetchedData,
-              }" placeholder="Enter CID number" @input="resetFetchedData"
-              :disabled="isFetchingData || fetchedData" />
+              'bg-gray-50 border border-gray-200': fetchedData,
+              'border border-gray-300': !fetchedData,
+            }" placeholder="Enter CID number" @input="resetFetchedData" :disabled="isFetchingData || fetchedData" />
             <button @click="fetchCitizenData" type="button" :disabled="isFetchingData || fetchedData"
               class="absolute right-2.5 top-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed">
               <span v-if="isFetchingData">Fetching...</span>
@@ -83,7 +82,8 @@
 
         <!-- Credits Information -->
         <div class="col-span-1">
-          <div :class="['rounded-xl p-4',
+          <div
+            :class="['rounded-xl p-4',
               creditStatus === 'red' ? 'bg-red-50 border border-red-200' :
                 creditStatus === 'blue' ? 'bg-blue-50 border border-blue-200' : 'bg-green-50 border border-green-200']">
             <div class="flex items-center">
@@ -125,9 +125,8 @@
           class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
           Cancel
         </button>
-        <button @click="handleSubmit"
-          :class="['px-6 py-3 rounded-lg text-white transition-colors',
-            isEligibleForRenewal ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed']"
+        <button @click="handleSubmit" :class="['px-6 py-3 rounded-lg text-white transition-colors',
+              isEligibleForRenewal ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed']"
           :disabled="!isEligibleForRenewal">
           {{ buttonText }}
         </button>

@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Header Section -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 mb-10">
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         Track Your Application
       </h2>
@@ -29,7 +29,7 @@
       <div v-for="application in applications" :key="application.id"
         class="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300">
         <!-- Main Info Header -->
-        <div class="relative bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+        <div class="relative bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 border-b border-gray-200">
           <!-- Action Buttons -->
           <div class="absolute top-0 right-0 m-4 flex space-x-3 z-10">
 
@@ -503,7 +503,7 @@ const handlePaymentCompleted = async (paymentData) => {
     updateFormData.append('payment_id', paymentId);
     updateFormData.append('payment_status', "processing_payment");
 
-    await apiService.updateBhmcNewQualification(qualificationId, updateFormData);
+    await apiService.patchBhmcNewQualification(qualificationId, updateFormData);
 
     // 3. Local state update (optional)
     selectedQualification.value.payment_id = paymentId;
