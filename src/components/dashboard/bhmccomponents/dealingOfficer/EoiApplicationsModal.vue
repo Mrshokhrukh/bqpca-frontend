@@ -12,7 +12,7 @@
             enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
             leave-to="opacity-0 scale-95">
             <DialogPanel
-              class="w-full container transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all"
+              class="w-full max-w-7xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all"
               v-if="application">
               <div class="relative">
                 <!-- Enhanced Status Banner -->
@@ -194,7 +194,7 @@
                   </div>
                 </div>
 
-                <!-- Enhanced Footer with Approve/Reject -->
+                <!-- Enhanced Footer with Approve/Regret -->
                 <div class="px-8 py-4 bg-gray-50 border-t border-gray-200">
                   <div class="flex justify-between items-center">
                     <div v-if="errorMessage" class="text-sm text-red-600 flex items-center space-x-2">
@@ -212,7 +212,7 @@
                       <button type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 inline-flex items-center space-x-2"
                         @click="rejectApplication">
-                        Reject Application
+                        Regret Application
                       </button>
 
                       <button type="button"

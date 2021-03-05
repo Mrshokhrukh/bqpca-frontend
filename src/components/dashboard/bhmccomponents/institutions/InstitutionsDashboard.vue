@@ -13,7 +13,7 @@
         </button>
       </router-link>
     </div>
-    <div class="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <h1 class="text-3xl font-bold text-gray-900 mb-8 flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="w-8 h-8 mr-3 text-blue-500">
@@ -83,7 +83,7 @@
         <div
           class="bg-gradient-to-r from-red-400 to-red-500 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 text-white">
           <h3 class="text-lg font-semibold">Rejected Institute</h3>
-          <p class="text-3xl font-bold mt-2">{{ applicationStatusCounts.Reject }}</p>
+          <p class="text-3xl font-bold mt-2">{{ applicationStatusCounts.Regret }}</p>
         </div>
       </div>
 
@@ -102,7 +102,7 @@
         <div
           class="bg-gradient-to-r from-red-400 via-red-500 to-red-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 text-white">
           <h3 class="text-lg font-semibold">Rejected Departments</h3>
-          <p class="text-3xl font-bold mt-2">{{ departmentStatusCounts.Reject }}</p>
+          <p class="text-3xl font-bold mt-2">{{ departmentStatusCounts.Regret }}</p>
         </div>
       </div>
 
@@ -196,28 +196,28 @@ const totalDepartments = computed(() => {
 });
 
 const applicationStatusCounts = computed(() => {
-  const counts = { Pending: 0, Approved: 0, Reject: 0 };
+  const counts = { Pending: 0, Approved: 0, Regret: 0 };
   instituteData.value.forEach(app => {
     if (app.review_decision === 'Pending') {
       counts.Pending++;
     } else if (app.review_decision === 'Approved') {
       counts.Approved++;
-    } else if (app.review_decision === 'Reject') {
-      counts.Reject++;
+    } else if (app.review_decision === 'Regret') {
+      counts.Regret++;
     }
   });
   return counts;
 });
 
 const departmentStatusCounts = computed(() => {
-  const counts = { Pending: 0, Approved: 0, Reject: 0 };
+  const counts = { Pending: 0, Approved: 0, Regret: 0 };
   instituteData.value.forEach(app => {
     if (app.do_dpr_review_decision === 'Pending') {
       counts.Pending++;
     } else if (app.do_dpr_review_decision === 'Approved') {
       counts.Approved++;
-    } else if (app.do_dpr_review_decision === 'Reject') {
-      counts.Reject++;
+    } else if (app.do_dpr_review_decision === 'Regret') {
+      counts.Regret++;
     }
   });
   return counts;
@@ -249,7 +249,7 @@ const getStatusClass = (status) => {
       return 'bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-semibold';
     case 'Approved':
       return 'bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold';
-    case 'Reject':
+    case 'Regret':
       return 'bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-semibold';
     default:
       return 'bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold';
@@ -262,7 +262,7 @@ const getDprStatusClass = (status) => {
       return 'bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-semibold';
     case 'Approved':
       return 'bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold';
-    case 'Reject':
+    case 'Regret':
       return 'bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-semibold';
     default:
       return 'bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold';

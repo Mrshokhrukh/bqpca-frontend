@@ -52,7 +52,7 @@ const selectedApplication = ref(null);
 const filteredApplications = computed(() => {
   return applications.value.filter(app => {
     const matchesType = !filters.value.type || app.type === filters.value.type;
-    const matchesSearch = !filters.value.search || 
+    const matchesSearch = !filters.value.search ||
       app.name.toLowerCase().includes(filters.value.search.toLowerCase()) ||
       app.id.toString().includes(filters.value.search);
     return matchesType && matchesSearch;
@@ -95,21 +95,15 @@ const getStatusClass = (status) => {
   <div class="p-6 bg-gray-50 min-h-screen">
     <!-- Filters and Search -->
     <div class="flex flex-col md:flex-row gap-4 mb-6">
-      <select
-        v-model="filters.type"
-        class="p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
+      <select v-model="filters.type"
+        class="p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
         <option value="">All Types</option>
         <option value="registration">Registration</option>
         <option value="renewal">Renewal</option>
         <option value="cogs">CoGS</option>
       </select>
-      <input
-        v-model="filters.search"
-        type="text"
-        placeholder="Search by name or CID"
-        class="p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-grow"
-      />
+      <input v-model="filters.search" type="text" placeholder="Search by name or CID"
+        class="p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-grow" />
     </div>
 
     <!-- Applications Table -->
@@ -128,11 +122,7 @@ const getStatusClass = (status) => {
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <tr
-            v-for="app in filteredApplications"
-            :key="app.id"
-            class="hover:bg-gray-50 transition-colors"
-          >
+          <tr v-for="app in filteredApplications" :key="app.id" class="hover:bg-gray-50 transition-colors">
             <td class="p-3 text-sm text-gray-700">{{ app.id }}</td>
             <td class="p-3 text-sm text-gray-700">{{ app.name }}</td>
             <td class="p-3 text-sm text-gray-700">
@@ -142,53 +132,37 @@ const getStatusClass = (status) => {
             </td>
             <td class="p-3 text-sm text-gray-700">{{ app.date }}</td>
             <td class="p-3 text-sm text-gray-700">
-              <span
-                class="px-2 py-1 rounded-full text-xs font-medium"
-                :class="getStatusClass(app.status)"
-              >
+              <span class="px-2 py-1 rounded-full text-xs font-medium" :class="getStatusClass(app.status)">
                 {{ app.status }}
               </span>
             </td>
             <td class="p-3 text-sm text-gray-700">
               <ul class="space-y-1">
                 <li v-for="doc in app.documents" :key="doc.name">
-                  <button
-                    @click="viewDocument(doc, app)"
-                    class="text-blue-500 hover:text-blue-700 hover:underline"
-                  >
+                  <button @click="viewDocument(doc, app)" class="text-blue-500 hover:text-blue-700 hover:underline">
                     {{ doc.name }}
                   </button>
                 </li>
               </ul>
             </td>
             <td class="p-3 text-sm text-gray-700">
-              <textarea
-                v-model="app.remarks"
-                placeholder="Enter remarks"
+              <textarea v-model="app.remarks" placeholder="Enter remarks"
                 class="w-full p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows="2"
-              />
+                rows="2" />
             </td>
             <td class="p-3 text-sm text-gray-700">
               <div class="flex items-center gap-2">
-                <select
-                  v-model="app.reviewStatus"
-                  class="p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
+                <select v-model="app.reviewStatus"
+                  class="p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                   <option value="approve">Approve</option>
-                  <option value="reject">Reject</option>
+                  <option value="reject">Regret</option>
                 </select>
-                <button
-                  @click="endorseApplication(app)"
-                  class="px-3 py-1.5 rounded-lg transition-colors"
-                  :class="app.reviewStatus === 'approve' ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-red-500 hover:bg-red-600 text-white'"
-                >
+                <button @click="endorseApplication(app)" class="px-3 py-1.5 rounded-lg transition-colors"
+                  :class="app.reviewStatus === 'approve' ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-red-500 hover:bg-red-600 text-white'">
                   Endorse
                 </button>
-                <button
-                  @click="generateCertificate(app)"
-                  class="bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 transition-colors"
-                >
+                <button @click="generateCertificate(app)"
+                  class="bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 transition-colors">
                   Certificate
                 </button>
               </div>
@@ -199,25 +173,11 @@ const getStatusClass = (status) => {
     </div>
 
     <!-- Modals -->
-    <Modal
-      v-if="showActionModal"
-      :title="modalTitle"
-      :message="modalMessage"
-      @close="showActionModal = false"
-    />
+    <Modal v-if="showActionModal" :title="modalTitle" :message="modalMessage" @close="showActionModal = false" />
 
-    <Modal
-      v-if="showDocumentModal"
-      :title="modalTitle"
-      :message="modalMessage"
-      @close="showDocumentModal = false"
-    />
+    <Modal v-if="showDocumentModal" :title="modalTitle" :message="modalMessage" @close="showDocumentModal = false" />
 
-    <Modal
-      v-if="showCertificateModal"
-      :title="modalTitle"
-      :message="modalMessage"
-      @close="showCertificateModal = false"
-    />
+    <Modal v-if="showCertificateModal" :title="modalTitle" :message="modalMessage"
+      @close="showCertificateModal = false" />
   </div>
 </template>

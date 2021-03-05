@@ -1,22 +1,17 @@
 Modernized Vue 3 ECPF Change Request Forms
 
 <template>
-  <div class="container mx-auto p-6">
+  <div class="max-w-7xl mx-auto p-6">
     <h1 class="text-2xl font-bold mb-6">ECPF Change Request Forms</h1>
-    
+
     <!-- Tab Navigation -->
     <div class="flex space-x-4 mb-6">
-      <button 
-        v-for="form in forms" 
-        :key="form.id"
-        @click="activeForm = form.id"
-        :class="[
-          'px-4 py-2 rounded-md transition-colors',
-          activeForm === form.id 
-            ? 'bg-blue-600 text-white' 
-            : 'bg-gray-200 hover:bg-gray-300'
-        ]"
-      >
+      <button v-for="form in forms" :key="form.id" @click="activeForm = form.id" :class="[
+        'px-4 py-2 rounded-md transition-colors',
+        activeForm === form.id
+          ? 'bg-blue-600 text-white'
+          : 'bg-gray-200 hover:bg-gray-300'
+      ]">
         {{ form.label }}
       </button>
     </div>
@@ -39,45 +34,29 @@ Modernized Vue 3 ECPF Change Request Forms
           <label class="block text-sm font-medium text-gray-700 mb-1">
             Proposed Name of ECPF
           </label>
-          <input 
-            v-model="nameChange.formData.proposedName"
-            type="text"
-            required
-            class="w-full rounded-md border-gray-300 shadow-sm"
-          />
+          <input v-model="nameChange.formData.proposedName" type="text" required
+            class="w-full rounded-md border-gray-300 shadow-sm" />
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
             Remarks
           </label>
-          <textarea
-            v-model="nameChange.formData.remarks"
-            class="w-full rounded-md border-gray-300 shadow-sm"
-            rows="3"
-          />
+          <textarea v-model="nameChange.formData.remarks" class="w-full rounded-md border-gray-300 shadow-sm"
+            rows="3" />
         </div>
 
         <div class="flex space-x-4">
-          <button
-            type="submit"
-            :disabled="nameChange.isSubmitting"
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-          >
+          <button type="submit" :disabled="nameChange.isSubmitting"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50">
             {{ nameChange.isSubmitting ? 'Submitting...' : 'Submit' }}
           </button>
-          <button
-            type="button"
-            @click="nameChange.handleEdit"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
-          >
+          <button type="button" @click="nameChange.handleEdit"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
             Edit
           </button>
-          <button
-            type="button"
-            @click="nameChange.handleView"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
-          >
+          <button type="button" @click="nameChange.handleView"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
             View
           </button>
         </div>
@@ -113,29 +92,17 @@ Modernized Vue 3 ECPF Change Request Forms
           <label class="block text-sm font-medium text-gray-700 mb-1">
             Location
           </label>
-          <input 
-            v-model="locationChange.formData.location"
-            type="text"
-            required
-            class="w-full rounded-md border-gray-300 shadow-sm"
-          />
+          <input v-model="locationChange.formData.location" type="text" required
+            class="w-full rounded-md border-gray-300 shadow-sm" />
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
             Gewog/Throm
           </label>
-          <select 
-            v-model="locationChange.formData.gewog"
-            required
-            class="w-full rounded-md border-gray-300 shadow-sm"
-          >
+          <select v-model="locationChange.formData.gewog" required class="w-full rounded-md border-gray-300 shadow-sm">
             <option value="">Select Gewog/Throm</option>
-            <option 
-              v-for="option in locationChange.gewogOptions" 
-              :key="option.value" 
-              :value="option.value"
-            >
+            <option v-for="option in locationChange.gewogOptions" :key="option.value" :value="option.value">
               {{ option.label }}
             </option>
           </select>
@@ -145,17 +112,10 @@ Modernized Vue 3 ECPF Change Request Forms
           <label class="block text-sm font-medium text-gray-700 mb-1">
             Dzongkhag/Thromde
           </label>
-          <select 
-            v-model="locationChange.formData.dzongkhag"
-            required
-            class="w-full rounded-md border-gray-300 shadow-sm"
-          >
+          <select v-model="locationChange.formData.dzongkhag" required
+            class="w-full rounded-md border-gray-300 shadow-sm">
             <option value="">Select Dzongkhag/Thromde</option>
-            <option 
-              v-for="option in locationChange.dzongkhagOptions" 
-              :key="option.value" 
-              :value="option.value"
-            >
+            <option v-for="option in locationChange.dzongkhagOptions" :key="option.value" :value="option.value">
               {{ option.label }}
             </option>
           </select>
@@ -165,33 +125,21 @@ Modernized Vue 3 ECPF Change Request Forms
           <label class="block text-sm font-medium text-gray-700 mb-1">
             Remarks
           </label>
-          <textarea
-            v-model="locationChange.formData.remarks"
-            class="w-full rounded-md border-gray-300 shadow-sm"
-            rows="3"
-          />
+          <textarea v-model="locationChange.formData.remarks" class="w-full rounded-md border-gray-300 shadow-sm"
+            rows="3" />
         </div>
 
         <div class="flex space-x-4">
-          <button
-            type="submit"
-            :disabled="locationChange.isSubmitting"
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-          >
+          <button type="submit" :disabled="locationChange.isSubmitting"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50">
             {{ locationChange.isSubmitting ? 'Submitting...' : 'Submit' }}
           </button>
-          <button
-            type="button"
-            @click="locationChange.handleEdit"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
-          >
+          <button type="button" @click="locationChange.handleEdit"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
             Edit
           </button>
-          <button
-            type="button"
-            @click="locationChange.handleView"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
-          >
+          <button type="button" @click="locationChange.handleView"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
             View
           </button>
         </div>
@@ -233,19 +181,11 @@ Modernized Vue 3 ECPF Change Request Forms
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                   CID No.
                 </label>
-                <input 
-                  v-model="ownershipChange.newApplicant.cidNo"
-                  type="text"
-                  required
-                  class="w-full rounded-md border-gray-300 shadow-sm"
-                  @blur="ownershipChange.searchCID"
-                />
+                <input v-model="ownershipChange.newApplicant.cidNo" type="text" required
+                  class="w-full rounded-md border-gray-300 shadow-sm" @blur="ownershipChange.searchCID" />
               </div>
-              <button
-                type="button"
-                @click="ownershipChange.searchCID"
-                class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 self-end"
-              >
+              <button type="button" @click="ownershipChange.searchCID"
+                class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 self-end">
                 Search
               </button>
             </div>
@@ -276,46 +216,26 @@ Modernized Vue 3 ECPF Change Request Forms
               <tbody class="divide-y divide-gray-200">
                 <tr v-for="(linkage, index) in ownershipChange.linkages" :key="index">
                   <td class="px-4 py-2">
-                    <input 
-                      v-model="linkage.name"
-                      type="text"
-                      class="w-full rounded-md border-gray-300 shadow-sm"
-                    />
+                    <input v-model="linkage.name" type="text" class="w-full rounded-md border-gray-300 shadow-sm" />
                   </td>
                   <td class="px-4 py-2">
-                    <input 
-                      v-model="linkage.location"
-                      type="text"
-                      class="w-full rounded-md border-gray-300 shadow-sm"
-                    />
+                    <input v-model="linkage.location" type="text" class="w-full rounded-md border-gray-300 shadow-sm" />
                   </td>
                   <td class="px-4 py-2">
-                    <input 
-                      v-model="linkage.country"
-                      type="text"
-                      class="w-full rounded-md border-gray-300 shadow-sm"
-                    />
+                    <input v-model="linkage.country" type="text" class="w-full rounded-md border-gray-300 shadow-sm" />
                   </td>
                   <td class="px-4 py-2">
-                    <input 
-                      type="file"
+                    <input type="file"
                       @change="event => ownershipChange.handleFileChange(event, linkage, 'recognition')"
-                      class="w-full"
-                    />
+                      class="w-full" />
                   </td>
                   <td class="px-4 py-2">
-                    <input 
-                      type="file"
-                      @change="event => ownershipChange.handleFileChange(event, linkage, 'approval')"
-                      class="w-full"
-                    />
+                    <input type="file" @change="event => ownershipChange.handleFileChange(event, linkage, 'approval')"
+                      class="w-full" />
                   </td>
                   <td class="px-4 py-2">
-                    <button
-                      type="button"
-                      @click="ownershipChange.deleteLinkage(index)"
-                      class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700"
-                    >
+                    <button type="button" @click="ownershipChange.deleteLinkage(index)"
+                      class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700">
                       Delete
                     </button>
                   </td>
@@ -323,42 +243,27 @@ Modernized Vue 3 ECPF Change Request Forms
               </tbody>
             </table>
           </div>
-          <button
-            type="button"
-            @click="ownershipChange.addLinkage"
-            class="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-          >
+          <button type="button" @click="ownershipChange.addLinkage"
+            class="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
             Add Linkage
           </button>
         </section>
 
         <div class="flex space-x-4">
-          <button
-            type="button"
-            @click="ownershipChange.handleSubmit"
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
+          <button type="button" @click="ownershipChange.handleSubmit"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
             Submit
           </button>
-          <button
-            type="button"
-            @click="ownershipChange.viewApplication"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
-          >
+          <button type="button" @click="ownershipChange.viewApplication"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
             View
           </button>
-          <button
-            type="button"
-            @click="ownershipChange.editApplication"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
-          >
+          <button type="button" @click="ownershipChange.editApplication"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
             Edit
           </button>
-          <button
-            type="button"
-            @click="ownershipChange.cancelChanges"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
-          >
+          <button type="button" @click="ownershipChange.cancelChanges"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
             Cancel
           </button>
         </div>

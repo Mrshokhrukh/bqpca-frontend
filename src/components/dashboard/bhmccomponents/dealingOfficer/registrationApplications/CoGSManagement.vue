@@ -41,7 +41,7 @@
               <button @click="approveApplication(app)"
                 class="text-green-600 hover:text-green-800 hover:underline ml-2">Approve</button>
               <button @click="rejectApplication(app)"
-                class="text-red-600 hover:text-red-800 hover:underline ml-2">Reject</button>
+                class="text-red-600 hover:text-red-800 hover:underline ml-2">Regret</button>
             </td>
           </tr>
         </tbody>

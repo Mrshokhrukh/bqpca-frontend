@@ -13,7 +13,7 @@ ViewApplicationDetailsModal.vue
             enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
             leave-to="opacity-0 scale-95">
             <DialogPanel
-              class="w-full container transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all"
+              class="w-full max-w-7xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all"
               v-if="application">
               <div class="relative">
                 <!-- Enhanced Status Banner -->
@@ -184,7 +184,7 @@ ViewApplicationDetailsModal.vue
                                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                   <option value="Pending">Pending Review</option>
                                   <option value="Approved">Approve Documents</option>
-                                  <option value="Regretted">Reject Documents</option>
+                                  <option value="Regretted">Regret Documents</option>
                                 </select>
                                 <textarea v-if="editableQualification.application_review_status === 'Regretted'"
                                   v-model="editableQualification.application_review_remark"
@@ -203,7 +203,7 @@ ViewApplicationDetailsModal.vue
                                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                   <option value="Pending">Pending Verification</option>
                                   <option value="Approved">Verify Documents</option>
-                                  <option value="Regretted">Reject Verification</option>
+                                  <option value="Regretted">Regret Verification</option>
                                 </select>
                                 <textarea v-if="editableQualification.physical_review_status === 'Regretted'"
                                   v-model="editableQualification.physical_review_remark"
@@ -222,7 +222,7 @@ ViewApplicationDetailsModal.vue
                                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                   <option value="Pending">Pending Decision</option>
                                   <option value="Approved">Endorse Application</option>
-                                  <option value="Regretted">Reject Application</option>
+                                  <option value="Regretted">Regret Application</option>
                                 </select>
                                 <textarea v-if="editableQualification.endorsement_decision === 'Regretted'"
                                   v-model="editableQualification.endorsement_remarks"
@@ -285,7 +285,8 @@ ViewApplicationDetailsModal.vue
                               <select v-model="editableApplication.personnel_category"
                                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 <option value="" disabled>Select Category</option>
-                                <option v-for="category in personnelCategories" :key="category.id" :value="category.name">
+                                <option v-for="category in personnelCategories" :key="category.id"
+                                  :value="category.name">
                                   {{ category.name }}
                                 </option>
                               </select>
@@ -560,7 +561,7 @@ const props = defineProps({
   },
   onDownloadCertificate: { // new prop to handle certificate download
     type: Function,
-    default: () => {}
+    default: () => { }
   }
 });
 

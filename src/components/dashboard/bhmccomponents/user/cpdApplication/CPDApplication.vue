@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gradient-to-b from-gray-100 to-gray-50 py-12">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Form Header -->
       <div
         class="relative bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-2xl p-8 mb-12  overflow-hidden">
@@ -102,7 +102,8 @@
                   {{ activity.cpd_activity_name }}
                 </option>
               </select>
-              <span v-if="errors.type_of_cpd_activity" class="text-sm text-red-500 block">{{ errors.type_of_cpd_activity }}</span>
+              <span v-if="errors.type_of_cpd_activity" class="text-sm text-red-500 block">{{ errors.type_of_cpd_activity
+                }}</span>
             </div>
 
             <!-- File Upload -->

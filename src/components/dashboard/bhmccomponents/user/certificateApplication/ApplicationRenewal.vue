@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
+  <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Form Header -->
     <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
@@ -26,9 +26,9 @@
             <input type="text" v-model="formData.cidNo"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
               :class="{
-                'bg-gray-50 border border-gray-200': fetchedData,
-                'border border-gray-300': !fetchedData,
-              }" placeholder="Enter CID number" @input="resetFetchedData" :disabled="isFetchingData || fetchedData" />
+              'bg-gray-50 border border-gray-200': fetchedData,
+              'border border-gray-300': !fetchedData,
+            }" placeholder="Enter CID number" @input="resetFetchedData" :disabled="isFetchingData || fetchedData" />
             <button @click="fetchCitizenData" type="button" :disabled="isFetchingData || fetchedData"
               class="absolute right-2.5 top-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed">
               <span v-if="isFetchingData">Fetching...</span>
@@ -126,7 +126,7 @@
           Cancel
         </button>
         <button @click="handleSubmit" :class="['px-6 py-3 rounded-lg text-white transition-colors',
-          isEligibleForRenewal ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed']"
+              isEligibleForRenewal ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed']"
           :disabled="!isEligibleForRenewal">
           {{ buttonText }}
         </button>

@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
+    <div class="max-w-7xl mx-auto px-4 py-8">
       <!-- Header -->
       <div class="text-center mb-8">
         <h2 class="text-3xl font-extrabold text-gray-900 mb-4">Manage CPD Providers</h2>

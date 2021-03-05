@@ -9,7 +9,7 @@
         <div class="absolute -bottom-32 -left-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div class="text-center">
           <!-- 404 Content -->
           <div class="space-y-2 mb-6">

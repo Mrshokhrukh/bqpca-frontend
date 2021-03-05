@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto px-4 py-8">
+    <div class="max-w-7xl mx-auto px-4 py-8">
         <!-- Form Header -->
         <div class="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-8 mb-10">
             <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
@@ -67,7 +67,7 @@
                 </p>
                 <p class="text-gray-700">
                     <strong>Current Status:</strong> <span :class="getStatusClass(applicationStatus.status)">{{
-                        applicationStatus.status
+                            applicationStatus.status
                         }}</span>
                 </p>
                 <p class="text-gray-700" v-if="applicationStatus.comments">

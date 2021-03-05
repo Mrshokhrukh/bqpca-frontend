@@ -1,6 +1,6 @@
 <template>
     <div class="bg-gray-100 min-h-screen p-6">
-        <div class="container mx-auto">
+        <div class="max-w-7xl mx-auto">
             <h2 class="text-3xl font-bold text-gray-800 mb-6">Appeal Lists</h2>
 
             <!-- Filters Section -->
@@ -228,7 +228,7 @@ function sortBy(key) {
 
 function viewAppeal(appealId) {
     // Implement view logic (e.g., navigate to a detail page or open a modal)
-    // Example: router.push(`/appeal/${appealId}`); 
+    // Example: router.push(`/appeal/${appealId}`);
     console.log('Viewing appeal:', appealId);
 }
 

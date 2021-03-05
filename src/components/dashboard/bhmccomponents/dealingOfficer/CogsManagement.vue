@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <div class="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <!-- Header Section with Gradient -->
       <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md">
         <div class="flex justify-between items-center">
@@ -138,7 +138,7 @@
       <Transition name="modal">
         <div v-if="selectedApplication"
           class="fixed z-50 inset-0 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-start justify-center pt-4 px-4 pb-20 sm:p-0">
-          <div class="relative w-full container mx-auto mt-10">
+          <div class="relative w-full max-w-7xl mx-auto mt-10">
             <!-- Modal Content -->
             <div class="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
               <!-- Modal Header -->
@@ -282,7 +282,7 @@
                   <button @click="handleReviewAction('Rejected')"
                     class="inline-flex items-center px-4 py-2 border border-red-300 text-red-700 bg-white rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
                     <XCircleIcon class="w-5 h-5 mr-2" />
-                    Reject
+                    Regret
                   </button>
                   <button @click="handleReviewAction('Approved')"
                     class="inline-flex items-center px-4 py-2 border border-transparent text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">

@@ -8,7 +8,7 @@
         <div class="absolute -bottom-32 -left-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
         <div class="lg:grid lg:grid-cols-12 lg:gap-8 items-center">
           <!-- Hero Content -->
           <div class="col-span-6 text-white">
@@ -66,7 +66,7 @@
 
     <!-- Services Section -->
     <div id="services" class="py-24 bg-white">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-20">
           <h2 class="text-3xl font-serif font-bold text-slate-900">Professional Services</h2>
           <div class="w-20 h-1 bg-blue-600 mx-auto mt-4"></div>
@@ -108,7 +108,7 @@
 
     <!-- About Section -->
     <div id="about" class="py-24 bg-slate-50">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-20">
           <h2 class="text-3xl font-serif font-bold text-slate-900">About BQPCA</h2>
           <div class="w-20 h-1 bg-blue-600 mx-auto mt-4"></div>
@@ -174,7 +174,7 @@
 
     <!-- Contact Section -->
     <div id="contact" class="py-24 bg-white">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-20">
           <h2 class="text-3xl font-serif font-bold text-slate-900">Contact Information</h2>
           <div class="w-20 h-1 bg-blue-600 mx-auto mt-4"></div>
@@ -202,7 +202,7 @@
     </div>
     <!-- Certificate Verification Section -->
     <div id="certificate-verification" class="py-24 bg-slate-100">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
           <h2 class="text-3xl font-serif font-bold text-slate-900">Certificate Verification</h2>
           <div class="w-20 h-1 bg-blue-600 mx-auto mt-4"></div>

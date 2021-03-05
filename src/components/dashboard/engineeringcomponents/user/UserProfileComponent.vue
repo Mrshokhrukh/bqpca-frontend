@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
     <!-- Profile Header with Avatar -->
     <div class="mb-8 flex flex-col md:flex-row items-center md:items-start gap-6">
       <div class="relative">

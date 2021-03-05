@@ -28,13 +28,13 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                    :class="getApplicationTypeClass(application.type)">
+                :class="getApplicationTypeClass(application.type)">
                 {{ application.type }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                    :class="getStatusClass(application.status)">
+                :class="getStatusClass(application.status)">
                 {{ application.status }}
               </span>
             </td>
@@ -49,19 +49,13 @@
       </table>
       <!-- Pagination Controls -->
       <div v-if="viewAll" class="mt-4 flex justify-center">
-        <button
-          :disabled="currentPage === 1"
-          @click="currentPage--"
-          class="px-4 py-2 mx-1 text-gray-700 bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <button :disabled="currentPage === 1" @click="currentPage--"
+          class="px-4 py-2 mx-1 text-gray-700 bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
           Previous
         </button>
         <span class="px-4 py-2 text-gray-700">Page {{ currentPage }} of {{ totalPages }}</span>
-        <button
-          :disabled="currentPage === totalPages"
-          @click="currentPage++"
-          class="px-4 py-2 mx-1 text-gray-700 bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <button :disabled="currentPage === totalPages" @click="currentPage++"
+          class="px-4 py-2 mx-1 text-gray-700 bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
           Next
         </button>
       </div>
@@ -126,7 +120,7 @@ const toggleViewAll = () => {
   viewAll.value = !viewAll.value;
   currentPage.value = 1; // Reset to page 1 when toggling
   if (!viewAll.value) {
-      recentApplications.value = allApplications.value.slice(0,5);
+    recentApplications.value = allApplications.value.slice(0, 5);
   }
 };
 
@@ -160,7 +154,7 @@ const getStatusClass = (status) => {
     'Documents Required': 'bg-red-100 text-red-800',
     'Approved': 'bg-green-100 text-green-800',
     'Rejected': 'bg-red-100 text-red-800',
-    'Reject': 'bg-red-100 text-red-800'
+    'Regret': 'bg-red-100 text-red-800'
   };
   return classes[status] || 'bg-gray-100 text-gray-800';
 };
