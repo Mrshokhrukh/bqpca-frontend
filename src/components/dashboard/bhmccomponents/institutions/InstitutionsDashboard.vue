@@ -1,19 +1,15 @@
 <template>
   <div class="min-h-screen ">
 
-    <!-- Show  blink message  in div saying Your Cid is Missing PLease please Fill your CID Show button below mgs  -->
-     <div v-if="userCID == null" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-      <strong class="font-bold">Your CID is Missing!</strong>
-      <span class="block sm:inline ml-6">Please fill your CID to view the dashboard.</span>
-      <router-link to="/profile" class="absolute top-0 right-0 px-4 py-3">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-          class="w-6 h-6 text-red-700">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </router-link>
-
-     </div>
+    <div v-if="userCID == null" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative overflow-hidden" role="alert">
+  <strong class="font-bold">Your CID is Missing!</strong>
+  <span class="block sm:inline ml-6">Please fill your CID to view the dashboard.</span>
+  <router-link to="/admin/institutions/health_certification/institution_profile" class="absolute top-0 right-0 px-4 py-3">
+    <button type="button" class="bg-white rounded px-2 py-1 text-black hover:text-gray-500 animate-custom-bounce" aria-label="Close">
+      <span aria-hidden="true">Click here</span>
+    </button>
+  </router-link>
+</div>
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <h1 class="text-3xl font-bold text-gray-900 mb-8 flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -270,3 +266,14 @@ const getDprStatusClass = (status) => {
   }
 };
 </script>
+
+<style scoped>
+@keyframes custom-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-custom-bounce {
+  animation: custom-bounce 1.5s infinite ease-in-out;
+}
+</style>

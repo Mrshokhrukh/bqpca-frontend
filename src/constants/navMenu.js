@@ -739,7 +739,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
       },
       {
-        name: 'Institution Profil',
+        name: 'Institution Profile',
         icon: getIconComponent(''),
         route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
       },
