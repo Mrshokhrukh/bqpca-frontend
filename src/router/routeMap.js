@@ -103,6 +103,7 @@ export default {
       ecpf_hei_visit: ecpfDashboard,
       hr_biodata: ecpfDashboard,
       student_biodata: ecpfDashboard,
+      profile: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,

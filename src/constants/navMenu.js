@@ -276,7 +276,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Profile',
-        icon: getIconComponent('UserCircle'), // 'UserCircle' for profile
+        icon: getIconComponent('UserCircle'), 
         route: (serviceType) => `/admin/user/${serviceType}/profile`,
       },
     ],
