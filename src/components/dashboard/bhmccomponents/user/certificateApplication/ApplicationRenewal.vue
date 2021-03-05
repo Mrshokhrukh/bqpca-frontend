@@ -26,9 +26,9 @@
             <input type="text" v-model="formData.cidNo"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
               :class="{
-              'bg-gray-50 border border-gray-200': fetchedData,
-              'border border-gray-300': !fetchedData,
-            }" placeholder="Enter CID number" @input="resetFetchedData" :disabled="isFetchingData || fetchedData" />
+                'bg-gray-50 border border-gray-200': fetchedData,
+                'border border-gray-300': !fetchedData,
+              }" placeholder="Enter CID number" @input="resetFetchedData" :disabled="isFetchingData || fetchedData" />
             <button @click="fetchCitizenData" type="button" :disabled="isFetchingData || fetchedData"
               class="absolute right-2.5 top-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed">
               <span v-if="isFetchingData">Fetching...</span>
@@ -126,7 +126,7 @@
           Cancel
         </button>
         <button @click="handleSubmit" :class="['px-6 py-3 rounded-lg text-white transition-colors',
-              isEligibleForRenewal ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed']"
+          isEligibleForRenewal ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed']"
           :disabled="!isEligibleForRenewal">
           {{ buttonText }}
         </button>
@@ -343,3 +343,51 @@ const resetFetchedData = () => {
 
 watch(() => formData.value.credits, validateEligibility);
 </script>
+
+<style>
+html,
+body {
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Make sure only one container handles scrolling */
+.max-w-6xl {
+  height: calc(100vh - 60px);
+  /* Adjust based on your header/footer height */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scrolling on iOS/macOS */
+}
+
+/* Safari-specific fixes */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) {
+    .max-w-6xl {
+      overflow-y: auto !important;
+    }
+
+    .fixed.inset-0 {
+      overflow: hidden !important;
+    }
+
+    /* Clean up any nested scrollable elements */
+    .p-8,
+    .bg-white.border.rounded-xl {
+      overflow: visible !important;
+    }
+  }
+}
+
+/* Fix for the confirmation modal */
+.fixed.inset-0 {
+  position: fixed;
+  overflow: hidden;
+}
+
+/* Ensure modal content doesn't cause scrolling issues */
+.fixed.inset-0>div {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+</style>
