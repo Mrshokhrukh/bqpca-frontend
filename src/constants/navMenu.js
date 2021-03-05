@@ -265,14 +265,14 @@ const serviceSpecificMenuItems = {
       },
 
       {
-        name: 'HR Management',
+        name: 'HR Bio Data',
         icon: getIconComponent('Users'), // 'Users' for HR
-        route: (serviceType) => `/admin/user/${serviceType}/profile`, // Consider a more specific route like /hr
+        route: (serviceType) => `/admin/user/${serviceType}/hr_biodata`, 
       },
       {
         name: 'Student Management',
         icon: getIconComponent('Users'), // 'Users' for Student Management
-        route: (serviceType) => `/admin/user/${serviceType}/profile`, // Consider a more specific route like /students
+        route: (serviceType) => `/admin/user/${serviceType}/student_biodata`, 
       },
       {
         name: 'Profile',

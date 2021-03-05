@@ -101,6 +101,8 @@ export default {
       ecpf_inhouse_event: ecpfDashboard,
       ecpf_massmedia: ecpfDashboard,
       ecpf_hei_visit: ecpfDashboard,
+      hr_biodata: ecpfDashboard,
+      student_biodata: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,

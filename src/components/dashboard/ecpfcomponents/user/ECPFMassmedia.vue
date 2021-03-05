@@ -204,7 +204,7 @@ const submitForm = async () => {
 
   //   API call (replace with your actual API)
   try {
-    //  const response = await apiService.submitMassMediaEvent(formData);
+    await apiService.submitMassMediaEvent(formData);
     toast.success('Mass media promotion registered successfully!');
     //   Redirect/update UI
   } catch (error) {
