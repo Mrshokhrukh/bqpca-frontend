@@ -481,37 +481,9 @@
                     </div>
                      <input v-else type="file" @change="handleCvUpload"
                         class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"/>
-
                 </div>
           </div>
-
-            Declaration
-          <div class="bg-white rounded-xl shadow-lg p-6">
-            <div class="flex items-center mb-4">
-              <CheckCircle class="w-5 h-5 text-blue-500 mr-2" />
-              <h3 class="text-xl font-semibold text-gray-800">Declaration</h3>
-            </div>
-            <div class="flex items-center">
-              <input v-model="profileData.declaration" type="checkbox" :disabled="!isEditing"
-                class="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
-              <label class="text-sm text-gray-700">I hereby declare that the information provided is true and
-                accurate.</label>
-
-            </div>
-            <div v-if="profileData.declarationDate" class="text-sm text-gray-500 mt-2">
-                Declared on: {{ formatDate(profileData.declarationDate) }}
-            </div>
-          </div>
-
-          <!-- Submit Button (Only when editing) -->
-          <div v-if="isEditing" class="flex justify-end">
-            <button type="submit" :disabled="loading"
-              class="px-6 py-2.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
-              <Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
-              <Save v-else class="w-4 h-4 mr-2" />
-              <span>{{ loading ? 'Saving...' : 'Save Changes' }}</span>
-            </button>
-          </div>
+          
         </form>
 
         <!-- Message Display -->
@@ -539,7 +511,7 @@ import { ref, onMounted, reactive } from 'vue';
 // import apiService from '@/services/services'; // Your API service
 import { TransitionRoot } from '@headlessui/vue';
 import {
-  Mail, User, MapPin, Award,Edit, X, CheckCircle, CircleAlert, Save, Loader2, Phone
+  Mail, User, MapPin, Award,Edit, X, CheckCircle, CircleAlert, Phone
 } from 'lucide-vue-next';
 
 const loading = ref(false);
