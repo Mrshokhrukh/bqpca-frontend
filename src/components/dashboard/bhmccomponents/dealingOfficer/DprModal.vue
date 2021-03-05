@@ -311,9 +311,9 @@
                     </button>
                     <button type="button"
                       class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-red-500 focus:ring-offset-2 inline-flex items-center space-x-2"
-                      @click="startConfirmation('reject')">
+                      @click="startConfirmation('Regretted')">
                       <Pencil class="h-4 w-4" />
-                      <span>Reject Application</span>
+                      <span>Regretted Application</span>
                     </button>
                   </div>
                 </div>
@@ -325,7 +325,7 @@
               class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
               <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                  Confirm {{ confirmingAction === 'approve' ? 'Approval' : 'Rejection' }}
+                  Confirm {{ confirmingAction === 'approve' ? 'Approval' : 'Regrettedion' }}
                 </h3>
                 <label for="confirmationMessage" class="block text-sm font-medium text-gray-700 mb-2">Message:</label>
                 <textarea id="confirmationMessage" v-model="confirmationMessage" rows="3"
@@ -336,9 +336,9 @@
                     @click="cancelConfirmation">Cancel</button>
                   <button type="button" class="px-4 py-2 text-sm font-medium text-white rounded-lg shadow-sm" :class="{
                     'bg-green-600 hover:bg-green-700 focus:ring-green-500': confirmingAction === 'approve',
-                    'bg-red-600 hover:bg-red-700 focus:ring-red-500': confirmingAction === 'reject'
+                    'bg-red-600 hover:bg-red-700 focus:ring-red-500': confirmingAction === 'Regretted'
                   }" @click="confirmAction">
-                    Confirm {{ confirmingAction === 'approve' ? 'Approval' : 'Rejection' }}
+                    Confirm {{ confirmingAction === 'approve' ? 'Approved' : 'Regrettedion' }}
                   </button>
                 </div>
               </div>
@@ -390,7 +390,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['close', 'save', 'approve', 'reject']);
+const emit = defineEmits(['close', 'save', 'approve', 'Regretted']);
 
 const errorMessage = ref('');
 
@@ -434,7 +434,7 @@ const saveChanges = async () => {
 
 // New properties for inline confirmation
 const isConfirmingAction = ref(false);
-const confirmingAction = ref(''); // 'approve' or 'reject'
+const confirmingAction = ref(''); // 'approve' or 'Regretted'
 const confirmationMessage = ref('');
 
 const startConfirmation = (action) => {
@@ -452,14 +452,14 @@ const cancelConfirmation = () => {
 const confirmAction = async () => {
   try {
     let updateData = {
-      reason_if_rejected: confirmationMessage.value, // Include the message - assuming this field holds reject reason
-      review_decision: confirmingAction.value === 'approve' ? 'Approved' : 'Rejected',
+      do_dpr_reason_if_rejected: confirmationMessage.value, // Include the message - assuming this field holds Regretted reason
+      do_dpr_review_decision: confirmingAction.value === 'approve' ? 'Approved' : 'Regretted',
     };
 
     await apiService.patchBmhcInstitute(props.application.id, updateData);
 
     // Emit the event to the parent component to refresh data
-    emit(confirmingAction.value === 'approve' ? 'approve' : 'reject', props.application);
+    emit(confirmingAction.value === 'approve' ? 'approve' : 'Regretted', props.application);
 
     closeModal();
   } catch (error) {

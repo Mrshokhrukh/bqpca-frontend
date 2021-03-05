@@ -111,6 +111,7 @@ export const useAuthStore = defineStore('auth', () => {
         }
       }
 
+      
       // Default redirection (if no role-based restrictions)
       toast.success('Login successful!');
       router.push(`/admin/${user.value.role}/${user.value.service_type}/dashboard`);
