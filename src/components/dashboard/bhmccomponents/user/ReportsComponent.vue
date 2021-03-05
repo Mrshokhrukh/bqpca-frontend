@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="container mx-auto px-4 py-8">
     <!-- Enhanced Header with Gradient -->
     <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-xl">
       <h2 class="text-4xl font-bold  mb-4 text-center">

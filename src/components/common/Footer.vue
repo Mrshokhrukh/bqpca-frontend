@@ -9,7 +9,7 @@
     </div>
 
     <!-- Main footer content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16 relative">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-16">
         <!-- Logo and Description -->
         <div class="col-span-1 md:col-span-2">

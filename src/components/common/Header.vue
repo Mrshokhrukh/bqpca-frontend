@@ -4,7 +4,7 @@
     <!-- Top accent line -->
     <div class="h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20"></div>
 
-    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-24">
         <div class="flex items-center">
           <!-- Logo and Text with enhanced animation -->
@@ -65,7 +65,7 @@
     <!-- Enhanced Mobile Menu with smooth transitions -->
     <div v-show="isMenuOpen"
       class="md:hidden absolute w-full bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-lg">
-      <div class="max-w-7xl mx-auto px-4 pt-3 pb-4 space-y-1.5">
+      <div class="container mx-auto px-4 pt-3 pb-4 space-y-1.5">
         <a v-for="item in navItems" :key="item.name" :href="item.route"
           class="block px-5 py-3 rounded-xl text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50/80 transition-all duration-300">
           {{ item.name }}

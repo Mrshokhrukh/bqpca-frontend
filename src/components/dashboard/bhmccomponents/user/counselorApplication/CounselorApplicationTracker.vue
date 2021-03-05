@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="container mx-auto px-4 py-8">
     <!-- Header Section -->
     <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
@@ -11,7 +11,7 @@
     </div>
 
     <!-- Results Section - Table Format -->
-    <div class="max-w-7xl mx-auto">
+    <div class="container mx-auto">
       <!-- Results Table -->
       <div v-if="filteredApplications?.length > 0"
         class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
@@ -44,11 +44,11 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span :class="[
-            'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
-            record.review_decision === 'Approved' ? 'bg-green-100 text-green-800' :
-              record.review_decision === 'Regretted' ? 'bg-red-100 text-red-800' :
-                'bg-yellow-100 text-yellow-700'
-          ]">
+        'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
+        record.review_decision === 'Approved' ? 'bg-green-100 text-green-800' :
+          record.review_decision === 'Regretted' ? 'bg-red-100 text-red-800' :
+            'bg-yellow-100 text-yellow-700'
+      ]">
                     {{ record.review_decision }}
                   </span>
                 </td>
@@ -130,11 +130,11 @@
             <div class="mb-6 flex items-center">
               <span class="text-sm text-gray-500 mr-2">Application Status:</span>
               <span :class="[
-            'px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full',
-            selectedRecord.review_decision === 'Approved' ? 'bg-green-100 text-green-800' :
-              selectedRecord.review_decision === 'Regretted' ? 'bg-red-100 text-red-800' :
-                'bg-yellow-100 text-yellow-700'
-          ]">
+        'px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full',
+        selectedRecord.review_decision === 'Approved' ? 'bg-green-100 text-green-800' :
+          selectedRecord.review_decision === 'Regretted' ? 'bg-red-100 text-red-800' :
+            'bg-yellow-100 text-yellow-700'
+      ]">
                 {{ selectedRecord.review_decision }}
               </span>
             </div>
@@ -227,7 +227,7 @@
                     <div>
                       <p class="text-sm font-medium text-gray-500">Declaration</p>
                       <p class="text-sm font-semibold text-gray-900">{{ selectedRecord.declaration ?
-            'Accepted' : 'Not Accepted' }}</p>
+        'Accepted' : 'Not Accepted' }}</p>
                     </div>
                   </div>
                 </div>
@@ -338,7 +338,7 @@ const fetchCounselor = async () => {
       applications.value = response.data.results;
     } else {
       applications.value = [];
-       console.error("API did not return an array in results:", response.data);
+      console.error("API did not return an array in results:", response.data);
       apiError.value = true;
     }
   } catch (error) {
@@ -350,7 +350,7 @@ const fetchCounselor = async () => {
   }
 };
 
-onMounted(async() => {
+onMounted(async () => {
   await fetchCounselor();
 })
 </script>

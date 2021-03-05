@@ -6,17 +6,17 @@
           enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
           leave-to="opacity-0 scale-95">
           <DialogPanel
-            class="w-full max-w-6xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all">
+            class="w-full container transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all">
             <div class="relative" v-if="application">
               <!-- Enhanced Status Banner (From Complex Modal) -->
               <div :class="[
-                'px-8 py-6 border-b relative overflow-hidden',
-                {
-                  'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
-                  'bg-green-50 border-green-100': overallStatus === 'Approved',
-                  'bg-red-50 border-red-100': overallStatus === 'Regretted',
-                },
-              ]">
+    'px-8 py-6 border-b relative overflow-hidden',
+    {
+      'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
+      'bg-green-50 border-green-100': overallStatus === 'Approved',
+      'bg-red-50 border-red-100': overallStatus === 'Regretted',
+    },
+  ]">
                 <div class="flex items-center justify-between relative z-10">
                   <div class="flex items-center space-x-4">
                     <div class="p-3 bg-white rounded-lg shadow-sm">
@@ -31,18 +31,18 @@
                   </div>
                   <div class="flex items-center space-x-4">
                     <span :class="[
-                      'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
-                      {
-                        'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
-                        'bg-green-100 text-green-800': overallStatus === 'Approved',
-                        'bg-red-100 text-red-800': overallStatus === 'Regretted',
-                      },
-                    ]" style="z-index: 11;"> <!-- Add inline style to increase z-index -->
+    'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
+    {
+      'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
+      'bg-green-100 text-green-800': overallStatus === 'Approved',
+      'bg-red-100 text-red-800': overallStatus === 'Regretted',
+    },
+  ]" style="z-index: 11;"> <!-- Add inline style to increase z-index -->
                       <Circle class="h-4 w-4" :class="{
-                        'text-yellow-500': overallStatus === 'Pending',
-                        'text-green-500': overallStatus === 'Approved',
-                        'text-red-500': overallStatus === 'Regretted',
-                      }" />
+    'text-yellow-500': overallStatus === 'Pending',
+    'text-green-500': overallStatus === 'Approved',
+    'text-red-500': overallStatus === 'Regretted',
+  }" />
                       <span>{{ overallStatus }}</span>
                     </span>
                     <button type="button"
@@ -79,9 +79,9 @@
 
                           <div class="text-center">
                             <h5 class="text-xl font-semibold text-gray-900">{{
-                              application.applicant_name }}</h5>
+    application.applicant_name }}</h5>
                             <p class="text-sm text-gray-500 mt-1">Application ID: #{{
-                              application.id }}</p>
+    application.id }}</p>
                           </div>
                           <div class="w-full grid grid-cols-2 gap-4 mt-4">
                             <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
@@ -91,7 +91,7 @@
                             <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
                               <Calendar class="h-4 w-4 text-gray-400" />
                               <span class="text-sm text-gray-600">{{
-                                formatDate(application.commencement_date) }}</span>
+    formatDate(application.commencement_date) }}</span>
                             </div>
                           </div>
                         </div>
@@ -104,7 +104,7 @@
                           <div class="flex items-center justify-between">
                             <span class="text-sm text-gray-600">
                               Application Status: {{ application.
-                              affiliation_details }}
+    affiliation_details }}
                             </span>
                           </div>
                         </div>
@@ -122,12 +122,12 @@
                           <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                             <Mail class="h-4 w-4 text-gray-400" />
                             <span class="text-sm text-gray-600">Proposed Name: {{
-                              application.dpr_name }}</span>
+    application.dpr_name }}</span>
                           </div>
                           <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                             <Phone class="h-4 w-4 text-gray-400" />
                             <span class="text-sm text-gray-600">Land Area: {{
-                              application.land_details }}</span>
+    application.land_details }}</span>
                           </div>
                           <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                             <MapPin class="h-4 w-4 text-gray-400" />
@@ -335,9 +335,9 @@
                     class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-blue-500 mr-2"
                     @click="cancelConfirmation">Cancel</button>
                   <button type="button" class="px-4 py-2 text-sm font-medium text-white rounded-lg shadow-sm" :class="{
-                    'bg-green-600 hover:bg-green-700 focus:ring-green-500': confirmingAction === 'approve',
-                    'bg-red-600 hover:bg-red-700 focus:ring-red-500': confirmingAction === 'Regretted'
-                  }" @click="confirmAction">
+    'bg-green-600 hover:bg-green-700 focus:ring-green-500': confirmingAction === 'approve',
+    'bg-red-600 hover:bg-red-700 focus:ring-red-500': confirmingAction === 'Regretted'
+  }" @click="confirmAction">
                     Confirm {{ confirmingAction === 'approve' ? 'Approved' : 'Regrettedion' }}
                   </button>
                 </div>

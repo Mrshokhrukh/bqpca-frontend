@@ -304,4 +304,4 @@ const loadApplications = async () => {
 onMounted(() => {
   loadApplications();
 });
-</script>
+</script>../../../common/ROQ/ROQStatsCard.vue../../../common/ROQ/ROQStatusCard.vue

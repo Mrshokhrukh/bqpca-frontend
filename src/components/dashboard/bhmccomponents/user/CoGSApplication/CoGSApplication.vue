@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-12">
-    <div class="max-w-6xl mx-auto px-4">
+    <div class="container mx-auto px-4">
       <!-- Enhanced Header with Animation -->
       <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
         <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
@@ -21,7 +21,7 @@
         <input type="hidden" v-model="form.gender" />
 
         <!-- Supervisor Details Section -->
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b">
             <div class="flex items-center space-x-3">
               <div
@@ -130,7 +130,7 @@
         </div>
 
         <!-- Recipient Details Section -->
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b">
             <div class="flex items-center space-x-3">
               <div
@@ -230,7 +230,7 @@
         </div>
 
         <!-- Declaration Section -->
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b">
             <div class="flex items-center space-x-3">
               <div

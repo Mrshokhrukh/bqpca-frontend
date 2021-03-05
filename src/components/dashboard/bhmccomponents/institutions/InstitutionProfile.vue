@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+  <div class="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
       <!-- Left Column: Profile Card (Sticky) -->
@@ -55,14 +55,14 @@
                 <label class="block text-sm font-medium text-gray-700">First Name <span
                     class="text-red-500">*</span></label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                  profileData.first_name }}</div>
+                    profileData.first_name }}</div>
                 <input v-else v-model="profileData.first_name" type="text" required
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Middle Name</label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                  profileData.middle_name || '-' }}</div>
+                    profileData.middle_name || '-' }}</div>
                 <input v-else v-model="profileData.middle_name" type="text"
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
@@ -70,21 +70,21 @@
                 <label class="block text-sm font-medium text-gray-700">Last Name <span
                     class="text-red-500">*</span></label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                  profileData.last_name }}</div>
+                    profileData.last_name }}</div>
                 <input v-else v-model="profileData.last_name" type="text" required
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                  formatDate(profileData.date_of_birth) }}</div>
+                    formatDate(profileData.date_of_birth) }}</div>
                 <input v-else v-model="profileData.date_of_birth" type="date"
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Gender</label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1 capitalize">{{
-                  profileData.gender || '-' }}</div>
+                    profileData.gender || '-' }}</div>
                 <select v-else v-model="profileData.gender"
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                   <option value="">Select</option>
@@ -97,7 +97,7 @@
                 <label class="block text-sm font-medium text-gray-700">Contact Number <span
                     class="text-red-500">*</span></label>
                 <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                  profileData.contact_number }}</div>
+                    profileData.contact_number }}</div>
                 <input v-else v-model="profileData.contact_number" type="tel" required
                   class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
               </div>
@@ -169,10 +169,10 @@
         <!-- Message Display -->
         <TransitionRoot appear :show="!!message" as="template">
           <div :class="[
-            'fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-all duration-300 transform max-w-md',
-            messageClass,
-            message ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
-          ]">
+                    'fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-all duration-300 transform max-w-md',
+                    messageClass,
+                    message ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+                  ]">
             <div class="flex items-center">
               <CheckCircle v-if="messageClass.includes('green')" class="w-5 h-5 mr-2 text-green-500" />
               <CircleAlert v-else class="w-5 h-5 mr-2 text-red-500" />

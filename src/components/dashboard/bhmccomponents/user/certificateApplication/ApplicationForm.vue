@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="container mx-auto px-4 py-8">
     <!-- Confirmation Modal -->
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
       <Dialog as="div" class="relative z-10 fixed.inset-0.z-10.w-screen" @close="isConfirmationModalOpen = false">
@@ -194,8 +194,8 @@
             <select v-model="localFormData.gender"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
               <option value="">Select Gender</option>
-              <option value="M">Male</option> <!-- Use "M" -->
-              <option value="F">Female</option> <!-- Use "F" -->
+              <option value="male">Male</option> <!-- Use "M" -->
+              <option value="female">Female</option> <!-- Use "F" -->
               <option value="O">Other</option> <!-- Use "O" (or whatever is appropriate) -->
             </select>
             <span v-if="errors.gender" class="text-sm text-red-500 mt-1">{{ errors.gender }}</span>
@@ -683,8 +683,8 @@ const fetchDCRCData = async () => {
     const response = await apiService.fetchCitizenDetails(localFormData.cid_no, { params: { user_id: userId } });
 
     const genderMap = {
-      'F': 'F', // Map to itself
-      'M': 'M', // Map to itself
+      'F': 'female', // Map to itself
+      'M': 'male', // Map to itself
       'O': 'O'  // Add 'O' if you have an "Other" option in your API
     };
 
@@ -732,20 +732,6 @@ const handlePassportPhotoSelect = (event) => {
     errors.passport_photo = 'File size should not exceed 2MB';
   }
 };
-
-// const openPaymentModal = () => { // Removed openPaymentModal
-//   paymentModal.value.openModal();
-// };
-
-// const onPaymentModalClose = () => { // Removed onPaymentModalClose
-//   console.log('Payment modal closed');
-// };
-
-// const onPaymentCompleted = (paymentData) => { // Removed onPaymentCompleted
-//   localFormData.payment_status = false;
-//   localFormData.payment_id = paymentData.paymentHash;
-//   handleSubmitActual();
-// };
 
 const formatDateForAPI = (date) => {
   const year = date.getFullYear();
@@ -881,11 +867,6 @@ const handleSubmitActual = async () => { // Modified to submit and redirect
   }
 };
 
-// const handleSubmit = async () => { // Replaced by openConfirmationModal
-//   if (validateForm()) {
-//     openPaymentModal();
-//   }
-// };
 </script>
 
 <style scoped>

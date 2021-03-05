@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <!-- Header Section with Gradient -->
       <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md">
         <div class="flex justify-between items-center">
@@ -138,14 +138,15 @@
       <Transition name="modal">
         <div v-if="selectedApplication"
           class="fixed z-50 inset-0 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-start justify-center pt-4 px-4 pb-20 sm:p-0">
-          <div class="relative w-full max-w-6xl mx-auto mt-10">
+          <div class="relative w-full container mx-auto mt-10">
             <!-- Modal Content -->
             <div class="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
               <!-- Modal Header -->
               <div class="bg-gray-50 px-8 py-4 border-b border-gray-200 flex justify-between items-center">
                 <div>
                   <h2 class="text-2xl font-bold text-gray-900">Application Details
-                    <!-- Changed from Application Review to Application Details --></h2>
+                    <!-- Changed from Application Review to Application Details -->
+                  </h2>
                   <p class="text-sm text-gray-500 mt-1">Registration No: {{ selectedApplication.registration_no }}</p>
                 </div>
                 <button @click="closeReviewModal"

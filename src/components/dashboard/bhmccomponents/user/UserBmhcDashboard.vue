@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-50 p-6 min-h-screen">
-    <div class="max-w-7xl mx-auto space-y-6">
+    <div class="container mx-auto space-y-6">
       <!-- Empty state when no approved applications -->
       <FirstDashboardState v-if="hasNoApplications && !isLoading"
         message="You don't have any approved applications yet.  Once approved, you will have access to the dashboard." />
@@ -49,8 +49,8 @@ import ApplicationHistoryCard from './dashBoardComponents/ApplicationHistoryCard
 import ActivityFeed from './dashBoardComponents/ActivityFeeds.vue';
 import DeadlinesList from './dashBoardComponents/DeadlinesLists.vue';
 import ApplicationsModal from './dashBoardComponents/ApplicationModal.vue';
-import CertificateModal from '../../../common/MHPCCertificateModal.vue';
-import LoadingSpinner from '../../../common/MHPCLoadingSpinner.vue';
+import CertificateModal from '../../../common/MHPC/MHPCCertificateModal.vue';
+import LoadingSpinner from '../../../common/MHPC/MHPCLoadingSpinner.vue';
 import EmptyDashboardState from './dashBoardComponents/EmptyDashboardStates.vue';
 import FirstDashboardState from './dashBoardComponents/FirstDashboardStates.vue';
 
