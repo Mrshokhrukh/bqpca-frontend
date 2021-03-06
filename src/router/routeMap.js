@@ -170,11 +170,14 @@ export default {
     },
     ecpf: {
       dashboard: ecpfDashboard,
-      // pending_applications: () => import('@/views/admin/ECPF/PendingApplications.vue'),
-      // approved_applications: () => import('@/views/admin/ECPF/ApprovedApplications.vue'),
-      // rejected_applications: () => import('@/views/admin/ECPF/RejectedApplications.vue'),
-      // reports: () => import('@/views/admin/ECPF/Reports.vue'),
-      // ... other ECPF routes for dealing officer
+      applications: ecpfDashboard,
+      change_requests: ecpfDashboard,
+      reports: ecpfDashboard,
+      events: ecpfDashboard,
+      biodata: ecpfDashboard,
+      payments: ecpfDashboard,
+      profile: ecpfDashboard,
+      linkages: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,

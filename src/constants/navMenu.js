@@ -188,6 +188,11 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/chief/${serviceType}/reports`,
       },
+      {
+        name: 'Profile',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/chief/${serviceType}/profile`,
+      },
     ],
   },
   ecpf: {
@@ -304,19 +309,24 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/admin/${serviceType}/applications`,
       },
       {
-        name: 'Verification',
+        name: 'CHange Requests',
         icon: getIconComponent('CheckCircle'),
-        route: (serviceType) => `/admin/admin/${serviceType}/verification`,
+        route: (serviceType) => `/admin/admin/${serviceType}/change_requests`,
       },
       {
-        name: 'Shortlisting',
+        name: 'Events',
         icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/admin/${serviceType}/shortlisting`,
+        route: (serviceType) => `/admin/admin/${serviceType}/events`,
       },
       {
-        name: 'Compliance',
+        name: 'ECPF Linkages',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/admin/${serviceType}/linkages`,
+      },
+      {
+        name: 'Bio data',
         icon: getIconComponent('FileText'),
-        route: (serviceType) => `/admin/admin/${serviceType}/compliance`,
+        route: (serviceType) => `/admin/admin/${serviceType}/bio_data`,
       },
       {
         name: 'Reports',

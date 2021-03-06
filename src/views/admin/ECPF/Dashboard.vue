@@ -55,16 +55,20 @@ import HrBiodata from '@/components/dashboard/ecpfcomponents/user/HrBiodata.vue'
 import StudentBiodata from '@/components/dashboard/ecpfcomponents/user/StudentBiodata.vue';
 import ECPFUserProfile from '@/components/dashboard/ecpfcomponents/user/ECPFUserProfile.vue';
 import ECPFTrackApplications from '@/components/dashboard/ecpfcomponents/user/ECPFTrackApplications.vue';
-// Other ECPF Components
+// Dealing officer Components
 import ECPFDealingOfficerDashboard from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFDealingOfficerDashboard.vue';
 import ECPFApplicationLists from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFApplicationLists.vue';
-import ECPFVerification from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFVerification.vue';
+import ECPFChangeRequests from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFChangeRequests.vue';
+import ECPFEvents from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFEvents.vue';
+
+// Chief Components
 import ECPFChiefDashboard from '@/components/dashboard/ecpfcomponents/chief/ECPFChiefDashboard.vue';
 import ECPFFinalApproval from '@/components/dashboard/ecpfcomponents/chief/ECPFFinalApproval.vue';
 import ECPFAdminDashboard from '@/components/dashboard/ecpfcomponents/admin/ECPFAdminDashboard.vue';
 import ECPFUserManagement from '@/components/dashboard/ecpfcomponents/admin/ECPFUserManagement.vue';
 
 const { role, user } = useAuthStore();
+
 const route = useRoute();
 const applications = ref([]);
 const currentPage = ref(1);
@@ -121,8 +125,12 @@ const ecpfDealingOfficerComponent = computed(() => {
       return ECPFDealingOfficerDashboard;
     case path.endsWith('/ecpf/applications'):
       return ECPFApplicationLists;
-    case path.endsWith('/ecpf/verification'):
-      return ECPFVerification;
+    case path.endsWith('/ecpf/change_requests'):
+      return ECPFChangeRequests;
+    case path.endsWith('/ecpf/events'):    
+      return ECPFEvents;
+
+
     default:
       return null;
   }
