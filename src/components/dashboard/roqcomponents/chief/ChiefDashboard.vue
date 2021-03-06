@@ -59,8 +59,8 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import StatsCard from '@/components/common/ROQStatsCard.vue';
-import StatusCard from '@/components/common/ROQStatusCard.vue';
+import StatsCard from '@/components/common/ROQ/ROQStatsCard.vue';
+import StatusCard from '@/components/common/ROQ/ROQStatusCard.vue';
 import VueApexCharts from 'vue3-apexcharts';
 import { FileText, Clock, CheckCircle, XCircle, Eye, Hourglass, PauseCircle } from 'lucide-vue-next';
 import apiService from '@/services/services';

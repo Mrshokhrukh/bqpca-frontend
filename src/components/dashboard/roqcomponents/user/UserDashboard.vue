@@ -61,8 +61,8 @@
 <script setup>
 import { ref, computed, onMounted, watchEffect } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
-import StatsCard from '../../../common/ROQStatsCard.vue';
-import StatusCard from '../../../common/ROQStatusCard.vue';
+import StatsCard from '../../../common/ROQ/ROQStatsCard.vue';
+import StatusCard from '../../../common/ROQ/ROQStatusCard.vue';
 import { FileText, CheckCircle, XCircle, Clock, TrendingUp, Pencil } from 'lucide-vue-next';
 import VueApexCharts from 'vue3-apexcharts';
 import apiService from '@/services/services';

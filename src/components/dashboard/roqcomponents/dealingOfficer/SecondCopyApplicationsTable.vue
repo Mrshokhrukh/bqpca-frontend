@@ -43,10 +43,10 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
-import ApplicationList from '@/components/common/ROQAdminApplicationList.vue';
-import ApplicationModal from '@/components/common/ROQApplicationModal.vue';
-import RemarksModal from '@/components/common/ROQRemarksModal.vue';
-import ViewCertificateModal from '@/components/common/ROQViewCertificateModal.vue';
+import ApplicationList from '@/components/common/ROQ/ROQAdminApplicationList.vue';
+import ApplicationModal from '@/components/common/ROQ/ROQApplicationModal.vue';
+import RemarksModal from '@/components/common/ROQ/ROQRemarksModal.vue';
+import ViewCertificateModal from '@/components/common/ROQ/ROQViewCertificateModal.vue';
 import apiService from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
 import { RefreshCw } from 'lucide-vue-next';
