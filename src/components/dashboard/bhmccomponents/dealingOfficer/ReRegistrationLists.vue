@@ -46,6 +46,12 @@
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Registration
                 No.</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Primary Qualification
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Additional Qualification
+              </th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
@@ -67,6 +73,45 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {{ app.registration_no }}
+              </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <!-- Primary Qualification Display -->
+                <template v-if="app.user_qualifications && app.user_qualifications.length > 0">
+                  <template
+                    v-for="qualification in app.user_qualifications.filter(q => q.is_primary_qualification)"
+                    :key="qualification.id">
+                    <div>
+                      <span :class="getQualificationStatusClasses(qualification.endorsement_decision)"
+                        class="px-2 py-1 rounded text-xs">
+                        {{ qualification.endorsement_decision }}
+                      </span>
+                      <span class="text-xs text-gray-600 ml-1">({{ qualification.qualification_name_display }})</span>
+                    </div>
+                  </template>
+                </template>
+                <template
+                  v-if="!app.user_qualifications || !app.user_qualifications.some(q => q.is_primary_qualification)">
+                  <div class="text-xs text-orange-500">
+                    <span class="font-medium">⚠️</span> Primary Qualification Missing
+                  </div>
+                </template>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <!-- Display multiple additional qualifications -->
+                <template v-if="app.user_qualifications && app.user_qualifications.length > 0">
+                  <div v-for="qualification in app.user_qualifications.filter(q => !q.is_primary_qualification)"
+                    :key="qualification.id" class="mb-2 last:mb-0">
+                    <span :class="getQualificationStatusClasses(qualification.endorsement_decision)"
+                      class="px-2 py-1 rounded text-xs">
+                      {{ qualification.endorsement_decision }}
+                    </span>
+                    <span class="text-xs text-gray-600 ml-1">({{ qualification.qualification_name_display }})</span>
+
+                  </div>
+                </template>
+                <template v-if="!app.user_qualifications.some(q => !q.is_primary_qualification)">
+                  N/A
+                </template>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(app)">
@@ -136,6 +181,7 @@
 import { ref, computed, onMounted } from 'vue';
 import apiServices from '@/services/services';
 import ViewDetailsModal from './modals/ViewApplicationDetailsModal.vue';
+import { useToast } from 'vue-toastification';
 
 const applications = ref([]);
 const filterStatus = ref('all');
@@ -147,6 +193,7 @@ const selectedApplication = ref(null);
 const personnelCategories = ref([]);
 const personnelSubcategories = ref([]);
 const sectors = ref([]);
+const toast = useToast();
 
 const pendingCount = computed(() => {
   return filteredApplications.value.filter(app => getStatus(app) === 'Pending').length;
@@ -193,29 +240,20 @@ const paginationEnd = computed(() => {
 });
 
 const getStatus = (app) => {
-  if (!Array.isArray(app.user_qualifications) || app.user_qualifications.length === 0) {
-    return 'Pending';
-  }
-
-  for (const qualification of app.user_qualifications) {
-    const { application_review_status, physical_review_status, endorsement_decision } = qualification;
-
-    if (application_review_status === 'Regretted' || physical_review_status === 'Regretted' || endorsement_decision === 'Regretted') {
-      return 'Regretted';
+    const primaryQualification = app.user_qualifications?.find(q => q.is_primary_qualification);
+    if(primaryQualification){
+        return primaryQualification.endorsement_decision;
     }
-  }
 
-  const allApproved = app.user_qualifications.every(qualification =>
-    qualification.application_review_status === 'Approved' &&
-    qualification.physical_review_status === 'Approved' &&
-    qualification.endorsement_decision === 'Approved'
-  );
+    return 'Pending'
+};
 
-  if (allApproved) {
-    return 'Approved';
-  }
-
-  return 'Pending';
+const getQualificationStatusClasses = (status) => {
+  return {
+    'bg-yellow-100 text-yellow-800': status === 'Pending',
+    'bg-green-100 text-green-800': status === 'Approved',
+    'bg-red-100 text-red-800': status === 'Regretted',
+  };
 };
 
 const getStatusClasses = (app) => {
@@ -238,49 +276,53 @@ const formatDate = (date) => {
     day: 'numeric'
   });
 };
+const fetchMasterData = async () => {
+  try {
+    const [categoriesRes, subcategoriesRes, sectorsRes] = await Promise.all([
+      apiServices.getMastersPersonnelCategories(),
+      apiServices.getMastersSubCategories(),
+      apiServices.getMastersSectors(),
+    ]);
 
+    personnelCategories.value = categoriesRes.data.results || [];
+    personnelSubcategories.value = subcategoriesRes.data.results || [];
+    sectors.value = sectorsRes.data.results || [];
+  } catch (error) {
+    console.error('Error fetching master data:', error);
+  }
+};
 const fetchApplications = async () => {
   try {
     const response = await apiServices.getBhmcNewApplications();
-    applications.value = Array.isArray(response.data) ? response.data : (response.data?.results || []);
-
-    const categories = await apiServices.getMastersParticipationCategories();
-    personnelCategories.value = Array.isArray(categories.data) ? categories.data : (categories.data?.results || []);
-
-    const subcategories = await apiServices.getMastersSubCategories();
-    personnelSubcategories.value = Array.isArray(subcategories.data) ? subcategories.data : (subcategories.data?.results || [])
-
-    const sectorData = await apiServices.getMastersSectors();
-    sectors.value = Array.isArray(sectorData.data) ? sectorData.data : (sectorData.data?.results || []);
-
-
+    applications.value = response.data.results || [];
   } catch (error) {
-    console.error('Error fetching applications or master data:', error);
+    console.error('Error fetching applications:', error);
   }
 };
 
 const viewDetails = async (application) => {
   try {
     const response = await apiServices.getAllUsers();
-    const users = Array.isArray(response.data) ? response.data : (response.data?.results || []);
+    const users = response.data.results || [];
     const matchingUser = users.find(user => user.cid === application.cid_no);
 
     selectedApplication.value = {
       ...application,
       is_counselor: matchingUser?.is_counselor || false,
-      userDetails: matchingUser
+      userDetails: matchingUser,
     };
+
     isModalOpen.value = true;
   } catch (error) {
-    console.error('Error fetching user details:', error);
-    selectedApplication.value = { ...application, is_counselor: false }; //safe fallback
+    console.error('Error fetching details:', error);
+    selectedApplication.value = { ...application, is_counselor: false, userDetails: null };
     isModalOpen.value = true;
   }
 };
-
 const handleUpdate = async () => {
   await fetchApplications();
   closeModal();
+  toast.success('Application updated successfully');
 };
 
 const closeModal = () => {
@@ -296,7 +338,7 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++;
 };
 
-onMounted(() => {
-  fetchApplications();
+onMounted(async () => {
+  await Promise.all([fetchApplications(), fetchMasterData()]);
 });
 </script>

@@ -47,23 +47,32 @@
             <label class="block text-sm font-medium text-gray-600 mb-2">
               Select Qualification to Edit
             </label>
-            <select v-model="selectedQualificationId" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg
+            <!-- Conditionally render input -->
+            <template v-if="isEditing">
+              <select v-model="selectedQualificationId" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg
                      focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                      transition-all duration-200 ease-in-out">
-              <option value="" disabled>Select a Qualification</option>
-              <option v-for="qualification in application.user_qualifications" :key="qualification.id"
-                :value="qualification.id">
-                {{ qualification.qualification_name_display }}
-              </option>
-            </select>
+                <option value="" disabled>Select a Qualification</option>
+                <option v-for="qualification in application.user_qualifications" :key="qualification.id"
+                  :value="qualification.id">
+                  {{ qualification.qualification_name_display }}
+                </option>
+              </select>
+            </template>
+            <template v-else>
+                <div class="text-gray-700 px-3 py-2">
+                  {{ selectedQualification ? selectedQualification.qualification_name_display : 'No Qualification Selected' }}
+                </div>
+            </template>
           </div>
 
           <!-- Primary Qualification Toggle -->
           <div class="bg-gray-50 rounded-lg p-4">
-            <button @click="togglePrimaryQualification" :disabled="!selectedQualification" :class="{
+            <!-- Conditionally enable/disable button -->
+            <button @click="togglePrimaryQualification" :disabled="!selectedQualification || !isEditing" :class="{
             'bg-blue-500 text-white': selectedQualification && selectedQualification.is_primary_qualification,
-            'bg-gray-200 text-gray-700': !selectedQualification || !selectedQualification.is_primary_qualification,
-            'opacity-50 cursor-not-allowed': !selectedQualification
+            'bg-gray-200 text-gray-700': !isEditing || !selectedQualification || !selectedQualification.is_primary_qualification,
+            'opacity-50 cursor-not-allowed': !selectedQualification || !isEditing
           }" class="w-full px-4 py-2 rounded-lg transition-all duration-200
                      focus:outline-none focus:ring-2 focus:ring-blue-500
                      hover:shadow-md">
