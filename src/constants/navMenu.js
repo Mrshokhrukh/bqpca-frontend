@@ -124,11 +124,11 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('Wrench'),
         route: (serviceType) => `/admin/admin/${serviceType}/decisions`,
       },
-      {
-        name: 'Learning Types',
-        icon: getIconComponent('BookOpen'),
-        route: (serviceType) => `/admin/admin/${serviceType}/learning_types`,
-      },
+      // {
+      //   name: 'Learning Types',
+      //   icon: getIconComponent('BookOpen'),
+      //   route: (serviceType) => `/admin/admin/${serviceType}/learning_types`,
+      // },
       {
         name: 'Qualifications',
         icon: getIconComponent('Award'),
@@ -140,7 +140,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/admin/${serviceType}/reason_for_issue_of_second_copy`,
       },
       {
-        name: 'Types of Courses',
+        name: 'Mode of Study',
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/admin/${serviceType}/type_of_courses`,
       },
@@ -154,16 +154,16 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('Users'),
         route: (serviceType) => `/admin/admin/${serviceType}/esign`,
       },
-      {
-        name: 'Countries',
-        icon: getIconComponent('Globe'),
-        route: (serviceType) => `/admin/admin/${serviceType}/countries`,
-      },
-      {
-        name: 'User Profile',
-        icon: getIconComponent('Users'),
-        route: (serviceType) => `/admin/admin/${serviceType}/user_profile`,
-      },
+      // {
+      //   name: 'Countries',
+      //   icon: getIconComponent('Globe'),
+      //   route: (serviceType) => `/admin/admin/${serviceType}/countries`,
+      // },
+      // {
+      //   name: 'User Profile',
+      //   icon: getIconComponent('Users'),
+      //   route: (serviceType) => `/admin/admin/${serviceType}/user_profile`,
+      // },
     ],
     // Add dealing_officer to roq
     dealing_officer: dealingOfficerMenuItems,
@@ -281,12 +281,12 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Profile',
-        icon: getIconComponent('UserCircle'), 
+        icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/profile`,
       },
       {
         name: 'Track My Applications',
-        icon: getIconComponent('UserCircle'), 
+        icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/track_applications`,
       },
     ],

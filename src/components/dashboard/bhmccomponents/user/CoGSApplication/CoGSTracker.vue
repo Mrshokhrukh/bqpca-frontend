@@ -27,13 +27,12 @@
 
             <!-- Action Buttons -->
             <div class="flex space-x-3">
-              <!-- Removed the Update Application button -->
-
+              <!-- Payment Button -->
               <button v-if="application.review_status === 'Approved' && !application.is_payment_complete"
                 @click="initiatePayment(application)"
                 class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center">
                 <CreditCard class="w-4 h-4 mr-2" />
-                Complete Payment
+                {{ getPaymentButtonText(application) }}
               </button>
             </div>
           </div>
@@ -132,7 +131,6 @@ const authStore = useAuthStore(); // Use the auth store
 const paymentModal = ref(null);
 const selectedApplication = ref(null); // Track the application for payment
 
-
 // Computed Property for filtered applications
 const filteredApplications = computed(() => {
   if (!authStore.user || !authStore.user.cid) {
@@ -218,6 +216,17 @@ const formatDate = (dateString) => {
   });
 };
 
+const getPaymentButtonText = (application) => {
+    if(application.is_payment_complete){
+        return 'Payment Completed';
+    } else if (application.review_status === 'Approved' && !application.is_payment_complete){
+        return "Proceed to Payment"
+    }
+    else {
+        return 'Complete Payment';
+    }
+};
+
 const initiatePayment = (application) => {
   selectedApplication.value = application;
   paymentModal.value.openModal();
@@ -226,7 +235,6 @@ const initiatePayment = (application) => {
 const closePaymentModal = () => {
   selectedApplication.value = null; // Reset on close
 };
-
 
 const handlePaymentCompleted = async (paymentData) => {
 
@@ -267,16 +275,13 @@ const handlePaymentCompleted = async (paymentData) => {
     // Make the payment *before* updating the application
     await apiService.makePayment(paymentInitiationFormData);
 
-
     // 2. Update Application - PATCH request with FormData
     const updateFormData = new FormData();
     updateFormData.append('is_payment_complete', 'true'); // Use string 'true'
     updateFormData.append('payment_id', paymentId);
 
-
     //PATCH COGS application
     await apiService.patchBhmcCogs(applicationId, updateFormData);
-
 
     // 3.  Update local state to reflect changes
     const updatedApplicationIndex = applications.value.findIndex(app => app.id === applicationId);
@@ -284,7 +289,6 @@ const handlePaymentCompleted = async (paymentData) => {
       applications.value[updatedApplicationIndex].is_payment_complete = true;
       applications.value[updatedApplicationIndex].payment_id = paymentId;
     }
-
 
     toast.success(`Payment initiated! ID: ${paymentId}. ${paymentData.message}`);
 
@@ -310,11 +314,9 @@ const handlePaymentCompleted = async (paymentData) => {
   } finally {
     isLoading.value = false;
     selectedApplication.value = null; // Reset after processing
-    // No need to refetch if local state is updated correctly.  Remove: fetchApplications();
+    fetchApplications();
   }
 };
-
-
 
 onMounted(async () => {
   await fetchApplications();

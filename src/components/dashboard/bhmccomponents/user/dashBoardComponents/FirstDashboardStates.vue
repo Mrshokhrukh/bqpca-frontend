@@ -68,7 +68,7 @@ defineProps({
 
 const checkApplicationStatus = () => {
   if (typeof router.push === 'function') {
-    router.push('/admin/user/health_certification/my_applications'); // Ensure router.push is a function
+    router.push('/admin/user/health_certification/registration'); // Ensure router.push is a function
   } else {
     console.error('router.push is not a function');
   }

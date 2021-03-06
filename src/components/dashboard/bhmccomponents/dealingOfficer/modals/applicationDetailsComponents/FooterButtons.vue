@@ -1,3 +1,4 @@
+<!-- FooterButtons Component -->
 <template>
   <div class="px-8 py-4 bg-gray-50 border-t border-gray-200">
     <div class="flex justify-between items-center">
@@ -40,11 +41,11 @@ const props = defineProps({
   }
 });
 
-defineEmits(['close', 'open-certificate-modal', 'update'])
+defineEmits(['close', 'open-certificate-modal', 'update'])  // Corrected emit
 
 const errorMessage = ref('');
 
-const overallStatus = computed(() => { //calculate the overall status
+const overallStatus = computed(() => {
   if (!props.application?.user_qualifications?.[0]) return 'Pending'
 
   const appReview = props.application.user_qualifications[0].application_review_status

@@ -234,22 +234,22 @@ const handleLogout = async () => {
   border-radius: 20px;
 }
 
-/* Fix for macOS scrollbar issues */
+/* Fix for macOS scrollbar issues
 @media screen and (min-width: 0) and (min-resolution: 72dpi) {
   .custom-scrollbar {
     overflow: auto !important;
   }
-}
+} */
 
 /* Hide default scrollbar on macOS */
-@media not all and (min-resolution:.001dpcm) {
+/* @media not all and (min-resolution:.001dpcm) {
   @supports (-webkit-appearance:none) {
     .custom-scrollbar {
       -webkit-appearance: none;
       appearance: none;
     }
   }
-}
+} */
 
 /* Smooth transitions */
 .transition-all {

@@ -19,7 +19,7 @@
       </div>
 
       <!-- Enhanced Grid Layout -->
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <!-- Dynamic Configuration Cards -->
         <div v-for="config in configurationCards" :key="config.id" class="group relative">
           <div
@@ -183,7 +183,7 @@ const configurationCards = [
   },
   {
     id: 'courseTypes',
-    title: 'Course Types',
+    title: 'Mode of Study',
     description: 'Define different types of courses and programs',
     countLabel: 'Available Types',
     countRef: 'courseTypes',
@@ -226,28 +226,6 @@ const configurationCards = [
       </svg>`
     }
   },
-  {
-    id: 'countries',
-    title: 'Countries',
-    description: 'Manage country list and information',
-    countLabel: 'Registered',
-    countRef: 'countries',
-    countSuffix: 'countries',
-    usedIn: ['Address Info', 'Location Data'],
-    route: '/admin/admin/roq/countries',
-    buttonText: 'Manage Countries',
-    gradientClasses: 'from-teal-600 to-teal-400',
-    hoverBorderClass: 'hover:border-teal-200',
-    iconBgClass: 'bg-teal-50',
-    iconHoverBgClass: 'group-hover:bg-teal-100',
-    iconColorClass: 'text-teal-600',
-    buttonClasses: 'bg-teal-50 text-teal-600 hover:bg-teal-100',
-    icon: {
-      template: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
-      </svg>`
-    }
-  }
 ];
 
 // Fetch counts on component mount
