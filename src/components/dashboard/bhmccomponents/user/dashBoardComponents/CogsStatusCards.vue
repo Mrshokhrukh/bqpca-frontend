@@ -3,9 +3,10 @@
     <!-- Card Header -->
     <div class="flex items-center space-x-3 mb-4">
       <div class="bg-purple-100 p-2 rounded-full">
-        <FolderIcon class="w-5 h-5 text-purple-500" />
+        <FolderIcon class="w-5 h-5 text-purple-500 " />
+
       </div>
-      <h3 class="font-semibold">Cogs</h3>
+      <h3 class="font-bold text-gray-800 text-xl">Cogs</h3>
     </div>
 
     <!-- Card Body -->
@@ -25,6 +26,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { FolderIcon } from '@heroicons/vue/24/outline';
@@ -59,9 +61,9 @@ const displayData = computed(() => {
     return {};
   }
   return {
-    'Agency': application.value.agency.name,
-    'Department': application.value.department.name,
-    'Workplace': application.value.workplace.name,
+    'Agency :': application.value.agency.name,
+    'Department :': application.value.department.name,
+    'Workplace :': application.value.workplace.name,
     'Review Status': application.value.review_status,
     'Endorsement Decision': application.value.endorsement_decision,
     'Payment Complete': application.value.is_payment_complete ? 'Yes' : 'No',

@@ -10,15 +10,16 @@
       <template v-else >
         <ProfileHeader :user-detail="userDetail" :renewal-message="renewalStatus"
           :qualifications="getPrimaryQualifications" @view-certificate="handleViewCertificate" />
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <StatCard title="CPD Credits" icon="Award" :progress="cpdCredits" :total="50" type="progress" />
+            <CogsStatusCard :expiry-date="licenseExpiryDate" :status="licenseStatus" />
+            <ActivityFeed title="Recent Activities" :activities="recentActivities" />
+          </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard title="CPD Credits" icon="Award" :progress="cpdCredits" :total="50" type="progress" />
-          <LicenseStatusCard :expiry-date="licenseExpiryDate" :status="licenseStatus" />
-          <ApplicationHistoryCard :applications="applications" @show-rejected="showRejectedApplications" />
-        </div>
+            <ApplicationHistoryCard :applications="applications" @show-rejected="showRejectedApplications" />
+      
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ActivityFeed title="Recent Activities" :activities="recentActivities" />
           <DeadlinesList title="Upcoming Deadlines" :deadlines="upcomingDeadlines" />
         </div>
 
@@ -44,7 +45,7 @@ import { useDashboardStore } from '@/stores/mhpcUserDahboardStore';
 // Components
 import ProfileHeader from './dashBoardComponents/ProfileHeaders.vue';
 import StatCard from './dashBoardComponents/StatCards.vue';
-import LicenseStatusCard from './dashBoardComponents/CogsStatusCards.vue';
+import CogsStatusCard from './dashBoardComponents/CogsStatusCards.vue';
 import ApplicationHistoryCard from './dashBoardComponents/ApplicationHistoryCards.vue';
 import ActivityFeed from './dashBoardComponents/ActivityFeeds.vue';
 import DeadlinesList from './dashBoardComponents/DeadlinesLists.vue';
@@ -179,12 +180,12 @@ watch(applications, (newApplications) => {
 
   if (approvedEoi) {
     // Enable DPR - logic depends on how this is reflected in your UI
-    console.log('DPR is enabled for application:', approvedEoi.id);
+    // console.log('DPR is enabled for application:', approvedEoi.id);
     // Implement whatever logic enables the DPR form, e.g., set a reactive variable
     // that controls the visibility of the DPR button/form.
   } else {
     // Disable DPR
-    console.log('DPR is disabled');
+    // console.log('DPR is disabled');
     // Disable the DPR form, e.g., set the reactive variable to false.
   }
 }, { deep: true });
