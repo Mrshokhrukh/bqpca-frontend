@@ -1,37 +1,40 @@
 <template>
-  <div v-if="!isEditing && application.is_counselor">
-    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
-      <Check class="h-4 w-4 mr-1" />
-      Verified Counselor
-    </span>
+  <div>
+    <!-- Badge for verified counselors -->
+    <div v-if="application.is_counselor" class="flex flex-col space-y-3">
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+        <Check class="h-4 w-4 mr-1" />
+        Verified Counselor
+      </span>
+
+      <!-- Unregister button for counselors only -->
+      <button
+        @click="unregisterCounselor"
+        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 w-fit"
+      >
+        Unregister as Counselor
+      </button>
+    </div>
+
+    <!-- Register button for non-counselors -->
+    <div v-if="!application.is_counselor">
+      <button
+        @click="registerAsCounselor"
+        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-100 text-blue-700 hover:bg-blue-200"
+      >
+        Register as Counselor
+      </button>
+    </div>
+
+    <!-- Error message display -->
+    <div v-if="errorMessage" class="text-red-500 text-sm mt-2">{{ errorMessage }}</div>
   </div>
-  <div v-else>
-    <button @click="toggleCounselorStatus" :class="[
-    'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-    editableData.is_counselor
-      ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-      : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-  ]">
-      {{
-    editableData.is_counselor
-      ? 'Cancel Registration'
-      : 'Register as Counselor'
-  }}
-    </button>
-    <button v-if="isEditing" @click="saveChanges" class="text-green-600 hover:text-green-800 mr-2 ml-3">
-      <Check class="h-4 w-4" />
-    </button>
-    <button v-if="isEditing" @click="cancelEditing" class="text-gray-600 hover:text-gray-800">
-      <X class="h-4 w-4" />
-    </button>
-  </div>
-  <div v-if="errorMessage" class="text-red-500 text-sm mt-2">{{ errorMessage }}</div>
 </template>
+
 <script setup>
-import { ref, watch, onMounted } from 'vue'
-import { Check, X } from 'lucide-vue-next'
+import { ref } from 'vue'
+import { Check } from 'lucide-vue-next'
 import apiServices from '@/services/services'
-import isEqual from 'lodash/isEqual';
 
 const props = defineProps({
   application: {
@@ -41,74 +44,49 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update'])
-
-const isEditing = ref(false)
-const editableData = ref({})
-const originalData = ref({})
 const errorMessage = ref('')
 
-onMounted(() => {
-  originalData.value = JSON.parse(JSON.stringify(props.application));
-  editableData.value = { ...props.application };
-});
-
-watch(() => props.application, (newVal) => {
-  originalData.value = JSON.parse(JSON.stringify(newVal));
-  editableData.value = { ...newVal };
-}, { deep: true });
-
-const startEditing = () => {
-  isEditing.value = !isEditing.value;
-  editableData.value = { ...originalData.value };
-}
-const toggleCounselorStatus = () => {
-  startEditing();
-  editableData.value.is_counselor = !editableData.value.is_counselor;
-};
-
-const cancelEditing = () => {
-  isEditing.value = !isEditing.value;
-  editableData.value = { ...originalData.value } // Reset to original
-  errorMessage.value = ''
-}
-
-const saveChanges = async () => {
-  errorMessage.value = '';
+const registerAsCounselor = async () => {
   if (!props.application.userDetails?.id) {
-    console.error("User details ID is missing.");
-    errorMessage.value = "User details are missing.";
-    return;
-  }
-  const changedFields = {};
-  for (const key in editableData.value) {
-    if (!isEqual(editableData.value[key], originalData.value[key])) {
-      changedFields[key] = editableData.value[key];
-    }
-  }
-
-  if (Object.keys(changedFields).length === 0) {
-    isEditing.value = !isEditing.value;
-    return;
+    console.error("User details ID is missing.")
+    errorMessage.value = "User details are missing."
+    return
   }
 
   try {
-    const formData = new FormData();
-    for (const key in changedFields) {
-      if (Object.prototype.hasOwnProperty.call(changedFields, key)) {
-        const value = changedFields[key];
-        formData.append(key, value === null || value === undefined ? '' : value); // Handle null values
-      }
-    }
+    const formData = new FormData()
+    formData.append('is_counselor', true)
 
-    await apiServices.patchUser(props.application.userDetails.id, formData);
-    originalData.value = JSON.parse(JSON.stringify(editableData.value));
-    isEditing.value = !isEditing.value;
-    emit('update');
+    // Make API call to update user details
+    await apiServices.patchUser(props.application.userDetails.id, formData)
 
+    // Notify parent to refresh
+    emit('update')
   } catch (error) {
-    console.error("Error saving changes:", error);
-    errorMessage.value = "Failed to save changes.";
+    console.error("Error updating counselor status:", error)
+    errorMessage.value = "Failed to update counselor status."
   }
 }
 
+const unregisterCounselor = async () => {
+  if (!props.application.userDetails?.id) {
+    console.error("User details ID is missing.")
+    errorMessage.value = "User details are missing."
+    return
+  }
+
+  try {
+    const formData = new FormData()
+    formData.append('is_counselor', false)
+
+    // Make API call to update user details
+    await apiServices.patchUser(props.application.userDetails.id, formData)
+
+    // Notify parent to refresh
+    emit('update')
+  } catch (error) {
+    console.error("Error updating counselor status:", error)
+    errorMessage.value = "Failed to update counselor status."
+  }
+}
 </script>
