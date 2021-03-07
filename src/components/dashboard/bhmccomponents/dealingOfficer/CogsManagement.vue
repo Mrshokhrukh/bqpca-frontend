@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <!-- Header Section with Gradient -->
+      <!-- Enhanced Header Section with Gradient -->
       <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md">
         <div class="flex justify-between items-center">
           <div>
@@ -27,293 +27,234 @@
         </div>
       </div>
 
-      <!-- Loading State -->
-      <div v-if="isLoading" class="flex justify-center items-center py-8">
-        <Loader2Icon class="w-8 h-8 animate-spin text-blue-500" />
+      <!-- Enhanced Stats Summary (New Addition) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl p-6 shadow-md border-l-4 border-blue-500">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-blue-100 mr-4">
+              <ClipboardCheckIcon class="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-500">Total Applications</p>
+              <p class="text-2xl font-bold text-gray-900">{{ applications.length }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-md border-l-4 border-yellow-500">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-yellow-100 mr-4">
+              <ClockIcon class="h-6 w-6 text-yellow-600" />
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-500">Pending</p>
+              <p class="text-2xl font-bold text-gray-900">{{ getPendingCount() }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-md border-l-4 border-green-500">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-green-100 mr-4">
+              <CheckCircleIcon class="h-6 w-6 text-green-600" />
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-500">Approved</p>
+              <p class="text-2xl font-bold text-gray-900">{{ getApprovedCount() }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-md border-l-4 border-red-500">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-red-100 mr-4">
+              <XCircleIcon class="h-6 w-6 text-red-600" />
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-500">Rejected</p>
+              <p class="text-2xl font-bold text-gray-900">{{ getRejectedCount() }}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Error State -->
-      <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+      <!-- Loading State with Improved Animation -->
+      <div v-if="isLoading" class="flex flex-col justify-center items-center py-16 bg-white rounded-xl shadow-md">
+        <Loader2Icon class="w-12 h-12 animate-spin text-blue-500 mb-4" />
+        <p class="text-gray-600 font-medium">Loading applications...</p>
+      </div>
+
+      <!-- Enhanced Error State -->
+      <div v-else-if="error" class="bg-red-50 border-l-4 border-red-500 rounded-xl p-6 mb-6 shadow-md">
         <div class="flex items-center">
-          <CircleAlert class="w-5 h-5 text-red-500 mr-2" />
-          <p class="text-red-700">{{ error }}</p>
+          <CircleAlert class="w-8 h-8 text-red-500 mr-4" />
+          <div>
+            <h3 class="text-lg font-bold text-red-800">An error occurred</h3>
+            <p class="text-red-700 mt-1">{{ error }}</p>
+            <button @click="fetchData" class="mt-4 px-4 py-2 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 transition-colors font-medium">
+              Try Again
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Data Table -->
-      <div v-else class="bg-white rounded-xl shadow-md overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration
-                No.
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant
-                Details
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Workplace Info
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supervisor</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="application in displayedApplications" :key="application.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {{ application.registration_no }}
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ application.full_name }}</div>
-                <div class="text-sm text-gray-500">CID: {{ application.cid_no }}</div>
-                <div class="text-sm text-gray-500">{{ application.email_address }}</div>
-                <div class="text-sm text-gray-500">Contact: {{ application.contact_number }}</div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm text-gray-900">{{ application.workplace?.name }}</div>
-                <div class="text-sm text-gray-500">{{ application.department?.name }}</div>
-                <div class="text-sm text-gray-500">{{ application.agency?.name }}</div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm text-gray-900">{{ application.supervisor_name }}</div>
-                <div class="text-sm text-gray-500">{{ application.supervisor_designation }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="space-y-2">
-                  <span :class="getStatusClass(application.review_status)"
-                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                    Review: {{ application.review_status }}
-                  </span>
-                  <span :class="getStatusClass(application.endorsement_decision)"
-                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                    Endorsement: {{ application.endorsement_decision }}
-                  </span>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div class="space-y-2">
-                  <button @click="reviewApplication(application)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
-                    View <!-- Changed from Review to View -->
-                  </button>
-                  <button v-if="application.endorsement_decision === 'Approved'"
-                    @click="downloadCertificate(application.id)"
-                    class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
-                    Download Certificate
-                  </button>
-                  <span v-if="!application.is_payment_complete" class="text-red-500 text-xs">
-                    Payment Pending
-                  </span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Enhanced Data Table -->
+      <div v-else class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="group px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors">
+                  <div class="flex items-center">
+                    Registration No.
+                    <ArrowUpDownIcon class="ml-1 h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+                  </div>
+                </th>
+                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Applicant Details
+                </th>
+                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Supervisor
+                </th>
+                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr v-for="application in displayedApplications" :key="application.id"
+                  class="hover:bg-blue-50 transition-colors duration-150">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-semibold text-gray-900">{{ application.registration_no }}</div>
+                  <div class="text-xs text-gray-500">ID: {{ application.id }}</div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
+                      {{ getInitials(application.full_name) }}
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900">{{ application.full_name }}</div>
+                      <div class="text-xs text-gray-500 mt-1">CID: {{ application.cid_no }}</div>
+                      <div class="text-xs text-gray-500">{{ application.email_address }}</div>
+                      <div class="text-xs text-gray-500">Contact: {{ application.contact_number }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-sm font-medium text-gray-900">{{ application.supervisor_name }}</div>
+                  <div class="text-xs text-gray-500 mt-1">{{ application.supervisor_designation }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="space-y-2">
+                    <span :class="getStatusClass(application.review_status)"
+                          class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
+                      <span class="w-2 h-2 rounded-full mr-1 mt-1.5" :class="getStatusDotClass(application.review_status)"></span>
+                      Review: {{ application.review_status }}
+                    </span>
+                    <span :class="getStatusClass(application.endorsement_decision)"
+                          class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
+                      <span class="w-2 h-2 rounded-full mr-1 mt-1.5" :class="getStatusDotClass(application.endorsement_decision)"></span>
+                      Endorsement: {{ application.endorsement_decision }}
+                    </span>
+                    <span v-if="application.is_payment_complete"
+                          class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      <span class="w-2 h-2 rounded-full bg-green-500 mr-1 mt-1.5"></span>
+                      Payment Complete
+                    </span>
+                    <span v-else
+                          class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                      <span class="w-2 h-2 rounded-full bg-yellow-500 mr-1 mt-1.5"></span>
+                      Payment Pending
+                    </span>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div class="flex flex-col space-y-2">
+                    <button @click="reviewApplication(application)"
+                            class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
+                      <EyeIcon class="h-4 w-4 mr-1" />
+                      View
+                    </button>
+                    <button v-if="application.endorsement_decision === 'Approved'"
+                            @click="downloadCertificate(application.id)"
+                            class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
+                      <DownloadIcon class="h-4 w-4 mr-1" />
+                      Certificate
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-        <!-- Empty State -->
-        <div v-if="!displayedApplications.length && !isLoading" class="text-center py-8">
-          <InboxIcon class="mx-auto h-12 w-12 text-gray-400" />
-          <h3 class="mt-2 text-sm font-medium text-gray-900">No applications</h3>
-          <p class="mt-1 text-sm text-gray-500">No COGS applications found matching your criteria.</p>
+        <!-- Empty State with Improved Visual -->
+        <div v-if="!displayedApplications.length && !isLoading" class="text-center py-16">
+          <div class="mx-auto h-24 w-24 text-gray-400 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+            <InboxIcon class="h-12 w-12" />
+          </div>
+          <h3 class="mt-2 text-lg font-medium text-gray-900">No applications found</h3>
+          <p class="mt-1 text-gray-500 max-w-md mx-auto">No COGS applications match your current search criteria. Try adjusting your filters or search terms.</p>
+          <button @click="resetFilters" class="mt-6 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium">
+            Reset Filters
+          </button>
         </div>
       </div>
 
-      <!-- Pagination -->
+      <!-- Enhanced Pagination -->
       <div v-if="totalPages > 1" class="mt-6 flex justify-between items-center bg-white p-4 rounded-xl shadow-md">
-        <div class="text-sm text-gray-700">
-          Page {{ currentPage }} of {{ totalPages }}
+        <div class="text-sm text-gray-700 flex items-center">
+          <span class="font-medium">Page {{ currentPage }}</span> of {{ totalPages }}
+          <span class="ml-4 text-gray-500">
+            Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
+            {{ Math.min(currentPage * itemsPerPage, filteredApplications.length) }}
+            of {{ filteredApplications.length }} applications
+          </span>
         </div>
         <div class="flex space-x-2">
+          <button @click="currentPage = 1" :disabled="currentPage === 1"
+                  class="bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            <ChevronsLeftIcon class="w-5 h-5" />
+          </button>
           <button @click="currentPage--" :disabled="currentPage === 1"
-            class="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-            Previous
+                  class="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+            <ChevronLeftIcon class="w-5 h-5 mr-1" />
+            Prev
           </button>
           <button @click="currentPage++" :disabled="currentPage === totalPages"
-            class="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                  class="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
             Next
+            <ChevronRightIcon class="w-5 h-5 ml-1" />
+          </button>
+          <button @click="currentPage = totalPages" :disabled="currentPage === totalPages"
+                  class="bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            <ChevronsRightIcon class="w-5 h-5" />
           </button>
         </div>
       </div>
-      <!-- Review Modal -->
-      <Transition name="modal">
-        <div v-if="selectedApplication"
-          class="fixed z-50 inset-0 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-start justify-center pt-4 px-4 pb-20 sm:p-0">
-          <div class="relative w-full max-w-7xl mx-auto mt-10">
-            <!-- Modal Content -->
-            <div class="relative bg-white rounded-2xl shadow-2xl overflow-hidden">
-              <!-- Modal Header -->
-              <div class="bg-gray-50 px-8 py-4 border-b border-gray-200 flex justify-between items-center">
-                <div>
-                  <h2 class="text-2xl font-bold text-gray-900">Application Details
-                    <!-- Changed from Application Review to Application Details -->
-                  </h2>
-                  <p class="text-sm text-gray-500 mt-1">Registration No: {{ selectedApplication.registration_no }}</p>
-                </div>
-                <button @click="closeReviewModal"
-                  class="rounded-full p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
-                  <XIcon class="w-6 h-6" />
-                </button>
-              </div>
+    </div>
 
-              <!-- Modal Body -->
-              <div class="px-8 py-6">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <!-- Left Column: Applicant Details -->
-                  <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
-                      <UserIcon class="w-5 h-5 text-blue-500" />
-                      Applicant Details
-                    </h3>
-                    <div class="space-y-4">
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-500">Full Name</span>
-                        <span class="text-base text-gray-900">{{ selectedApplication.full_name }}</span>
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-500">CID No</span>
-                        <span class="text-base text-gray-900">{{ selectedApplication.cid_no }}</span>
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-500">Gender</span>
-                        <span class="text-base text-gray-900">{{ selectedApplication.gender }}</span>
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-500">Contact Info</span>
-                        <span class="text-base text-gray-900">{{ selectedApplication.contact_number }}</span>
-                        <span class="text-sm text-gray-600">{{ selectedApplication.email_address }}</span>
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-500">Address</span>
-                        <span class="text-base text-gray-900">{{ selectedApplication.address }}</span>
-                        <span class="text-sm text-gray-600">PO Box: {{ selectedApplication.po_box }}</span>
-                        <span class="text-sm text-gray-600">ZIP: {{ selectedApplication.zip_code }}</span>
-                      </div>
-                    </div>
-                  </div>
+    <!-- Review Modal -->
+    <CogsReviewModal v-if="selectedApplication" :application="selectedApplication" @close="closeReviewModal"
+      @update="handleUpdate" />
 
-                  <!-- Middle Column: Workplace Details -->
-                  <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
-                      <BuildingIcon class="w-5 h-5 text-blue-500" />
-                      Workplace Details
-                    </h3>
-                    <div class="space-y-4">
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-500">Agency</span>
-                        <span class="text-base text-gray-900">{{ selectedApplication.agency?.name || 'N/A' }}</span>
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-500">Department</span>
-                        <span class="text-base text-gray-900">{{ selectedApplication.department?.name || 'N/A' }}</span>
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-500">Workplace</span>
-                        <span class="text-base text-gray-900">{{ selectedApplication.workplace?.name || 'N/A' }}</span>
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-500">Supervisor</span>
-                        <span class="text-base text-gray-900">{{ selectedApplication.supervisor_name }}</span>
-                        <span class="text-sm text-gray-600">{{ selectedApplication.supervisor_designation }}</span>
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-500">Application Reason</span>
-                        <span class="text-base text-gray-900">{{ selectedApplication.reason_for_application }}</span>
-                      </div>
-                    </div>
-                  </div>
+    <!-- Enhanced Confirmation Modal -->
+    <CogsConfirmationModal v-if="showConfirmation" :message="confirmationMessage"
+                           @confirm="confirmReviewAction" @cancel="cancelReviewAction" />
 
-                  <!-- Right Column: Status & Review -->
-                  <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
-                      <ClipboardIcon class="w-5 h-5 text-blue-500" />
-                      Status & Review <!-- Changed from Review Status to Status & Review -->
-                    </h3>
-                    <div class="space-y-4">
-                      <div class="rounded-lg bg-gray-50 p-4">
-                        <span class="text-sm font-medium text-gray-500">Review Status</span>
-                        <!-- Changed from Current Status to Review Status -->
-                        <div class="mt-1 flex items-center gap-2">
-                          <span :class="[
-                'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
-                getStatusClass(selectedApplication.review_status)
-              ]">
-                            {{ selectedApplication.review_status }}
-                          </span>
-                        </div>
-                        <p class="mt-2 text-sm text-gray-600">{{ selectedApplication.review_remark || 'No remarks' }}
-                        </p>
-                      </div>
-
-                      <div class="rounded-lg bg-gray-50 p-4">
-                        <span class="text-sm font-medium text-gray-500">Endorsement</span>
-                        <div class="mt-1 flex items-center gap-2">
-                          <span :class="[
-                'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
-                getStatusClass(selectedApplication.endorsement_decision)
-              ]">
-                            {{ selectedApplication.endorsement_decision }}
-                          </span>
-                        </div>
-                        <p class="mt-2 text-sm text-gray-600">{{ selectedApplication.endorsement_remark || 'No remarks'
-                          }}
-                        </p>
-                      </div>
-
-                      <div class="rounded-lg bg-gray-50 p-4">
-                        <span class="text-sm font-medium text-gray-500">Payment Status</span>
-                        <div class="mt-1">
-                          <span :class="[
-                'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
-                selectedApplication.is_payment_complete ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-              ]">
-                            {{ selectedApplication.is_payment_complete ? 'Paid' : 'Pending' }}
-                          </span>
-                          <p v-if="selectedApplication.is_payment_complete" class="mt-2 text-sm text-gray-600">
-                            Payment ID: {{ selectedApplication.payment_id }}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="mt-8 flex justify-end gap-4 border-t pt-6">
-                  <button @click="handleReviewAction('Rejected')"
-                    class="inline-flex items-center px-4 py-2 border border-red-300 text-red-700 bg-white rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
-                    <XCircleIcon class="w-5 h-5 mr-2" />
-                    Regret
-                  </button>
-                  <button @click="handleReviewAction('Approved')"
-                    class="inline-flex items-center px-4 py-2 border border-transparent text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
-                    <CheckCircleIcon class="w-5 h-5 mr-2" />
-                    Approve
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Transition>
-      <!-- Confirmation Modal -->
-      <Transition name="modal">
-        <div v-if="showConfirmation"
-          class="fixed z-50 inset-0 overflow-y-auto bg-black/75 flex items-center justify-center">
-          <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-            <p class="text-lg text-gray-800">{{ confirmationMessage }}</p>
-            <div class="mt-6 flex justify-end space-x-4">
-              <button @click="cancelReviewAction"
-                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
-                Cancel
-              </button>
-              <button @click="confirmReviewAction"
-                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      </Transition>
+    <!-- Success Toast Notification (New Addition) -->
+    <div v-if="showSuccessToast"
+         class="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center transition-all duration-300"
+         :class="{ 'opacity-100 translate-y-0': showSuccessToast, 'opacity-0 translate-y-8': !showSuccessToast }">
+      <CheckCircleIcon class="w-5 h-5 mr-2" />
+      <span>{{ toastMessage }}</span>
+      <button @click="showSuccessToast = false" class="ml-4 text-white hover:text-green-200">
+        <XIcon class="w-4 h-4" />
+      </button>
     </div>
   </div>
 </template>
@@ -325,33 +266,66 @@ import {
   SearchIcon,
   CircleAlert,
   InboxIcon,
-  XIcon,
-  UserIcon,
-  BuildingIcon,
-  ClipboardIcon,
+  ClipboardCheckIcon,
+  ClockIcon,
   CheckCircleIcon,
-  XCircleIcon
+  XCircleIcon,
+  EyeIcon,
+  DownloadIcon,
+  ArrowUpDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+  XIcon
 } from 'lucide-vue-next'
 import services from '@/services/services'
+import CogsReviewModal from './modals/CogsReviewModal.vue'
+import CogsConfirmationModal from './modals/CogsConfirmationModal.vue'
 
-
-const applications = ref([])  // Store the raw API response
+const applications = ref([])
 const isLoading = ref(false)
 const error = ref(null)
 const searchQuery = ref('')
-const statusFilter = ref('Pending')
+const statusFilter = ref('')
 const currentPage = ref(1)
-const itemsPerPage = ref(10); //  Set items per page
-const selectedApplication = ref(null);
-const showConfirmation = ref(false);
-const confirmationMessage = ref('');
-const actionType = ref('');
-const reviewRemark = ref('');   //for remarks
-const endorsementRemark = ref('');
-const statusField = ref('');  // Add statusField
+const itemsPerPage = ref(10)
+const selectedApplication = ref(null)
+const showConfirmation = ref(false)
+const confirmationMessage = ref('')
+const showSuccessToast = ref(false)
+const toastMessage = ref('')
+const confirmData = ref(null)
 
+// Get counts for dashboard stats
+const getPendingCount = () => {
+  return applications.value.filter(app =>
+    app.review_status === 'Pending' || app.endorsement_decision === 'Pending'
+  ).length;
+};
 
-// Computed Properties for Filtering and Pagination
+const getApprovedCount = () => {
+  return applications.value.filter(app =>
+    app.endorsement_decision === 'Approved'
+  ).length;
+};
+
+const getRejectedCount = () => {
+  return applications.value.filter(app =>
+    app.review_status === 'Rejected' || app.endorsement_decision === 'Rejected'
+  ).length;
+};
+
+// Get initials for avatar
+const getInitials = (name) => {
+  if (!name) return 'N/A';
+  return name.split(' ')
+    .map(word => word.charAt(0))
+    .join('')
+    .substring(0, 2)
+    .toUpperCase();
+};
+
 const filteredApplications = computed(() => {
   let filtered = applications.value;
 
@@ -360,17 +334,18 @@ const filteredApplications = computed(() => {
       app.review_status === statusFilter.value || app.endorsement_decision === statusFilter.value
     );
   }
+
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(app =>
-      app.full_name.toLowerCase().includes(query) ||
+      (app.full_name && app.full_name.toLowerCase().includes(query)) ||
       (app.cid_no && app.cid_no.toLowerCase().includes(query)) ||
       (app.registration_no && app.registration_no.toLowerCase().includes(query))
     );
   }
+
   return filtered;
 });
-
 
 const totalPages = computed(() => {
   return Math.ceil(filteredApplications.value.length / itemsPerPage.value);
@@ -382,13 +357,12 @@ const displayedApplications = computed(() => {
   return filteredApplications.value.slice(start, end);
 });
 
-// Fetch Data
 const fetchData = async () => {
   isLoading.value = true;
   error.value = null;
   try {
     const response = await services.getBmhcCogs();
-    applications.value = response.data.results; // Store the results
+    applications.value = response.data.results;
   } catch (err) {
     error.value = 'Failed to load applications. Please try again later.';
     console.error('Error fetching applications:', err);
@@ -397,113 +371,145 @@ const fetchData = async () => {
   }
 };
 
-// Watchers for Search, Filter, and Pagination
-watch([searchQuery, statusFilter], () => {
-  currentPage.value = 1; // Reset to the first page when search/filter changes
-});
-
-watch(currentPage, () => {
-
-
-});
-
-onMounted(fetchData); // Initial fetch
-
-// Methods
 const getStatusClass = (status) => {
   const classes = {
     'Pending': 'bg-yellow-100 text-yellow-800',
     'Approved': 'bg-green-100 text-green-800',
     'Rejected': 'bg-red-100 text-red-800',
-    'Processing': 'bg-yellow-100 text-yellow-800', // Added for "Processing"
-    // Add more status mappings as needed
+    'Processing': 'bg-blue-100 text-blue-800',
   };
-  return classes[status] || 'bg-gray-100 text-gray-800'; // Default class
+  return classes[status] || 'bg-gray-100 text-gray-800';
+};
+
+const getStatusDotClass = (status) => {
+  const classes = {
+    'Pending': 'bg-yellow-500',
+    'Approved': 'bg-green-500',
+    'Rejected': 'bg-red-500',
+    'Processing': 'bg-blue-500',
+  };
+  return classes[status] || 'bg-gray-500';
+};
+
+const resetFilters = () => {
+  searchQuery.value = '';
+  statusFilter.value = '';
+  currentPage.value = 1;
 };
 
 const reviewApplication = (application) => {
   selectedApplication.value = application;
-  // Initialize remarks with existing values or empty strings
-  reviewRemark.value = application.review_remark || '';
-  endorsementRemark.value = application.endorsement_remark || '';
 };
 
 const downloadCertificate = async (id) => {
   try {
-    const response = await services.downloadCogsCertificate(id)
-    const url = window.URL.createObjectURL(new Blob([response.data]))
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', `COGS_Certificate_${id}.pdf`)
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-  } catch (err) {
-    console.error('Error downloading certificate:', err)
-    error.value = 'Failed to download certificate. Please try again later.'
-  }
-}
+    const response = await services.downloadCogsCertificate(id);
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `COGS_Certificate_${id}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
 
-const handleReviewAction = (action, field) => {
-  actionType.value = action;
-  statusField.value = field;
-  confirmationMessage.value = `Are you sure you want to ${action === 'Processing' ? 'mark as Processing' : action} this application's ${field === 'review_status' ? 'review' : 'endorsement'}?`;
+    // Show success toast
+    toastMessage.value = 'Certificate downloaded successfully';
+    showSuccessToast.value = true;
+    setTimeout(() => {
+      showSuccessToast.value = false;
+    }, 3000);
+  } catch (err) {
+    console.error('Error downloading certificate:', err);
+    error.value = 'Failed to download certificate. Please try again later.';
+  }
+};
+
+const handleUpdate = (data) => {
+  // Set confirmation data and show confirmation modal
+  confirmData.value = data;
+
+  const action = data.review_status || data.endorsement_decision;
+  const type = data.review_status ? 'review' : 'endorsement';
+
+  confirmationMessage.value = `Are you sure you want to ${action.toLowerCase()} this ${type}?`;
   showConfirmation.value = true;
 };
 
-
 const confirmReviewAction = async () => {
+  showConfirmation.value = false;
+  if (!confirmData.value) return;
+
   try {
-    let updateData = {};
-
-    if (statusField.value === 'review_status') {
-      updateData = {
-        review_status: actionType.value,
-        review_remark: reviewRemark.value,
-      };
-    } else if (statusField.value === 'endorsement_decision') {
-      updateData = {
-        endorsement_decision: actionType.value,
-        endorsement_remark: endorsementRemark.value,
-      };
-    }
-    console.log("Sending updateData:", updateData); // Debugging line
-
-    const response = await services.patchBmhcCogs(selectedApplication.value.id, updateData);
-    console.log("API Response:", response); // Debugging line
-
-
+    const response = await services.patchBmhcCogs(selectedApplication.value.id, confirmData.value);
     if (response.status === 200) {
-      // Find and update the specific application in the applications array
       const index = applications.value.findIndex(app => app.id === selectedApplication.value.id);
       if (index !== -1) {
-        //  Update the relevant fields.  Use spread to avoid mutation issues
         applications.value = [
           ...applications.value.slice(0, index),
-          { ...applications.value[index], ...response.data }, // Merge updates
+          { ...applications.value[index], ...response.data },
           ...applications.value.slice(index + 1)
         ];
       }
+
+      // Show success toast
+      const action = confirmData.value.review_status || confirmData.value.endorsement_decision;
+      const type = confirmData.value.review_status ? 'Review' : 'Endorsement';
+      toastMessage.value = `${type} ${action.toLowerCase()} successfully`;
+      showSuccessToast.value = true;
+      setTimeout(() => {
+        showSuccessToast.value = false;
+      }, 3000);
+
       closeReviewModal();
     } else {
-      console.error('Failed to update application:', response);
-      error.value = 'Failed to update application. Please try again.';
+      console.error("Failed to update application", response);
+      error.value = "Failed to update application. Please try again.";
     }
   } catch (err) {
     console.error('Error updating application:', err);
-    error.value = 'Failed to update application. Please try again.';
-  } finally {
-    showConfirmation.value = false;
+    error.value = "Failed to update application, please try again.";
   }
-};
-const cancelReviewAction = () => {
-  showConfirmation.value = false;
 };
 
 const closeReviewModal = () => {
   selectedApplication.value = null;
-  reviewRemark.value = '';
-  endorsementRemark.value = '';
 };
 
+const cancelReviewAction = () => {
+  showConfirmation.value = false;
+  confirmData.value = null;
+};
+
+watch([searchQuery, statusFilter], () => {
+  currentPage.value = 1;
+});
+
+onMounted(fetchData);
 </script>
+
+<style scoped>
+/* Optional: Add smooth transitions for hover states */
+.hover\:bg-blue-50:hover {
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Optional: Add box shadow transition */
+.shadow-md, .shadow-lg {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+/* Optional: Add subtle hover effect to the table rows */
+tbody tr {
+  position: relative;
+}
+
+tbody tr:hover::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background-color: #3b82f6;
+}
+</style>

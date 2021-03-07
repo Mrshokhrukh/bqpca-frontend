@@ -8,22 +8,16 @@
         <div class="mt-4 md:mt-0 flex flex-col md:flex-row gap-3">
           <!-- Search Box -->
           <div class="relative">
-            <input
-              v-model.trim="searchQuery"
-              type="text"
-              placeholder="Search institutes..."
-              class="pl-10 pr-4 py-2.5 w-full md:w-64 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-            />
+            <input v-model.trim="searchQuery" type="text" placeholder="Search institutes..."
+              class="pl-10 pr-4 py-2.5 w-full md:w-64 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white" />
             <span class="absolute left-3 top-2.5 text-gray-400">
               <SearchIcon class="w-5 h-5" />
             </span>
           </div>
 
           <!-- Status Filter -->
-          <select
-            v-model="statusFilter"
-            class="py-2.5 px-4 text-sm rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
+          <select v-model="statusFilter"
+            class="py-2.5 px-4 text-sm rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             <option value="">All Status</option>
             <option value="R">Resolved</option>
             <option value="P">Pending</option>
@@ -62,15 +56,14 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <tr v-for="institute in displayedInstitutes" :key="institute.id" class="hover:bg-gray-50 transition-colors duration-150">
+          <tr v-for="institute in displayedInstitutes" :key="institute.id"
+            class="hover:bg-gray-50 transition-colors duration-150">
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm font-medium text-gray-900">{{ institute.name_of_institution }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <button
-                @click="openAddCapaModal(institute.id)"
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-              >
+              <button @click="openAddCapaModal(institute.id)"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                 <PlusIcon class="w-4 h-4 mr-1.5" />
                 Add CAPA
               </button>
@@ -83,20 +76,15 @@
                   <div class="flex items-center justify-between p-3 border-b bg-gray-50">
                     <div class="flex items-center space-x-3">
                       <span class="text-sm font-medium text-gray-700">CAPA #{{ capa.id }}</span>
-                      <span
-                        :class="[
-                          getStatusClass(capa.status),
-                          'px-2.5 py-0.5 rounded-full text-xs font-medium'
-                        ]"
-                      >
+                      <span :class="[
+              getStatusClass(capa.status),
+              'px-2.5 py-0.5 rounded-full text-xs font-medium'
+            ]">
                         {{ getStatusText(capa.status) }}
                       </span>
                     </div>
-                    <button
-                      @click="deleteCapa(capa.id)"
-                      class="p-1.5 rounded-full hover:bg-red-100 text-red-500 transition-colors"
-                      title="Delete CAPA"
-                    >
+                    <button @click="deleteCapa(capa.id)"
+                      class="p-1.5 rounded-full hover:bg-red-100 text-red-500 transition-colors" title="Delete CAPA">
                       <TrashIcon class="w-4 h-4" />
                     </button>
                   </div>
@@ -106,7 +94,8 @@
                         View Details
                       </summary>
                       <div class="mt-3 space-y-2 text-gray-700">
-                        <p><span class="font-medium text-gray-800">Observation:</span> {{ capa.observation_description }}</p>
+                        <p><span class="font-medium text-gray-800">Observation:</span> {{ capa.observation_description
+                          }}</p>
                         <p><span class="font-medium text-gray-800">Root Cause:</span> {{ capa.root_cause }}</p>
                         <p><span class="font-medium text-gray-800">CAPA:</span> {{ capa.capa }}</p>
                       </div>
@@ -134,24 +123,19 @@
       </div>
 
       <!-- Pagination -->
-      <div v-if="totalPages > 1" class="flex justify-between items-center py-4 px-6 border-t border-gray-200 bg-gray-50">
+      <div v-if="totalPages > 1"
+        class="flex justify-between items-center py-4 px-6 border-t border-gray-200 bg-gray-50">
         <div class="text-sm text-gray-700">
           Page {{ currentPage }} of {{ totalPages }}
         </div>
         <div class="flex space-x-2">
-          <button
-            @click="currentPage--"
-            :disabled="currentPage === 1"
-            class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
+          <button @click="currentPage--" :disabled="currentPage === 1"
+            class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <ChevronLeftIcon class="w-4 h-4 mr-1" />
             Prev
           </button>
-          <button
-            @click="currentPage++"
-            :disabled="currentPage === totalPages"
-            class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
+          <button @click="currentPage++" :disabled="currentPage === totalPages"
+            class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
             Next
             <ChevronRightIcon class="w-4 h-4 ml-1" />
           </button>
@@ -160,27 +144,27 @@
     </div>
 
     <!-- Modern Modal for Add/Edit CAPA -->
-    <Transition
-      enter-active-class="transition ease-out duration-200"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition ease-in duration-150"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div v-if="showCapaModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0"
+      enter-to-class="opacity-100" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100"
+      leave-to-class="opacity-0">
+      <div v-if="showCapaModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+        aria-modal="true">
         <div class="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
           <!-- Background overlay -->
-          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity" @click="closeCapaModal"></div>
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity"
+            @click="closeCapaModal"></div>
 
           <!-- Modal panel -->
-          <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+          <div
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
             <!-- Modal header -->
-            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-5 sm:px-6 flex justify-between items-center">
+            <div
+              class="bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-5 sm:px-6 flex justify-between items-center">
               <h3 class="text-lg leading-6 font-medium text-white" id="modal-title">
                 Add CAPA for Institute #{{ selectedInstituteId }}
               </h3>
-              <button @click="closeCapaModal" class="rounded-full p-1 text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white">
+              <button @click="closeCapaModal"
+                class="rounded-full p-1 text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white">
                 <XIcon class="h-6 w-6" />
               </button>
             </div>
@@ -193,26 +177,18 @@
                   <label for="inspection_from_date" class="block text-sm font-medium text-gray-700">
                     Inspection From Date <span class="text-red-500">*</span>
                   </label>
-                  <input
-                    type="date"
-                    id="inspection_from_date"
-                    v-model="capaForm.inspection_from_date"
+                  <input type="date" id="inspection_from_date" v-model="capaForm.inspection_from_date"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    required
-                  />
+                    required />
                 </div>
 
                 <div>
                   <label for="inspection_to_date" class="block text-sm font-medium text-gray-700">
                     Inspection To Date <span class="text-red-500">*</span>
                   </label>
-                  <input
-                    type="date"
-                    id="inspection_to_date"
-                    v-model="capaForm.inspection_to_date"
+                  <input type="date" id="inspection_to_date" v-model="capaForm.inspection_to_date"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    required
-                  />
+                    required />
                 </div>
 
                 <!-- Observation Description -->
@@ -220,13 +196,9 @@
                   <label for="observation_description" class="block text-sm font-medium text-gray-700">
                     Observation Description <span class="text-red-500">*</span>
                   </label>
-                  <textarea
-                    id="observation_description"
-                    v-model="capaForm.observation_description"
-                    rows="3"
+                  <textarea id="observation_description" v-model="capaForm.observation_description" rows="3"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    required
-                  ></textarea>
+                    required></textarea>
                 </div>
 
                 <!-- Root Cause -->
@@ -234,13 +206,9 @@
                   <label for="root_cause" class="block text-sm font-medium text-gray-700">
                     Root Cause <span class="text-red-500">*</span>
                   </label>
-                  <textarea
-                    id="root_cause"
-                    v-model="capaForm.root_cause"
-                    rows="3"
+                  <textarea id="root_cause" v-model="capaForm.root_cause" rows="3"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    required
-                  ></textarea>
+                    required></textarea>
                 </div>
 
                 <!-- CAPA -->
@@ -248,13 +216,9 @@
                   <label for="capa" class="block text-sm font-medium text-gray-700">
                     CAPA <span class="text-red-500">*</span>
                   </label>
-                  <textarea
-                    id="capa"
-                    v-model="capaForm.capa"
-                    rows="3"
+                  <textarea id="capa" v-model="capaForm.capa" rows="3"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    required
-                  ></textarea>
+                    required></textarea>
                 </div>
 
                 <!-- Implementation Timeline -->
@@ -262,13 +226,9 @@
                   <label for="implementation_timeline" class="block text-sm font-medium text-gray-700">
                     Implementation Timeline <span class="text-red-500">*</span>
                   </label>
-                  <input
-                    type="text"
-                    id="implementation_timeline"
-                    v-model="capaForm.implementation_timeline"
+                  <input type="text" id="implementation_timeline" v-model="capaForm.implementation_timeline"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    required
-                  />
+                    required />
                 </div>
 
                 <!-- Status -->
@@ -276,12 +236,9 @@
                   <label for="status" class="block text-sm font-medium text-gray-700">
                     Status <span class="text-red-500">*</span>
                   </label>
-                  <select
-                    id="status"
-                    v-model="capaForm.status"
+                  <select id="status" v-model="capaForm.status"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    required
-                  >
+                    required>
                     <option value="R">Resolved</option>
                     <option value="P">Pending</option>
                   </select>
@@ -292,12 +249,8 @@
                   <label for="management_comment" class="block text-sm font-medium text-gray-700">
                     Management Comment
                   </label>
-                  <textarea
-                    id="management_comment"
-                    v-model="capaForm.management_comment"
-                    rows="2"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  ></textarea>
+                  <textarea id="management_comment" v-model="capaForm.management_comment" rows="2"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
                 </div>
 
                 <!-- DO Remarks -->
@@ -305,12 +258,8 @@
                   <label for="DO_remarks" class="block text-sm font-medium text-gray-700">
                     DO Remarks
                   </label>
-                  <textarea
-                    id="DO_remarks"
-                    v-model="capaForm.DO_remarks"
-                    rows="2"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  ></textarea>
+                  <textarea id="DO_remarks" v-model="capaForm.DO_remarks" rows="2"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
                 </div>
 
                 <!-- User Remarks -->
@@ -318,30 +267,20 @@
                   <label for="user_remarks" class="block text-sm font-medium text-gray-700">
                     User Remarks
                   </label>
-                  <textarea
-                    id="user_remarks"
-                    v-model="capaForm.user_remarks"
-                    rows="2"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  ></textarea>
+                  <textarea id="user_remarks" v-model="capaForm.user_remarks" rows="2"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
                 </div>
               </form>
             </div>
 
             <!-- Modal footer -->
             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-              <button
-                type="button"
-                @click="saveCapa"
-                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-              >
+              <button type="button" @click="saveCapa"
+                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                 Save CAPA
               </button>
-              <button
-                type="button"
-                @click="closeCapaModal"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-              >
+              <button type="button" @click="closeCapaModal"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                 Cancel
               </button>
             </div>
@@ -392,6 +331,7 @@ const capaForm = ref({
   DO_remarks: '',
   user_remarks: '',
   status: 'P',
+  teaching_center: 1,
 })
 
 // Computed Properties
@@ -506,6 +446,7 @@ const resetCapaForm = () => {
     DO_remarks: '',
     user_remarks: '',
     status: 'P',
+    teaching_center: 1,
   }
 }
 

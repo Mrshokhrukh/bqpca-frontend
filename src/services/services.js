@@ -15,6 +15,9 @@ export default {
   makePayment(data) {
     return apiClient.post('/payments/', data)
   },
+  getAllPayments(appName) {
+    return apiClient.get(`/payment_status/payment_details/?app_name=${appName}`)
+  },
 
   // certificate verification
   verifyCertificate(params) {
