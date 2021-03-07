@@ -688,14 +688,14 @@ const handleSubmitActual = async (isDraft = false) => {
     if (!isDraft) {
       // Payment Request (only if not a draft)
       const paymentData = {
-        platform: 'web',
+        platform: 'BQPCA e-Zhapto',
         refNo: form.payment_id,  // Use the payment_id from the form
         taxPayerNo: form.cid_no,
-        taxPayerDocumentNo: 'BAOW', //AGENCYCODE replaced with literal as per instructions
+        taxPayerDocumentNo: form.cid_no, //AGENCYCODE replaced with literal as per instructions
         payerEmail: form.email_address,
         mobileNo: form.contact_no,
         totalPayableAmount: 1000.00,
-        serviceCode: 'BAOW',    //AGENCYCODE replaced with literal as per instructions
+        serviceCode: 'additional_qualification_fee',
         description: 'Payment for ROQ',
         payableAmount: 1000.00,
         taxPayerName: form.applicants_name,

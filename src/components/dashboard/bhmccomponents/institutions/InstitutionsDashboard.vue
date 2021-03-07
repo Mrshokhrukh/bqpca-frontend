@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen ">
 
-    <div v-if="userCID == null"
+    <div v-if="userCID === null"
       class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative overflow-hidden" role="alert">
       <strong class="font-bold">Your CID is Missing!</strong>
       <span class="block sm:inline ml-6">Please fill your CID to view the dashboard.</span>
