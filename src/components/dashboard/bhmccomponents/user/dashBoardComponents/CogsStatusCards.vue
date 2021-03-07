@@ -4,7 +4,6 @@
     <div class="flex items-center space-x-3 mb-4">
       <div class="bg-purple-100 p-2 rounded-full">
         <FolderIcon class="w-5 h-5 text-purple-500 " />
-
       </div>
       <h3 class="font-bold text-gray-800 text-xl">Cogs</h3>
     </div>
@@ -14,19 +13,19 @@
       <div v-for="(value, key) in displayData" :key="key" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
         <div class="text-sm font-medium text-gray-500">{{ key }}</div>
         <!-- Dynamic Styling for Statuses -->
-        <div
-          v-if="key === 'Review Status' || key === 'Endorsement Decision' || key === 'Payment Complete'"
+        <div v-if="key === 'Review Status' || key === 'Endorsement Decision' || key === 'Payment Complete'"
           :class="getStatusClass(value)"
-          class="text-base mt-1 font-semibold inline-flex items-center px-3 py-1 rounded-full"
-        >
+          class="text-base mt-1 font-semibold inline-flex items-center px-3 py-1 rounded-full">
           {{ value }}
         </div>
         <div v-else class="text-base text-gray-900 mt-1">{{ value }}</div>
       </div>
     </div>
   </div>
+  <div v-else class="bg-white shadow-lg rounded-xl p-6 text-center text-gray-500">
+    No Data to Display
+  </div>
 </template>
-
 
 <script setup>
 import { FolderIcon } from '@heroicons/vue/24/outline';

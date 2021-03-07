@@ -17,19 +17,21 @@
         <div class="bg-blue-500 h-3 rounded-full" :style="{ width: `${progressPercentage}%` }"></div>
       </div>
       <p class="text-lg text-gray-900 mt-4">
-          Total CPD Applications: <span class="font-semibold">{{relevantApplications.length}}</span>
-        </p>
+        Total CPD Applications: <span class="font-semibold">{{ relevantApplications.length }}</span>
+      </p>
     </div>
 
     <!-- Status Cards -->
     <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div v-for="(count, status) in statusCounts" :key="status"
-           :class="statusCardClasses(status)"
-           class="p-4 rounded-lg shadow-sm flex flex-col items-center justify-center">
+      <div v-for="(count, status) in statusCounts" :key="status" :class="statusCardClasses(status)"
+        class="p-4 rounded-lg shadow-sm flex flex-col items-center justify-center">
         <div class="text-2xl font-bold" :class="statusTextClasses(status)">{{ count || 0 }}</div>
         <div class="text-sm text-gray-600 mt-1">{{ status }}</div>
       </div>
     </div>
+  </div>
+  <div v-else class="bg-white rounded-xl shadow-lg p-6 text-center text-gray-500">
+    No Data to Display
   </div>
 </template>
 
@@ -118,7 +120,7 @@ const statusCounts = computed(() => {
 const statusCardClasses = (status) => {
   switch (status) {
     case 'Approved': return 'bg-green-100 border border-green-200';
-    case 'Pending':  return 'bg-yellow-100 border border-yellow-200';
+    case 'Pending': return 'bg-yellow-100 border border-yellow-200';
     case 'Regretted': return 'bg-red-100 border border-red-200';
     default: return 'bg-gray-100 border border-gray-200';
   }
@@ -127,7 +129,7 @@ const statusCardClasses = (status) => {
 const statusTextClasses = (status) => {
   switch (status) {
     case 'Approved': return 'text-green-600';
-    case 'Pending':  return 'text-yellow-600';
+    case 'Pending': return 'text-yellow-600';
     case 'Regretted': return 'text-red-600';
     default: return 'text-gray-600';
   }

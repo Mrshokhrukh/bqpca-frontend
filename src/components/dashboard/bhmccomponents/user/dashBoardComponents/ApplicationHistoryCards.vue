@@ -14,30 +14,26 @@
     </p>
 
     <!-- Review Status Section -->
-    <div class="mt-6 space-y-4">
-      <div
-        v-for="(counts, reviewType) in reviewStatusCounts"
-        :key="reviewType"
-        class="bg-gray-50 p-3 rounded-lg"
-      >
+    <div v-if="totalQualifications > 0" class="mt-6 space-y-4">
+      <div v-for="(counts, reviewType) in reviewStatusCounts" :key="reviewType" class="bg-gray-50 p-3 rounded-lg">
         <h4 class="font-medium text-gray-700 text-sm mb-2">
           {{ formatReviewTypeName(reviewType) }}
         </h4>
         <div class="grid grid-cols-3 gap-2">
-          <div
-            v-for="(count, status) in counts"
-            :key="`${reviewType}-${status}`"
-            :class="['p-2 rounded-lg text-center', getStatusClass(status)]"
-          >
+          <div v-for="(count, status) in counts" :key="`${reviewType}-${status}`"
+            :class="['p-2 rounded-lg text-center', getStatusClass(status)]">
             <div class="font-semibold text-sm">{{ status }}</div>
             <div class="text-xs">{{ count || 0 }}</div>
           </div>
         </div>
       </div>
     </div>
+    <div v-else class="text-center text-gray-500 mt-6">
+      No Data to Display
+    </div>
 
     <!-- Payment Status -->
-    <div class="mt-6">
+    <div v-if="totalQualifications > 0" class="mt-6">
       <h3 class="font-semibold text-gray-800 text-base mb-2">Payment Status</h3>
       <div class="grid grid-cols-2 gap-2">
         <div class="bg-green-50 p-2 rounded-lg text-center">
