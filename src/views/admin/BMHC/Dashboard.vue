@@ -66,8 +66,8 @@ import RenewalLists from '@/components/dashboard/bhmccomponents/dealingOfficer/R
 import InstituteManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/InstituteManagement.vue';
 import ProfessionalProfiles from '@/components/dashboard/bhmccomponents/dealingOfficer/ProfessionalProfiles.vue';
 import CogsManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/CogsManagement.vue';
-import Capa from '@/components/dashboard/bhmccomponents/dealingOfficer/Capa.vue';
-import PaymentManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/Payments.vue';
+import Capa from '@/components/dashboard/bhmccomponents/dealingOfficer/CapaManagement.vue';
+import PaymentManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/PaymentsComponent.vue';
 import Reports from '@/components/dashboard/bhmccomponents/dealingOfficer/Reports.vue';
 import EoiApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/EoiApplication.vue';
 import DprApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/DprApplication.vue';

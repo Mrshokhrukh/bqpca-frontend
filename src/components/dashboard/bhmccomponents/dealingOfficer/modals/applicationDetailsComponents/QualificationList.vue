@@ -33,7 +33,7 @@
 <script setup>
 import { GraduationCap, CircleAlert } from 'lucide-vue-next'
 import QualificationDetails from './QualificationDetails.vue'
-import ApplicationReview from '../ApplicationReview.vue'
+import ApplicationReview from './ApplicationReview.vue'
 
 defineProps({
   qualifications: {
@@ -47,4 +47,4 @@ defineProps({
 })
 
 defineEmits(['update'])
-</script>
+</script>../ApplicationReview.vue

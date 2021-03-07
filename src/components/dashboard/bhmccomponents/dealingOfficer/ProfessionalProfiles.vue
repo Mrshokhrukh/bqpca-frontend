@@ -1,156 +1,224 @@
+<!-- src/components/SearchRecords.vue -->
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <!-- Header with Gradient -->
+      <!-- Header with Gradient (Preserved as requested) -->
       <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Search Records</h1>
         <p class="text-gray-600">Find and manage professional records within the system.</p>
       </div>
 
-      <!-- Filters Section -->
-      <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
-        <div class="mb-4 flex justify-end">
+      <!-- Filter Section - Redesigned -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-100">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-lg font-semibold text-gray-900">Search Filters</h3>
           <button @click="resetFilters"
-            class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
+            class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg shadow-sm transition-all duration-200 hover:shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
             Reset Filters
           </button>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <!-- Registration Date Range -->
-          <div>
+          <div class="space-y-2">
             <label for="reg-from" class="block text-sm font-medium text-gray-700">Registration From</label>
-            <div class="mt-1">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                </svg>
+              </div>
               <input id="reg-from" type="date" v-model="filters.regFrom"
-                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg">
             </div>
           </div>
-          <div>
+          <div class="space-y-2">
             <label for="reg-to" class="block text-sm font-medium text-gray-700">Registration To</label>
-            <div class="mt-1">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                </svg>
+              </div>
               <input id="reg-to" type="date" v-model="filters.regTo"
-                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg">
             </div>
           </div>
 
           <!-- Search by Name -->
-          <div>
-            <label for="name-search" class="block text-sm font-medium text-gray-700">Search by Name</label>
-            <div class="mt-1">
+          <div class="space-y-2">
+            <label for="name-search" class="block text-sm font-medium text-gray-700">Name</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
+              </div>
               <input id="name-search" type="text" v-model="filters.name"
-                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg"
                 placeholder="Enter name...">
             </div>
           </div>
 
           <!-- CID/Work Permit/Passport No. -->
-          <div>
-            <label for="cid-search" class="block text-sm font-medium text-gray-700">CID/Work Permit/Passport No.</label>
-            <div class="mt-1">
+          <div class="space-y-2">
+            <label for="cid-search" class="block text-sm font-medium text-gray-700">CID/Work Permit/Passport</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h6v4H7V5zm8 8V7H5v6h10z" clip-rule="evenodd" />
+                </svg>
+              </div>
               <input id="cid-search" type="text" v-model="filters.cid"
-                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg"
                 placeholder="Enter CID/Work Permit/Passport No....">
             </div>
           </div>
 
           <!-- Gender -->
-          <div>
+          <div class="space-y-2">
             <label for="gender-filter" class="block text-sm font-medium text-gray-700">Gender</label>
-            <div class="mt-1">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+              </div>
               <select id="gender-filter" v-model="filters.gender"
-                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                <option value="">All</option>
-                <option value="M">Male</option>
-                <option value="F">Female</option>
+                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg appearance-none bg-none">
+                <option value="">All Genders</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
               </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </div>
             </div>
           </div>
 
           <!-- Category -->
-          <div>
+          <div class="space-y-2">
             <label for="category-filter" class="block text-sm font-medium text-gray-700">Category</label>
-            <div class="mt-1">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+                </svg>
+              </div>
               <select id="category-filter" v-model="filters.category"
-                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                <option value="">All</option>
+                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg appearance-none">
+                <option value="">All Categories</option>
                 <option>University</option>
                 <option>Sector</option>
               </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </div>
             </div>
           </div>
 
           <!-- Sub Category -->
-          <div>
+          <div class="space-y-2">
             <label for="sub-category-filter" class="block text-sm font-medium text-gray-700">Sub Category</label>
-            <div class="mt-1">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" />
+                </svg>
+              </div>
               <select id="sub-category-filter" v-model="filters.subCategory"
-                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                <option value="">All</option>
+                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg appearance-none">
+                <option value="">All Sub Categories</option>
                 <option>Qualification Type</option>
               </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </div>
             </div>
           </div>
 
           <!-- Health Facility -->
-          <div>
+          <div class="space-y-2">
             <label for="health-facility-filter" class="block text-sm font-medium text-gray-700">Health Facility</label>
-            <div class="mt-1">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                </svg>
+              </div>
               <select id="health-facility-filter" v-model="filters.healthFacility"
-                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                <option value="">All</option>
+                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg appearance-none">
+                <option value="">All Facilities</option>
                 <option>Hospital</option>
                 <option>Clinic</option>
               </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Results Table -->
-      <div class="bg-white rounded-xl shadow-md">
-        <div class="overflow-x-auto">
+      <!-- Results Section -->
+      <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+        <!-- Results Header -->
+        <div class="p-4 bg-indigo-50 border-b border-gray-200 flex justify-between items-center">
+          <h3 class="text-lg font-semibold text-gray-900">Search Results</h3>
+          <div class="text-sm text-gray-500">{{ filteredRecords.length }} record(s) found</div>
+        </div>
+
+        <!-- Loading State -->
+        <div v-if="loading" class="py-12 flex justify-center">
+          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        </div>
+
+        <!-- Table -->
+        <div v-else-if="filteredRecords.length > 0" class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200 table-fixed">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Ref. No.
-                </th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Reg. Dt.
-                </th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Name
-                </th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
-                  CID/Permit</th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Gender
-                </th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Category
-                </th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Facility
-                </th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Status
-                </th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">Action
-                </th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Ref.</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Date</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Name</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">CID/Permit</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Gender</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Category</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Facility</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Status</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28">Action</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="(record, index) in filteredRecords" :key="record.cid">
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ index + 1 }}</td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ formatDate(record.regDate) }}</td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 truncate">{{ record.name }}</td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ record.cid }}</td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ record.gender === 'M' ? 'Male' :
-            'Female' }}</td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{{ record.category }}</td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 truncate">{{ record.healthFacility }}</td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm">
+              <tr v-for="(record, index) in filteredRecords" :key="record.id" class="hover:bg-gray-50 transition-colors duration-150">
+                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ index + 1 }}</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ formatDate(record.registration_date) }}</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 truncate">{{ record.username }}</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 font-mono">{{ record.cid }}</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ record.gender }}</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ record.category }}</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 truncate">{{ record.service_type }}</td>
+                <td class="px-4 py-3 whitespace-nowrap">
                   <span
-                    :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusClass(record.status)}`">
-                    {{ record.status }}
+                    :class="`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${record.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`">
+                    {{ record.is_active ? 'Active' : 'Inactive' }}
                   </span>
                 </td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm space-x-1">
+                <td class="px-4 py-3 whitespace-nowrap flex space-x-2">
                   <button @click="viewRecord(record)"
-                    class="inline-flex items-center p-1 text-blue-600 hover:text-blue-800">
+                    class="inline-flex items-center p-1.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition-colors duration-200">
                     <span class="sr-only">View</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -160,15 +228,15 @@
                     </svg>
                   </button>
                   <button @click="editRecord(record)"
-                    class="inline-flex items-center p-1 text-green-600 hover:text-green-800">
+                    class="inline-flex items-center p-1.5 rounded-full bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-800 transition-colors duration-200">
                     <span class="sr-only">Edit</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
-                  <button @click="deleteRecord(record.cid)"
-                    class="inline-flex items-center p-1 text-red-600 hover:text-red-800">
+                  <button @click="deleteRecord(record.id)"
+                    class="inline-flex items-center p-1.5 rounded-full bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition-colors duration-200">
                     <span class="sr-only">Delete</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -180,86 +248,33 @@
             </tbody>
           </table>
         </div>
-        <div v-if="filteredRecords.length === 0" class="p-4 text-gray-500 text-center">
-          No matching records found.
-        </div>
-      </div>
 
-      <!-- View/Edit Modal -->
-      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 transform transition-all">
-          <span class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 cursor-pointer"
-            @click="closeModal">×</span>
-          <h2 class="text-xl font-bold text-gray-900 mb-4">{{ isEditing ? 'Edit Record' : 'View Record' }}</h2>
-          <div v-if="selectedRecord" class="space-y-4">
-            <div>
-              <label for="modal-reg-date" class="block text-sm font-medium text-gray-700">Registration Date:</label>
-              <div class="mt-1">
-                <input id="modal-reg-date" type="date" v-model="selectedRecord.regDate" :readonly="!isEditing"
-                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
-              </div>
-            </div>
-            <div>
-              <label for="modal-name" class="block text-sm font-medium text-gray-700">Full Name:</label>
-              <div class="mt-1">
-                <input id="modal-name" type="text" v-model="selectedRecord.name" :readonly="!isEditing"
-                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
-              </div>
-            </div>
-            <div>
-              <label for="modal-cid" class="block text-sm font-medium text-gray-700">CID Number:</label>
-              <div class="mt-1">
-                <input id="modal-cid" type="text" v-model="selectedRecord.cid" :readonly="!isEditing"
-                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
-              </div>
-            </div>
-            <div>
-              <label for="modal-gender" class="block text-sm font-medium text-gray-700">Gender:</label>
-              <div class="mt-1">
-                <select id="modal-gender" v-model="selectedRecord.gender" :disabled="!isEditing"
-                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                  <option value="M">Male</option>
-                  <option value="F">Female</option>
-                </select>
-              </div>
-            </div>
-            <div>
-              <label for="modal-status" class="block text-sm font-medium text-gray-700">Status:</label>
-              <div class="mt-1">
-                <select id="modal-status" v-model="selectedRecord.status" :disabled="!isEditing"
-                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                  <option>Verified</option>
-                  <option>Pending</option>
-                  <option>Agreed</option>
-                </select>
-              </div>
-            </div>
-            <div class="flex justify-end gap-4">
-              <button v-if="isEditing" @click="saveChanges"
-                class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">Save
-                Changes</button>
-              <button @click="closeModal"
-                class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">Cancel</button>
-            </div>
+        <!-- Empty State -->
+        <div v-else class="p-12 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h3 class="mt-2 text-lg font-medium text-gray-900">No matching records found</h3>
+          <p class="mt-1 text-sm text-gray-500">Try adjusting your search filters to find what you're looking for.</p>
+          <div class="mt-6">
+            <button @click="resetFilters" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              Reset All Filters
+            </button>
           </div>
         </div>
       </div>
+
+      <!-- Modal for viewing and editing record details -->
+      <UserDetailsModal :show-modal="showModal" :is-editing="isEditing" :selected-record="selectedRecord"
+        :user-id="selectedRecord?.id" @close="closeModal" @update="fetchUsers" />
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, computed } from 'vue';
-
-interface ProfessionalRecord {
-  regDate: string;
-  name: string;
-  cid: string;
-  gender: string;
-  category: string;
-  healthFacility: string;
-  status: string;
-}
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import apiServices from '@/services/services'; // Import your API service
+import UserDetailsModal from './modals/UserDetailsModal.vue';
 
 const filters = ref({
   regFrom: '',
@@ -272,166 +287,46 @@ const filters = ref({
   healthFacility: ''
 });
 
-const records = ref<ProfessionalRecord[]>([
-  {
-    regDate: '2023-01-05',
-    name: 'Jampel Kuenga',
-    cid: '11107000996',
-    gender: 'M',
-    category: 'University',
-    healthFacility: 'National Hospital',
-    status: 'Verified'
-  },
-  {
-    regDate: '2023-02-10',
-    name: 'Wangkok Dorji',
-    cid: '10905001085',
-    gender: 'M',
-    category: 'Sector',
-    healthFacility: 'Central Clinic',
-    status: 'Pending'
-  },
-  {
-    regDate: '2023-03-15',
-    name: 'Takering Zangmo Tamang',
-    cid: '11809000127',
-    gender: 'F',
-    category: 'University',
-    healthFacility: 'Private Clinic',
-    status: 'Agreed'
-  },
-  {
-    regDate: '2023-04-20',
-    name: 'Bodha Kumar Rai',
-    cid: '11206001118',
-    gender: 'M',
-    category: 'Sector',
-    healthFacility: 'Community Health Center',
-    status: 'Verified'
-  },
-  {
-    regDate: '2023-05-25',
-    name: 'Pem Chezom',
-    cid: '11308002635',
-    gender: 'F',
-    category: 'University',
-    healthFacility: 'National Hospital',
-    status: 'Agreed'
-  },
-  {
-    regDate: '2023-06-01',
-    name: 'Yangchen Lhamo',
-    cid: '1151404502',
-    gender: 'F',
-    category: 'Sector',
-    healthFacility: 'Central Clinic',
-    status: 'Pending'
-  },
-  {
-    regDate: '2023-07-07',
-    name: 'Soman Yangchen',
-    cid: '10709005003',
-    gender: 'F',
-    category: 'University',
-    healthFacility: 'Private Clinic',
-    status: 'Verified'
-  },
-  {
-    regDate: '2023-08-15',
-    name: 'Daw Doji Doya',
-    cid: '11206003641',
-    gender: 'M',
-    category: 'Sector',
-    healthFacility: 'Community Health Center',
-    status: 'Agreed'
-  },
-  {
-    regDate: '2023-09-20',
-    name: 'Kinley Wangmo',
-    cid: '11911004567',
-    gender: 'F',
-    category: 'University',
-    healthFacility: 'National Hospital',
-    status: 'Pending'
-  },
-  {
-    regDate: '2023-10-25',
-    name: 'Tshewang Norbu',
-    cid: '12012005555',
-    gender: 'M',
-    category: 'Sector',
-    healthFacility: 'Central Clinic',
-    status: 'Verified'
-  },
-  {
-    regDate: '2023-11-30',
-    name: 'Dechen Zangmo',
-    cid: '12113006666',
-    gender: 'F',
-    category: 'University',
-    healthFacility: 'Private Clinic',
-    status: 'Agreed'
-  },
-  {
-    regDate: '2023-12-05',
-    name: 'Karma Dorji',
-    cid: '12214007777',
-    gender: 'M',
-    category: 'Sector',
-    healthFacility: 'Community Health Center',
-    status: 'Pending'
-  },
-  {
-    regDate: '2024-01-10',
-    name: 'Sonam Choden',
-    cid: '12315008888',
-    gender: 'F',
-    category: 'University',
-    healthFacility: 'National Hospital',
-    status: 'Verified'
-  },
-  {
-    regDate: '2024-02-15',
-    name: 'Nima Wangchuk',
-    cid: '12416009999',
-    gender: 'M',
-    category: 'Sector',
-    healthFacility: 'Central Clinic',
-    status: 'Verified'
-  }
-]);
-
+const records = ref([]);
 const showModal = ref(false);
 const isEditing = ref(false);
-const selectedRecord = ref<ProfessionalRecord | null>(null);
+const selectedRecord = ref(null);
+const loading = ref(false);
+
+const fetchUsers = async () => {
+  loading.value = true;
+  try {
+    const response = await apiServices.getAllUsers();
+    records.value = response.data.results.filter((user) => user.role === 'user' && user.service_type === 'health_certification');
+    loading.value = false;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    loading.value = false;
+  }
+};
+
+onMounted(fetchUsers);
 
 const filteredRecords = computed(() => {
   return records.value.filter(record => {
-    const regDate = new Date(record.regDate);
+    const regDate = record.registration_date ? new Date(record.registration_date) : null;
     const from = filters.value.regFrom ? new Date(filters.value.regFrom) : null;
     const to = filters.value.regTo ? new Date(filters.value.regTo) : null;
-
     return (
-      (!from || regDate >= from) &&
-      (!to || regDate <= to) &&
-      (!filters.value.name || record.name.toLowerCase().includes(filters.value.name.toLowerCase())) &&
-      (!filters.value.cid || record.cid.includes(filters.value.cid)) &&
-      (!filters.value.gender || record.gender === filters.value.gender) &&
-      (!filters.value.category || record.category === filters.value.category) &&
-      (!filters.value.healthFacility || record.healthFacility === filters.value.healthFacility)
+      (!from || (regDate && regDate >= from)) &&
+      (!to || (regDate && regDate <= to)) &&
+      (!filters.value.name || (record.username && record.username.toLowerCase().includes(filters.value.name.toLowerCase()))) &&
+      (!filters.value.cid || (record.cid && record.cid.includes(filters.value.cid))) &&
+      (!filters.value.gender || (record.gender && record.gender === filters.value.gender)) &&
+      (!filters.value.category || (record.category && record.category === filters.value.category)) &&
+      (!filters.value.healthFacility || (record.service_type && record.service_type === filters.value.healthFacility))
     );
   });
 });
 
-const statusClass = (status: string) => ({
-  'bg-green-100 text-green-800': status === 'Verified',
-  'bg-yellow-100 text-yellow-800': status === 'Pending',
-  'bg-blue-100 text-blue-800': status === 'Agreed'
-});
-
-const formatDate = (dateString: string) => {
+const formatDate = (dateString) => {
   if (!dateString) return '-';
-  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
@@ -449,31 +344,26 @@ const resetFilters = () => {
   };
 };
 
-const viewRecord = (record: ProfessionalRecord) => {
+const viewRecord = (record) => {
   selectedRecord.value = { ...record };
   isEditing.value = false;
   showModal.value = true;
 };
 
-const editRecord = (record: ProfessionalRecord) => {
+const editRecord = (record) => {
   selectedRecord.value = { ...record };
   isEditing.value = true;
   showModal.value = true;
 };
 
-const deleteRecord = (cid: string) => {
+const deleteRecord = async (id) => {
   if (confirm('Are you sure you want to delete this record?')) {
-    records.value = records.value.filter(record => record.cid !== cid);
-  }
-};
-
-const saveChanges = () => {
-  if (selectedRecord.value) {
-    const index = records.value.findIndex(r => r.cid === selectedRecord.value?.cid);
-    if (index !== -1) {
-      records.value[index] = { ...selectedRecord.value };
+    try {
+      await apiServices.deleteUser(id);
+      fetchUsers(); // Refresh the list
+    } catch (error) {
+      console.error("Error deleting user:", error);
     }
-    closeModal();
   }
 };
 
