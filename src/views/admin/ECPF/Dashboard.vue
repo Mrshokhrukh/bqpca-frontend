@@ -57,14 +57,18 @@ import ECPFUserProfile from '@/components/dashboard/ecpfcomponents/user/ECPFUser
 import ECPFTrackApplications from '@/components/dashboard/ecpfcomponents/user/ECPFTrackApplications.vue';
 // Dealing officer Components
 import ECPFDealingOfficerDashboard from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFDealingOfficerDashboard.vue';
-import ECPFApplicationLists from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFApplicationLists.vue';
-import ECPFChangeRequests from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFChangeRequests.vue';
-import ECPFEvents from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFEvents.vue';
+import IndividualEcpfApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/IndividualEcpfApplications.vue';
+import CollaboratedEcpfApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/CollaboratedEcpfApplications.vue';
+import RenewalApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/RenewalApplications.vue';
+import OwnershipChangeApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/OwnershipChangeApplications.vue';
+import NameChangeApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/NameChangeApplications.vue';
+import LocationChangeApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/LocationChangeApplications.vue';
 
 // Chief Components
 import ECPFChiefDashboard from '@/components/dashboard/ecpfcomponents/chief/ECPFChiefDashboard.vue';
 import ECPFFinalApproval from '@/components/dashboard/ecpfcomponents/chief/ECPFFinalApproval.vue';
 import ECPFAdminDashboard from '@/components/dashboard/ecpfcomponents/admin/ECPFAdminDashboard.vue';
+import BranchEcpfApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/BranchEcpfApplications.vue';
 import ECPFUserManagement from '@/components/dashboard/ecpfcomponents/admin/ECPFUserManagement.vue';
 
 const { role, user } = useAuthStore();
@@ -123,14 +127,20 @@ const ecpfDealingOfficerComponent = computed(() => {
   switch (true) {
     case path.endsWith('/ecpf/dashboard'):
       return ECPFDealingOfficerDashboard;
-    case path.endsWith('/ecpf/applications'):
-      return ECPFApplicationLists;
-    case path.endsWith('/ecpf/change_requests'):
-      return ECPFChangeRequests;
-    case path.endsWith('/ecpf/events'):    
-      return ECPFEvents;
-
-
+    case path.endsWith('/ecpf/individual_ecpf_applications'):
+      return IndividualEcpfApplications;
+    case path.endsWith('/ecpf/collaborated_ecpf_applications'):
+      return CollaboratedEcpfApplications;
+    case path.endsWith('/ecpf/branch_ecpf_applications'):
+      return BranchEcpfApplications;  
+    case path.endsWith('/ecpf/renewal_applications'):
+      return RenewalApplications;  
+    case path.endsWith('/ecpf/ownership_change_applications'):
+      return OwnershipChangeApplications;
+    case path.endsWith('/ecpf/name_change_applications'):
+      return NameChangeApplications;  
+    case path.endsWith('/ecpf/location_change_applications'):
+      return LocationChangeApplications;  
     default:
       return null;
   }
