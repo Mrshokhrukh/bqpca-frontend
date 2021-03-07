@@ -170,15 +170,13 @@ export default {
     },
     ecpf: {
       dashboard: ecpfDashboard,
-      individual_ecpf_applications: ecpfDashboard,  
+      individual_ecpf_applications: ecpfDashboard,
       collaborated_ecpf_applications: ecpfDashboard,
       branch_ecpf_applications: ecpfDashboard,
       renewal_applications: ecpfDashboard,
       name_change_applications: ecpfDashboard,
       location_change_applications: ecpfDashboard,
       ownership_change_applications: ecpfDashboard,
-        
-
     },
     accreditation: {
       dashboard: accredDashboard,
@@ -327,7 +325,6 @@ export default {
       view_certificates: bmhcDashboard,
       track_eoi: bmhcDashboard,
       track_dpr: bmhcDashboard,
-      draft_applications: bmhcDashboard,
       institution_profile: bmhcDashboard,
       // ... other Health Certification routes for director
     },

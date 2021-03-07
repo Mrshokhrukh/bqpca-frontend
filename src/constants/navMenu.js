@@ -309,15 +309,18 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Individual ECPF Applications',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/individual_ecpf_applications`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/individual_ecpf_applications`,
           },
           {
             name: 'Collaborated ECPF Applications',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/collaborated_ecpf_applications`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/collaborated_ecpf_applications`,
           },
           {
             name: 'New Branch Applications',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/branch_ecpf_applications`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/branch_ecpf_applications`,
           },
           {
             name: 'Renewal Applications',
@@ -331,16 +334,18 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'ECPF Name Change',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/name_change_applications`,
-
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/name_change_applications`,
           },
           {
             name: 'ECPF Location Change',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/location_change_applications`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/location_change_applications`,
           },
           {
             name: 'ECPF Ownership Change',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/ownership_change_applications`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/ownership_change_applications`,
           },
         ],
       },
@@ -773,11 +778,6 @@ const serviceSpecificMenuItems = {
         name: 'Track DPR',
         icon: getIconComponent('FileSearch'),
         route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
-      },
-      {
-        name: 'Draft Application',
-        icon: getIconComponent('FileSearch'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/draft_applications`,
       },
       {
         name: 'View Certificates',
