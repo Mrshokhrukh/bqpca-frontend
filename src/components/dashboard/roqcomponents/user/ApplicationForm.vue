@@ -3,7 +3,7 @@
     <!-- CID Holder or Non-CID Holder Selection -->
     <CIDSelection v-model="isCIDHolder" />
 
-    <PaymentModal ref="paymentModal" @payment-completed="onPaymentCompleted" @close="onPaymentModalClose" />
+    <PaymentModal ref="paymentModal" :amount="1000" @payment-completed="onPaymentCompleted" @close="onPaymentModalClose" />
 
     <form v-if="isCIDHolder !== null" @submit.prevent="handleSubmit" class="space-y-6 mt-6">
       <!-- Personal Information Section - CID Holders -->

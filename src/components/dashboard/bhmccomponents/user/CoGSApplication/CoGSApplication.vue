@@ -322,73 +322,6 @@
           </div>
         </Dialog>
       </TransitionRoot>
-
-      <!-- Payment Section -->
-      <TransitionRoot as="template" :show="showPaymentSection">
-        <div class="mt-8 bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-8">
-            <div class="flex items-center space-x-3">
-              <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <CreditCardIcon class="h-6 w-6 text-green-600" />
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-gray-900">Payment Required</h3>
-                <p class="mt-1 text-gray-600">Complete your payment to proceed</p>
-              </div>
-            </div>
-          </div>
-          <div class="p-8">
-            <p class="text-gray-600 mb-6">
-              An email notification with payment instructions has been sent to your registered email address.
-            </p>
-            <button @click="simulatePayment"
-              class="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-              <CreditCardIcon class="h-5 w-5 mr-2" />
-              Proceed to Payment
-            </button>
-          </div>
-        </div>
-      </TransitionRoot>
-
-      <!-- Certificate Section -->
-      <TransitionRoot as="template" :show="showCertificateSection">
-        <div class="mt-8 bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 p-8">
-            <div class="flex items-center space-x-3">
-              <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <DocumentTextIcon class="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-gray-900">Certificate Generation</h3>
-                <p class="mt-1 text-gray-600">Your certificate is ready to be generated</p>
-              </div>
-            </div>
-          </div>
-          <div class="p-8">
-            <button @click="generateCertificate"
-              class="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-              <DocumentDownloadIcon class="h-5 w-5 mr-2" />
-              Generate Certificate
-            </button>
-
-            <TransitionRoot as="template" :show="certificateGenerated">
-              <div class="mt-6 border border-gray-200 rounded-xl p-6 bg-gray-50">
-                <div class="flex items-center justify-between mb-4">
-                  <h4 class="text-lg font-semibold text-gray-900">Certificate of Good Standing</h4>
-                  <button @click="printCertificate"
-                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    <PrinterIcon class="h-5 w-5 mr-2" />
-                    Print
-                  </button>
-                </div>
-                <div class="p-4 border border-gray-200 rounded-lg bg-white">
-                  <p class="text-gray-600">Certificate preview will appear here...</p>
-                </div>
-              </div>
-            </TransitionRoot>
-          </div>
-        </div>
-      </TransitionRoot>
     </div>
   </div>
 </template>
@@ -398,6 +331,7 @@ import { ref, reactive, onMounted, watch, computed } from 'vue';
 import { useToast } from 'vue-toastification';
 import apiService from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
+import { useRouter } from 'vue-router';  // Import useRouter
 import {
   Dialog,
   DialogOverlay,
@@ -412,13 +346,15 @@ import {
 } from '@headlessui/vue'
 import {
   CheckIcon,
-  CreditCardIcon,
-  DocumentTextIcon,
-  PrinterIcon,
+  // Removed unused icons:
+  // CreditCardIcon,
+  // DocumentTextIcon,
+  // PrinterIcon,
 } from '@heroicons/vue/24/outline'
 
 const toast = useToast();
 const authStore = useAuthStore();
+const router = useRouter(); // Initialize useRouter
 
 const form = reactive({
   registration_no: '',
@@ -446,9 +382,9 @@ const showTermsModal = ref(false);
 const agencyOptions = ref([]);
 const message = ref('');
 const messageClass = ref('');
-const showPaymentSection = ref(false);
-const showCertificateSection = ref(false);
-const certificateGenerated = ref(false);
+// const showPaymentSection = ref(false);       // Removed
+// const showCertificateSection = ref(false);   // Removed
+// const certificateGenerated = ref(false);     // Removed
 
 const fetchRegistrationNumber = async (cid) => {
   try {
@@ -573,7 +509,7 @@ const submitForm = async () => {
       review_remark: "",
       endorsement_decision: "Pending",
       endorsement_remark: "",
-      is_payment_complete: false,
+      is_payment_complete: false, // Removed payment and certificate related fields
       payment_id: "",
       is_active: true,
     };
@@ -582,8 +518,9 @@ const submitForm = async () => {
       const response = await apiService.createBmhcCogs(requestData);
 
       if (response.status === 201) {
-        toast.success('Application submitted successfully! You will receive an email notification for payment.');
-        showPaymentSection.value = true;
+        toast.success('Application submitted successfully!');
+        // Redirect to dashboard after successful submission
+        router.push('/admin/user/health_certification/dashboard');
       } else {
         toast.error('An unexpected error occurred. Please try again.');
         console.error("Unexpected response status:", response.status);
@@ -640,28 +577,10 @@ const cancelForm = () => {
 
 
 
-const simulatePayment = () => {
-  message.value = 'Processing payment...';
-  messageClass.value = 'text-yellow-500';
-  setTimeout(() => {
-    message.value = 'Payment successful!';
-    messageClass.value = 'text-green-500';
-    showPaymentSection.value = false;
-    showCertificateSection.value = true;
-    setTimeout(() => {
-      message.value = '';
-      messageClass.value = '';
-    }, 3000);
-  }, 2000);
-};
-
-const generateCertificate = () => {
-  certificateGenerated.value = true
-};
-
-const printCertificate = () => {
-  window.print();
-};
+// Removed payment and certificate related methods:
+// const simulatePayment = () => { ... };
+// const generateCertificate = () => { ... };
+// const printCertificate = () => { ... };
 
 const updateRecipientDetails = () => {
   if (isRecipientSelf.value && authStore.user) {

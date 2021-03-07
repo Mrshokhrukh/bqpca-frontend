@@ -210,6 +210,13 @@
             </div>
           </div>
 
+          <!-- CID Number -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">CID/Work Permit Number</label>
+            <input type="number" v-model="registerForm.cid" required
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
+          </div>
+
           <!-- Contact Number -->
           <div>
             <label class="block text-sm font-medium text-gray-700">Contact Number</label>
@@ -305,6 +312,7 @@ const registerForm = reactive({
   last_name: '',
   gender: '',
   date_of_birth: null,
+  cid: '',
   contact_number: '',
   email: '',
   password: '',
@@ -403,6 +411,7 @@ const handleRegister = async () => {
       last_name: registerForm.last_name,
       gender: registerForm.gender,
       date_of_birth: registerForm.date_of_birth,
+      cid: registerForm.cid,
       contact_number: registerForm.contact_number,
       email: registerForm.email,
       password: registerForm.password,

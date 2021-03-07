@@ -1,18 +1,18 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Type of Course Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Mode of Study</h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8">
           <h2 class="text-xl font-semibold text-slate-900 mb-4">
-            {{ isEditing ? 'Edit Type of Course' : 'Add New Type of Course' }}
+            {{ isEditing ? 'Edit Mode of Study' : 'Add New Mode of Study' }}
           </h2>
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
-                <label for="courseTypeName" class="block text-sm font-medium text-slate-700">Type of Course Name</label>
+                <label for="courseTypeName" class="block text-sm font-medium text-slate-700">Mode of Study Name</label>
                 <input type="text" id="courseTypeName" v-model="formData.name" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md
                          focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter type of course name" required />
@@ -26,7 +26,7 @@
               <div class="flex gap-3">
                 <button type="submit" class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700
                          focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                  {{ isEditing ? 'Update Type of Course' : 'Add Type of Course' }}
+                  {{ isEditing ? 'Update Mode of Study' : 'Add Mode of Study' }}
                 </button>
                 <button v-if="isEditing" type="button" @click="cancelEdit"
                   class="py-2 px-4 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200">
@@ -37,11 +37,11 @@
           </form>
         </div>
 
-        <!-- Right Column - Types of Course List -->
+        <!-- Right Column - Mode of Study List -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
           <div class="mb-6 space-y-4">
             <div class="flex justify-between items-center">
-              <h2 class="text-xl font-semibold text-slate-900">Types of Course List</h2>
+              <h2 class="text-xl font-semibold text-slate-900">Mode of Study List</h2>
               <span class="text-sm text-slate-500">
                 {{ filteredCourseTypes.length }} type{{ filteredCourseTypes.length !== 1 ? 's' : '' }} of course
               </span>
@@ -59,7 +59,7 @@
             </div>
           </div>
 
-          <!-- Types of Course Grid -->
+          <!-- Mode of Study Grid -->
           <div class="space-y-4 mb-6">
             <TransitionGroup name="list">
               <div v-for="courseType in paginatedCourseTypes" :key="courseType.id" class="p-4 border border-slate-200 rounded-lg hover:border-blue-200
