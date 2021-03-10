@@ -369,7 +369,7 @@ const serviceSpecificMenuItems = {
           {
             name: 'Hei Visit Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/hei_visit_applications`,
-            
+
           },
         ],
       },
@@ -512,8 +512,8 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/user_profile`,
         hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.profile,
       },
-      
-      
+
+
       {
         name: 'Reports',
         icon: getIconComponent('FileSearch'),
@@ -781,36 +781,46 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/institutions/${serviceType}/dashboard`,
       },
       {
-        name: 'Apply for EOI',
-        icon: getIconComponent('CheckCircle'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_eoi`,
+        name: 'EOI Management',
+        icon: getIconComponent('Activity'),
+        children: [
+          {
+            name: 'Apply for EOI',
+            route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_eoi`,
+
+          },
+          {
+            name: 'Track EOI',
+            route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
+          },
+
+
+        ],
       },
       {
-        name: 'Track EOI',
-        icon: getIconComponent('FileSearch'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
+        name: 'DPR Management',
+        icon: getIconComponent('Activity'),
+        children: [
+          {
+            name: 'Apply for DPR',
+            route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_dpr`,
+
+          },
+          {
+            name: 'Track DPR',
+            route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
+          },
+
+
+        ],
       },
-      {
-        name: 'Apply For DPR',
-        icon: getIconComponent('CheckCircle'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_dpr`,
-      },
-      {
-        name: 'Track DPR',
-        icon: getIconComponent('FileSearch'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
-      },
+
       {
         name: 'View Certificates',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
       },
-      {
-        name: 'Teaching Hospital Education Program',
-        icon: getIconComponent('file'),
-        route: (serviceType) =>
-          `/admin/institutions/${serviceType}/teaching_hospital_education_program`,
-      },
+
       {
         name: 'Institution Profile',
         icon: getIconComponent(''),
@@ -818,7 +828,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Teaching Hospital',
-        icon: getIconComponent('Activity'), 
+        icon: getIconComponent('Activity'),
         children: [
           {
             name: 'New Teaching Hospital',
@@ -833,7 +843,7 @@ const serviceSpecificMenuItems = {
             name: 'New Education Program',
             route: (serviceType) => `/admin/institutions/${serviceType}/new_education_program`,
           },
-          
+
         ],
       },
     ],
