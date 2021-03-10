@@ -117,6 +117,7 @@ import TrackEoiApplication from '@/components/dashboard/bhmccomponents/instituti
 import TrackDPRApplication from '@/components/dashboard/bhmccomponents/institutions/TrackDPRApplication.vue';
 import ViewCertificates from '@/components/dashboard/bhmccomponents/institutions/ViewCertificates.vue';
 import InstituteProfile from '@/components/dashboard/bhmccomponents/institutions/InstitutionProfile.vue';
+import TeachingHospitalEduPrograme from '@/components/dashboard/bhmccomponents/institutions/TeachingHospitalEduPrograme.vue';
 const { role } = useAuthStore();
 const route = useRoute();
 
@@ -297,6 +298,8 @@ const bmhInstitutionsComponent = computed(() => {
       return ViewCertificates;
     case path.endsWith('/health_certification/institution_profile'):
       return InstituteProfile;
+    case path.endsWith('/health_certification/teaching_hospital_edu_programe'):
+      return TeachingHospitalEduPrograme;
     default:
       return null;
   }

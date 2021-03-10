@@ -785,6 +785,12 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
       },
       {
+        name: 'Teaching Hospital Education Program',
+        icon: getIconComponent('file'),
+        route: (serviceType) =>
+          `/admin/institutions/${serviceType}/teaching_hospital_education_program`,
+      },
+      {
         name: 'Institution Profile',
         icon: getIconComponent(''),
         route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,

@@ -326,6 +326,7 @@ export default {
       track_eoi: bmhcDashboard,
       track_dpr: bmhcDashboard,
       institution_profile: bmhcDashboard,
+      teaching_hospital_edu_programe: bmhcDashboard,
       // ... other Health Certification routes for director
     },
   },

@@ -267,6 +267,13 @@
                   </div>
 
                   <div>
+                    <label for="license_number" class="block text-sm font-medium text-slate-700">Institute License
+                      Number</label>
+                    <input type="text" id="license_number" v-model="medicalInstitutionForm.license_number"
+                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500" />
+                  </div>
+
+                  <div>
                     <label for="cme_email" class="block text-sm font-medium text-slate-700">Email</label>
                     <input type="email" id="cme_email" v-model="medicalInstitutionForm.email" required
                       class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500" />
@@ -440,7 +447,8 @@ const medicalInstitutionForm = reactive({
   email: '',
   password: '',
   confirm_password: '',
-  contact_number: '', // Added this field
+  contact_number: '',
+  license_number: '', // This will be shown to user as License Number but sent as CID
 });
 
 const openMedicalInstitutionModal = () => {
@@ -449,12 +457,14 @@ const openMedicalInstitutionModal = () => {
 
 const closeMedicalInstitutionModal = () => {
   showMedicalInstitutionModal.value = false;
-  // Reset the form if needed
+  // Reset the form
   Object.assign(medicalInstitutionForm, {
     institution_name: '',
     email: '',
     password: '',
     confirm_password: '',
+    contact_number: '',
+    license_number: '',
   });
 };
 
@@ -479,6 +489,8 @@ const handleMedicalInstitutionRegistration = async () => {
       contact_number: medicalInstitutionForm.contact_number,
       role: 'institutions',
       service_type: serviceType.value,
+      // Send the license number as cid to the backend
+      cid: medicalInstitutionForm.license_number || ''
     }
 
     await apiService.register(payload)
