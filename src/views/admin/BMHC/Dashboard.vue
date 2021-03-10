@@ -60,6 +60,7 @@ import ReRegistration from '@/components/dashboard/bhmccomponents/user/certifica
 import BMHCUserReports from '@/components/dashboard/bhmccomponents/user/ReportsComponent.vue';
 import CounselorApplicationFrom from '@/components/dashboard/bhmccomponents/user/counselorApplication/CounselorApplicationFrom.vue';
 import CounselorApplicationTracker from '@/components/dashboard/bhmccomponents/user/counselorApplication/CounselorApplicationTracker.vue';
+
 // Dealing Officer Components
 import ApplicationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/ApplicationLists.vue';
 import RenewalLists from '@/components/dashboard/bhmccomponents/dealingOfficer/RenewalLists.vue';
@@ -117,7 +118,9 @@ import TrackEoiApplication from '@/components/dashboard/bhmccomponents/instituti
 import TrackDPRApplication from '@/components/dashboard/bhmccomponents/institutions/TrackDPRApplication.vue';
 import ViewCertificates from '@/components/dashboard/bhmccomponents/institutions/ViewCertificates.vue';
 import InstituteProfile from '@/components/dashboard/bhmccomponents/institutions/InstitutionProfile.vue';
-import TeachingHospitalEduPrograme from '@/components/dashboard/bhmccomponents/institutions/TeachingHospitalEduPrograme.vue';
+import TeachingCenter from '@/components/dashboard/bhmccomponents/institutions/TeachingCenter.vue';
+import TeachingCenterRenewal from '@/components/dashboard/bhmccomponents/institutions/TeachingCenterRenewal.vue';
+import NewEducationProgram from '@/components/dashboard/bhmccomponents/institutions/NewEducationProgram.vue';
 const { role } = useAuthStore();
 const route = useRoute();
 
@@ -208,6 +211,7 @@ const bmhUserComponent = computed(() => {
       return BMHCUserProfile;
     case path.endsWith('/health_certification/track_counselor_application'):
       return CounselorApplicationTracker;
+
     default:
       return null;
   }
@@ -298,8 +302,12 @@ const bmhInstitutionsComponent = computed(() => {
       return ViewCertificates;
     case path.endsWith('/health_certification/institution_profile'):
       return InstituteProfile;
-    case path.endsWith('/health_certification/teaching_hospital_edu_programe'):
-      return TeachingHospitalEduPrograme;
+      case path.endsWith('/health_certification/new_teaching_hospital'):
+      return TeachingCenter;
+    case path.endsWith('/health_certification/renewal_teaching_hospital'):
+      return TeachingCenterRenewal;
+    case path.endsWith('/health_certification/new_education_program'):
+      return NewEducationProgram;
     default:
       return null;
   }

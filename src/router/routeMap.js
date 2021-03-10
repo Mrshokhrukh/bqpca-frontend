@@ -159,6 +159,8 @@ export default {
       track_cogs_applications: bmhcDashboard,
       counselor_application: bmhcDashboard,
       track_counselor_application: bmhcDashboard,
+
+
     },
   },
   dealing_officer: {
@@ -177,6 +179,13 @@ export default {
       name_change_applications: ecpfDashboard,
       location_change_applications: ecpfDashboard,
       ownership_change_applications: ecpfDashboard,
+      education_fair_applications: ecpfDashboard,
+      in_house_event_applications: ecpfDashboard,
+      mass_media_applications: ecpfDashboard,
+      hei_visit_applications: ecpfDashboard,
+      ecpf_link_establishment: ecpfDashboard,
+
+
     },
     accreditation: {
       dashboard: accredDashboard,
@@ -326,7 +335,9 @@ export default {
       track_eoi: bmhcDashboard,
       track_dpr: bmhcDashboard,
       institution_profile: bmhcDashboard,
-      teaching_hospital_edu_programe: bmhcDashboard,
+      new_teaching_hospital: bmhcDashboard,
+      renewal_teaching_hospital: bmhcDashboard,
+      new_education_program: bmhcDashboard,
       // ... other Health Certification routes for director
     },
   },

@@ -351,13 +351,32 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Events',
-        icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/admin/${serviceType}/events`,
+        icon: getIconComponent('Activity'), //Use activity
+        children: [
+          {
+            name: 'Education Fair Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/education_fair_applications`,
+
+          },
+          {
+            name: 'Mass Media Event Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/mass_media_applications`,
+          },
+          {
+            name: 'In House Event Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/in_house_event_applications`,
+          },
+          {
+            name: 'Hei Visit Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/hei_visit_applications`,
+            
+          },
+        ],
       },
       {
         name: 'ECPF Linkages',
         icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/admin/${serviceType}/linkages`,
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_link_establishment`,
       },
       {
         name: 'Bio data',
@@ -493,6 +512,8 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/user_profile`,
         hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.profile,
       },
+      
+      
       {
         name: 'Reports',
         icon: getIconComponent('FileSearch'),
@@ -794,6 +815,26 @@ const serviceSpecificMenuItems = {
         name: 'Institution Profile',
         icon: getIconComponent(''),
         route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
+      },
+      {
+        name: 'Teaching Hospital',
+        icon: getIconComponent('Activity'), 
+        children: [
+          {
+            name: 'New Teaching Hospital',
+            route: (serviceType) => `/admin/institutions/${serviceType}/new_teaching_hospital`,
+
+          },
+          {
+            name: 'Renewal',
+            route: (serviceType) => `/admin/institutions/${serviceType}/renewal_teaching_hospital`,
+          },
+          {
+            name: 'New Education Program',
+            route: (serviceType) => `/admin/institutions/${serviceType}/new_education_program`,
+          },
+          
+        ],
       },
     ],
   },
