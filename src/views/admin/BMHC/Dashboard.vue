@@ -81,6 +81,11 @@ import CpdReports from '@/components/dashboard/bhmccomponents/dealingOfficer/CPD
 import ReRegistrationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/userApplications/ReRegistrationLists.vue';
 import AdditionalApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/userApplications/AdditionalApplication.vue';
 import TeachingHospitals from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/TeachingHospitals.vue';
+import EducationPrograms from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/EducationPrograms.vue';
+import InstituteProfiles from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/InstituteProfiles.vue';
+import InstituteRenewals from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/InstituteRenewals.vue';
+import TeachingHospitalRenewals from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/TeachingHospitalRenewals.vue';
+
 //BMHC masters components
 import MastersCmeActivities from '@/components/dashboard/bhmccomponents/admin/MastersCmeActivities.vue';
 import MastersCmeCredits from '@/components/dashboard/bhmccomponents/admin/MastersCmeCredits.vue';
@@ -259,7 +264,6 @@ const bmhDealingOfficerComponent = computed(() => {
       return Reports;
     case path.endsWith('/health_certification/eoi_application'):
       return EoiApplication;
-
     case path.endsWith('/health_certification/dpr_application'):
       return DprApplication;
     case path.endsWith('/health_certification/institute_report'):
@@ -269,11 +273,13 @@ const bmhDealingOfficerComponent = computed(() => {
     case path.endsWith('/health_certification/teaching_hospitals'):
       return TeachingHospitals;
     case path.endsWith('/health_certification/education_programs'):
-      return AdditionalApplication;
+      return EducationPrograms;
     case path.endsWith('/health_certification/institute_renewals'):
-      return AdditionalApplication;
+      return InstituteRenewals;
     case path.endsWith('/health_certification/teaching_hospital_renewals'):
-      return AdditionalApplication;
+      return TeachingHospitalRenewals;
+    case path.endsWith('/health_certification/institute_profiles'):
+      return InstituteProfiles;
     default:
       return null;
   }
@@ -322,10 +328,10 @@ const bmhInstitutionsComponent = computed(() => {
       return NewEducationProgram;
     case path.endsWith('/health_certification/my_applications'):  // My Applications
       return MyApplications;
-    case path.endsWith('/health_certification/institutes_renewal'):  
-      return InstitutesRenewal;  
+    case path.endsWith('/health_certification/institute_renewal'):
+      return InstitutesRenewal;
     case path.endsWith('/health_certification/my_capa'):
-      return MyCapa;  
+      return MyCapa;
     default:
       return null;
   }

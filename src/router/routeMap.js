@@ -228,6 +228,7 @@ export default {
       education_programs: bmhcDashboard,
       institute_renewals: bmhcDashboard,
       teaching_hospital_renewals: bmhcDashboard,
+      institute_profiles: bmhcDashboard,
     },
   },
   chief: {

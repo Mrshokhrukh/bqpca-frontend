@@ -727,6 +727,10 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/capa`,
           },
           {
+            name: 'All Institute Profiles',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_profiles`,
+          },
+          {
             name: 'Teaching Hospitals',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_hospitals`,
           },

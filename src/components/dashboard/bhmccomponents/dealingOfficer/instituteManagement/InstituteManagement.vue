@@ -216,7 +216,7 @@ import InstituteManageCapaModal from '../modals/InstituteManageCapaModal.vue';
 
 export default {
   name: 'InstituteManagement',
-  components: {
+  components: { 
     InstituteViewDetailsModal,
     InstituteReviewApplicationModal,
     InstituteManageCapaModal,

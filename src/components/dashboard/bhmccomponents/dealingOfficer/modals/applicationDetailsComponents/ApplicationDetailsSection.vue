@@ -60,9 +60,10 @@
               </select>
             </template>
             <template v-else>
-                <div class="text-gray-700 px-3 py-2">
-                  {{ selectedQualification ? selectedQualification.qualification_name_display : 'No Qualification Selected' }}
-                </div>
+              <div class="text-gray-700 px-3 py-2">
+                {{ selectedQualification ? selectedQualification.qualification_name_display :
+            'No Qualification Selected' }}
+              </div>
             </template>
           </div>
 
