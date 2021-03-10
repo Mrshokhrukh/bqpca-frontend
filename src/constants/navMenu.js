@@ -868,6 +868,11 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/institutions/${serviceType}/my_applications`,
       },
+      {
+        name: 'CAPA',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
+      },
     ],
   },
   engineering_certification: {

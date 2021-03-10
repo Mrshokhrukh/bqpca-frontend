@@ -344,6 +344,7 @@ export default {
       new_education_program: bmhcDashboard,
       my_applications: bmhcDashboard,
       institutes_renewal: bmhcDashboard,
+      my_capa : bmhcDashboard,
       // ... other Health Certification routes for director
     },
   },
