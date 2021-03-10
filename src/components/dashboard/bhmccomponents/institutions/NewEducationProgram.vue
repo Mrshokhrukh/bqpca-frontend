@@ -1,6 +1,6 @@
 <template>
   <div class="p-6 bg-gray-50 rounded-lg shadow-md">
-    <h2 class="text-2xl font-semibold text-gray-900 mb-6">Renewal of Teaching Center</h2>
+    <h2 class="text-2xl font-semibold text-gray-900 mb-6">New Educational Programme Application</h2>
 
     <form @submit.prevent="handleSubmit" class="space-y-6">
       <!-- Proponent Details -->
@@ -64,49 +64,70 @@
         </div>
       </section>
 
-      <!-- Renewal Details (Teaching Center Details) -->
+      <!-- Head of Institution Details -->
       <section>
-        <h3 class="text-xl font-medium text-gray-900 mb-4">Renewal Details (Teaching Center Details)</h3>
+        <h3 class="text-xl font-medium text-gray-900 mb-4">Head of Institution Details</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="centerName" class="block text-sm font-medium text-gray-700">
-              Center Name
+            <label for="headName" class="block text-sm font-medium text-gray-700">
+              Name
             </label>
-            <select id="centerName" v-model="formData.renewalDetails.centerName"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-              <option value="" disabled>Select Center</option>
-              <option v-for="center in centerNameOptions" :key="center.value" :value="center.value">
-                {{ center.label }}
-              </option>
-            </select>
+            <input type="text" id="headName" v-model="formData.headInstitutionDetails.name"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
           </div>
           <div>
-            <label for="centerLocation" class="block text-sm font-medium text-gray-700">
-              Center Location
+            <label for="headMobileNo" class="block text-sm font-medium text-gray-700">
+              Mobile Number
             </label>
-            <input type="text" id="centerLocation" v-model="formData.renewalDetails.centerLocation" disabled
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
+            <input type="text" id="headMobileNo" v-model="formData.headInstitutionDetails.mobileNumber"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
           </div>
           <div>
-            <label for="cityGewogCenter" class="block text-sm font-medium text-gray-700">
-              City/Gewog
+            <label for="headEmailAddress" class="block text-sm font-medium text-gray-700">
+              Email Address
             </label>
-            <input type="text" id="cityGewogCenter" v-model="formData.renewalDetails.cityGewog" disabled
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
+            <input type="email" id="headEmailAddress" v-model="formData.headInstitutionDetails.emailAddress"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Website -->
+      <section>
+        <h3 class="text-xl font-medium text-gray-900 mb-4">Website</h3>
+        <div>
+          <label for="website" class="block text-sm font-medium text-gray-700">
+            Website
+          </label>
+          <input type="text" id="website" v-model="formData.website"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+        </div>
+      </section>
+
+      <!-- Proposal Details -->
+      <section>
+        <h3 class="text-xl font-medium text-gray-900 mb-4">Proposal Details</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="proposalTitle" class="block text-sm font-medium text-gray-700">
+              Proposal Title
+            </label>
+            <input type="text" id="proposalTitle" v-model="formData.proposalDetails.proposalTitle"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
           </div>
           <div>
-            <label for="stateDzongkhag" class="block text-sm font-medium text-gray-700">
-              State/Dzongkhag
+            <label for="duration" class="block text-sm font-medium text-gray-700">
+              Duration (in months)
             </label>
-            <input type="text" id="stateDzongkhag" v-model="formData.renewalDetails.stateDzongkhag" disabled
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
+            <input type="number" id="duration" v-model="formData.proposalDetails.duration"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
           </div>
           <div>
-            <label for="targetCategory" class="block text-sm font-medium text-gray-700">
-              Target Category
+            <label for="commencementDate" class="block text-sm font-medium text-gray-700">
+              Commencement Date
             </label>
-            <input type="text" id="targetCategory" v-model="formData.renewalDetails.targetCategory" disabled
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
+            <input type="date" id="commencementDate" v-model="formData.proposalDetails.commencementDate"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
           </div>
           <div>
             <label for="attachments" class="block text-sm font-medium text-gray-700">
@@ -121,7 +142,7 @@
           <label for="remarks" class="block text-sm font-medium text-gray-700">
             Remarks
           </label>
-          <textarea id="remarks" v-model="formData.renewalDetails.remarks" rows="3"
+          <textarea id="remarks" v-model="formData.proposalDetails.remarks" rows="3"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
         </div>
       </section>
@@ -146,7 +167,7 @@
         <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" @click="handleCancel">
           Cancel
         </button>
-         <button type="button" class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" @click="handleSaveDraft">
+        <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" @click="handleSaveDraft">
           Save as Draft
         </button>
         <button type="submit" :disabled="!formData.declaration"
@@ -165,20 +186,24 @@ import { ref, watch } from 'vue';
 const formData = ref({
   proponentDetails: {
     trainingInstituteName: '',
-    country: 'Bhutan', // Auto-filled
-    dzongkhag: '',     // Auto-filled
-    cityGewog: '',     // Auto-filled
-    addressLocation: '', // Auto-filled, editable
-    contactNo: '',     // Auto-filled, editable
-    emailAddress: '',    // Auto-filled, editable
+    country: 'Bhutan',
+    dzongkhag: '',
+    cityGewog: '',
+    addressLocation: '',
+    contactNo: '',
+    emailAddress: '',
   },
-  renewalDetails: {
-    centerName: '', // Dropdown
-    centerLocation: '', // Auto-filled
-    cityGewog: '',     // Auto-filled
-    stateDzongkhag: '', // Auto-filled
-    targetCategory: '', // Auto-filled
-    attachments: null, // Handle file uploads if needed
+  headInstitutionDetails: {
+    name: '',
+    mobileNumber: '',
+    emailAddress: '',
+  },
+  website: '',
+  proposalDetails: {
+    proposalTitle: '',
+    duration: null,
+    commencementDate: null,
+    attachments: null,
     remarks: '',
   },
   declaration: false,
@@ -191,109 +216,86 @@ const instituteOptions = ref([
   { label: 'Other Institute', value: 'other' },
 ]);
 
-const centerNameOptions = ref([
-  // These options should be dynamically loaded based on the selected Training Institute
-  { label: 'RIHS Teaching Center', value: 'rihs_center' },
-  { label: 'KGUMSB Simulation Center', value: 'kgumsb_sim_center' },
-  // ... more center options for the selected institute
-]);
-
-// Placeholder data for auto-filling center details
-const centerDetailsData = ref({
-  'rihs_center': {
-    centerLocation: 'Thimphu, Bhutan',
-    cityGewog: 'Thimphu Thromde',
-    stateDzongkhag: 'Thimphu',
-    targetCategory: 'Medical Training',
+// Placeholder data for Head of Institution Details (replace with actual data source)
+const headOfInstitutionData = ref({
+  'rihs': {
+    name: 'Dr. Tashi Wangchuk',
+    mobileNumber: '+(975) 17XXXXXXX',
+    emailAddress: 'head@rihs.edu.bt',
   },
-  'kgumsb_sim_center': {
-    centerLocation: 'Thimphu, Bhutan',
-    cityGewog: 'Thimphu Thromde',
-    stateDzongkhag: 'Thimphu',
-    targetCategory: 'Simulation Training',
+  'kgumsb': {
+    name: 'Dr. Sonam Jamtsho',
+    mobileNumber: '+(975) 17YYYYYYY',
+    emailAddress: 'head@kgumsb.edu.bt',
   },
-  // ... more center details based on centerName value
+  // ... more data for other institutes
 });
 
 
-// Watch for changes in Training Institute to auto-fill proponent details
+// Watch for changes in Training Institute to auto-fill proponent and head details
 watch(() => formData.value.proponentDetails.trainingInstituteName, (newValue) => {
   if (newValue === 'rihs') {
     formData.value.proponentDetails.country = 'Bhutan';
     formData.value.proponentDetails.dzongkhag = 'Thimphu';
     formData.value.proponentDetails.cityGewog = 'Thimphu Thromde';
-    formData.value.proponentDetails.addressLocation = 'Thimphu, Bhutan'; // Example address
-    formData.value.proponentDetails.contactNo = '+(975) 2 322057'; // Example contact
-    formData.value.proponentDetails.emailAddress = 'info@rihs.edu.bt'; // Example email
+    formData.value.proponentDetails.addressLocation = 'Thimphu, Bhutan';
+    formData.value.proponentDetails.contactNo = '+(975) 2 322057';
+    formData.value.proponentDetails.emailAddress = 'info@rihs.edu.bt';
 
-    // Update centerNameOptions based on selected institute (Example - replace with API call)
-    centerNameOptions.value = [
-      { label: 'RIHS Teaching Center', value: 'rihs_center' },
-      // ... fetch centers associated with RIHS from backend
-    ];
+    formData.value.headInstitutionDetails.name = headOfInstitutionData.value['rihs'].name;
+    formData.value.headInstitutionDetails.mobileNumber = headOfInstitutionData.value['rihs'].mobileNumber;
+    formData.value.headInstitutionDetails.emailAddress = headOfInstitutionData.value['rihs'].emailAddress;
+
   } else if (newValue === 'kgumsb') {
     formData.value.proponentDetails.country = 'Bhutan';
     formData.value.proponentDetails.dzongkhag = 'Thimphu';
     formData.value.proponentDetails.cityGewog = 'Thimphu Thromde';
-    formData.value.proponentDetails.addressLocation = 'Thimphu, Bhutan'; // Example address
-    formData.value.proponentDetails.contactNo = '+(975) 2 330556'; // Example contact
-    formData.value.proponentDetails.emailAddress = 'info@kgumsb.edu.bt'; // Example email
+    formData.value.proponentDetails.addressLocation = 'Thimphu, Bhutan';
+    formData.value.proponentDetails.contactNo = '+(975) 2 330556';
+    formData.value.proponentDetails.emailAddress = 'info@kgumsb.edu.bt';
 
-    // Update centerNameOptions based on selected institute (Example - replace with API call)
-    centerNameOptions.value = [
-      { label: 'KGUMSB Simulation Center', value: 'kgumsb_sim_center' },
-      // ... fetch centers associated with KGUMSB from backend
-    ];
+    formData.value.headInstitutionDetails.name = headOfInstitutionData.value['kgumsb'].name;
+    formData.value.headInstitutionDetails.mobileNumber = headOfInstitutionData.value['kgumsb'].mobileNumber;
+    formData.value.headInstitutionDetails.emailAddress = headOfInstitutionData.value['kgumsb'].emailAddress;
+
   } else if (newValue === 'other') {
-    // Clear auto-filled proponent fields if 'Other Institute' is selected
     formData.value.proponentDetails.country = '';
     formData.value.proponentDetails.dzongkhag = '';
     formData.value.proponentDetails.cityGewog = '';
     formData.value.proponentDetails.addressLocation = '';
     formData.value.proponentDetails.contactNo = '';
     formData.value.proponentDetails.emailAddress = '';
-    centerNameOptions.value = []; // Clear center options as institute is 'Other'
-  } else {
-    // Handle default case or no selection for institute
-    formData.value.proponentDetails.country = '';
-    formData.value.proponentDetails.dzongkhag = '';
-    formData.value.proponentDetails.cityGewog = '';
-    formData.value.proponentDetails.addressLocation = '';
-    formData.value.proponentDetails.contactNo = '';
-    formData.value.proponentDetails.emailAddress = '';
-    centerNameOptions.value = [];
-  }
-});
 
-// Watch for changes in Center Name to auto-fill renewal details
-watch(() => formData.value.renewalDetails.centerName, (newValue) => {
-  if (centerDetailsData.value[newValue]) {
-    const details = centerDetailsData.value[newValue];
-    formData.value.renewalDetails.centerLocation = details.centerLocation;
-    formData.value.renewalDetails.cityGewog = details.cityGewog;
-    formData.value.renewalDetails.stateDzongkhag = details.stateDzongkhag;
-    formData.value.renewalDetails.targetCategory = details.targetCategory;
+    formData.value.headInstitutionDetails.name = '';
+    formData.value.headInstitutionDetails.mobileNumber = '';
+    formData.value.headInstitutionDetails.emailAddress = '';
+
   } else {
-    // Clear renewal details if no matching center data found
-    formData.value.renewalDetails.centerLocation = '';
-    formData.value.renewalDetails.cityGewog = '';
-    formData.value.renewalDetails.stateDzongkhag = '';
-    formData.value.renewalDetails.targetCategory = '';
+    formData.value.proponentDetails.country = '';
+    formData.value.proponentDetails.dzongkhag = '';
+    formData.value.proponentDetails.cityGewog = '';
+    formData.value.proponentDetails.addressLocation = '';
+    formData.value.proponentDetails.contactNo = '';
+    formData.value.proponentDetails.emailAddress = '';
+
+    formData.value.headInstitutionDetails.name = '';
+    formData.value.headInstitutionDetails.mobileNumber = '';
+    formData.value.headInstitutionDetails.emailAddress = '';
   }
 });
 
 
 const handleSubmit = () => {
   if (formData.value.declaration) {
-    console.log('Renewal Form submitted:', formData.value);
-    // In a real application, you would send formData to your backend here for renewal.
+    console.log('New Educational Programme Form submitted:', formData.value);
+    // In a real application, you would send formData to your backend here for new program application with submit status.
   } else {
     alert('Please declare that the information is correct before submitting.');
   }
 };
 
 const handleCancel = () => {
-  console.log('Renewal Form cancelled');
+  console.log('New Educational Programme Form cancelled');
   // Reset form data or handle cancel action as needed
   formData.value = {
     proponentDetails: {
@@ -305,12 +307,16 @@ const handleCancel = () => {
       contactNo: '',
       emailAddress: '',
     },
-    renewalDetails: {
-      centerName: '',
-      centerLocation: '',
-      cityGewog: '',
-      stateDzongkhag: '',
-      targetCategory: '',
+    headInstitutionDetails: {
+      name: '',
+      mobileNumber: '',
+      emailAddress: '',
+    },
+    website: '',
+    proposalDetails: {
+      proposalTitle: '',
+      duration: null,
+      commencementDate: null,
       attachments: null,
       remarks: '',
     },
@@ -319,9 +325,9 @@ const handleCancel = () => {
 };
 
 const handleSaveDraft = () => {
-  console.log('Renewal Form saved as draft:', formData.value);
-  // In a real application, you would send formData to your backend here to save as draft for renewal.
-  alert('Renewal Form saved as draft!');
+  console.log('New Educational Programme Form saved as draft:', formData.value);
+  // In a real application, you would send formData to your backend here for saving as draft.
+  // You would likely send the data with a different status to indicate it's a draft.
 };
 </script>
 
