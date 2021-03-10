@@ -224,6 +224,10 @@ export default {
       payments: bmhcDashboard,
       reports: bmhcDashboard,
       counselor_application: bmhcDashboard,
+      teaching_hospitals: bmhcDashboard,
+      education_programs: bmhcDashboard,
+      institute_renewals: bmhcDashboard,
+      teaching_hospital_renewals: bmhcDashboard,
     },
   },
   chief: {

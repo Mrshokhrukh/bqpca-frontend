@@ -696,10 +696,6 @@ const serviceSpecificMenuItems = {
             name: 'Application Lists',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_application_review`,
           },
-          // {
-          //   name: 'Create Application',
-          //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_create_application`,
-          // },
           {
             name: 'Manage Providers',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_provider_management`,
@@ -729,6 +725,22 @@ const serviceSpecificMenuItems = {
           {
             name: 'CAPA Management',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/capa`,
+          },
+          {
+            name: 'Teaching Hospitals',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_hospitals`,
+          },
+          {
+            name: 'Education Programs',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/education_programs`,
+          },
+          {
+            name: 'Institute Renewals',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_renewals`,
+          },
+          {
+            name: 'Teaching Hospital Renewals',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_hospital_renewals`,
           },
           {
             name: 'Reports',
