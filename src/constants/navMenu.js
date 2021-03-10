@@ -814,24 +814,18 @@ const serviceSpecificMenuItems = {
 
         ],
       },
-
       {
-        name: 'View Certificates',
+        name: 'Institutes Renewal',
         icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
+        route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
       },
 
-      {
-        name: 'Institution Profile',
-        icon: getIconComponent(''),
-        route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
-      },
       {
         name: 'Teaching Hospital',
         icon: getIconComponent('Activity'),
         children: [
           {
-            name: 'New Teaching Hospital',
+            name: 'Teaching Hospital',
             route: (serviceType) => `/admin/institutions/${serviceType}/new_teaching_hospital`,
 
           },
@@ -845,6 +839,22 @@ const serviceSpecificMenuItems = {
           },
 
         ],
+      },
+      {
+        name: 'Institution Profile',
+        icon: getIconComponent(''),
+        route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
+      },
+      {
+        name: 'View Certificates',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
+      },
+
+      {
+        name: 'My Applications',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/my_applications`,
       },
     ],
   },

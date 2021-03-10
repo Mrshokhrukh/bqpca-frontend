@@ -121,6 +121,8 @@ import InstituteProfile from '@/components/dashboard/bhmccomponents/institutions
 import TeachingCenter from '@/components/dashboard/bhmccomponents/institutions/TeachingCenter.vue';
 import TeachingCenterRenewal from '@/components/dashboard/bhmccomponents/institutions/TeachingCenterRenewal.vue';
 import NewEducationProgram from '@/components/dashboard/bhmccomponents/institutions/NewEducationProgram.vue';
+import MyApplications from '@/components/dashboard/bhmccomponents/institutions/MyApplications.vue';
+import InstitutesRenewal from '@/components/dashboard/bhmccomponents/institutions/InstitutesRenewal.vue';
 const { role } = useAuthStore();
 const route = useRoute();
 
@@ -308,6 +310,10 @@ const bmhInstitutionsComponent = computed(() => {
       return TeachingCenterRenewal;
     case path.endsWith('/health_certification/new_education_program'):
       return NewEducationProgram;
+    case path.endsWith('/health_certification/my_applications'):  // My Applications
+      return MyApplications;
+    case path.endsWith('/health_certification/institutes_renewal'):  
+      return InstitutesRenewal;  
     default:
       return null;
   }

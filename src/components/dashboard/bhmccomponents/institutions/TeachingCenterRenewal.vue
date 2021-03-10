@@ -1,6 +1,6 @@
 <template>
   <div class="p-6 bg-gray-50 rounded-lg shadow-md">
-    <h2 class="text-2xl font-semibold text-gray-900 mb-6">Renewal of Teaching Center</h2>
+    <h2 class="text-2xl font-semibold text-gray-900 mb-6">Institute Renewal Application</h2>
 
     <form @submit.prevent="handleSubmit" class="space-y-6">
       <!-- Proponent Details -->
@@ -8,120 +8,133 @@
         <h3 class="text-xl font-medium text-gray-900 mb-4">Proponent Details</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="trainingInstituteName" class="block text-sm font-medium text-gray-700">
-              Training Institute Name
+            <label for="cid" class="block text-sm font-medium text-gray-700">
+              CID
             </label>
-            <select id="trainingInstituteName" v-model="formData.proponentDetails.trainingInstituteName"
+            <input type="text" id="cid" v-model="formData.proponentDetails.cid" disabled
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
+          </div>
+          <div>
+            <label for="fullName" class="block text-sm font-medium text-gray-700">
+              Full Name
+            </label>
+            <input type="text" id="fullName" v-model="formData.proponentDetails.fullName" disabled
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
+          </div>
+          <div>
+            <label for="gender" class="block text-sm font-medium text-gray-700">
+              Gender
+            </label>
+            <input type="text" id="gender" v-model="formData.proponentDetails.gender" disabled
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
+          </div>
+          <div>
+            <label for="contactNoProponent" class="block text-sm font-medium text-gray-700">
+              Contact No.
+            </label>
+            <input type="text" id="contactNoProponent" v-model="formData.proponentDetails.contactNo"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+          </div>
+          <div>
+            <label for="emailAddressProponent" class="block text-sm font-medium text-gray-700">
+              Email Address
+            </label>
+            <input type="email" id="emailAddressProponent" v-model="formData.proponentDetails.emailAddress"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Institute Details -->
+      <section>
+        <h3 class="text-xl font-medium text-gray-900 mb-4">Institute Details</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="institutionName" class="block text-sm font-medium text-gray-700">
+              Name of Institution
+            </label>
+            <select id="institutionName" v-model="formData.instituteDetails.institutionName"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-              <option value="" disabled>Select Institute</option>
+              <option value="" disabled>Select Institution</option>
               <option v-for="institute in instituteOptions" :key="institute.value" :value="institute.value">
                 {{ institute.label }}
               </option>
             </select>
           </div>
           <div>
-            <label for="country" class="block text-sm font-medium text-gray-700">
+            <label for="countryInstitute" class="block text-sm font-medium text-gray-700">
               Country
             </label>
-            <input type="text" id="country" v-model="formData.proponentDetails.country" disabled
+            <input type="text" id="countryInstitute" v-model="formData.instituteDetails.country" disabled
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
           </div>
           <div>
-            <label for="dzongkhag" class="block text-sm font-medium text-gray-700">
-              Dzongkhag/Throme
+            <label for="gewogState" class="block text-sm font-medium text-gray-700">
+              Gewog/State
             </label>
-            <input type="text" id="dzongkhag" v-model="formData.proponentDetails.dzongkhag" disabled
+            <input type="text" id="gewogState" v-model="formData.instituteDetails.gewogState" disabled
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
           </div>
           <div>
-            <label for="cityGewogProponent" class="block text-sm font-medium text-gray-700">
-              City/Gewog
+            <label for="chiwogDzongkhag" class="block text-sm font-medium text-gray-700">
+              Dzongkhag/Thromde
             </label>
-            <input type="text" id="cityGewogProponent" v-model="formData.proponentDetails.cityGewog" disabled
+            <input type="text" id="chiwogDzongkhag" v-model="formData.instituteDetails.chiwogDzongkhag" disabled
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
           </div>
           <div>
-            <label for="addressLocation" class="block text-sm font-medium text-gray-700">
-              Address/Location
+            <label for="teachingInstitute" class="block text-sm font-medium text-gray-700">
+              Teaching Institute
             </label>
-            <input type="text" id="addressLocation" v-model="formData.proponentDetails.addressLocation"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-          </div>
-          <div>
-            <label for="contactNo" class="block text-sm font-medium text-gray-700">
-              Contact No.
-            </label>
-            <input type="text" id="contactNo" v-model="formData.proponentDetails.contactNo"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-          </div>
-          <div>
-            <label for="emailAddress" class="block text-sm font-medium text-gray-700">
-              Email Address
-            </label>
-            <input type="email" id="emailAddress" v-model="formData.proponentDetails.emailAddress"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+            <input type="text" id="teachingInstitute" v-model="formData.instituteDetails.teachingInstitute" disabled
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
           </div>
         </div>
       </section>
 
-      <!-- Renewal Details (Teaching Center Details) -->
+      <!-- Head of Institution Details -->
       <section>
-        <h3 class="text-xl font-medium text-gray-900 mb-4">Renewal Details (Teaching Center Details)</h3>
+        <h3 class="text-xl font-medium text-gray-900 mb-4">Head of Institution Details</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="centerName" class="block text-sm font-medium text-gray-700">
-              Center Name
+            <label for="headName" class="block text-sm font-medium text-gray-700">
+              Name
             </label>
-            <select id="centerName" v-model="formData.renewalDetails.centerName"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-              <option value="" disabled>Select Center</option>
-              <option v-for="center in centerNameOptions" :key="center.value" :value="center.value">
-                {{ center.label }}
-              </option>
-            </select>
+            <input type="text" id="headName" v-model="formData.headInstitutionDetails.name"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
           </div>
           <div>
-            <label for="centerLocation" class="block text-sm font-medium text-gray-700">
-              Center Location
+            <label for="headGender" class="block text-sm font-medium text-gray-700">
+              Gender
             </label>
-            <input type="text" id="centerLocation" v-model="formData.renewalDetails.centerLocation" disabled
+            <input type="text" id="headGender" v-model="formData.headInstitutionDetails.gender" disabled
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
           </div>
           <div>
-            <label for="cityGewogCenter" class="block text-sm font-medium text-gray-700">
-              City/Gewog
+            <label for="headPhoneNumber" class="block text-sm font-medium text-gray-700">
+              Phone Number
             </label>
-            <input type="text" id="cityGewogCenter" v-model="formData.renewalDetails.cityGewog" disabled
+            <input type="text" id="headPhoneNumber" v-model="formData.headInstitutionDetails.phoneNumber" disabled
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
           </div>
           <div>
-            <label for="stateDzongkhag" class="block text-sm font-medium text-gray-700">
-              State/Dzongkhag
+            <label for="headEmailAddress" class="block text-sm font-medium text-gray-700">
+              Email Address
             </label>
-            <input type="text" id="stateDzongkhag" v-model="formData.renewalDetails.stateDzongkhag" disabled
+            <input type="email" id="headEmailAddress" v-model="formData.headInstitutionDetails.emailAddress" disabled
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
-          </div>
-          <div>
-            <label for="targetCategory" class="block text-sm font-medium text-gray-700">
-              Target Category
-            </label>
-            <input type="text" id="targetCategory" v-model="formData.renewalDetails.targetCategory" disabled
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100" />
-          </div>
-          <div>
-            <label for="attachments" class="block text-sm font-medium text-gray-700">
-              Attachments (if any)
-            </label>
-            <input type="file" id="attachments" multiple
-              class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-            <p class="mt-1 text-sm text-gray-500" id="file_input_help">You can attach relevant documents here.</p>
           </div>
         </div>
+      </section>
+
+      <!-- Remarks -->
+      <section>
+        <h3 class="text-xl font-medium text-gray-900 mb-4">Remarks</h3>
         <div>
           <label for="remarks" class="block text-sm font-medium text-gray-700">
             Remarks
           </label>
-          <textarea id="remarks" v-model="formData.renewalDetails.remarks" rows="3"
+          <textarea id="remarks" v-model="formData.remarks" rows="3"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
         </div>
       </section>
@@ -146,6 +159,9 @@
         <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" @click="handleCancel">
           Cancel
         </button>
+        <button type="button" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" @click="handleSaveDraft">
+          Save as Draft
+        </button>
         <button type="submit" :disabled="!formData.declaration"
           class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           :class="{ 'opacity-50 cursor-not-allowed': !formData.declaration }">
@@ -157,163 +173,164 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 
 const formData = ref({
   proponentDetails: {
-    trainingInstituteName: '',
+    cid: '',
+    fullName: '',
+    gender: '',
+    contactNo: '',
+    emailAddress: '',
+  },
+  instituteDetails: {
+    institutionName: '',
     country: 'Bhutan', // Auto-filled
-    dzongkhag: '',     // Auto-filled
-    cityGewog: '',     // Auto-filled
-    addressLocation: '', // Auto-filled, editable
-    contactNo: '',     // Auto-filled, editable
-    emailAddress: '',    // Auto-filled, editable
+    gewogState: '',     // Auto-filled
+    chiwogDzongkhag: '', // Auto-filled (Corrected to Dzongkhag/Thromde)
+    teachingInstitute: '', // Auto-filled
   },
-  renewalDetails: {
-    centerName: '', // Dropdown
-    centerLocation: '', // Auto-filled
-    cityGewog: '',     // Auto-filled
-    stateDzongkhag: '', // Auto-filled
-    targetCategory: '', // Auto-filled
-    attachments: null, // Handle file uploads if needed
-    remarks: '',
+  headInstitutionDetails: {
+    name: '',
+    gender: '',
+    phoneNumber: '',
+    emailAddress: '',
   },
+  remarks: '',
   declaration: false,
 });
 
-// Placeholder data for dropdowns - Replace with actual data fetching logic
+// Placeholder data for dropdown - Replace with actual data fetching logic
 const instituteOptions = ref([
-  { label: 'Royal Institute of Health Sciences', value: 'rihs' },
-  { label: 'Khesar Gyalpo University of Medical Sciences of Bhutan', value: 'kgumsb' },
+  { label: 'Bhutan Medical and Health Council', value: 'bmhc' },
+  { label: 'National Medical Services', value: 'nms' },
   { label: 'Other Institute', value: 'other' },
 ]);
 
-const centerNameOptions = ref([
-  // These options should be dynamically loaded based on the selected Training Institute
-  { label: 'RIHS Teaching Center', value: 'rihs_center' },
-  { label: 'KGUMSB Simulation Center', value: 'kgumsb_sim_center' },
-  // ... more center options for the selected institute
-]);
-
-// Placeholder data for auto-filling center details
-const centerDetailsData = ref({
-  'rihs_center': {
-    centerLocation: 'Thimphu, Bhutan',
-    cityGewog: 'Thimphu Thromde',
-    stateDzongkhag: 'Thimphu',
-    targetCategory: 'Medical Training',
+// Placeholder data for auto-filling institute details and head details
+const instituteDetailsData = ref({
+  'bmhc': {
+    country: 'Bhutan',
+    gewogState: 'Thimphu Thromde',
+    chiwogDzongkhag: 'Thimphu',
+    teachingInstitute: 'Yes', // Or 'Registered Teaching Institute' if more descriptive
+    headName: 'Dr. Example Head BMHC',
+    headGender: 'Male',
+    headPhoneNumber: '+(975) 2 XXX XXXX',
+    headEmailAddress: 'head@bmhc.gov.bt',
   },
-  'kgumsb_sim_center': {
-    centerLocation: 'Thimphu, Bhutan',
-    cityGewog: 'Thimphu Thromde',
-    stateDzongkhag: 'Thimphu',
-    targetCategory: 'Simulation Training',
+  'nms': {
+    country: 'Bhutan',
+    gewogState: 'Thimphu Thromde',
+    chiwogDzongkhag: 'Thimphu',
+    teachingInstitute: 'Yes', // Or 'Registered Teaching Institute'
+    headName: 'Dr. Example Head NMS',
+    headGender: 'Female',
+    headPhoneNumber: '+(975) 2 YYY YYYY',
+    headEmailAddress: 'head@nms.gov.bt',
   },
-  // ... more center details based on centerName value
+  // ... more data for other institutes
 });
 
+// Watch for changes in Institution Name to auto-fill details
+watch(() => formData.value.instituteDetails.institutionName, (newValue) => {
+  if (instituteDetailsData.value[newValue]) {
+    const details = instituteDetailsData.value[newValue];
+    formData.value.instituteDetails.country = details.country;
+    formData.value.instituteDetails.gewogState = details.gewogState;
+    formData.value.instituteDetails.chiwogDzongkhag = details.chiwogDzongkhag;
+    formData.value.instituteDetails.teachingInstitute = details.teachingInstitute;
 
-// Watch for changes in Training Institute to auto-fill proponent details
-watch(() => formData.value.proponentDetails.trainingInstituteName, (newValue) => {
-  if (newValue === 'rihs') {
-    formData.value.proponentDetails.country = 'Bhutan';
-    formData.value.proponentDetails.dzongkhag = 'Thimphu';
-    formData.value.proponentDetails.cityGewog = 'Thimphu Thromde';
-    formData.value.proponentDetails.addressLocation = 'Thimphu, Bhutan'; // Example address
-    formData.value.proponentDetails.contactNo = '+(975) 2 322057'; // Example contact
-    formData.value.proponentDetails.emailAddress = 'info@rihs.edu.bt'; // Example email
-
-    // Update centerNameOptions based on selected institute (Example - replace with API call)
-    centerNameOptions.value = [
-      { label: 'RIHS Teaching Center', value: 'rihs_center' },
-      // ... fetch centers associated with RIHS from backend
-    ];
-  } else if (newValue === 'kgumsb') {
-    formData.value.proponentDetails.country = 'Bhutan';
-    formData.value.proponentDetails.dzongkhag = 'Thimphu';
-    formData.value.proponentDetails.cityGewog = 'Thimphu Thromde';
-    formData.value.proponentDetails.addressLocation = 'Thimphu, Bhutan'; // Example address
-    formData.value.proponentDetails.contactNo = '+(975) 2 330556'; // Example contact
-    formData.value.proponentDetails.emailAddress = 'info@kgumsb.edu.bt'; // Example email
-
-    // Update centerNameOptions based on selected institute (Example - replace with API call)
-    centerNameOptions.value = [
-      { label: 'KGUMSB Simulation Center', value: 'kgumsb_sim_center' },
-      // ... fetch centers associated with KGUMSB from backend
-    ];
+    formData.value.headInstitutionDetails.name = details.headName;
+    formData.value.headInstitutionDetails.gender = details.headGender;
+    formData.value.headInstitutionDetails.phoneNumber = details.headPhoneNumber;
+    formData.value.headInstitutionDetails.emailAddress = details.headEmailAddress;
   } else if (newValue === 'other') {
-    // Clear auto-filled proponent fields if 'Other Institute' is selected
-    formData.value.proponentDetails.country = '';
-    formData.value.proponentDetails.dzongkhag = '';
-    formData.value.proponentDetails.cityGewog = '';
-    formData.value.proponentDetails.addressLocation = '';
-    formData.value.proponentDetails.contactNo = '';
-    formData.value.proponentDetails.emailAddress = '';
-    centerNameOptions.value = []; // Clear center options as institute is 'Other'
+    // Clear auto-filled institute and head details if 'Other Institute' is selected
+    formData.value.instituteDetails.country = '';
+    formData.value.instituteDetails.gewogState = '';
+    formData.value.instituteDetails.chiwogDzongkhag = '';
+    formData.value.instituteDetails.teachingInstitute = '';
+
+    formData.value.headInstitutionDetails.name = '';
+    formData.value.headInstitutionDetails.gender = '';
+    formData.value.headInstitutionDetails.phoneNumber = '';
+    formData.value.headInstitutionDetails.emailAddress = '';
   } else {
-    // Handle default case or no selection for institute
-    formData.value.proponentDetails.country = '';
-    formData.value.proponentDetails.dzongkhag = '';
-    formData.value.proponentDetails.cityGewog = '';
-    formData.value.proponentDetails.addressLocation = '';
-    formData.value.proponentDetails.contactNo = '';
-    formData.value.proponentDetails.emailAddress = '';
-    centerNameOptions.value = [];
+    // Clear fields if no institute is selected or selection is cleared
+    formData.value.instituteDetails.country = '';
+    formData.value.instituteDetails.gewogState = '';
+    formData.value.instituteDetails.chiwogDzongkhag = '';
+    formData.value.instituteDetails.teachingInstitute = '';
+
+    formData.value.headInstitutionDetails.name = '';
+    formData.value.headInstitutionDetails.gender = '';
+    formData.value.headInstitutionDetails.phoneNumber = '';
+    formData.value.headInstitutionDetails.emailAddress = '';
   }
 });
-
-// Watch for changes in Center Name to auto-fill renewal details
-watch(() => formData.value.renewalDetails.centerName, (newValue) => {
-  if (centerDetailsData.value[newValue]) {
-    const details = centerDetailsData.value[newValue];
-    formData.value.renewalDetails.centerLocation = details.centerLocation;
-    formData.value.renewalDetails.cityGewog = details.cityGewog;
-    formData.value.renewalDetails.stateDzongkhag = details.stateDzongkhag;
-    formData.value.renewalDetails.targetCategory = details.targetCategory;
-  } else {
-    // Clear renewal details if no matching center data found
-    formData.value.renewalDetails.centerLocation = '';
-    formData.value.renewalDetails.cityGewog = '';
-    formData.value.renewalDetails.stateDzongkhag = '';
-    formData.value.renewalDetails.targetCategory = '';
-  }
-});
-
 
 const handleSubmit = () => {
   if (formData.value.declaration) {
-    console.log('Renewal Form submitted:', formData.value);
-    // In a real application, you would send formData to your backend here for renewal.
+    console.log('Institute Renewal Form submitted:', formData.value);
+    // In a real application, you would send formData to your backend here for institute renewal.
+    localStorage.removeItem('instituteRenewalDraft'); // Clear draft after submission
+    alert('Form submitted successfully!'); // Basic feedback for submission
   } else {
     alert('Please declare that the information is correct before submitting.');
   }
 };
 
 const handleCancel = () => {
-  console.log('Renewal Form cancelled');
-  // Reset form data or handle cancel action as needed
-  formData.value = {
-    proponentDetails: {
-      trainingInstituteName: '',
-      country: 'Bhutan',
-      dzongkhag: '',
-      cityGewog: '',
-      addressLocation: '',
-      contactNo: '',
-      emailAddress: '',
-    },
-    renewalDetails: {
-      centerName: '',
-      centerLocation: '',
-      cityGewog: '',
-      stateDzongkhag: '',
-      targetCategory: '',
-      attachments: null,
-      remarks: '',
-    },
-    declaration: false,
-  };
+  console.log('Institute Renewal Form cancelled');
+  localStorage.removeItem('instituteRenewalDraft'); // Clear draft if cancelled
+  formData.value = resetFormData(); // Use reset function
+  alert('Form cancelled and draft cleared.'); // Basic feedback for cancel
 };
+
+const handleSaveDraft = () => {
+  localStorage.setItem('instituteRenewalDraft', JSON.stringify(formData.value));
+  console.log('Institute Renewal Form saved as draft:', formData.value);
+  alert('Form saved as draft!'); // Basic feedback for draft save
+};
+
+const loadDraftData = () => {
+  const draft = localStorage.getItem('instituteRenewalDraft');
+  if (draft) {
+    formData.value = JSON.parse(draft);
+    console.log('Draft data loaded:', formData.value);
+    alert('Draft data loaded. You can continue editing.'); // Basic feedback for draft load
+  }
+};
+
+const resetFormData = () => ({
+  proponentDetails: {
+    cid: '',
+    fullName: '',
+    gender: '',
+    contactNo: '',
+    emailAddress: '',
+  },
+  instituteDetails: {
+    institutionName: '',
+    country: 'Bhutan',
+    gewogState: '',
+    chiwogDzongkhag: '',
+    teachingInstitute: '',
+  },
+  headInstitutionDetails: {
+    name: '',
+    gender: '',
+    phoneNumber: '',
+    emailAddress: '',
+  },
+  remarks: '',
+  declaration: false,
+});
+
+onMounted(() => {
+  loadDraftData(); // Load draft data when component is mounted
+});
 </script>
 
 <style scoped>

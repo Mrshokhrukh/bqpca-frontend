@@ -338,6 +338,8 @@ export default {
       new_teaching_hospital: bmhcDashboard,
       renewal_teaching_hospital: bmhcDashboard,
       new_education_program: bmhcDashboard,
+      my_applications: bmhcDashboard,
+      institutes_renewal: bmhcDashboard,
       // ... other Health Certification routes for director
     },
   },

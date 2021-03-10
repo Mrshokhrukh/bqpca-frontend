@@ -151,6 +151,9 @@
         <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" @click="handleCancel">
           Cancel
         </button>
+        <button type="button" class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" @click="handleSaveDraft">
+          Save as Draft
+        </button>
         <button type="submit" :disabled="!formData.declaration"
           class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           :class="{ 'opacity-50 cursor-not-allowed': !formData.declaration }">
@@ -246,7 +249,7 @@ watch(() => formData.value.proponentDetails.trainingInstituteName, (newValue) =>
 const handleSubmit = () => {
   if (formData.value.declaration) {
     console.log('Form submitted:', formData.value);
-    // In a real application, you would send formData to your backend here.
+    // In a real application, you would send formData to your backend here for final submission.
   } else {
     alert('Please declare that the information is correct before submitting.');
   }
@@ -276,6 +279,12 @@ const handleCancel = () => {
     },
     declaration: false,
   };
+};
+
+const handleSaveDraft = () => {
+  console.log('Form saved as draft:', formData.value);
+  // In a real application, you would send formData to your backend here to save as draft.
+  alert('Form saved as draft!');
 };
 </script>
 
