@@ -2,12 +2,7 @@
   <div class="cpd-management">
     <!-- Navigation Tabs -->
     <nav class="tabs">
-      <button
-        v-for="tab in tabs"
-        :key="tab.id"
-        :class="{ active: currentTab === tab.id }"
-        @click="currentTab = tab.id"
-      >
+      <button v-for="tab in tabs" :key="tab.id" :class="{ active: currentTab === tab.id }" @click="currentTab = tab.id">
         {{ tab.label }}
       </button>
     </nav>

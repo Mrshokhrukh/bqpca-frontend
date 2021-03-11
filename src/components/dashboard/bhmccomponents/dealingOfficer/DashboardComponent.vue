@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen">
-    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <!-- Dashboard Header - Simplified and less colorful -->
       <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-2xl p-8 mb-8 shadow-sm border-b border-gray-200">
         <div class="flex justify-between items-center">

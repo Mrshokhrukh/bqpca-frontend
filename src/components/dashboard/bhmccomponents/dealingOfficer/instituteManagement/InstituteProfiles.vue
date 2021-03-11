@@ -5,7 +5,7 @@
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-          Total: {{ instituteProfiles.length }}
+          Total: {{ institutes.length }}
         </span>
         <!-- Add status indicators here if needed -->
       </div>
@@ -58,20 +58,25 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="institute in instituteProfiles" :key="institute.cid" class="hover:bg-gray-50 transition-colors">
+            <tr v-if="loading">
+              <td colspan="5" class="text-center py-4">Loading institutes...</td>
+            </tr>
+            <tr v-else-if="institutes.length === 0">
+              <td colspan="5" class="text-center py-4">No institutes found.</td>
+            </tr>
+            <tr v-else v-for="institute in institutes" :key="institute.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium text-gray-900">{{ institute.name_of_institution }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ institute.cid }}</div>
+                <div class="text-sm text-gray-900">{{ institute.CID }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-500">{{ institute.dzongkhag }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(institute.do_dpr_review_decision)">
-                  <!-- Adjust status field as needed -->
-                  {{ getStatusText(institute.do_dpr_review_decision) }} <!-- Adjust status field as needed -->
+                  {{ getStatusText(institute.do_dpr_review_decision) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -100,91 +105,38 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import InstituteProfileDetailsModal from '../modals/InstituteProfileDetailsModal.vue'; // Adjust path if needed
+import { ref, onMounted } from 'vue';
+import InstituteProfileDetailsModal from '../modals/InstituteProfileDetailsModal.vue';
+import apiServices from '@/services/services';
 
-// Static data for institute profiles (replace with your actual data or API call later)
-const instituteProfiles = ref([
-  {
-    cid: '12121212121',
-    full_name: 'Dr. Pema Wangchuk',
-    gender: 'Male',
-    contact_no: '17171717',
-    email_address: 'pema@example.com',
-    name_of_institution: 'Bhutan Medical Institute',
-    country: 'Bhutan',
-    gewog: 'Thimphu Gewog',
-    dzongkhag: 'Thimphu',
-    village: 'Changangkha',
-    address: 'Norzin Lam',
-    chiwog: 'Chang',
-    teaching_institute: 'Yes',
-    title_of_course: 'MBBS',
-    course_duration: '60 Months',
-    commencement_date: '2024-08-15',
-    type_of_programme: 'Degree',
-    supporting_documents: 'link-to-docs-1',
-    remarks: 'Premier medical institute in Bhutan.',
-    declaration: 'Institute declares compliance.',
-    review_decision: 'Approved',
-    reason_if_rejected: null,
-    website: 'www.bmi.bt',
-    head_of_institution_name: 'Dr. Karma Tenzin',
-    head_of_institution_gender: 'Male',
-    head_of_institution_phone_number: '17777777',
-    head_of_institution_email: 'karma.tenzin@bmi.bt',
-    dpr_name: 'DPR Report 2023',
-    executive_summary: 'Comprehensive DPR summary.',
-    institute_eoi_supporting_documents: 'link-to-eoi-docs-1',
-    institute_dpr_remarks: 'DPR submitted and under review.',
-    do_dpr_review_report: 'dpr-review-report-1.pdf',
-    do_dpr_review_summary: 'Summary of DPR review.',
-    do_dpr_report: 'dpr-report-final-1.pdf',
-    do_dpr_review_decision: 'Pending',
-    do_dpr_reason_if_rejected: null,
-    is_active: true,
-    payment_id: 'PAYID004',
-    is_payment_complete: true,
-    is_physical_verification: true,
-    vision_mission_implementation_strategies: 'Vision and mission outlined.',
-    project_scheduling_implementation_management: 'Project schedule detailed.',
-    values_of_gross_national_happiness: 'GNH values integrated.',
-    land: 'Land details provided.',
-    conceptual_master_plan: 'Master plan available.',
-    academic_plan_profile: 'Academic profile detailed.',
-    affiliation: 'Affiliated with KU.',
-    teaching_hospital: 'Yes, own teaching hospital.',
-    research_policy: 'Research policy in place.',
-    human_resource: 'HR plan detailed.',
-    quality_assurance_system: 'QA system implemented.',
-    governance_structure: 'Clear governance structure.',
-    business_plan: 'Business plan available.',
-    project_cost_and_analysis: 'Cost analysis provided.',
-    facilities_and_student_services: 'Facilities and services listed.',
-    admission_policy_and_scholarships: 'Admission policy and scholarships detailed.',
-    service_conditions: 'Service conditions defined.',
-    safety_and_security: 'Safety and security measures in place.',
-    public_information_system: 'Public info system described.',
-    others: 'Other relevant information.',
-  },
-  {
-    cid: '23232323232',
-    name_of_institution: 'Royal Institute of Health',
-    dzongkhag: 'Paro',
-    do_dpr_review_decision: 'Approved',
-    // ... more institute data
-  },
-  {
-    cid: '34343434343',
-    name_of_institution: 'Eastern Medical College',
-    dzongkhag: 'Trashigang',
-    do_dpr_review_decision: 'Rejected',
-    // ... more institute data
-  },
-]);
-
+const institutes = ref([]);
 const isModalOpen = ref(false);
 const selectedInstitute = ref({});
+const loading = ref(false);
+const error = ref(null); // Add an error ref
+
+
+onMounted(async () => {
+  loading.value = true;
+  error.value = null; // Reset error on each fetch
+  try {
+    const response = await apiServices.getBmhcInstitutes();
+
+    // Corrected access to results: response.data.results
+    if (response && response.data && Array.isArray(response.data.results)) {
+      institutes.value = response.data.results;
+    } else {
+      // Handle unexpected response structure
+      console.error("Unexpected API response:", response);
+      error.value = "Failed to load institutes: Invalid response format."; // Set a user-friendly error message
+    }
+  } catch (err) {
+    console.error("Error fetching institutes:", err);
+    error.value = "Failed to load institutes. Please try again later."; // Set user friendly error
+  } finally {
+    loading.value = false;
+  }
+});
 
 const openModal = (institute) => {
   selectedInstitute.value = institute;
@@ -193,7 +145,7 @@ const openModal = (institute) => {
 
 const closeModal = () => {
   isModalOpen.value = false;
-  selectedInstitute.value = {}; // Clear selected institute data when closing
+  selectedInstitute.value = {};
 };
 
 const getStatusText = (decision) => {
