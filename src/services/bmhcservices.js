@@ -626,7 +626,26 @@ export default {
   deleteBmhcInstitute(id) {
     return apiClient.delete(`/bmhc/bmhc-institutes/${id}/`)
   },
-   // BMHC Teaching Center
+  //BMHC COUrses api
+  getBmhcCourseDetails() {
+    return apiClient.get('/bmhc/bmhc-course-details/')
+  },
+  createBmhcCourseDetail(data) {
+    return apiClient.post('/bmhc/bmhc-course-details/', data)
+  },
+  getBmhcCourseDetail(id) {
+    return apiClient.get(`/bmhc/bmhc-course-details/${id}/`)
+  },
+  updateBmhcCourseDetail(id, data) {
+    return apiClient.put(`/bmhc/bmhc-course-details/${id}/`, data)
+  },
+  patchBmhcCourseDetail(id, data) {
+    return apiClient.patch(`/bmhc/bmhc-course-details/${id}/`, data)
+  },
+  deleteBmhcCourseDetail(id) {
+    return apiClient.delete(`/bmhc/bmhc-course-details/${id}/`)
+  },
+  // BMHC Teaching Center
   getBmhcTeachingCenters() {
     return apiClient.get('/bmhc/bmhc-teaching-centers/')
   },
