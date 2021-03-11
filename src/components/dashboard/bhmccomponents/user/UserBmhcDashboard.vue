@@ -7,6 +7,7 @@
       <EmptyDashboardState v-else-if="!hasApprovedApplications && !isLoading"
         message="You don't have any approved applications yet.  Once approved, you will have access to the dashboard." />
 
+        
       <template v-else >
         <ProfileHeader :user-detail="userDetail" :renewal-message="renewalStatus"
           :qualifications="getPrimaryQualifications" @view-certificate="handleViewCertificate" />
@@ -17,7 +18,7 @@
           </div>
 
             <ApplicationHistoryCard :applications="applications" @show-rejected="showRejectedApplications" />
-      
+
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <DeadlinesList title="Upcoming Deadlines" :deadlines="upcomingDeadlines" />

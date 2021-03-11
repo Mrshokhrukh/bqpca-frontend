@@ -143,67 +143,61 @@
         </div>
 
         <!-- CPD Activities Card - Less colorful -->
-        <div
-          class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-100">
-          <div class="flex items-center space-x-4 mb-4">
-            <div class="flex items-center justify-center h-12 w-12 rounded-xl bg-gray-100 text-green-600">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M16.023 9.348h4.992v-.001l-.628-.349m-1.263-.52V4.046c0-1.26-1.517-1.867-2.583-1.513m-3.764 1.088c-1.031.888-1.951 2.274-2.227 4.141m-1.29-3.801c-.051.49-.186 1.08-1.504 1.979m9.583-.302v.003h4.992M15 6.75a3.75 3.75 0 11-7.5 0 3.75 0 017.5 0z" />
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900">CPD Activities</h3>
-              <div class="flex items-baseline">
-                <p class="text-2xl font-bold text-green-600">{{ stats.pendingCPD }}</p>
-                <span class="ml-2 text-sm text-gray-500">pending review</span>
-              </div>
-            </div>
-          </div>
+        <!-- Improved CPD Activities Card -->
+<div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-100 transform hover:-translate-y-1 transition-transform">
+  <!-- Header Section -->
+  <div class="flex items-center space-x-4 mb-6">
+    <div class="flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-br from-green-50 to-green-100 text-green-600 shadow-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001l-.628-.349m-1.263-.52V4.046c0-1.26-1.517-1.867-2.583-1.513m-3.764 1.088c-1.031.888-1.951 2.274-2.227 4.141m-1.29-3.801c-.051.49-.186 1.08-1.504 1.979m9.583-.302v.003h4.992M15 6.75a3.75 3.75 0 11-7.5 0 3.75 0 017.5 0z" />
+      </svg>
+    </div>
+    <div>
+      <h3 class="text-lg font-semibold text-gray-900">CPD Activities</h3>
+      <div class="flex items-baseline">
+        <p class="text-2xl font-bold text-green-600">{{ stats.pendingCPD }}</p>
+        <span class="ml-2 text-sm text-gray-500">pending review</span>
+      </div>
+    </div>
+  </div>
 
-          <!-- CPD Distribution Chart - Gray and Green tones -->
-          <div class="flex items-center space-x-4 mt-4">
-            <div class="w-20 h-20 relative">
-              <svg viewBox="0 0 36 36" class="w-full h-full">
-                <path class="stroke-none fill-gray-200"
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <path class="stroke-none fill-green-500"
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  :stroke-dasharray="`${stats.cpdPercentage}, 100`" />
-                <text x="18" y="20.5" class="fill-gray-800 font-medium text-xs" text-anchor="middle">{{ stats.cpdPercentage }}%</text>
-              </svg>
-            </div>
-            <div class="flex-1 space-y-2">
-              <div class="flex justify-between text-sm items-center">
-                <span class="flex items-center">
-                  <span class="w-3 h-3 rounded-full bg-green-500 inline-block mr-2"></span>
-                  <span class="text-gray-600">Self-Directed</span>
-                </span>
-                <span class="font-medium">{{ stats.selfDirectedCPD }}</span>
-              </div>
-              <div class="flex justify-between text-sm items-center">
-                <span class="flex items-center">
-                  <span class="w-3 h-3 rounded-full bg-green-200 inline-block mr-2"></span>
-                  <span class="text-gray-600">Program Approvals</span>
-                </span>
-                <span class="font-medium">{{ stats.programApprovals }}</span>
-              </div>
-            </div>
-          </div>
+  <!-- CPD Distribution Chart Section -->
+  <div class="flex items-center space-x-6 mt-8">
+    <div class="w-20 h-20 relative">
+      <svg viewBox="0 0 36 36" class="w-full h-full">
+        <path class="stroke-none fill-gray-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+        <path class="stroke-none fill-green-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" :stroke-dasharray="`${stats.cpdPercentage}, 100`" />
+        <text x="18" y="20.5" class="fill-gray-800 font-medium text-[10px]" text-anchor="middle">{{ stats.cpdPercentage }}%</text>
+      </svg>
+    </div>
+    <div class="flex-1 space-y-3">
+      <div class="flex justify-between text-sm items-center">
+        <span class="flex items-center">
+          <span class="w-3 h-3 rounded-full bg-green-500 inline-block mr-2"></span>
+          <span class="text-gray-600">Self-Directed</span>
+        </span>
+        <span class="font-medium text-gray-800">{{ stats.selfDirectedCPD }}</span>
+      </div>
+      <div class="flex justify-between text-sm items-center">
+        <span class="flex items-center">
+          <span class="w-3 h-3 rounded-full bg-green-200 inline-block mr-2"></span>
+          <span class="text-gray-600">Program Approvals</span>
+        </span>
+        <span class="font-medium text-gray-800">{{ stats.programApprovals }}</span>
+      </div>
+    </div>
+  </div>
 
-          <div class="mt-5 text-right">
-            <button
-              class="text-green-600 text-sm font-medium hover:text-green-800 flex items-center justify-end w-full">
-              Manage CPD activities
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clip-rule="evenodd" />
-              </svg>
-            </button>
-          </div>
-        </div>
+  <!-- Footer Section -->
+  <div class="mt-10 text-right">
+    <button class="text-green-600 text-sm font-semibold hover:text-green-800 flex items-center justify-end w-full transition-colors duration-200">
+      Manage CPD activities
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+      </svg>
+    </button>
+  </div>
+</div>
 
         <!-- CoGS Requests Card - Less colorful gauge -->
         <div
@@ -225,22 +219,34 @@
             </div>
           </div>
 
-          <!-- Semi-circular gauge - Gray and Purple tones -->
-          <div class="mt-4 flex flex-col items-center">
-            <div class="relative w-32 h-16 mb-2">
-              <svg class="w-full h-full" viewBox="0 0 100 50">
-                <path d="M5,50 A45,45 0 0,1 95,50" class="stroke-gray-200 fill-none" stroke-width="10"
-                  stroke-linecap="round" />
-                <path
-                  :d="`M5,50 A45,45 0 0,1 ${5 + (stats.cogsCompletionRate / 100) * 90},${50 - Math.sin(Math.PI * stats.cogsCompletionRate / 100) * 45}`"
-                  class="stroke-purple-500 fill-none" stroke-width="10" stroke-linecap="round" />
-              </svg>
-              <div class="absolute bottom-0 left-0 right-0 text-center text-purple-700 font-bold text-lg">
-                {{ stats.cogsCompletionRate }}%
-              </div>
-            </div>
-            <p class="text-sm text-gray-600 font-medium">Processing Rate</p>
-          </div>
+        <!-- Semi-circular gauge - Gray and Purple tones -->
+<div class="mt-4 flex flex-col items-center">
+  <div class="relative w-32 h-16 mb-2">
+    <svg class="w-full h-full" viewBox="0 0 100 50">
+      <!-- Base gray track -->
+      <path
+        d="M5,50 A45,45 0 0,1 95,50"
+        class="stroke-gray-200 fill-none"
+        stroke-width="10"
+        stroke-linecap="round"
+      />
+
+      <!-- Purple progress indicator -->
+      <path
+        d="M5,50 A45,45 0 0,1 95,50"
+        class="stroke-purple-500 fill-none"
+        stroke-width="10"
+        stroke-linecap="round"
+        :stroke-dasharray="90"
+        :stroke-dashoffset="90 - (90 * stats.cogsCompletionRate / 100)"
+      />
+    </svg>
+    <div class="absolute bottom-0 left-0 right-0 text-center text-purple-700 font-bold text-lg">
+      {{ stats.cogsCompletionRate }}%
+    </div>
+  </div>
+  <p class="text-sm text-gray-600 font-medium">Processing Rate</p>
+</div>
 
           <div class="mt-4 space-y-2">
             <div class="flex justify-between text-sm">

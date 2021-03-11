@@ -1,6 +1,18 @@
 <template>
-  <div class="min-h-screen ">
+  <!-- Empty state when no approved applications -->
+  <FirstDashboardState v-if="hasNoApplications && !isLoading"
+    message="You don't have any applications yet. Once submitted, you will have access to the dashboard." />
+  <EmptyDashboardState v-else-if="!hasApprovedApplications && !isLoading"
+    message="You don't have any approved applications yet. Once approved, you will have access to the dashboard." />
+  <!-- Application processing message -->
+  <div v-else-if="hasPendingApplications && !isLoading"
+    class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
+    <strong class="font-bold">Application Under Process!</strong>
+    <span class="block sm:inline ml-6">Your application is currently being reviewed. Please check back later.</span>
+  </div>
 
+  <!-- Main dashboard content - only shown when user has at least one approved application -->
+  <div v-else class="min-h-screen">
     <div v-if="userCID === null"
       class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative overflow-hidden" role="alert">
       <strong class="font-bold">Your CID is Missing!</strong>
@@ -117,7 +129,6 @@
             </svg>
             Recent Applications
           </h2>
-
         </div>
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-300 rounded-lg">
@@ -172,9 +183,26 @@
 import { ref, onMounted, computed } from 'vue';
 import apiservices from '@/services/bmhcservices';
 import { useAuthStore } from '@/stores/authStore';
+import FirstDashboardState from '@/components/dashboard/bhmccomponents/institutions/FirstDashboardStates.vue'
+import EmptyDashboardState from '@/components/dashboard/bhmccomponents/institutions/EmptyDashboardStates.vue';
+
 
 const authStore = useAuthStore();
 const instituteData = ref([]);
+const isLoading = ref(true);
+const userCID = computed(() => authStore.user?.cid);
+
+// Computed properties for conditional rendering
+const hasNoApplications = computed(() => instituteData.value.length === 0);
+
+const hasApprovedApplications = computed(() => {
+  return instituteData.value.some(app => app.review_decision === 'Approved');
+});
+
+const hasPendingApplications = computed(() => {
+  return !hasApprovedApplications.value &&
+    instituteData.value.some(app => app.review_decision === 'Pending');
+});
 
 // Computed Properties for Counts
 const totalApplications = computed(() => instituteData.value.length);
@@ -190,10 +218,14 @@ const totalInstitutes = computed(() => {
 const totalDepartments = computed(() => {
   const departmentNames = new Set();
   instituteData.value.forEach(app => {
-    departmentNames.add(app.dpr_name);
+    // Check if dpr_name exists and is not null
+    if (app.dpr_name) {
+      departmentNames.add(app.dpr_name);
+    }
   });
   return departmentNames.size;
 });
+
 
 const applicationStatusCounts = computed(() => {
   const counts = { Pending: 0, Approved: 0, Regret: 0 };
@@ -232,14 +264,17 @@ const recentApplications = computed(() => {
 // Fetch Data
 onMounted(async () => {
   try {
+    isLoading.value = true;
     const response = await apiservices.getBmhcInstitutes();
     const allInstitutes = response.data.results || [];
-    const userCID = authStore.user?.cid;
 
     // Filter data based on user's CID
-    instituteData.value = allInstitutes.filter(institute => institute.CID === userCID);
+    instituteData.value = allInstitutes.filter(institute => institute.CID === userCID.value);
+    console.log(instituteData.value);
   } catch (error) {
     console.error('Error fetching institute data:', error);
+  } finally {
+    isLoading.value = false;
   }
 });
 
