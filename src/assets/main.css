@@ -15,3 +15,18 @@
     @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50;
   }
 }
+
+@layer base {
+  html, body {
+    overflow-x: hidden;
+    overflow-y: auto !important;
+    scroll-behavior: smooth;
+    height: auto;
+    min-height: 100%;
+  }
+  
+  #app {
+    min-height: 100vh;
+    position: relative;
+  }
+}
