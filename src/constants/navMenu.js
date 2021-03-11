@@ -831,7 +831,7 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Institutes Renewal',
+        name: 'Institute Renewal',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
       },
@@ -876,6 +876,26 @@ const serviceSpecificMenuItems = {
         name: 'CAPA',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
+      },
+      {
+        name: 'Maintenance',
+        icon: getIconComponent('Activity'),
+        children: [
+          {
+            name: 'Staff Management',
+            route: (serviceType) => `/admin/institutions/${serviceType}/staff_management`,
+
+          },
+          {
+            name: 'Course Management',
+            route: (serviceType) => `/admin/institutions/${serviceType}/course_management`,
+          },
+          {
+            name: 'Department Management',
+            route: (serviceType) => `/admin/institutions/${serviceType}/department_management`,
+          },
+
+        ],
       },
     ],
   },
