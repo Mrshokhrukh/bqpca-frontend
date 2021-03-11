@@ -321,7 +321,7 @@ const bmhInstitutionsComponent = computed(() => {
       return ViewCertificates;
     case path.endsWith('/health_certification/institution_profile'):
       return InstituteProfile;
-      case path.endsWith('/health_certification/new_teaching_hospital'):
+    case path.endsWith('/health_certification/new_teaching_hospital'):
       return TeachingCenter;
     case path.endsWith('/health_certification/renewal_teaching_hospital'):
       return TeachingCenterRenewal;
@@ -329,8 +329,8 @@ const bmhInstitutionsComponent = computed(() => {
       return NewEducationProgram;
     case path.endsWith('/health_certification/my_applications'):  // My Applications
       return MyApplications;
-    case path.endsWith('/health_certification/institute_renewal'):  
-      return InstitutesRenewal;  
+    case path.endsWith('/health_certification/institutes_renewal'):
+      return InstitutesRenewal;
     case path.endsWith('/health_certification/my_capa'):
       return MyCapa;
     case path.endsWith('/health_certification/staff_management'):
