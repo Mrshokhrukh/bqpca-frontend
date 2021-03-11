@@ -193,6 +193,7 @@ export default {
       appeals: accredDashboard,
       assessor_management: accredDashboard,
       site_visit_scheduling: accredDashboard,
+      payment_history: accredDashboard,
       reports: accredDashboard,
     },
     engineering_certification: {
@@ -347,6 +348,7 @@ export default {
       institutes_renewal: bmhcDashboard,
       my_capa : bmhcDashboard,
       staff_management: bmhcDashboard,
+      
       // ... other Health Certification routes for director
     },
   },
