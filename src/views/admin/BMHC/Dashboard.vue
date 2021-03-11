@@ -60,25 +60,32 @@ import ReRegistration from '@/components/dashboard/bhmccomponents/user/certifica
 import BMHCUserReports from '@/components/dashboard/bhmccomponents/user/ReportsComponent.vue';
 import CounselorApplicationFrom from '@/components/dashboard/bhmccomponents/user/counselorApplication/CounselorApplicationFrom.vue';
 import CounselorApplicationTracker from '@/components/dashboard/bhmccomponents/user/counselorApplication/CounselorApplicationTracker.vue';
+
 // Dealing Officer Components
-import ApplicationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/ApplicationLists.vue';
-import RenewalLists from '@/components/dashboard/bhmccomponents/dealingOfficer/RenewalLists.vue';
-import InstituteManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/InstituteManagement.vue';
+import ApplicationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/userApplications/ApplicationLists.vue';
+import RenewalLists from '@/components/dashboard/bhmccomponents/dealingOfficer/userApplications/RenewalLists.vue';
+import InstituteManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/InstituteManagement.vue';
 import ProfessionalProfiles from '@/components/dashboard/bhmccomponents/dealingOfficer/ProfessionalProfiles.vue';
-import CogsManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/CogsManagement.vue';
-import Capa from '@/components/dashboard/bhmccomponents/dealingOfficer/CapaManagement.vue';
+import CogsManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/userApplications/CogsManagement.vue';
+import Capa from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/CapaManagement.vue';
 import PaymentManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/PaymentsComponent.vue';
 import Reports from '@/components/dashboard/bhmccomponents/dealingOfficer/Reports.vue';
-import EoiApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/EoiApplication.vue';
-import DprApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/DprApplication.vue';
-import InstituteReport from '@/components/dashboard/bhmccomponents/dealingOfficer/InstituteReport.vue';
-import CpdApplicationReview from '@/components/dashboard/bhmccomponents/dealingOfficer/CpdApplicationReview.vue';
-import CpdCreateApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/CpdCreateApplication.vue';
-import CpdProviderManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/CpdProviderManagement.vue';
-import CpdAwardCredits from '@/components/dashboard/bhmccomponents/dealingOfficer/CpdAwardCredits.vue';
-import CpdReports from '@/components/dashboard/bhmccomponents/dealingOfficer/CpdReports.vue';
-import ReRegistrationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/ReRegistrationLists.vue';
-import AdditionalApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/AdditionalApplication.vue';
+import EoiApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/EoiApplication.vue';
+import DprApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/DprApplication.vue';
+import InstituteReport from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/InstituteReport.vue';
+import CpdApplicationReview from '@/components/dashboard/bhmccomponents/dealingOfficer/CPDManagement/CpdApplicationReview.vue';
+import CpdCreateApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/CPDManagement/CpdCreateApplication.vue';
+import CpdProviderManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/CPDManagement/CpdProviderManagement.vue';
+import CpdAwardCredits from '@/components/dashboard/bhmccomponents/dealingOfficer/CPDManagement/CpdAwardCredits.vue';
+import CpdReports from '@/components/dashboard/bhmccomponents/dealingOfficer/CPDManagement/CpdReports.vue';
+import ReRegistrationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/userApplications/ReRegistrationLists.vue';
+import AdditionalApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/userApplications/AdditionalApplication.vue';
+import TeachingHospitals from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/TeachingHospitals.vue';
+import EducationPrograms from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/EducationPrograms.vue';
+import InstituteProfiles from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/InstituteProfiles.vue';
+import InstituteRenewals from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/InstituteRenewals.vue';
+import TeachingHospitalRenewals from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/TeachingHospitalRenewals.vue';
+
 //BMHC masters components
 import MastersCmeActivities from '@/components/dashboard/bhmccomponents/admin/MastersCmeActivities.vue';
 import MastersCmeCredits from '@/components/dashboard/bhmccomponents/admin/MastersCmeCredits.vue';
@@ -115,9 +122,14 @@ import InstituteEoiApplication from '@/components/dashboard/bhmccomponents/insti
 import InstituteDPRApplication from '@/components/dashboard/bhmccomponents/institutions/InstituteDPRApplication.vue';
 import TrackEoiApplication from '@/components/dashboard/bhmccomponents/institutions/TrackEoiApplication.vue';
 import TrackDPRApplication from '@/components/dashboard/bhmccomponents/institutions/TrackDPRApplication.vue';
-import DraftApplications from '@/components/dashboard/bhmccomponents/institutions/DraftApplications.vue';
 import ViewCertificates from '@/components/dashboard/bhmccomponents/institutions/ViewCertificates.vue';
 import InstituteProfile from '@/components/dashboard/bhmccomponents/institutions/InstitutionProfile.vue';
+import TeachingCenter from '@/components/dashboard/bhmccomponents/institutions/TeachingCenter.vue';
+import TeachingCenterRenewal from '@/components/dashboard/bhmccomponents/institutions/TeachingCenterRenewal.vue';
+import NewEducationProgram from '@/components/dashboard/bhmccomponents/institutions/NewEducationProgram.vue';
+import MyApplications from '@/components/dashboard/bhmccomponents/institutions/MyApplications.vue';
+import InstitutesRenewal from '@/components/dashboard/bhmccomponents/institutions/InstitutesRenewal.vue';
+import MyCapa from '@/components/dashboard/bhmccomponents/institutions/MyCapa.vue';
 const { role } = useAuthStore();
 const route = useRoute();
 
@@ -208,6 +220,7 @@ const bmhUserComponent = computed(() => {
       return BMHCUserProfile;
     case path.endsWith('/health_certification/track_counselor_application'):
       return CounselorApplicationTracker;
+
     default:
       return null;
   }
@@ -251,13 +264,22 @@ const bmhDealingOfficerComponent = computed(() => {
       return Reports;
     case path.endsWith('/health_certification/eoi_application'):
       return EoiApplication;
-
     case path.endsWith('/health_certification/dpr_application'):
       return DprApplication;
     case path.endsWith('/health_certification/institute_report'):
       return InstituteReport;
     case path.endsWith('/health_certification/additional_application'):
       return AdditionalApplication;
+    case path.endsWith('/health_certification/teaching_hospitals'):
+      return TeachingHospitals;
+    case path.endsWith('/health_certification/education_programs'):
+      return EducationPrograms;
+    case path.endsWith('/health_certification/institute_renewals'):
+      return InstituteRenewals;
+    case path.endsWith('/health_certification/teaching_hospital_renewals'):
+      return TeachingHospitalRenewals;
+    case path.endsWith('/health_certification/institute_profiles'):
+      return InstituteProfiles;
     default:
       return null;
   }
@@ -294,12 +316,22 @@ const bmhInstitutionsComponent = computed(() => {
       return InstituteDPRApplication;
     case path.endsWith('/health_certification/track_dpr'):
       return TrackDPRApplication;
-    case path.endsWith('/health_certification/draft_applications'):
-      return DraftApplications;
     case path.endsWith('/health_certification/view_certificates'):
       return ViewCertificates;
     case path.endsWith('/health_certification/institution_profile'):
       return InstituteProfile;
+      case path.endsWith('/health_certification/new_teaching_hospital'):
+      return TeachingCenter;
+    case path.endsWith('/health_certification/renewal_teaching_hospital'):
+      return TeachingCenterRenewal;
+    case path.endsWith('/health_certification/new_education_program'):
+      return NewEducationProgram;
+    case path.endsWith('/health_certification/my_applications'):  // My Applications
+      return MyApplications;
+    case path.endsWith('/health_certification/institute_renewal'):
+      return InstitutesRenewal;
+    case path.endsWith('/health_certification/my_capa'):
+      return MyCapa;
     default:
       return null;
   }

@@ -210,13 +210,13 @@
 
 <script>
 import { ref, computed } from 'vue';
-import InstituteViewDetailsModal from './modals/InstituteViewDetailsModal.vue';
-import InstituteReviewApplicationModal from './modals/InstituteReviewApplicationModal.vue';
-import InstituteManageCapaModal from './modals/InstituteManageCapaModal.vue';
+import InstituteViewDetailsModal from '../modals/InstituteViewDetailsModal.vue';
+import InstituteReviewApplicationModal from '../modals/InstituteReviewApplicationModal.vue';
+import InstituteManageCapaModal from '../modals/InstituteManageCapaModal.vue';
 
 export default {
   name: 'InstituteManagement',
-  components: {
+  components: { 
     InstituteViewDetailsModal,
     InstituteReviewApplicationModal,
     InstituteManageCapaModal,

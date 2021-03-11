@@ -1,7 +1,7 @@
 // ApplicationDashboard.vue
 <script setup>
 import { ref, computed } from 'vue';
-import Modal from './modals/Modal.vue';
+import Modal from '../modals/Modal.vue';
 
 // State management
 const filters = ref({

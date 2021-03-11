@@ -103,17 +103,17 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div
           class="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 text-white">
-          <h3 class="text-lg font-semibold">Pending Departments</h3>
+          <h3 class="text-lg font-semibold">Pending DPR</h3>
           <p class="text-3xl font-bold mt-2">{{ departmentStatusCounts.Pending }}</p>
         </div>
         <div
           class="bg-gradient-to-r from-green-400 via-green-500 to-green-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 text-white">
-          <h3 class="text-lg font-semibold">Approved Departments</h3>
+          <h3 class="text-lg font-semibold">Approved DPR</h3>
           <p class="text-3xl font-bold mt-2">{{ departmentStatusCounts.Approved }}</p>
         </div>
         <div
           class="bg-gradient-to-r from-red-400 via-red-500 to-red-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 text-white">
-          <h3 class="text-lg font-semibold">Rejected Departments</h3>
+          <h3 class="text-lg font-semibold">Rejected DPR</h3>
           <p class="text-3xl font-bold mt-2">{{ departmentStatusCounts.Regret }}</p>
         </div>
       </div>
@@ -145,8 +145,6 @@
                   Institute</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Department</th>
                 <th scope="col"
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">
                   Dpr Status</th>

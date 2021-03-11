@@ -309,15 +309,18 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Individual ECPF Applications',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/individual_ecpf_applications`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/individual_ecpf_applications`,
           },
           {
             name: 'Collaborated ECPF Applications',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/collaborated_ecpf_applications`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/collaborated_ecpf_applications`,
           },
           {
             name: 'New Branch Applications',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/branch_ecpf_applications`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/branch_ecpf_applications`,
           },
           {
             name: 'Renewal Applications',
@@ -331,28 +334,49 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'ECPF Name Change',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/name_change_applications`,
-
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/name_change_applications`,
           },
           {
             name: 'ECPF Location Change',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/location_change_applications`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/location_change_applications`,
           },
           {
             name: 'ECPF Ownership Change',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/ownership_change_applications`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/ownership_change_applications`,
           },
         ],
       },
       {
         name: 'Events',
-        icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/admin/${serviceType}/events`,
+        icon: getIconComponent('Activity'), //Use activity
+        children: [
+          {
+            name: 'Education Fair Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/education_fair_applications`,
+
+          },
+          {
+            name: 'Mass Media Event Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/mass_media_applications`,
+          },
+          {
+            name: 'In House Event Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/in_house_event_applications`,
+          },
+          {
+            name: 'Hei Visit Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/hei_visit_applications`,
+
+          },
+        ],
       },
       {
         name: 'ECPF Linkages',
         icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/admin/${serviceType}/linkages`,
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_link_establishment`,
       },
       {
         name: 'Bio data',
@@ -488,6 +512,8 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/user_profile`,
         hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.profile,
       },
+
+
       {
         name: 'Reports',
         icon: getIconComponent('FileSearch'),
@@ -670,10 +696,6 @@ const serviceSpecificMenuItems = {
             name: 'Application Lists',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_application_review`,
           },
-          // {
-          //   name: 'Create Application',
-          //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_create_application`,
-          // },
           {
             name: 'Manage Providers',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_provider_management`,
@@ -703,6 +725,26 @@ const serviceSpecificMenuItems = {
           {
             name: 'CAPA Management',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/capa`,
+          },
+          {
+            name: 'All Institute Profiles',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_profiles`,
+          },
+          {
+            name: 'Teaching Hospitals',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_hospitals`,
+          },
+          {
+            name: 'Education Programs',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/education_programs`,
+          },
+          {
+            name: 'Institute Renewals',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_renewals`,
+          },
+          {
+            name: 'Teaching Hospital Renewals',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_hospital_renewals`,
           },
           {
             name: 'Reports',
@@ -755,39 +797,85 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/institutions/${serviceType}/dashboard`,
       },
       {
-        name: 'Apply for EOI',
-        icon: getIconComponent('CheckCircle'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_eoi`,
+        name: 'EOI Management',
+        icon: getIconComponent('Activity'),
+        children: [
+          {
+            name: 'Apply for EOI',
+            route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_eoi`,
+
+          },
+          {
+            name: 'Track EOI',
+            route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
+          },
+
+
+        ],
       },
       {
-        name: 'Track EOI',
-        icon: getIconComponent('FileSearch'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
+        name: 'DPR Management',
+        icon: getIconComponent('Activity'),
+        children: [
+          {
+            name: 'Apply for DPR',
+            route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_dpr`,
+
+          },
+          {
+            name: 'Track DPR',
+            route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
+          },
+
+
+        ],
       },
       {
-        name: 'Apply For DPR',
-        icon: getIconComponent('CheckCircle'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_dpr`,
+        name: 'Institutes Renewal',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
+      },
+
+      {
+        name: 'Teaching Hospital',
+        icon: getIconComponent('Activity'),
+        children: [
+          {
+            name: 'Teaching Hospital',
+            route: (serviceType) => `/admin/institutions/${serviceType}/new_teaching_hospital`,
+
+          },
+          {
+            name: 'Renewal',
+            route: (serviceType) => `/admin/institutions/${serviceType}/renewal_teaching_hospital`,
+          },
+          {
+            name: 'New Education Program',
+            route: (serviceType) => `/admin/institutions/${serviceType}/new_education_program`,
+          },
+
+        ],
       },
       {
-        name: 'Track DPR',
-        icon: getIconComponent('FileSearch'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
-      },
-      {
-        name: 'Draft Application',
-        icon: getIconComponent('FileSearch'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/draft_applications`,
+        name: 'Institution Profile',
+        icon: getIconComponent(''),
+        route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
       },
       {
         name: 'View Certificates',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
       },
+
       {
-        name: 'Institution Profile',
-        icon: getIconComponent(''),
-        route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
+        name: 'My Applications',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/my_applications`,
+      },
+      {
+        name: 'CAPA',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
       },
     ],
   },

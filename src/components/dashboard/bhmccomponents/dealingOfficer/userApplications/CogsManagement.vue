@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class=" mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <!-- Enhanced Header Section with Gradient -->
       <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md">
         <div class="flex justify-between items-center">
@@ -179,9 +179,12 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex flex-col space-y-2">
+<<<<<<< HEAD:src/components/dashboard/bhmccomponents/dealingOfficer/CogsManagement.vue
                     <button
                       v-if="application.review_status === 'Approved' && application.endorsement_decision === 'Approved' && application.is_payment_complete"
                       @click="reviewApplication(application)"
+=======
+>>>>>>> 7be523483fed4d6ac5f410ba1e70b7f24e0a3132:src/components/dashboard/bhmccomponents/dealingOfficer/userApplications/CogsManagement.vue
                       class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                       <EyeIcon class="h-4 w-4 mr-1" />
                       View
@@ -289,8 +292,8 @@ import {
   XIcon
 } from 'lucide-vue-next'
 import services from '@/services/services'
-import CogsReviewModal from './modals/CogsReviewModal.vue'
-import CogsConfirmationModal from './modals/CogsConfirmationModal.vue'
+import CogsReviewModal from '../modals/CogsReviewModal.vue'
+import CogsConfirmationModal from '../modals/CogsConfirmationModal.vue'
 
 const applications = ref([])
 const isLoading = ref(false)

@@ -1,7 +1,7 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Renewal Applications</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">Additional Qualification Applications</h1>
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
@@ -46,17 +46,19 @@
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Registration
                 No.</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Primary
-                Qualification</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Additional
-                Qualification</th>
+              <th
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Primary Qualification</th>
+              <th
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Additional Qualification</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
-            <tr v-for="app in paginatedApplications" :key="app.id" class="hover:bg-gray-50 transition-colors">
+           <tr v-for="app in paginatedApplications" :key="app.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 #{{ app.id }}
               </td>
@@ -73,44 +75,38 @@
                 {{ app.registration_no }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                <!-- Primary Qualification Display -->
-                <template v-if="app.user_qualifications && app.user_qualifications.length > 0">
-                  <template
-                    v-for="qualification in app.user_qualifications.filter(q => q.is_primary_qualification)"
-                    :key="qualification.id">
-                    <div>
-                      <span :class="getQualificationStatusClasses(qualification.endorsement_decision)"
-                        class="px-2 py-1 rounded text-xs">
-                        {{ qualification.endorsement_decision }}
-                      </span>
-                      <span class="text-xs text-gray-600 ml-1">({{ qualification.qualification_name_display }})</span>
-                    </div>
-                  </template>
-                </template>
-                <template
-                  v-if="!app.user_qualifications || !app.user_qualifications.some(q => q.is_primary_qualification)">
-                  <div class="text-xs text-orange-500">
-                    <span class="font-medium">⚠️</span> Primary Qualification Missing
-                  </div>
-                </template>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                <!-- Display multiple additional qualifications -->
-                <template v-if="app.user_qualifications && app.user_qualifications.length > 0">
-                  <div v-for="qualification in app.user_qualifications.filter(q => !q.is_primary_qualification)"
-                    :key="qualification.id" class="mb-2 last:mb-0">
-                    <span :class="getQualificationStatusClasses(qualification.endorsement_decision)"
-                      class="px-2 py-1 rounded text-xs">
-                      {{ qualification.endorsement_decision }}
-                    </span>
-                    <span class="text-xs text-gray-600 ml-1">({{ qualification.qualification_name_display }})</span>
+                    <!-- Primary Qualification Display -->
+                    <template v-if="app.user_qualifications && app.user_qualifications.length > 0">
+                        <template v-for="qualification in app.user_qualifications.filter(q => q.is_primary_qualification)" :key="qualification.id">
+                            <div>
+                                <span :class="getQualificationStatusClasses(qualification.endorsement_decision)" class="px-2 py-1 rounded text-xs">
+                                    {{ qualification.endorsement_decision }}
+                                </span>
+                                <span class="text-xs text-gray-600 ml-1">({{ qualification.qualification_name_display }})</span>
+                            </div>
+                        </template>
+                    </template>
+                    <template v-if="!app.user_qualifications || !app.user_qualifications.some(q => q.is_primary_qualification)">
+                        <div class="text-xs text-orange-500">
+                            <span class="font-medium">⚠️</span> Primary Qualification Missing
+                        </div>
+                    </template>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <!-- Display multiple additional qualifications -->
+                    <template v-if="app.user_qualifications && app.user_qualifications.length > 0">
+                        <div v-for="qualification in app.user_qualifications.filter(q => !q.is_primary_qualification)" :key="qualification.id" class="mb-2 last:mb-0">
+                            <span :class="getQualificationStatusClasses(qualification.endorsement_decision)" class="px-2 py-1 rounded text-xs">
+                                {{ qualification.endorsement_decision }}
+                            </span>
+                            <span class="text-xs text-gray-600 ml-1">({{ qualification.qualification_name_display }})</span>
 
-                  </div>
-                </template>
-                <template v-if="!app.user_qualifications.some(q => !q.is_primary_qualification)">
-                  N/A
-                </template>
-              </td>
+                        </div>
+                    </template>
+                    <template v-if="!app.user_qualifications.some(q => !q.is_primary_qualification)">
+                        N/A
+                    </template>
+                </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(app)">
                   {{ getStatus(app) }}
@@ -178,7 +174,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import apiServices from '@/services/services';
-import ViewDetailsModal from './modals/ViewApplicationDetailsModal.vue';
+import ViewDetailsModal from '../modals/ViewApplicationDetailsModal.vue';
 import { useToast } from 'vue-toastification';
 
 const applications = ref([]);
@@ -193,14 +189,13 @@ const personnelSubcategories = ref([]);
 const sectors = ref([]);
 const toast = useToast();
 
-
 const pendingCount = computed(() => {
   return filteredApplications.value.filter(app => getStatus(app) === 'Pending').length;
 });
 
-// Filter for "Renewal"
+// Filter for "Additional Qualification"
 const filteredApplications = computed(() => {
-  return applications.value.filter(app => app.registration_type_name === 'Renewal')
+  return applications.value.filter(app => app.registration_type_name === 'Additional Qualification')
     .filter(app => {
       if (filterStatus.value !== 'all') {
         return getStatus(app) === filterStatus.value;
@@ -239,12 +234,11 @@ const paginationEnd = computed(() => {
 });
 
 const getStatus = (app) => {
-    const primaryQualification = app.user_qualifications?.find(q => q.is_primary_qualification);
-    if(primaryQualification){
-        return primaryQualification.endorsement_decision;
-    }
-
-    return 'Pending'
+  const primaryQualification = app.user_qualifications?.find(q => q.is_primary_qualification);
+  if (primaryQualification) {
+    return primaryQualification.endorsement_decision;
+  }
+  return 'Pending';
 };
 
 const getQualificationStatusClasses = (status) => {
@@ -275,51 +269,51 @@ const formatDate = (date) => {
     day: 'numeric'
   });
 };
-
 const fetchMasterData = async () => {
   try {
-    const [categoriesRes, subcategoriesRes, sectorsRes] = await Promise.all([
-      apiServices.getMastersPersonnelCategories(),
-      apiServices.getMastersSubCategories(),
-      apiServices.getMastersSectors(),
-    ]);
+      const [categoriesRes, subcategoriesRes, sectorsRes] = await Promise.all([
+          apiServices.getMastersPersonnelCategories(),
+          apiServices.getMastersSubCategories(),
+          apiServices.getMastersSectors(),
+      ]);
 
-    personnelCategories.value = categoriesRes.data.results || [];
-    personnelSubcategories.value = subcategoriesRes.data.results || [];
-    sectors.value = sectorsRes.data.results || [];
+      personnelCategories.value = categoriesRes.data.results || [];
+      personnelSubcategories.value = subcategoriesRes.data.results || [];
+      sectors.value = sectorsRes.data.results || [];
   } catch (error) {
-    console.error('Error fetching master data:', error);
+      console.error('Error fetching master data:', error);
   }
 };
 
 const fetchApplications = async () => {
   try {
-    const response = await apiServices.getBhmcNewApplications();
-    applications.value = response.data.results || [];
+      const response = await apiServices.getBhmcNewApplications();
+      applications.value = response.data.results || [];
   } catch (error) {
-    console.error('Error fetching applications:', error);
+      console.error('Error fetching applications:', error);
   }
 };
 
 const viewDetails = async (application) => {
   try {
-    const response = await apiServices.getAllUsers();
-    const users = response.data.results || [];
-    const matchingUser = users.find(user => user.cid === application.cid_no);
+      const response = await apiServices.getAllUsers();
+      const users = response.data.results || [];
+      const matchingUser = users.find(user => user.cid === application.cid_no);
 
-    selectedApplication.value = {
-      ...application,
-      is_counselor: matchingUser?.is_counselor || false,
-      userDetails: matchingUser,
-    };
+      selectedApplication.value = {
+          ...application,
+          is_counselor: matchingUser?.is_counselor || false,
+          userDetails: matchingUser,
+      };
 
-    isModalOpen.value = true;
+      isModalOpen.value = true;
   } catch (error) {
-    console.error('Error fetching details:', error);
-    selectedApplication.value = { ...application, is_counselor: false, userDetails: null };
-    isModalOpen.value = true;
+      console.error('Error fetching details:', error);
+      selectedApplication.value = { ...application, is_counselor: false, userDetails: null };
+      isModalOpen.value = true;
   }
 };
+
 const handleUpdate = async () => {
   await fetchApplications();
   closeModal();

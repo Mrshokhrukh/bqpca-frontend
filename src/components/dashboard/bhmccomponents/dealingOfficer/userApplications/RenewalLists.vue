@@ -1,7 +1,7 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Re-registration Applications</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">Renewal Applications</h1>
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
@@ -46,12 +46,10 @@
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Registration
                 No.</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Primary Qualification
-              </th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Additional Qualification
-              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Primary
+                Qualification</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Additional
+                Qualification</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
@@ -74,7 +72,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {{ app.registration_no }}
               </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 <!-- Primary Qualification Display -->
                 <template v-if="app.user_qualifications && app.user_qualifications.length > 0">
                   <template
@@ -180,7 +178,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import apiServices from '@/services/services';
-import ViewDetailsModal from './modals/ViewApplicationDetailsModal.vue';
+import ViewDetailsModal from '../modals/ViewApplicationDetailsModal.vue';
 import { useToast } from 'vue-toastification';
 
 const applications = ref([]);
@@ -195,13 +193,14 @@ const personnelSubcategories = ref([]);
 const sectors = ref([]);
 const toast = useToast();
 
+
 const pendingCount = computed(() => {
   return filteredApplications.value.filter(app => getStatus(app) === 'Pending').length;
 });
 
-// Filter for "Re-registration"
+// Filter for "Renewal"
 const filteredApplications = computed(() => {
-  return applications.value.filter(app => app.registration_type_name === 'Re-Registration')
+  return applications.value.filter(app => app.registration_type_name === 'Renewal')
     .filter(app => {
       if (filterStatus.value !== 'all') {
         return getStatus(app) === filterStatus.value;
@@ -276,6 +275,7 @@ const formatDate = (date) => {
     day: 'numeric'
   });
 };
+
 const fetchMasterData = async () => {
   try {
     const [categoriesRes, subcategoriesRes, sectorsRes] = await Promise.all([
@@ -291,6 +291,7 @@ const fetchMasterData = async () => {
     console.error('Error fetching master data:', error);
   }
 };
+
 const fetchApplications = async () => {
   try {
     const response = await apiServices.getBhmcNewApplications();

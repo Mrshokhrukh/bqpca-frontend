@@ -159,6 +159,8 @@ export default {
       track_cogs_applications: bmhcDashboard,
       counselor_application: bmhcDashboard,
       track_counselor_application: bmhcDashboard,
+
+
     },
   },
   dealing_officer: {
@@ -170,14 +172,19 @@ export default {
     },
     ecpf: {
       dashboard: ecpfDashboard,
-      individual_ecpf_applications: ecpfDashboard,  
+      individual_ecpf_applications: ecpfDashboard,
       collaborated_ecpf_applications: ecpfDashboard,
       branch_ecpf_applications: ecpfDashboard,
       renewal_applications: ecpfDashboard,
       name_change_applications: ecpfDashboard,
       location_change_applications: ecpfDashboard,
       ownership_change_applications: ecpfDashboard,
-        
+      education_fair_applications: ecpfDashboard,
+      in_house_event_applications: ecpfDashboard,
+      mass_media_applications: ecpfDashboard,
+      hei_visit_applications: ecpfDashboard,
+      ecpf_link_establishment: ecpfDashboard,
+
 
     },
     accreditation: {
@@ -217,6 +224,11 @@ export default {
       payments: bmhcDashboard,
       reports: bmhcDashboard,
       counselor_application: bmhcDashboard,
+      teaching_hospitals: bmhcDashboard,
+      education_programs: bmhcDashboard,
+      institute_renewals: bmhcDashboard,
+      teaching_hospital_renewals: bmhcDashboard,
+      institute_profiles: bmhcDashboard,
     },
   },
   chief: {
@@ -327,8 +339,13 @@ export default {
       view_certificates: bmhcDashboard,
       track_eoi: bmhcDashboard,
       track_dpr: bmhcDashboard,
-      draft_applications: bmhcDashboard,
       institution_profile: bmhcDashboard,
+      new_teaching_hospital: bmhcDashboard,
+      renewal_teaching_hospital: bmhcDashboard,
+      new_education_program: bmhcDashboard,
+      my_applications: bmhcDashboard,
+      institutes_renewal: bmhcDashboard,
+      my_capa : bmhcDashboard,
       // ... other Health Certification routes for director
     },
   },

@@ -1,5 +1,4 @@
 /** @type {import('tailwindcss').Config} */
-import scrollbarFixPlugin from './scrollbar-fix-plugin'
 
 export default {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
@@ -11,5 +10,5 @@ export default {
       },
     },
   },
-  plugins: [scrollbarFixPlugin],
+  plugins: [],
 }

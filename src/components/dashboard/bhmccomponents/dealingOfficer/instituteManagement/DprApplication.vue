@@ -99,7 +99,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import DprModal from './DprModal.vue';
+import DprModal from '../instituteManagement/DprModal.vue';
 import apiService from '@/services/services'; // Import your API service
 
 const applications = ref([]); // Initialize as an empty array

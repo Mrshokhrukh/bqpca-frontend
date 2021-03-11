@@ -63,6 +63,11 @@ import RenewalApplications from '@/components/dashboard/ecpfcomponents/dealingOf
 import OwnershipChangeApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/OwnershipChangeApplications.vue';
 import NameChangeApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/NameChangeApplications.vue';
 import LocationChangeApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/LocationChangeApplications.vue';
+import EducationFair from '@/components/dashboard/ecpfcomponents/dealingOfficer/EducationFair.vue';
+import MassMediaEvent from '@/components/dashboard/ecpfcomponents/dealingOfficer/MassMediaEvent.vue';
+import HeiVisit from '@/components/dashboard/ecpfcomponents/dealingOfficer/HeiVisit.vue';
+import InhouseEvent from '@/components/dashboard/ecpfcomponents/dealingOfficer/InhouseEvent.vue';
+import ECPFLinkEstablishment from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFLinkEstablishment.vue';
 
 // Chief Components
 import ECPFChiefDashboard from '@/components/dashboard/ecpfcomponents/chief/ECPFChiefDashboard.vue';
@@ -141,6 +146,17 @@ const ecpfDealingOfficerComponent = computed(() => {
       return NameChangeApplications;  
     case path.endsWith('/ecpf/location_change_applications'):
       return LocationChangeApplications;  
+    case path.endsWith('/ecpf/education_fair_applications'):
+      return EducationFair;  
+    case path.endsWith('/ecpf/mass_media_applications'):
+      return MassMediaEvent;  
+    case path.endsWith('/ecpf/hei_visit_applications'):
+      return HeiVisit;
+    case path.endsWith('/ecpf/in_house_event_applications'):
+      return InhouseEvent;  
+    case path.endsWith('/ecpf//ecpf_link_establishment'):
+      return ECPFLinkEstablishment;  
+
     default:
       return null;
   }
