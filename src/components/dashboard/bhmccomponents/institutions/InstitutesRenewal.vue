@@ -46,9 +46,6 @@
               </span>
             </p>
           </div>
-          <div class="bg-white/20 rounded-lg px-4 py-2 text-white">
-            <p class="text-sm font-medium">ID: {{ instituteData.id }}</p>
-          </div>
         </div>
       </div>
 
@@ -248,8 +245,8 @@ const userCid = computed(() => {
 
 // Format dates and calculate days until expiration
 const formattedActiveDate = computed(() => {
-  if (!instituteData.value?.created_at) return 'N/A';
-  return new Date(instituteData.value.created_at).toLocaleDateString();
+  if (!instituteData.value?.valid_since) return 'N/A';
+  return new Date(instituteData.value.valid_since).toLocaleDateString();
 });
 
 const formattedExpirationDate = computed(() => {
@@ -271,7 +268,7 @@ const isActive = computed(() => {
 });
 
 const isRenewalInProgress = computed(() => {
-  // Renewal is in progress if the review decision is pending and not active
+  // Renewal is in progress if the DPR review decision is pending and not active
   return instituteData.value?.do_dpr_review_decision === 'Pending' && !isActive.value;
 });
 
@@ -368,7 +365,7 @@ const confirmRenewal = async () => {
       is_payment_complete: false,
       is_active: false,
       payment_id: null,
-      active_date: new Date().toISOString().split('T')[0], // Today's date
+      valid_since: new Date().toISOString().split('T')[0], // Today's date
       valid_till: newValidTill.toISOString().split('T')[0] // New expiration date
     };
 
