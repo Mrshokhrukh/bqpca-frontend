@@ -22,11 +22,12 @@
                       CAPA Details
                     </DialogTitle>
                     <p class="mt-1 text-sm text-gray-500">
-                      Facility: {{ capa.facilityName }}
+                      Facility: {{ capa.teaching_center?.institute_name }}
                     </p>
                   </div>
                   <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
@@ -43,22 +44,34 @@
                   <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label class="block text-xs font-medium text-gray-500 mb-1">Facility Name</label>
-                      <p class="text-sm text-gray-800">{{ capa.facilityName }}</p>
+                      <p class="text-sm text-gray-800">{{ capa.teaching_center?.institute_name }}</p>
                     </div>
                     <div>
                       <label class="block text-xs font-medium text-gray-500 mb-1">Inspection Period</label>
-                      <p class="text-sm text-gray-800">{{ capa.inspectionDateFrom }} - {{ capa.inspectionDateTo }}</p>
+                      <p class="text-sm text-gray-800">{{ capa.inspection_from_date }} - {{ capa.inspection_to_date }}
+                      </p>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-medium text-gray-500 mb-1">Dzongkhag/Thromde</label>
+                      <p class="text-sm text-gray-800">{{ capa.teaching_center?.state_dzongkhag }}</p>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-medium text-gray-500 mb-1">City/Gewog</label>
+                      <p class="text-sm text-gray-800">{{ capa.teaching_center?.city_gewog }}</p>
+                    </div>
+                    <div class="md:col-span-2">
+                      <label class="block text-xs font-medium text-gray-500 mb-1">Address/Location</label>
+                      <p class="text-sm text-gray-800">{{ capa.teaching_center?.center_location }}</p>
                     </div>
                     <div class="md:col-span-2">
                       <label class="block text-xs font-medium text-gray-500 mb-1">Status</label>
-                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
-                        :class="{
-                          'bg-yellow-100 text-yellow-800': capa.status === 'Pending',
-                          'bg-green-100 text-green-800': capa.status === 'Completed',
-                          'bg-blue-100 text-blue-800': capa.status === 'In Progress',
-                          'bg-gray-100 text-gray-800': !['Pending', 'Completed', 'In Progress'].includes(capa.status)
-                        }">
-                        {{ capa.status }}
+                      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" :class="{
+                        'bg-yellow-100 text-yellow-800': capa.status === 'P',
+                        'bg-green-100 text-green-800': capa.status === 'R',
+                        'bg-blue-100 text-blue-800': capa.status === 'C',
+                        'bg-gray-100 text-gray-800': !['P', 'R', 'C'].includes(capa.status)
+                      }">
+                        {{ getStatusText(capa.status) }}
                       </span>
                     </div>
                   </div>
@@ -72,11 +85,13 @@
                   <div class="p-4 space-y-4">
                     <div>
                       <label class="block text-xs font-medium text-gray-500 mb-1">Observation Description</label>
-                      <p class="text-sm text-gray-800 bg-gray-50 p-3 rounded border border-gray-100">{{ capa.observationDescription }}</p>
+                      <p class="text-sm text-gray-800 bg-gray-50 p-3 rounded border border-gray-100">{{
+                        capa.observation_description }}</p>
                     </div>
                     <div>
                       <label class="block text-xs font-medium text-gray-500 mb-1">Root Cause</label>
-                      <p class="text-sm text-gray-800 bg-gray-50 p-3 rounded border border-gray-100">{{ capa.rootCause }}</p>
+                      <p class="text-sm text-gray-800 bg-gray-50 p-3 rounded border border-gray-100">{{ capa.root_cause }}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -89,30 +104,40 @@
                   <div class="p-4 space-y-4">
                     <div>
                       <label for="capa-plan" class="block text-sm font-medium text-gray-700">
-                        Corrective and Preventive Action <span class="text-red-500">*</span>
+                        Corrective and Preventive Action
                       </label>
-                      <textarea id="capa-plan" v-model="internalCapa.capaPlan" rows="3"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
+                      <textarea id="capa-plan" v-model="internalCapa.capa" rows="3" :disabled="true"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 sm:text-sm"></textarea>
                     </div>
                     <div>
                       <label for="implementation-timeline" class="block text-sm font-medium text-gray-700">
-                        Implementation Timeline <span class="text-red-500">*</span>
+                        Implementation Timeline
                       </label>
-                      <input type="text" id="implementation-timeline" v-model="internalCapa.implementationTimeline"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                      <input type="text" id="implementation-timeline" v-model="internalCapa.implementation_timeline"
+                        :disabled="true"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 sm:text-sm">
                     </div>
                     <div>
                       <label for="management-comment" class="block text-sm font-medium text-gray-700">
                         Management Comments
                       </label>
-                      <textarea id="management-comment" v-model="internalCapa.managementComment" rows="2"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
+                      <textarea id="management-comment" v-model="internalCapa.management_comment"
+                        rows="2" :disabled="true"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 sm:text-sm"></textarea>
+                    </div>
+                    <!-- Conditionally render DO Remarks -->
+                    <div v-if="internalCapa.user_remarks">
+                      <label for="do-remarks" class="block text-sm font-medium text-gray-700">
+                        Dealing Officer Remarks
+                      </label>
+                      <textarea id="do-remarks" v-model="internalCapa.DO_remarks" rows="2" :disabled="true"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm  bg-gray-50 sm:text-sm"></textarea>
                     </div>
                     <div>
-                      <label for="remarks" class="block text-sm font-medium text-gray-700">
-                        Additional Remarks
+                      <label for="user-remarks" class="block text-sm font-medium text-gray-700">
+                        Your Remarks
                       </label>
-                      <textarea id="remarks" v-model="internalCapa.remarks" rows="2"
+                      <textarea id="user-remarks" v-model="internalCapa.user_remarks" rows="2"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
                     </div>
                   </div>
@@ -120,7 +145,8 @@
               </div>
 
               <!-- Footer Buttons -->
-              <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex flex-col-reverse sm:flex-row sm:justify-between sm:space-x-4 space-y-3 space-y-reverse sm:space-y-0">
+              <div
+                class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex flex-col-reverse sm:flex-row sm:justify-between sm:space-x-4 space-y-3 space-y-reverse sm:space-y-0">
                 <button type="button"
                   class="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
                   @click="$emit('close')">
@@ -129,10 +155,11 @@
                 <button type="button"
                   class="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors flex items-center justify-center space-x-2"
                   @click="submitCapa">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Submit CAPA</span>
+                  <span>Submit Remarks</span>
                 </button>
               </div>
             </DialogPanel>
@@ -146,6 +173,7 @@
 <script setup>
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
 import { defineProps, defineEmits, ref, watch } from 'vue';
+import apiservice from '@/services/bmhcservices';
 
 const props = defineProps({
   capa: {
@@ -156,25 +184,47 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'capa-updated']);
 
-// Create a reactive copy of the capa prop to allow local modifications in the modal
 const internalCapa = ref({ ...props.capa });
 
-// Watch for changes in the prop (if the parent component updates the capa)
 watch(
   () => props.capa,
   (newCapa) => {
-    internalCapa.value = { ...newCapa }; // Update internal copy when prop changes
+    internalCapa.value = Object.assign({}, internalCapa.value, newCapa);
   },
   { deep: true }
 );
 
-const submitCapa = () => {
-  emit('capa-updated', internalCapa.value);
+const submitCapa = async () => {
+  try {
+    const dataToSubmit = {
+      user_remarks: internalCapa.value.user_remarks,
+    };
+
+    const response = await apiservice.patchBmhcCapa(internalCapa.value.id, dataToSubmit);
+    emit('capa-updated', response.data);
+    emit('close');
+
+  } catch (error) {
+    console.error('Error updating CAPA:', error);
+  }
+};
+
+const getStatusText = (status) => {
+  switch (status) {
+    case 'P':
+      return 'Pending';
+    case 'R':
+      return 'Resolved';
+    case 'C':
+      return 'Cancelled';
+    default:
+      return 'Unknown';
+  }
 };
 </script>
 
 <style scoped>
-/* Custom scrollbar */
+/* Custom scrollbar (optional) */
 .overflow-y-auto {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;

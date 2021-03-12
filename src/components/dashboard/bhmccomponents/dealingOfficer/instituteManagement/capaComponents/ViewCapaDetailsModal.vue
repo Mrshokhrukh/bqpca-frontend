@@ -82,6 +82,10 @@
               class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
               Close
             </button>
+            <button type="button" @click="resolveCapa"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+              Resolve
+            </button>
           </div>
         </div>
       </div>
@@ -91,12 +95,16 @@
 
 <script setup>
 import { XIcon } from 'lucide-vue-next';
+import apiservice from '@/services/bmhcservices';
+import { toRefs } from 'vue';
 
-defineProps({
+const props = defineProps({
   show: Boolean,
   capa: Object, // No 'required' here, can be null initially
   instituteName: String
 });
+
+const { capa } = toRefs(props);
 
 defineEmits(['close']);
 
@@ -118,4 +126,18 @@ const getStatusText = (status) => {
   return statusTexts[status] || 'Unknown';
 };
 
+const resolveCapa = async () => {
+  const remarks = prompt("Please enter Dealing Officer Remarks/Reason for Resolved:");
+  if (remarks) {
+    try {
+      await apiservice.patchBmhcCapa(capa.value.id, { status: 'R', DO_remarks: remarks });
+      capa.value.status = 'R';
+      capa.value.DO_remarks = remarks;
+      alert("CAPA resolved successfully.");
+    } catch (error) {
+      console.error("Error resolving CAPA:", error.response ? error.response.data : error.message);
+      alert("Failed to resolve CAPA.");
+    }
+  }
+};
 </script>
