@@ -1,102 +1,223 @@
 <template>
-  <div class="max-w-7xl mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4">Institutional Accreditation Applications</h1>
-
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white border border-gray-200">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="px-4 py-2 text-left">Application ID</th>
-            <th class="px-4 py-2 text-left">Institute Name</th>
-            <th class="px-4 py-2 text-left">Status</th>
-            <th class="px-4 py-2 text-left">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="application in applications" :key="application.application_id" class="hover:bg-gray-50">
-            <td class="border px-4 py-2">{{ application.application_id }}</td>
-            <td class="border px-4 py-2">{{ application.institute_name }}</td>
-            <td class="border px-4 py-2">{{ application.status }}</td>
-            <td class="border px-4 py-2">
-              <button @click="viewApplication(application)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">View/Edit</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Application Form Modal -->
-    <div v-if="showApplicationForm" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-
-        <!-- This element is to trick the browser into centering the modal contents. -->
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
-
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full">
-          <ApplicationForm
-            :application="selectedApplication"
-            :assessorPool="assessorPool"
-            @close="closeApplicationForm"
-            @save="saveApplicationData"
-          />
+  <div class="container mx-auto px-4 sm:px-8">
+    <div class="py-8">
+      <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
+        <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">
+          <table class="min-w-full leading-normal">
+            <thead>
+              <tr>
+                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Application ID
+                </th>
+                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Institution Name
+                </th>
+                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Program Name
+                </th>
+                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Submission Date
+                </th>
+                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Status
+                </th>
+                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="application in applications" :key="application.applicationId">
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <p class="text-gray-900 whitespace-no-wrap">
+                    {{ application.applicationId }}
+                  </p>
+                </td>
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <p class="text-gray-900 whitespace-no-wrap">
+                    {{ application.institutionName }}
+                  </p>
+                </td>
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <p class="text-gray-900 whitespace-no-wrap">
+                    {{ application.programName }}
+                  </p>
+                </td>
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <p class="text-gray-900 whitespace-no-wrap">
+                    {{ application.submissionDate }}
+                  </p>
+                </td>
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <span class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight" :class="getStatusClass(application.status)">
+                    <span aria-hidden class="absolute inset-0 bg-green-200 opacity-50 rounded-full" :class="getStatusBackgroundClass(application.status)"></span>
+                    <span class="relative">{{ application.status }}</span>
+                  </span>
+                </td>
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <button @click="openModal(application)" class="inline-block text-center py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white text-sm rounded-md transition duration-200">
+                    View
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
+
+    <ApplicationModal
+      :is-open="isModalOpen"
+      :application="selectedApplication"
+      @close-modal="closeModal"
+    />
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue';
-import ApplicationForm from './ApplicationForm.vue'; // Adjust path if necessary
+import ApplicationModal from './AccreditationModal.vue'; // Import the modal component
 
-export default {
-  components: {
-    ApplicationForm
+const applications = ref([
+  {
+    applicationId: 'APP-2024-001',
+    institutionName: 'University Alpha',
+    programName: 'Bachelor of Science in Computing',
+    submissionDate: '2024-08-15',
+    status: 'Submitted',
+    institutionProfile: {
+      nameOfInstitution: 'University Alpha',
+      addressLocation: '123 Main Street',
+      gewogThrom: 'Thimphu Thromde',
+      dzongkhagThrom: 'Thimphu',
+      contactNumber: '17XXXXXXX',
+      emailAddress: 'info@alpha.edu.bt',
+      telephoneNumber: '+975 2 3XXXXX',
+      yearOfEstablishment: '2000',
+      typeOfInstitution: 'University',
+      affiliatedTo: 'N/A',
+      levelOfAutonomy: 'Full',
+      sourceOfFunding: 'Government',
+      totalArea: '50 acres',
+      website: 'www.alpha.edu.bt'
+    },
+    pastAccreditationDetails: {
+      accreditationRating: 'A',
+      accreditationValidityDate: '2023-12-31'
+    },
+    headOfInstituteDetails: {
+      name: 'Dr. Head Alpha',
+      contactNumber: '17YYYYYYY',
+      emailAddress: 'head@alpha.edu.bt'
+    },
+    iqaFocalDetails: {
+      nameOfIqaFocal: 'Mr. IQA Focal',
+      contactNumber: '17ZZZZZZZ',
+      emailAddress: 'iqa@alpha.edu.bt'
+    },
+    academicActivities: 'Bachelor of Science - 200\nMaster of Arts - 100',
+    studentDetails: {
+      maleCount: 250,
+      femaleCount: 150,
+      totalCount: 400
+    },
+    financialResources: 'Annual Budget - $1,000,000',
+    standards: [
+      { standardName: 'Standard 1', keyAspectName: 'Curriculum Design', indicators: 'Indicators for Standard 1...', reportByInstitute: 'Report on Standard 1...' },
+      { standardName: 'Standard 2', keyAspectName: 'Teaching and Learning', indicators: 'Indicators for Standard 2...', reportByInstitute: 'Report on Standard 2...' }
+    ],
+    supportingDocuments: [
+      { name: 'Self-Assessment Report', url: '#' },
+      { name: 'Institutional Profile Document', url: '#' }
+    ]
   },
-  setup() {
-    // Example Application Data (replace with your actual data source)
-    const applications = ref([
-      { application_id: 'APP001', institute_name: 'University of Example', status: 'Submitted' },
-      { application_id: 'APP002', institute_name: 'College of Science', status: 'In Review' },
-      { application_id: 'APP003', institute_name: 'Tech Institute', status: 'Site Visit Scheduled' }
-    ]);
+  {
+    applicationId: 'APP-2024-002',
+    institutionName: 'College Beta',
+    programName: 'Master of Arts in Education',
+    submissionDate: '2024-08-20',
+    status: 'Under Review',
+    institutionProfile: {
+      nameOfInstitution: 'College Beta',
+      addressLocation: '456 Elm Street',
+      gewogThrom: 'Paro Thromde',
+      dzongkhagThrom: 'Paro',
+      contactNumber: '17AAAAAAA',
+      emailAddress: 'info@beta.edu.bt',
+      telephoneNumber: '+975 8 8XXXXX',
+      yearOfEstablishment: '2010',
+      typeOfInstitution: 'College',
+      affiliatedTo: 'University XYZ',
+      levelOfAutonomy: 'Partial',
+      sourceOfFunding: 'Private',
+      totalArea: '25 acres',
+      website: 'www.beta.edu.bt'
+    },
+    pastAccreditationDetails: {
+      accreditationRating: 'B+',
+      accreditationValidityDate: '2022-06-30'
+    },
+    headOfInstituteDetails: {
+      name: 'Dr. Head Beta',
+      contactNumber: '17BBBBBBB',
+      emailAddress: 'head@beta.edu.bt'
+    },
+    iqaFocalDetails: {
+      nameOfIqaFocal: 'Ms. IQA Beta',
+      contactNumber: '17CCCCCCC',
+      emailAddress: 'iqa@beta.edu.bt'
+    },
+    academicActivities: 'Master of Arts - 120\nDiploma in Education - 80',
+    studentDetails: {
+      maleCount: 100,
+      femaleCount: 100,
+      totalCount: 200
+    },
+    financialResources: 'Annual Budget - $750,000',
+    standards: [
+      { standardName: 'Standard 1', keyAspectName: 'Governance and Leadership', indicators: 'Indicators for Standard 1...', reportByInstitute: 'Report on Standard 1...' },
+      { standardName: 'Standard 3', keyAspectName: 'Student Support Services', indicators: 'Indicators for Standard 3...', reportByInstitute: 'Report on Standard 3...' }
+    ],
+    supportingDocuments: [
+      { name: 'Quality Assurance Manual', url: '#' }
+    ]
+  },
+  // ... add more application objects with the same structure
+]);
 
-    const assessorPool = ref(['Dr. Jane Doe', 'Prof. John Smith', 'Dr. Alice Brown']);
-    const showApplicationForm = ref(false);
-    const selectedApplication = ref(null);
+const isModalOpen = ref(false);
+const selectedApplication = ref({});
 
-    const viewApplication = (application) => {
-      selectedApplication.value = { ...application };
-      showApplicationForm.value = true;
-    };
+const openModal = (application) => {
+  selectedApplication.value = application;
+  console.log('selectedApplication:', selectedApplication.value); // Debugging line
+  isModalOpen.value = true;
+};
 
-    const closeApplicationForm = () => {
-      showApplicationForm.value = false;
-      selectedApplication.value = null;
-    };
+const closeModal = () => {
+  isModalOpen.value = false;
+  selectedApplication.value = {};
+};
 
-    const saveApplicationData = (updatedApplication) => {
-      // Find the application in the list and update it (in a real application, update the database)
-      const index = applications.value.findIndex(app => app.application_id === updatedApplication.application_id);
-      if (index !== -1) {
-        applications.value[index] = { ...updatedApplication };
-      }
-
-      // Implement your data saving logic here (e.g., API call)
-      console.log('Saving application data:', updatedApplication);
-      closeApplicationForm();
-    };
-
-    return {
-      applications,
-      assessorPool,
-      showApplicationForm,
-      selectedApplication,
-      viewApplication,
-      closeApplicationForm,
-      saveApplicationData
-    };
+const getStatusClass = (status) => {
+  switch (status) {
+    case 'Submitted': return 'text-blue-900';
+    case 'Under Review': return 'text-yellow-900';
+    case 'Assessor Assigned': return 'text-purple-900';
+    case 'Site Visit Scheduled': return 'text-indigo-900';
+    case 'Approved': return 'text-green-900';
+    default: return 'text-gray-900';
   }
 };
+const getStatusBackgroundClass = (status) => {
+  switch (status) {
+    case 'Submitted': return 'bg-blue-200';
+    case 'Under Review': return 'bg-yellow-200';
+    case 'Assessor Assigned': return 'bg-purple-200';
+    case 'Site Visit Scheduled': return 'bg-indigo-200';
+    case 'Approved': return 'bg-green-200';
+    default: return 'bg-gray-200';
+  }
+};
+
 </script>

@@ -8,41 +8,41 @@
           <DialogPanel
             class="w-full max-w-7xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all">
             <div class="relative" v-if="application">
-              <!-- Enhanced Status Banner (From Complex Modal) -->
+              <!-- Status Banner -->
               <div :class="[
-    'px-8 py-6 border-b relative overflow-hidden',
-    {
-      'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
-      'bg-green-50 border-green-100': overallStatus === 'Approved',
-      'bg-red-50 border-red-100': overallStatus === 'Regretted',
-    },
-  ]">
+                'px-4 py-3 sm:px-8 sm:py-6 border-b relative overflow-hidden',
+                {
+                  'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
+                  'bg-green-50 border-green-100': overallStatus === 'Approved',
+                  'bg-red-50 border-red-100': overallStatus === 'Regretted',
+                },
+              ]">
                 <div class="flex items-center justify-between relative z-10">
                   <div class="flex items-center space-x-4">
                     <div class="p-3 bg-white rounded-lg shadow-sm">
                       <FileText class="h-7 w-7 text-gray-700" />
                     </div>
                     <div>
-                      <DialogTitle as="h3" class="text-2xl font-semibold text-gray-900">
+                      <DialogTitle as="h3" class="text-lg sm:text-2xl font-semibold text-gray-900">
                         Application Details
                       </DialogTitle>
-                      <p class="text-sm text-gray-600 mt-1">Review and manage application information</p>
+                      <p class="text-xs sm:text-sm text-gray-600 mt-1">Review and manage application information</p>
                     </div>
                   </div>
                   <div class="flex items-center space-x-4">
                     <span :class="[
-    'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
-    {
-      'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
-      'bg-green-100 text-green-800': overallStatus === 'Approved',
-      'bg-red-100 text-red-800': overallStatus === 'Regretted',
-    },
-  ]" style="z-index: 11;"> <!-- Add inline style to increase z-index -->
-                      <Circle class="h-4 w-4" :class="{
-    'text-yellow-500': overallStatus === 'Pending',
-    'text-green-500': overallStatus === 'Approved',
-    'text-red-500': overallStatus === 'Regretted',
-  }" />
+                      'px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
+                      {
+                        'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
+                        'bg-green-100 text-green-800': overallStatus === 'Approved',
+                        'bg-red-100 text-red-800': overallStatus === 'Regretted',
+                      },
+                    ]" style="z-index: 11;">
+                      <Circle class="h-3 w-3 sm:h-4 sm:w-4" :class="{
+                        'text-yellow-500': overallStatus === 'Pending',
+                        'text-green-500': overallStatus === 'Approved',
+                        'text-red-500': overallStatus === 'Regretted',
+                      }" />
                       <span>{{ overallStatus }}</span>
                     </span>
                     <button type="button"
@@ -61,97 +61,90 @@
                 </div>
               </div>
 
-              <!-- Main Content -->
-              <div class="px-8 py-6 bg-white">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <!-- Left Column (Personal Information, etc.) -->
-                  <div class="lg:col-span-1 space-y-6">
-                    <!-- Personal Information Card -->
+
+              <!-- Main Content (Scrollable) -->
+              <div class="px-4 py-4 sm:px-8 sm:py-6 bg-white overflow-y-auto max-h-[calc(100vh-200px)]">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+
+                  <!-- Left Column -->
+                  <div class="lg:col-span-1 space-y-4 sm:space-y-6">
+                    <!-- Personal Information -->
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                      <div class="p-6">
-                        <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
+                      <div class="p-4 sm:p-6">
+                        <h4 class="text-base sm:text-lg font-medium text-gray-900 mb-4 sm:mb-6 flex items-center space-x-2">
                           <User class="h-5 w-5 text-gray-500" />
                           <span>Personal Information</span>
                         </h4>
                         <div class="flex flex-col items-center space-y-4">
-
-
-
                           <div class="text-center">
-                            <h5 class="text-xl font-semibold text-gray-900">{{
-    application.applicant_name }}</h5>
-                            <p class="text-sm text-gray-500 mt-1">Application ID: #{{
-    application.id }}</p>
+                            <h5 class="text-base sm:text-xl font-semibold text-gray-900">{{ application.applicant_name }}
+                            </h5>
+                            <p class="text-xs sm:text-sm text-gray-500 mt-1">Application ID: #{{ application.id }}</p>
                           </div>
-                          <div class="w-full grid grid-cols-2 gap-4 mt-4">
-                            <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
+                          <div class="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                            <div class="flex items-center space-x-2 bg-gray-50 p-2 sm:p-3 rounded-lg">
                               <UserCircle class="h-4 w-4 text-gray-400" />
-                              <span class="text-sm text-gray-600">Applicant{{ application.full_name }}</span>
+                              <span class="text-xs sm:text-sm text-gray-600">Applicant: {{ application.full_name }}</span>
                             </div>
-                            <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
+                            <div class="flex items-center space-x-2 bg-gray-50 p-2 sm:p-3 rounded-lg">
                               <Calendar class="h-4 w-4 text-gray-400" />
-                              <span class="text-sm text-gray-600">{{
-    formatDate(application.commencement_date) }}</span>
+                              <span class="text-xs sm:text-sm text-gray-600">{{ formatDate(application.commencement_date) }}</span>
                             </div>
                           </div>
                         </div>
                       </div>
 
-                      <!-- Enhanced Counselor Status Section -->
-                      <div class="border-t border-gray-100 p-6 bg-gray-50">
+                      <div class="border-t border-gray-100 p-4 sm:p-6 bg-gray-50">
                         <div class="flex flex-col space-y-4">
                           <h5 class="font-medium text-gray-900">Application Status</h5>
                           <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">
-                              Application Status: {{ application.
-    affiliation_details }}
-                            </span>
+                            <span class="text-xs sm:text-sm text-gray-600">Status: {{ application.affiliation_details
+                            }}</span>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <!-- Contact Information Card -->
+                    <!-- Application Information -->
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                      <div class="p-6">
-                        <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
+                      <div class="p-4 sm:p-6">
+                        <h4 class="text-base sm:text-lg font-medium text-gray-900 mb-4 sm:mb-6 flex items-center space-x-2">
                           <Contact class="h-5 w-5 text-gray-500" />
                           <span>Application Information</span>
                         </h4>
                         <div class="space-y-4">
-                          <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <div class="flex items-center space-x-3 p-2 sm:p-3 bg-gray-50 rounded-lg">
                             <Mail class="h-4 w-4 text-gray-400" />
-                            <span class="text-sm text-gray-600">Proposed Name: {{
-    application.dpr_name }}</span>
+                            <span class="text-xs sm:text-sm text-gray-600">Proposed Name: {{ application.dpr_name }}</span>
                           </div>
-                          <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <div class="flex items-center space-x-3 p-2 sm:p-3 bg-gray-50 rounded-lg">
                             <Phone class="h-4 w-4 text-gray-400" />
-                            <span class="text-sm text-gray-600">Land Area: {{
-    application.land_details }}</span>
+                            <span class="text-xs sm:text-sm text-gray-600">Land Area: {{ application.land_details }}</span>
                           </div>
-                          <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <div class="flex items-center space-x-3 p-2 sm:p-3 bg-gray-50 rounded-lg">
                             <MapPin class="h-4 w-4 text-gray-400" />
-                            <span class="text-sm text-gray-600">
-                              Vision Mission and Implementation Strategies : {{ application.vision_mission_strategies }}
-                            </span>
+                            <span class="text-xs sm:text-sm text-gray-600">Vision, Mission & Strategies: {{
+                              application.vision_mission_strategies }}</span>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
+                  <!-- End Left Column -->
 
-                  <!-- Right Column (Application Details) -->
-                  <div class="lg:col-span-2 space-y-6">
 
+                  <!-- Right Column -->
+                  <div class="lg:col-span-2 space-y-4 sm:space-y-6">
                     <!-- Application Details Card -->
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                      <div class="p-6">
-                        <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
+                      <div class="p-4 sm:p-6">
+                        <h4
+                          class="text-base sm:text-lg font-medium text-gray-900 mb-4 sm:mb-6 flex items-center space-x-2">
                           <FileText class="h-5 w-5 text-gray-500" />
                           <span>Application Details</span>
                         </h4>
-                        <div class="grid grid-cols-2 gap-6">
-                          <div class="p-4 bg-gray-50 rounded-lg">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                         <div class="p-4 bg-gray-50 rounded-lg">
                             <p class="text-sm font-medium text-gray-500">Project Scheduling
                             </p>
                             <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
@@ -273,23 +266,24 @@
                               <span>{{ application.other_details }}</span>
                             </p>
                           </div>
-
                         </div>
                       </div>
                     </div>
                   </div>
+                  <!-- End Right Column -->
+
                 </div>
               </div>
+              <!-- End Main Content -->
 
-              <!-- Enhanced Footer (From Complex Modal) -->
-              <div class="px-8 py-4 bg-gray-50 border-t border-gray-200">
+              <!-- Footer -->
+              <div class="px-4 py-3 sm:px-8 sm:py-4 bg-gray-50 border-t border-gray-200">
                 <div class="flex justify-between items-center">
-                  <div v-if="errorMessage" class="text-sm text-red-600 flex items-center space-x-2">
+                   <div v-if="errorMessage" class="text-sm text-red-600 flex items-center space-x-2">
                     <CircleAlert class="h-4 w-4" />
                     <span>{{ errorMessage }}</span>
                   </div>
-
-                  <!-- Action Buttons (if not confirming) -->
+                  <!-- Action Buttons -->
                   <div v-else class="flex items-center space-x-4">
                     <button type="button"
                       class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center space-x-2"
@@ -297,52 +291,48 @@
                       <X class="h-4 w-4" />
                       <span>Close</span>
                     </button>
-                    <!-- <button type="button"
-                      class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center space-x-2"
-                      @click="saveChanges">
-                      <Check class="h-4 w-4" />
-                      <span>Save Changes</span>
-                    </button> -->
                     <button type="button"
                       class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-green-500 focus:ring-offset-2 inline-flex items-center space-x-2"
                       @click="startConfirmation('approve')">
                       <FileText class="h-4 w-4" />
-                      <span>Approve Application</span>
+                      <span>Approve</span>
                     </button>
                     <button type="button"
                       class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-red-500 focus:ring-offset-2 inline-flex items-center space-x-2"
                       @click="startConfirmation('Regretted')">
                       <Pencil class="h-4 w-4" />
-                      <span>Regretted Application</span>
+                      <span>Regretted</span>
                     </button>
                   </div>
                 </div>
               </div>
+              <!-- End Footer -->
             </div>
 
             <!-- Confirmation Modal -->
             <div v-if="isConfirmingAction"
               class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-              <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+              <div class="bg-white rounded-xl shadow-lg p-4 sm:p-8 w-full max-w-md">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4">
                   Confirm {{ confirmingAction === 'approve' ? 'Approval' : 'Regrettedion' }}
                 </h3>
-                <label for="confirmationMessage" class="block text-sm font-medium text-gray-700 mb-2">Message:</label>
+                <label for="confirmationMessage" class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Message:</label>
                 <textarea id="confirmationMessage" v-model="confirmationMessage" rows="3"
-                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md mb-4"></textarea>
+                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full text-xs sm:text-sm border-gray-300 rounded-md mb-4"></textarea>
                 <div class="flex justify-end">
                   <button type="button"
                     class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-blue-500 mr-2"
                     @click="cancelConfirmation">Cancel</button>
                   <button type="button" class="px-4 py-2 text-sm font-medium text-white rounded-lg shadow-sm" :class="{
-    'bg-green-600 hover:bg-green-700 focus:ring-green-500': confirmingAction === 'approve',
-    'bg-red-600 hover:bg-red-700 focus:ring-red-500': confirmingAction === 'Regretted'
-  }" @click="confirmAction">
+                    'bg-green-600 hover:bg-green-700 focus:ring-green-500': confirmingAction === 'approve',
+                    'bg-red-600 hover:bg-red-700 focus:ring-red-500': confirmingAction === 'Regretted'
+                  }" @click="confirmAction">
                     Confirm {{ confirmingAction === 'approve' ? 'Approved' : 'Regrettedion' }}
                   </button>
                 </div>
               </div>
             </div>
+            <!-- End Confirmation Modal -->
           </DialogPanel>
         </TransitionChild>
       </div>
@@ -351,6 +341,7 @@
 </template>
 
 <script setup>
+// ... (Your existing script setup, imports, props, emits, refs, computed properties, methods)
 import {
   Dialog,
   DialogPanel,
@@ -396,7 +387,7 @@ const errorMessage = ref('');
 
 const overallStatus = computed(() => {
   if (!props.application) return 'Pending';
-  return props.application.status;
+  return props.application.do_dpr_review_decision;
 });
 
 const closeModal = () => {
@@ -476,12 +467,7 @@ console.log('DprModal.vue loaded');
 </script>
 
 <style scoped>
-/* Style to center the modal */
-.fixed.inset-0.z-50.overflow-y-auto {
-  display: grid;
-  place-items: center;
-}
-
+/* Basic styles, animations - Keep your existing styles */
 /* Enhanced scrollbar styles */
 .overflow-y-auto {
   scrollbar-width: thin;

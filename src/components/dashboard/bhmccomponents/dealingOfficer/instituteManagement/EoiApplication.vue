@@ -97,9 +97,10 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(institute)">
                   {{ institute.review_decision }}
-                  <span v-if="institute.review_decision === 'Rejected' && institute.reason_if_rejected">
+                  <span v-if="institute.review_decision === 'Regretted' && institute.reason_if_rejected">
                     (Reason: {{ institute.reason_if_rejected }})
                   </span>
+
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -223,7 +224,7 @@ const getStatusClasses = (institute) => {
     {
       'bg-yellow-100 text-yellow-800': institute.review_decision === 'Pending',
       'bg-green-100 text-green-800': institute.review_decision === 'Approved',
-      'bg-red-100 text-red-800': institute.review_decision === 'Rejected',
+      'bg-red-100 text-red-800': institute.review_decision === 'Regretted',
     },
   ];
 };
@@ -232,5 +233,6 @@ const getStatusClasses = (institute) => {
 <style scoped>
 /* Tailwind styles - no need for custom styles here, Tailwind classes are used */
 </style>
+
 
 

@@ -1012,34 +1012,39 @@ const serviceSpecificMenuItems = {
     dealing_officer: [
       {
         name: 'Dashboard',
-        icon: getIconComponent('LayoutDashboard'),
+        icon: getIconComponent('LayoutDashboard'), // Corrected icon name
         route: (serviceType) => `/admin/dealing_Officer/${serviceType}/dashboard`,
       },
       {
-        name: 'Institutional Accreditation',
-        icon: getIconComponent('Folder'),
+        name: 'Accreditation Appilications',
+        icon: getIconComponent('Folder'), // Corrected icon name
         route: (serviceType) =>
           `/admin/dealing_officer/${serviceType}/institutional_accreditations`,
       },
       {
-        name: 'Appeals',
-        icon: getIconComponent('CheckCircle'),
+        name: 'Appeals Applications',
+        icon: getIconComponent('CheckCircle'), // Corrected icon name
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/appeals`,
       },
       {
         name: 'Assessor Management',
-        icon: getIconComponent('ClipboardCheck'),
+        icon: getIconComponent('ClipboardCheck'), // Corrected icon name
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/assessor_management`,
       },
       {
         name: 'Site Visit Scheduling',
-        icon: getIconComponent('ClipboardCheck'),
+        icon: getIconComponent('Clock'), // Corrected icon name - using Clock for scheduling
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/site_visit_scheduling`,
       },
       {
         name: 'Reports',
-        icon: getIconComponent('CreditCard'),
+        icon: getIconComponent('FileText'), // Changed to FileText - more suitable for reports
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
+      },
+      {
+        name: 'Payment History',
+        icon: getIconComponent('CreditCard'), // Corrected icon name
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/payment_history`,
       },
     ],
     admin: [

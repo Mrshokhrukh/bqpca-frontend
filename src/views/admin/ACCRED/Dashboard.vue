@@ -90,6 +90,7 @@ import Appeals from '@/components/dashboard/accredcomponent/dealingOfficer/Appea
 import AssessorManagement from '@/components/dashboard/accredcomponent/dealingOfficer/AssessorManagement.vue';
 import SiteVisitScheduling from '@/components/dashboard/accredcomponent/dealingOfficer/SiteVisitScheduling.vue';
 import Reports from '@/components/dashboard/accredcomponent/dealingOfficer/Reports.vue';
+import PaymentHistory from '@/components/dashboard/accredcomponent/dealingOfficer/PaymentHistory.vue';
 
 const route = useRoute();
 const { role } = useAuthStore();
@@ -187,6 +188,8 @@ const dealingOfficerComponent = computed(() => {
       
     case path.endsWith('/accreditation/reports'):
       return Reports; 
+     case path.endsWith('/accreditation/payment_history'):
+      return PaymentHistory; 
      
     default:
       return null;
