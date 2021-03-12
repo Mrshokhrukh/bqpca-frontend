@@ -260,6 +260,7 @@ import { defineProps, defineEmits, computed, ref } from 'vue';
 import apiService from '@/services/services';
 import { useToast } from 'vue-toastification';
 
+
 const toast = useToast()
 
 const props = defineProps({
@@ -291,7 +292,7 @@ const approveApplication = async () => {
 
   try {
     const response = await apiService.patchBmhcInstitute(props.application.id, {
-      status: 'Approved',
+      review_decision: 'Approved',  // CHANGED: Using review_decision instead of status
       approvalNotes: notes,
     });
 
@@ -318,8 +319,8 @@ const rejectApplication = async () => {
 
   try {
     const response = await apiService.patchBmhcInstitute(props.application.id, {
-      status: 'Rejected',
-      reason_if_rejected: reason, //use this reason
+      review_decision: 'Regretted',  // CHANGED: Using review_decision instead of status
+      reason_if_rejected: reason,
     });
 
     if (response && response.status === 200 && response.data) {
@@ -351,8 +352,7 @@ const formatDate = (date) => {
 };
 
 const overallStatus = computed(() => {
-  // Replace this logic with your actual status determination
-  // based on the EOI application's properties
+  // Return the review_decision or 'Pending' if not available
   return props.application.review_decision || 'Pending';
 });
 </script>

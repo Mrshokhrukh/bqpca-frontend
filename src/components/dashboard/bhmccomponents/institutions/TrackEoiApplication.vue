@@ -81,6 +81,11 @@
               </div>
             </div>
           </div>
+
+          <!-- Message for Approved Applications -->
+          <div v-if="application.review_decision === 'Approved'" class="mt-4 p-4 bg-green-100 text-green-700 rounded-lg">
+            Now you can proceed to DRP Application
+          </div>
         </div>
       </div>
     </div>
