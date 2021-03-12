@@ -162,7 +162,6 @@
                     {{ application.review_decision }}
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ application.dpr_name }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span :class="getDprStatusClass(application.do_dpr_review_decision)">
                     {{ application.do_dpr_review_decision }}
