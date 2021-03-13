@@ -70,7 +70,7 @@
             <select v-model="application.institutionType"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
               <option :value="null" disabled>Select Institution Type</option>
-              <option v-for="item in institutionTypes" :key="item" :value="item">{{ item }}</option>
+              <option v-for="item in institutionTypesOptions" :key="item.id" :value="item.id">{{ item.name }}</option>
             </select>
           </div>
 
@@ -91,7 +91,7 @@
             <select v-model="application.fundingSource"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
               <option :value="null" disabled>Select Funding Source</option>
-              <option v-for="item in fundingSources" :key="item" :value="item">{{ item }}</option>
+              <option v-for="item in fundingSourcesOptions" :key="item.id" :value="item.id">{{ item.name }}</option>
             </select>
           </div>
 
@@ -468,6 +468,7 @@
 
 <script setup>
 import { reactive, ref, computed, onMounted } from 'vue';
+import apiservice from '@/services/accreditationservices'; 
 
 const application = reactive({
   institutionName: 'Example Institution', // Auto-filled from profile
@@ -477,10 +478,10 @@ const application = reactive({
   emailAddress: '',
   telephoneNumber: '',
   yearEstablished: '',
-  institutionType: null,
+  institutionType: null, // Will store the ID from master list
   affiliatedTo: '',
   levelOfAutonomy: '',
-  fundingSource: null,
+  fundingSource: null, // Will store the ID from master list
   totalArea: '',
   website: '',
   accreditationRating: '',
@@ -517,15 +518,16 @@ const application = reactive({
   supportingDocuments: [],
 });
 
-const dzongkhags = ref(['Thimphu', 'Paro', 'Wangdue Phodrang', 'Punakha']); // Mock data
-const institutionTypes = ref(['Constituent', 'Affiliated', 'Others']); // Mock data
-const fundingSources = ref(['Government', 'Private', 'Donation']); // Mock data
+const dzongkhags = ref(['Thimphu', 'Paro', 'Wangdue Phodrang', 'Punakha']); // Mock data - can be fetched from API later if needed
+const institutionTypesOptions = ref([]); // For fetched Institution Types
+const fundingSourcesOptions = ref([]);   // For fetched Funding Sources
 const qualificationCategories = ref(['Bachelor', 'Master', 'PhD']); // Mock data
 const genderOptions = ref(['Male', 'Female']);
 const standardNames = ref(['Standard 1', 'Standard 2', 'Standard 3']);
 const keyAspectNames = ref(['Key Aspect 1', 'Key Aspect 2', 'Key Aspect 3']);
 const indicators = ref(['Indicator 1', 'Indicator 2', 'Indicator 3']);
 
+// Programme List Management
 const addProgramme = () => {
   application.programmes.push({ name: '', number: '' });
 };
@@ -534,6 +536,7 @@ const removeProgramme = (index) => {
   application.programmes.splice(index, 1);
 };
 
+// Standards Management
 const addStandard = () => {
   application.standards.push({ standardName: '', keyAspectName: '', indicators: '', reportByInstitute: '' });
 };
@@ -542,6 +545,7 @@ const removeStandard = (index) => {
   application.standards.splice(index, 1);
 };
 
+// Computed properties for totals
 const totalFaculty = computed(() => {
   return Number(application.facultyF || 0) + Number(application.facultyM || 0);
 });
@@ -562,24 +566,71 @@ const totalNonTeachingStaff = computed(() => {
   return Number(application.technicalStaffTotal || 0) + Number(application.administrativeStaffTotal || 0) + Number(application.supportStaffTotal || 0);
 });
 
+// File Handling
 const onFileChange = (event) => {
   const files = event.target.files;
   application.supportingDocuments = Array.from(files); // Ensure files is an array
 };
 
-const submitApplication = () => {
-  // TODO: Implement submit application logic (API call)
-  console.log('Submitting application:', application);
+// Submit Application Function
+const submitApplication = async () => {
+  try {
+    const formData = new FormData();
+
+    // Append text data from the application object
+    for (const key in application) {
+      if (key !== 'supportingDocuments' && key !== 'programmes' && key !== 'standards') {
+        formData.append(key, application[key]);
+      }
+    }
+
+    // Append programmes and standards as JSON
+    formData.append('programmes', JSON.stringify(application.programmes));
+    formData.append('standards', JSON.stringify(application.standards));
+
+    // Append files
+    application.supportingDocuments.forEach((file, index) => {
+      formData.append(`supportingDocuments[${index}]`, file);
+    });
+
+    const response = await apiservice.createInstitutionProfile(formData);
+    console.log('Application submitted successfully!', response.data);
+    alert('Application submitted successfully!');
+  } catch (error) {
+    console.error('Error submitting application:', error);
+    alert('Error submitting application. Please check the console for details.');
+  }
 };
 
+// Save Draft Function (TODO: Implement backend logic)
 const saveDraft = () => {
-  // TODO: Implement save draft logic
   console.log('Saving draft:', application);
+  alert('Save Draft functionality is not yet implemented.');
 };
 
-onMounted(() => {
-  // Fetch dzongkhags, institutionTypes, fundingSources from API/store
-  // Example: dzongkhags.value = fetchDzongkhagsFromAPI();
+// Fetch Master Data on Component Mount
+onMounted(async () => {
+  try {
+    // Fetch Institution Types
+    const institutionTypesResponse = await apiservice.getMastersInstitutes();
+    institutionTypesOptions.value = institutionTypesResponse.data;
+
+    // Fetch Funding Sources
+    const fundingSourcesResponse = await apiservice.getMastersSourceOfFundings();
+    fundingSourcesOptions.value = fundingSourcesResponse.data;
+
+    
+    const dzongkhagsResponse = await apiservice.getDzongkhags();
+    dzongkhags.value = dzongkhagsResponse.data;
+
+  } catch (error) {
+    console.error('Error fetching master data:', error);
+    alert('Failed to load dropdown options. Please check the console.');
+  }
 });
 
 </script>
+
+<style scoped>
+/* Add component-specific styles here if needed */
+</style>

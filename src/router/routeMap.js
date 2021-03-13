@@ -195,6 +195,7 @@ export default {
       site_visit_scheduling: accredDashboard,
       payment_history: accredDashboard,
       reports: accredDashboard,
+      assign_assessor: accredDashboard,
     },
     engineering_certification: {
       dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
@@ -348,7 +349,7 @@ export default {
       institutes_renewal: bmhcDashboard,
       my_capa : bmhcDashboard,
       staff_management: bmhcDashboard,
-      
+
       // ... other Health Certification routes for director
     },
   },

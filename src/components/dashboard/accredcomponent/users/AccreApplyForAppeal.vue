@@ -102,13 +102,14 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
+import apiservice from '@/services/accreditationservices'; // Assuming apiservice is set up in this path
 
 const autoFilledDetails = reactive({
-  'Name of Institution': 'Example Institution',
-  'Address/Location': '123 Main St',
-  'Dzongkhag/Thromde': 'Thimphu',
-  'Contact': '17XXXXXX',
-  'Email': 'example@example.com'
+  'Name of Institution': '',
+  'Address/Location': '',
+  'Dzongkhag/Thromde': '',
+  'Contact': '',
+  'Email': ''
 });
 
 const appeal = reactive({
@@ -122,26 +123,103 @@ const appeal = reactive({
   declaration: false,
 });
 
-const appealReasons = ref([
-  { text: 'Incorrect Assessment', value: 'IncorrectAssessment' },
-  { text: 'Insufficient Evidence', value: 'InsufficientEvidence' },
-  { text: 'Procedural Error', value: 'ProceduralError' },
-  { text: 'Other', value: 'Other' },
-]);
+const appealReasons = ref([]);
 
 const onFileChange = (event) => {
   appeal.supportingDocuments = Array.from(event.target.files);
 };
 
-const saveDraft = () => {
-  console.log('Saving draft:', appeal);
+const saveDraft = async () => {
+  try {
+    const formData = new FormData();
+    formData.append('reason_type', appeal.reasonType); // Use snake_case to match backend if needed
+    formData.append('reason_other', appeal.reasonOther);
+    formData.append('reason', appeal.reason);
+    formData.append('attempted_to_resolve', appeal.attemptedToResolve);
+    formData.append('outcome', appeal.outcome);
+    // Append files
+    appeal.supportingDocuments.forEach(file => {
+      formData.append('supporting_documents', file); // Backend needs to handle multiple files with this key
+    });
+
+    const response = await apiservice.createProfileAppeal(formData, { // Using createProfileAppeal from apiservice
+      headers: {
+        'Content-Type': 'multipart/form-data' // Important for file uploads
+      }
+    });
+    console.log('Draft saved:', response.data);
+    alert('Draft saved successfully!'); // Provide user feedback
+  } catch (error) {
+    console.error('Error saving draft:', error);
+    alert('Failed to save draft. Please check the console for details.'); // User feedback for error
+  }
 };
 
-const submitAppeal = () => {
-  console.log('Submitting appeal:', appeal);
+const submitAppeal = async () => {
+  try {
+    const formData = new FormData();
+    formData.append('reason_type', appeal.reasonType); // Use snake_case to match backend if needed
+    formData.append('reason_other', appeal.reasonOther);
+    formData.append('reason', appeal.reason);
+    formData.append('attempted_to_resolve', appeal.attemptedToResolve);
+    formData.append('outcome', appeal.outcome);
+    // Append files
+    appeal.supportingDocuments.forEach(file => {
+      formData.append('supporting_documents', file); // Backend needs to handle multiple files with this key
+    });
+
+    const response = await apiservice.createProfileAppeal(formData, { // Using createProfileAppeal from apiservice
+      headers: {
+        'Content-Type': 'multipart/form-data' // Important for file uploads
+      }
+    });
+    console.log('Appeal submitted:', response.data);
+    alert('Appeal submitted successfully!'); // Provide user feedback
+    // Optionally reset the form or redirect user
+  } catch (error) {
+    console.error('Error submitting appeal:', error);
+    alert('Failed to submit appeal. Please check the console for details.'); // User feedback for error
+  }
 };
+
+const fetchAppealReasons = async () => {
+  try {
+    const response = await apiservice.getMastersAppealReasons(); // Using getMastersAppealReasons from apiservice
+    appealReasons.value = response.data.map(reason => ({ // Assuming backend returns array of objects
+      text: reason.reason_name, // Adjust based on actual API response field
+      value: reason.reason_type_value // Adjust based on actual API response field
+    }));
+  } catch (error) {
+    console.error('Error fetching appeal reasons:', error);
+  }
+};
+
+const fetchInstitutionProfile = async () => {
+  try {
+    const response = await apiservice.getProfileAppeals(); // Using getProfileAppeals - assuming this fetches institution profiles based on previous API info and service name context. **Verify this is the correct service call**
+    const profiles = response.data; // Assuming API returns a list of profiles
+
+    if (profiles && profiles.length > 0) {
+      const profileData = profiles[0]; // Taking the first profile from the list. Adjust logic if needed.
+      autoFilledDetails['Name of Institution'] = profileData.institution_name || ''; // Adjust field names based on your API response
+      autoFilledDetails['Address/Location'] = profileData.address || '';
+      autoFilledDetails['Dzongkhag/Thromde'] = profileData.dzongkhag || '';
+      autoFilledDetails['Contact'] = profileData.contact_number || '';
+      autoFilledDetails['Email'] = profileData.email || '';
+    } else {
+      console.warn('No institution profiles found.');
+      // Optionally handle the case where no profiles are found (e.g., display a message)
+    }
+
+  } catch (error) {
+    console.error('Error fetching institution profile:', error);
+    // Optionally handle error, e.g., display a message to the user
+  }
+};
+
 
 onMounted(() => {
-  // Fetch institution data if needed
+  fetchAppealReasons();
+  fetchInstitutionProfile();
 });
 </script>
