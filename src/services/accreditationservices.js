@@ -1,7 +1,6 @@
-import apiClient from './apiClient';
+import apiClient from './apiClient'
 
 export default {
-
   // Institution Profiles
   getInstitutionProfiles() {
     return apiClient.get('/accrediations/institution-profiles/')
@@ -301,7 +300,45 @@ export default {
   deleteMastersStandard(id) {
     return apiClient.delete(`/accrediations/masters-standard/${id}/`)
   },
+  // Masters Document Type
+  getMastersDocumentTypes() {
+    return apiClient.get('/accrediations/masters-document-type/')
+  },
+  createMastersDocumentType(data) {
+    return apiClient.post('/accrediations/masters-document-type/', data)
+  },
+  getMastersDocumentType(id) {
+    return apiClient.get(`/accrediations/masters-document-type/${id}/`)
+  },
+  updateMastersDocumentType(id, data) {
+    return apiClient.put(`/accrediations/masters-document-type/${id}/`, data)
+  },
+  patchMastersDocumentType(id, data) {
+    return apiClient.patch(`/accrediations/masters-document-type/${id}/`, data)
+  },
+  deleteMastersDocumentType(id) {
+    return apiClient.delete(`/accrediations/masters-document-type/${id}/`)
+  },
 
+  // Masters Source of Funding
+  getMastersSourceOfFundings() {
+    return apiClient.get('/accrediations/masters-source-of-funding/')
+  },
+  createMastersSourceOfFunding(data) {
+    return apiClient.post('/accrediations/masters-source-of-funding/', data)
+  },
+  getMastersSourceOfFunding(id) {
+    return apiClient.get(`/accrediations/masters-source-of-funding/${id}/`)
+  },
+  updateMastersSourceOfFunding(id, data) {
+    return apiClient.put(`/accrediations/masters-source-of-funding/${id}/`, data)
+  },
+  patchMastersSourceOfFunding(id, data) {
+    return apiClient.patch(`/accrediations/masters-source-of-funding/${id}/`, data)
+  },
+  deleteMastersSourceOfFunding(id) {
+    return apiClient.delete(`/accrediations/masters-source-of-funding/${id}/`)
+  },
   // Past Accreditations
   getPastAccreditations() {
     return apiClient.get('/accrediations/past-accreditations/')

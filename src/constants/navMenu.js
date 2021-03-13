@@ -1,4 +1,3 @@
-// src/constants/navMenu.js
 import {
   LayoutDashboard,
   FileText,
@@ -19,13 +18,31 @@ import {
   Heart,
   Wrench,
   Award,
-  FilePlus, // Added for 'FilePlus'
-  List, // Added for 'List'
-  RefreshCw, // Added for 'RefreshCw'
-  Edit, // Added for 'Edit'
-  Link, //Added for Linkage
-  Users2, //Added for Group
-  Monitor, //Added for screen
+  FilePlus,
+  List,
+  RefreshCw,
+  Edit,
+  Link,
+  Users2,
+  Monitor,
+  // Added missing icons
+  Scale,
+  History,
+  ClipboardList,
+  FileBarChart,
+  Building,
+  UserPlus,
+  CheckSquare,
+  Layers,
+  Target,
+  Key,
+  Star,
+  Scroll,
+  PenTool,
+  DollarSign,
+  Wallet,
+  GraduationCap,
+  Sliders,
 } from 'lucide-vue-next'
 
 // Icon mapping for dynamic icon selection
@@ -49,13 +66,31 @@ const iconMap = {
   Heart,
   Wrench,
   Award,
-  FilePlus, // Include in the map
-  List, // Include in the map
-  RefreshCw, // Include in the map
+  FilePlus,
+  List,
+  RefreshCw,
   Edit,
-  Link, //Added for Linkage
-  Users2, //Added for Group
-  Monitor, // Include in the map
+  Link,
+  Users2,
+  Monitor,
+  // Added missing icons
+  Scale,
+  History,
+  ClipboardList,
+  FileBarChart,
+  Building,
+  UserPlus,
+  CheckSquare,
+  Layers,
+  Target,
+  Key,
+  Star,
+  Scroll,
+  PenTool,
+  DollarSign,
+  Wallet,
+  GraduationCap,
+  Sliders,
 }
 import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
 import { useAuthStore } from '@/stores/authStore'
@@ -1067,6 +1102,11 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('Scale'),
             route: (serviceType) => `/admin/admin/${serviceType}/appeal_lists`,
           },
+          {
+            name: 'Past Accreditations',
+            icon: getIconComponent('History'),
+            route: (serviceType) => `/admin/admin/${serviceType}/past_accreditations`,
+          },
         ],
       },
       {
@@ -1080,7 +1120,7 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Manage Institutes',
-            icon: getIconComponent('Building'), // Or another suitable icon
+            icon: getIconComponent('Building'),
             route: (serviceType) => `/admin/admin/${serviceType}/institute`,
           },
           {
@@ -1089,15 +1129,15 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/assessor_pool`,
           },
           {
-            name: 'Institution Standards', // Clarify that these are *institution* standards
+            name: 'Institution Standards',
             icon: getIconComponent('Award'),
-            route: (serviceType) => `/admin/admin/${serviceType}/institution_standards`, // NEW ROUTE
+            route: (serviceType) => `/admin/admin/${serviceType}/institution_standards`,
           },
         ],
       },
       {
-        name: 'Personnel', // Group employee/staff settings
-        icon: getIconComponent('Users'), // Consistent icon
+        name: 'Personnel',
+        icon: getIconComponent('Users'),
         children: [
           {
             name: 'Categories',
@@ -1114,11 +1154,16 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('UserPlus'),
             route: (serviceType) => `/admin/admin/${serviceType}/staff_type`,
           },
+          {
+            name: 'Qualifications',
+            icon: getIconComponent('GraduationCap'),
+            route: (serviceType) => `/admin/admin/${serviceType}/qualification`,
+          },
         ],
       },
       {
         name: 'Accreditation Setup',
-        icon: getIconComponent('Settings'), // Or perhaps a different icon, like 'Sliders'
+        icon: getIconComponent('Settings'),
         children: [
           {
             name: 'Decisions',
@@ -1141,7 +1186,7 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/key_aspects`,
           },
           {
-            name: 'Standards', // General accreditation standards
+            name: 'Standards',
             icon: getIconComponent('Award'),
             route: (serviceType) => `/admin/admin/${serviceType}/standard`,
           },
@@ -1167,6 +1212,11 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/application_duration`,
           },
           {
+            name: 'Document Types',
+            icon: getIconComponent('FileText'),
+            route: (serviceType) => `/admin/admin/${serviceType}/document_type`,
+          },
+          {
             name: 'E-Signature',
             icon: getIconComponent('PenTool'),
             route: (serviceType) => `/admin/admin/${serviceType}/e_signature`,
@@ -1175,16 +1225,6 @@ const serviceSpecificMenuItems = {
             name: 'Fees',
             icon: getIconComponent('DollarSign'),
             route: (serviceType) => `/admin/admin/${serviceType}/fees`,
-          },
-          {
-            name: 'Documents',
-            icon: getIconComponent('FileText'),
-            route: (serviceType) => `/admin/admin/${serviceType}/document`,
-          },
-          {
-            name: 'Qualifications',
-            icon: getIconComponent('GraduationCap'),
-            route: (serviceType) => `/admin/admin/${serviceType}/qualification`,
           },
           {
             name: 'Source of Funding',
