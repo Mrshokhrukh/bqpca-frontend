@@ -241,14 +241,27 @@ const dzongkhagOptions = ref([]);
 
 onMounted(async () => {
   try {
-    const institutesResponse = await apiServices.getInstitutesForDropdown(); // Replace with your actual API endpoint to fetch institutes
-    instituteOptions.value = institutesResponse.data;
+    const institutesResponse = await apiServices.getBmhcInstitutes(); // **Corrected function name to getBmhcInstitutes()**
+    // Access the 'results' array inside institutesResponse.data:
+    const institutesArray = institutesResponse.data.results; // Get the results array
 
-    const cityGewogsResponse = await apiServices.getCityGewogsForDropdown(); // Replace with your actual API endpoint
-    cityGewogOptions.value = cityGewogsResponse.data;
+    console.log('Full institutesResponse:', institutesResponse);
+    console.log('institutesResponse.data:', institutesResponse.data);
+    console.log('institutesArray (results):', institutesArray); // Log the array we will map over
 
-    const dzongkhagsResponse = await apiServices.getDzongkhagsForDropdown(); // Replace with your actual API endpoint
-    dzongkhagOptions.value = dzongkhagsResponse.data;
+
+    // Now use .map() on the institutesArray (the 'results' array):
+    instituteOptions.value = institutesArray.map(institute => ({
+      value: institute.id, // Adjust 'id' if your institute object uses a different ID property
+      label: institute.name_of_institution // Adjust 'name_of_institution' if your institute object uses a different name property
+    }));
+
+    // COMMENTING OUT CITY GEWOGS AND DZONGKHAGS FOR NOW - NEED TO IMPLEMENT LATER
+    // const cityGewogsResponse = await apiServices.getCityGewogsForDropdown();
+    // cityGewogOptions.value = cityGewogsResponse.data;
+
+    // const dzongkhagsResponse = await apiServices.getDzongkhagsForDropdown();
+    // dzongkhagOptions.value = dzongkhagsResponse.data;
 
 
   } catch (error) {

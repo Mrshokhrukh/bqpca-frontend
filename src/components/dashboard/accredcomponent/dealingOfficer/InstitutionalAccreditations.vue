@@ -55,9 +55,14 @@
                   </span>
                 </td>
                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  <button @click="openModal(application)" class="inline-block text-center py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white text-sm rounded-md transition duration-200">
-                    View
-                  </button>
+                  <div class="flex space-x-2">
+                    <button @click="openModal(application)" class="inline-block text-center py-2 px-3 bg-blue-500 hover:bg-blue-700 text-white text-sm rounded-md transition duration-200">
+                      View
+                    </button>
+                    <button @click="generateCertificate(application)" class="inline-block text-center py-2 px-3 bg-purple-500 hover:bg-purple-700 text-white text-sm rounded-md transition duration-200">
+                      Generate Certificate
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -218,6 +223,12 @@ const getStatusBackgroundClass = (status) => {
     case 'Approved': return 'bg-green-200';
     default: return 'bg-gray-200';
   }
+};
+
+const generateCertificate = (application) => {
+  alert("Generating Certificate for " + application.institutionName);
+  // Implement actual certificate generation logic here, similar to the button in ApplicationModal.vue
+  // You can reuse or adapt the logic from ApplicationModal.vue if needed.
 };
 
 </script>

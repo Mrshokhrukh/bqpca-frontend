@@ -91,6 +91,7 @@ import AssessorManagement from '@/components/dashboard/accredcomponent/dealingOf
 import SiteVisitScheduling from '@/components/dashboard/accredcomponent/dealingOfficer/SiteVisitScheduling.vue';
 import Reports from '@/components/dashboard/accredcomponent/dealingOfficer/Reports.vue';
 import PaymentHistory from '@/components/dashboard/accredcomponent/dealingOfficer/PaymentHistory.vue';
+import AssignAssessor from '@/components/dashboard/accredcomponent/dealingOfficer/AssignAssessor.vue';
 
 const route = useRoute();
 const { role } = useAuthStore();
@@ -177,20 +178,23 @@ const dealingOfficerComponent = computed(() => {
     case path.endsWith('/accreditation/dashboard'):
       return AccreDealingdashboard;
 
-    case path.endsWith('/accreditation/institutional_accreditations'):  
+    case path.endsWith('/accreditation/institutional_accreditations'):
       return InstitutionalAccreditations;
     case path.endsWith('/accreditation/appeals'):
-      return Appeals;  
+      return Appeals;
     case path.endsWith('/accreditation/assessor_management'):
-      return AssessorManagement;  
-    case path.endsWith('/accreditation/site_visit_scheduling'):          
-      return SiteVisitScheduling;  
-      
+      return AssessorManagement;
+    case path.endsWith('/accreditation/site_visit_scheduling'):
+      return SiteVisitScheduling;
+
     case path.endsWith('/accreditation/reports'):
-      return Reports; 
-     case path.endsWith('/accreditation/payment_history'):
-      return PaymentHistory; 
-     
+      return Reports;
+    case path.endsWith('/accreditation/payment_history'):
+      return PaymentHistory;
+    case path.endsWith('/accreditation/assign_assessor'):
+      return AssignAssessor;
+
+
     default:
       return null;
   }
@@ -200,10 +204,10 @@ const dealingOfficerComponent = computed(() => {
 const chiefComponent = computed(() => {
   const path = route.path;
   switch (true) {
-    case path.endsWith('/accreditation/dashboard'):  
+    case path.endsWith('/accreditation/dashboard'):
       return null;
     case path.endsWith('/accreditation/institutional_accreditations'):
-      return null;  
+      return null;
     default:
       return null;
   }
@@ -228,15 +232,15 @@ const userComponent = computed(() => {
     case path.endsWith('/accreditation/apply_for_accreditation'):
       return AccreApplyForAccreditation;
     case path.endsWith('/accreditation/appeal'):
-      return AccreApplyForAppeal;  
+      return AccreApplyForAppeal;
     case path.endsWith('/accreditation/results'):
-      return AccreViewResults; 
+      return AccreViewResults;
     case path.endsWith('/accreditation/profile'):
-      return AccreUserProfile; 
+      return AccreUserProfile;
     case path.endsWith('/accreditation/coi_confirmation'):
-      return CoIConfirmation;   
+      return CoIConfirmation;
     case path.endsWith('/accreditation/site_visit_confirmation'):
-      return SiteVisitConfirmation;   
+      return SiteVisitConfirmation;
     default:
       return null;
   }
