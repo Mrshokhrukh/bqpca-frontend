@@ -131,6 +131,8 @@ import MyApplications from '@/components/dashboard/bhmccomponents/institutions/M
 import InstitutesRenewal from '@/components/dashboard/bhmccomponents/institutions/InstitutesRenewal.vue';
 import MyCapa from '@/components/dashboard/bhmccomponents/institutions/MyCapa.vue';
 import StaffManagement from '@/components/dashboard/bhmccomponents/institutions/StaffManagement.vue';
+import CourseManagement from '@/components/dashboard/bhmccomponents/institutions/CourseManagement.vue';
+import DepartmentManagement from '@/components/dashboard/bhmccomponents/institutions/DepartmentManagement.vue';
 const { role } = useAuthStore();
 const route = useRoute();
 
@@ -335,6 +337,10 @@ const bmhInstitutionsComponent = computed(() => {
       return MyCapa;
     case path.endsWith('/health_certification/staff_management'):
       return StaffManagement;
+    case path.endsWith('/health_certification/course_management'):
+      return CourseManagement;
+    case path.endsWith('/health_certification/department_management'):
+      return DepartmentManagement;
     default:
       return null;
   }
