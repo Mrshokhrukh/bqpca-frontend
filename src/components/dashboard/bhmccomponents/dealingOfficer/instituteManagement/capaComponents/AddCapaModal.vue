@@ -32,6 +32,7 @@
                     Inspection From Date <span class="text-red-500">*</span>
                   </label>
                   <input type="date" id="inspection_from_date" v-model="capaForm.inspection_from_date"
+                    @change="updateImplementationTimeline"
                     class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"
                     required />
                 </div>
@@ -40,6 +41,7 @@
                     Inspection To Date <span class="text-red-500">*</span>
                   </label>
                   <input type="date" id="inspection_to_date" v-model="capaForm.inspection_to_date"
+                    @change="updateImplementationTimeline"
                     class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"
                     required />
                 </div>
@@ -83,19 +85,7 @@
                   </label>
                   <input type="text" id="implementation_timeline" v-model="capaForm.implementation_timeline"
                     class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"
-                    required />
-                </div>
-                <div class="space-y-2">
-                  <label for="status" class="block text-sm font-medium text-gray-700">
-                    Status <span class="text-red-500">*</span>
-                  </label>
-                  <select id="status" v-model="capaForm.status"
-                    class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"
-                    required>
-                    <option value="P">Pending</option>
-                    <option value="R">Resolved</option>
-                    <option value="A">Approved</option>
-                  </select>
+                    required readonly />
                 </div>
               </div>
 
@@ -110,21 +100,9 @@
                     <textarea id="management_comment" v-model="capaForm.management_comment" rows="2"
                       class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"></textarea>
                   </div>
-                  <div class="space-y-2">
-                    <label for="DO_remarks" class="block text-sm font-medium text-gray-600">
-                      DO Remarks
-                    </label>
-                    <textarea id="DO_remarks" v-model="capaForm.DO_remarks" rows="2"
-                      class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"></textarea>
-                  </div>
+
                 </div>
-                <div class="mt-4 space-y-2">
-                  <label for="user_remarks" class="block text-sm font-medium text-gray-600">
-                    User Remarks
-                  </label>
-                  <textarea id="user_remarks" v-model="capaForm.user_remarks" rows="2"
-                    class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"></textarea>
-                </div>
+
               </div>
             </form>
           </div>
@@ -166,10 +144,8 @@ const capaForm = ref({
   capa: '',
   implementation_timeline: '',
   management_comment: '',
-  DO_remarks: '',
-  user_remarks: '',
-  status: 'P',
   teaching_center: 1,
+
 });
 
 const resetForm = () => {
@@ -181,10 +157,9 @@ const resetForm = () => {
     capa: '',
     implementation_timeline: '',
     management_comment: '',
-    DO_remarks: '',
-    user_remarks: '',
-    status: 'P',
+
     teaching_center: 1,
+
   };
 };
 
@@ -200,7 +175,26 @@ onMounted(() => {
   }
 });
 
+const updateImplementationTimeline = () => {
+  //check date are empty or not
+  if (capaForm.value.inspection_from_date && capaForm.value.inspection_to_date) {
+    const fromDate = new Date(capaForm.value.inspection_from_date);
+    const toDate = new Date(capaForm.value.inspection_to_date);
+
+    // Calculate the difference in milliseconds
+    const timeDiff = toDate.getTime() - fromDate.getTime();
+
+    // Convert milliseconds to days, adding 1 to include both start and end dates
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+
+    capaForm.value.implementation_timeline = `${daysDiff} days`;
+  } else {
+    capaForm.value.implementation_timeline = ''; // Or some default value
+  }
+};
+
 const submitForm = () => {
+  console.log('Submitting CAPA form:', capaForm.value); // Add this line for debugging
   emit('save', capaForm.value);
 };
 </script>

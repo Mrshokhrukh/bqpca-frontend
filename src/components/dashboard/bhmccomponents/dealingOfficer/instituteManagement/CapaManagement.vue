@@ -182,7 +182,7 @@ const handleSaveCapa = async (capaData) => {
     await fetchCapas();
     closeCapaModal();
   } catch (err) {
-    console.error('Error saving CAPA:', err);
+    console.error('Error saving CAPA:', err.response ? err.response.data : err.message);
     error.value = 'Failed to save CAPA. Please try again.';
   }
 };
