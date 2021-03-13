@@ -188,6 +188,12 @@ const getStatusText = (status) => {
       return 'Resolved';
     case 'C':
       return 'Cancelled';
+    case 'Pending':
+      return 'Pending';
+    case 'Approved':
+      return 'Approved';
+    case 'Rejected':
+      return 'Rejected';
     default:
       return 'Unknown';
   }
