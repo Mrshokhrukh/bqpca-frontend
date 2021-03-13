@@ -665,6 +665,7 @@ const awardCredits = () => {
   // Prepare the updated data object
   const updatedData = {
     cpd_credit: updatedCredits,
+    review_status: "Approved"  // Set status to Approved when awarding credits
   };
 
   // Show loading state
@@ -678,7 +679,8 @@ const awardCredits = () => {
         // Create updated participant object with merged data
         const updatedParticipant = {
           ...participants.value[participantIndex],
-          cpdCredits: updatedCredits
+          cpdCredits: updatedCredits,
+          reviewStatus: "Approved"  // Update status in UI
         };
         // Replace the old participant data with updated data
         participants.value.splice(participantIndex, 1, updatedParticipant);
@@ -687,7 +689,7 @@ const awardCredits = () => {
       showNotification(
         'success',
         'Credits Awarded',
-        `Successfully awarded ${creditScore.value} credits to ${selectedParticipant.value.fullName}.`
+        `Successfully awarded ${creditScore.value} credits to ${selectedParticipant.value.fullName} and marked as Approved.`
       );
 
       closeAwardModal(); // Close the modal after successful update
