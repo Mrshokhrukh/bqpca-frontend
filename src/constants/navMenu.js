@@ -697,11 +697,11 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`,
       },
       {
-        name: 'Applications',
+        name: 'Initial Applications',
         icon: getIconComponent('FileText'),
         children: [
           {
-            name: 'Application Lists',
+            name: 'Initial Application Lists',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/application_lists`,
           },
           {
@@ -709,11 +709,11 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/additional_application`,
           },
           {
-            name: 'Renewal Lists',
+            name: 'Renewal Application Lists',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_lists`,
           },
           {
-            name: 'Reregistration Lists',
+            name: 'Re-registration Lists',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/re_registration_lists`,
           },
           {

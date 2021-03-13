@@ -379,7 +379,7 @@ const handleSubmit = async () => {
     }
 
     // Submit form data to course details API with proper headers for multipart/form-data
-    const response = await bmhcService.createBmhcCourseDetail(submissionData);
+    await bmhcService.createBmhcCourseDetail(submissionData);
 
     toast.success('Educational programme application submitted successfully!');
 
@@ -428,7 +428,7 @@ const handleSaveDraft = async () => {
     }
 
     // Submit as draft
-    const response = await bmhcService.createBmhcCourseDetail(draftData);
+    await bmhcService.createBmhcCourseDetail(draftData);
 
     toast.success('Draft saved successfully!');
 

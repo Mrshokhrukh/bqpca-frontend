@@ -174,9 +174,8 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
 
-const props = defineProps({
+defineProps({
   isOpen: {
     type: Boolean,
     required: true
