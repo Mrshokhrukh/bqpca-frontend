@@ -672,7 +672,7 @@ const awardCredits = () => {
 
   // Make the API call to update the participant's credits
   apiServices.patchBmhcCpdRecord(selectedParticipant.value.id, updatedData)
-    .then(response => {
+    .then(() => {
       const participantIndex = participants.value.findIndex(p => p.id === selectedParticipant.value.id);
       if (participantIndex !== -1) {
         // Create updated participant object with merged data
