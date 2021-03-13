@@ -355,8 +355,8 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Education Fair Applications',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/education_fair_applications`,
-
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/education_fair_applications`,
           },
           {
             name: 'Mass Media Event Applications',
@@ -364,12 +364,12 @@ const serviceSpecificMenuItems = {
           },
           {
             name: 'In House Event Applications',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/in_house_event_applications`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/in_house_event_applications`,
           },
           {
             name: 'Hei Visit Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/hei_visit_applications`,
-
           },
         ],
       },
@@ -512,7 +512,6 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/user_profile`,
         hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.profile,
       },
-
 
       {
         name: 'Reports',
@@ -693,16 +692,16 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('BookOpen'),
         children: [
           {
-            name: 'Application Lists',
+            name: 'CPD providers Application',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_application_review`,
+          },
+          {
+            name: 'Self Assessed CPD Application',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_award_credits`,
           },
           {
             name: 'Manage Providers',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_provider_management`,
-          },
-          {
-            name: 'Award Credits',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_award_credits`,
           },
           {
             name: 'Reports',
@@ -744,7 +743,8 @@ const serviceSpecificMenuItems = {
           },
           {
             name: 'Teaching Hospital Renewals',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_hospital_renewals`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/teaching_hospital_renewals`,
           },
           {
             name: 'Reports',
@@ -803,14 +803,11 @@ const serviceSpecificMenuItems = {
           {
             name: 'Apply for EOI',
             route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_eoi`,
-
           },
           {
             name: 'Track EOI',
             route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
           },
-
-
         ],
       },
       {
@@ -820,14 +817,11 @@ const serviceSpecificMenuItems = {
           {
             name: 'Apply for DPR',
             route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_dpr`,
-
           },
           {
             name: 'Track DPR',
             route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
           },
-
-
         ],
       },
       {
@@ -843,7 +837,6 @@ const serviceSpecificMenuItems = {
           {
             name: 'Teaching Hospital',
             route: (serviceType) => `/admin/institutions/${serviceType}/new_teaching_hospital`,
-
           },
           {
             name: 'Renewal',
@@ -853,7 +846,6 @@ const serviceSpecificMenuItems = {
             name: 'New Education Program',
             route: (serviceType) => `/admin/institutions/${serviceType}/new_education_program`,
           },
-
         ],
       },
       {
@@ -884,7 +876,6 @@ const serviceSpecificMenuItems = {
           {
             name: 'Staff Management',
             route: (serviceType) => `/admin/institutions/${serviceType}/staff_management`,
-
           },
           {
             name: 'Course Management',
@@ -894,7 +885,6 @@ const serviceSpecificMenuItems = {
             name: 'Department Management',
             route: (serviceType) => `/admin/institutions/${serviceType}/department_management`,
           },
-
         ],
       },
     ],
@@ -1021,7 +1011,8 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Institutional Accreditation',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institutional_accreditations`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/institutional_accreditations`,
           },
           {
             name: 'Assign Assessor',
@@ -1030,7 +1021,6 @@ const serviceSpecificMenuItems = {
           {
             name: 'Site Visit Scheduling',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/site_visit_scheduling`,
-           
           },
         ],
       },
@@ -1039,7 +1029,7 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('CheckCircle'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/appeals`,
       },
-      
+
       {
         name: 'Assessor Management',
         icon: getIconComponent('ClipboardCheck'),
@@ -1085,7 +1075,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/admin/${serviceType}/reports`,
       },
       {
-        name: 'Institutions', 
+        name: 'Institutions',
         icon: getIconComponent('Building'),
         children: [
           {
