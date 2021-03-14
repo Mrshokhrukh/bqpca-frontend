@@ -6,30 +6,6 @@
         </h1>
 
         <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
-            <!-- Progress Steps -->
-            <div class="flex justify-center items-center mb-10">
-                <div class="flex flex-col items-center">
-                    <div
-                        class="w-9 h-9 flex items-center justify-center rounded-full bg-green-500 text-white font-semibold">
-                        1</div>
-                    <span class="text-xs font-medium text-green-600 mt-2">Template</span>
-                </div>
-                <div class="h-1 w-16 bg-green-200 mx-2 mb-8"></div>
-                <div class="flex flex-col items-center">
-                    <div
-                        class="w-9 h-9 flex items-center justify-center rounded-full bg-green-500 text-white font-semibold">
-                        2</div>
-                    <span class="text-xs font-medium text-green-600 mt-2">Details</span>
-                </div>
-                <div class="h-1 w-16 bg-gray-200 mx-2 mb-8"></div>
-                <div class="flex flex-col items-center">
-                    <div
-                        class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 font-semibold">
-                        3</div>
-                    <span class="text-xs font-medium text-gray-500 mt-2">Review</span>
-                </div>
-            </div>
-
             <div class="space-y-6">
                 <!-- Credits Section -->
                 <div class="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-sm transition">
@@ -40,34 +16,15 @@
                         <label for="cpdCreditsTemplate" class="block text-sm font-medium text-gray-700 mb-2">
                             CPD Credits Template <span class="text-gray-500 text-xs italic">(Optional)</span>
                         </label>
-                        <div class="flex">
-                            <select id="cpdCreditsTemplate" v-model="formData.cpdCreditsTemplate"
-                                @change="applyCreditsTemplate"
-                                class="flex-grow px-4 py-2 rounded-l-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
-                                aria-label="CPD Credits Template Options">
-                                <option value="">Select template (optional)</option>
-                                <option value="symposium">Symposium - 2 Credits</option>
-                                <option value="workshop">Workshop - 3 Credits</option>
-                                <option value="conference">Conference - 5 Credits</option>
-                            </select>
-                            <div class="flex bg-gray-50 border-t border-r border-b border-gray-300 rounded-r-lg">
-                                <button @click="editCpdCreditsTemplate" class="p-2 hover:bg-gray-100"
-                                    title="Edit Template">
-                                    <PencilIcon class="h-5 w-5 text-gray-500" />
-                                    <span class="sr-only">Edit Template</span>
-                                </button>
-                                <button @click="addCpdCreditsTemplate" class="p-2 hover:bg-gray-100"
-                                    title="Add New Template">
-                                    <PlusIcon class="h-5 w-5 text-gray-500" />
-                                    <span class="sr-only">Add New Template</span>
-                                </button>
-                                <button @click="deleteCpdCreditsTemplate" class="p-2 hover:bg-gray-100"
-                                    title="Delete Template">
-                                    <TrashIcon class="h-5 w-5 text-gray-500" />
-                                    <span class="sr-only">Delete Template</span>
-                                </button>
-                            </div>
-                        </div>
+                        <select id="cpdCreditsTemplate" v-model="formData.cpdCreditsTemplate"
+                            @change="applyCreditsTemplate"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
+                            aria-label="CPD Credits Template Options">
+                            <option value="">Select template (optional)</option>
+                            <option value="symposium">Symposium - 2 Credits</option>
+                            <option value="workshop">Workshop - 3 Credits</option>
+                            <option value="conference">Conference - 5 Credits</option>
+                        </select>
                         <p class="mt-1 text-sm text-gray-500">Choose a template for pre-filled CPD credits or enter
                             manually below</p>
                     </div>
@@ -163,32 +120,16 @@
                             <label for="cpdTask" class="block text-sm font-medium text-gray-700 mb-2">
                                 CPD Task <span class="text-red-500">*</span>
                             </label>
-                            <div class="flex">
-                                <div class="relative flex-grow">
-                                    <select id="cpdTask" v-model="formData.cpdTask"
-                                        class="w-full px-4 py-2 rounded-l-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none pr-10"
-                                        aria-required="true" aria-label="CPD Task">
-                                        <option value="">Select a CPD task</option>
-                                        <option v-for="task in cpdTasks" :key="task.id" :value="task.id">{{ task.title
-                                        }}</option>
-                                    </select>
-                                    <MagnifyingGlassIcon
-                                        class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
-                                </div>
-                                <div class="flex bg-gray-50 border-t border-r border-b border-gray-300 rounded-r-lg">
-                                    <button @click="editTask" class="p-2 hover:bg-gray-100" title="Edit CPD Task">
-                                        <PencilIcon class="h-5 w-5 text-gray-500" />
-                                        <span class="sr-only">Edit CPD Task</span>
-                                    </button>
-                                    <button @click="addTask" class="p-2 hover:bg-gray-100" title="Add New CPD Task">
-                                        <PlusIcon class="h-5 w-5 text-gray-500" />
-                                        <span class="sr-only">Add New CPD Task</span>
-                                    </button>
-                                    <button @click="viewTask" class="p-2 hover:bg-gray-100" title="View CPD Task">
-                                        <EyeIcon class="h-5 w-5 text-gray-500" />
-                                        <span class="sr-only">View CPD Task</span>
-                                    </button>
-                                </div>
+                            <div class="relative">
+                                <select id="cpdTask" v-model="formData.cpdTask"
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none pr-10"
+                                    aria-required="true" aria-label="CPD Task">
+                                    <option value="">Select a CPD task</option>
+                                    <option v-for="task in cpdTasks" :key="task.id" :value="task.id">{{ task.title }}
+                                    </option>
+                                </select>
+                                <MagnifyingGlassIcon
+                                    class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
                             </div>
                             <p class="mt-1 text-sm text-gray-500">Select the CPD task this participant is associated
                                 with</p>
@@ -198,37 +139,18 @@
                             <label for="participantRegNo" class="block text-sm font-medium text-gray-700 mb-2">
                                 Participant <span class="text-red-500">*</span>
                             </label>
-                            <div class="flex">
-                                <div class="relative flex-grow">
-                                    <select id="participantRegNo" v-model="formData.participantRegNo"
-                                        class="w-full px-4 py-2 rounded-l-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none pr-10"
-                                        aria-required="true" aria-label="Participant Registration Number">
-                                        <option value="">Select a participant</option>
-                                        <option v-for="participant in participants" :key="participant.id"
-                                            :value="participant.reg_no">
-                                            {{ participant.full_name }} - {{ participant.reg_no }}
-                                        </option>
-                                    </select>
-                                    <MagnifyingGlassIcon
-                                        class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
-                                </div>
-                                <div class="flex bg-gray-50 border-t border-r border-b border-gray-300 rounded-r-lg">
-                                    <button @click="editParticipant" class="p-2 hover:bg-gray-100"
-                                        title="Edit Participant">
-                                        <PencilIcon class="h-5 w-5 text-gray-500" />
-                                        <span class="sr-only">Edit Participant</span>
-                                    </button>
-                                    <button @click="addParticipant" class="p-2 hover:bg-gray-100"
-                                        title="Add New Participant">
-                                        <PlusIcon class="h-5 w-5 text-gray-500" />
-                                        <span class="sr-only">Add New Participant</span>
-                                    </button>
-                                    <button @click="viewParticipant" class="p-2 hover:bg-gray-100"
-                                        title="View Participant Details">
-                                        <EyeIcon class="h-5 w-5 text-gray-500" />
-                                        <span class="sr-only">View Participant Details</span>
-                                    </button>
-                                </div>
+                            <div class="relative">
+                                <select id="participantRegNo" v-model="formData.participantRegNo"
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none pr-10"
+                                    aria-required="true" aria-label="Participant Registration Number">
+                                    <option value="">Select a participant</option>
+                                    <option v-for="participant in participants" :key="participant.id"
+                                        :value="participant.reg_no">
+                                        {{ participant.full_name }} - {{ participant.reg_no }}
+                                    </option>
+                                </select>
+                                <MagnifyingGlassIcon
+                                    class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
                             </div>
                             <p class="mt-1 text-sm text-gray-500">Choose the participant from the registered list</p>
                         </div>
@@ -270,14 +192,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive, computed } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import apiService from '@/services/services';
 import {
-    PencilIcon,
-    PlusIcon,
-    TrashIcon,
-    EyeIcon,
     CheckCircleIcon,
     ExclamationCircleIcon,
     MagnifyingGlassIcon
@@ -390,47 +308,6 @@ function showMessage(text, type) {
     message.value = text;
     messageType.value = type;
     setTimeout(() => message.value = '', 4000);
-}
-
-// Action handlers
-const editCpdCreditsTemplate = () => alert('Edit CPD Credits Template functionality to be implemented');
-const addCpdCreditsTemplate = () => alert('Add CPD Credits Template functionality to be implemented');
-const deleteCpdCreditsTemplate = () => alert('Delete CPD Credits Template functionality to be implemented');
-
-function editTask() {
-    if (formData.cpdTask) {
-        router.push(`/cpd-tasks/edit/${formData.cpdTask}`);
-    } else {
-        showMessage('Please select a task first', 'error');
-    }
-}
-
-const addTask = () => router.push('/cpd-tasks/new');
-
-function viewTask() {
-    if (formData.cpdTask) {
-        router.push(`/cpd-tasks/view/${formData.cpdTask}`);
-    } else {
-        showMessage('Please select a task first', 'error');
-    }
-}
-
-function editParticipant() {
-    if (formData.participantRegNo) {
-        router.push(`/participants/edit/${formData.participantRegNo}`);
-    } else {
-        showMessage('Please select a participant first', 'error');
-    }
-}
-
-const addParticipant = () => router.push('/participants/new');
-
-function viewParticipant() {
-    if (formData.participantRegNo) {
-        router.push(`/participants/view/${formData.participantRegNo}`);
-    } else {
-        showMessage('Please select a participant first', 'error');
-    }
 }
 </script>
 
