@@ -97,7 +97,7 @@
                   @click="showCertificate(application)"
                   class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded text-sm mr-2"
                 >
-                  Download Certificate
+                  View Certificate
                 </button>
 
                 <!-- Appeal button for rejected/regretted applications -->
