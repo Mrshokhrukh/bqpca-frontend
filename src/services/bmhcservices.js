@@ -728,4 +728,23 @@ export default {
   deleteBmhcCounsellor(id) {
     return apiClient.delete(`/bmhc/bmhc-counsellors/${id}/`)
   },
+  // BMHC CPD Task Participants endpoints
+getBmhcCpdTaskParticipants() {
+  return apiClient.get('/bmhc/bmhc-cpd-task-participants/')
+},
+createBmhcCpdTaskParticipant(data) {
+  return apiClient.post('/bmhc/bmhc-cpd-task-participants/', data)
+},
+getBmhcCpdTaskParticipantById(id) {
+  return apiClient.get(`/bmhc/bmhc-cpd-task-participants/${id}/`)
+},
+updateBmhcCpdTaskParticipant(id, data) {
+  return apiClient.put(`/bmhc/bmhc-cpd-task-participants/${id}/`, data)
+},
+patchBmhcCpdTaskParticipant(id, data) {
+  return apiClient.patch(`/bmhc/bmhc-cpd-task-participants/${id}/`, data)
+},
+deleteBmhcCpdTaskParticipant(id) {
+  return apiClient.delete(`/bmhc/bmhc-cpd-task-participants/${id}/`)
+},
 }
