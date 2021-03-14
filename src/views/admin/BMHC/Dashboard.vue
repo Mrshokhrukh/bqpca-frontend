@@ -133,6 +133,7 @@ import MyCapa from '@/components/dashboard/bhmccomponents/institutions/MyCapa.vu
 import StaffManagement from '@/components/dashboard/bhmccomponents/institutions/StaffManagement.vue';
 import CourseManagement from '@/components/dashboard/bhmccomponents/institutions/CourseManagement.vue';
 import DepartmentManagement from '@/components/dashboard/bhmccomponents/institutions/DepartmentManagement.vue';
+import CPDapprovedAddParticipants from '@/components/dashboard/bhmccomponents/cpdCmeProvider/CPDapprovedAddParticipants.vue';
 const { role } = useAuthStore();
 const route = useRoute();
 
@@ -298,6 +299,8 @@ const bmhCpdCmeProviderComponent = computed(() => {
       return CPDApplicationDetails;
     case path.endsWith('/health_certification/cpd_application_tracker'):
       return CPDApplicationTracker;
+    case path.endsWith('/health_certification/cpd_approved_add_participants'):
+      return CPDapprovedAddParticipants;
     default:
       return null;
   }

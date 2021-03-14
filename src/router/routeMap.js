@@ -379,6 +379,7 @@ export default {
       cpd_application_details: bmhcDashboard,
       cpd_application_tracker: bmhcDashboard,
       reports: bmhcDashboard,
+      cpd_approved_add_participants: bmhcDashboard,
     },
   },
 }

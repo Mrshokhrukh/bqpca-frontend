@@ -826,6 +826,12 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/cpd_application_tracker`,
       },
+      {
+        name: 'CPD approved Add Participants',
+        icon: getIconComponent('FileText'),
+        route: (serviceType) =>
+          `/admin/cpd_cme_provider/${serviceType}/cpd_approved_add_participants`,
+      },
     ],
     institutions: [
       {
@@ -1069,14 +1075,13 @@ const serviceSpecificMenuItems = {
           {
             name: 'Site Visit Scheduling',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/site_visit_scheduling`,
-
           },
           {
             name: 'Accreditation Assessment',
             icon: getIconComponent('ClipboardCheck'),
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/accreditation_assessment`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/accreditation_assessment`,
           },
-
         ],
       },
       {
@@ -1084,9 +1089,6 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('CheckCircle'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/appeals`,
       },
-
-
-
 
       {
         name: 'Assessor Management',
