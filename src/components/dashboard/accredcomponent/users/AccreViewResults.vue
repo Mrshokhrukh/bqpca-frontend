@@ -94,7 +94,7 @@
                 <!-- Download Certificate button for approved/active applications -->
                 <button
                   v-if="isApproved(application.status)"
-                  @click="downloadCertificate(application)"
+                  @click="showCertificate(application)"
                   class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded text-sm mr-2"
                 >
                   Download Certificate
@@ -190,6 +190,7 @@
         </table>
       </div>
     </div>
+      <ViewCertificateModal :show="showModal" :certificateData="currentCertificateData" @close="closeModal" />
   </div>
 </template>
 
@@ -197,6 +198,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import apiService from '@/services/services'; // Import apiService
+import ViewCertificateModal from '@/components/common/Accreditation/AccreViewCertificateModal.vue';
 
 const router = useRouter();
 const activeTab = ref('applications');
@@ -205,6 +207,8 @@ const selectedFilter = ref('all');
 const backendApplications = ref([]); // Ref to store backend data
 const accreditations = ref([]);
 const appeals = ref([]);
+const showModal = ref(false);
+const currentCertificateData = ref({});
 
 const applications = computed(() => {
   return backendApplications.value.map(app => ({
@@ -287,10 +291,19 @@ const filterApplications = () => {
   // No need to re-implement filtering logic here, it's in the computed property
 };
 
-const downloadCertificate = (application) => {
-  // Simulate certificate download (replace with actual implementation)
-  alert(`Downloading certificate for application ID: ${application.id}`);
-  // In a real app, you would call an API endpoint or generate a file
+const showCertificate = (application) => {
+    currentCertificateData.value = {
+        institutionName: application.institution_name,
+        grade: application.review_decision?.grade || 'N/A', // Assuming grade is in review_decision.  Adjust if needed.
+        validUntil: '2024-12-31', //  Replace with actual validity date from your data, if available.
+        date: new Date().toISOString()
+    };
+    showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+  currentCertificateData.value = {}; // Clear the data after closing
 };
 
 const goToAppealPage = (application) => {
