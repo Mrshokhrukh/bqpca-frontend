@@ -92,6 +92,7 @@ import SiteVisitScheduling from '@/components/dashboard/accredcomponent/dealingO
 import Reports from '@/components/dashboard/accredcomponent/dealingOfficer/Reports.vue';
 import PaymentHistory from '@/components/dashboard/accredcomponent/dealingOfficer/PaymentHistory.vue';
 import AssignAssessor from '@/components/dashboard/accredcomponent/dealingOfficer/AssignAssessor.vue';
+import AccreditationAssessment from '@/components/dashboard/accredcomponent/dealingOfficer/AccreditationAssessment.vue';
 
 const route = useRoute();
 const { role } = useAuthStore();
@@ -193,8 +194,9 @@ const dealingOfficerComponent = computed(() => {
       return PaymentHistory;
     case path.endsWith('/accreditation/assign_assessor'):
       return AssignAssessor;
-
-
+    case path.endsWith('/accreditation/accreditation_assessment'):
+      return AccreditationAssessment;
+   
     default:
       return null;
   }

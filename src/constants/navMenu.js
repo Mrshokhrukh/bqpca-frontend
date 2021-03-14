@@ -1069,6 +1069,7 @@ const serviceSpecificMenuItems = {
           {
             name: 'Site Visit Scheduling',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/site_visit_scheduling`,
+
           },
         ],
       },
@@ -1076,6 +1077,14 @@ const serviceSpecificMenuItems = {
         name: 'Appeals Applications',
         icon: getIconComponent('CheckCircle'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/appeals`,
+      },
+
+
+
+      {
+        name: 'Accreditation Assessment',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/accreditation_assessment`,
       },
 
       {

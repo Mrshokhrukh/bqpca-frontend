@@ -120,6 +120,26 @@ export default {
   deleteMastersEmployeeCategory(id) {
     return apiClient.delete(`/accrediations/masters-employee-category/${id}/`)
   },
+  
+  // Masters Source of Funding Endpoints 
+  getMastersSourceOfFundings() {
+    return apiClient.get('/accrediations/masters-source-of-funding/');
+  },
+  createMastersSourceOfFunding(data) {
+    return apiClient.post('/accrediations/masters-source-of-funding/', data);
+  },
+  getMastersSourceOfFunding(id) {
+    return apiClient.get(`/accrediations/masters-source-of-funding/${id}/`);
+  },
+  updateMastersSourceOfFunding(id, data) {
+    return apiClient.put(`/accrediations/masters-source-of-funding/${id}/`, data);
+  },
+  patchMastersSourceOfFunding(id, data) {
+    return apiClient.patch(`/accrediations/masters-source-of-funding/${id}/`, data);
+  },
+  deleteMastersSourceOfFunding(id) { // Added delete function
+    return apiClient.delete(`/accrediations/masters-source-of-funding/${id}/`);
+  },
 
   // Masters Employee Type
   getMastersEmployeeTypes() {
