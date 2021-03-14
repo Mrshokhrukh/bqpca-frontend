@@ -2,45 +2,44 @@
   <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-7xl mx-auto px-4">
       <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center"> <!-- Reduced mb-8 to mb-6 here -->
           Application for Expression of Interest
         </h1>
 
-        <!-- Show Error/Success Messages -->
-        <div v-if="errorMessage" class="mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-md">
-          {{ errorMessage }}
-        </div>
-        <div v-if="successMessage" class="mb-4 p-4 bg-green-50 border border-green-200 text-green-600 rounded-md">
-          {{ successMessage }}
-        </div>
-
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+        <form @submit.prevent="handleSubmit" class="space-y-8"> <!-- Increased form space-y-6 to space-y-8 -->
           <!-- Basic Information Section -->
-          <div class="space-y-6 pb-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Basic Information</h2>
+          <div class="space-y-8 pb-6 border-b border-gray-100">
+            <!-- space-y-6 to space-y-8, border-gray-200 to border-gray-100 -->
+            <h2 class="text-xl font-semibold text-gray-900 mb-10">Basic Information</h2> <!-- mb-8 to mb-10 -->
             <div class="grid gap-6 md:grid-cols-2">
               <div>
-                <label for="CID" class="block text-sm font-medium text-gray-700 mb-1">
-                  CID Number *
+                <label for="CID" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  CID Number
                 </label>
                 <input type="text" id="CID" v-model="formData.CID"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
 
               <div>
-                <label for="full_name" class="block text-sm font-medium text-gray-700 mb-1">
-                  Full Name *
+                <label for="full_name" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  Full Name
                 </label>
                 <input type="text" id="full_name" v-model="formData.full_name"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
 
               <div>
-                <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">
-                  Gender *
+                <label for="gender" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  Gender
                 </label>
                 <select id="gender" v-model="formData.gender"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
+                  <!-- Added px-3 py-2 -->
                   <option value="">Select Gender</option>
                   <option v-for="option in genderOptions" :key="option.value" :value="option.value">
                     {{ option.label }}
@@ -49,41 +48,50 @@
               </div>
 
               <div>
-                <label for="contact_no" class="block text-sm font-medium text-gray-700 mb-1">
-                  Contact Number *
+                <label for="contact_no" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  Contact Number
                 </label>
                 <input type="tel" id="contact_no" v-model="formData.contact_no"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
 
               <div>
-                <label for="email_address" class="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address *
+                <label for="email_address" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  Email Address
                 </label>
                 <input type="email" id="email_address" v-model="formData.email_address"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
             </div>
           </div>
 
           <!-- Institution Details Section -->
-          <div class="space-y-6 pb-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Institution Details</h2>
+          <div class="space-y-8 pb-6 border-b border-gray-100">
+            <!-- space-y-6 to space-y-8, border-gray-200 to border-gray-100 -->
+            <h2 class="text-xl font-semibold text-gray-900 mb-10">Institution Details</h2> <!-- mb-8 to mb-10 -->
             <div class="grid gap-6 md:grid-cols-2">
               <div class="col-span-2">
-                <label for="name_of_institution" class="block text-sm font-medium text-gray-700 mb-1">
-                  Name of Institution *
+                <label for="name_of_institution" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  Name of Institution
                 </label>
                 <input type="text" id="name_of_institution" v-model="formData.name_of_institution"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
 
               <div>
-                <label for="dzongkhag" class="block text-sm font-medium text-gray-700 mb-1">
-                  Dzongkhag *
+                <label for="dzongkhag" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  Dzongkhag
                 </label>
                 <input type="text" id="dzongkhag" v-model="formData.dzongkhag"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
 
               <div>
@@ -91,7 +99,8 @@
                   Gewog
                 </label>
                 <input type="text" id="gewog" v-model="formData.gewog"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
 
               <div>
@@ -99,7 +108,8 @@
                   Village
                 </label>
                 <input type="text" id="village" v-model="formData.village"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
 
               <div>
@@ -107,15 +117,17 @@
                   Chiwog
                 </label>
                 <input type="text" id="chiwog" v-model="formData.chiwog"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
 
               <div class="col-span-2">
-                <label for="address" class="block text-sm font-medium text-gray-700 mb-1">
-                  Address *
+                <label for="address" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  Address
                 </label>
                 <textarea id="address" v-model="formData.address"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 resize-none"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 resize-none px-3 py-2"
                   rows="3"></textarea>
               </div>
 
@@ -124,23 +136,27 @@
                   Website
                 </label>
                 <input type="url" id="website" v-model="formData.website"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
             </div>
           </div>
 
           <!-- Course Details Section -->
-          <div class="space-y-6 pb-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Course Details</h2>
+          <div class="space-y-8 pb-6 border-b border-gray-100">
+            <!-- space-y-6 to space-y-8, border-gray-200 to border-gray-100 -->
+            <h2 class="text-xl font-semibold text-gray-900 mb-10">Course Details</h2> <!-- mb-8 to mb-10 -->
 
             <div class="grid gap-6 md:grid-cols-2">
               <div class="col-span-2 flex gap-4">
                 <div class="w-1/2">
-                  <label for="title_of_course" class="block text-sm font-medium text-gray-700 mb-1">
-                    Title of Course *
+                  <label for="title_of_course" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                    <!-- Added required-label class -->
+                    Title of Course
                   </label>
                   <input type="text" id="title_of_course" v-model="formData.title_of_course"
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                  <!-- Added px-3 py-2 -->
                 </div>
 
                 <div class="w-1/2">
@@ -148,30 +164,36 @@
                     Teaching Institution
                   </label>
                   <input type="text" id="teaching_institute" v-model="formData.teaching_institute"
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                  <!-- Added px-3 py-2 -->
                 </div>
               </div>
 
 
               <div>
-                <label for="course_duration" class="block text-sm font-medium text-gray-700 mb-1">
-                  Course Duration (in months) *
+                <label for="course_duration" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  Course Duration (in months)
                 </label>
                 <input type="number" id="course_duration" v-model="formData.course_duration"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
 
               <div>
-                <label for="commencement_date" class="block text-sm font-medium text-gray-700 mb-1">
-                  Commencement Date *
+                <label for="commencement_date" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  Commencement Date
                 </label>
                 <input type="date" id="commencement_date" v-model="formData.commencement_date"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
 
               <div class="col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-3">
-                  Type of Program *
+                <label class="block text-sm font-medium text-gray-700 mb-3 required-label">
+                  <!-- Added required-label class -->
+                  Type of Program
                 </label>
                 <div class="space-y-3">
                   <div class="flex items-center space-x-4">
@@ -198,30 +220,38 @@
                   Remarks
                 </label>
                 <textarea id="remarks" v-model="formData.remarks"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 resize-none"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 resize-none px-3 py-2"
                   rows="3"></textarea>
               </div>
             </div>
           </div>
 
           <!-- Head of Institution Section -->
-          <div class="space-y-6 pb-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Head of Institution Details</h2>
+          <div class="space-y-8 pb-6 border-b border-gray-100">
+            <!-- space-y-6 to space-y-8, border-gray-200 to border-gray-100 -->
+            <h2 class="text-xl font-semibold text-gray-900 mb-10">Head of Institution Details</h2>
+            <!-- mb-8 to mb-10 -->
             <div class="grid gap-6 md:grid-cols-2">
               <div>
-                <label for="head_of_institution_name" class="block text-sm font-medium text-gray-700 mb-1">
-                  Name *
+                <label for="head_of_institution_name"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  Name
                 </label>
                 <input type="text" id="head_of_institution_name" v-model="formData.head_of_institution_name"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
 
               <div>
-                <label for="head_of_institution_gender" class="block text-sm font-medium text-gray-700 mb-1">
-                  Gender *
+                <label for="head_of_institution_gender"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  Gender
                 </label>
                 <select id="head_of_institution_gender" v-model="formData.head_of_institution_gender"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
+                  <!-- Added px-3 py-2 -->
                   <option value="">Select Gender</option>
                   <option v-for="option in genderOptions" :key="option.value" :value="option.value">
                     {{ option.label }}
@@ -230,26 +260,33 @@
               </div>
 
               <div>
-                <label for="head_of_institution_phone_number" class="block text-sm font-medium text-gray-700 mb-1">
-                  Phone Number *
+                <label for="head_of_institution_phone_number"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  Phone Number
                 </label>
                 <input type="tel" id="head_of_institution_phone_number"
                   v-model="formData.head_of_institution_phone_number"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
 
               <div>
-                <label for="head_of_institution_email" class="block text-sm font-medium text-gray-700 mb-1">
-                  Email *
+                <label for="head_of_institution_email"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  <!-- Added required-label class -->
+                  Email
                 </label>
                 <input type="email" id="head_of_institution_email" v-model="formData.head_of_institution_email"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <!-- Added px-3 py-2 -->
               </div>
             </div>
           </div>
 
           <!-- Declaration Section -->
-          <div class="space-y-6 pb-6 border-b border-gray-200">
+          <div class="space-y-6 pb-6 border-b border-gray-100">
+            <!-- border-gray-200 to border-gray-100 - removed for declaration section -->
             <div class="bg-gray-50 rounded-lg p-4">
               <h2 class="text-xl font-semibold text-gray-900 mb-3">Declaration</h2>
               <div class="space-y-4">
@@ -293,8 +330,10 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import bmhcService from '@/services/bmhcservices';
+import { useToast } from 'vue-toastification';
 
 const router = useRouter();
+const toast = useToast();
 
 const formData = ref({
   // Basic Information
@@ -415,8 +454,6 @@ const validatePartialForm = () => {
 const submitPartial = async () => {
   try {
     isSubmitting.value = true;
-    errorMessage.value = '';
-    successMessage.value = '';
 
     if (!validatePartialForm()) {
       isSubmitting.value = false;
@@ -476,7 +513,7 @@ const submitPartial = async () => {
 
 
     if (response.data) {
-      successMessage.value = 'Partial application submitted successfully!';
+      toast.success('Application saved as draft successfully!');
       clearDraft();
       setTimeout(() => {
         router.push('/dashboard/institutions');
@@ -495,6 +532,7 @@ const submitPartial = async () => {
         errorMessage.value = errors;
       }
     }
+    toast.error(errorMessage.value, { timeout: 5000 });
   } finally {
     isSubmitting.value = false;
   }
@@ -506,8 +544,6 @@ const submitPartial = async () => {
 const handleSubmit = async () => {
   try {
     isSubmitting.value = true;
-    errorMessage.value = '';
-    successMessage.value = '';
 
     if (!validatePartialForm()) {
       isSubmitting.value = false;
@@ -537,26 +573,26 @@ const handleSubmit = async () => {
     const response = await bmhcService.createBmhcInstitute(submitData);
 
     if (response.data) {
-      successMessage.value = 'Application submitted successfully!';
+      toast.success('Application submitted successfully!');
       clearDraft();
       setTimeout(() => {
-        router.push('admin/institutions/health_certification/apply_for_eoi');
-      }, 2000);
+        router.push('/admin/institutions/health_certification/dashboard');
+      }, 1500);
     }
   } catch (error) {
     console.error('Error submitting form:', error);
+    let message = 'Error submitting application. Please try again.'; // Default error message
     if (error.response?.data) {
       const errors = error.response.data;
       if (typeof errors === 'object') {
-        errorMessage.value = Object.entries(errors)
-          .map(([field, message]) => `${field}: ${message}`)
+        message = Object.entries(errors)
+          .map(([field, msg]) => `${field}: ${msg}`)
           .join(', ');
       } else {
-        errorMessage.value = errors;
+        message = errors;
       }
-    } else {
-      errorMessage.value = 'Error submitting application. Please try again.';
     }
+    toast.error(message, { timeout: 5000 }); // Error toast with longer timeout
   } finally {
     isSubmitting.value = false;
   }
@@ -570,7 +606,7 @@ const saveDraft = () => {
     delete draftData[key];
   });
   localStorage.setItem('eoiFormDraft', JSON.stringify(draftData));
-  successMessage.value = 'Draft saved successfully!';
+  toast.success('Draft saved successfully!');
   setTimeout(() => {
     successMessage.value = '';
   }, 3000);

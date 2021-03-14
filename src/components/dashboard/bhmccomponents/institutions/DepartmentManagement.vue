@@ -4,10 +4,10 @@
     </div>
 </template>
 
-<script>
-export default {
-    name: 'DepartmentManagement'
-}
+<script setup>
+defineOptions({
+  name: 'DepartmentManagement'
+})
 </script>
 
 <style scoped>

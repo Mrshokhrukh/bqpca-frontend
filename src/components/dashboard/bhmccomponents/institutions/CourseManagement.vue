@@ -4,14 +4,10 @@
     </div>
 </template>
 
-<script>
-export default {
-    name: 'CourseManagement',
-    data() {
-        return {
-        }
-    }
-}
+<script setup>
+defineOptions({
+  name: 'CourseManagement'
+})
 </script>
 
 <style scoped>

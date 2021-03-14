@@ -24,7 +24,7 @@
 
     <!-- Loading state -->
     <div v-if="isLoading" class="flex justify-center my-8">
-      <div class="inline-block animate-spin text-blue-600 text-3xl">⌛</div>
+      <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
       <p class="ml-2 text-gray-600">Loading applications...</p>
     </div>
 
@@ -373,6 +373,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import bmhcService from '@/services/bmhcservices';
+import { Loader } from 'lucide-vue-next'
 
 // State variables
 const teachingCenters = ref([]);
@@ -501,7 +502,7 @@ const confirmApprove = async () => {
     };
 
     // Send PATCH request to update center
-    const response = await bmhcService.patchBmhcTeachingCenter(selectedCenter.value.id, approvalData);
+    await bmhcService.patchBmhcTeachingCenter(selectedCenter.value.id, approvalData);
 
     // Update local data
     teachingCenters.value = teachingCenters.value.map(center => {
@@ -549,7 +550,7 @@ const confirmReject = async () => {
     };
 
     // Send PATCH request to update center
-    const response = await bmhcService.patchBmhcTeachingCenter(selectedCenter.value.id, rejectionData);
+    await bmhcService.patchBmhcTeachingCenter(selectedCenter.value.id, rejectionData);
 
     // Update local data
     teachingCenters.value = teachingCenters.value.map(center => {
@@ -605,7 +606,7 @@ const submitReview = async () => {
     }
 
     // Send PATCH request to update teaching center
-    const response = await bmhcService.patchBmhcTeachingCenter(selectedCenter.value.id, formData);
+    await bmhcService.patchBmhcTeachingCenter(selectedCenter.value.id, formData);
 
     // Update local data
     teachingCenters.value = teachingCenters.value.map(center => {

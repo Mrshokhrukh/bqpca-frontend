@@ -407,35 +407,18 @@
         </div>
       </div>
     </div>
-
-    <!-- Success Modal -->
-    <div v-if="showSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 transform transition-all">
-        <div class="flex items-center mb-4">
-          <div class="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold text-gray-900">Application Submitted</h3>
-        </div>
-        <p class="text-gray-600 mb-6">Your Detailed Project Proposal has been submitted successfully! We will review
-          your application and contact you soon.</p>
-        <div class="flex justify-end">
-          <button @click="closeSuccessModal"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
-            OK
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import apiService from '@/services/bmhcservices';
+import { useRouter } from 'vue-router'; // Import useRouter
+import { useToast } from 'vue-toastification'; // Import useToast
+import "vue-toastification/dist/index.css"; // Import the CSS for toast
+
+const router = useRouter(); // Initialize router
+const toast = useToast(); // Initialize toast
 
 const instituteName = ref('');
 const isSubmitting = ref(false);
@@ -473,7 +456,6 @@ const formData = ref({
   other_details: '',
 });
 
-const showSuccessModal = ref(false);
 
 onMounted(async () => {
   const userString = localStorage.getItem('user');
@@ -529,6 +511,7 @@ onMounted(async () => {
 
   } catch (error) {
     console.error('Error fetching institute data:', error);
+    toast.error('Error fetching institute data. Please try again.', { timeout: 3000 }); // Error toast on fetch fail
   } finally {
     isLoading.value = false; // Stop loading in all cases
   }
@@ -543,6 +526,7 @@ const fetchInstituteName = async () => {
     }
   } catch (error) {
     console.error('Error fetching institute name:', error);
+    toast.error('Error fetching institute name. Please try again.', { timeout: 3000 }); // Error toast on fetch fail
   }
 };
 
@@ -580,17 +564,14 @@ const fetchDprData = async () => {
     }
   } catch (error) {
     console.error('Error fetching DPR data:', error);
+    toast.error('Error fetching DPR data. Please try again.', { timeout: 3000 }); // Error toast on fetch fail
   }
 };
 
-const handleFileUpload = (event) => {
+const handleFileUpload = (fieldName) => (event) => {
   const file = event.target.files[0];
   if (file) {
-    if (event.target.id === 'institute_eoi_supporting_documents') {
-      formData.value.institute_eoi_supporting_documents = file;
-    } else if (event.target.id === 'do_dpr_report') {
-      formData.value.do_dpr_report = file;
-    }
+    formData.value[fieldName] = file;
   }
 };
 
@@ -599,10 +580,11 @@ const handleSubmit = async () => {
 
   if (!instituteId.value) {
     console.error("Institute ID is missing.");
+    toast.error('Institute ID is missing. Please refresh the page.', { timeout: 3000 }); // Error toast
     return;
   }
   if (!formData.value.dpr_name) {
-    alert("Please enter the DPR name.");
+    toast.error("Please enter the DPR name.", { timeout: 3000 }); // Error toast
     return;
   }
 
@@ -646,10 +628,16 @@ const handleSubmit = async () => {
     isSubmitting.value = true;
     const response = await apiService.patchBmhcInstitute(instituteId.value, submitData);
     if (response.status === 200 || response.status === 204) {
-      showSuccessModal.value = true;
+      toast.success('DPR submitted successfully!'); // Success toast
+      setTimeout(() => {
+        router.push('/admin/institutions/health_certification/dashboard'); // Redirect after successful submission
+      }, 1500); // Delay for toast to be visible
+    } else {
+      toast.error(`Failed to submit DPR. Status: ${response.status}`, { timeout: 5000 }); // Error toast with status
     }
   } catch (error) {
     console.error('Error submitting DPR data:', error);
+    toast.error('Error submitting DPR data. Please try again.', { timeout: 5000 }); // Generic error toast
   } finally {
     isSubmitting.value = false;
   }
@@ -658,6 +646,7 @@ const handleSubmit = async () => {
 const handleSaveDraft = async () => {
   if (!instituteId.value) {
     console.error("Institute ID is missing.");
+    toast.error('Institute ID is missing. Please refresh the page.', { timeout: 3000 }); // Error toast
     return;
   }
   const draftData = new FormData();
@@ -701,20 +690,18 @@ const handleSaveDraft = async () => {
     const response = await apiService.patchBmhcInstitute(instituteId.value, draftData); // Same API
 
     if (response.status >= 200 && response.status < 300) {
-      alert("Draft saved successfully!");
+      toast.success("Draft saved successfully!"); // Success toast
     } else {
-      alert("Failed to save draft. Status: " + response.status);
+      toast.error(`Failed to save draft. Status: ${response.status}`, { timeout: 5000 }); // Error toast with status
     }
 
   } catch (error) {
     console.error('Error saving draft:', error);
+    toast.error('Error saving draft. Please try again.', { timeout: 5000 }); // Generic error toast
   } finally {
     isSubmitting.value = false;
   }
 };
 
-const closeSuccessModal = () => {
-  showSuccessModal.value = false;
-};
 
 </script>

@@ -355,8 +355,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useAuthStore } from '@/stores/authStore';
+import { ref,  onMounted } from 'vue';
+
 import { useToast } from 'vue-toastification';
 import bmhcService from '@/services/bmhcservices';
 import CertificateDialog from './CertificateDialog.vue';
@@ -380,14 +380,9 @@ const renewalFormData = ref({
   tc_declaration: false,
 });
 
-// Get auth store and toast notification
-const authStore = useAuthStore();
+// Get toast notification
 const toast = useToast();
 
-// Get user info from auth store
-const instituteId = computed(() => {
-  return authStore.user?.institute_id || null;
-});
 
 // Format date function
 const formatDate = (dateString) => {

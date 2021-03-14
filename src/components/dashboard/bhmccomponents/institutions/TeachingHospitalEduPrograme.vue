@@ -4,10 +4,10 @@
     </div>
 </template>
 
-<script>
-export default {
-    name: 'TeachingHospitalEduPrograme'
-}
+<script setup>
+defineOptions({
+  name: 'TeachingHospitalEduPrograme'
+})
 </script>
 
 <style scoped>

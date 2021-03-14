@@ -1,10 +1,10 @@
 <template>
-  <div class="p-6 bg-gray-50 rounded-lg shadow-md">
-    <h2 class="text-2xl font-semibold text-gray-900 mb-6">New Educational Programme Application</h2>
+  <div class="p-8 bg-gray-100 rounded-xl shadow-lg">
+    <h2 class="text-3xl font-bold text-gray-800 mb-8">New Educational Programme Application</h2>
 
     <!-- Loading state -->
     <div v-if="isLoading" class="flex justify-center my-8">
-      <div class="inline-block animate-spin text-blue-600 text-3xl">⌛</div>
+      <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
       <p class="ml-2 text-gray-600">Loading institute data...</p>
     </div>
 
@@ -23,64 +23,65 @@
     </div>
 
     <!-- Form -->
-    <form v-else @submit.prevent="handleSubmit" class="space-y-6">
+    <form v-else @submit.prevent="handleSubmit" class="space-y-8">
+
       <!-- Proponent Details -->
-      <section>
-        <h3 class="text-xl font-medium text-gray-900 mb-4">Proponent Details</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <section class="p-6 bg-white rounded-lg shadow">
+        <h3 class="text-2xl font-semibold text-gray-700 mb-6">Proponent Details</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label class="block text-sm font-medium text-gray-600">
               Training Institute Name
             </label>
-            <div class="mt-1 p-2 bg-gray-100 rounded-md border border-gray-200">
+            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
               {{ userInstitute.name_of_institution }}
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label class="block text-sm font-medium text-gray-600">
               Country
             </label>
-            <div class="mt-1 p-2 bg-gray-100 rounded-md border border-gray-200">
+            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
               {{ userInstitute.country }}
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label class="block text-sm font-medium text-gray-600">
               Dzongkhag/Throme
             </label>
-            <div class="mt-1 p-2 bg-gray-100 rounded-md border border-gray-200">
+            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
               {{ userInstitute.dzongkhag }}
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label class="block text-sm font-medium text-gray-600">
               City/Gewog
             </label>
-            <div class="mt-1 p-2 bg-gray-100 rounded-md border border-gray-200">
+            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
               {{ userInstitute.gewog }}
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label class="block text-sm font-medium text-gray-600">
               Address/Location
             </label>
-            <div class="mt-1 p-2 bg-gray-100 rounded-md border border-gray-200">
+            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
               {{ userInstitute.address }}
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label class="block text-sm font-medium text-gray-600">
               Contact No.
             </label>
-            <div class="mt-1 p-2 bg-gray-100 rounded-md border border-gray-200">
+            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
               {{ userInstitute.contact_no }}
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label class="block text-sm font-medium text-gray-600">
               Email Address
             </label>
-            <div class="mt-1 p-2 bg-gray-100 rounded-md border border-gray-200">
+            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
               {{ userInstitute.email_address }}
             </div>
           </div>
@@ -88,30 +89,30 @@
       </section>
 
       <!-- Head of Institution Details -->
-      <section>
-        <h3 class="text-xl font-medium text-gray-900 mb-4">Head of Institution Details</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <section class="p-6 bg-white rounded-lg shadow">
+        <h3 class="text-2xl font-semibold text-gray-700 mb-6">Head of Institution Details</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label class="block text-sm font-medium text-gray-600">
               Name
             </label>
-            <div class="mt-1 p-2 bg-gray-100 rounded-md border border-gray-200">
+            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
               {{ userInstitute.head_of_institution_name }}
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label class="block text-sm font-medium text-gray-600">
               Mobile Number
             </label>
-            <div class="mt-1 p-2 bg-gray-100 rounded-md border border-gray-200">
+            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
               {{ userInstitute.head_of_institution_phone_number }}
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label class="block text-sm font-medium text-gray-600">
               Email Address
             </label>
-            <div class="mt-1 p-2 bg-gray-100 rounded-md border border-gray-200">
+            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
               {{ userInstitute.head_of_institution_email }}
             </div>
           </div>
@@ -119,70 +120,71 @@
       </section>
 
       <!-- Website -->
-      <section>
-        <h3 class="text-xl font-medium text-gray-900 mb-4">Website</h3>
+      <section class="p-6 bg-white rounded-lg shadow">
+        <h3 class="text-2xl font-semibold text-gray-700 mb-6">Website</h3>
         <div>
-          <label class="block text-sm font-medium text-gray-700">
+          <label class="block text-sm font-medium text-gray-600">
             Website
           </label>
-          <div class="mt-1 p-2 bg-gray-100 rounded-md border border-gray-200">
+          <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
             {{ userInstitute.website }}
           </div>
         </div>
       </section>
 
+
       <!-- Proposal Details - Editable by user -->
-      <section>
-        <h3 class="text-xl font-medium text-gray-900 mb-4">Proposal Details</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <section class="p-6 bg-white rounded-lg shadow">
+        <h3 class="text-2xl font-semibold text-gray-700 mb-6">Proposal Details</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
           <div>
-            <label for="proposalTitle" class="block text-sm font-medium text-gray-700">
+            <label for="proposalTitle" class="block text-sm font-medium text-gray-600">
               Proposal Title <span class="text-red-500">*</span>
             </label>
             <input type="text" id="proposalTitle" v-model="formData.course_title" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
             <p v-if="validationErrors.course_title" class="mt-1 text-sm text-red-600">{{ validationErrors.course_title
               }}</p>
           </div>
           <div>
-            <label for="duration" class="block text-sm font-medium text-gray-700">
+            <label for="duration" class="block text-sm font-medium text-gray-600">
               Duration (in months) <span class="text-red-500">*</span>
             </label>
             <input type="number" id="duration" v-model.number="formData.duration_in_months" required min="1"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
             <p v-if="validationErrors.duration_in_months" class="mt-1 text-sm text-red-600">{{
-              validationErrors.duration_in_months }}</p>
+      validationErrors.duration_in_months }}</p>
           </div>
           <div>
-            <label for="commencementDate" class="block text-sm font-medium text-gray-700">
+            <label for="commencementDate" class="block text-sm font-medium text-gray-600">
               Commencement Date <span class="text-red-500">*</span>
             </label>
             <input type="date" id="commencementDate" v-model="formData.commencement_date" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+              class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
             <p v-if="validationErrors.commencement_date" class="mt-1 text-sm text-red-600">{{
-              validationErrors.commencement_date }}</p>
+      validationErrors.commencement_date }}</p>
           </div>
           <div>
-            <label for="attachments" class="block text-sm font-medium text-gray-700">
+            <label for="attachments" class="block text-sm font-medium text-gray-600">
               Attachments (if any)
             </label>
             <input type="file" id="attachments" @change="handleFileUpload"
-              class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-            <p class="mt-1 text-sm text-gray-500" id="file_input_help">You can attach relevant documents here.</p>
+              class="mt-2 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+            <p class="mt-1 text-sm text-gray-500">You can attach relevant documents here.</p>
             <p v-if="selectedFileName" class="mt-1 text-sm text-green-600">Selected: {{ selectedFileName }}</p>
           </div>
         </div>
-        <div class="mt-4">
-          <label for="remarks" class="block text-sm font-medium text-gray-700">
+        <div class="mt-6">
+          <label for="remarks" class="block text-sm font-medium text-gray-600">
             Remarks
           </label>
           <textarea id="remarks" v-model="formData.remarks" rows="3"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
+            class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
         </div>
       </section>
 
       <!-- Declaration -->
-      <div class="flex items-start">
+      <div class="flex items-start p-6 bg-white rounded-lg shadow">
         <div class="flex items-center h-5">
           <input id="declaration" aria-describedby="declaration-description" type="checkbox"
             v-model="formData.ins_declaration" required
@@ -198,19 +200,19 @@
       </div>
 
       <!-- Buttons -->
-      <div class="flex justify-end space-x-4">
+      <div class="flex justify-end space-x-4 p-6 bg-white rounded-lg shadow">
         <button type="button"
-          class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
           @click="handleCancel">
           Cancel
         </button>
         <button type="button"
-          class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-300"
           @click="handleSaveDraft" :disabled="isSubmitting">
           Save as Draft
         </button>
         <button type="submit" :disabled="isSubmitting || !formData.ins_declaration"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           :class="{ 'opacity-50 cursor-not-allowed': isSubmitting || !formData.ins_declaration }">
           <span v-if="isSubmitting">Submitting...</span>
           <span v-else>Submit</span>
@@ -226,12 +228,12 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from 'vue-toastification';
 import bmhcService from '@/services/bmhcservices';
+import { Loader } from 'lucide-vue-next';
 
 const router = useRouter();
 const authStore = useAuthStore();
 const toast = useToast();
 
-// State variables
 const userInstitute = ref(null);
 const isLoading = ref(true);
 const isSubmitting = ref(false);
@@ -241,7 +243,6 @@ const validationErrors = ref({});
 const selectedFileName = ref('');
 const selectedFile = ref(null);
 
-// Form data structure that matches what the backend course details API expects
 const formData = ref({
   course_title: '',
   duration_in_months: null,
@@ -249,7 +250,6 @@ const formData = ref({
   institute_attachments: null,
   remarks: '',
   ins_declaration: false,
-  // Additional fields will be generated with default values if required by the API
   ins_renewal_review_name: '',
   ins_review_summary: '',
   ins_report: '',
@@ -257,18 +257,14 @@ const formData = ref({
   ins_reason_if_rejected: '',
   ins_remarks: '',
   is_active: true,
-  // Institute ID will be added from userInstitute
   institute: null,
-  // Adding institute name field
   institute_name: ''
 });
 
-// Get user CID from auth store
 const userCid = computed(() => {
   return authStore.user?.cid || '';
 });
 
-// Fetch institute data based on user CID
 const fetchInstituteData = async () => {
   if (!userCid.value) {
     errorMessage.value = 'User information not available. Please log in again.';
@@ -284,14 +280,12 @@ const fetchInstituteData = async () => {
     const response = await bmhcService.getBmhcInstitutes();
 
     if (response && response.data && response.data.results) {
-      // Filter institutes to find one matching the user's CID
       const userInstitutes = response.data.results.filter(institute =>
         institute.CID.toLowerCase() === userCid.value.toLowerCase()
       );
 
       if (userInstitutes.length > 0) {
         userInstitute.value = userInstitutes[0];
-        // Set the institute ID and name for the form data
         formData.value.institute = userInstitute.value.id;
         formData.value.institute_name = userInstitute.value.name_of_institution;
       } else {
@@ -311,7 +305,6 @@ const fetchInstituteData = async () => {
   }
 };
 
-// File upload handler
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -323,7 +316,6 @@ const handleFileUpload = (event) => {
   }
 };
 
-// Validate form data
 const validateForm = () => {
   const errors = {};
 
@@ -343,9 +335,6 @@ const validateForm = () => {
   return Object.keys(errors).length === 0;
 };
 
-// This function is not needed since the course details API handles file uploads directly
-
-// Form submission handler
 const handleSubmit = async () => {
   if (!validateForm()) {
     toast.error('Please correct the errors in the form');
@@ -360,36 +349,29 @@ const handleSubmit = async () => {
   isSubmitting.value = true;
 
   try {
-    // Prepare data for submission using FormData to handle file upload
     const submissionData = new FormData();
 
-    // Add all form fields to FormData
     Object.keys(formData.value).forEach(key => {
-      if (key !== 'institute_attachments') { // Handle file separately
+      if (key !== 'institute_attachments') {
         submissionData.append(key, formData.value[key]);
       }
     });
 
-    // Ensure number fields are sent properly
     submissionData.set('duration_in_months', Number(formData.value.duration_in_months));
 
-    // Add file if selected
     if (selectedFile.value) {
       submissionData.append('institute_attachments', selectedFile.value);
     }
 
-    // Submit form data to course details API with proper headers for multipart/form-data
     await bmhcService.createBmhcCourseDetail(submissionData);
 
     toast.success('Educational programme application submitted successfully!');
 
-    // Redirect to appropriate page (e.g., a list view of submitted programs)
     router.push('/bmhc/course-applications');
 
   } catch (error) {
     console.error('Error submitting form:', error);
 
-    // Handle validation errors from API
     if (error.response?.data?.errors) {
       validationErrors.value = error.response.data.errors;
       toast.error('Please correct the errors in the form');
@@ -401,33 +383,25 @@ const handleSubmit = async () => {
   }
 };
 
-// Save as draft handler - can be adjusted based on your backend implementation
 const handleSaveDraft = async () => {
   try {
     isSubmitting.value = true;
 
-    // Prepare draft data using FormData for file upload
     const draftData = new FormData();
 
-    // Add all form fields to FormData
     Object.keys(formData.value).forEach(key => {
-      if (key !== 'institute_attachments') { // Handle file separately
+      if (key !== 'institute_attachments') {
         draftData.append(key, formData.value[key]);
       }
     });
 
-    // Set draft status
-    draftData.append('ins_review_decision', 'Draft'); // May need to change this based on your API requirements
+    draftData.append('ins_review_decision', 'Draft');
 
-    // Ensure number fields are sent properly
     draftData.set('duration_in_months', Number(formData.value.duration_in_months));
 
-    // Add file if selected
     if (selectedFile.value) {
       draftData.append('institute_attachments', selectedFile.value);
     }
-
-    // Submit as draft
     await bmhcService.createBmhcCourseDetail(draftData);
 
     toast.success('Draft saved successfully!');
@@ -440,13 +414,10 @@ const handleSaveDraft = async () => {
   }
 };
 
-// Cancel handler
 const handleCancel = () => {
-  // Navigate back or to a specified route
-  router.go(-1); // Go back to previous page
+  router.go(-1);
 };
 
-// Fetch institute data on component mount
 onMounted(fetchInstituteData);
 </script>
 

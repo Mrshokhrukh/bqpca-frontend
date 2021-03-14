@@ -192,6 +192,7 @@ export default {
       payment_history: accredDashboard,
       reports: accredDashboard,
       assign_assessor: accredDashboard,
+      accreditation_assessment: accredDashboard,
     },
     engineering_certification: {
       dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),

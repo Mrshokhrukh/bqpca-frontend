@@ -10,9 +10,13 @@
       </p>
     </div>
 
+    <!-- Payment Modal -->
+    <PaymentModal ref="paymentModal" :amount="1000" @payment-completed="onPaymentCompleted"
+      @close="onPaymentModalClose" />
+
     <!-- Main Form Card -->
     <div class="bg-white border rounded-xl shadow-sm p-6">
-      <form @submit.prevent="submitApplication">
+      <form @submit.prevent="handleSubmit">
         <!-- 1. Institution Profile -->
         <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl mb-6">
           <h3 class="text-lg font-semibold text-gray-900">1. Institution Profile</h3>
@@ -22,8 +26,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-8">
           <div class="col-span-2">
             <label class="block text-sm font-medium text-gray-700">Name of Institution</label>
-            <input type="text" v-model="application.institutionName" readonly
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+            <input type="text" v-model="application.institutionName"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
           </div>
 
           <div class="col-span-2">
@@ -34,11 +38,16 @@
 
           <div>
             <label class="block text-sm font-medium text-gray-700">Dzongkhag/Throm</label>
-            <select v-model="application.dzongkhag"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
-              <option :value="null" disabled>Select Dzongkhag</option>
-              <option v-for="item in dzongkhags" :key="item" :value="item">{{ item }}</option>
-            </select>
+            <input type="text" v-model="application.dzongkhag"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
+            <p class="mt-1 text-sm text-gray-500">Please type the Dzongkhag or Throm name.</p>
+            <!-- Optional: List of Dzongkhags for reference -->
+            <details class="mt-2">
+              <summary class="text-blue-500 text-sm cursor-pointer hover:underline">List of Dzongkhags</summary>
+              <ul class="list-disc pl-5 mt-1 text-sm">
+                <li v-for="dzongkhag in dzongkhagList" :key="dzongkhag">{{ dzongkhag }}</li>
+              </ul>
+            </details>
           </div>
 
           <div>
@@ -70,9 +79,12 @@
             <select v-model="application.institutionType"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
               <option :value="null" disabled>Select Institution Type</option>
-              <option v-for="item in institutionTypesOptions" :key="item.id" :value="item.id">{{ item.name }}</option>
+              <option value="Constituent">Constituent</option>
+              <option value="Affiliated">Affiliated</option>
+              <option value="Others">Others</option>
             </select>
           </div>
+
 
           <div>
             <label class="block text-sm font-medium text-gray-700">Affiliated to, if relevant</label>
@@ -86,12 +98,14 @@
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
           </div>
 
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-8">
           <div>
             <label class="block text-sm font-medium text-gray-700">Source of Funding</label>
             <select v-model="application.fundingSource"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
               <option :value="null" disabled>Select Funding Source</option>
-              <option v-for="item in fundingSourcesOptions" :key="item.id" :value="item.id">{{ item.name }}</option>
+              <option v-for="item in filteredFundingSources" :key="item?.id" :value="item?.id">{{ item?.name }}</option>
             </select>
           </div>
 
@@ -451,14 +465,30 @@
           </ul>
         </div>
 
+        <!-- Declaration -->
+        <div class="flex items-start p-8">
+          <div class="flex items-center h-5">
+            <input type="checkbox" id="declaration" v-model="application.declaration" required
+              class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary" />
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="declaration" class="fontmedium text-gray-700">Declaration</label>
+            <p class="text-gray-500">
+              I declare that all the information provided is true and accurate
+              to the best of my knowledge.
+            </p>
+          </div>
+        </div>
+
         <!-- Action Buttons -->
         <div class="mt-12 flex justify-end space-x-4 p-8">
           <button @click="saveDraft" type="button"
             class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
             Save as Draft
           </button>
-          <button type="submit" class="px-6 py-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-            Submit Application
+          <button type="button" @click="openPaymentModal" :disabled="!application.declaration || isSubmitting"
+            class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ isSubmitting ? "Submitting..." : "Submit" }}
           </button>
         </div>
       </form>
@@ -468,20 +498,25 @@
 
 <script setup>
 import { reactive, ref, computed, onMounted } from 'vue';
-import apiservice from '@/services/accreditationservices'; 
+import apiService from '@/services/services';
+import { useToast } from "vue-toastification";
+import PaymentModal from "@/components/common/PaymentModal.vue";
+import { useAuthStore } from "@/stores/authStore";
+
+
 
 const application = reactive({
-  institutionName: 'Example Institution', // Auto-filled from profile
+  institutionName: '',
   address: '',
-  dzongkhag: null,
+  dzongkhag: '', // Changed to empty string for text input
   contactNumber: '',
   emailAddress: '',
   telephoneNumber: '',
   yearEstablished: '',
-  institutionType: null, // Will store the ID from master list
+  institutionType: null, // Use null for initial unselected state
   affiliatedTo: '',
   levelOfAutonomy: '',
-  fundingSource: null, // Will store the ID from master list
+  fundingSource: null,
   totalArea: '',
   website: '',
   accreditationRating: '',
@@ -516,36 +551,33 @@ const application = reactive({
   supportStaffTotal: '',
   standards: [{ standardName: '', keyAspectName: '', indicators: '', reportByInstitute: '' }],
   supportingDocuments: [],
+  declaration: false, // Add declaration
+  is_payment_complete: false, // Add is_payment_complete
+  payment_id: null,      // Add payment_id
+  status: "applied",      // Add application status
 });
 
-const dzongkhags = ref(['Thimphu', 'Paro', 'Wangdue Phodrang', 'Punakha']); // Mock data - can be fetched from API later if needed
-const institutionTypesOptions = ref([]); // For fetched Institution Types
-const fundingSourcesOptions = ref([]);   // For fetched Funding Sources
-const qualificationCategories = ref(['Bachelor', 'Master', 'PhD']); // Mock data
+const toast = useToast();
+const isSubmitting = ref(false);
+const authStore = useAuthStore(); // Get authStore
+
+// Removed dzongkhags ref and filteredDzongkhags computed
+//const institutionTypesOptions = ref([]); // No longer fetching from API
+const fundingSourcesOptions = ref([]);
+const qualificationCategories = ref(['Bachelor', 'Master', 'PhD']);
 const genderOptions = ref(['Male', 'Female']);
 const standardNames = ref(['Standard 1', 'Standard 2', 'Standard 3']);
 const keyAspectNames = ref(['Key Aspect 1', 'Key Aspect 2', 'Key Aspect 3']);
 const indicators = ref(['Indicator 1', 'Indicator 2', 'Indicator 3']);
 
-// Programme List Management
-const addProgramme = () => {
-  application.programmes.push({ name: '', number: '' });
-};
+// Static list of Dzongkhags for reference (optional, adjust as needed)
+const dzongkhagList = ref([
+  "Bumthang", "Chukha", "Dagana", "Gasa", "Haa", "Lhuntse", "Mongar", "Paro", "Pema Gatshel",
+  "Punakha", "Samdrup Jongkhar", "Samtse", "Sarpang", "Thimphu", "Trashigang", "Trashiyangtse",
+  "Trongsa", "Tsirang", "Wangdue Phodrang", "Zhemgang", "Thromde" // Added Thromde as it can also be relevant
+]);
 
-const removeProgramme = (index) => {
-  application.programmes.splice(index, 1);
-};
-
-// Standards Management
-const addStandard = () => {
-  application.standards.push({ standardName: '', keyAspectName: '', indicators: '', reportByInstitute: '' });
-};
-
-const removeStandard = (index) => {
-  application.standards.splice(index, 1);
-};
-
-// Computed properties for totals
+// Computed properties for totals (remain the same)
 const totalFaculty = computed(() => {
   return Number(application.facultyF || 0) + Number(application.facultyM || 0);
 });
@@ -566,71 +598,186 @@ const totalNonTeachingStaff = computed(() => {
   return Number(application.technicalStaffTotal || 0) + Number(application.administrativeStaffTotal || 0) + Number(application.supportStaffTotal || 0);
 });
 
-// File Handling
-const onFileChange = (event) => {
-  const files = event.target.files;
-  application.supportingDocuments = Array.from(files); // Ensure files is an array
+// Computed property for filtered funding sources (removed institution types)
+const filteredFundingSources = computed(() => {
+  return fundingSourcesOptions.value.filter(item => item && item.id && item.name);
+});
+
+
+// Programme List Management (remains the same)
+const addProgramme = () => {
+  application.programmes.push({ name: '', number: '' });
 };
 
-// Submit Application Function
-const submitApplication = async () => {
-  try {
-    const formData = new FormData();
+const removeProgramme = (index) => {
+  application.programmes.splice(index, 1);
+};
 
-    // Append text data from the application object
-    for (const key in application) {
-      if (key !== 'supportingDocuments' && key !== 'programmes' && key !== 'standards') {
-        formData.append(key, application[key]);
-      }
-    }
+// Standards Management (remains the same)
+const addStandard = () => {
+  application.standards.push({ standardName: '', keyAspectName: '', indicators: '', reportByInstitute: '' });
+};
 
-    // Append programmes and standards as JSON
-    formData.append('programmes', JSON.stringify(application.programmes));
-    formData.append('standards', JSON.stringify(application.standards));
+const removeStandard = (index) => {
+  application.standards.splice(index, 1);
+};
 
-    // Append files
-    application.supportingDocuments.forEach((file, index) => {
-      formData.append(`supportingDocuments[${index}]`, file);
-    });
+// File Handling (remains the same)
+const onFileChange = (event) => {
+  const files = event.target.files;
+  application.supportingDocuments = Array.from(files);
+};
 
-    const response = await apiservice.createInstitutionProfile(formData);
-    console.log('Application submitted successfully!', response.data);
-    alert('Application submitted successfully!');
-  } catch (error) {
-    console.error('Error submitting application:', error);
-    alert('Error submitting application. Please check the console for details.');
+// Payment Modal Handling
+const paymentModal = ref(null);
+
+const openPaymentModal = () => {
+  paymentModal.value.openModal();
+};
+
+const onPaymentModalClose = () => {
+  console.log("Payment modal closed"); // For debugging, check if this is called
+};
+
+const onPaymentCompleted = (paymentData) => {
+  application.is_payment_complete = true;  // Set payment status
+  application.payment_id = paymentData.paymentHash; // Store payment ID
+  application.status = "processing_payment"; // Update status
+  handleSubmitActual();  // Proceed with submission after successful payment
+};
+
+const handleSubmit = () => {
+  if (application.declaration) {
+    openPaymentModal(); // Open payment modal if declaration is checked
+  } else {
+    toast.error("Please accept the declaration"); // Show error if not checked
   }
 };
 
-// Save Draft Function (TODO: Implement backend logic)
-const saveDraft = () => {
-  console.log('Saving draft:', application);
-  alert('Save Draft functionality is not yet implemented.');
+// Submit Application Function (Modified for FormData)
+const handleSubmitActual = async () => {
+  isSubmitting.value = true;
+  try {
+    const formData = new FormData();
+
+    // Append all fields to FormData
+    for (const key in application) {
+      if (Object.prototype.hasOwnProperty.call(application, key)) {
+        let value = application[key];
+
+        if (key === 'programmes' || key === 'standards') {
+          // Stringify arrays
+          formData.append(key, JSON.stringify(value));
+        } else if (key === 'supportingDocuments') {
+          // Append files individually
+          value.forEach(file => {
+            formData.append(`supportingDocuments`, file); // Corrected file appending
+          });
+        } else if (typeof value === 'boolean') {
+          formData.append(key, value.toString());
+        }
+        else if (value !== null && value !== undefined) {
+          // Append other values directly
+          formData.append(key, value);
+        }
+      }
+    }
+
+
+    // Only make the main request if payment is completed OR it's a draft.
+    if (application.status === "draft" || application.is_payment_complete) {
+
+      // Only make the Payment Request if it is not draft.
+      if (application.status !== "draft") {
+        const paymentData = {
+          platform: 'BQPCA e-Zhapto',
+          refNo: application.payment_id,  // Use application's payment_id
+          taxPayerNo: application.contactNumber, // Placeholder. Consider using appropriate ID.
+          taxPayerDocumentNo: application.contactNumber, // Placeholder. Consider using appropriate ID.
+          payerEmail: application.emailAddress,
+          mobileNo: application.contactNumber,
+          totalPayableAmount: 1000.00,
+          serviceCode: 'accreditation_fee', // Use an appropriate service code
+          description: 'Payment for Accreditation Application',
+          payableAmount: 1000.00,
+          taxPayerName: application.institutionName,
+          application_no: application.payment_id, // Use application payment_id
+          app_type: 'Accreditation', // A string to identify the type of application
+          user_id: authStore.userId, // Make sure authStore and userId are defined
+        };
+        try {
+          const paymentResponse = await apiService.makePayment(paymentData);
+          console.log("Payment Response:", paymentResponse);
+
+          if (paymentResponse.status !== 201 && paymentResponse.status !== 200) {
+            throw new Error("Payment request failed");
+          }
+        }
+        catch (paymentError) {
+          console.error("Error making payment:", paymentError);
+          toast.error("Payment request failed: " + (paymentError.response?.data?.message || paymentError.message));
+          isSubmitting.value = false; // Reset before returning.
+          return; // Stop execution if payment fails
+        }
+      }
+
+      const response = await apiService.createInstitutionProfile(formData); // Send FormData
+      console.log('Application submitted successfully!', response.data);
+
+      if (application.status === "draft") {
+        toast.success("Application saved as draft");
+      } else {
+        toast.success('Application submitted successfully! Please check your email to complete the payment');
+      }
+    }
+    else {
+      toast.error('Payment is not complete. Cannot submit application.');
+    }
+  } catch (error) {
+    console.error('Error submitting application:', error);
+    // Improved error handling: check for response and data
+    const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+    toast.error(`Error submitting application: ${errorMessage}`);
+
+  }
+  finally {
+    isSubmitting.value = false; // Reset loading state
+  }
 };
 
-// Fetch Master Data on Component Mount
+
+// Save Draft Function (TODO: Implement backend logic) (remains the same)
+const saveDraft = () => {
+  application.status = "draft"; // Set status to draft
+  handleSubmitActual();
+};
+
+// Fetch Master Data on Component Mount (Modified - Dzongkhags fetching removed)
 onMounted(async () => {
   try {
-    // Fetch Institution Types
-    const institutionTypesResponse = await apiservice.getMastersInstitutes();
-    institutionTypesOptions.value = institutionTypesResponse.data;
 
     // Fetch Funding Sources
-    const fundingSourcesResponse = await apiservice.getMastersSourceOfFundings();
-    fundingSourcesOptions.value = fundingSourcesResponse.data;
+    const fundingSourcesResponse = await apiService.getMastersSourceOfFundings();
+    if (fundingSourcesResponse && fundingSourcesResponse.data && Array.isArray(fundingSourcesResponse.data.results)) {
+      fundingSourcesOptions.value = fundingSourcesResponse.data.results;
+    } else {
+      console.error('Invalid data received for funding sources:', fundingSourcesResponse);
+      fundingSourcesOptions.value = [];
+      alert('Error: Invalid funding sources data received from API.');
+    }
 
-    
-    const dzongkhagsResponse = await apiservice.getDzongkhags();
-    dzongkhags.value = dzongkhagsResponse.data;
 
   } catch (error) {
     console.error('Error fetching master data:', error);
-    alert('Failed to load dropdown options. Please check the console.');
+    alert('Failed to load dropdown options (Institution Type, Funding Source). Please check the console.'); // Modified alert message
   }
 });
 
 </script>
 
 <style scoped>
-/* Add component-specific styles here if needed */
+.required::after {
+  content: " *";
+  color: #ef4444;
+}
 </style>

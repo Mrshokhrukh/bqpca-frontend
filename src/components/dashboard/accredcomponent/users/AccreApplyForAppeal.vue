@@ -8,8 +8,11 @@
           <p class="text-gray-600 text-center max-w-2xl mx-auto">File an appeal against the accreditation decision.</p>
         </div>
 
+        <!-- Payment Modal -->
+        <PaymentModal ref="paymentModal" :amount="1000" @payment-completed="onPaymentCompleted" @close="onPaymentModalClose" />
+
         <!-- Form -->
-        <form @submit.prevent="submitAppeal" class="p-6">
+        <form @submit.prevent="handleSubmit" class="p-6">
 
           <!-- 1. Appellant Details -->
           <div class="mb-6">
@@ -39,7 +42,7 @@
                 <select v-model="appeal.reasonType"
                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
                   <option value="" disabled>Select Reason</option>
-                  <option v-for="reason in appealReasons" :key="reason.value" :value="reason.value">{{ reason.text }}
+                  <option v-for="reason in appealReason" :key="reason.value" :value="reason.value">{{ reason.text }}
                   </option>
                 </select>
               </div>
@@ -83,15 +86,33 @@
             </div>
           </div>
 
+            <!-- Declaration -->
+            <div class="mb-6">
+                <label class="inline-flex items-center">
+                <input
+                    type="checkbox"
+                    v-model="appeal.declaration"
+                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    required
+                />
+                <span class="ml-2 text-gray-700">I hereby declare that the information provided is true and accurate to the best of my knowledge.</span>
+                </label>
+            </div>
+
+
           <!-- Actions -->
           <div class="flex items-center justify-end space-x-4 mt-8 pt-6 border-t p-8">
             <button type="button" @click="saveDraft"
               class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
               Save as Draft
             </button>
-            <button type="submit"
+            <!-- <button type="submit"
               class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
               Submit Appeal
+            </button> -->
+             <button type="button" @click="openPaymentModal" :disabled="!appeal.declaration || isSubmitting"
+                class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                {{ isSubmitting ? "Submitting..." : "Submit" }}
             </button>
           </div>
         </form>
@@ -102,7 +123,11 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import apiservice from '@/services/accreditationservices'; // Assuming apiservice is set up in this path
+import apiService from '@/services/services';
+import { useToast } from "vue-toastification";
+import PaymentModal from "@/components/common/PaymentModal.vue";
+import { useAuthStore } from "@/stores/authStore";
+import { useRoute } from 'vue-router'; // Import useRoute
 
 const autoFilledDetails = reactive({
   'Name of Institution': '',
@@ -121,105 +146,196 @@ const appeal = reactive({
   supportingDocuments: [],
   remarks: '',
   declaration: false,
+  is_payment_complete: false,
+  payment_id: null,
+  status: "applied",
 });
 
-const appealReasons = ref([]);
+const appealReason = ref([]);
+const toast = useToast();
+const isSubmitting = ref(false);
+const authStore = useAuthStore();
+const route = useRoute(); // Use useRoute
 
 const onFileChange = (event) => {
   appeal.supportingDocuments = Array.from(event.target.files);
 };
 
 const saveDraft = async () => {
+  appeal.status = "draft";
+  submitAppealActual();
+};
+
+const paymentModal = ref(null);
+
+const openPaymentModal = () => {
+  paymentModal.value.openModal();
+};
+
+const onPaymentModalClose = () => {
+  console.log("Payment modal closed");
+};
+
+const onPaymentCompleted = (paymentData) => {
+  appeal.is_payment_complete = true;
+  appeal.payment_id = paymentData.paymentHash;
+  appeal.status = "processing_payment";
+  submitAppealActual();
+};
+
+const handleSubmit = () => {
+  if (appeal.declaration) {
+    openPaymentModal();
+  } else {
+    toast.error("Please accept the declaration");
+  }
+};
+
+const submitAppealActual = async () => {
+  isSubmitting.value = true;
   try {
     const formData = new FormData();
-    formData.append('reason_type', appeal.reasonType); // Use snake_case to match backend if needed
-    formData.append('reason_other', appeal.reasonOther);
-    formData.append('reason', appeal.reason);
-    formData.append('attempted_to_resolve', appeal.attemptedToResolve);
-    formData.append('outcome', appeal.outcome);
-    // Append files
-    appeal.supportingDocuments.forEach(file => {
-      formData.append('supporting_documents', file); // Backend needs to handle multiple files with this key
-    });
+    for (const key in appeal) {
+      if (Object.prototype.hasOwnProperty.call(appeal, key)) {
+        let value = appeal[key];
 
-    const response = await apiservice.createProfileAppeal(formData, { // Using createProfileAppeal from apiservice
-      headers: {
-        'Content-Type': 'multipart/form-data' // Important for file uploads
+        if (key === 'supportingDocuments') {
+          value.forEach(file => {
+            formData.append('supporting_documents', file);
+          });
+        } else if (typeof value === 'boolean') {
+          formData.append(key, value.toString());
+        }
+        else if (value !== null && value !== undefined) {
+          formData.append(key.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase(), value);
+        }
       }
-    });
-    console.log('Draft saved:', response.data);
-    alert('Draft saved successfully!'); // Provide user feedback
-  } catch (error) {
-    console.error('Error saving draft:', error);
-    alert('Failed to save draft. Please check the console for details.'); // User feedback for error
-  }
-};
+    }
 
-const submitAppeal = async () => {
-  try {
-    const formData = new FormData();
-    formData.append('reason_type', appeal.reasonType); // Use snake_case to match backend if needed
-    formData.append('reason_other', appeal.reasonOther);
-    formData.append('reason', appeal.reason);
-    formData.append('attempted_to_resolve', appeal.attemptedToResolve);
-    formData.append('outcome', appeal.outcome);
-    // Append files
-    appeal.supportingDocuments.forEach(file => {
-      formData.append('supporting_documents', file); // Backend needs to handle multiple files with this key
-    });
+    if (appeal.status === "draft" || appeal.is_payment_complete) {
 
-    const response = await apiservice.createProfileAppeal(formData, { // Using createProfileAppeal from apiservice
-      headers: {
-        'Content-Type': 'multipart/form-data' // Important for file uploads
+      if (appeal.status !== "draft") {
+        const paymentData = {
+          platform: 'BQPCA e-Zhapto',
+          refNo: appeal.payment_id,
+          taxPayerNo: autoFilledDetails['Contact'],
+          taxPayerDocumentNo: autoFilledDetails['Contact'],
+          payerEmail: autoFilledDetails['Email'],
+          mobileNo: autoFilledDetails['Contact'],
+          totalPayableAmount: 1000.00,
+          serviceCode: 'accreditation_appeal_fee',
+          description: 'Payment for Accreditation Appeal Application',
+          payableAmount: 1000.00,
+          taxPayerName: autoFilledDetails['Name of Institution'],
+          application_no: appeal.payment_id,
+          app_type: 'Accreditation Appeal',
+          user_id: authStore.userId,
+        };
+        try {
+          const paymentResponse = await apiService.makePayment(paymentData);
+          console.log("Payment Response:", paymentResponse);
+
+          if (paymentResponse.status !== 201 && paymentResponse.status !== 200) {
+            throw new Error("Payment request failed");
+          }
+        }
+        catch (paymentError) {
+          console.error("Error making payment:", paymentError);
+          toast.error("Payment request failed: " + (paymentError.response?.data?.message || paymentError.message));
+          isSubmitting.value = false;
+          return;
+        }
       }
-    });
-    console.log('Appeal submitted:', response.data);
-    alert('Appeal submitted successfully!'); // Provide user feedback
-    // Optionally reset the form or redirect user
-  } catch (error) {
-    console.error('Error submitting appeal:', error);
-    alert('Failed to submit appeal. Please check the console for details.'); // User feedback for error
-  }
-};
 
-const fetchAppealReasons = async () => {
-  try {
-    const response = await apiservice.getMastersAppealReasons(); // Using getMastersAppealReasons from apiservice
-    appealReasons.value = response.data.map(reason => ({ // Assuming backend returns array of objects
-      text: reason.reason_name, // Adjust based on actual API response field
-      value: reason.reason_type_value // Adjust based on actual API response field
-    }));
-  } catch (error) {
-    console.error('Error fetching appeal reasons:', error);
-  }
-};
-
-const fetchInstitutionProfile = async () => {
-  try {
-    const response = await apiservice.getProfileAppeals(); // Using getProfileAppeals - assuming this fetches institution profiles based on previous API info and service name context. **Verify this is the correct service call**
-    const profiles = response.data; // Assuming API returns a list of profiles
-
-    if (profiles && profiles.length > 0) {
-      const profileData = profiles[0]; // Taking the first profile from the list. Adjust logic if needed.
-      autoFilledDetails['Name of Institution'] = profileData.institution_name || ''; // Adjust field names based on your API response
-      autoFilledDetails['Address/Location'] = profileData.address || '';
-      autoFilledDetails['Dzongkhag/Thromde'] = profileData.dzongkhag || '';
-      autoFilledDetails['Contact'] = profileData.contact_number || '';
-      autoFilledDetails['Email'] = profileData.email || '';
+      const appealResponse = await apiService.createProfileAppeal(formData);
+      console.log("Appeal Response:", appealResponse);
+      if (appeal.status === "draft") {
+        toast.success("Appeal saved as draft");
+      } else {
+        toast.success('Appeal submitted successfully! Please check your email to complete the payment');
+      }
     } else {
-      console.warn('No institution profiles found.');
-      // Optionally handle the case where no profiles are found (e.g., display a message)
+      toast.error('Payment is not complete. Cannot submit Appeal.');
     }
 
   } catch (error) {
-    console.error('Error fetching institution profile:', error);
-    // Optionally handle error, e.g., display a message to the user
+    console.error('Error submitting appeal:', error);
+    const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+    toast.error(`Failed to submit appeal: ${errorMessage}`);
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+const fetchAppealReason = async () => {
+  try {
+    const response = await apiService.getMastersAppealReasons();
+    console.log("Appeal Reasons Response:", response);
+
+    if (response.status === 200) {
+      if (response.data && response.data.results) {
+        appealReason.value = response.data.results.map(reason => ({
+          text: reason.appeal_name, // Use 'appeal_name' for text
+          value: reason.id         // Use 'id' for value
+        }));
+      } else {
+        console.error("API response data is missing 'results' array:", response.data);
+        toast.error("Error fetching appeal reasons: Data format incorrect (missing 'results').");
+      }
+    } else {
+      console.error("API request failed with status:", response.status, response);
+      toast.error(`Failed to fetch appeal reasons. Status: ${response.status}`);
+    }
+
+  } catch (error) {
+    console.error('Error fetching appeal reasons:', error);
+    toast.error(`Failed to fetch appeal reasons. Please check the console for details.`);
   }
 };
 
 
+// const fetchInstitutionProfile = async () => { // Removed fetchInstitutionProfile
+//   try {
+//     const response = await apiService.getProfileAppeals();
+//     const profiles = response.data;
+
+//     if (profiles && profiles.length > 0) {
+//       const profileData = profiles[0];
+//       autoFilledDetails['Name of Institution'] = profileData.institution_name || '';
+//       autoFilledDetails['Address/Location'] = profileData.address || '';
+//       autoFilledDetails['Dzongkhag/Thromde'] = profileData.dzongkhag || '';
+//       autoFilledDetails['Contact'] = profileData.contact_number || '';
+//       autoFilledDetails['Email'] = profileData.email || '';
+//     } else {
+//       console.warn('No institution profiles found.');
+//     }
+
+//   } catch (error) {
+//     console.error('Error fetching institution profile:', error);
+//     toast.error("Failed to fetch institution profile.");
+//   }
+// };
+
 onMounted(() => {
-  fetchAppealReasons();
-  fetchInstitutionProfile();
+  fetchAppealReason();
+  // fetchInstitutionProfile(); //removed and replaced with below
+
+    // Populate autoFilledDetails directly from route.query
+  autoFilledDetails['Name of Institution'] = route.query.institutionName || '';
+  autoFilledDetails['Address/Location'] = route.query.address || '';
+  autoFilledDetails['Dzongkhag/Thromde'] = route.query.dzongkhagThromde || '';
+  autoFilledDetails['Contact'] = route.query.contact || '';
+  autoFilledDetails['Email'] = route.query.email || '';
 });
 </script>
+
+<style scoped>
+/* Your component-specific styles here if needed */
+.bg-primary {
+    background-color: #3b82f6; /* Example primary color - blue-500 from Tailwind */
+}
+
+.bg-secondary {
+    background-color: #2563eb; /* Example secondary color - blue-700 from Tailwind */
+}
+</style>
