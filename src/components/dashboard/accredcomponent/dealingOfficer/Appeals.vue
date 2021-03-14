@@ -85,6 +85,9 @@
                   >
                     Certificate
                   </button>
+                   <button @click="removeAppeal(appeal.id)" class="text-red-600 hover:text-red-900">
+                    Delete
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -95,13 +98,13 @@
         <div class="bg-white px-6 py-4 border-t border-gray-200">
           <div class="flex items-center justify-between">
             <div class="text-sm text-gray-700">
-              Showing <span class="font-medium">1</span> to <span class="font-medium">{{ appeals.length }}</span> of <span class="font-medium">{{ appeals.length }}</span> entries
+            Showing <span class="font-medium">{{ (currentPage - 1) * perPage + 1 }}</span> to <span class="font-medium">{{ Math.min(currentPage * perPage, totalAppeals) }}</span> of <span class="font-medium">{{ totalAppeals }}</span> entries
             </div>
             <div class="flex-1 flex justify-end">
-              <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 mx-1">
+              <button @click="previousPage" :disabled="currentPage === 1" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 mx-1">
                 Previous
               </button>
-              <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 mx-1">
+              <button @click="nextPage" :disabled="currentPage * perPage >= totalAppeals" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 mx-1">
                 Next
               </button>
             </div>
@@ -247,7 +250,7 @@
                   <div>
                     <p class="text-xs text-gray-500">Documents</p>
                     <div v-if="isEditMode">
-                      <input type="file" class="text-sm mt-1" />
+                      <input type="file" @change="handleFileUpload" ref="fileInput" class="text-sm mt-1" />
                     </div>
                     <a v-else-if="selectedAppeal.supportingDocument" :href="selectedAppeal.supportingDocument" target="_blank" class="text-indigo-600 hover:text-indigo-800 flex items-center mt-1">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -304,188 +307,264 @@
 
           <!-- Footer -->
           <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+          <button v-if="!isEditMode" type="button" class="inline-flex items-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" @click="removeAppeal(selectedAppeal.id)">
+             Delete
+          </button>
+
             <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="closeModal">
               Cancel
             </button>
-            <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="saveDecision(selectedAppeal)">
-              Save Decision
+             <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="saveAppeal">
+                Save
             </button>
+
           </div>
         </div>
       </div>
     </div>
+     <button @click="addNewAppeal" class="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+      + Add Appeal
+    </button>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted,  } from 'vue';
+import axios from 'axios';
 
 export default {
   name: 'AppealsView',
   setup() {
-    // Mock Appeal Data (Replace with your actual data fetching logic)
-    const appeals = ref([
-      {
-        id: 1,
-        institutionName: 'Royal Institute of Awesome Studies',
-        address: 'Thimphu TechPark',
-        dzongkhag: 'Thimphu',
-        contact: '17XXXXXXX',
-        email: 'info@rias.bt',
-        reasonType: 'Course Accreditation',
-        reason: 'Appeal against initial accreditation outcome for BSc. CS',
-        resolvedWithHEQC: 'Yes',
-        resolutionOutcome: 'Meeting held with HEQC panel. Clarifications provided.',
-        meetingDate: '2023-11-15',
-        supportingDocument: 'document.pdf', // Replace with actual URL or path if needed
-        remarks: 'Initial appeal submitted after review.',
-        declaration: true,
-        decisionBAC: '', // Initially no decision
-        decisionDetails: '',
-      },
-      {
-        id: 2,
-        institutionName: 'Bhutan College of Innovation',
-        address: 'Paro Valley',
-        dzongkhag: 'Paro',
-        contact: '17YYYYYYY',
-        email: 'admissions@bci.bt',
-        reasonType: 'Recognition',
-        reason: 'Appeal for recognition of new diploma program.',
-        resolvedWithHEQC: 'No',
-        resolutionOutcome: '',
-        meetingDate: '',
-        supportingDocument: null,
-        remarks: 'Seeking recognition for the first time.',
-        declaration: true,
-        decisionBAC: 'Approved', // Example: Already approved
-        decisionDetails: 'Program meets all recognition criteria.',
-      },
-      {
-        id: 3,
-        institutionName: 'Gedu College of Business Studies',
-        address: 'Gedu, Chukha',
-        dzongkhag: 'Chukha',
-        contact: '17ZZZZZZZ',
-        email: 'principal@gcbs.bt',
-        reasonType: 'Others',
-        reasonOthers: 'Program Review',
-        reason: 'Appeal against program review recommendations.',
-        resolvedWithHEQC: 'Yes',
-        resolutionOutcome: 'Review panel recommendations reconsidered. Some modifications accepted.',
-        meetingDate: '2023-12-01',
-        supportingDocument: 'review_report.pdf',
-        remarks: 'Appeal related to program review.',
-        declaration: true,
-        decisionBAC: 'Rejected', // Example: Rejected
-        decisionDetails: 'Appeal did not provide sufficient justification to overturn review findings.',
-      },
-    ]);
-
+    const appeals = ref([]);
     const isModalOpen = ref(false);
     const selectedAppeal = ref(null);
     const isEditMode = ref(false);
-    const nextId = ref(4); // Track next ID for new appeals
+    const loading = ref(false); //for loading
+    const fileInput = ref(null);  //for file upload.
+    const currentPage = ref(1);
+    const perPage = ref(10);
+    const totalAppeals = ref(0);
 
-    const viewAppeal = (appeal) => {
-      selectedAppeal.value = { ...appeal }; // Create a copy to avoid direct mutation
-      isModalOpen.value = true;
-      isEditMode.value = false; // Reset edit mode when opening modal
-    };
-
-    const closeModal = () => {
-      isModalOpen.value = false;
-      selectedAppeal.value = null;
-      isEditMode.value = false; // Reset edit mode when closing modal
-    };
-
-    const saveDecision = (appeal) => {
-      // Find the appeal in the array and update it
-      const index = appeals.value.findIndex(a => a.id === appeal.id);
-      if (index !== -1) {
-        // If in edit mode, update all fields
-        if (isEditMode.value) {
-          appeals.value[index] = { ...appeal };
-          isEditMode.value = false; // Exit edit mode after saving
-        } else {
-          // Otherwise just update decision related fields
-          appeals.value[index].decisionBAC = appeal.decisionBAC;
-          appeals.value[index].decisionDetails = appeal.decisionDetails;
-        }
+    // Fetch Appeals
+    const fetchAppeals = async () => {
+      loading.value = true;
+      try {
+         const response = await axios.get('/api/accrediations/masters-appeal-reason/',{
+          params: {
+            page: currentPage.value,
+            per_page: perPage.value
+          }
+         });
+         appeals.value = response.data.results; // Use response.data.results for DRF paginated response
+         totalAppeals.value = response.data.count;  // Get total count from DRF
+      } catch (error) {
+        console.error('Error fetching appeals:', error);
+        // Handle error appropriately, e.g., show a notification
+        alert('Failed to fetch appeals. Please try again later.');
+      } finally {
+        loading.value = false;
       }
-
-      // In a real application, you would send this updated appeal data to your backend.
-      console.log('Decision Saved for Appeal ID:', appeal.id);
-      closeModal(); // Close modal after saving
     };
 
+     const previousPage = () => {
+      if (currentPage.value > 1) {
+        currentPage.value--;
+        fetchAppeals(); // Fetch appeals for the new page
+      }
+    };
+
+    const nextPage = () => {
+      // Check if there is a next page based on total count and current page/perPage
+      if (currentPage.value * perPage.value < totalAppeals.value) {
+        currentPage.value++;
+        fetchAppeals();  //fetch appeals for the new page.
+      }
+    };
+
+
+    // View Appeal
+    const viewAppeal = (appeal) => {
+      selectedAppeal.value = { ...appeal };
+      isModalOpen.value = true;
+      isEditMode.value = false;
+    };
+
+    // Close Modal
+   const closeModal = () => {
+      isModalOpen.value = false;
+      if(selectedAppeal.value && !selectedAppeal.value.id){ //If a new appeal was added but not saved.
+          const index = appeals.value.findIndex(a => a.id === undefined);
+          if(index !== -1) {
+            appeals.value.splice(index, 1)
+          }
+      }
+      selectedAppeal.value = null;
+      isEditMode.value = false;
+      if(fileInput.value){
+        fileInput.value.value = "";
+      }
+    };
+
+
+   const handleFileUpload = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        selectedAppeal.value.supportingDocument = file; // Store the File object directly
+        // Or if you need a base64 string (less efficient for large files):
+        // const reader = new FileReader();
+        // reader.onload = (e) => {
+        //   selectedAppeal.value.supportingDocument = e.target.result;
+        // }
+        // reader.readAsDataURL(file);
+      }
+    };
+
+     // Save Appeal (Create/Update)
+  const saveAppeal = async () => {
+      loading.value = true;
+      try {
+        let formData = new FormData();
+        for (let key in selectedAppeal.value) {
+          if (key === 'supportingDocument' && selectedAppeal.value[key] instanceof File) {
+            formData.append(key, selectedAppeal.value[key]);  //append the actual file.
+          } else if(selectedAppeal.value[key] !== null && selectedAppeal.value[key] !== undefined){ //append only if it is not null.
+              formData.append(key, selectedAppeal.value[key]);
+          }
+        }
+
+
+        let response;
+        if (selectedAppeal.value.id) {
+          // Update existing appeal
+          response = await axios.patch(`/api/accrediations/masters-appeal-reason/${selectedAppeal.value.id}/`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data', // Important for file uploads
+            },
+          });
+           // Find the index and update.
+          const index = appeals.value.findIndex(a => a.id === selectedAppeal.value.id);
+          if(index != -1) {
+            appeals.value[index] = response.data;
+          }
+
+        } else {
+          // Create new appeal
+          response = await axios.post('/api/accrediations/masters-appeal-reason/', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          appeals.value.push(response.data);
+        }
+         totalAppeals.value = (await axios.get('/api/accrediations/masters-appeal-reason/')).data.count; //Refetch the total count.
+
+        console.log('Appeal saved:', response.data);
+        closeModal();
+         fetchAppeals();
+      } catch (error) {
+        console.error('Error saving appeal:', error);
+         let errorMessage = 'Failed to save appeal. Please try again later.';
+        if (error.response && error.response.data) {
+            // Extract and display specific error messages from the backend
+            errorMessage = Object.values(error.response.data).flat().join('\n');
+        }
+        alert(errorMessage);
+      } finally {
+        loading.value = false;
+      }
+    };
+
+
+
+    // Generate Certificate (Placeholder)
     const generateCertificate = (appeal) => {
-      // In a real application, this would trigger the certificate generation process.
       console.log('Generate Certificate for Appeal ID:', appeal.id);
       alert(`Certificate generation initiated for ${appeal.institutionName}'s appeal.`);
-      // You would typically redirect to a certificate download page or handle it in a more sophisticated way.
     };
 
-    // Edit mode functions
+    // Toggle Edit Mode
     const toggleEditMode = () => {
-      if (isEditMode.value) {
-        // If already in edit mode, save changes
-        saveDecision(selectedAppeal.value);
-      } else {
-        // Enter edit mode
-        isEditMode.value = true;
-      }
+        if(!isEditMode.value) {
+            isEditMode.value = true;
+        } else {
+            saveAppeal(); //save on toggling to view.
+        }
+
     };
 
+    // Add New Appeal (Open Modal in Edit Mode)
     const addNewAppeal = () => {
+
       const newAppeal = {
-        id: nextId.value++,
-        institutionName: 'New Institution',
-        address: 'Address',
-        dzongkhag: 'Dzongkhag',
-        contact: 'Contact Number',
-        email: 'email@example.bt',
-        reasonType: 'Course Accreditation',
-        reason: 'Reason for appeal',
-        resolvedWithHEQC: 'No',
+        institutionName: '', // Initialize with empty strings or defaults
+        address: '',
+        dzongkhag: '',
+        contact: '',
+        email: '',
+        reasonType: '',
+        reasonOthers: '',
+        reason: '',
+        resolvedWithHEQC: '',
         resolutionOutcome: '',
         meetingDate: '',
-        supportingDocument: null,
+        supportingDocument: null, // Important for file uploads
         remarks: '',
-        declaration: true,
+        declaration: false,
         decisionBAC: '',
-        decisionDetails: '',
+        decisionDetails: ''
       };
-      appeals.value.push(newAppeal);
+        appeals.value.unshift(newAppeal); // Add to the beginning of the array for immediate visibility
+        viewAppeal(newAppeal);
+      isEditMode.value = true;
 
-      // Open the modal for the new appeal
-      viewAppeal(newAppeal);
-      isEditMode.value = true; // Automatically enter edit mode for new appeals
     };
 
-    const removeAppeal = (id) => {
+    // Remove Appeal
+    const removeAppeal = async (id) => {
       if (confirm('Are you sure you want to delete this appeal?')) {
-        const index = appeals.value.findIndex(a => a.id === id);
-        if (index !== -1) {
-          appeals.value.splice(index, 1);
+        loading.value = true;
+        try {
+          await axios.delete(`/api/accrediations/masters-appeal-reason/${id}/`);
+
+          const index = appeals.value.findIndex(a => a.id === id);
+          if (index !== -1) {
+            appeals.value.splice(index, 1);
+          }
+          totalAppeals.value--; //reduce the total count.
+          closeModal(); //close only if deletion is successful.
+          // Optionally, re-fetch appeals or update the local list
+        } catch (error) {
+          console.error('Error deleting appeal:', error);
+          alert('Failed to delete appeal. Please try again later.');
+        } finally {
+          loading.value = false;
         }
-        closeModal(); // Close modal after deletion
       }
     };
+
+    onMounted(fetchAppeals);
 
     return {
       appeals,
       isModalOpen,
       selectedAppeal,
       isEditMode,
+      loading,
       viewAppeal,
       closeModal,
-      saveDecision,
+      saveAppeal,
       generateCertificate,
       toggleEditMode,
       addNewAppeal,
-      removeAppeal
+      removeAppeal,
+      fileInput,
+      handleFileUpload,
+      currentPage,
+      perPage,
+      totalAppeals,
+      previousPage,
+      nextPage
     };
   }
-}
+};
 </script>
