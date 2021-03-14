@@ -1,95 +1,99 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-8">
-    <!-- Form Header -->
-    <div class="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-8 mb-10">
-      <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
-        CPD Activity Submission (Provider)
-      </h2>
-      <p class="text-gray-600 text-center max-w-2xl mx-auto">
-        Submit your CPD activity for review and approval. Please provide detailed and accurate
-        information. Fields marked with an asterisk (<span class="text-red-600">*</span>) are required.
-      </p>
-    </div>
-
-    <form @submit.prevent="handleSubmit" class="bg-white border rounded-xl shadow-sm p-6">
-      <!-- Applicant Details -->
-      <ApplicantDetails v-model="form.applicantDetails" :is-disabled="isLoggedIn" />
-
-      <!-- CPD Application Details -->
-      <CPDApplicationDetails v-model="form.applicationDetails" />
-
-      <!-- CPD Provider Host Details -->
-      <CPDProviderHostDetails v-model="form.hostDetails" />
-
-      <!-- Resource Person Details -->
-      <ResourcePersonDetails v-model="form.resourcePersons" />
-
-      <!-- Teaching Learning Details -->
-      <TeachingLearningDetails v-model="form.teachingLearning" />
-
-      <!-- Participant Details -->
-      <ParticipantDetails v-model="form.participantDetails" />
-
-      <!-- Buttons -->
-      <div class="mt-12 flex justify-end space-x-4 p-8">
-        <button type="button" @click="handleCancel"
-          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-          Cancel
-        </button>
-        <button type="button" @click="handleSaveDraft"
-          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-          Save as Draft
-        </button>
-        <button type="submit" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-          Submit
-        </button>
+  <div>
+    <!-- Check if we're in participant adding mode -->
+    <div v-if="addingParticipants && approvedCpdId" class="max-w-7xl mx-auto px-4 py-8">
+      <div class="bg-green-50 border border-green-200 rounded-xl p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-2">Add Participants to Approved CPD</h2>
+        <p class="text-gray-600">
+          Your CPD application has been approved. Please add participants below to complete the process.
+        </p>
       </div>
-    </form>
-
-    <!--After Approval Participants -->
-    <AfterApprovalParticipants v-if="isApproved" />
+      
+      <!-- After Approval Participants Component -->
+      <AfterApprovalParticipants :cpd-id="approvedCpdId" :calculated-credits="calculatedCredits" />
+    </div>
+    
+    <!-- Regular CPD Application Form -->
+    <div v-else>
+      <CPDApplicationDetails v-model="formData" :application-id="applicationId" @application-loaded="handleApplicationLoaded" />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
-import ApplicantDetails from './ApplicantDetails.vue';
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useToast } from 'vue-toastification';
+import apiservice from '@/services/bmhcservices';
 import CPDApplicationDetails from './CPDApplicationDetails.vue';
-import CPDProviderHostDetails from './CPDProviderHostDetails.vue';
-import ResourcePersonDetails from './ResourcePersonDetails.vue';
-import TeachingLearningDetails from './TeachingLearningDetails.vue';
-import ParticipantDetails from './ParticipantDetails.vue';
 import AfterApprovalParticipants from './AfterApprovalParticipants.vue';
 
-import { useToast } from 'vue-toastification';
 const toast = useToast();
+const route = useRoute();
+const router = useRouter();
 
-// Dummy props to simulate logged in and application approve/reject states
-const isLoggedIn = ref(true);
-const isApproved = ref(false);
-
-const form = reactive({
-  applicantDetails: {},
-  applicationDetails: {},
-  hostDetails: {},
-  resourcePersons: [],
-  teachingLearning: {},
-  participantDetails: {}
+// Create a reactive form object that will be passed to CPDApplicationDetails
+const formData = ref({
+  isApproved: false,
+  title: '',
+  venue: '',
+  fromDate: '',
+  toDate: '',
+  approvalLetter: null
 });
 
-const handleSaveDraft = () => {
-  console.log('Saving as draft:', form);
-  toast.info('Form saved as draft!');
-};
+// State for CPD approval details
+const applicationId = ref(null);
+const approvedCpdId = ref(null);
+const calculatedCredits = ref(0);
+const addingParticipants = ref(false);
 
-const handleSubmit = () => {
-  console.log('Submitting form:', form);
-  toast.success('Form submitted successfully!');
-  // In real implementation, submit the form data to an API.
-};
+// Load application if ID is provided in the URL
+onMounted(async () => {
+  // Check if we have an ID parameter in the route
+  const id = route.query.id;
+  if (id) {
+    applicationId.value = parseInt(id);
+    
+    // Check if we're meant to add participants
+    if (route.query.add_participants === 'true') {
+      try {
+        // Fetch the application to verify it's approved
+        const response = await apiservice.getBmhcCpdTaskById(id);
+        
+        if (response.data && response.data.review_status === 'Approved') {
+          approvedCpdId.value = parseInt(id);
+          calculatedCredits.value = response.data.credit || 0;
+          addingParticipants.value = true;
+        } else {
+          toast.error('This application is not approved or cannot be found.');
+          router.push('/admin/cpd_cme_provider/health_certification/cpd_application_tracker');
+        }
+      } catch (error) {
+        console.error('Error loading application:', error);
+        toast.error('Failed to load the application. Please try again.');
+        router.push('/admin/cpd_cme_provider/health_certification/cpd_application_tracker');
+      }
+    }
+  }
+});
 
-const handleCancel = () => {
-  // Reset the form data, or redirect the user.
-  toast.warning('Form cancelled.');
+// Handle when application is loaded from CPDApplicationDetails
+const handleApplicationLoaded = (applicationData) => {
+  // Check if the application is approved and needs participants
+  if (applicationData && 
+      applicationData.review_status === 'Approved' && 
+      (!applicationData.participants || applicationData.participants.length === 0)) {
+    
+    // Set up state for adding participants
+    approvedCpdId.value = applicationData.id;
+    calculatedCredits.value = applicationData.credit || 0;
+    
+    // Ask if user wants to add participants now
+    const addNow = confirm('This application is approved. Would you like to add participants now?');
+    if (addNow) {
+      addingParticipants.value = true;
+    }
+  }
 };
 </script>

@@ -41,9 +41,12 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- My Training Sessions -->
       <div class="bg-white p-6 rounded-lg shadow-md">
-        <h3 class="font-semibold text-lg mb-4">My Training Sessions</h3>
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-semibold text-lg">My Training Sessions</h3>
+          <button @click="viewAllSessions" class="text-blue-600 text-sm hover:text-blue-800">View All</button>
+        </div>
         <div class="space-y-4">
-          <div v-for="session in trainingSessions" :key="session.id" class="border-b last:border-0 pb-4 last:pb-0">
+          <div v-for="session in trainingSessions.slice(0, 3)" :key="session.id" class="border-b last:border-0 pb-4 last:pb-0">
             <div class="flex justify-between items-start">
               <div class="space-y-1">
                 <h4 class="font-medium">{{ session.title }}</h4>
@@ -82,6 +85,9 @@
               </span>
             </div>
           </div>
+          <p v-if="trainingSessions.length === 0" class="text-gray-600 py-4">
+            No training sessions found. Click "Propose New Training" to create one.
+          </p>
         </div>
       </div>
 
@@ -118,7 +124,7 @@
         <h3 class="font-semibold text-lg">Upcoming Schedule</h3>
         <button class="text-blue-600 text-sm hover:text-blue-700">View Calendar</button>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div v-if="upcomingSchedule.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div v-for="event in upcomingSchedule" :key="event.id" class="border rounded-lg p-4">
           <div class="flex items-start space-x-3">
             <div class="bg-gray-100 p-2 rounded text-center min-w-[3rem]">
@@ -145,6 +151,9 @@
           </div>
         </div>
       </div>
+      <p v-else class="text-gray-600 py-4">
+        No upcoming events found. Click "Propose New Training" to create one.
+      </p>
     </div>
   </div>
 </template>
@@ -163,8 +172,11 @@ import {
   Presentation,
 } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import apiservice from '@/services/bmhcservices';
 import { format } from 'date-fns';
+
+const router = useRouter();
 
 // Access user data directly from localStorage
 const user = ref(JSON.parse(localStorage.getItem('user')) || {});
@@ -187,8 +199,14 @@ const recentFeedback = ref([]); // Add ref for feedback
 const upcomingSchedule = ref([]);
 const loading = ref(false);
 
+// Redirect to CPD application form
 const proposeNewTraining = () => {
-  window.location.href = 'http://localhost:5173/admin/cpd_cme_provider/health_certification/cpd_application_details';
+  router.push('/admin/cpd_cme_provider/health_certification/cpd_application_details');
+};
+
+// Redirect to CPD application tracker
+const viewAllSessions = () => {
+  router.push('/admin/cpd_cme_provider/health_certification/cpd_application_tracker');
 };
 
 onMounted(async () => {
@@ -250,10 +268,9 @@ onMounted(async () => {
     upcomingSchedule.value = filteredData.filter(item => item.is_cpd_approved) //Filter for Approved ones.
       .map(item => ({
         id: item.id,
-        day: item.from_date, //You'll format this in template.
-        month: item.from_date, //You'll format this
+        date: item.from_date, //You'll format this in template.
         title: item.title_of_cpd,
-        time: "Add time if available in API", //Add if your api give
+        time: "9:00 AM - 5:00 PM", // Default time if not available
         participants: item.number_of_participants,
         venue: item.venue
       }));

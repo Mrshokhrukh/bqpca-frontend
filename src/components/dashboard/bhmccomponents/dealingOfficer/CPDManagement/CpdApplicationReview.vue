@@ -9,11 +9,11 @@
             'bg-blue-50 border-l-4 border-blue-500'
       ]">
         <div :class="[
-        'flex-shrink-0 w-6 h-6',
-        notification.type === 'success' ? 'text-green-500' :
-          notification.type === 'error' ? 'text-red-500' :
-            'text-blue-500'
-      ]">
+          'flex-shrink-0 w-6 h-6',
+          notification.type === 'success' ? 'text-green-500' :
+            notification.type === 'error' ? 'text-red-500' :
+              'text-blue-500'
+        ]">
           <svg v-if="notification.type === 'success'" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -29,19 +29,19 @@
         </div>
         <div class="ml-3">
           <h3 :class="[
-        'text-sm font-medium',
-        notification.type === 'success' ? 'text-green-800' :
-          notification.type === 'error' ? 'text-red-800' :
-            'text-blue-800'
-      ]">
+            'text-sm font-medium',
+            notification.type === 'success' ? 'text-green-800' :
+              notification.type === 'error' ? 'text-red-800' :
+                'text-blue-800'
+          ]">
             {{ notification.title }}
           </h3>
           <p :class="[
-        'text-sm mt-1',
-        notification.type === 'success' ? 'text-green-700' :
-          notification.type === 'error' ? 'text-red-700' :
-            'text-blue-700'
-      ]">
+            'text-sm mt-1',
+            notification.type === 'success' ? 'text-green-700' :
+              notification.type === 'error' ? 'text-red-700' :
+                'text-blue-700'
+          ]">
             {{ notification.message }}
           </p>
         </div>
@@ -112,8 +112,8 @@
         <h3 class="mt-2 text-base font-medium text-gray-900">No applications found</h3>
         <p class="mt-1 text-sm text-gray-500">
           {{ applications.length > 0
-        ? 'No applications match your current filters.'
-        : 'No CPD applications have been submitted for review.' }}
+            ? 'No applications match your current filters.'
+            : 'No CPD applications have been submitted for review.' }}
         </p>
       </div>
 
@@ -175,7 +175,7 @@
             <div>
               <p class="text-sm text-gray-700">
                 Showing <span class="font-medium">{{ paginationStart + 1 }}</span> to <span class="font-medium">{{
-        paginationEnd }}</span> of <span class="font-medium">{{ filteredApplications.length }}</span> results
+                  paginationEnd }}</span> of <span class="font-medium">{{ filteredApplications.length }}</span> results
               </p>
             </div>
             <div class="flex">
@@ -384,30 +384,64 @@ const saveApplication = async (updatedApp) => {
 const approveApplication = async (applicationData) => {
   try {
     loading.value = true;
+    console.log('Application data received for approval:', applicationData);
 
-    // Check if participants is iterable before proceeding
-    if (!applicationData.participants || !Array.isArray(applicationData.participants)) {
-      console.error("Participants is not an array or is null/undefined.");
-      showNotification('error', 'Approval Failed', 'The application has no participant data. Please try again.');
-      return; // Exit the function
+    // Ensure applicationData is not null or undefined
+    if (!applicationData) {
+      console.error("Application data is null or undefined.");
+      showNotification('error', 'Approval Failed', 'Invalid application data. Please try again.');
+      return;
     }
 
-    // Create a copy to avoid directly modifying the original application
+    // Create a defensive copy of the application
     const updatedApplication = { ...applicationData };
 
-    // Iterate through the participants
-    for (const participant of updatedApplication.participants) {
-      // Check if the participant's review status is not 'Pending'
-      if (participant.review_status !== 'Pending') {
+    // Initialize participants array if it's missing or not an array
+    if (!updatedApplication.participants || !Array.isArray(updatedApplication.participants)) {
+      console.warn("Participants is not an array or is null/undefined - initializing empty array");
+      updatedApplication.participants = [];
+      
+      // If there are no participants, directly update the application status
+      const patchData = {
+        review_status: 'Approved',  // Set the application's status to approved
+        id: updatedApplication.id
+      };
+      
+      // Update the application status in the database
+      await apiServices.patchBmhcCpdTask(updatedApplication.id, patchData);
+      
+      showNotification('success', 'Application Approved', 'The CPD application has been approved successfully.');
+      closeViewModal();
+      await fetchApplications();
+      return;
+    }
 
-        // Prepare the data for the PATCH request
-        const patchData = {
-          participants: [{
+    // Process participants if they exist
+    if (updatedApplication.participants.length > 0) {
+      // Create an array to collect participants that need updating
+      const participantsToUpdate = [];
+
+      // Iterate through the participants
+      for (const participant of updatedApplication.participants) {
+        // Skip invalid participant objects
+        if (!participant || typeof participant !== 'object') continue;
+
+        // Check if the participant's review status needs to be updated
+        if (participant.review_status && participant.review_status !== 'Pending') {
+          participantsToUpdate.push({
             id: participant.id,
             review_status: participant.review_status,
-            review_remarks: participant.review_remarks,
-            cpd_credits_for_participant: participant.cpd_credits_for_participant
-          }]
+            review_remarks: participant.review_remarks || '',
+            cpd_credits_for_participant: participant.cpd_credits_for_participant || 0
+          });
+        }
+      }
+
+      // If we have participants to update, send the request
+      if (participantsToUpdate.length > 0) {
+        const patchData = {
+          participants: participantsToUpdate,
+          review_status: 'Approved'  // Also update the application's status
         };
 
         // Send the PATCH request to update the CPD task in the database
@@ -416,14 +450,31 @@ const approveApplication = async (applicationData) => {
         // Update the application data in the component's state
         const appIndex = applications.value.findIndex(app => app.id === updatedApplication.id);
         if (appIndex !== -1) {
-          const participantIndex = applications.value[appIndex].participants.findIndex(p => p.id === participant.id);
-          if (participantIndex !== -1) {
-            applications.value[appIndex].participants[participantIndex].review_status = participant.review_status;
-            applications.value[appIndex].participants[participantIndex].review_remarks = participant.review_remarks;
-            applications.value[appIndex].participants[participantIndex].cpd_credits_for_participant = participant.cpd_credits_for_participant;
+          applications.value[appIndex].status = 'Approved';
+          
+          // Update each participant in the local state
+          for (const updatedParticipant of participantsToUpdate) {
+            const participantIndex = applications.value[appIndex].participants.findIndex(p => p.id === updatedParticipant.id);
+            if (participantIndex !== -1) {
+              Object.assign(applications.value[appIndex].participants[participantIndex], updatedParticipant);
+            }
           }
         }
+      } else {
+        // If no participants need updating, just update the application status
+        const patchData = {
+          review_status: 'Approved'
+        };
+        
+        await apiServices.patchBmhcCpdTask(updatedApplication.id, patchData);
       }
+    } else {
+      // If there are no participants, directly update the application status
+      const patchData = {
+        review_status: 'Approved'
+      };
+      
+      await apiServices.patchBmhcCpdTask(updatedApplication.id, patchData);
     }
 
     showNotification('success', 'Application Approved', 'The CPD application has been approved successfully.');
@@ -444,23 +495,66 @@ const approveApplication = async (applicationData) => {
 const rejectApplication = async (rejectionData) => {
   try {
     loading.value = true;
+    console.log('Application data received for rejection:', rejectionData);
 
-    // Create a copy to avoid directly modifying the original application
+    // Ensure rejectionData is not null or undefined
+    if (!rejectionData) {
+      console.error("Rejection data is null or undefined.");
+      showNotification('error', 'Rejection Failed', 'Invalid application data. Please try again.');
+      return;
+    }
+
+    // Create a defensive copy of the application
     const updatedApplication = { ...rejectionData };
 
-    // Iterate through the participants
-    for (const participant of updatedApplication.participants) {
-      // Check if the participant's review status is not 'Pending'
-      if (participant.review_status !== 'Pending') {
+    // Initialize participants array if it's missing or not an array
+    if (!updatedApplication.participants || !Array.isArray(updatedApplication.participants)) {
+      console.warn("Participants is not an array or is null/undefined - initializing empty array");
+      updatedApplication.participants = [];
+      
+      // If there are no participants, directly update the application status
+      const patchData = {
+        review_status: 'Rejected',  // Set the application's status to rejected
+        id: updatedApplication.id,
+        review_remarks: updatedApplication.remarks || ''
+      };
+      
+      // Update the application status in the database
+      await apiServices.patchBmhcCpdTask(updatedApplication.id, patchData);
+      
+      showNotification('success', 'Application Rejected', 'The CPD application has been rejected.');
+      closeViewModal();
+      await fetchApplications();
+      return;
+    }
 
-        // Prepare the data for the PATCH request
-        const patchData = {
-          participants: [{
+    // Process participants if they exist
+    if (updatedApplication.participants.length > 0) {
+      // Create an array to collect participants that need updating
+      const participantsToUpdate = [];
+
+      // Iterate through the participants
+      for (const participant of updatedApplication.participants) {
+        // Skip invalid participant objects
+        if (!participant || typeof participant !== 'object') continue;
+
+        // Check if the participant's review status needs to be updated
+        if (participant.review_status && participant.review_status !== 'Pending') {
+          participantsToUpdate.push({
             id: participant.id,
-            review_status: participant.review_status,
-            review_remarks: participant.review_remarks,
-            cpd_credits_for_participant: participant.cpd_credits_for_participant
-          }]
+            review_status: participant.review_status || 'Rejected',
+            review_remarks: participant.review_remarks || '',
+            cpd_credits_for_participant: participant.cpd_credits_for_participant || 0
+          });
+        }
+      }
+
+      // If we have participants to update, send the request
+      if (participantsToUpdate.length > 0) {
+        const patchData = {
+          participants: participantsToUpdate,
+          review_status: 'Rejected',  // Also update the application's status
+          review_remarks: updatedApplication.remarks || ''
         };
 
         // Send the PATCH request to update the CPD task in the database
@@ -469,14 +563,33 @@ const rejectApplication = async (rejectionData) => {
         // Update the application data in the component's state
         const appIndex = applications.value.findIndex(app => app.id === updatedApplication.id);
         if (appIndex !== -1) {
-          const participantIndex = applications.value[appIndex].participants.findIndex(p => p.id === participant.id);
-          if (participantIndex !== -1) {
-            applications.value[appIndex].participants[participantIndex].review_status = participant.review_status;
-            applications.value[appIndex].participants[participantIndex].review_remarks = participant.review_remarks;
-            applications.value[appIndex].participants[participantIndex].cpd_credits_for_participant = participant.cpd_credits_for_participant;
+          applications.value[appIndex].status = 'Rejected';
+          
+          // Update each participant in the local state
+          for (const updatedParticipant of participantsToUpdate) {
+            const participantIndex = applications.value[appIndex].participants.findIndex(p => p.id === updatedParticipant.id);
+            if (participantIndex !== -1) {
+              Object.assign(applications.value[appIndex].participants[participantIndex], updatedParticipant);
+            }
           }
         }
+      } else {
+        // If no participants need updating, just update the application status
+        const patchData = {
+          review_status: 'Rejected',
+          review_remarks: updatedApplication.remarks || ''
+        };
+        
+        await apiServices.patchBmhcCpdTask(updatedApplication.id, patchData);
       }
+    } else {
+      // If there are no participants, directly update the application status
+      const patchData = {
+        review_status: 'Rejected',
+        review_remarks: updatedApplication.remarks || ''
+      };
+      
+      await apiServices.patchBmhcCpdTask(updatedApplication.id, patchData);
     }
 
     showNotification('success', 'Application Rejected', 'The CPD application has been rejected.');
