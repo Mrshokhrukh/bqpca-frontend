@@ -172,7 +172,7 @@
 
 <script setup>
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
-import { defineProps, defineEmits, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import apiservice from '@/services/bmhcservices';
 
 const props = defineProps({

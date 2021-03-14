@@ -124,8 +124,8 @@ import TrackEoiApplication from '@/components/dashboard/bhmccomponents/instituti
 import TrackDPRApplication from '@/components/dashboard/bhmccomponents/institutions/TrackDPRApplication.vue';
 import ViewCertificates from '@/components/dashboard/bhmccomponents/institutions/ViewCertificates.vue';
 import InstituteProfile from '@/components/dashboard/bhmccomponents/institutions/InstitutionProfile.vue';
-import TeachingCenter from '@/components/dashboard/bhmccomponents/institutions/TeachingCenter.vue';
-import TeachingCenterRenewal from '@/components/dashboard/bhmccomponents/institutions/TeachingCenterRenewal.vue';
+import TeachingCenter from '@/components/dashboard/bhmccomponents/institutions/TeachingCenterApplication.vue';
+import TeachingCenterRenewal from '@/components/dashboard/bhmccomponents/institutions/TeachingCenterTrackAndRenew.vue';
 import NewEducationProgram from '@/components/dashboard/bhmccomponents/institutions/NewEducationProgram.vue';
 import MyApplications from '@/components/dashboard/bhmccomponents/institutions/MyApplications.vue';
 import InstitutesRenewal from '@/components/dashboard/bhmccomponents/institutions/InstitutesRenewal.vue';

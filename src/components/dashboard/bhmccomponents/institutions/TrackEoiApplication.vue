@@ -12,7 +12,7 @@
 
     <!-- Loading Indicator -->
     <div v-if="isLoading" class="flex justify-center my-8">
-      <div class="inline-block animate-spin text-blue-600 text-3xl">⌛</div>
+      <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
     </div>
 
     <!-- Results Section -->
@@ -104,6 +104,7 @@
 import { ref, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import bmhcService from '@/services/bmhcservices';
+import { Loader } from 'lucide-vue-next';
 
 // State
 const applications = ref([]);

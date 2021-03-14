@@ -6,29 +6,30 @@
     message="You don't have any approved applications yet. Once approved, you will have access to the dashboard." />
   <!-- Application processing message -->
   <div v-else-if="hasPendingApplications && !isLoading"
-    class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
+    class="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded relative" role="alert">
     <strong class="font-bold">Application Under Process!</strong>
     <span class="block sm:inline ml-6">Your application is currently being reviewed. Please check back later.</span>
   </div>
 
   <!-- Main dashboard content - only shown when user has at least one approved application -->
-  <div v-else class="min-h-screen">
+  <div v-else class="min-h-screen bg-gray-50">
     <div v-if="userCID === null"
-      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative overflow-hidden" role="alert">
+      class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded relative overflow-hidden" role="alert">
       <strong class="font-bold">Your CID is Missing!</strong>
       <span class="block sm:inline ml-6">Please fill your CID to view the dashboard.</span>
       <router-link to="/admin/institutions/health_certification/institution_profile"
         class="absolute top-0 right-0 px-4 py-3">
-        <button type="button" class="bg-white rounded px-2 py-1 text-black hover:text-gray-500 animate-custom-bounce"
+        <button type="button"
+          class="bg-white rounded px-2 py-1 text-gray-700 hover:text-gray-500 border border-gray-200"
           aria-label="Close">
-          <span aria-hidden="true">Click here</span>
+          <span aria-hidden="true">Complete Profile</span>
         </button>
       </router-link>
     </div>
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-8 flex items-center">
+      <h1 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-          class="w-8 h-8 mr-3 text-blue-500">
+          class="w-8 h-8 mr-3 text-indigo-600">
           <path stroke-linecap="round" stroke-linejoin="round"
             d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
         </svg>
@@ -37,45 +38,54 @@
 
       <!-- Main Stats -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200 flex items-center">
-          <div class="flex-shrink-0 bg-blue-100 text-blue-600 rounded-full p-3 mr-4">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0 6.75 1.5m-6.75-1.5v11.25c0 .621.504 1.125 1.125 1.125h4.875c.621 0 1.125-.504 1.125-1.125V4.5m-9 0h3.75m9-1.5h-9m9 1.5-2.25-2.25m4.5 0H21m-17.25 0h.75m16.5 0h.75" />
-            </svg>
-          </div>
-          <div>
-            <h2 class="text-lg font-semibold text-gray-900">Total Applications</h2>
-            <p class="text-2xl font-bold text-blue-600">{{ totalApplications }}</p>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200 flex items-center">
-          <div class="flex-shrink-0 bg-green-100 text-green-600 rounded-full p-3 mr-4">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-            </svg>
-          </div>
-          <div>
-            <h2 class="text-lg font-semibold text-gray-900">Registered Institutes</h2>
-            <p class="text-2xl font-bold text-green-600">{{ totalInstitutes }}</p>
+        <div
+          class="bg-white rounded-lg p-6 shadow border border-gray-100 hover:shadow-md transition-shadow duration-200">
+          <div class="flex items-center">
+            <div class="mr-4 text-indigo-600">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Total Applications</h2>
+              <p class="text-2xl font-bold text-gray-800 mt-1">{{ totalApplications }}</p>
+            </div>
           </div>
         </div>
 
-        <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200 flex items-center">
-          <div class="flex-shrink-0 bg-purple-100 text-purple-600 rounded-full p-3 mr-4">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-            </svg>
+        <div
+          class="bg-white rounded-lg p-6 shadow border border-gray-100 hover:shadow-md transition-shadow duration-200">
+          <div class="flex items-center">
+            <div class="mr-4 text-indigo-600">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"></path>
+                <path d="M3 9V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Registered Institutes</h2>
+              <p class="text-2xl font-bold text-gray-800 mt-1">{{ totalInstitutes }}</p>
+            </div>
           </div>
-          <div>
-            <h2 class="text-lg font-semibold text-gray-900">Total Departments</h2>
-            <p class="text-2xl font-bold text-purple-600">{{ totalDepartments }}</p>
+        </div>
+
+        <div
+          class="bg-white rounded-lg p-6 shadow border border-gray-100 hover:shadow-md transition-shadow duration-200">
+          <div class="flex items-center">
+            <div class="mr-4 text-indigo-600">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Total Departments</h2>
+              <p class="text-2xl font-bold text-gray-800 mt-1">{{ totalDepartments }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -83,56 +93,122 @@
       <!-- Application Status Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div
-          class="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 text-white">
-          <h3 class="text-lg font-semibold">Pending Institute</h3>
-          <p class="text-3xl font-bold mt-2">{{ applicationStatusCounts.Pending }}</p>
+          class="bg-white rounded-lg p-6 shadow border border-gray-100 hover:shadow-md transition-shadow duration-200">
+          <div class="flex items-center mb-3">
+            <div class="text-amber-500 mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Pending Institute</h3>
+          </div>
+          <p class="text-3xl font-bold text-gray-800">{{ applicationStatusCounts.Pending }}</p>
         </div>
+
         <div
-          class="bg-gradient-to-r from-green-400 to-green-500 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 text-white">
-          <h3 class="text-lg font-semibold">Approved Institute</h3>
-          <p class="text-3xl font-bold mt-2">{{ applicationStatusCounts.Approved }}</p>
+          class="bg-white rounded-lg p-6 shadow border border-gray-100 hover:shadow-md transition-shadow duration-200">
+          <div class="flex items-center mb-3">
+            <div class="text-emerald-500 mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Approved Institute</h3>
+          </div>
+          <p class="text-3xl font-bold text-gray-800">{{ applicationStatusCounts.Approved }}</p>
         </div>
+
         <div
-          class="bg-gradient-to-r from-red-400 to-red-500 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 text-white">
-          <h3 class="text-lg font-semibold">Rejected Institute</h3>
-          <p class="text-3xl font-bold mt-2">{{ applicationStatusCounts.Regret }}</p>
+          class="bg-white rounded-lg p-6 shadow border border-gray-100 hover:shadow-md transition-shadow duration-200">
+          <div class="flex items-center mb-3">
+            <div class="text-red-500 mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Rejected Institute</h3>
+          </div>
+          <p class="text-3xl font-bold text-gray-800">{{ applicationStatusCounts.Regret }}</p>
         </div>
       </div>
 
       <!-- Department Status Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div
-          class="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 text-white">
-          <h3 class="text-lg font-semibold">Pending DPR</h3>
-          <p class="text-3xl font-bold mt-2">{{ departmentStatusCounts.Pending }}</p>
+          class="bg-white rounded-lg p-6 shadow border border-gray-100 hover:shadow-md transition-shadow duration-200">
+          <div class="flex items-center mb-3">
+            <div class="text-amber-500 mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20v-6M9 17l3 3 3-3M4 4v6M7 7l-3 3 3 3M20 4v6M17 7l3 3-3 3M12 4v6M9 7l3 3 3-3"></path>
+              </svg>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Pending DPR</h3>
+          </div>
+          <p class="text-3xl font-bold text-gray-800">{{ departmentStatusCounts.Pending }}</p>
         </div>
+
         <div
-          class="bg-gradient-to-r from-green-400 via-green-500 to-green-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 text-white">
-          <h3 class="text-lg font-semibold">Approved DPR</h3>
-          <p class="text-3xl font-bold mt-2">{{ departmentStatusCounts.Approved }}</p>
+          class="bg-white rounded-lg p-6 shadow border border-gray-100 hover:shadow-md transition-shadow duration-200">
+          <div class="flex items-center mb-3">
+            <div class="text-emerald-500 mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h1"></path>
+                <path d="M17 3h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1"></path>
+                <path d="M12 12h2a2 2 0 0 1 2 2v6"></path>
+                <path d="M10 12h2a2 2 0 0 0 2-2V4"></path>
+                <path d="M9 20H7a2 2 0 0 1-2-2v-6"></path>
+                <path d="M21 16v3a2 2 0 0 1-2 2h-7"></path>
+                <path d="M12 10v4"></path>
+              </svg>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Approved DPR</h3>
+          </div>
+          <p class="text-3xl font-bold text-gray-800">{{ departmentStatusCounts.Approved }}</p>
         </div>
+
         <div
-          class="bg-gradient-to-r from-red-400 via-red-500 to-red-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 text-white">
-          <h3 class="text-lg font-semibold">Rejected DPR</h3>
-          <p class="text-3xl font-bold mt-2">{{ departmentStatusCounts.Regret }}</p>
+          class="bg-white rounded-lg p-6 shadow border border-gray-100 hover:shadow-md transition-shadow duration-200">
+          <div class="flex items-center mb-3">
+            <div class="text-red-500 mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17">
+                </path>
+              </svg>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Rejected DPR</h3>
+          </div>
+          <p class="text-3xl font-bold text-gray-800">{{ departmentStatusCounts.Regret }}</p>
         </div>
       </div>
 
       <!-- Recent Applications Table -->
-      <div class="bg-white rounded-xl p-6 shadow-lg">
+      <div class="bg-white rounded-lg p-6 shadow border border-gray-100">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-bold text-gray-900 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="w-6 h-6 mr-2 text-gray-500">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25-4.125c.825-.675 1.913-.675 2.738 0l5.276 4.297a3.355 3.355 0 0 1 0 4.818l-5.276 4.297a3.375 3.375 0 0 1-2.738 0l-5.276-4.297a3.355 3.355 0 0 1 0-4.818l5.276-4.297Z" />
+          <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="mr-2 text-indigo-600">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
             </svg>
             Recent Applications
           </h2>
         </div>
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-300 rounded-lg">
-            <thead class="bg-gray-100">
+          <table class="min-w-full divide-y divide-gray-200 rounded-lg">
+            <thead class="bg-gray-50">
               <tr>
                 <th scope="col"
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">
@@ -147,25 +223,63 @@
                   Status</th>
                 <th scope="col"
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">
-                  Dpr Status</th>
+                  DPR Status</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-for="application in recentApplications" :key="application.id"
                 class="hover:bg-gray-50 transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ application.full_name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ application.contact_no }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ application.email_address }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ application.name_of_institution }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ application.contact_no }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ application.email_address }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ application.name_of_institution }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span :class="getStatusClass(application.review_decision)">
-                    {{ application.review_decision }}
-                  </span>
+                  <div class="flex items-center">
+                    <span v-if="application.review_decision === 'Pending'"
+                      class="w-2 h-2 bg-amber-400 rounded-full mr-2"></span>
+                    <span v-else-if="application.review_decision === 'Approved'"
+                      class="w-2 h-2 bg-emerald-400 rounded-full mr-2"></span>
+                    <span v-else-if="application.review_decision === 'Regret'"
+                      class="w-2 h-2 bg-red-400 rounded-full mr-2"></span>
+                    <span v-else class="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                    <span :class="getStatusTextClass(application.review_decision)">
+                      {{ application.review_decision }}
+                    </span>
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span :class="getDprStatusClass(application.do_dpr_review_decision)">
-                    {{ application.do_dpr_review_decision }}
-                  </span>
+                  <div class="flex items-center">
+                    <span v-if="application.do_dpr_review_decision === 'Pending'"
+                      class="w-2 h-2 bg-amber-400 rounded-full mr-2"></span>
+                    <span v-else-if="application.do_dpr_review_decision === 'Approved'"
+                      class="w-2 h-2 bg-emerald-400 rounded-full mr-2"></span>
+                    <span v-else-if="application.do_dpr_review_decision === 'Regret'"
+                      class="w-2 h-2 bg-red-400 rounded-full mr-2"></span>
+                    <span v-else class="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                    <span :class="getStatusTextClass(application.do_dpr_review_decision)">
+                      {{ application.do_dpr_review_decision }}
+                    </span>
+                  </div>
+                </td>
+              </tr>
+              <!-- Empty state when no applications -->
+              <tr v-if="recentApplications.length === 0">
+                <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                  <div class="flex flex-col items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-gray-300 mb-3">
+                      <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                      <line x1="7" y1="2" x2="7" y2="22"></line>
+                      <line x1="17" y1="2" x2="17" y2="22"></line>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                      <line x1="2" y1="7" x2="7" y2="7"></line>
+                      <line x1="2" y1="17" x2="7" y2="17"></line>
+                      <line x1="17" y1="17" x2="22" y2="17"></line>
+                      <line x1="17" y1="7" x2="22" y2="7"></line>
+                    </svg>
+                    <p>No applications found</p>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -275,29 +389,17 @@ onMounted(async () => {
   }
 });
 
-const getStatusClass = (status) => {
+// Updated status class functions
+const getStatusTextClass = (status) => {
   switch (status) {
     case 'Pending':
-      return 'bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-semibold';
+      return 'text-amber-700 font-medium';
     case 'Approved':
-      return 'bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold';
+      return 'text-emerald-700 font-medium';
     case 'Regret':
-      return 'bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-semibold';
+      return 'text-red-700 font-medium';
     default:
-      return 'bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold';
-  }
-};
-
-const getDprStatusClass = (status) => {
-  switch (status) {
-    case 'Pending':
-      return 'bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-semibold';
-    case 'Approved':
-      return 'bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold';
-    case 'Regret':
-      return 'bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-semibold';
-    default:
-      return 'bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold';
+      return 'text-gray-700 font-medium';
   }
 };
 </script>
@@ -311,7 +413,7 @@ const getDprStatusClass = (status) => {
   }
 
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-5px);
   }
 }
 

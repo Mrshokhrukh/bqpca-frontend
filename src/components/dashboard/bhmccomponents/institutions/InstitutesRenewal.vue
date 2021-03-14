@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Page Header -->
-    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
+    <div class="bg-gray-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         Institute Status
       </h2>
@@ -12,22 +12,22 @@
 
     <!-- Loading State -->
     <div v-if="isLoading" class="flex justify-center my-8">
-      <div class="inline-block animate-spin text-blue-600 text-3xl">⌛</div>
+      <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
       <p class="ml-2 text-gray-600">Loading institute data...</p>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="apiError" class="bg-red-50 border border-red-200 text-red-700 p-6 rounded-lg mb-6">
+    <div v-else-if="apiError" class="bg-gray-50 border border-gray-200 text-gray-700 p-6 rounded-lg mb-6">
       <h3 class="text-lg font-medium mb-2">Error Loading Institute Data</h3>
       <p>{{ errorMessage }}</p>
       <button @click="fetchInstituteData"
-        class="mt-4 bg-red-100 hover:bg-red-200 text-red-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        class="mt-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
         Try Again
       </button>
     </div>
 
     <!-- No Institute Found -->
-    <div v-else-if="!instituteData" class="bg-yellow-50 border border-yellow-200 text-yellow-700 p-6 rounded-lg mb-6">
+    <div v-else-if="!instituteData" class="bg-gray-50 border border-gray-200 text-gray-700 p-6 rounded-lg mb-6">
       <h3 class="text-lg font-medium mb-2">No Institute Found</h3>
       <p>You don't have any registered institute associated with your account.</p>
       <p class="mt-2">Please register an institute first before attempting to renew.</p>
@@ -36,11 +36,16 @@
     <!-- Institute Card -->
     <div v-else class="bg-white rounded-xl shadow-md overflow-hidden">
       <!-- Institute Status Header - Changes color based on expiration status -->
-      <div class="p-6" :class="statusHeaderClass">
+      <div class="p-6 border-b border-gray-200">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="text-xl font-bold text-white">{{ instituteData.name_of_institution }}</h3>
-            <p class="text-white/80">
+            <!-- Added relative positioning here -->
+            <h3 class="text-xl font-bold text-gray-800 relative">
+              {{ instituteData.name_of_institution }}
+              <!-- Status Indicator Dot -->
+              <span :class="statusIndicatorClass" class="absolute -top-1 -right-1 h-3 w-3 rounded-full"></span>
+            </h3>
+            <p class="text-gray-600">
               <span>
                 {{ isActive ? 'Active Registration' : 'Registration Pending' }}
               </span>
@@ -49,27 +54,34 @@
         </div>
       </div>
 
+
       <!-- Institute Details -->
       <div class="p-6">
         <!-- Expiration Alert -->
-        <div v-if="isActive && daysUntilExpiration <= 90" class="mb-6 p-4 rounded-lg" :class="[
-          daysUntilExpiration <= 30 ? 'bg-red-50 text-red-700 border border-red-200' :
-            'bg-yellow-50 text-yellow-700 border border-yellow-200'
-        ]">
+        <div v-if="isActive && daysUntilExpiration <= 90" class="mb-6 p-4 rounded-lg border" :class="[
+      daysUntilExpiration <= 30 ? 'border-red-400' :
+        'border-yellow-400'
+    ]">
           <div class="flex items-start">
             <div class="flex-shrink-0 mt-0.5">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <!-- Icon color change -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :class="[
+      daysUntilExpiration <= 30 ? 'text-red-500' : 'text-yellow-500'
+    ]" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd"
                   d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
                   clip-rule="evenodd" />
               </svg>
             </div>
+            <!-- Text color changes -->
             <div class="ml-3">
-              <h3 class="text-sm font-medium">
+              <h3 class="text-sm font-medium" :class="[
+      daysUntilExpiration <= 30 ? 'text-red-700' : 'text-yellow-700'
+    ]">
                 {{
-                  daysUntilExpiration <= 0 ? 'Registration Expired!' : daysUntilExpiration <= 30
-                    ? 'Registration Expiring Soon!' : 'Registration Renewal Recommended' }} </h3>
-                  <div class="mt-1 text-sm">
+      daysUntilExpiration <= 0 ? 'Registration Expired!' : daysUntilExpiration <= 30
+        ? 'Registration Expiring Soon!' : 'Registration Renewal Recommended' }} </h3>
+                  <div class="mt-1 text-sm text-gray-600">
                     <p v-if="daysUntilExpiration <= 0">
                       Your institute registration has expired. Please renew immediately to maintain your registration
                       status.
@@ -91,7 +103,8 @@
               <div class="grid grid-cols-1 gap-3">
                 <div>
                   <p class="text-xs text-gray-500">Registration Status</p>
-                  <p class="text-sm font-medium" :class="isActive ? 'text-green-600' : 'text-yellow-600'">
+                  <!-- Status text color -->
+                  <p class="text-sm font-medium" :class="statusTextColorClass">
                     {{ isActive ? 'Active' : 'Pending' }}
                   </p>
                 </div>
@@ -101,21 +114,15 @@
                 </div>
                 <div>
                   <p class="text-xs text-gray-500">Valid Until</p>
-                  <p class="text-sm font-medium" :class="[
-                    daysUntilExpiration <= 0 ? 'text-red-600' :
-                      daysUntilExpiration <= 30 ? 'text-orange-600' :
-                        'text-gray-800'
-                  ]">
+                  <!-- Expiration date text color -->
+                  <p class="text-sm font-medium" :class="expirationTextColorClass">
                     {{ formattedExpirationDate }}
                   </p>
                 </div>
                 <div>
                   <p class="text-xs text-gray-500">Review Decision</p>
-                  <p class="text-sm font-medium" :class="{
-                    'text-green-600': instituteData.do_dpr_review_decision === 'Approved',
-                    'text-yellow-600': instituteData.do_dpr_review_decision === 'Pending',
-                    'text-red-600': instituteData.do_dpr_review_decision === 'Rejected'
-                  }">
+                  <!-- Review decision text color -->
+                  <p class="text-sm font-medium" :class="reviewDecisionColorClass">
                     {{ instituteData.do_dpr_review_decision }}
                   </p>
                 </div>
@@ -200,7 +207,7 @@
           payment.
         </p>
         <div v-if="isRenewing" class="flex items-center justify-center mb-4">
-          <div class="inline-block animate-spin text-blue-600 text-xl mr-2">⌛</div>
+          <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
           <p>Processing renewal...</p>
         </div>
         <div class="flex justify-end space-x-4">
@@ -225,6 +232,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from 'vue-toastification';
 import bmhcService from '@/services/bmhcservices';
+import {Loader} from 'lucide-vue-next'
 
 // State variables
 const instituteData = ref(null);
@@ -272,26 +280,44 @@ const isRenewalInProgress = computed(() => {
   return instituteData.value?.do_dpr_review_decision === 'Pending' && !isActive.value;
 });
 
-// Status header styling based on expiration
-const statusHeaderClass = computed(() => {
+// Status indicator class (for the dot)
+const statusIndicatorClass = computed(() => {
   if (!isActive.value) {
-    return 'bg-yellow-600';
+    return 'bg-yellow-500';
   }
-
   if (daysUntilExpiration.value <= 0) {
-    return 'bg-red-600';
+    return 'bg-red-500';
   }
-
   if (daysUntilExpiration.value <= 30) {
-    return 'bg-orange-600';
+    return 'bg-orange-500';
   }
-
   if (daysUntilExpiration.value <= 90) {
-    return 'bg-yellow-600';
+    return 'bg-yellow-500'
   }
-
-  return 'bg-green-600';
+  return 'bg-green-500';
 });
+
+// Status text color class
+const statusTextColorClass = computed(() => {
+  return isActive.value ? 'text-green-600' : 'text-yellow-600'
+})
+
+//expiration text color class
+const expirationTextColorClass = computed(() => {
+  return daysUntilExpiration.value <= 0 ? 'text-red-600' :
+    daysUntilExpiration.value <= 30 ? 'text-orange-600' :
+      'text-gray-800'
+})
+
+//review decision text color
+const reviewDecisionColorClass = computed(() => {
+  return {
+    'text-green-600': instituteData.value?.do_dpr_review_decision === 'Approved',
+    'text-yellow-600': instituteData.value?.do_dpr_review_decision === 'Pending',
+    'text-red-600': instituteData.value?.do_dpr_review_decision === 'Rejected'
+  }
+})
+
 
 // Fetch institute data based on user CID
 const fetchInstituteData = async () => {

@@ -1,294 +1,222 @@
 <template>
-  <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <div class=" min-h-screen">
+    <div class="mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div v-if="institute" class="bg-white rounded-3xl shadow-xl overflow-hidden">
 
-      <!-- Left Column: Profile Card (Sticky) -->
-      <div class="lg:col-span-1">
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden sticky top-6">
-          <div class="bg-gradient-to-r from-blue-500 to-blue-400 p-6 text-white">
-            <div class="flex flex-col items-center">
-              <div class="relative group mb-4">
-                <div
-                  class="w-28 h-28 rounded-full bg-white flex items-center justify-center text-blue-500 text-4xl font-bold shadow-lg transition-all duration-300 group-hover:shadow-xl">
-                  {{ authStore.fullName ? authStore.fullName.charAt(0).toUpperCase() : 'U' }}
-                </div>
+        <!-- Header Section -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-8 text-white relative">
+          <!-- Institute Name (Large and Centered) -->
+          <h1 class="text-4xl font-extrabold text-center mb-4">{{ institute.name_of_institution }}</h1>
+
+          <!-- Website (if available, styled as a link) -->
+          <p v-if="institute.website" class="text-center text-blue-100 hover:underline">
+            <a :href="institute.website" target="_blank" rel="noopener noreferrer"
+              class="flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-5 h-5 mr-2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+              </svg>
+              {{ institute.website }}
+            </a>
+          </p>
+
+          <!-- Head of Institution (Subtle, smaller text) -->
+          <p class="text-center text-sm mt-4 text-blue-200">
+            Headed by: {{ institute.head_of_institution_name }}
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 p-8">
+          <!-- Left Column: Contact Information -->
+          <div class="md:col-span-1">
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Contact Information</h2>
+            <div class="space-y-4">
+              <div>
+                <p class="text-gray-600 font-medium">Address:</p>
+                <p class="text-gray-800">{{ institute.address }}, {{ institute.village }}, {{ institute.gewog }}, {{
+        institute.dzongkhag }}</p>
               </div>
-              <h2 class="text-2xl font-bold text-center">{{ profileData.first_name }} {{ profileData.last_name }}</h2>
-              <p class="text-sm text-blue-100 flex items-center justify-center mt-1">
-                <Mail class="w-4 h-4 mr-1" />
-                {{ profileData.email }}
-              </p>
-              <div v-if="profileData.contact_number"
-                class="text-sm text-blue-100 flex items-center justify-center mt-1">
-                <Phone class="w-4 h-4 mr-1" />
-                {{ profileData.contact_number }}
+              <div>
+                <p class="text-gray-600 font-medium">Email:</p>
+                <p class="text-gray-800 hover:text-blue-600">
+                  <a :href="`mailto:${institute.head_of_institution_email}`"> {{ institute.head_of_institution_email
+                    }}</a>
+                </p>
+              </div>
+              <div>
+                <p class="text-gray-600 font-medium">Phone:</p>
+                <p class="text-gray-800">{{ institute.head_of_institution_phone_number }}</p>
               </div>
             </div>
           </div>
 
-          <div class="p-6">
+          <!-- Middle Column: Program Details -->
+          <div class="md:col-span-1">
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Program Overview</h2>
+            <div class="space-y-4">
+              <div>
+                <p class="text-gray-600 font-medium">Course:</p>
+                <p class="text-gray-800">{{ institute.title_of_course }}</p>
+              </div>
+              <div>
+                <p class="text-gray-600 font-medium">Duration:</p>
+                <p class="text-gray-800">{{ institute.course_duration }} Months</p>
+              </div>
+              <div>
+                <p class="text-gray-600 font-medium">Commencement Date:</p>
+                <p class="text-gray-800">{{ formattedCommencementDate }}</p>
+              </div>
+              <div>
+                <p class="text-gray-600 font-medium">Program Type:</p>
+                <p class="text-gray-800">{{ institute.type_of_programme === 'D' ? 'Diploma' : 'Other' }}</p>
+                <!--  Handles 'D' for diploma. Add more as needed. -->
+              </div>
+            </div>
+          </div>
 
-            <button @click="toggleEditMode"
-              class="w-full mt-4 flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-              :class="[isEditing ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white']">
-              <Edit v-if="!isEditing" class="w-4 h-4 mr-2" />
-              <X v-else class="w-4 h-4 mr-2" />
-              {{ isEditing ? 'Cancel' : 'Edit Profile' }}
-            </button>
+
+          <!-- Right Column:  Status and Validity -->
+          <div class="md:col-span-1">
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Status & Validity</h2>
+            <div class="space-y-4">
+              <div>
+                <p class="text-gray-600 font-medium">Review Decision:</p>
+                <p :class="{
+        'text-green-600': institute.review_decision === 'Approved',
+        'text-yellow-600': institute.review_decision === 'Pending',
+        'text-red-600': institute.review_decision !== 'Approved' && institute.review_decision !== 'Pending',
+        'font-semibold': true
+      }">
+                  {{ institute.review_decision }}
+                </p>
+              </div>
+              <div v-if="institute.valid_since && institute.valid_till">
+                <p class="text-gray-600 font-medium">Valid From:</p>
+                <p class="text-gray-800">{{ formattedValidSince }}</p>
+                <p class="text-gray-600 font-medium">Valid Until:</p>
+                <p class="text-gray-800">{{ formattedValidTill }}</p>
+              </div>
+              <div v-else class="text-gray-500 italic">
+                Validity information not available.
+              </div>
+              <div>
+                <p class="text-gray-600 font-medium">Remarks:</p>
+                <p class="text-gray-800">{{ institute.remarks }}</p>
+              </div>
+            </div>
           </div>
         </div>
+
+        <!-- Documents Section -->
+        <div class="bg-gray-50 p-8">
+          <h2 class="text-2xl font-bold text-gray-700 mb-4">Supporting Documents</h2>
+          <div v-if="institute.supporting_documents" class="mt-2">
+            <a :href="institute.supporting_documents" target="_blank" rel="noopener noreferrer"
+              class="text-blue-600 hover:underline flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-5 h-5 mr-1">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
+              </svg>
+
+              View Document
+            </a>
+          </div>
+          <p v-else class="text-gray-500 italic">No supporting documents available.</p>
+        </div>
+
+
       </div>
-
-
-      <!-- Right Column: Main Content (Forms and Certificates) -->
-      <div class="lg:col-span-2 space-y-6">
-        <form @submit.prevent="updateProfile" class="space-y-6">
-
-          <!-- ... (Personal Information and Location - No Changes Here) ... -->
-          <div class="bg-white rounded-xl shadow-lg p-6">
-            <div class="flex items-center mb-4">
-              <User class="w-5 h-5 text-blue-500 mr-2" />
-              <h3 class="text-xl font-semibold text-gray-800">Personal Information</h3>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label class="block text-sm font-medium text-gray-700">First Name <span
-                    class="text-red-500">*</span></label>
-                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                    profileData.first_name }}</div>
-                <input v-else v-model="profileData.first_name" type="text" required
-                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Middle Name</label>
-                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                    profileData.middle_name || '-' }}</div>
-                <input v-else v-model="profileData.middle_name" type="text"
-                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Last Name <span
-                    class="text-red-500">*</span></label>
-                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                    profileData.last_name }}</div>
-                <input v-else v-model="profileData.last_name" type="text" required
-                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
-                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                    formatDate(profileData.date_of_birth) }}</div>
-                <input v-else v-model="profileData.date_of_birth" type="date"
-                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Gender</label>
-                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1 capitalize">{{
-                    profileData.gender || '-' }}</div>
-                <select v-else v-model="profileData.gender"
-                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                  <option value="">Select</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Contact Number <span
-                    class="text-red-500">*</span></label>
-                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{
-                    profileData.contact_number }}</div>
-                <input v-else v-model="profileData.contact_number" type="tel" required
-                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">CID <span class="text-red-500">*</span></label>
-                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">{{ profileData.cid
-                  }}</div>
-                <input v-else v-model="profileData.cid" type="text" required
-                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Location Information -->
-          <!-- Location Information -->
-          <div class="bg-white rounded-xl shadow-lg p-6">
-            <div class="flex items-center mb-4">
-              <MapPin class="w-5 h-5 text-blue-500 mr-2" />
-              <h3 class="text-xl font-semibold text-gray-800">Location Details</h3>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <!-- Dzongkhag Field -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Dzongkhag <span
-                    class="text-red-500">*</span></label>
-                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">
-                  {{ profileData.dzongkhag }}
-                </div>
-                <input v-else v-model="profileData.dzongkhag" type="text" required
-                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-              </div>
-
-              <!-- Gewog Field -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Gewog <span class="text-red-500">*</span></label>
-                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">
-                  {{ profileData.gewog }}
-                </div>
-                <input v-else v-model="profileData.gewog" type="text" required
-                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-              </div>
-
-              <!-- Village Field -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Village <span
-                    class="text-red-500">*</span></label>
-                <div v-if="!isEditing" class="text-gray-600 px-4 py-2.5 bg-gray-50 rounded-md mt-1">
-                  {{ profileData.village }}
-                </div>
-                <input v-else v-model="profileData.village" type="text" required
-                  class="mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-              </div>
-            </div>
-          </div>
-
-
-          <!-- Submit Button (Only when editing) -->
-          <div v-if="isEditing" class="flex justify-end">
-            <button type="submit" :disabled="loading"
-              class="px-6 py-2.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
-              <Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
-              <Save v-else class="w-4 h-4 mr-2" />
-              <span>{{ loading ? 'Saving...' : 'Save Changes' }}</span>
-            </button>
-          </div>
-        </form>
-
-        <!-- Message Display -->
-        <TransitionRoot appear :show="!!message" as="template">
-          <div :class="[
-                    'fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-all duration-300 transform max-w-md',
-                    messageClass,
-                    message ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
-                  ]">
-            <div class="flex items-center">
-              <CheckCircle v-if="messageClass.includes('green')" class="w-5 h-5 mr-2 text-green-500" />
-              <CircleAlert v-else class="w-5 h-5 mr-2 text-red-500" />
-              {{ message }}
-            </div>
-          </div>
-        </TransitionRoot>
+      <div v-else class="text-center py-12">
+        <p class="text-gray-600 text-xl">Loading institute profile...</p>
       </div>
     </div>
   </div>
 </template>
+
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import apiServices from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
-import apiService from '@/services/userservices';
 import { storeToRefs } from 'pinia';
-import { TransitionRoot } from '@headlessui/vue';
-import {
-  Mail, User, MapPin, Edit, X, CheckCircle, CircleAlert, Save, Loader2, Phone
-} from 'lucide-vue-next';
 
+const institute = ref(null);
 const authStore = useAuthStore();
-const { userId } = storeToRefs(authStore);
-const loading = ref(false);
-const message = ref('');
-const messageClass = ref('');
-const isEditing = ref(false);
+const { user } = storeToRefs(authStore);
+const errorMessage = ref('');
 
-const profileData = ref({
-  first_name: '',
-  middle_name: '',
-  last_name: '',
-  email: '',
-  date_of_birth: '',
-  contact_number: '',
-  gender: '',
-  dzongkhag: '',
-  gewog: '',
-  village: '',
-  cid: '' // Initialize cid
+
+const formattedCommencementDate = computed(() => {
+  return institute.value?.commencement_date ? formatDate(institute.value.commencement_date) : 'N/A';
 });
 
-const formatDate = (date) => {
-  if (!date) return '-';
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+const formattedValidSince = computed(() => {
+  return institute.value?.valid_since ? formatDate(institute.value.valid_since) : 'N/A';
+});
+
+const formattedValidTill = computed(() => {
+  return institute.value?.valid_till ? formatDate(institute.value.valid_till) : 'N/A';
+});
+
+
+const formatDate = (dateString) => {
+  if (!dateString) return null;
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 };
 
-const toggleEditMode = () => {
-  if (isEditing.value) {
-    loadProfile(); // Reset to original values
-  }
-  isEditing.value = !isEditing.value;
-  message.value = ''; // Clear messages
-};
 
-const loadProfile = async () => {
-  if (authStore.user) {
-    // Include cid in the initial load
-    profileData.value = { ...authStore.user, email: authStore.email };
-  } else {
-    showMessage('User not logged in.', 'error');
-  }
-};
-
-const updateProfile = async () => {
-  loading.value = true;
-  message.value = '';
+const fetchInstitute = async () => {
   try {
-    if (!userId.value) {
-      showMessage('User ID is missing. Please log in again.', 'error');
+    const response = await apiServices.getBmhcInstitutes();
+
+    // Corrected validation check: Access 'results' through response.data
+    if (!response || !response.data || !response.data.results || !Array.isArray(response.data.results)) {
+      console.error("Error: Invalid API response. Expected 'results' array.", response);
+      errorMessage.value = "Failed to load institute data. Please try again later.";
       return;
     }
 
-    const formData = new FormData();
-    formData.append('id', userId.value);
-    formData.append('first_name', profileData.value.first_name);
-    formData.append('middle_name', profileData.value.middle_name);
-    formData.append('last_name', profileData.value.last_name);
-    formData.append('date_of_birth', profileData.value.date_of_birth);
-    formData.append('contact_number', profileData.value.contact_number);
-    formData.append('gender', profileData.value.gender);
-    formData.append('dzongkhag', profileData.value.dzongkhag);
-    formData.append('gewog', profileData.value.gewog);
-    formData.append('village', profileData.value.village);
-    formData.append('cid', profileData.value.cid);
+    // Check if user and user.cid is available
+    if (!user.value || !user.value.cid) {
+      console.error("Error: User CID is not available.");
+      errorMessage.value = "User information is missing. Please log in again.";
+      return;
+    }
 
-    await apiService.patchUser(authStore.user.id, formData);
-    await authStore.updateUserAfterFetch(); // Refresh the user data
-    showMessage('Profile updated successfully!', 'success');
-    isEditing.value = false;
+    // Access 'results' through response.data
+    institute.value = response.data.results.find(inst => inst.CID === user.value.cid);
+
+    // Check if the institute is found or not
+    if (!institute.value) {
+      console.error(`Institute with CID ${user.value.cid} not found in the API response`, response.data.results);
+      errorMessage.value = `Institute profile not found.`;
+      return;
+    }
 
   } catch (error) {
-    console.error('Error updating profile:', error);
-    const errorMessage = error.response?.data?.message || 'Failed to update profile. Please try again.';
-    showMessage(errorMessage, 'error');
-
-  } finally {
-    loading.value = false;
+    console.error("Error fetching institutes:", error);
+    // More specific error handling (same as before - no changes needed here)
+    if (error.response) {
+      console.error("Server Error:", error.response.status, error.response.data);
+      errorMessage.value = `Server error (${error.response.status}). Please try again later.`;
+    } else if (error.request) {
+      console.error("Network Error:", error.request);
+      errorMessage.value = "Network error. Please check your internet connection.";
+    } else {
+      console.error("Request Error:", error.message);
+      errorMessage.value = "An unexpected error occurred. Please try again.";
+    }
   }
 };
 
-const showMessage = (text, type = 'success') => {
-  message.value = text;
-  messageClass.value = type === 'success'
-    ? 'bg-green-100 text-green-800'
-    : 'bg-red-100 text-red-800';
 
-  setTimeout(() => {
-    message.value = '';
-    messageClass.value = '';
-  }, 5000);
-};
-
-onMounted(loadProfile);
+onMounted(() => {
+  fetchInstitute();
+});
 </script>
+
+<style scoped>
+/* Add custom styles here if needed */
+</style>

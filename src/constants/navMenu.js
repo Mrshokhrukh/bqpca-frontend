@@ -883,7 +883,7 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/institutions/${serviceType}/new_teaching_hospital`,
           },
           {
-            name: 'Renewal',
+            name: 'Track & Renewal',
             route: (serviceType) => `/admin/institutions/${serviceType}/renewal_teaching_hospital`,
           },
           {
