@@ -1,100 +1,144 @@
 <template>
-  <Transition
-    enter-active-class="transition ease-out duration-200"
-    enter-from-class="opacity-0"
-    enter-to-class="opacity-100"
-    leave-active-class="transition ease-in duration-150"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
-  >
-    <div
-      v-if="show"
-      class="fixed inset-0 z-50 overflow-y-auto"
-      aria-labelledby="view-details-modal-title"
-      role="dialog"
-      aria-modal="true"
-    >
-      <div class="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
-        <!-- Background overlay -->
-        <div
-          class="fixed inset-0 bg-gray-900 bg-opacity-75 backdrop-blur-sm transition-opacity"
-          @click="$emit('close')"
-          aria-hidden="true"
-        ></div>
+  <Transition enter-active-class="transition ease-out duration-300" enter-from-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+    enter-to-class="opacity-100 translate-y-0 sm:scale-100" leave-active-class="transition ease-in duration-200"
+    leave-from-class="opacity-100 translate-y-0 sm:scale-100" leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+    <div v-if="show" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="view-details-modal-title" role="dialog"
+      aria-modal="true">
+      <div class="flex items-center justify-center min-h-screen px-4 text-center sm:p-0">
+        <!-- Improved background overlay with blur effect -->
+        <div class="fixed inset-0 bg-gray-800 bg-opacity-75 backdrop-blur-sm transition-opacity" @click="$emit('close')"
+          aria-hidden="true"></div>
 
-        <!-- Modal panel -->
+        <!-- Modal panel with improved shadow and positioning -->
         <div
-          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
-        >
-          <!-- Modal header -->
-          <div class="bg-gradient-to-r from-gray-800 to-gray-900 px-6 py-5 sm:px-8 flex justify-between items-center">
-            <h3 class="text-xl font-semibold text-white" id="view-details-modal-title">
-              CAPA Details - CAPA #{{ capa?.id }}
-            </h3>
-            <div class="flex items-center space-x-4">
-              <div>
-                <dt class="text-sm font-medium text-gray-200">Physical Verification</dt>
-                <dd class="mt-1 text-sm">
-                  <span
-                    :class="capa?.physical_verification_status ? 'badge-check' : 'badge-x'"
-                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                  >
-                    <component
-                      :is="capa?.physical_verification_status ? BadgeCheck : BadgeX"
-                      class="h-4 w-4 mr-2"
-                    />
-                    {{ capa?.physical_verification_status ? "Verified" : "Not Verified" }}
+          class="inline-block align-bottom bg-white rounded-lg overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl w-full">
+          <!-- Enhanced Modal header with better spacing and typography -->
+          <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4 flex items-center justify-between">
+            <div>
+              <h3 class="text-xl leading-6 font-semibold text-indigo-900" id="view-details-modal-title">
+                CAPA Details - CAPA #{{ capa?.id }}
+              </h3>
+              <p class="mt-1 text-sm text-indigo-700">{{ props.instituteName }}</p>
+            </div>
+
+            <button type="button"
+              class="inline-flex justify-center rounded-md p-2 text-indigo-500 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              @click="$emit('close')">
+              <XIcon class="h-5 w-5" />
+            </button>
+          </div>
+
+          <!-- Modal body with improved layout and spacing -->
+          <div class="px-6 py-5">
+            <!-- Physical Verification Status with improved badge design -->
+            <div class="mb-6 pb-4 border-b border-gray-200">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Physical Verification Status:
+              </label>
+              <div class="flex items-center">
+                <span
+                  :class="capa.physical_verification_status ? 'bg-green-100 text-green-800 border-green-300' : 'bg-red-100 text-red-800 border-red-300'"
+                  class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium border">
+                  <component :is="capa.physical_verification_status ? BadgeCheck : BadgeX" class="h-4 w-4 mr-2" />
+                  {{ capa.physical_verification_status ? "Verified" : "Not Verified" }}
+                </span>
+                <button v-if="capa.status !== 'R'" @click="togglePhysicalVerification" type="button"
+                  class="ml-3 inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                  {{ capa.physical_verification_status ? 'Mark as Not Verified' : 'Mark as Verified' }}
+                </button>
+              </div>
+            </div>
+
+            <!-- CAPA Details with improved grid layout -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <!-- Status Field with enhanced styling -->
+              <div class="col-span-1">
+                <dt class="text-sm font-medium text-gray-500 mb-1">Status</dt>
+                <dd>
+                  <span :class="getStatusClass(capa?.status)"
+                    class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium border">
+                    {{ getStatusText(capa?.status) }}
                   </span>
                 </dd>
               </div>
-              <button
-                @click="$emit('close')"
-                class="rounded-full p-2 text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white"
-                aria-label="Close modal"
-              >
-                <XIcon class="h-6 w-6" />
-              </button>
+
+              <!-- Timeline Fields Side by Side -->
+              <div class="col-span-1">
+                <dt class="text-sm font-medium text-gray-500 mb-1">Inspection Period</dt>
+                <dd class="text-sm text-gray-900">
+                  {{ capa?.inspection_from_date || "N/A" }} to {{ capa?.inspection_to_date || "N/A" }}
+                </dd>
+              </div>
+
+              <!-- Full width fields for longer text content -->
+              <div class="col-span-2">
+                <dt class="text-sm font-medium text-gray-500 mb-1">Observation Description</dt>
+                <dd class="text-sm text-gray-900 bg-gray-50 p-3 rounded-md border border-gray-200">
+                  {{ capa?.observation_description || "N/A" }}
+                </dd>
+              </div>
+
+              <div class="col-span-2">
+                <dt class="text-sm font-medium text-gray-500 mb-1">Root Cause</dt>
+                <dd class="text-sm text-gray-900 bg-gray-50 p-3 rounded-md border border-gray-200">
+                  {{ capa?.root_cause || "N/A" }}
+                </dd>
+              </div>
+
+              <div class="col-span-2">
+                <dt class="text-sm font-medium text-gray-500 mb-1">CAPA</dt>
+                <dd class="text-sm text-gray-900 bg-gray-50 p-3 rounded-md border border-gray-200">
+                  {{ capa?.capa || "N/A" }}
+                </dd>
+              </div>
+
+              <div class="col-span-1">
+                <dt class="text-sm font-medium text-gray-500 mb-1">Implementation Timeline</dt>
+                <dd class="text-sm text-gray-900">
+                  {{ capa?.implementation_timeline || "N/A" }}
+                </dd>
+              </div>
+
+              <div class="col-span-2">
+                <dt class="text-sm font-medium text-gray-500 mb-1">Management Comment</dt>
+                <dd class="text-sm text-gray-900 bg-gray-50 p-3 rounded-md border border-gray-200">
+                  {{ capa?.management_comment || "N/A" }}
+                </dd>
+              </div>
+
+              <!-- User Remarks -->
+              <div class="col-span-2">
+                <dt class="text-sm font-medium text-gray-500 mb-1">User Remarks</dt>
+                <dd class="text-sm text-gray-900 bg-gray-50 p-3 rounded-md border border-gray-200">
+                  {{ capa?.user_remarks || "N/A" }}
+                </dd>
+              </div>
+
+              <!-- DO Remarks with improved textarea -->
+              <div class="col-span-2">
+                <dt class="text-sm font-medium text-gray-500 mb-1">Dealing Officer Remarks</dt>
+                <dd>
+                  <textarea v-if="capa.status !== 'R'" v-model="editableRemarks" @blur="updateRemarks" rows="3"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Enter remarks..."></textarea>
+                  <div v-else class="text-sm text-gray-900 bg-gray-50 p-3 rounded-md border border-gray-200">
+                    {{ capa?.DO_remarks || "N/A" }}
+                  </div>
+                </dd>
+              </div>
             </div>
           </div>
 
-          <!-- Modal body -->
-          <div class="px-6 pt-6 pb-4 sm:p-8 sm:pb-6 max-h-[70vh] overflow-y-auto">
-            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div v-for="(detail, index) in details" :key="index" class="sm:col-span-1">
-                <dt class="text-sm font-medium text-gray-500">{{ detail.label }}</dt>
-                <dd class="mt-1 text-sm text-gray-900">
-                  <template v-if="detail.key === 'status'">
-                    <span
-                      :class="getStatusClass(capa?.[detail.key])"
-                      class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                    >
-                      {{ getStatusText(capa?.[detail.key]) }}
-                    </span>
-                  </template>
-                  <template v-else>
-                    {{ capa?.[detail.key] || "N/A" }}
-                  </template>
-                </dd>
-              </div>
-            </dl>
-          </div>
-
-          <!-- Modal footer -->
-          <div class="bg-gray-50 px-6 py-4 sm:px-8 sm:flex sm:flex-row-reverse">
-            <button
-              v-if="capa?.status !== 'R'"
-              type="button"
-              @click="resolveCapa"
-              class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            >
-              Resolve
+          <!-- Modal footer with improved button styling -->
+          <div class="bg-gray-50 border-t border-gray-200 px-6 py-4 sm:flex sm:flex-row-reverse">
+            <button v-if="capa?.status !== 'R'" type="button" @click="resolveCapa"
+              class="w-full sm:w-auto inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+              <BadgeCheck class="h-4 w-4 mr-2" />
+              Resolve CAPA
             </button>
-            <button
-              type="button"
-              @click="$emit('close')"
-              class="mt-3 w-full sm:mt-0 sm:ml-3 sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Close
+            <button type="button" @click="$emit('close')"
+              class="mt-3 w-full sm:mt-0 sm:mr-3 sm:w-auto inline-flex justify-center items-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+              Cancel
             </button>
           </div>
         </div>
@@ -102,10 +146,11 @@
     </div>
   </Transition>
 </template>
+
 <script setup>
 import { XIcon, BadgeCheck, BadgeX } from 'lucide-vue-next';
 import apiservice from '@/services/bmhcservices';
-import { toRefs } from 'vue';
+import { toRefs, ref, watch } from 'vue';
 
 const props = defineProps({
   show: Boolean,
@@ -117,28 +162,21 @@ const { capa } = toRefs(props);
 
 const emits = defineEmits(['close', 'capa-updated']);
 
-// Define the details to display in the modal
-const details = [
-  { label: 'Institute', key: 'instituteName' },
-  { label: 'Status', key: 'status' },
-  { label: 'Inspection From Date', key: 'inspection_from_date' },
-  { label: 'Inspection To Date', key: 'inspection_to_date' },
-  { label: 'Observation Description', key: 'observation_description' },
-  { label: 'Root Cause', key: 'root_cause' },
-  { label: 'CAPA', key: 'capa' },
-  { label: 'Implementation Timeline', key: 'implementation_timeline' },
-  { label: 'Management Comment', key: 'management_comment' },
-  { label: 'DO Remarks', key: 'DO_remarks' },
-  { label: 'User Remarks', key: 'user_remarks' },
-];
+// Editable remarks
+const editableRemarks = ref('');
+
+// Initialize editableRemarks when capa changes
+watch(capa, (newCapa) => {
+  editableRemarks.value = newCapa?.DO_remarks || '';
+}, { immediate: true });
 
 const getStatusClass = (status) => {
   const classes = {
-    P: 'bg-yellow-100 text-yellow-800',
-    R: 'bg-green-100 text-green-800',
-    A: 'bg-blue-100 text-blue-800',
+    P: 'bg-yellow-50 text-yellow-800 border-yellow-300',
+    R: 'bg-green-50 text-green-800 border-green-300',
+    A: 'bg-blue-50 text-blue-800 border-blue-300',
   };
-  return classes[status] || 'bg-gray-100 text-gray-800';
+  return classes[status] || 'bg-gray-50 text-gray-800 border-gray-300';
 };
 
 const getStatusText = (status) => {
@@ -148,6 +186,36 @@ const getStatusText = (status) => {
     A: 'Approved',
   };
   return statusTexts[status] || 'Unknown';
+};
+
+const togglePhysicalVerification = async () => {
+  const newStatus = !capa.value.physical_verification_status;
+  try {
+    await apiservice.patchBmhcCapa(capa.value.id, {
+      physical_verification_status: newStatus,
+    });
+
+    capa.value.physical_verification_status = newStatus;
+    emits('capa-updated');
+
+  } catch (error) {
+    console.error('Error updating physical verification:', error.response ? error.response.data : error.message);
+    alert('Failed to update physical verification.');
+  }
+};
+
+const updateRemarks = async () => {
+  if (editableRemarks.value !== capa.value.DO_remarks) {
+    try {
+      await apiservice.patchBmhcCapa(capa.value.id, { DO_remarks: editableRemarks.value });
+      capa.value.DO_remarks = editableRemarks.value;
+      emits('capa-updated');
+    } catch (error) {
+      console.error('Error updating remarks:', error);
+      alert('Failed to update remarks.');
+      editableRemarks.value = capa.value.DO_remarks;
+    }
+  }
 };
 
 const resolveCapa = async () => {
@@ -175,11 +243,18 @@ const resolveCapa = async () => {
 </script>
 
 <style scoped>
-.badge-check {
-  @apply bg-green-100 text-green-800;
+/* Add subtle card effect on the modal */
+.transform {
+  transform-origin: center;
 }
 
-.badge-x {
-  @apply bg-red-100 text-red-800;
+/* Subtle animation for status badges */
+[class*="bg-"] {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Improve text readability */
+.text-gray-900 {
+  line-height: 1.5;
 }
 </style>

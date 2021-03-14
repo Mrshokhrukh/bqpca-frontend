@@ -52,7 +52,7 @@
 import { ref } from 'vue';
 import TeachingCenterCertificate from './TeachingCenterCertificate.vue';
 
-const props = defineProps({
+defineProps({
     show: {
         type: Boolean,
         default: false
@@ -88,7 +88,7 @@ const printCertificate = () => {
                 return Array.from(styleSheet.cssRules)
                     .map(rule => rule.cssText)
                     .join('\n');
-            } catch (e) {
+            } catch {
                 console.warn('Cannot access stylesheet rules');
                 return '';
             }

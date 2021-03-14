@@ -740,10 +740,10 @@ const serviceSpecificMenuItems = {
             name: 'Manage Providers',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_provider_management`,
           },
-          {
-            name: 'Reports',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_reports`,
-          },
+          // {
+          //   name: 'Reports',
+          //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_reports`,
+          // },
         ],
       },
       {
@@ -898,18 +898,18 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
         hidden: () => !useInstitutionStore().visibleMenus.showOtherMenus,
       },
-      {
-        name: 'View Certificates',
-        icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
-        hidden: () => !useInstitutionStore().visibleMenus.showOtherMenus,
-      },
-      {
-        name: 'My Applications',
-        icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/my_applications`,
-        hidden: () => !useInstitutionStore().visibleMenus.showOtherMenus,
-      },
+      // {
+      //   name: 'View Certificates',
+      //   icon: getIconComponent('ClipboardCheck'),
+      //   route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
+      //   hidden: () => !useInstitutionStore().visibleMenus.showOtherMenus,
+      // },
+      // {
+      //   name: 'My Applications',
+      //   icon: getIconComponent('ClipboardCheck'),
+      //   route: (serviceType) => `/admin/institutions/${serviceType}/my_applications`,
+      //   hidden: () => !useInstitutionStore().visibleMenus.showOtherMenus,
+      // },
       {
         name: 'CAPA',
         icon: getIconComponent('ClipboardCheck'),

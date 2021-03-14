@@ -1,7 +1,5 @@
 <template>
-  <div class=" min-h-screen bg-gray-50">
-
-    <!-- CAPA Table -->
+  <div class="min-h-screen bg-gray-50">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -22,64 +20,67 @@
               <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Description
               </th>
-              <th scope="col" class="relative px-6 py-4">
-                <span class="sr-only">Actions</span>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Actions
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <template v-for="institute in institutes" :key="institute.id">
-              <tr v-if="!instituteCapas[institute.id] || instituteCapas[institute.id].length === 0">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ institute.name_of_institution }}</td>
-                <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div class="flex items-center">
-                    <InboxIcon class="w-4 h-4 text-gray-400 mr-2" />
-                    No CAPAs for this institute
-                  </div>
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ institute.name_of_institution }}
+                  <button @click="toggleCapas(institute.id)" class="ml-2">
+                    <svg v-if="expandedInstitute === institute.id" class="w-4 h-4 fill-current"
+                      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path d="M7 10v4h6v-4H7zm0-5v4h6V5H7zm0 10v4h6v-4H7zM2 3v14h16V3H2zm15 13H3V4h14v12z" />
+                    </svg>
+                    <svg v-else class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path
+                        d="M10 0v4h4v2h-4v4H8V6H4V4h4V0h2zm0 8v4h4v2h-4v4H8v-4H4v-2h4V8h2zM2 3v14h16V3H2zm15 13H3V4h14v12z" />
+                    </svg>
+                  </button>
+
                 </td>
-                <td class="whitespace-nowrap px-3 py-4 text-right text-sm font-medium">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button @click="$emit('add-capa', institute.id)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
-                    <PlusIcon class="w-4 h-4 mr-1" />
-                    Create First CAPA
-                  </button>
-                </td>
-              </tr>
-              <tr v-for="capa in instituteCapas[institute.id]" :key="capa.id"
-                class="hover:bg-gray-50 transition-colors">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ institute.name_of_institution }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">CAPA #{{ capa.id }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <span :class="[getStatusClass(capa.status), 'px-2.5 py-0.5 rounded-full text-xs font-medium']">
-                    {{ getStatusText(capa.status) }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ getDateRangeText(capa.inspection_from_date, capa.inspection_to_date) }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.observation_description">
-                  {{ truncateText(capa.observation_description || 'No description available', 50) }}
-                </td>
-                <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                  <button @click="$emit('open-view-details-modal', capa)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200 mr-2">
-                    View
-                  </button>
-                  <button @click="$emit('delete-capa', capa.id)"
-                    class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
-                    <TrashIcon class="w-4 h-4" />
-                  </button>
-                </td>
-              </tr>
-              <tr v-if="instituteCapas[institute.id] && instituteCapas[institute.id].length > 0" class="bg-gray-100">
-                <td colspan="6" class="px-6 py-2 text-right">
-                  <button @click="$emit('add-capa', institute.id)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
+                    class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                     <PlusIcon class="w-4 h-4 mr-1" />
                     Add CAPA
                   </button>
                 </td>
               </tr>
+              <template v-if="expandedInstitute === institute.id">
+                <tr v-for="capa in instituteCapas[institute.id] || []" :key="capa.id" class="bg-gray-100">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">CAPA #{{ capa.id }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span :class="[getStatusClass(capa.status), 'px-2.5 py-0.5 rounded-full text-xs font-medium']">
+                      {{ getStatusText(capa.status) }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ getDateRangeText(capa.inspection_from_date, capa.inspection_to_date) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.observation_description">
+                    {{ truncateText(capa.observation_description || 'No description available', 50) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button @click="$emit('open-view-details-modal', capa)"
+                      class="inline-flex items-center bg-blue-100 hover:bg-blue-200 text-blue-600 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200 mr-2">
+                      View
+                    </button>
+                    <button @click="$emit('delete-capa', capa.id)"
+                      class="inline-flex items-center bg-red-100 hover:bg-red-200 text-red-600 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
+                      <TrashIcon class="w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+              </template>
             </template>
           </tbody>
         </table>
@@ -89,7 +90,8 @@
 </template>
 
 <script setup>
-import { PlusIcon, TrashIcon, InboxIcon } from 'lucide-vue-next';
+import { PlusIcon, TrashIcon } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 defineProps({
   institutes: {
@@ -103,6 +105,15 @@ defineProps({
 });
 
 defineEmits(['add-capa', 'view-details', 'delete-capa', 'open-view-details-modal']);
+const expandedInstitute = ref(null);
+
+const toggleCapas = (instituteId) => {
+  if (expandedInstitute.value === instituteId) {
+    expandedInstitute.value = null;
+  } else {
+    expandedInstitute.value = instituteId;
+  }
+}
 
 // Helper functions (same as before)
 const getStatusClass = (status) => {

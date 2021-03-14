@@ -191,7 +191,7 @@
             <thead class="bg-gray-50">
               <tr>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Ref.</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Date</th>
+                <!-- <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Date</th> -->
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Name</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">CID/Permit</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Gender</th>
@@ -204,7 +204,7 @@
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-for="(record, index) in filteredRecords" :key="record.id" class="hover:bg-gray-50 transition-colors duration-150">
                 <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ index + 1 }}</td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ formatDate(record.registration_date) }}</td>
+                <!-- <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ formatDate(record.registration_date) }}</td> -->
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 truncate">{{ record.username }}</td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 font-mono">{{ record.cid }}</td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ record.gender }}</td>
@@ -324,11 +324,11 @@ const filteredRecords = computed(() => {
   });
 });
 
-const formatDate = (dateString) => {
-  if (!dateString) return '-';
-  const options = { year: 'numeric', month: 'short', day: 'numeric' };
-  return new Date(dateString).toLocaleDateString(undefined, options);
-};
+// const formatDate = (dateString) => {
+//   if (!dateString) return '-';
+//   const options = { year: 'numeric', month: 'short', day: 'numeric' };
+//   return new Date(dateString).toLocaleDateString(undefined, options);
+// };
 
 // Filter reset functionality
 const resetFilters = () => {

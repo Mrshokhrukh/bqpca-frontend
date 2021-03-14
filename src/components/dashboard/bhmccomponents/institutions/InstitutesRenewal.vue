@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="mx-auto px-4 py-8">
     <!-- Page Header -->
     <div class="bg-gray-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
@@ -178,8 +178,8 @@
           </div>
         </div>
 
-        <!-- Renewal Button - only show if active -->
-        <div class="flex justify-end mt-8" v-if="isActive && !isRenewalInProgress">
+        <!-- Renewal Button - only show if active AND within 3 months of expiration -->
+        <div class="flex justify-end mt-8" v-if="isActive && !isRenewalInProgress && daysUntilExpiration <= 90">
           <button @click="openRenewalDialog"
             class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline"
             :class="{ 'animate-pulse': daysUntilExpiration <= 30 }">
@@ -232,7 +232,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from 'vue-toastification';
 import bmhcService from '@/services/bmhcservices';
-import {Loader} from 'lucide-vue-next'
+import { Loader } from 'lucide-vue-next'
 
 // State variables
 const instituteData = ref(null);

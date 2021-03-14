@@ -1,5 +1,5 @@
 <template>
-  <div class="p-8 bg-gray-100 rounded-xl shadow-lg">
+  <div class="p-8 rounded-xl">
     <h2 class="text-3xl font-bold text-gray-800 mb-8">New Teaching Center Application</h2>
 
     <form @submit.prevent="handleSubmit" class="space-y-8" enctype="multipart/form-data">
