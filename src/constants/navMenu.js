@@ -1071,6 +1071,12 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/site_visit_scheduling`,
 
           },
+          {
+            name: 'Accreditation Assessment',
+            icon: getIconComponent('ClipboardCheck'),
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/accreditation_assessment`,
+          },
+
         ],
       },
       {
@@ -1081,11 +1087,6 @@ const serviceSpecificMenuItems = {
 
 
 
-      {
-        name: 'Accreditation Assessment',
-        icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/accreditation_assessment`,
-      },
 
       {
         name: 'Assessor Management',

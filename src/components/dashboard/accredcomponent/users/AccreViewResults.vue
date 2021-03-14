@@ -18,7 +18,7 @@
       >
         <option value="all">All</option>
         <option value="pending">Pending</option>
-        <option value="approved">Approved</option>
+        <option value="accredited">Accredited</option>
         <option value="rejected">Rejected</option>
         <option value="appealed">Appealed</option>
       </select>
@@ -91,9 +91,9 @@
                 </span>
               </td>
               <td class="py-3 px-4 border border-gray-200">
-                <!-- Download Certificate button for approved/active applications -->
+                <!-- Download Certificate button for accredited applications -->
                 <button
-                  v-if="isApproved(application.status)"
+                  v-if="isAccredited(application)"
                   @click="showCertificate(application)"
                   class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded text-sm mr-2"
                 >
@@ -213,15 +213,16 @@ const currentCertificateData = ref({});
 const applications = computed(() => {
   return backendApplications.value.map(app => ({
     id: app.id,
-    institution_name: app.name_of_institution, // Use name_of_institution
-    created_at: app.year_of_establishment ? new Date(app.year_of_establishment, 0, 1).toISOString() : null, // Use year_of_establishment as date placeholder
-    status: app.review_decision?.decision_name || 'pending', // Access decision_name from nested object, default to 'pending'
-    review_decision: app.review_decision, // Keep the full review_decision object if needed
-    // Add other institution details here for the appeal form
+    institution_name: app.name_of_institution,
+    created_at: app.year_of_establishment ? new Date(app.year_of_establishment, 0, 1).toISOString() : null,
+    // Use accreditation_decision, default to 'pending' if null
+    status: app.accreditation_decision?.decision_name || 'pending',
+    accreditation_decision: app.accreditation_decision, // Keep for other checks
+    review_decision: app.review_decision,  //keep if we need later.
     address: app.address,
-    dzongkhag_thromde: app.dzongkhag_thromde,  // Corrected property name
-    contact: app.contact,
-    email: app.email
+    dzongkhag_thromde: app.dzongkhag_thromde,
+    contact: app.contact_number,
+    email: app.email_address,
   }));
 });
 
@@ -235,15 +236,15 @@ const filteredApplications = computed(() => {
       const normalizedAppStatus = app.status ? app.status.toLowerCase() : '';
 
       if (normalizedSelectedFilter === 'pending') {
-        return normalizedAppStatus === 'pending' || normalizedAppStatus === 'applied' || normalizedAppStatus === 'processing_payment'; // Include other pending statuses if needed
-      } else if (normalizedSelectedFilter === 'approved') {
-        return normalizedAppStatus === 'approved' || normalizedAppStatus === 'active'; // Include other approved statuses if needed
+        return normalizedAppStatus === 'pending' || normalizedAppStatus === 'applied' || normalizedAppStatus === 'processing_payment';
+      } else if (normalizedSelectedFilter === 'accredited') {
+        return normalizedAppStatus === 'accredited';
       } else if (normalizedSelectedFilter === 'rejected') {
-        return normalizedAppStatus === 'rejected' || normalizedAppStatus === 'regretted'; // Map "Regretted" to "rejected" or adjust as needed
+        return normalizedAppStatus === 'rejected' || normalizedAppStatus === 'regretted';
       } else if (normalizedSelectedFilter === 'appealed') {
-        return normalizedAppStatus === 'appealed'; // Assuming "appealed" is a possible decision_name
+        return normalizedAppStatus === 'appealed';
       }
-      return false; // Should not reach here if 'all' is handled correctly
+      return false;
     });
   }
 
@@ -251,7 +252,7 @@ const filteredApplications = computed(() => {
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(app =>
-      app.institution_name.toLowerCase().includes(query) || // Use institution_name for search
+      app.institution_name.toLowerCase().includes(query) ||
       app.id.toString().includes(query)
     );
   }
@@ -260,9 +261,8 @@ const filteredApplications = computed(() => {
 });
 
 // Helper methods to check application status
-const isApproved = (status) => {
-  const normalizedStatus = status ? status.toLowerCase() : '';
-  return normalizedStatus === 'approved' || normalizedStatus === 'active';
+const isAccredited = (application) => {
+    return application.accreditation_decision && application.accreditation_decision.decision_name === 'Accrediated';
 };
 
 const isRejected = (status) => {
@@ -275,27 +275,23 @@ onMounted(async () => {
   try {
     const response = await apiService.getInstitutionProfiles();
     console.log("Institution Profiles Response:", response);
-    backendApplications.value = response.data.results || []; // Assuming results array contains applications
-
-    // Initially filter applications after loading data
+    backendApplications.value = response.data.results || [];
     filterApplications();
 
   } catch (error) {
     console.error("Error fetching institution profiles:", error);
-    // Handle error appropriately, e.g., show a toast or message to the user
   }
 });
 
 const filterApplications = () => {
-  // This function is now using the computed `filteredApplications` ref
-  // No need to re-implement filtering logic here, it's in the computed property
+  // Now handled by the computed property.
 };
 
 const showCertificate = (application) => {
     currentCertificateData.value = {
         institutionName: application.institution_name,
-        grade: application.review_decision?.grade || 'N/A', // Assuming grade is in review_decision.  Adjust if needed.
-        validUntil: '2024-12-31', //  Replace with actual validity date from your data, if available.
+        grade: application.review_decision?.grade || 'N/A', // Get grade, default to 'N/A'
+        validUntil: application.accreditation_decision?.validity_if_approved || '2024-12-31',  //from accreditation decision
         date: new Date().toISOString()
     };
     showModal.value = true;
@@ -303,11 +299,11 @@ const showCertificate = (application) => {
 
 const closeModal = () => {
   showModal.value = false;
-  currentCertificateData.value = {}; // Clear the data after closing
+  currentCertificateData.value = {}; // Clear data
 };
 
 const goToAppealPage = (application) => {
-    router.push({
+  router.push({
     path: '/admin/user/accreditation/appeal',
     query: {
       applicationId: application.id,
@@ -321,26 +317,27 @@ const goToAppealPage = (application) => {
 };
 
 const approveAppeal = (appeal) => {
-  // Update appeal status
-  appeal.status = 'approved';
+    appeal.status = 'approved';
 
-  // Find and update the corresponding application
-  const application = applications.value.find(app => app.id === appeal.applicationId);
-  if (application) {
-    application.status = 'approved';
+    // Find the corresponding application and update its status
+    const application = backendApplications.value.find(app => app.id === appeal.applicationId);
+      if (application) {
+           if (!application.accreditation_decision) {
+               application.accreditation_decision = {};
+             }
+          application.accreditation_decision.decision_name = 'accredited';
+          application.status = 'accredited';
 
-    // Create a new accreditation
-    const newAccreditation = {
-      id: accreditations.value.length + 1,
-      applicantName: application.applicantName,
-      accreditationDate: new Date().toISOString().split('T')[0],
-      status: 'active'
-    };
-
-    accreditations.value.push(newAccreditation);
-  }
-
-  filterApplications();
+        // Create a new accreditation entry.
+        const newAccreditation = {
+          id: accreditations.value.length + 1,
+          applicantName: application.name_of_institution,
+          accreditationDate: new Date().toISOString().split('T')[0],
+          status: 'active'
+        };
+        accreditations.value.push(newAccreditation);
+    }
+    filterApplications();
 };
 
 const getStatusClasses = (status) => {
@@ -350,11 +347,10 @@ const getStatusClasses = (status) => {
     case 'applied':
     case 'processing_payment':
       return 'inline-block py-1 px-2 rounded text-xs font-medium bg-yellow-100 text-yellow-800';
-    case 'approved':
-    case 'active':
+    case 'accredited':
       return 'inline-block py-1 px-2 rounded text-xs font-medium bg-green-100 text-green-800';
     case 'rejected':
-    case 'regretted': // Assuming "Regretted" from API means "rejected"
+    case 'regretted':
       return 'inline-block py-1 px-2 rounded text-xs font-medium bg-red-100 text-red-800';
     case 'appealed':
       return 'inline-block py-1 px-2 rounded text-xs font-medium bg-blue-100 text-blue-800';
@@ -366,10 +362,10 @@ const getStatusClasses = (status) => {
 const formatDate = (dateString) => {
   if (!dateString) return '';
   const date = new Date(dateString);
-  return date.toLocaleDateString(); // Format as local date string (e.g., MM/DD/YYYY)
+  return date.toLocaleDateString();
 };
 </script>
 
 <style scoped>
-/* Your component-specific styles here if needed */
+/* Component-specific styles */
 </style>
