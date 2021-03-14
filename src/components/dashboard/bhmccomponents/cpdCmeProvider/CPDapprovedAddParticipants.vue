@@ -1,165 +1,287 @@
 <template>
-    <div class="cpd-participant-container">
-        <h1 class="form-title">Add CPD Task Participant</h1>
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
+            Add CPD Task Participant
+            <div class="h-1 w-20 bg-green-500 rounded mx-auto mt-3"></div>
+        </h1>
 
-        <div class="form-card">
-            <div class="form-grid">
-                <div class="form-row">
-                    <label for="cpdCreditsTemplate" class="form-label">CPD Credits Template <span
-                            class="optional">(Optional)</span>:</label>
-                    <div class="input-group">
-                        <select id="cpdCreditsTemplate" v-model="formData.cpdCreditsTemplate" class="form-select"
-                            @change="applyCreditsTemplate" aria-label="CPD Credits Template Options">
-                            <option value="">Select template (optional)</option>
-                            <option value="symposium">Symposium - 2 Credits</option>
-                            <option value="workshop">Workshop - 3 Credits</option>
-                            <option value="conference">Conference - 5 Credits</option>
-                        </select>
-                        <div class="action-buttons">
-                            <button class="btn-icon btn-action" @click="editCpdCreditsTemplate" title="Edit Template">
-                                <lucide-icon name="pencil" aria-hidden="true" />
-                                <span class="sr-only">Edit Template</span>
-                            </button>
-                            <button class="btn-icon btn-action" @click="addCpdCreditsTemplate" title="Add New Template">
-                                <lucide-icon name="plus" aria-hidden="true" />
-                                <span class="sr-only">Add New Template</span>
-                            </button>
-                            <button class="btn-icon btn-action" @click="deleteCpdCreditsTemplate"
-                                title="Delete Template">
-                                <lucide-icon name="trash" aria-hidden="true" />
-                                <span class="sr-only">Delete Template</span>
-                            </button>
-                            <button class="btn-icon btn-action" @click="viewCpdCreditsTemplate" title="View Template">
-                                <lucide-icon name="eye" aria-hidden="true" />
-                                <span class="sr-only">View Template</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-text-hint">Choose a template for pre-filled CPD credits or enter manually below.
-                    </div>
+        <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+            <!-- Progress Steps -->
+            <div class="flex justify-center items-center mb-10">
+                <div class="flex flex-col items-center">
+                    <div
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-green-500 text-white font-semibold">
+                        1</div>
+                    <span class="text-xs font-medium text-green-600 mt-2">Template</span>
                 </div>
-
-                <div class="form-row">
-                    <label for="cpdCredits" class="form-label">CPD Credits <span class="required">*</span>:</label>
-                    <input type="number" id="cpdCredits" v-model.number="formData.cpdCredits" class="form-input"
-                        placeholder="Enter CPD credits" aria-required="true" />
-                    <div class="form-text-hint">Specify the CPD credits earned by the participant.</div>
+                <div class="h-1 w-16 bg-green-200 mx-2 mb-8"></div>
+                <div class="flex flex-col items-center">
+                    <div
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-green-500 text-white font-semibold">
+                        2</div>
+                    <span class="text-xs font-medium text-green-600 mt-2">Details</span>
                 </div>
-
-                <div class="form-row">
-                    <label for="reviewStatus" class="form-label">Review Status <span class="required">*</span>:</label>
-                    <select id="reviewStatus" v-model="formData.reviewStatus" class="form-select" aria-required="true"
-                        aria-label="Review Status">
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                    <div class="form-text-hint">Current status of the review process.</div>
-                </div>
-
-                <div class="form-row">
-                    <label for="reviewRemarks" class="form-label">Review Remarks <span
-                            class="optional">(Optional)</span>:</label>
-                    <textarea id="reviewRemarks" v-model="formData.reviewRemarks" rows="3" class="form-textarea"
-                        placeholder="Add review remarks (if any)" aria-label="Review Remarks"></textarea>
-                    <div class="form-text-hint">Any notes or comments from the reviewer.</div>
-                </div>
-
-                <div class="form-row">
-                    <label for="endorsementDecision" class="form-label">Endorsement Decision <span
-                            class="required">*</span>:</label>
-                    <select id="endorsementDecision" v-model="formData.endorsementDecision" class="form-select"
-                        aria-required="true" aria-label="Endorsement Decision">
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                    <div class="form-text-hint">Final decision on endorsement.</div>
-                </div>
-
-                <div class="form-row">
-                    <label for="endorsementRemarks" class="form-label">Endorsement Remarks <span
-                            class="optional">(Optional)</span>:</label>
-                    <textarea id="endorsementRemarks" v-model="formData.endorsementRemarks" rows="3"
-                        class="form-textarea" placeholder="Add endorsement remarks (if any)"
-                        aria-label="Endorsement Remarks"></textarea>
-                    <div class="form-text-hint">Additional notes regarding the endorsement decision.</div>
-                </div>
-
-                <div class="form-row">
-                    <label for="cpdTask" class="form-label">CPD Task <span class="required">*</span>:</label>
-                    <div class="input-group">
-                        <select id="cpdTask" v-model="formData.cpdTask" class="form-select" aria-required="true"
-                            aria-label="CPD Task">
-                            <option v-for="task in cpdTasks" :key="task.id" :value="task.id">{{ task.title }}</option>
-                        </select>
-                        <div class="action-buttons">
-                            <button class="btn-icon btn-action" @click="editTask" title="Edit CPD Task">
-                                <lucide-icon name="pencil" aria-hidden="true" />
-                                <span class="sr-only">Edit CPD Task</span>
-                            </button>
-                            <button class="btn-icon btn-action" @click="addTask" title="Add New CPD Task">
-                                <lucide-icon name="plus" aria-hidden="true" />
-                                <span class="sr-only">Add New CPD Task</span>
-                            </button>
-                            <button class="btn-icon btn-action" @click="viewTask" title="View CPD Task">
-                                <lucide-icon name="eye" aria-hidden="true" />
-                                <span class="sr-only">View CPD Task</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-text-hint">Select the CPD task this participant is associated with.</div>
-                </div>
-
-                <div class="form-row">
-                    <label for="participantRegNo" class="form-label">Participant Reg No <span
-                            class="required">*</span>:</label>
-                    <div class="input-group">
-                        <select id="participantRegNo" v-model="formData.participantRegNo" class="form-select"
-                            aria-required="true" aria-label="Participant Registration Number">
-                            <option v-for="participant in participants" :key="participant.id"
-                                :value="participant.reg_no">
-                                {{ participant.full_name }} - {{ participant.reg_no }}
-                            </option>
-                        </select>
-                        <div class="action-buttons">
-                            <button class="btn-icon btn-action" @click="editParticipant" title="Edit Participant">
-                                <lucide-icon name="pencil" aria-hidden="true" />
-                                <span class="sr-only">Edit Participant</span>
-                            </button>
-                            <button class="btn-icon btn-action" @click="addParticipant" title="Add New Participant">
-                                <lucide-icon name="plus" aria-hidden="true" />
-                                <span class="sr-only">Add New Participant</span>
-                            </button>
-                            <button class="btn-icon btn-action" @click="viewParticipant"
-                                title="View Participant Details">
-                                <lucide-icon name="eye" aria-hidden="true" />
-                                <span class="sr-only">View Participant Details</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-text-hint">Choose the participant from the registered list.</div>
+                <div class="h-1 w-16 bg-gray-200 mx-2 mb-8"></div>
+                <div class="flex flex-col items-center">
+                    <div
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 font-semibold">
+                        3</div>
+                    <span class="text-xs font-medium text-gray-500 mt-2">Review</span>
                 </div>
             </div>
 
+            <div class="space-y-6">
+                <!-- Credits Section -->
+                <div class="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-sm transition">
+                    <h2 class="text-lg font-semibold text-gray-700 pb-3 border-b border-gray-200 mb-4">Credits Templates
+                    </h2>
 
-            <div class="form-actions">
-                <button @click="submitForm" class="btn-primary">Submit</button>
-                <button @click="resetForm" class="btn-secondary">Reset</button>
+                    <div class="mb-6">
+                        <label for="cpdCreditsTemplate" class="block text-sm font-medium text-gray-700 mb-2">
+                            CPD Credits Template <span class="text-gray-500 text-xs italic">(Optional)</span>
+                        </label>
+                        <div class="flex">
+                            <select id="cpdCreditsTemplate" v-model="formData.cpdCreditsTemplate"
+                                @change="applyCreditsTemplate"
+                                class="flex-grow px-4 py-2 rounded-l-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
+                                aria-label="CPD Credits Template Options">
+                                <option value="">Select template (optional)</option>
+                                <option value="symposium">Symposium - 2 Credits</option>
+                                <option value="workshop">Workshop - 3 Credits</option>
+                                <option value="conference">Conference - 5 Credits</option>
+                            </select>
+                            <div class="flex bg-gray-50 border-t border-r border-b border-gray-300 rounded-r-lg">
+                                <button @click="editCpdCreditsTemplate" class="p-2 hover:bg-gray-100"
+                                    title="Edit Template">
+                                    <PencilIcon class="h-5 w-5 text-gray-500" />
+                                    <span class="sr-only">Edit Template</span>
+                                </button>
+                                <button @click="addCpdCreditsTemplate" class="p-2 hover:bg-gray-100"
+                                    title="Add New Template">
+                                    <PlusIcon class="h-5 w-5 text-gray-500" />
+                                    <span class="sr-only">Add New Template</span>
+                                </button>
+                                <button @click="deleteCpdCreditsTemplate" class="p-2 hover:bg-gray-100"
+                                    title="Delete Template">
+                                    <TrashIcon class="h-5 w-5 text-gray-500" />
+                                    <span class="sr-only">Delete Template</span>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-500">Choose a template for pre-filled CPD credits or enter
+                            manually below</p>
+                    </div>
+
+                    <div>
+                        <label for="cpdCredits" class="block text-sm font-medium text-gray-700 mb-2">
+                            CPD Credits <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" id="cpdCredits" v-model.number="formData.cpdCredits"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 mb-2 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
+                            placeholder="Enter CPD credits" aria-required="true" />
+                        <div class="flex space-x-2 mb-1">
+                            <button v-for="credit in [1, 2, 3, 5]" :key="credit" @click="formData.cpdCredits = credit"
+                                class="h-8 w-8 rounded-full flex items-center justify-center bg-gray-100 hover:bg-gray-200 border border-gray-300 text-sm font-medium">
+                                {{ credit }}
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-500">Specify the CPD credits earned by the participant</p>
+                    </div>
+                </div>
+
+                <!-- Review & Endorsement Section -->
+                <div class="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-sm transition">
+                    <h2 class="text-lg font-semibold text-gray-700 pb-3 border-b border-gray-200 mb-4">Review &
+                        Endorsement</h2>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Review Column -->
+                        <div class="space-y-6">
+                            <div>
+                                <label for="reviewStatus" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Review Status <span class="text-red-500">*</span>
+                                </label>
+                                <select id="reviewStatus" v-model="formData.reviewStatus"
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
+                                    aria-required="true" aria-label="Review Status">
+                                    <option value="pending">Pending</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                                <p class="mt-1 text-sm text-gray-500">Current status of the review process</p>
+                            </div>
+
+                            <div>
+                                <label for="reviewRemarks" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Review Remarks <span class="text-gray-500 text-xs italic">(Optional)</span>
+                                </label>
+                                <textarea id="reviewRemarks" v-model="formData.reviewRemarks" rows="3"
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
+                                    placeholder="Add review remarks (if any)" aria-label="Review Remarks"></textarea>
+                                <p class="mt-1 text-sm text-gray-500">Any notes or comments from the reviewer</p>
+                            </div>
+                        </div>
+
+                        <!-- Endorsement Column -->
+                        <div class="space-y-6">
+                            <div>
+                                <label for="endorsementDecision" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Endorsement Decision <span class="text-red-500">*</span>
+                                </label>
+                                <select id="endorsementDecision" v-model="formData.endorsementDecision"
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
+                                    aria-required="true" aria-label="Endorsement Decision">
+                                    <option value="pending">Pending</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                                <p class="mt-1 text-sm text-gray-500">Final decision on endorsement</p>
+                            </div>
+
+                            <div>
+                                <label for="endorsementRemarks" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Endorsement Remarks <span class="text-gray-500 text-xs italic">(Optional)</span>
+                                </label>
+                                <textarea id="endorsementRemarks" v-model="formData.endorsementRemarks" rows="3"
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
+                                    placeholder="Add endorsement remarks (if any)"
+                                    aria-label="Endorsement Remarks"></textarea>
+                                <p class="mt-1 text-sm text-gray-500">Additional notes regarding the endorsement
+                                    decision</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task & Participant Section -->
+                <div class="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-sm transition">
+                    <h2 class="text-lg font-semibold text-gray-700 pb-3 border-b border-gray-200 mb-4">Task &
+                        Participant Selection</h2>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label for="cpdTask" class="block text-sm font-medium text-gray-700 mb-2">
+                                CPD Task <span class="text-red-500">*</span>
+                            </label>
+                            <div class="flex">
+                                <div class="relative flex-grow">
+                                    <select id="cpdTask" v-model="formData.cpdTask"
+                                        class="w-full px-4 py-2 rounded-l-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none pr-10"
+                                        aria-required="true" aria-label="CPD Task">
+                                        <option value="">Select a CPD task</option>
+                                        <option v-for="task in cpdTasks" :key="task.id" :value="task.id">{{ task.title
+                                        }}</option>
+                                    </select>
+                                    <MagnifyingGlassIcon
+                                        class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
+                                </div>
+                                <div class="flex bg-gray-50 border-t border-r border-b border-gray-300 rounded-r-lg">
+                                    <button @click="editTask" class="p-2 hover:bg-gray-100" title="Edit CPD Task">
+                                        <PencilIcon class="h-5 w-5 text-gray-500" />
+                                        <span class="sr-only">Edit CPD Task</span>
+                                    </button>
+                                    <button @click="addTask" class="p-2 hover:bg-gray-100" title="Add New CPD Task">
+                                        <PlusIcon class="h-5 w-5 text-gray-500" />
+                                        <span class="sr-only">Add New CPD Task</span>
+                                    </button>
+                                    <button @click="viewTask" class="p-2 hover:bg-gray-100" title="View CPD Task">
+                                        <EyeIcon class="h-5 w-5 text-gray-500" />
+                                        <span class="sr-only">View CPD Task</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-500">Select the CPD task this participant is associated
+                                with</p>
+                        </div>
+
+                        <div>
+                            <label for="participantRegNo" class="block text-sm font-medium text-gray-700 mb-2">
+                                Participant <span class="text-red-500">*</span>
+                            </label>
+                            <div class="flex">
+                                <div class="relative flex-grow">
+                                    <select id="participantRegNo" v-model="formData.participantRegNo"
+                                        class="w-full px-4 py-2 rounded-l-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none pr-10"
+                                        aria-required="true" aria-label="Participant Registration Number">
+                                        <option value="">Select a participant</option>
+                                        <option v-for="participant in participants" :key="participant.id"
+                                            :value="participant.reg_no">
+                                            {{ participant.full_name }} - {{ participant.reg_no }}
+                                        </option>
+                                    </select>
+                                    <MagnifyingGlassIcon
+                                        class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
+                                </div>
+                                <div class="flex bg-gray-50 border-t border-r border-b border-gray-300 rounded-r-lg">
+                                    <button @click="editParticipant" class="p-2 hover:bg-gray-100"
+                                        title="Edit Participant">
+                                        <PencilIcon class="h-5 w-5 text-gray-500" />
+                                        <span class="sr-only">Edit Participant</span>
+                                    </button>
+                                    <button @click="addParticipant" class="p-2 hover:bg-gray-100"
+                                        title="Add New Participant">
+                                        <PlusIcon class="h-5 w-5 text-gray-500" />
+                                        <span class="sr-only">Add New Participant</span>
+                                    </button>
+                                    <button @click="viewParticipant" class="p-2 hover:bg-gray-100"
+                                        title="View Participant Details">
+                                        <EyeIcon class="h-5 w-5 text-gray-500" />
+                                        <span class="sr-only">View Participant Details</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-500">Choose the participant from the registered list</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div v-if="message" :class="['message', messageType]">
-                {{ message }}
+            <!-- Form Actions -->
+            <div class="mt-8 flex justify-between items-center">
+                <button @click="cancel" class="text-gray-600 hover:text-gray-800 hover:underline font-medium">
+                    Cancel
+                </button>
+                <div class="flex space-x-4">
+                    <button @click="resetForm"
+                        class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg border border-gray-300 font-medium">
+                        Reset
+                    </button>
+                    <button @click="submitForm"
+                        class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium shadow-sm flex items-center">
+                        <CheckCircleIcon class="h-5 w-5 mr-2" />
+                        Submit
+                    </button>
+                </div>
             </div>
+
+            <!-- Status Messages -->
+            <transition name="fade">
+                <div v-if="message" :class="[
+                    'mt-6 p-4 rounded-lg flex items-center',
+                    messageType === 'success' ? 'bg-green-50 text-green-700 border-l-4 border-green-500' : 'bg-red-50 text-red-700 border-l-4 border-red-500'
+                ]">
+                    <component :is="messageType === 'success' ? CheckCircleIcon : ExclamationCircleIcon"
+                        class="h-5 w-5 mr-3" />
+                    {{ message }}
+                </div>
+            </transition>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import apiService from '@/services/services'; // Assuming path is correct
-import { LucideIcon } from "lucide-vue-next"; // Import LucidIcon
+import apiService from '@/services/services';
+import {
+    PencilIcon,
+    PlusIcon,
+    TrashIcon,
+    EyeIcon,
+    CheckCircleIcon,
+    ExclamationCircleIcon,
+    MagnifyingGlassIcon
+} from '@heroicons/vue/24/outline';
 
 const router = useRouter();
 const cpdTasks = ref([]);
@@ -178,53 +300,38 @@ const formData = reactive({
     participantRegNo: ''
 });
 
-// Fetch CPD tasks and participants on component mount
-onMounted(async () => {
-    await fetchData();
-});
+onMounted(fetchData);
 
-const fetchData = async () => {
+async function fetchData() {
     try {
-        const tasksResponse = await apiService.getBmhcCpdTasks();
-        cpdTasks.value = tasksResponse.data;
+        const [tasksResponse, participantsResponse] = await Promise.all([
+            apiService.getBmhcCpdTasks(),
+            apiService.getBmhcCounsellors()
+        ]);
 
-        const participantsResponse = await apiService.getBmhcCounsellors(); // Assuming counsellors are participants
+        cpdTasks.value = tasksResponse.data;
         participants.value = participantsResponse.data;
     } catch (error) {
         console.error('Error fetching data:', error);
         showMessage('Failed to load data. Please try again.', 'error');
     }
-};
+}
 
-// Apply CPD credits template
-const applyCreditsTemplate = () => {
-    switch (formData.cpdCreditsTemplate) {
-        case 'symposium':
-            formData.cpdCredits = 2;
-            break;
-        case 'workshop':
-            formData.cpdCredits = 3;
-            break;
-        case 'conference':
-            formData.cpdCredits = 5;
-            break;
-        default:
-            formData.cpdCredits = 0;
-            break;
-    }
-};
+function applyCreditsTemplate() {
+    const templates = {
+        'symposium': 2,
+        'workshop': 3,
+        'conference': 5
+    };
 
+    formData.cpdCredits = templates[formData.cpdCreditsTemplate] || 0;
+}
 
-// Form submission
-const submitForm = async () => {
+async function submitForm() {
+    if (!validateForm()) return;
+
     try {
-        // Validate form
-        if (!validateForm()) {
-            return;
-        }
-
-        // Prepare data for API
-        const participantData = {
+        await apiService.createBmhcCpdTaskParticipant({
             cpd_credits: formData.cpdCredits,
             review_status: formData.reviewStatus,
             review_remarks: formData.reviewRemarks,
@@ -232,22 +339,18 @@ const submitForm = async () => {
             endorsement_remarks: formData.endorsementRemarks,
             cpd_task: formData.cpdTask,
             participant_reg_no: formData.participantRegNo
-        };
-
-        // Submit to API
-        await apiService.createBmhcCpdTaskParticipant(participantData);
+        });
 
         showMessage('Participant added successfully!', 'success');
         resetForm();
-        await fetchData(); // Refresh data after successful submission, if needed for lists.
+        await fetchData();
     } catch (error) {
         console.error('Error submitting form:', error);
         showMessage('Failed to add participant. Please try again.', 'error');
     }
-};
+}
 
-// Form validation
-const validateForm = () => {
+function validateForm() {
     if (!formData.cpdCredits) {
         showMessage('Please enter CPD credits', 'error');
         return false;
@@ -264,426 +367,82 @@ const validateForm = () => {
     }
 
     return true;
-};
+}
 
-// Reset form to default values
-const resetForm = () => {
-    formData.cpdCreditsTemplate = '';
-    formData.cpdCredits = 0;
-    formData.reviewStatus = 'pending';
-    formData.reviewRemarks = '';
-    formData.endorsementDecision = 'pending';
-    formData.endorsementRemarks = '';
-    formData.cpdTask = '';
-    formData.participantRegNo = '';
-};
+function resetForm() {
+    Object.assign(formData, {
+        cpdCreditsTemplate: '',
+        cpdCredits: 0,
+        reviewStatus: 'pending',
+        reviewRemarks: '',
+        endorsementDecision: 'pending',
+        endorsementRemarks: '',
+        cpdTask: '',
+        participantRegNo: ''
+    });
+}
 
-// Display message to user
-const showMessage = (text, type) => {
+function cancel() {
+    router.go(-1);
+}
+
+function showMessage(text, type) {
     message.value = text;
     messageType.value = type;
+    setTimeout(() => message.value = '', 4000);
+}
 
-    // Clear message after 3 seconds
-    setTimeout(() => {
-        message.value = '';
-    }, 3000);
-};
+// Action handlers
+const editCpdCreditsTemplate = () => alert('Edit CPD Credits Template functionality to be implemented');
+const addCpdCreditsTemplate = () => alert('Add CPD Credits Template functionality to be implemented');
+const deleteCpdCreditsTemplate = () => alert('Delete CPD Credits Template functionality to be implemented');
 
-// Template actions handlers -  Placeholders, implement actual logic as needed
-const editCpdCreditsTemplate = () => {
-    alert('Edit CPD Credits Template functionality to be implemented'); // Placeholder
-};
-
-const addCpdCreditsTemplate = () => {
-    alert('Add CPD Credits Template functionality to be implemented'); // Placeholder
-};
-
-const deleteCpdCreditsTemplate = () => {
-    alert('Delete CPD Credits Template functionality to be implemented'); // Placeholder
-};
-
-const viewCpdCreditsTemplate = () => {
-    alert('View CPD Credits Template functionality to be implemented'); // Placeholder
-};
-
-const editTask = () => {
+function editTask() {
     if (formData.cpdTask) {
         router.push(`/cpd-tasks/edit/${formData.cpdTask}`);
     } else {
         showMessage('Please select a task first', 'error');
     }
-};
+}
 
-const addTask = () => {
-    router.push('/cpd-tasks/new');
-};
+const addTask = () => router.push('/cpd-tasks/new');
 
-const viewTask = () => {
+function viewTask() {
     if (formData.cpdTask) {
         router.push(`/cpd-tasks/view/${formData.cpdTask}`);
     } else {
         showMessage('Please select a task first', 'error');
     }
-};
+}
 
-const editParticipant = () => {
+function editParticipant() {
     if (formData.participantRegNo) {
         router.push(`/participants/edit/${formData.participantRegNo}`);
     } else {
         showMessage('Please select a participant first', 'error');
     }
-};
+}
 
-const addParticipant = () => {
-    router.push('/participants/new');
-};
+const addParticipant = () => router.push('/participants/new');
 
-const viewParticipant = () => {
+function viewParticipant() {
     if (formData.participantRegNo) {
         router.push(`/participants/view/${formData.participantRegNo}`);
     } else {
         showMessage('Please select a participant first', 'error');
     }
-};
+}
 </script>
 
 <style scoped>
-/* General layout and container */
-.cpd-participant-container {
-    max-width: 900px;
-    margin: 30px auto;
-    /* Increased top/bottom margin */
-    padding: 30px;
-    font-family: 'Roboto', sans-serif;
-    /* Professional and readable font */
-    color: #333;
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s, transform 0.3s;
 }
 
-.form-card {
-    background-color: #fff;
-    border-radius: 12px;
-    /* More rounded corners */
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-    /* Softer, more modern shadow */
-    padding: 30px;
-}
-
-.form-title {
-    font-size: 2.2rem;
-    /* Slightly larger title */
-    color: #2d3748;
-    /* Darker, professional title color */
-    margin-bottom: 35px;
-    /* Increased bottom margin */
-    text-align: center;
-    font-weight: 600;
-    /* Semi-bold title */
-}
-
-.form-grid {
-    display: grid;
-    gap: 25px;
-    /* Increased gap between form rows */
-}
-
-.form-row {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    /* Increased gap between label and input */
-    padding-bottom: 18px;
-    /* Increased padding */
-    margin-bottom: 18px;
-    /* Increased margin */
-    border-bottom: 1px solid #e2e8f0;
-    /* Lighter border color */
-}
-
-.form-row:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.form-label {
-    font-weight: 500;
-    /* Medium font weight for labels */
-    color: #4a5568;
-    /* Slightly muted label color */
-    margin-bottom: 5px;
-    display: block;
-    font-size: 1rem;
-    /* Slightly larger label font */
-}
-
-.optional {
-    font-style: italic;
-    color: #718096;
-    /* Muted color for optional text */
-    margin-left: 5px;
-}
-
-.required {
-    color: #e53e3e;
-    /* Subtle red for required fields */
-    margin-left: 2px;
-    font-weight: bold;
-    font-size: 1.1em;
-    vertical-align: super;
-    position: relative;
-    top: -0.2em;
-}
-
-
-.form-input,
-.form-select,
-.form-textarea {
-    padding: 14px 16px;
-    /* Increased padding in inputs */
-    border: 1px solid #cbd5e0;
-    /* Lighter border color */
-    border-radius: 8px;
-    /* Slightly more rounded inputs */
-    font-size: 1rem;
-    color: #333;
-    background-color: #fff;
-    transition: border-color 0.2s ease;
-}
-
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
-    border-color: #63b3ed;
-    /* Focus border color */
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.2);
-    /* Softer focus shadow */
-}
-
-.form-textarea {
-    resize: vertical;
-    min-height: 120px;
-    /* Slightly taller textarea */
-}
-
-.input-group {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    /* Increased gap in input group */
-}
-
-.input-group .form-select {
-    flex-grow: 1;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.btn-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    /* Slightly larger buttons */
-    height: 40px;
-    /* border: 1px solid #cbd5e0; Removed border */
-    border-radius: 8px;
-    cursor: pointer;
-    color: #4a5568;
-    /* Icon color */
-    background-color: transparent;
-    /* Make background transparent */
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.btn-icon:hover,
-.btn-icon:focus {
-    background-color: rgba(0, 0, 0, 0.04);
-    /* Very subtle hover background */
-    color: #2d3748;
-    /* Darker icon color on hover */
-}
-
-
-.btn-icon i,
-.btn-icon lucide-icon {
-    font-size: 1.1rem;
-    /* Icon size */
-    vertical-align: middle;
-}
-
-
-.form-actions {
-    margin-top: 35px;
-    /* Increased margin */
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-}
-
-.btn-primary,
-.btn-secondary {
-    padding: 14px 30px;
-    /* Increased button padding */
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 1.1rem;
-    /* Slightly larger button text */
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    /* Subtle button shadow */
-}
-
-.btn-primary {
-    background-color: #43a047;
-    /* Primary green */
-    color: white;
-}
-
-.btn-secondary {
-    background-color: #f8f9fa;
-    /* Light gray secondary button */
-    color: #4a5568;
-    border: 1px solid #cbd5e0;
-}
-
-.btn-primary:hover,
-.btn-primary:focus {
-    background-color: #388e3c;
-    /* Darker green on hover */
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    /* Slightly stronger shadow on hover */
-}
-
-.btn-secondary:hover,
-.btn-secondary:focus {
-    background-color: #e9ecef;
-    /* Slightly darker secondary hover */
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-
-.message {
-    margin-top: 25px;
-    /* Increased margin */
-    padding: 18px;
-    /* Increased padding */
-    border-radius: 8px;
-    text-align: center;
-    font-weight: 500;
-}
-
-.success {
-    background-color: #e6f7e8;
-    color: #3ab759;
-    border: 1px solid #b7e1c1;
-}
-
-.error {
-    background-color: #fceeee;
-    color: #e74c3c;
-    border: 1px solid #f5c6cb;
-}
-
-.form-text-hint {
-    color: #718096;
-    /* Muted hint text color */
-    font-size: 0.9rem;
-    margin-top: 3px;
-}
-
-
-/* Accessibility helper class */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .cpd-participant-container {
-        margin: 20px auto;
-        padding: 20px;
-    }
-
-    .form-card {
-        padding: 20px;
-    }
-
-    .form-title {
-        font-size: 1.8rem;
-        margin-bottom: 25px;
-    }
-
-    .form-grid {
-        gap: 20px;
-    }
-
-    .form-row {
-        gap: 8px;
-        padding-bottom: 15px;
-        margin-bottom: 15px;
-    }
-
-    .form-label {
-        font-size: 0.95rem;
-        margin-bottom: 3px;
-    }
-
-    .form-input,
-    .form-select,
-    .form-textarea {
-        padding: 12px 14px;
-        font-size: 0.95rem;
-    }
-
-    .form-textarea {
-        min-height: 100px;
-    }
-
-    .input-group {
-        gap: 8px;
-    }
-
-    .action-buttons {
-        gap: 5px;
-    }
-
-    .btn-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
-    }
-
-    .btn-primary,
-    .btn-secondary {
-        padding: 12px 25px;
-        font-size: 1rem;
-    }
-
-    .message {
-        margin-top: 20px;
-        padding: 15px;
-        font-size: 0.9rem;
-    }
-
-    .form-text-hint {
-        font-size: 0.85rem;
-    }
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
 }
 </style>
