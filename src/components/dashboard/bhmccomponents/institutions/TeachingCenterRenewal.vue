@@ -124,6 +124,12 @@
                     </p>
                   </div>
                   <div>
+                    <p class="text-xs text-gray-500">Last Renewal</p>
+                    <p class="text-sm font-medium text-gray-800">
+                      {{ formatDate(center.last_renewal_date || center.valid_since) }}
+                    </p>
+                  </div>
+                  <div>
                     <p class="text-xs text-gray-500">Review Decision</p>
                     <p class="text-sm font-medium" :class="{
                       'text-green-600': center.tc_review_decision === 'Approved',
@@ -184,12 +190,35 @@
             </div>
           </div>
 
-          <!-- Renewal Button - only show if active and not already in renewal process -->
-          <div class="flex justify-end mt-8" v-if="center.is_active && !isRenewalInProgress(center)">
-            <button @click="openRenewalDialog(center)"
+          <!-- Action Buttons -->
+          <div class="flex justify-end mt-8 space-x-4">
+            <!-- View Certificate Button - show if active -->
+            <button v-if="center.is_active" @click="openCertificateDialog(center)"
+              class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline">
+              <span class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                View Certificate
+              </span>
+            </button>
+
+            <!-- Renewal Button - only show if active, not in renewal process, and within 90 days of expiration or expired -->
+            <button
+              v-if="center.is_active && !isRenewalInProgress(center) && (getDaysUntilExpiration(center) <= 90 || getDaysUntilExpiration(center) <= 0)"
+              @click="openRenewalDialog(center)"
               class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline"
               :class="{ 'animate-pulse': getDaysUntilExpiration(center) <= 30 }">
-              Renew Teaching Center
+              <span class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Renew Teaching Center
+              </span>
             </button>
           </div>
 
@@ -318,6 +347,10 @@
         </form>
       </div>
     </div>
+
+    <!-- Certificate Dialog -->
+    <CertificateDialog v-if="showCertificateDialog" :show="showCertificateDialog" :center-data="selectedCenter"
+      :cert-type="'teaching-center'" @close="closeCertificateDialog" />
   </div>
 </template>
 
@@ -326,6 +359,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from 'vue-toastification';
 import bmhcService from '@/services/bmhcservices';
+import CertificateDialog from './CertificateDialog.vue';
 
 // State variables
 const teachingCenters = ref([]);
@@ -333,6 +367,7 @@ const isLoading = ref(true);
 const apiError = ref(false);
 const errorMessage = ref('');
 const showRenewalDialog = ref(false);
+const showCertificateDialog = ref(false);
 const isRenewing = ref(false);
 const selectedCenter = ref(null);
 const selectedFile = ref(null);
@@ -481,6 +516,18 @@ const closeRenewalDialog = () => {
   selectedFileName.value = '';
 };
 
+// Open certificate dialog
+const openCertificateDialog = (center) => {
+  selectedCenter.value = center;
+  showCertificateDialog.value = true;
+};
+
+// Close certificate dialog
+const closeCertificateDialog = () => {
+  showCertificateDialog.value = false;
+  selectedCenter.value = null;
+};
+
 // Submit renewal request
 const confirmRenewal = async () => {
   if (!selectedCenter.value) {
@@ -503,6 +550,9 @@ const confirmRenewal = async () => {
     newValidTill.setDate(newValidTill.getDate() + 1); // Add 1 day
     newValidTill.setMonth(newValidTill.getMonth() + 12); // Add 12 months
 
+    // Store the current valid_since as last_renewal_date
+    const lastRenewalDate = selectedCenter.value.valid_since;
+
     // Prepare FormData for PATCH request with file upload
     const formData = new FormData();
 
@@ -512,6 +562,9 @@ const confirmRenewal = async () => {
     formData.append('is_active', false);
     formData.append('remarks', renewalFormData.value.remarks || '');
     formData.append('tc_declaration', true);
+
+    // Store last renewal date
+    formData.append('last_renewal_date', lastRenewalDate);
 
     // Add dates
     formData.append('valid_since', new Date().toISOString().split('T')[0]); // Today's date
@@ -535,6 +588,7 @@ const confirmRenewal = async () => {
           is_active: false,
           valid_since: new Date().toISOString().split('T')[0],
           valid_till: newValidTill.toISOString().split('T')[0],
+          last_renewal_date: center.valid_since,
           remarks: renewalFormData.value.remarks || center.remarks,
           tc_declaration: true
         };
