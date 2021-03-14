@@ -3,7 +3,7 @@
     <!-- Page Header -->
     <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
-        Teaching Center Renewal
+        Teaching Center Renewal ss
       </h2>
       <p class="text-gray-600 text-center max-w-2xl mx-auto">
         Manage and renew your teaching center registration
@@ -355,7 +355,7 @@
 </template>
 
 <script setup>
-import { ref,  onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 
 import { useToast } from 'vue-toastification';
 import bmhcService from '@/services/bmhcservices';

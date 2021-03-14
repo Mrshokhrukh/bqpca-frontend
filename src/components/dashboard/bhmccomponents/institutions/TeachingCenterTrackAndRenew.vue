@@ -68,10 +68,10 @@
         <div class="p-6">
           <!-- Expiration Alert -->
           <div v-if="center.is_active && getDaysUntilExpiration(center) <= 90" class="mb-6 p-4 rounded-lg" :class="[
-      getDaysUntilExpiration(center) <= 30
-        ? 'bg-red-50 text-red-700 border border-red-200'
-        : 'bg-yellow-50 text-yellow-700 border border-yellow-200',
-    ]">
+            getDaysUntilExpiration(center) <= 30
+              ? 'bg-red-50 text-red-700 border border-red-200'
+              : 'bg-yellow-50 text-yellow-700 border border-yellow-200',
+          ]">
             <div class="flex items-start">
               <div class="flex-shrink-0 mt-0.5">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -83,8 +83,8 @@
               <div class="ml-3">
                 <h3 class="text-sm font-medium">
                   {{
-      getDaysUntilExpiration(center) <= 0 ? 'Registration Expired!' : getDaysUntilExpiration(center) <= 30
-        ? 'Registration Expiring Soon!' : 'Registration Renewal Recommended' }} </h3>
+                    getDaysUntilExpiration(center) <= 0 ? 'Registration Expired!' : getDaysUntilExpiration(center) <= 30
+                      ? 'Registration Expiring Soon!' : 'Registration Renewal Recommended' }} </h3>
                     <div class="mt-1 text-sm">
                       <p v-if="getDaysUntilExpiration(center) <= 0">
                         Your teaching center registration has expired. Please renew immediately to
@@ -93,8 +93,8 @@
                       </p>
                       <p v-else>
                         Your teaching center registration will expire in {{
-      getDaysUntilExpiration(center)
-    }} days
+                          getDaysUntilExpiration(center)
+                        }} days
                         ({{ formatDate(center.valid_till) }}). Please renew your registration to
                         maintain your status.
                       </p>
@@ -128,24 +128,24 @@
                   <div>
                     <p class="text-xs text-gray-500">Valid Until</p>
                     <p class="text-sm font-medium" :class="[
-      !center.valid_till
-        ? 'text-gray-800'
-        : getDaysUntilExpiration(center) <= 0
-          ? 'text-red-600'
-          : getDaysUntilExpiration(center) <= 30
-            ? 'text-orange-600'
-            : 'text-gray-800',
-    ]">
+                      !center.valid_till
+                        ? 'text-gray-800'
+                        : getDaysUntilExpiration(center) <= 0
+                          ? 'text-red-600'
+                          : getDaysUntilExpiration(center) <= 30
+                            ? 'text-orange-600'
+                            : 'text-gray-800',
+                    ]">
                       {{ formatDate(center.valid_till) }}
                     </p>
                   </div>
                   <div>
                     <p class="text-xs text-gray-500">Review Decision</p>
                     <p class="text-sm font-medium" :class="{
-      'text-green-600': center.tc_review_decision === 'Approved',
-      'text-yellow-600': center.tc_review_decision === 'Pending',
-      'text-red-600': center.tc_review_decision === 'Rejected',
-    }">
+                      'text-green-600': center.tc_review_decision === 'Approved',
+                      'text-yellow-600': center.tc_review_decision === 'Pending',
+                      'text-red-600': center.tc_review_decision === 'Rejected',
+                    }">
                       {{ center.tc_review_decision }}
                     </p>
                   </div>
@@ -209,6 +209,29 @@
               Renew Teaching Center
             </button>
           </div>
+          <!-- Action Buttons -->
+          <div class="flex justify-end mt-8 space-x-4">
+            <!-- View Certificate Button - only show if active -->
+            <button v-if="center.is_active" @click="openCertificateDialog(center)"
+              class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline">
+              <span class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                View Certificate
+              </span>
+            </button>
+
+            <!-- Renewal Button - only show if active, within 3 months of expiration, and not already in renewal process -->
+            <button v-if="center.is_active && getDaysUntilExpiration(center) <= 90 && !isRenewalInProgress(center)"
+              @click="openRenewalDialog(center)"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline"
+              :class="{ 'animate-pulse': getDaysUntilExpiration(center) <= 30 }">
+              Renew Teaching Center
+            </button>
+          </div>
 
           <!-- Renewal in progress message / Application in progress-->
           <div v-if="isRenewalInProgress(center)"
@@ -241,6 +264,7 @@
                 Apply Again
               </button>
             </div>
+
           </div>
         </div>
       </div>
@@ -345,6 +369,9 @@
         </form>
       </div>
     </div>
+    <!-- Certificate Dialog -->
+    <CertificateDialog v-if="showCertificateDialog" :show="showCertificateDialog" :center-data="selectedCenter"
+      :cert-type="'teaching-center'" @close="closeCertificateDialog" />
   </div>
 </template>
 
@@ -353,7 +380,10 @@ import { ref, onMounted, computed } from 'vue';
 import { useAuthStore } from '@/stores/authStore'; // Corrected import
 import { useToast } from 'vue-toastification';
 import apiServices from '@/services/services';
-import {Loader} from 'lucide-vue-next'
+import { Loader } from 'lucide-vue-next'
+import CertificateDialog from './CertificateDialog.vue'; // Add this import
+
+
 
 // State variables
 const teachingCenters = ref([]);
@@ -365,6 +395,9 @@ const isRenewing = ref(false);
 const selectedCenter = ref(null);
 const selectedFile = ref(null);
 const selectedFileName = ref('');
+const showCertificateDialog = ref(false);
+
+
 
 // Renewal form data
 const renewalFormData = ref({
@@ -621,6 +654,19 @@ const fetchData = async () => {
   }
 };
 
+// Add these functions with your other functions
+
+// Open certificate dialog
+const openCertificateDialog = (center) => {
+  selectedCenter.value = center;
+  showCertificateDialog.value = true;
+};
+
+// Close certificate dialog
+const closeCertificateDialog = () => {
+  showCertificateDialog.value = false;
+  selectedCenter.value = null;
+};
 // Fetch data on component mount
 onMounted(fetchData);
 </script>
