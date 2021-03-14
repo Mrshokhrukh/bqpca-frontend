@@ -137,6 +137,7 @@ import { ref, computed, onBeforeMount, reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore';
+import { useInstitutionStore } from '@/stores/institutionNavigationStore';
 import {
   Menu,
   X as XIcon,
@@ -166,6 +167,12 @@ onBeforeMount(async () => {
     await healthStore.initialize();
   }
 
+  // Initialize institution store if needed
+  if (authStore.serviceType === 'health_certification' && authStore.role === 'institutions') {
+    const institutionStore = useInstitutionStore();
+    await institutionStore.initialize();
+  }
+
   // Generate navigation items after store initialization
   navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType);
 });
@@ -175,6 +182,12 @@ onMounted(async () => {
   if (authStore.serviceType === 'health_certification' && authStore.role === 'user') {
     const healthStore = useHealthCertificationStore();
     await healthStore.initialize();
+    navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType);
+  }
+
+  if (authStore.serviceType === 'health_certification' && authStore.role === 'institutions') {
+    const institutionStore = useInstitutionStore();
+    await institutionStore.initialize();
     navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType);
   }
 });

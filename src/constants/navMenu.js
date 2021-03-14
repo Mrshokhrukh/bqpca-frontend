@@ -94,6 +94,8 @@ const iconMap = {
 }
 import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
 import { useAuthStore } from '@/stores/authStore'
+import { useInstitutionStore } from '@/stores/institutionNavigationStore'
+
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
   return iconMap[iconName] || File
@@ -834,28 +836,34 @@ const serviceSpecificMenuItems = {
       {
         name: 'EOI Management',
         icon: getIconComponent('Activity'),
+        hidden: () => !useInstitutionStore().visibleMenus.showEoiManagement,
         children: [
           {
             name: 'Apply for EOI',
             route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_eoi`,
+            hidden: () => !useInstitutionStore().visibleMenus.showApplyForEoi,
           },
           {
             name: 'Track EOI',
             route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
+            hidden: () => !useInstitutionStore().visibleMenus.showTrackEoi,
           },
         ],
       },
       {
         name: 'DPR Management',
         icon: getIconComponent('Activity'),
+        hidden: () => !useInstitutionStore().visibleMenus.showDprManagement,
         children: [
           {
             name: 'Apply for DPR',
             route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_dpr`,
+            hidden: () => !useInstitutionStore().visibleMenus.showApplyForDpr,
           },
           {
             name: 'Track DPR',
             route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
+            hidden: () => !useInstitutionStore().visibleMenus.showTrackDpr,
           },
         ],
       },
@@ -863,11 +871,12 @@ const serviceSpecificMenuItems = {
         name: 'Institute Renewal',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
+        hidden: () => !useInstitutionStore().visibleMenus.showOtherMenus,
       },
-
       {
         name: 'Teaching Hospital',
         icon: getIconComponent('Activity'),
+        hidden: () => !useInstitutionStore().visibleMenus.showOtherMenus,
         children: [
           {
             name: 'Teaching Hospital',
@@ -885,28 +894,32 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Institution Profile',
-        icon: getIconComponent(''),
+        icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
+        hidden: () => !useInstitutionStore().visibleMenus.showOtherMenus,
       },
       {
         name: 'View Certificates',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
+        hidden: () => !useInstitutionStore().visibleMenus.showOtherMenus,
       },
-
       {
         name: 'My Applications',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/institutions/${serviceType}/my_applications`,
+        hidden: () => !useInstitutionStore().visibleMenus.showOtherMenus,
       },
       {
         name: 'CAPA',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
+        hidden: () => !useInstitutionStore().visibleMenus.showOtherMenus,
       },
       {
         name: 'Maintenance',
         icon: getIconComponent('Activity'),
+        hidden: () => !useInstitutionStore().visibleMenus.showOtherMenus,
         children: [
           {
             name: 'Staff Management',
