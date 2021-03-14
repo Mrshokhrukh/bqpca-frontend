@@ -1,3 +1,4 @@
+<!-- EducationPrograms.vue -->
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
@@ -7,35 +8,54 @@
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
           Total: {{ educationPrograms.length }}
         </span>
-        <!-- Add status indicators here if needed, e.g., for pending/approved programs -->
       </div>
     </div>
 
-    <!-- Search and Filter (if needed, implement similarly to Applications component) -->
-    <!--
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-      <div class="relative">
-        <input type="text" placeholder="Search programs..."
-          class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
-          fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-      </div>
-      <div class="flex gap-4">
-        <select
-          class="flex-1 px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-          <option value="all">All Statuses</option>
-          <option value="Pending">Pending</option>
-          <option value="Approved">Approved</option>
-          <option value="Rejected">Rejected</option>
-        </select>
+    <!-- Alert for Success/Error Messages -->
+    <div v-if="alert.show"
+      :class="`mb-4 p-4 rounded-md ${alert.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg v-if="alert.type === 'success'" class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd" />
+          </svg>
+          <svg v-else class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium">{{ alert.message }}</p>
+        </div>
+        <div class="ml-auto pl-3">
+          <div class="-mx-1.5 -my-1.5">
+            <button @click="alert.show = false" class="inline-flex rounded-md p-1.5"
+              :class="alert.type === 'success' ? 'text-green-500 hover:bg-green-100' : 'text-red-500 hover:bg-red-100'">
+              <span class="sr-only">Dismiss</span>
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-    -->
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div v-if="loading" class="flex justify-center my-8">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+
+    <div v-else-if="educationPrograms.length === 0"
+      class="bg-white p-8 text-center text-gray-500 rounded-xl shadow-sm border border-gray-100">
+      <p>No education programs found</p>
+    </div>
+
+    <div v-else class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
@@ -63,20 +83,24 @@
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="program in educationPrograms" :key="program.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ program.institute }}</div>
+                <div class="text-sm font-medium text-gray-900">{{ program.institute_name || program.institute }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ program.courseTitle }}</div>
+                <div class="text-sm text-gray-900">{{ program.course_title }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ program.durationMonths }} Months</div>
+                <div class="text-sm text-gray-900">{{ program.duration_in_months }} Months</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(program.commencementDate) }}
+                {{ formatDate(program.commencement_date) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="getStatusClasses(program.insReviewDecision)">
-                  {{ getStatusText(program.insReviewDecision) }}
+                <span class="px-3 py-1 rounded-full text-xs font-medium" :class="{
+                  'bg-yellow-100 text-yellow-800': program.ins_review_decision === 'Pending',
+                  'bg-green-100 text-green-800': program.ins_review_decision === 'Approved',
+                  'bg-red-100 text-red-800': program.ins_review_decision === 'Regretted'
+                }">
+                  {{ program.ins_review_decision }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -93,86 +117,125 @@
       </div>
     </div>
 
-    <!-- Pagination (if needed) -->
-    <!--
-    <div class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-      </div>
-    -->
+    <EducationProgramDetailsModal :is-open="isModalOpen" :program-details="selectedProgram" @close-modal="closeModal"
+      @approve="handleApprove" @regret="handleRegret" />
 
-    <EducationProgramDetailsModal :is-open="isModalOpen" :program-details="selectedProgram" @close-modal="closeModal" />
+    <!-- Confirmation Modal - Now using Teleport to ensure it appears on top -->
+    <Teleport to="body">
+      <div v-if="confirmModal.show" class="fixed z-50 inset-0 overflow-y-auto">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="confirmModal.show = false">
+          </div>
+          <span class="hidden sm:inline-block sm:align-middle sm:h-screen"></span>
+          <div
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div
+                  class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    {{ confirmModal.title }}
+                  </h3>
+                  <div class="mt-2">
+                    <p class="text-sm text-gray-500">
+                      {{ confirmModal.message }}
+                    </p>
+                  </div>
+                  <div v-if="confirmModal.action === 'regret'" class="mt-3">
+                    <label for="regret-reason" class="block text-sm font-medium text-gray-700">Reason for Regret</label>
+                    <textarea id="regret-reason" v-model="regretReason" rows="3"
+                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      placeholder="Please provide a reason for regret"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <button type="button" @click="confirmAction"
+                :class="`inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm
+                  ${confirmModal.action === 'approve' ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' : 'bg-red-600 hover:bg-red-700 focus:ring-red-500'}`">
+                {{ confirmModal.action === 'approve' ? 'Approve' : 'Regret' }}
+              </button>
+              <button type="button" @click="confirmModal.show = false"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import EducationProgramDetailsModal from '../modals/EducationProgramDetailsModal.vue'; // Adjust path if needed
+import { ref, onMounted } from 'vue';
+import EducationProgramDetailsModal from '../modals/EducationProgramDetailsModal.vue';
+import apiServices from '@/services/services';
 
-// Static data for education programs (replace with your actual data or API call later)
-const educationPrograms = ref([
-  {
-    id: 1,
-    institute: 'Medical College of City X',
-    courseTitle: 'Bachelor of Medicine',
-    durationMonths: 60,
-    commencementDate: '2024-09-15',
-    instituteAttachments: 'link-to-attachments-1',
-    remarks: 'Program focuses on general medicine.',
-    insDeclaration: 'Declaration text 1',
-    insRenewalReviewName: 'Reviewer 1',
-    insReviewSummary: 'Summary of review 1',
-    insReport: 'report-file-1.pdf',
-    insReviewDecision: 'Approved',
-    insReasonIfRejected: null,
-    insRemarks: 'Approved after minor revisions.',
-    isActive: true,
-    validTill: '2029-09-15',
-    paymentId: 'PAYID001',
-    isPaymentComplete: true,
-  },
-  {
-    id: 2,
-    institute: 'University Health Sciences Y',
-    courseTitle: 'Master of Surgery',
-    durationMonths: 36,
-    commencementDate: '2025-01-10',
-    instituteAttachments: 'link-to-attachments-2',
-    remarks: 'Specialization in surgical procedures.',
-    insDeclaration: 'Declaration text 2',
-    insRenewalReviewName: 'Reviewer 2',
-    insReviewSummary: 'Summary of review 2',
-    insReport: 'report-file-2.pdf',
-    insReviewDecision: 'Pending',
-    insReasonIfRejected: null,
-    insRemarks: 'Under review by committee.',
-    isActive: false,
-    validTill: '2027-01-10',
-    paymentId: 'PAYID002',
-    isPaymentComplete: false,
-  },
-  {
-    id: 3,
-    institute: 'Institute of Advanced Medicine Z',
-    courseTitle: 'PhD in Neuroscience',
-    durationMonths: 48,
-    commencementDate: '2024-11-01',
-    instituteAttachments: 'link-to-attachments-3',
-    remarks: 'Research-oriented program in neuroscience.',
-    insDeclaration: 'Declaration text 3',
-    insRenewalReviewName: 'Reviewer 3',
-    insReviewSummary: 'Summary of review 3',
-    insReport: 'report-file-3.pdf',
-    insReviewDecision: 'Rejected',
-    insReasonIfRejected: 'Did not meet research criteria.',
-    insRemarks: 'Rejected due to insufficient research proposal.',
-    isActive: false,
-    validTill: null,
-    paymentId: 'PAYID003',
-    isPaymentComplete: true,
-  },
-]);
-
+const educationPrograms = ref([]);
 const isModalOpen = ref(false);
 const selectedProgram = ref({});
+const loading = ref(false);
+const regretReason = ref('');
+
+// Alert system for success/error messages
+const alert = ref({
+  show: false,
+  type: 'success',
+  message: ''
+});
+
+// Confirmation modal
+const confirmModal = ref({
+  show: false,
+  title: '',
+  message: '',
+  action: '',
+  programId: null
+});
+
+onMounted(async () => {
+  await fetchEducationPrograms();
+});
+
+const fetchEducationPrograms = async () => {
+  try {
+    loading.value = true;
+
+    // Fetch Education Programs from the API
+    const response = await apiServices.getBmhcCourseDetails();
+    console.log('API Response:', response);
+
+    // Extract data from response based on structure
+    if (response && response.data && response.data.results) {
+      educationPrograms.value = response.data.results;
+    } else if (response && response.results) {
+      educationPrograms.value = response.results;
+    } else if (Array.isArray(response)) {
+      educationPrograms.value = response;
+    } else if (response && Array.isArray(response.data)) {
+      educationPrograms.value = response.data;
+    } else {
+      console.error("Unexpected API response structure:", response);
+      showAlert('error', 'Failed to load education programs data');
+    }
+
+    console.log('Education programs loaded:', educationPrograms.value);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    showAlert('error', 'Failed to load education programs data');
+  } finally {
+    loading.value = false;
+  }
+};
 
 const openModal = (program) => {
   selectedProgram.value = program;
@@ -193,26 +256,104 @@ const formatDate = (date) => {
   });
 };
 
-const getStatusText = (decision) => {
-  switch (decision) {
-    case 'Approved':
-      return 'Approved';
-    case 'Rejected':
-      return 'Rejected';
-    default:
-      return 'Pending';
+const handleApprove = () => {
+  confirmModal.value = {
+    show: true,
+    title: 'Approve Education Program',
+    message: `Are you sure you want to approve "${selectedProgram.value.course_title}"?`,
+    action: 'approve',
+    programId: selectedProgram.value.id
+  };
+};
+
+const handleRegret = () => {
+  confirmModal.value = {
+    show: true,
+    title: 'Regret Education Program',
+    message: `Are you sure you want to regret "${selectedProgram.value.course_title}"?`,
+    action: 'regret',
+    programId: selectedProgram.value.id
+  };
+  regretReason.value = ''; // Reset regret reason
+};
+
+const confirmAction = async () => {
+  try {
+    loading.value = true;
+    const id = confirmModal.value.programId;
+
+    if (!id) {
+      throw new Error('Education program ID is missing');
+    }
+
+    // Create the update data object with the ins_review_decision field
+    const updateData = {
+      ins_review_decision: confirmModal.value.action === 'approve' ? 'Approved' : 'Regretted'
+    };
+
+    // Add reason if rejecting
+    if (confirmModal.value.action === 'regret') {
+      if (!regretReason.value.trim()) {
+        showAlert('error', 'Please provide a reason for regret');
+        loading.value = false;
+        return;
+      }
+      updateData.ins_reason_if_rejected = regretReason.value.trim();
+    }
+
+    console.log('Updating program with data:', updateData);
+
+    // Update the education program via API
+    const response = await apiServices.patchBmhcCourseDetail(id, updateData);
+    console.log('API update response:', response);
+
+    // Update local data to reflect the change
+    const index = educationPrograms.value.findIndex(program => program.id === id);
+    if (index !== -1) {
+      educationPrograms.value[index].ins_review_decision = updateData.ins_review_decision;
+      if (updateData.ins_reason_if_rejected) {
+        educationPrograms.value[index].ins_reason_if_rejected = updateData.ins_reason_if_rejected;
+      }
+
+      // Also update the selected program if it's currently being viewed
+      if (selectedProgram.value.id === id) {
+        selectedProgram.value.ins_review_decision = updateData.ins_review_decision;
+        if (updateData.ins_reason_if_rejected) {
+          selectedProgram.value.ins_reason_if_rejected = updateData.ins_reason_if_rejected;
+        }
+      }
+    }
+
+    // Show success message
+    showAlert(
+      'success',
+      `Education program ${confirmModal.value.action === 'approve' ? 'approved' : 'regretted'} successfully`
+    );
+
+    // Close modals
+    confirmModal.value.show = false;
+    closeModal(); // Close the details modal as well after successful action
+
+    // Optionally refresh data from the server to ensure we have the latest state
+    await fetchEducationPrograms();
+  } catch (error) {
+    console.error('Error updating education program:', error);
+    showAlert('error', `Failed to ${confirmModal.value.action} education program: ${error.message}`);
+  } finally {
+    loading.value = false;
   }
 };
 
-const getStatusClasses = (decision) => {
-  const status = getStatusText(decision);
-  return [
-    'px-3 py-1 rounded-full text-xs font-medium',
-    {
-      'bg-yellow-100 text-yellow-800': status === 'Pending',
-      'bg-green-100 text-green-800': status === 'Approved',
-      'bg-red-100 text-red-800': status === 'Rejected'
-    }
-  ];
+const showAlert = (type, message) => {
+  alert.value = {
+    show: true,
+    type,
+    message
+  };
+
+  // Auto-hide alert after 5 seconds
+  setTimeout(() => {
+    alert.value.show = false;
+  }, 5000);
 };
 </script>
