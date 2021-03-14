@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto px-4 py-8">
+  <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Page Header -->
     <div class="bg-gray-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
@@ -59,15 +59,15 @@
       <div class="p-6">
         <!-- Expiration Alert -->
         <div v-if="isActive && daysUntilExpiration <= 90" class="mb-6 p-4 rounded-lg border" :class="[
-      daysUntilExpiration <= 30 ? 'border-red-400' :
-        'border-yellow-400'
-    ]">
+          daysUntilExpiration <= 30 ? 'border-red-400' :
+            'border-yellow-400'
+        ]">
           <div class="flex items-start">
             <div class="flex-shrink-0 mt-0.5">
               <!-- Icon color change -->
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :class="[
-      daysUntilExpiration <= 30 ? 'text-red-500' : 'text-yellow-500'
-    ]" viewBox="0 0 20 20" fill="currentColor">
+                daysUntilExpiration <= 30 ? 'text-red-500' : 'text-yellow-500'
+              ]" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd"
                   d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
                   clip-rule="evenodd" />
@@ -76,11 +76,11 @@
             <!-- Text color changes -->
             <div class="ml-3">
               <h3 class="text-sm font-medium" :class="[
-      daysUntilExpiration <= 30 ? 'text-red-700' : 'text-yellow-700'
-    ]">
+                daysUntilExpiration <= 30 ? 'text-red-700' : 'text-yellow-700'
+              ]">
                 {{
-      daysUntilExpiration <= 0 ? 'Registration Expired!' : daysUntilExpiration <= 30
-        ? 'Registration Expiring Soon!' : 'Registration Renewal Recommended' }} </h3>
+                  daysUntilExpiration <= 0 ? 'Registration Expired!' : daysUntilExpiration <= 30
+                    ? 'Registration Expiring Soon!' : 'Registration Renewal Recommended' }} </h3>
                   <div class="mt-1 text-sm text-gray-600">
                     <p v-if="daysUntilExpiration <= 0">
                       Your institute registration has expired. Please renew immediately to maintain your registration
@@ -178,12 +178,19 @@
           </div>
         </div>
 
-        <!-- Renewal Button - only show if active AND within 3 months of expiration -->
-        <div class="flex justify-end mt-8" v-if="isActive && !isRenewalInProgress && daysUntilExpiration <= 90">
-          <button @click="openRenewalDialog"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline"
+        <!-- Buttons Section - Renewal and View Certificate -->
+        <div class="flex justify-end mt-8" v-if="isActive">
+          <!-- Renewal Button - only show if active and not in renewal process -->
+          <button v-if="!isRenewalInProgress" @click="openRenewalDialog"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline mr-4"
             :class="{ 'animate-pulse': daysUntilExpiration <= 30 }">
             Renew Institute Registration
+          </button>
+
+          <!-- View Certificate Button - only shows when approved -->
+          <button v-if="instituteData?.do_dpr_review_decision === 'Approved'" @click="openCertificatePopup"
+            class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline">
+            View Certificate
           </button>
         </div>
 
@@ -224,6 +231,38 @@
         </div>
       </div>
     </div>
+
+    <!-- Certificate Popup Dialog -->
+    <div v-if="showCertificatePopup"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto print:hidden">
+      <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-5xl w-full h-5/6 overflow-y-auto">
+        <div class="flex justify-between items-center mb-4 print:hidden">
+          <h3 class="text-xl font-bold text-gray-900">Institute Certificate</h3>
+          <button @click="closeCertificatePopup" class="text-gray-500 hover:text-gray-700">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="certificate-wrapper">
+          <InstituteCertificate :instituteName="instituteData?.name_of_institution"
+            :initialRegistrationDate="formattedRegistrationDate" :lastRenewalDate="formattedLastRenewalDate"
+            :expiryDate="formattedExpirationDate" :programs="instituteData?.programs || '-'" />
+        </div>
+
+        <div class="flex justify-end mt-4 print:hidden">
+          <button @click="closeCertificatePopup"
+            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Close
+          </button>
+          <button @click="printCertificate"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-4">
+            Print Certificate
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -232,7 +271,8 @@ import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from 'vue-toastification';
 import bmhcService from '@/services/bmhcservices';
-import { Loader } from 'lucide-vue-next'
+import { Loader } from 'lucide-vue-next';
+import InstituteCertificate from './InstituteCertificate.vue'; // Import the certificate component
 
 // State variables
 const instituteData = ref(null);
@@ -241,6 +281,7 @@ const apiError = ref(false);
 const errorMessage = ref('');
 const showRenewalDialog = ref(false);
 const isRenewing = ref(false);
+const showCertificatePopup = ref(false); // Certificate popup state
 
 // Get auth store and toast notification
 const authStore = useAuthStore();
@@ -260,6 +301,16 @@ const formattedActiveDate = computed(() => {
 const formattedExpirationDate = computed(() => {
   if (!instituteData.value?.valid_till) return 'N/A';
   return new Date(instituteData.value.valid_till).toLocaleDateString();
+});
+
+const formattedRegistrationDate = computed(() => {
+  if (!instituteData.value?.registration_date) return 'N/A';
+  return new Date(instituteData.value.registration_date).toLocaleDateString();
+});
+
+const formattedLastRenewalDate = computed(() => {
+  if (!instituteData.value?.last_renewal_date) return 'N/A';
+  return new Date(instituteData.value.last_renewal_date).toLocaleDateString();
 });
 
 const daysUntilExpiration = computed(() => {
@@ -368,6 +419,21 @@ const closeRenewalDialog = () => {
   showRenewalDialog.value = false;
 };
 
+// Open certificate popup
+const openCertificatePopup = () => {
+  showCertificatePopup.value = true;
+};
+
+// Close certificate popup
+const closeCertificatePopup = () => {
+  showCertificatePopup.value = false;
+};
+
+// Print certificate
+const printCertificate = () => {
+  window.print();
+};
+
 // Submit renewal request
 const confirmRenewal = async () => {
   if (!instituteData.value) {
@@ -419,5 +485,26 @@ onMounted(fetchInstituteData);
 </script>
 
 <style scoped>
-/* Any component-specific styles */
+/* Component-specific styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .certificate-wrapper,
+  .certificate-wrapper * {
+    visibility: visible;
+  }
+
+  .certificate-wrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+}
 </style>

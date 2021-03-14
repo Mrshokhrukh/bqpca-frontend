@@ -171,13 +171,9 @@ const closeModal = () => {
   selectedInstitute.value = {}; // Clear selected application data when closing
 };
 
-const formatDate = (date) => {
-  if (!date) return 'Not Set';
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  return new Date(dateString).toLocaleDateString();
 };
 
 const handleApprove = async (institute) => {
@@ -188,22 +184,20 @@ const handleApprove = async (institute) => {
     const validTill = new Date();
     validTill.setFullYear(validTill.getFullYear() + 1);
 
-    // Update the institute status
+    // Update the institute status with is_active set to true
     const updatedData = {
       review_decision: 'Approved',
+      do_dpr_review_decision: 'Approved', // Set both review fields
+      is_active: true, // This is the missing key field
       valid_since: currentDate.toISOString().split('T')[0],
       valid_till: validTill.toISOString().split('T')[0],
     };
 
     await apiService.patchBmhcInstitute(institute.id, updatedData);
 
-    // Refresh the institutes list
+    // Rest of your code remains the same
     await fetchInstitutes();
-
-    // Show success message
     toast.success(`Approved renewal application for: ${institute.name_of_institution}`);
-
-    // Close modal if open
     if (isModalOpen.value) {
       closeModal();
     }
