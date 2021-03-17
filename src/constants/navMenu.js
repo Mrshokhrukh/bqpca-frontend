@@ -338,7 +338,7 @@ const serviceSpecificMenuItems = {
       {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
-        route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`,
       },
       {
         name: 'Applications',
