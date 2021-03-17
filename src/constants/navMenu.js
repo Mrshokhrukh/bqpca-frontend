@@ -951,7 +951,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
       },
       {
-        name: 'Registration Services',
+        name: 'Certification',
         icon: getIconComponent('ClipboardCheck'),
         children: [
           {
@@ -979,26 +979,33 @@ const serviceSpecificMenuItems = {
       {
         name: 'CPD Management',
         icon: getIconComponent('BookOpen'),
-        route: (serviceType) => `/admin/user/${serviceType}/cpd`,
-      },
-      {
-        name: 'Payment',
-        icon: getIconComponent('CreditCard'),
         children: [
           {
-            name: 'Payment Link',
-            route: (serviceType) => `/admin/user/${serviceType}/payment`,
+            name: 'Apply for CPD',
+            route: (serviceType) => `/admin/user/${serviceType}/cpd`,
           },
           {
-            name: 'Payment History',
-            route: (serviceType) => `/admin/user/${serviceType}/payment_history`,
+            name: 'track CPD Applications',
+            route: (serviceType) => `/admin/user/${serviceType}/track_cpd_applications`,
+
           },
         ],
+
       },
       {
-        name: 'Reports',
-        icon: getIconComponent('FileText'),
-        route: (serviceType) => `/admin/user/${serviceType}/reports`,
+        name: 'CoGS Management',
+        icon: getIconComponent('CreditCard'),
+
+        children: [
+          {
+            name: 'Apply for CoGS',
+            route: (serviceType) => `/admin/user/${serviceType}/CoGS`,
+          },
+          {
+            name: 'Track CoGS Applications',
+            route: (serviceType) => `/admin/user/${serviceType}/track_cogs_applications`,
+          },
+        ],
       },
       {
         name: 'Profile',
