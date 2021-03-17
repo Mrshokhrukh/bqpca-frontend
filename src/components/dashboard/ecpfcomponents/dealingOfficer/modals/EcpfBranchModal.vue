@@ -23,12 +23,24 @@
                     <p class="mt-1 text-white/90">Application ID: {{ application.cidNo }}</p>
                   </div>
 
-                  <!-- Status Indicator -->
-                  <div class="bg-white/20 px-4 py-2 rounded-lg backdrop-blur-sm">
-                    <span class="flex items-center">
-                      <span class="h-3 w-3 rounded-full bg-green-400 mr-2 animate-pulse"></span>
-                      <span class="font-medium">{{ getApplicationStatus }}</span>
-                    </span>
+                  <div class="flex items-center space-x-4">
+                    <!-- Edit Button -->
+                    <button
+                      type="button"
+                      class="rounded-md text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
+                      @click="editApplicationHandler"
+                      aria-label="Edit application details"
+                    >
+                      <PencilIcon class="h-5 w-5" aria-hidden="true" />
+                    </button>
+
+                    <!-- Status Indicator -->
+                    <div class="bg-white/20 px-4 py-2 rounded-lg backdrop-blur-sm">
+                      <span class="flex items-center">
+                        <span class="h-3 w-3 rounded-full bg-green-400 mr-2 animate-pulse"></span>
+                        <span class="font-medium">{{ getApplicationStatus }}</span>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -445,7 +457,8 @@ import {
   DocumentDuplicateIcon,
   CheckIcon,
   XMarkIcon,
-  DocumentArrowDownIcon
+  DocumentArrowDownIcon,
+  PencilIcon // Import Pencil Icon
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
@@ -468,7 +481,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['close', 'update', 'update-verification', 'update-evaluation', 'update-mou'])
+const emit = defineEmits(['close', 'update', 'update-verification', 'update-evaluation', 'update-mou', 'edit']) // Add 'edit' event
 
 const activeTab = ref('proposal') // Default to proposal tab
 
@@ -479,6 +492,12 @@ const closeModalHandler = () => {
   console.log("Closing modal");
   emit('close');
 }
+
+const editApplicationHandler = () => {
+  console.log("Edit Application Handler called");
+  emit('edit', props.application); // Emit 'edit' event with application data
+  closeModal(); // Close the modal after emitting edit event (optional, depends on desired behavior)
+};
 
 
 // Form Data for Verification, Evaluation, and MoU (local to Modal)
