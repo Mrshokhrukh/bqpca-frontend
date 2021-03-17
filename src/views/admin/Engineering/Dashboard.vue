@@ -53,7 +53,7 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import ApplicationTable from '@/components/common/ROQUserApplicationsList.vue';
+// import ApplicationTable from '@/components/common/ROQUserApplicationsList.vue';
 
 // Engineering Component Imports
 import EngineeringAdminDashboard from '@/components/dashboard/engineeringcomponents/admin/EngineeringAdminDashboard.vue';

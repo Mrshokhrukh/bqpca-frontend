@@ -368,7 +368,7 @@
           <div class="p-8">
             <button @click="generateCertificate"
               class="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-              <DocumentDownloadIcon class="h-5 w-5 mr-2" />
+              <DocumentIcon class="h-5 w-5 mr-2" />
               Generate Certificate
             </button>
 
@@ -415,7 +415,7 @@ import {
   CheckIcon,
   CreditCardIcon,
   DocumentTextIcon,
-  DocumentDownloadIcon,
+  DocumentIcon,
   PrinterIcon,
 } from '@heroicons/vue/24/outline'
 //import * as yup from 'yup'; // Install VeeValidate or Yup for complex validation rules
