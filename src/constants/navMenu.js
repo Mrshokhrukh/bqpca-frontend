@@ -416,9 +416,22 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_link_establishment`,
       },
       {
-        name: 'Bio data',
-        icon: getIconComponent('FileText'),
-        route: (serviceType) => `/admin/admin/${serviceType}/bio_data`,
+        name: 'Bio Data',
+        icon: getIconComponent('Activity'), //Use activity
+        children: [
+          {
+            name: 'Add HR',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/add_hr`,
+            
+          },
+          {
+            name: 'Add Student',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/add_student`,
+            
+          },
+
+
+        ],
       },
       {
         name: 'Reports',

@@ -68,6 +68,8 @@ import MassMediaEvent from '@/components/dashboard/ecpfcomponents/dealingOfficer
 import HeiVisit from '@/components/dashboard/ecpfcomponents/dealingOfficer/HeiVisit.vue';
 import InhouseEvent from '@/components/dashboard/ecpfcomponents/dealingOfficer/InhouseEvent.vue';
 import ECPFLinkEstablishment from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFLinkEstablishment.vue';
+import AddHr from '@/components/dashboard/ecpfcomponents/dealingOfficer/AddHr.vue';
+import AddStudent from '@/components/dashboard/ecpfcomponents/dealingOfficer/AddStudent.vue';
 
 // Chief Components
 import ECPFChiefDashboard from '@/components/dashboard/ecpfcomponents/chief/ECPFChiefDashboard.vue';
@@ -156,6 +158,10 @@ const ecpfDealingOfficerComponent = computed(() => {
       return InhouseEvent;
     case path.endsWith('/ecpf/ecpf_link_establishment'):
       return ECPFLinkEstablishment;
+    case path.endsWith('/ecpf/add_hr'):
+      return AddHr;   
+    case path.endsWith('/ecpf/add_student'):
+      return AddStudent;  
 
     default:
       return null;

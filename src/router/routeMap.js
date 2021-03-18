@@ -182,6 +182,8 @@ export default {
       mass_media_applications: ecpfDashboard,
       hei_visit_applications: ecpfDashboard,
       ecpf_link_establishment: ecpfDashboard,
+      add_hr: ecpfDashboard,
+      add_student: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,
