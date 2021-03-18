@@ -112,15 +112,15 @@ const ecpfUserComponent = computed(() => {
     case path.endsWith('/ecpf/ecpf_massmedia'):
       return ECPFMassmedia;
     case path.endsWith('/ecpf/ecpf_hei_visit'):
-      return ECPFHeiVisit;  
+      return ECPFHeiVisit;
     case path.endsWith('/ecpf/hr_biodata'):
-      return HrBiodata; 
+      return HrBiodata;
     case path.endsWith('/ecpf/student_biodata'):
-      return StudentBiodata;  
+      return StudentBiodata;
     case path.endsWith('/ecpf/profile'):
-      return ECPFUserProfile;  
+      return ECPFUserProfile;
     case path.endsWith('/ecpf/track_applications'):
-      return ECPFTrackApplications;   
+      return ECPFTrackApplications;
     default:
       return null;
   }
@@ -137,25 +137,25 @@ const ecpfDealingOfficerComponent = computed(() => {
     case path.endsWith('/ecpf/collaborated_ecpf_applications'):
       return CollaboratedEcpfApplications;
     case path.endsWith('/ecpf/branch_ecpf_applications'):
-      return BranchEcpfApplications;  
+      return BranchEcpfApplications;
     case path.endsWith('/ecpf/renewal_applications'):
-      return RenewalApplications;  
+      return RenewalApplications;
     case path.endsWith('/ecpf/ownership_change_applications'):
       return OwnershipChangeApplications;
     case path.endsWith('/ecpf/name_change_applications'):
-      return NameChangeApplications;  
+      return NameChangeApplications;
     case path.endsWith('/ecpf/location_change_applications'):
-      return LocationChangeApplications;  
+      return LocationChangeApplications;
     case path.endsWith('/ecpf/education_fair_applications'):
-      return EducationFair;  
+      return EducationFair;
     case path.endsWith('/ecpf/mass_media_applications'):
-      return MassMediaEvent;  
+      return MassMediaEvent;
     case path.endsWith('/ecpf/hei_visit_applications'):
       return HeiVisit;
     case path.endsWith('/ecpf/in_house_event_applications'):
-      return InhouseEvent;  
-    case path.endsWith('/ecpf//ecpf_link_establishment'):
-      return ECPFLinkEstablishment;  
+      return InhouseEvent;
+    case path.endsWith('/ecpf/ecpf_link_establishment'):
+      return ECPFLinkEstablishment;
 
     default:
       return null;
