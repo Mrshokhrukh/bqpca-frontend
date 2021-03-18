@@ -126,13 +126,13 @@
                         <div class="mt-6 flex justify-end space-x-2">
                           <button type="button"
                             class="rounded-md px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all"
-                            @click="saveVerificationDecision('Accepted')">
+                            @click="openAcceptDialog">
                             <CheckIcon class="h-4 w-4 inline-block mr-1" />
                             Accept
                           </button>
                           <button type="button"
                             class="rounded-md px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all"
-                            @click="confirmRejectVerification">
+                            @click="openRejectDialog">
                             <XMarkIcon class="h-4 w-4 inline-block mr-1" />
                             Regret
                           </button>
@@ -155,6 +155,110 @@
                   class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
                   @click="submitVerification">
                   Submit Verification
+                </button>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+
+  <!-- Accept Confirmation Dialog -->
+  <TransitionRoot appear :show="isAcceptDialogOpen" as="template">
+    <Dialog as="div" @close="closeAcceptDialog" class="relative z-50">
+      <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
+        leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
+        <div class="fixed inset-0 bg-black/25" aria-hidden="true" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4">
+          <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95">
+            <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 flex items-center">
+                <div class="bg-green-100 p-2 rounded-full mr-2">
+                  <CheckIcon class="h-5 w-5 text-green-600" />
+                </div>
+                Confirm Acceptance
+              </DialogTitle>
+              <div class="mt-4">
+                <p class="text-sm text-gray-500">
+                  Are you sure you want to accept this HEI Visit application? Please review your comments and conditions before proceeding.
+                </p>
+              </div>
+
+              <div class="mt-4">
+                <label class="text-sm font-medium text-gray-700">Comments:</label>
+                <textarea v-model="acceptDialogMessage" rows="3"
+                  class="shadow-sm focus:ring-green-500 focus:border-green-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
+                  placeholder="Add any additional comments or instructions..."></textarea>
+              </div>
+
+              <div class="mt-6 flex justify-end space-x-3">
+                <button type="button"
+                  class="inline-flex justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                  @click="closeAcceptDialog">
+                  Cancel
+                </button>
+                <button type="button"
+                  class="inline-flex justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  @click="confirmAccept">
+                  Confirm Acceptance
+                </button>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+
+  <!-- Reject Confirmation Dialog -->
+  <TransitionRoot appear :show="isRejectDialogOpen" as="template">
+    <Dialog as="div" @close="closeRejectDialog" class="relative z-50">
+      <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
+        leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
+        <div class="fixed inset-0 bg-black/25" aria-hidden="true" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4">
+          <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95">
+            <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 flex items-center">
+                <div class="bg-red-100 p-2 rounded-full mr-2">
+                  <XMarkIcon class="h-5 w-5 text-red-600" />
+                </div>
+                Confirm Rejection
+              </DialogTitle>
+              <div class="mt-4">
+                <p class="text-sm text-gray-500">
+                  Are you sure you want to regret this HEI Visit application? This action cannot be undone.
+                </p>
+              </div>
+
+              <div class="mt-4">
+                <label class="text-sm font-medium text-gray-700">Rejection Reason:</label>
+                <textarea v-model="rejectDialogMessage" rows="3"
+                  class="shadow-sm focus:ring-red-500 focus:border-red-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
+                  placeholder="Please provide a reason for rejection..."></textarea>
+              </div>
+
+              <div class="mt-6 flex justify-end space-x-3">
+                <button type="button"
+                  class="inline-flex justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                  @click="closeRejectDialog">
+                  Cancel
+                </button>
+                <button type="button"
+                  class="inline-flex justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  @click="confirmReject">
+                  Confirm Rejection
                 </button>
               </div>
             </DialogPanel>
@@ -198,6 +302,51 @@ const verificationForm = ref({
   remarksText: '',
 });
 
+// Dialog states
+const isAcceptDialogOpen = ref(false);
+const isRejectDialogOpen = ref(false);
+const acceptDialogMessage = ref('');
+const rejectDialogMessage = ref('');
+
+// Dialog functions
+const openAcceptDialog = () => {
+  acceptDialogMessage.value = verificationForm.value.conditionText || '';
+  isAcceptDialogOpen.value = true;
+};
+
+const closeAcceptDialog = () => {
+  isAcceptDialogOpen.value = false;
+};
+
+const openRejectDialog = () => {
+  rejectDialogMessage.value = verificationForm.value.regretReason || '';
+  isRejectDialogOpen.value = true;
+};
+
+const closeRejectDialog = () => {
+  isRejectDialogOpen.value = false;
+};
+
+const confirmAccept = () => {
+  // Transfer the dialog message to the form
+  verificationForm.value.verificationDecision = 'accepted';
+  verificationForm.value.conditionText = acceptDialogMessage.value;
+
+  // Save the verification
+  saveVerificationDecision('Accepted');
+  closeAcceptDialog();
+};
+
+const confirmReject = () => {
+  // Transfer the dialog message to the form
+  verificationForm.value.verificationDecision = 'regretted';
+  verificationForm.value.regretReason = rejectDialogMessage.value;
+
+  // Save the verification
+  saveVerificationDecision('Regretted');
+  closeRejectDialog();
+};
+
 const saveVerificationDecision = (action) => {
   console.log('Verification Decision:', verificationForm.value, 'Action:', action, 'for CID:', props.application.cid);
   emit('update-verification', {
@@ -207,16 +356,15 @@ const saveVerificationDecision = (action) => {
   closeModal();
 };
 
-const confirmRejectVerification = () => {
-  if (confirm('Are you sure you want to regret this application at verification stage?')) {
-    saveVerificationDecision('Regretted');
+const submitVerification = () => {
+  if (verificationForm.value.verificationDecision === 'accepted') {
+    openAcceptDialog();
+  } else if (verificationForm.value.verificationDecision === 'regretted') {
+    openRejectDialog();
+  } else {
+    alert('Please select a verification decision before submitting.');
   }
 };
-
-const submitVerification = () => {
-  saveVerificationDecision(verificationForm.value.verificationDecision === 'accepted' ? 'Accepted' : 'Regretted');
-};
-
 
 watch(() => props.application, (newApplication) => {
   if (newApplication) {
