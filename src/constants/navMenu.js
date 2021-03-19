@@ -422,12 +422,12 @@ const serviceSpecificMenuItems = {
           {
             name: 'Add HR',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/add_hr`,
-            
+
           },
           {
             name: 'Add Student',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/add_student`,
-            
+
           },
 
 
@@ -436,12 +436,12 @@ const serviceSpecificMenuItems = {
       {
         name: 'Reports',
         icon: getIconComponent('FileSearch'),
-        route: (serviceType) => `/admin/admin/${serviceType}/reports`,
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_reports`,
       },
       {
         name: 'Payments',
         icon: getIconComponent('CreditCard'),
-        route: (serviceType) => `/admin/admin/${serviceType}/payments`,
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_payment_history`,
       },
     ],
     // // Add dealing_officer to ecpf

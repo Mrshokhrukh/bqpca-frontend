@@ -1,7 +1,7 @@
 <!-- HRBioDataTable.vue -->
 <template>
-  <div class="p-8 min-h-screen bg-gray-100">
-    <div class="max-w-7xl mx-auto">
+  <div class="p-8 min-h-screen ">
+    <div class=" mx-auto">
       <!-- Header with Add Buttons and Filters -->
       <div class="mb-6 flex justify-between items-center">
         <div>
@@ -107,7 +107,12 @@
       </div>
 
 <!-- HR Modal -->
-      <HRBioDataModal :is-open="isHRModalOpen" @close="closeHRModal" />
+      <HRBioDataModal
+        :is-open="isHRModalOpen"
+        @close="closeHRModal"
+        :hr-data-to-edit="selectedHR"
+        :modal-mode="modalMode"
+      />
     </div>
   </div>
 </template>
@@ -123,21 +128,32 @@ const hrData = ref([
 ]);
 
 const isHRModalOpen = ref(false);
+const selectedHR = ref(null); // To store the HR data for view/edit
+const modalMode = ref('add'); // To track modal mode: 'add', 'view', 'edit'
 
 const openAddHRModal = () => {
+  selectedHR.value = null; // Clear selected HR data for Add mode
+  modalMode.value = 'add';
   isHRModalOpen.value = true;
 };
 
 const closeHRModal = () => {
   isHRModalOpen.value = false;
+  selectedHR.value = null; // Clear selected HR data when modal is closed
 };
 
 const viewHR = (hr) => {
+  selectedHR.value = hr;
+  modalMode.value = 'view';
+  isHRModalOpen.value = true;
   console.log('View HR:', hr);
   // Logic to view HR details (open modal or navigate to detail page)
 };
 
 const editHR = (hr) => {
+  selectedHR.value = hr;
+  modalMode.value = 'edit';
+  isHRModalOpen.value = true;
   console.log('Edit HR:', hr);
   // Logic to edit HR details (open modal for editing)
 };

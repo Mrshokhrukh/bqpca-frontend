@@ -1,6 +1,6 @@
 <template>
-  <div class="ecpf-location-change-table p-8 min-h-screen bg-gray-100">
-    <div class="max-w-7xl mx-auto">
+  <div class="ecpf-location-change-table p-8 min-h-screen">
+    <div class=" mx-auto">
       <!-- Header with stats (If you want to include stats, uncomment this section and the related methods in script) -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
