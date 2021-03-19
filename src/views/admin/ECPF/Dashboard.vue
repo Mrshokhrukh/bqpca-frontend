@@ -72,13 +72,29 @@ import AddHr from '@/components/dashboard/ecpfcomponents/dealingOfficer/AddHr.vu
 import AddStudent from '@/components/dashboard/ecpfcomponents/dealingOfficer/AddStudent.vue';
 import ECPFReports from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFReports.vue';
 import ECPFPaymentHistory from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFPaymentHistory.vue';
+import BranchEcpfApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/BranchEcpfApplications.vue';
 
 // Chief Components
 import ECPFChiefDashboard from '@/components/dashboard/ecpfcomponents/chief/ECPFChiefDashboard.vue';
 import ECPFFinalApproval from '@/components/dashboard/ecpfcomponents/chief/ECPFFinalApproval.vue';
 import ECPFAdminDashboard from '@/components/dashboard/ecpfcomponents/admin/ECPFAdminDashboard.vue';
-import BranchEcpfApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/BranchEcpfApplications.vue';
+import ChiefBranchEcpfApplications from '@/components/dashboard/ecpfcomponents/chief/BranchEcpfApplications.vue';
 import ECPFUserManagement from '@/components/dashboard/ecpfcomponents/admin/ECPFUserManagement.vue';
+import ChiefIndividualEcpfApplications from '@/components/dashboard/ecpfcomponents/chief/IndividualEcpfApplications.vue';
+import ChiefCollaboratedEcpfApplications from '@/components/dashboard/ecpfcomponents/chief/CollaboratedEcpfApplications.vue';
+import ChiefRenewalApplications from '@/components/dashboard/ecpfcomponents/chief/RenewalApplications.vue';
+import ChiefOwnershipChangeApplications from '@/components/dashboard/ecpfcomponents/chief/OwnershipChangeApplications.vue';
+import ChiefNameChangeApplications from '@/components/dashboard/ecpfcomponents/chief/NameChangeApplications.vue';
+import ChiefLocationChangeApplications from '@/components/dashboard/ecpfcomponents/chief/LocationChangeApplications.vue';
+import ChiefEducationFair from '@/components/dashboard/ecpfcomponents/chief/EducationFair.vue';
+import ChiefMassMediaEvent from '@/components/dashboard/ecpfcomponents/chief/MassMediaEvent.vue';
+import ChiefHeiVisit from '@/components/dashboard/ecpfcomponents/chief/HeiVisit.vue';
+import ChiefInhouseEvent from '@/components/dashboard/ecpfcomponents/chief/InhouseEvent.vue';
+import ChiefECPFLinkEstablishment from '@/components/dashboard/ecpfcomponents/chief/ECPFLinkEstablishment.vue';
+import ChiefAddHr from '@/components/dashboard/ecpfcomponents/chief/AddHr.vue';
+import ChiefAddStudent from '@/components/dashboard/ecpfcomponents/chief/AddStudent.vue';
+import ChiefECPFReports from '@/components/dashboard/ecpfcomponents/chief/ECPFReports.vue';
+import ChiefECPFPaymentHistory from '@/components/dashboard/ecpfcomponents/chief/ECPFPaymentHistory.vue';
 
 const { role, user } = useAuthStore();
 
@@ -182,6 +198,38 @@ const ecpfChiefComponent = computed(() => {
       return ECPFChiefDashboard;
     case path.endsWith('/ecpf/final_approval'):
       return ECPFFinalApproval;
+    case path.endsWith('/ecpf/branch_ecpf_applications'):
+      return ChiefBranchEcpfApplications;
+    case path.endsWith('/ecpf/individual_ecpf_applications'):
+      return ChiefIndividualEcpfApplications;
+    case path.endsWith('/ecpf/collaborated_ecpf_applications'):
+      return ChiefCollaboratedEcpfApplications;
+    case path.endsWith('/ecpf/renewal_applications'):
+      return ChiefRenewalApplications;
+    case path.endsWith('/ecpf/ownership_change_applications'):
+      return ChiefOwnershipChangeApplications;
+    case path.endsWith('/ecpf/name_change_applications'):
+      return ChiefNameChangeApplications;
+    case path.endsWith('/ecpf/location_change_applications'):
+      return ChiefLocationChangeApplications;
+    case path.endsWith('/ecpf/education_fair_applications'):
+      return ChiefEducationFair;
+    case path.endsWith('/ecpf/mass_media_applications'):
+      return ChiefMassMediaEvent;
+    case path.endsWith('/ecpf/hei_visit_applications'):
+      return ChiefHeiVisit;
+    case path.endsWith('/ecpf/in_house_event_applications'):
+      return ChiefInhouseEvent;
+    case path.endsWith('/ecpf/ecpf_link_establishment'):
+      return ChiefECPFLinkEstablishment;
+    case path.endsWith('/ecpf/add_hr'):
+      return ChiefAddHr;
+    case path.endsWith('/ecpf/add_student'):
+      return ChiefAddStudent;
+    case path.endsWith('/ecpf/ecpf_reports'):
+      return ChiefECPFReports;
+    case path.endsWith('/ecpf/ecpf_payment_history'):
+      return ChiefECPFPaymentHistory;
     default:
       return null;
   }
