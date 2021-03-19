@@ -422,15 +422,11 @@ const serviceSpecificMenuItems = {
           {
             name: 'Add HR',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/add_hr`,
-
           },
           {
             name: 'Add Student',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/add_student`,
-
           },
-
-
         ],
       },
       {
@@ -964,6 +960,11 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
       },
       {
+        name: 'Profile',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/user/${serviceType}/profile`,
+      },
+      {
         name: 'Certification',
         icon: getIconComponent('ClipboardCheck'),
         children: [
@@ -984,8 +985,8 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
           },
           {
-            name: 'Certificate of Good Standing',
-            route: (serviceType) => `/admin/user/${serviceType}/CoGS`,
+            name: 'My Applications',
+            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
           },
         ],
       },
@@ -998,17 +999,14 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/user/${serviceType}/cpd`,
           },
           {
-            name: 'track CPD Applications',
+            name: 'Track CPD Applications',
             route: (serviceType) => `/admin/user/${serviceType}/track_cpd_applications`,
-
           },
         ],
-
       },
       {
         name: 'CoGS Management',
         icon: getIconComponent('CreditCard'),
-
         children: [
           {
             name: 'Apply for CoGS',
@@ -1021,19 +1019,291 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Profile',
-        icon: getIconComponent('UserCircle'),
-        route: (serviceType) => `/admin/user/${serviceType}/profile`,
+        name: 'Payment',
+        icon: getIconComponent('Wallet'),
+        children: [
+          {
+            name: 'Make Payment',
+            route: (serviceType) => `/admin/user/${serviceType}/payment`,
+          },
+          {
+            name: 'Payment History',
+            route: (serviceType) => `/admin/user/${serviceType}/payment_history`,
+          },
+        ],
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('FileBarChart'),
+        route: (serviceType) => `/admin/user/${serviceType}/reports`,
       },
     ],
+
+    dealing_officer: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Application Lists',
+        icon: getIconComponent('ListChecks'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/application_lists`,
+      },
+      {
+        name: 'Renewal Lists',
+        icon: getIconComponent('RefreshCw'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_lists`,
+      },
+      {
+        name: 'Re-Registration Lists',
+        icon: getIconComponent('RotateCw'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/re_registration_lists`,
+      },
+      {
+        name: 'Additional Applications',
+        icon: getIconComponent('Plus'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/additional_application`,
+      },
+      {
+        name: 'CPD Management',
+        icon: getIconComponent('BookOpen'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_application_review`,
+      },
+      {
+        name: 'Institutes',
+        icon: getIconComponent('Building'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/institutes`,
+      },
+      {
+        name: 'Professional Profiles',
+        icon: getIconComponent('Users'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/profiles`,
+      },
+      {
+        name: 'CoGS Management',
+        icon: getIconComponent('Award'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/cogs`,
+      },
+      {
+        name: 'CAPA',
+        icon: getIconComponent('CheckSquare'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/capa`,
+      },
+      {
+        name: 'Payments',
+        icon: getIconComponent('DollarSign'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/payments`,
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('FileBarChart'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
+      },
+    ],
+
+    chief: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/chief/${serviceType}/dashboard`,
+      },
+    ],
+
+    director: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/director/${serviceType}/dashboard`,
+      },
+    ],
+
     admin: [
       {
-        name: 'Engineering Categories',
-        icon: getIconComponent('Wrench'),
-        route: (serviceType) => `/admin/admin/${serviceType}/categories`,
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
+      },
+      {
+        name: 'User Management',
+        icon: getIconComponent('Users'),
+        route: (serviceType) => `/admin/admin/${serviceType}/user_management`,
+      },
+      {
+        name: 'Masters',
+        icon: getIconComponent('Database'),
+        children: [
+          {
+            name: 'CME Activities',
+            route: (serviceType) => `/admin/admin/${serviceType}/cme_activities`,
+          },
+          {
+            name: 'CME Credits',
+            route: (serviceType) => `/admin/admin/${serviceType}/cme_credits`,
+          },
+          {
+            name: 'CME Methodologies',
+            route: (serviceType) => `/admin/admin/${serviceType}/cme_methodologies`,
+          },
+          {
+            name: 'CPD Activity',
+            route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
+          },
+          {
+            name: 'Document Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/document_types`,
+          },
+          {
+            name: 'E-Signatures',
+            route: (serviceType) => `/admin/admin/${serviceType}/e_signatures`,
+          },
+          {
+            name: 'Fee Structures',
+            route: (serviceType) => `/admin/admin/${serviceType}/fee_structures`,
+          },
+          {
+            name: 'File Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
+          },
+          {
+            name: 'Personnel Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/personnel_categories`,
+          },
+          {
+            name: 'Qualifications',
+            route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
+          },
+          {
+            name: 'Registration Type',
+            route: (serviceType) => `/admin/admin/${serviceType}/registration_type`,
+          },
+          {
+            name: 'Sector',
+            route: (serviceType) => `/admin/admin/${serviceType}/sector`,
+          },
+        ],
+      },
+      {
+        name: 'CoGS Masters',
+        icon: getIconComponent('Award'),
+        children: [
+          {
+            name: 'CoGS Agency',
+            route: (serviceType) => `/admin/admin/${serviceType}/cogs_agency`,
+          },
+          {
+            name: 'CoGS Department',
+            route: (serviceType) => `/admin/admin/${serviceType}/cogs_dept`,
+          },
+          {
+            name: 'CoGS Workplace',
+            route: (serviceType) => `/admin/admin/${serviceType}/cogs_workplace`,
+          },
+        ],
       },
     ],
-    dealing_officer: dealingOfficerMenuItems,
+
+    super_admin: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/super_admin/${serviceType}/dashboard`,
+      },
+    ],
+
+    cpd_cme_provider: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/dashboard`,
+      },
+      {
+        name: 'CPD Application',
+        icon: getIconComponent('FileText'),
+        route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/cpd_application_details`,
+      },
+      {
+        name: 'Track Applications',
+        icon: getIconComponent('Search'),
+        route: (serviceType) => `/admin/cpd_cme_provider/${serviceType}/cpd_application_tracker`,
+      },
+      {
+        name: 'Add Participants',
+        icon: getIconComponent('UserPlus'),
+        route: (serviceType) =>
+          `/admin/cpd_cme_provider/${serviceType}/cpd_approved_add_participants`,
+      },
+    ],
+
+    institutions: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Institution Profile',
+        icon: getIconComponent('Building'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
+      },
+      {
+        name: 'Applications',
+        icon: getIconComponent('FileText'),
+        children: [
+          {
+            name: 'Apply for EOI',
+            route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_eoi`,
+          },
+          {
+            name: 'Track EOI',
+            route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
+          },
+          {
+            name: 'Apply for DPR',
+            route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_dpr`,
+          },
+          {
+            name: 'Track DPR',
+            route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
+          },
+          {
+            name: 'My Applications',
+            route: (serviceType) => `/admin/institutions/${serviceType}/my_applications`,
+          },
+        ],
+      },
+      {
+        name: 'Management',
+        icon: getIconComponent('Settings'),
+        children: [
+          {
+            name: 'Renewal',
+            route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
+          },
+          {
+            name: 'CAPA',
+            route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
+          },
+          {
+            name: 'Staff Management',
+            route: (serviceType) => `/admin/institutions/${serviceType}/staff_management`,
+          },
+          {
+            name: 'Course Management',
+            route: (serviceType) => `/admin/institutions/${serviceType}/course_management`,
+          },
+          {
+            name: 'Department Management',
+            route: (serviceType) => `/admin/institutions/${serviceType}/department_management`,
+          },
+        ],
+      },
+      {
+        name: 'Certificates',
+        icon: getIconComponent('Award'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
+      },
+    ],
   },
   accreditation: {
     user: [

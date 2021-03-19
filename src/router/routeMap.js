@@ -49,9 +49,30 @@ export default {
     },
     engineering_certification: {
       dashboard: engineeringDashboard,
-      applications: engineeringDashboard,
-      clients: engineeringDashboard,
-      reports: engineeringDashboard,
+      user_management: engineeringDashboard,
+      // Master data management routes
+      cme_activities: engineeringDashboard,
+      cme_credits: engineeringDashboard,
+      cme_methodologies: engineeringDashboard,
+      cpd_activity: engineeringDashboard,
+      document_types: engineeringDashboard,
+      e_signatures: engineeringDashboard,
+      fee_structures: engineeringDashboard,
+      fees_associated_for: engineeringDashboard,
+      file_types: engineeringDashboard,
+      participation_category: engineeringDashboard,
+      participation_sub_category: engineeringDashboard,
+      personnel_categories: engineeringDashboard,
+      qualification_types: engineeringDashboard,
+      qualifications: engineeringDashboard,
+      registration_type: engineeringDashboard,
+      sector: engineeringDashboard,
+      sub_categories: engineeringDashboard,
+      university: engineeringDashboard,
+      // CoGS master routes
+      cogs_agency: engineeringDashboard,
+      cogs_dept: engineeringDashboard,
+      cogs_workplace: engineeringDashboard,
     },
     health_certification: {
       dashboard: bmhcDashboard,
@@ -116,31 +137,23 @@ export default {
       profile: accredDashboard,
     },
     engineering_certification: {
-      // Existing routes
       dashboard: engineeringDashboard,
       profile: engineeringDashboard,
-
-      // Registration services routes
       registration: engineeringDashboard,
       renewal: engineeringDashboard,
       re_registration: engineeringDashboard,
       additional_qualification: engineeringDashboard,
       CoGS: engineeringDashboard,
-
-      // CPD route
       cpd: engineeringDashboard,
-
-      // Payment routes
+      track_cpd_applications: engineeringDashboard,
+      track_cogs_applications: engineeringDashboard,
       payment: engineeringDashboard,
       payment_history: engineeringDashboard,
-
-      // Reports route
       reports: engineeringDashboard,
-
-      // Keep existing routes that weren't in our navigation but might be used elsewhere
       my_applications: engineeringDashboard,
+      // Backward compatibility
       new_application: engineeringDashboard,
-      application_status: () => engineeringDashboard,
+      application_status: engineeringDashboard,
     },
     health_certification: {
       dashboard: bmhcDashboard,
@@ -199,12 +212,18 @@ export default {
       accreditation_assessment: accredDashboard,
     },
     engineering_certification: {
-      dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
-      // pending_applications: () => import('@/views/admin/Engineering/PendingApplications.vue'),
-      // approved_applications: () => import('@/views/admin/Engineering/ApprovedApplications.vue'),
-      // rejected_applications: () => import('@/views/admin/Engineering/RejectedApplications.vue'),
-      // reports: () => import('@/views/admin/Engineering/Reports.vue'),
-      // ... other Engineering routes for dealing officer
+      dashboard: engineeringDashboard,
+      application_lists: engineeringDashboard,
+      renewal_lists: engineeringDashboard,
+      re_registration_lists: engineeringDashboard,
+      additional_application: engineeringDashboard,
+      cpd_application_review: engineeringDashboard,
+      institutes: engineeringDashboard,
+      profiles: engineeringDashboard,
+      cogs: engineeringDashboard,
+      capa: engineeringDashboard,
+      payments: engineeringDashboard,
+      reports: engineeringDashboard,
     },
     health_certification: {
       dashboard: bmhcDashboard,
@@ -329,11 +348,19 @@ export default {
       // ... other Accreditation routes for director
     },
     engineering_certification: {
-      dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
-      // for_approval_applications: () => import('@/views/admin/Engineering/ForApprovalApplications.vue'),
-      // approved_applications: () => import('@/views/admin/Engineering/ApprovedApplications.vue'),
-      // reports: () => import('@/views/admin/Engineering/Reports.vue'),
-      // ... other Engineering routes for director
+      dashboard: engineeringDashboard,
+      institution_profile: engineeringDashboard,
+      apply_for_eoi: engineeringDashboard,
+      track_eoi: engineeringDashboard,
+      apply_for_dpr: engineeringDashboard,
+      track_dpr: engineeringDashboard,
+      my_applications: engineeringDashboard,
+      institutes_renewal: engineeringDashboard,
+      my_capa: engineeringDashboard,
+      staff_management: engineeringDashboard,
+      course_management: engineeringDashboard,
+      department_management: engineeringDashboard,
+      view_certificates: engineeringDashboard,
     },
     health_certification: {
       dashboard: bmhcDashboard,
@@ -372,11 +399,10 @@ export default {
       // ... other Accreditation routes for director
     },
     engineering_certification: {
-      dashboard: () => import('@/views/admin/Engineering/Dashboard.vue'),
-      // for_approval_applications: () => import('@/views/admin/Engineering/ForApprovalApplications.vue'),
-      // approved_applications: () => import('@/views/admin/Engineering/ApprovedApplications.vue'),
-      // reports: () => import('@/views/admin/Engineering/Reports.vue'),
-      // ... other Engineering routes for director
+      dashboard: engineeringDashboard,
+      cpd_application_details: engineeringDashboard,
+      cpd_application_tracker: engineeringDashboard,
+      cpd_approved_add_participants: engineeringDashboard,
     },
     health_certification: {
       dashboard: bmhcDashboard,
