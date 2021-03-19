@@ -1046,34 +1046,62 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`,
       },
       {
-        name: 'Application Lists',
-        icon: getIconComponent('ListChecks'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/application_lists`,
-      },
-      {
-        name: 'Renewal Lists',
-        icon: getIconComponent('RefreshCw'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_lists`,
-      },
-      {
-        name: 'Re-Registration Lists',
-        icon: getIconComponent('RotateCw'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/re_registration_lists`,
-      },
-      {
-        name: 'Additional Applications',
-        icon: getIconComponent('Plus'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/additional_application`,
+        name: 'Applications',
+        icon: getIconComponent('ClipboardList'),
+        children: [
+          {
+            name: 'New Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/application_lists`,
+          },
+          {
+            name: 'Renewal Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_lists`,
+          },
+          {
+            name: 'Re-Registration Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/re_registration_lists`,
+          },
+          {
+            name: 'Additional Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/additional_application`,
+          },
+        ],
       },
       {
         name: 'CPD Management',
         icon: getIconComponent('BookOpen'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_application_review`,
+        children: [
+          {
+            name: 'CPD Applications Review',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_application_review`,
+          },
+          {
+            name: 'CPD Provider Management',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_provider_management`,
+          },
+        ],
       },
       {
-        name: 'Institutes',
+        name: 'Institute Management',
         icon: getIconComponent('Building'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/institutes`,
+        children: [
+          {
+            name: 'Institutes',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institutes`,
+          },
+          {
+            name: 'EOI Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/eoi_application`,
+          },
+          {
+            name: 'DPR Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/dpr_application`,
+          },
+          {
+            name: 'Institute Reports',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_report`,
+          },
+        ],
       },
       {
         name: 'Professional Profiles',

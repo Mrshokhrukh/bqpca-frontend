@@ -213,12 +213,24 @@ export default {
     },
     engineering_certification: {
       dashboard: engineeringDashboard,
+
+      // Application routes
       application_lists: engineeringDashboard,
       renewal_lists: engineeringDashboard,
       re_registration_lists: engineeringDashboard,
       additional_application: engineeringDashboard,
+
+      // CPD Management routes - missing cpd_provider_management
       cpd_application_review: engineeringDashboard,
+      cpd_provider_management: engineeringDashboard,
+
+      // Institute Management routes - missing several routes
       institutes: engineeringDashboard,
+      eoi_application: engineeringDashboard,
+      dpr_application: engineeringDashboard,
+      institute_report: engineeringDashboard,
+
+      // Other management routes
       profiles: engineeringDashboard,
       cogs: engineeringDashboard,
       capa: engineeringDashboard,
