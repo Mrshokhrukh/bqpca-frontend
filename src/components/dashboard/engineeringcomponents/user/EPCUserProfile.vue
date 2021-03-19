@@ -5,7 +5,7 @@
       <div class="relative">
         <div
           class="h-32 w-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
-          <img v-if="authStore.user?.profilePhotoUrl" :src="authStore.user.profilePhotoUrl" alt="Profile photo"
+          <img v-if="authStore.user?.profile_photo_url" :src="authStore.user.profile_photo_url" alt="Profile photo"
             class="h-full w-full object-cover" />
           <span v-else class="text-4xl font-bold text-gray-500">{{ getInitials(authStore.fullName) }}</span>
         </div>
@@ -123,7 +123,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                <span>{{ authStore.contactNumber || 'No contact number' }}</span>
+                <span>{{ authStore.user?.contact_number || 'No contact number' }}</span>
               </div>
               <div class="mt-1 flex items-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
@@ -131,7 +131,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <span>{{ authStore.email || 'No email address' }}</span>
+                <span>{{ authStore.user?.email || 'No email address' }}</span>
               </div>
             </div>
           </div>
@@ -142,7 +142,7 @@
         <h3 class="text-lg font-medium text-gray-900 mb-4 border-b pb-2">Work Information</h3>
         <div>
           <h4 class="text-sm font-medium text-gray-500">Work Address [Practice]</h4>
-          <p class="mt-1 text-gray-900">{{ getWorkAddressName(profileForm.workAddress) || 'Not specified' }}</p>
+          <p class="mt-1 text-gray-900">{{ getWorkAddressName(profileForm.workAddressId) || 'Not specified' }}</p>
         </div>
       </div>
     </div>
@@ -207,7 +207,7 @@
 
           <div>
             <label for="workAddress" class="block text-sm font-medium text-gray-700">Work Address [Practice]</label>
-            <select id="workAddress" name="workAddress" v-model="profileForm.workAddress"
+            <select id="workAddress" name="workAddress" v-model="profileForm.workAddressId"
               class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
               <option value="">Select Work Address</option>
               <option v-for="address in workAddresses" :key="address.id" :value="address.id">{{ address.name }}</option>
@@ -234,6 +234,7 @@
 import { ref, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import apiService from '@/services/services';
+import epcServices from '@/services/epcServices';
 import { useToast } from 'vue-toastification';
 
 const authStore = useAuthStore();
@@ -242,10 +243,10 @@ const isEditing = ref(false);
 const previewUrl = ref(null);
 
 const profileForm = ref({
-  contactNumber: authStore.contactNumber || '',
-  emailAddress: authStore.email || '',
+  contactNumber: authStore.user?.contact_number || '',
+  emailAddress: authStore.user?.email || '',
   passportPhoto: null,
-  workAddress: '',
+  workAddressId: '',
 });
 
 const workAddresses = ref([]);
@@ -303,7 +304,7 @@ const saveProfile = async () => {
     if (profileForm.value.passportPhoto) {
       formData.append('passport_photo', profileForm.value.passportPhoto);
     }
-    formData.append('work_address', profileForm.value.workAddress);
+    formData.append('work_address', profileForm.value.workAddressId);
 
     // Call the API to update the profile
     await apiService.updateProfile(authStore.userId, formData, {
@@ -313,14 +314,12 @@ const saveProfile = async () => {
     });
 
     // Update the authStore
-    authStore.user = {
+    authStore.setUser({
       ...authStore.user,
       contact_number: profileForm.value.contactNumber,
       email: profileForm.value.emailAddress,
-    };
+    });
 
-    // Persist the updated user data in localStorage
-    localStorage.setItem('user', JSON.stringify(authStore.user));
     toast.success('Profile updated successfully!');
     isEditing.value = false;
 
@@ -333,10 +332,10 @@ const saveProfile = async () => {
 const cancelEdit = () => {
   // Reset form data
   profileForm.value = {
-    contactNumber: authStore.contactNumber || '',
-    emailAddress: authStore.email || '',
+    contactNumber: authStore.user?.contact_number || '',
+    emailAddress: authStore.user?.email || '',
     passportPhoto: null,
-    workAddress: profileForm.value.workAddress,
+    workAddressId: profileForm.value.workAddressId, // Keep the current work address
   };
 
   // Clear preview
@@ -355,14 +354,34 @@ const isValidEmail = (email) => {
 };
 
 onMounted(async () => {
-  // Load Work Addresses
+  // Load Work Addresses using EPC services
   try {
-    const response = await apiService.getWorkAddresses();
-    workAddresses.value = response.data;
-
-    // Set work address if it exists in authStore
-    if (authStore.user?.work_address) {
-      profileForm.value.workAddress = authStore.user.work_address;
+    // Get the user's CID
+    const userCid = authStore.user?.cid;
+    
+    if (userCid) {
+      // Get EPC applications for this user
+      const response = await epcServices.getEpcNewApplications();
+      
+      if (response.data && Array.isArray(response.data.results)) {
+        const userApplications = response.data.results.filter(app => app.cid_no === userCid);
+        
+        if (userApplications.length > 0) {
+          // Extract work addresses from qualifications
+          const workplaces = userApplications.flatMap(app => app.user_qualifications)
+            .filter(qual => qual.practice_address);
+          
+          workAddresses.value = workplaces.map(workplace => ({
+            id: workplace.id,
+            name: workplace.practice_address
+          }));
+          
+          // Set default work address if available
+          if (workAddresses.value.length > 0) {
+            profileForm.value.workAddressId = workAddresses.value[0].id;
+          }
+        }
+      }
     }
   } catch (error) {
     console.error('Error loading work addresses:', error);
