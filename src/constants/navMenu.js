@@ -440,6 +440,116 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_payment_history`,
       },
     ],
+    chief: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/chief/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Applications',
+        icon: getIconComponent('Activity'), //Use activity
+        children: [
+          {
+            name: 'Individual ECPF Applications',
+            route: (serviceType) =>
+              `/admin/chief/${serviceType}/individual_ecpf_applications`,
+          },
+          {
+            name: 'Collaborated ECPF Applications',
+            route: (serviceType) =>
+              `/admin/chief/${serviceType}/collaborated_ecpf_applications`,
+          },
+          {
+            name: 'New Branch Applications',
+            route: (serviceType) =>
+              `/admin/chief/${serviceType}/branch_ecpf_applications`,
+          },
+          {
+            name: 'Renewal Applications',
+            route: (serviceType) => `/admin/chief/${serviceType}/renewal_applications`,
+          },
+        ],
+      },
+      {
+        name: 'Change Requests',
+        icon: getIconComponent('Activity'), //Use activity
+        children: [
+          {
+            name: 'ECPF Name Change',
+            route: (serviceType) =>
+              `/admin/chief/${serviceType}/name_change_applications`,
+          },
+          {
+            name: 'ECPF Location Change',
+            route: (serviceType) =>
+              `/admin/chief/${serviceType}/location_change_applications`,
+          },
+          {
+            name: 'ECPF Ownership Change',
+            route: (serviceType) =>
+              `/admin/chief/${serviceType}/ownership_change_applications`,
+          },
+        ],
+      },
+      {
+        name: 'Events',
+        icon: getIconComponent('Activity'), //Use activity
+        children: [
+          {
+            name: 'Education Fair Applications',
+            route: (serviceType) =>
+              `/admin/chief/${serviceType}/education_fair_applications`,
+          },
+          {
+            name: 'Mass Media Event Applications',
+            route: (serviceType) => `/admin/chief/${serviceType}/mass_media_applications`,
+          },
+          {
+            name: 'In House Event Applications',
+            route: (serviceType) =>
+              `/admin/chief/${serviceType}/in_house_event_applications`,
+          },
+          {
+            name: 'Hei Visit Applications',
+            route: (serviceType) => `/admin/chief/${serviceType}/hei_visit_applications`,
+          },
+        ],
+      },
+      {
+        name: 'ECPF Linkages',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/chief/${serviceType}/ecpf_link_establishment`,
+      },
+      {
+        name: 'Bio Data',
+        icon: getIconComponent('Activity'), //Use activity
+        children: [
+          {
+            name: 'Add HR',
+            route: (serviceType) => `/admin/chief/${serviceType}/add_hr`,
+
+          },
+          {
+            name: 'Add Student',
+            route: (serviceType) => `/admin/chief/${serviceType}/add_student`,
+
+          },
+
+
+        ],
+      },
+      {
+        name: 'Reports',
+        icon: getIconComponent('FileSearch'),
+        route: (serviceType) => `/admin/chief/${serviceType}/ecpf_reports`,
+      },
+      {
+        name: 'Payments',
+        icon: getIconComponent('CreditCard'),
+        route: (serviceType) => `/admin/chief/${serviceType}/ecpf_payment_history`,
+      },
+    ],
     // // Add dealing_officer to ecpf
     // dealing_officer: dealingOfficerMenuItems,
   },
