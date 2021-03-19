@@ -70,6 +70,8 @@ import InhouseEvent from '@/components/dashboard/ecpfcomponents/dealingOfficer/I
 import ECPFLinkEstablishment from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFLinkEstablishment.vue';
 import AddHr from '@/components/dashboard/ecpfcomponents/dealingOfficer/AddHr.vue';
 import AddStudent from '@/components/dashboard/ecpfcomponents/dealingOfficer/AddStudent.vue';
+import ECPFReports from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFReports.vue';
+import ECPFPaymentHistory from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFPaymentHistory.vue';
 
 // Chief Components
 import ECPFChiefDashboard from '@/components/dashboard/ecpfcomponents/chief/ECPFChiefDashboard.vue';
@@ -159,9 +161,13 @@ const ecpfDealingOfficerComponent = computed(() => {
     case path.endsWith('/ecpf/ecpf_link_establishment'):
       return ECPFLinkEstablishment;
     case path.endsWith('/ecpf/add_hr'):
-      return AddHr;   
+      return AddHr;
     case path.endsWith('/ecpf/add_student'):
-      return AddStudent;  
+      return AddStudent;
+    case path.endsWith('/ecpf/ecpf_reports'):
+      return ECPFReports;
+    case path.endsWith('/ecpf/ecpf_payment_history'):
+      return ECPFPaymentHistory;
 
     default:
       return null;

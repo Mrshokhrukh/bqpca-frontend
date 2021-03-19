@@ -1,7 +1,7 @@
 <!-- BranchEcpfApplications.vue (or your table component file) -->
 <template>
-  <div class="p-8 min-h-screen bg-gray-100">
-    <div class="max-w-7xl mx-auto">
+  <div class="p-8 min-h-screen ">
+    <div class="mx-auto">
       <!-- Header with stats -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">

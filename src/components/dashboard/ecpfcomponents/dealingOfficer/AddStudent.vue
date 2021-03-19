@@ -1,7 +1,7 @@
 <!-- StudentBioDataTable.vue -->
 <template>
-  <div class="p-8 min-h-screen bg-gray-100">
-    <div class="max-w-7xl mx-auto">
+  <div class="p-8 min-h-screen ">
+    <div class=" mx-auto">
       <!-- Header with Add Buttons and Filters -->
       <div class="mb-6 flex justify-between items-center">
         <div>

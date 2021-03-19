@@ -184,6 +184,8 @@ export default {
       ecpf_link_establishment: ecpfDashboard,
       add_hr: ecpfDashboard,
       add_student: ecpfDashboard,
+      ecpf_reports: ecpfDashboard,
+      ecpf_payment_history: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,
