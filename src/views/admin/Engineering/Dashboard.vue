@@ -84,7 +84,7 @@ import PractitionerCertification from '@/components/dashboard/engineeringcompone
 import PractitionerRenewal from '@/components/dashboard/engineeringcomponents/user/pracitioner_reg_and_cert/PractitionerRenewal.vue';
 
 // Dealing Officer Components
-import ApplicationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/ApplicationLists.vue';
+import ApplicationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/ApplicationLists.vue';
 import RenewalLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/RenewalLists.vue';
 import CpdManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CpdManagement.vue';
 import InstituteManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/InstituteManagement.vue';
@@ -94,7 +94,7 @@ import EngineeringCapa from '@/components/dashboard/engineeringcomponents/dealin
 import EngineeringPayments from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringPayments.vue';
 import EngineeringReports from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringReports.vue';
 import ReRegistrationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/ReRegistrationLists.vue';
-import AdditionalApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/AdditionalApplication.vue';
+import AdditionalApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/AdditionalApplication.vue';
 
 // CPD Provider Components
 import EngineeringProviderDashboard from '@/components/dashboard/engineeringcomponents/cpdCmeProvider/EngineeringCpdCmeProviderDashboard.vue';

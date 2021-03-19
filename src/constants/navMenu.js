@@ -452,18 +452,15 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Individual ECPF Applications',
-            route: (serviceType) =>
-              `/admin/chief/${serviceType}/individual_ecpf_applications`,
+            route: (serviceType) => `/admin/chief/${serviceType}/individual_ecpf_applications`,
           },
           {
             name: 'Collaborated ECPF Applications',
-            route: (serviceType) =>
-              `/admin/chief/${serviceType}/collaborated_ecpf_applications`,
+            route: (serviceType) => `/admin/chief/${serviceType}/collaborated_ecpf_applications`,
           },
           {
             name: 'New Branch Applications',
-            route: (serviceType) =>
-              `/admin/chief/${serviceType}/branch_ecpf_applications`,
+            route: (serviceType) => `/admin/chief/${serviceType}/branch_ecpf_applications`,
           },
           {
             name: 'Renewal Applications',
@@ -477,18 +474,15 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'ECPF Name Change',
-            route: (serviceType) =>
-              `/admin/chief/${serviceType}/name_change_applications`,
+            route: (serviceType) => `/admin/chief/${serviceType}/name_change_applications`,
           },
           {
             name: 'ECPF Location Change',
-            route: (serviceType) =>
-              `/admin/chief/${serviceType}/location_change_applications`,
+            route: (serviceType) => `/admin/chief/${serviceType}/location_change_applications`,
           },
           {
             name: 'ECPF Ownership Change',
-            route: (serviceType) =>
-              `/admin/chief/${serviceType}/ownership_change_applications`,
+            route: (serviceType) => `/admin/chief/${serviceType}/ownership_change_applications`,
           },
         ],
       },
@@ -498,8 +492,7 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Education Fair Applications',
-            route: (serviceType) =>
-              `/admin/chief/${serviceType}/education_fair_applications`,
+            route: (serviceType) => `/admin/chief/${serviceType}/education_fair_applications`,
           },
           {
             name: 'Mass Media Event Applications',
@@ -507,8 +500,7 @@ const serviceSpecificMenuItems = {
           },
           {
             name: 'In House Event Applications',
-            route: (serviceType) =>
-              `/admin/chief/${serviceType}/in_house_event_applications`,
+            route: (serviceType) => `/admin/chief/${serviceType}/in_house_event_applications`,
           },
           {
             name: 'Hei Visit Applications',
@@ -528,15 +520,11 @@ const serviceSpecificMenuItems = {
           {
             name: 'Add HR',
             route: (serviceType) => `/admin/chief/${serviceType}/add_hr`,
-
           },
           {
             name: 'Add Student',
             route: (serviceType) => `/admin/chief/${serviceType}/add_student`,
-
           },
-
-
         ],
       },
       {
@@ -1070,11 +1058,6 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
       },
       {
-        name: 'Profile',
-        icon: getIconComponent('UserCircle'),
-        route: (serviceType) => `/admin/user/${serviceType}/profile`,
-      },
-      {
         name: 'Certification',
         icon: getIconComponent('ClipboardCheck'),
         children: [
@@ -1146,6 +1129,11 @@ const serviceSpecificMenuItems = {
         name: 'Reports',
         icon: getIconComponent('FileBarChart'),
         route: (serviceType) => `/admin/user/${serviceType}/reports`,
+      },
+      {
+        name: 'Profile',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/user/${serviceType}/profile`,
       },
     ],
 
