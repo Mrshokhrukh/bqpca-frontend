@@ -146,8 +146,6 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex space-x-2">
                     <button @click="viewApplication(application)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
-
-                    
                   </div>
                 </td>
               </tr>
@@ -175,7 +173,7 @@
                             <DialogTitle as="h3" class="text-2xl font-semibold leading-6 text-gray-900">
                                 ECPF Collaboration Application Details
                             </DialogTitle>
-                            <button v-if="!isEditing" @click="enableEditing" class="flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                            <button @click="enableEditing" class="flex items-center text-blue-600 hover:text-blue-800 font-medium">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
@@ -303,10 +301,10 @@
                             <button v-if="isEditing" type="button" class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" @click="saveChanges">
                                 Save Changes
                             </button>
-                            <button v-if="!isEditing" @click="approveDirectly(editingApplication)" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            <button type="button" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" @click="approveDirectly(editingApplication)">
                                 Approve
                             </button>
-                            <button v-if="!isEditing" @click="rejectDirectly(editingApplication)" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <button type="button" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" @click="rejectDirectly(editingApplication)">
                                 Reject
                             </button>
                             <button type="button" class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="closeModal">
@@ -440,9 +438,6 @@ const enableEditing = () => {
   isEditing.value = true; // Enable editing mode
 };
 
-
-
-// Approve and Reject are now called *within* the modal.
 const approveDirectly = (application) => {
   application.status = 'Approved';
   alert(`Approved application: ${application.applicantName}`);

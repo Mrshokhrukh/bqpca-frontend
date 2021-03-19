@@ -193,7 +193,7 @@
     </div>
 
     <!-- Name Change Application Modal -->
-    <ecpf-name-change-modal
+    <EcpfNameChangeModal
       v-if="isModalOpen"
       :application="selectedApplication"
       @close-modal="closeModal"
