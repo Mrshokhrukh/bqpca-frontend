@@ -146,7 +146,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex space-x-2">
                     <button @click="viewApplication(application)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
-                    <button @click="forwardApplication(application)" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">Forward</button>
+
                     <!-- Removed Approve and Reject buttons from here -->
                   </div>
                 </td>
@@ -440,11 +440,7 @@ const enableEditing = () => {
   isEditing.value = true; // Enable editing mode
 };
 
-const forwardApplication = (application) => {
-  // Implement forward logic here (e.g., API call to update application status)
-  application.status = 'In Review'; //Simple status update for demonstration
-  alert(`Forwarding application: ${application.applicantName}`);
-};
+
 
 // Approve and Reject are now called *within* the modal.
 const approveDirectly = (application) => {

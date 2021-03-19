@@ -141,12 +141,7 @@
                     >
                       View
                     </button>
-                    <button
-                      @click="forwardApplication(application)"
-                      class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                    >
-                      Forward
-                    </button>
+                    
                   </div>
                 </td>
               </tr>
@@ -282,11 +277,6 @@ const viewApplication = (application) => {
   isModalOpen.value = true;
 };
 
-const forwardApplication = (application) => {
-  // Implementation for forwarding the application
-  console.log('Forwarding name change application:', application.id);
-  alert(`Name change application for ${application.applicantName} has been forwarded.`);
-};
 
 const closeModal = () => {
   isModalOpen.value = false;

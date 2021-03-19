@@ -150,11 +150,7 @@
                     >
                       View
                     </button>
-                    <button
-                      class="forward-button"
-                    >
-                      Forward
-                    </button>
+                    
                   </div>
                 </td>
               </tr>

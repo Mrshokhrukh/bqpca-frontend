@@ -138,7 +138,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex justify-end space-x-2">
                     <button @click="openModal(application)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
-                    <button @click="forwardApplication(application)" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">Forward</button>
+                    
                   </div>
                 </td>
               </tr>
@@ -206,13 +206,6 @@ const closeModal = () => {
   selectedApplication.value = null;
 };
 
-const forwardApplication = (application) => {
-  // Implementation for forwarding the application
-  console.log('Forwarding application:', application.id);
-  // You would implement the logic to forward the application here
-  // For example, show a confirmation dialog or change the status
-  alert(`Application for ${application.ecpfName} (HEI Visit to: ${application.institute}) has been forwarded.`);
-};
 
 const getStatusClasses = (status) => {
   return  [

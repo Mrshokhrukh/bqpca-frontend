@@ -150,11 +150,7 @@
                     >
                       View
                     </button>
-                    <button
-                      class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                    >
-                      Forward
-                    </button>
+                    
                   </div>
                 </td>
               </tr>

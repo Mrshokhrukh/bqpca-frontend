@@ -139,7 +139,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex justify-end space-x-2">
                     <button @click="openModal(linkage)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
-                    <button @click="forwardLinkage(linkage)" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">Forward</button>
+
                   </div>
                 </td>
               </tr>
@@ -207,13 +207,7 @@ const closeModal = () => {
   selectedLinkage.value = null;
 };
 
-const forwardLinkage = (linkage) => {
-  // Implementation for forwarding the linkage application
-  console.log('Forwarding linkage application:', linkage.id);
-  // You would implement the logic to forward the application here
-  // For example, show a confirmation dialog or change the status
-  alert(`Linkage application for ${linkage.ecpfName} with ${linkage.heiName} has been forwarded.`);
-};
+
 
 const getStatusClasses = (status) => {
   return  [
