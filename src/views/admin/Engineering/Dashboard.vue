@@ -77,7 +77,6 @@ import AdditionalQualification from '@/components/dashboard/engineeringcomponent
 import ApplicationTracker from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ApplicationTracker.vue';
 import CPDTracker from '@/components/dashboard/engineeringcomponents/user/cpdApplication/CPDTracker.vue';
 import CoGSTracker from '@/components/dashboard/engineeringcomponents/user/CoGSApplication/CoGSTracker.vue';
-
 // Practitioner Registration Components
 import ApplicationForm from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ApplicationForm.vue';
 import CertificateRegistrationComponent from '@/components/dashboard/engineeringcomponents/user/certificateApplication/CertificateRegistrationComponent.vue';
@@ -209,7 +208,7 @@ const engineeringUserComponent = computed(() => {
     case path.endsWith('/engineering_certification/profile'):
       return EPCUserProfile;
     case path.endsWith('/engineering_certification/registration'):
-      return ApplicationForm;
+      return CertificateRegistrationComponent;
     case path.endsWith('/engineering_certification/renewal'):
       return ApplicationRenewal;
     case path.endsWith('/engineering_certification/re_registration'):
