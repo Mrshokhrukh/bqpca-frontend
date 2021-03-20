@@ -342,45 +342,52 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Applications',
-        icon: getIconComponent('Activity'), //Use activity
+        icon: getIconComponent('FileText'), // Using FileText for Applications
         children: [
           {
             name: 'Individual ECPF Applications',
+            icon: getIconComponent('UserCircle'), // User for Individual
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/individual_ecpf_applications`,
           },
           {
             name: 'Collaborated ECPF Applications',
+            icon: getIconComponent('Users2'), // Users2 for Collaboration
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/collaborated_ecpf_applications`,
           },
           {
             name: 'New Branch Applications',
+            icon: getIconComponent('BuildingPlus'), // BuildingPlus or Building2 for Branch, consider adding BuildingPlus to icon list if needed, or just use Building2
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/branch_ecpf_applications`,
           },
           {
             name: 'Renewal Applications',
+            icon: getIconComponent('RefreshCw'), // RefreshCw for Renewal
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_applications`,
           },
         ],
       },
       {
         name: 'Change Requests',
-        icon: getIconComponent('Activity'), //Use activity
+        icon: getIconComponent('Edit'), // Edit for Change Requests
         children: [
           {
             name: 'ECPF Name Change',
+            icon: getIconComponent('Edit'), // Edit for Change
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/name_change_applications`,
           },
           {
             name: 'ECPF Location Change',
+            icon: getIconComponent('Building'), // Building for Location
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/location_change_applications`,
           },
           {
             name: 'ECPF Ownership Change',
+            icon: getIconComponent('Users'), // Users for Ownership
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/ownership_change_applications`,
           },
@@ -388,55 +395,66 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Events',
-        icon: getIconComponent('Activity'), //Use activity
+        icon: getIconComponent('Briefcase'), // Briefcase for Events
         children: [
           {
             name: 'Education Fair Applications',
+            icon: getIconComponent('GraduationCap'), // GraduationCap for Education
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/education_fair_applications`,
           },
           {
             name: 'Mass Media Event Applications',
+            icon: getIconComponent('Monitor'), // Monitor for Media
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/mass_media_applications`,
           },
           {
             name: 'In House Event Applications',
+            icon: getIconComponent('Building'), // Building for In House
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/in_house_event_applications`,
           },
           {
             name: 'Hei Visit Applications',
+            icon: getIconComponent('Building2'), // Building2 for HEI
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/hei_visit_applications`,
           },
         ],
       },
       {
         name: 'ECPF Linkages',
-        icon: getIconComponent('ClipboardCheck'),
+        icon: getIconComponent('Link'), // Link for Linkages
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_link_establishment`,
       },
       {
         name: 'Bio Data',
-        icon: getIconComponent('Activity'), //Use activity
+        icon: getIconComponent('Users'), // Users for Bio Data
         children: [
           {
             name: 'Add HR',
+            icon: getIconComponent('UserPlus'), // UserPlus for Add
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/add_hr`,
           },
           {
             name: 'Add Student',
+            icon: getIconComponent('UserPlus'), // UserPlus for Add
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/add_student`,
           },
         ],
       },
       {
+        name: 'Non-Complaince Record',
+        icon: getIconComponent('XCircle'), // XCircle for Non-Compliance
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/non_compliance_records`,
+      },
+      {
         name: 'Reports',
-        icon: getIconComponent('FileSearch'),
+        icon: getIconComponent('FileBarChart'), // FileBarChart for Reports
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_reports`,
       },
       {
         name: 'Payments',
-        icon: getIconComponent('CreditCard'),
+        icon: getIconComponent('CreditCard'), // CreditCard for Payments
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_payment_history`,
       },
     ],

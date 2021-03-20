@@ -73,6 +73,7 @@ import AddStudent from '@/components/dashboard/ecpfcomponents/dealingOfficer/Add
 import ECPFReports from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFReports.vue';
 import ECPFPaymentHistory from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFPaymentHistory.vue';
 import BranchEcpfApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/BranchEcpfApplications.vue';
+import ECPFNonComplaince from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFNonCompliance.vue';
 
 // Chief Components
 import ECPFChiefDashboard from '@/components/dashboard/ecpfcomponents/chief/ECPFChiefDashboard.vue';
@@ -184,6 +185,8 @@ const ecpfDealingOfficerComponent = computed(() => {
       return ECPFReports;
     case path.endsWith('/ecpf/ecpf_payment_history'):
       return ECPFPaymentHistory;
+    case path.endsWith('/ecpf/non_compliance_records'):
+      return ECPFNonComplaince;
 
     default:
       return null;
