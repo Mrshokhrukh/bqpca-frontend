@@ -9,10 +9,10 @@
 
     <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Auto-populated Fields (same as before) -->
+        <!-- Auto-populated Fields -->
         <div>
           <label class="block text-sm font-medium text-gray-700">ECPF Name</label>
-          <input type="text" :value="ecpfData.ecpfName" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+          <input type="text" :value="ecpfData.ecpf_name" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Location</label>
@@ -20,7 +20,7 @@
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Name of Proprietor</label>
-          <input type="text" :value="ecpfData.proprietorName" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+          <input type="text" :value="ecpfData.proprietor_name" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">CID</label>
@@ -28,11 +28,11 @@
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Contact No</label>
-          <input type="text" :value="ecpfData.contactNo" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+          <input type="text" :value="ecpfData.contact_no" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Email Address</label>
-          <input type="email" :value="ecpfData.email" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+          <input type="email" :value="ecpfData.email_address" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
         </div>
 
         <!-- Subject (Dropdown) -->
@@ -87,47 +87,61 @@
 import { ref, reactive, onMounted } from 'vue';
 import apiServices from '@/services/services'; // Import your service
 
+// Assuming you have an ECPF ID available, e.g., from route params or props
+const ecpfId = 1; // Replace with the actual ECPF ID you want to fetch
 
 const ecpfData = reactive({
-  ecpfName: 'Example ECPF',
-  location: 'Thimphu',
-  proprietorName: 'John Doe',
-  cid: '1234567890',
-  contactNo: '+975-17123456',
-  email: 'john.doe@example.com',
+  ecpf_name: '',
+  location: '',
+  proprietor_name: '',
+  cid: '',
+  contact_no: '',
+  email_address: '',
 });
 
 const renewalData = reactive({
   subject: '',
   remarks: '',
-  declaration: null, // Initialize as null
+  declaration: null,
+  ecpf: ecpfId, // Include ecpf ID in renewal data for backend
 });
 
 const licenseValidityMessage = ref('');
-const declarationOptions = ref(null); // Holds the declaration data
+const declarationOptions = ref(null);
+const loading = ref(true); // Add loading state
 
 onMounted(async () => {
+  loading.value = true;
+  try {
+    // Fetch ECPF data
+    const ecpfResponse = await apiServices.getEcpfRenewal(ecpfId); // Use getEcpfRenewal endpoint to fetch ECPF details
+    Object.assign(ecpfData, ecpfResponse.data); // Assign fetched data to ecpfData
 
-    try {
-        const declarationResponse = await apiServices.getDeclarationOptions(); // Replace with your API method
-        declarationOptions.value = declarationResponse.data;
-    }
-    catch (error) {
-        console.error('Error fetching declaration options:', error);
-    }
+    // Fetch declaration options (assuming you have a dedicated endpoint for this)
+    const declarationResponse = await apiServices.getDeclarationOptions(); // Replace with your actual API method if different
+    declarationOptions.value = declarationResponse.data;
 
-  // Simulate license validity check (same as before)
-  const licenseActivationDate = new Date('2023-01-15'); // Example date - replace with your actual data source
-  const today = new Date();
-  const sixMonthsAgo = new Date();
-  sixMonthsAgo.setMonth(today.getMonth() - 6);
-   if (licenseActivationDate < sixMonthsAgo) {
-        licenseValidityMessage.value =
-            "Your license has been active for more than six months.  You must submit a new application.";
-    }
+     // Simulate license validity check (same as before, adjust based on your actual data)
+      if (ecpfResponse.data && ecpfResponse.data.license_activation_date) { // Assuming license_activation_date is in your ECPF data
+          const licenseActivationDate = new Date(ecpfResponse.data.license_activation_date);
+          const today = new Date();
+          const sixMonthsAgo = new Date();
+          sixMonthsAgo.setMonth(today.getMonth() - 6);
+           if (licenseActivationDate < sixMonthsAgo) {
+                licenseValidityMessage.value =
+                    "Your license has been active for more than six months.  You must submit a new application.";
+            }
+      }
+
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    alert('Failed to load data. Please check the console for details.');
+  } finally {
+    loading.value = false;
+  }
 });
 
-const submitRenewal = () => {
+const submitRenewal = async () => {
   if (renewalData.declaration !== 'agree') {
       alert('You must agree to the declaration before submitting.');
       return;
@@ -137,20 +151,28 @@ const submitRenewal = () => {
       return;
     }
 
-  // API call to submit renewal (replace with your actual API call)
-  console.log('Submitting renewal:', { ...ecpfData, ...renewalData });
-  alert('Renewal submitted successfully!');
-  // Reset form (optional)
-   Object.assign(renewalData, { subject: '', remarks: '', declaration: null });
-
+  try {
+    const response = await apiServices.createEcpfRenewal(renewalData); // Use createEcpfRenewal endpoint
+    console.log('Renewal submitted successfully:', response.data);
+    alert('Renewal submitted successfully!');
+    // Reset form
+    Object.assign(renewalData, { subject: '', remarks: '', declaration: null, ecpf: ecpfId }); // Keep ecpfId
+  } catch (error) {
+    console.error('Error submitting renewal:', error);
+    alert('Failed to submit renewal. Please check the console for details.');
+  }
 };
 
-const saveAsDraft = () => {
-  // API call or local storage to save the draft
-  console.log('Saving as draft:', { ...ecpfData, ...renewalData });
-  alert('Renewal application saved as draft.');
+const saveAsDraft = async () => {
+  try {
+    const response = await apiServices.patchEcpfRenewal(ecpfId, renewalData); // Assuming you want to PATCH to update draft - adjust if needed, maybe createEcpfRenewal for drafts
+    console.log('Saved as draft successfully:', response.data);
+    alert('Renewal application saved as draft.');
+  } catch (error) {
+    console.error('Error saving as draft:', error);
+    alert('Failed to save as draft. Please check the console for details.');
+  }
 };
-
 
 const editApplication = () => {
   // Logic for edit..

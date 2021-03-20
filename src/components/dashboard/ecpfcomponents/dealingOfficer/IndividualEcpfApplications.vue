@@ -13,7 +13,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Total Applications</p>
-              <p class="text-xl font-bold text-gray-800">{{ applications.length }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ totalApplicationsCount }}</p>
             </div>
           </div>
         </div>
@@ -27,7 +27,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Pending Review</p>
-              <p class="text-xl font-bold text-gray-800">{{ getPendingCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ pendingCount }}</p>
             </div>
           </div>
         </div>
@@ -41,7 +41,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Shortlisted</p>
-              <p class="text-xl font-bold text-gray-800">{{ getShortlistedCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ shortlistedCount }}</p>
             </div>
           </div>
         </div>
@@ -55,7 +55,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Approved</p>
-              <p class="text-xl font-bold text-gray-800">{{ getApprovedCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ approvedCount }}</p>
             </div>
           </div>
         </div>
@@ -118,23 +118,23 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr v-for="application in applications" :key="application.cidNo" class="hover:bg-gray-50 transition-colors">
+              <tr v-for="application in applications" :key="application.id" class="hover:bg-gray-50 transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-semibold mr-3">
-                      {{ getInitials(application.applicantName) }}
+                      {{ getInitials(application.applicant_name) }}
                     </div>
                     <div>
-                      <div class="text-sm font-medium text-gray-900">{{ application.applicantName }}</div>
+                      <div class="text-sm font-medium text-gray-900">{{ application.applicant_name }}</div>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.cidNo }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.firmName }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.contactNo }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.cid_no }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.proposed_firm_name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.contact_no }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span :class="getStatusClasses(application.applicationStatus)">
-                    {{ application.applicationStatus }}
+                  <span :class="getStatusClasses(application.application_status)">
+                    {{ application.application_status }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -154,8 +154,11 @@
                   </div>
                 </td>
               </tr>
-              <tr v-if="applications.length === 0">
+              <tr v-if="!loading && applications.length === 0">
                 <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No applications found.</td>
+              </tr>
+              <tr v-if="loading">
+                <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Loading applications...</td>
               </tr>
             </tbody>
           </table>
@@ -213,68 +216,62 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import EcpfApplicationModal from './modals/IndividualEcpfModal.vue'; // Import the modal component
+import { ref, onMounted, computed } from 'vue';
+import EcpfApplicationModal from './modals/IndividualEcpfModal.vue';
+import apiServices from '@/services/services';
 
-// Mock Application Data (Replace with your actual data fetching logic)
-const applications = ref([
-  {
-    cidNo: '12345678901',
-    applicantName: 'Sonam Wangchuk',
-    gender: 'Male',
-    dateOfBirth: '1990-01-15',
-    contactNo: '17123456',
-    emailAddress: 'sonam@example.com',
-    presentAddress: { officeNumber: '101', flatNo: 'A', buildingNo: 'XYZ Building', location: 'Thimphu', gewogThrom: 'Chang Gewog', dzongkhagThromde: 'Thimphu Thromde' },
-    permanentAddress: { villageChiwog: 'Chang', gewog: 'Chang Gewog', dungkhag: '', dzongkhagThromde: 'Thimphu' },
-    educationDetails: { qualification: 'Masters', instituteName: 'CST', universityName: 'RUB' },
-    ecpfProposalDetails: { firmName: 'Tech Solutions ECPF', firmAddress: 'Norzin Lam', firmLocation: 'Thimphu', firmType: 'Independent' },
-    purposeOfEstablishment: { vision: 'To provide quality counseling services.', mission: 'Empowering individuals through guidance.', objective: 'Reach 1000 clients in 3 years.' },
-    humanResource: [{ position: 'Counselor', cid: '98765432109', fullName: 'Pema Dema', qualification: 'Bachelor in Psychology', contactNumber: '17654321', emailAddress: 'pema@example.com' }],
-    financePlan: { details: 'Initial investment from personal savings.' },
-    services: [{ category: 'Counseling', details: 'Individual and group counseling sessions.' }],
-    swotAnalysis: { strengths: 'Experienced counselors', weaknesses: 'Limited initial funding', opportunities: 'Growing demand for mental health services', threats: 'Competition from established centers' },
-    feeCharges: [{ breakup: 'Consultation Fee', description: 'Per session', amount: 500, totalAmount: 500 }],
-    guarantorDetails: { fullName: 'Karma Dorji', cidNumber: '54321678901', relation: 'Brother', contactNumber: '17987654' },
-    applicationStatus: 'Pending Review' // Example status
-  },
-  {
-    cidNo: '98765432102',
-    applicantName: 'Tashi Wangmo',
-    gender: 'Female',
-    dateOfBirth: '1992-05-20',
-    firmName: 'Wellness Center',
-    contactNo: '17456789',
-    emailAddress: 'tashi@example.com',
-    applicationStatus: 'Shortlisted', // Example status
-    presentAddress: { officeNumber: '202', flatNo: 'B', buildingNo: 'PQR Building', location: 'Paro', gewogThrom: 'Dopshari Gewog', dzongkhagThromde: 'Paro Thromde' },
-    permanentAddress: { villageChiwog: 'Dopshari', gewog: 'Dopshari Gewog', dungkhag: '', dzongkhagThromde: 'Paro' },
-    educationDetails: { qualification: 'Masters in Counseling', instituteName: 'Paro College', universityName: 'Khesar Gyalpo University of Medical Sciences of Bhutan' },
-    ecpfProposalDetails: { firmName: 'Wellness Center ECPF', firmAddress: 'Town Area', firmLocation: 'Paro', firmType: 'Collaboration' },
-    purposeOfEstablishment: { vision: 'To be a leading wellness center.', mission: 'Promoting holistic wellbeing.', objective: 'Expand services to 3 Dzongkhags in 5 years.' },
-    humanResource: [{ position: 'HR Manager', cid: '11223344556', fullName: 'Sangay Lhamo', qualification: 'MBA in HR', contactNumber: '17112233', emailAddress: 'sangay@example.com' }],
-    financePlan: { details: 'Bank Loan and personal investment.' },
-    services: [{ category: 'Yoga', details: 'Yoga and Meditation classes.' }],
-    swotAnalysis: { strengths: 'Prime location', weaknesses: 'New in the market', opportunities: 'Growing health consciousness', threats: 'Economic downturn' },
-    feeCharges: [{ breakup: 'Yoga Class Fee', description: 'Monthly', amount: 1500, totalAmount: 1500 }],
-    guarantorDetails: { fullName: 'Dorji Phuntsho', cidNumber: '65432109876', relation: 'Friend', contactNumber: '17345678' },
-  },
-]);
-
+// --- Data ---
+const allApplications = ref([]); // Store all applications
+const applications = ref([]); // Store filtered applications for display
 const selectedApplication = ref(null);
 const isModalOpen = ref(false);
+const loading = ref(false);
+
+// --- Functions ---
+
+const fetchApplications = async () => {
+  loading.value = true;
+  try {
+    const response = await apiServices.getEcpfProfiles();
+    if (response.status === 200) {
+      allApplications.value = response.data; // Store all data
+      // Filter applications to only include "Pending Review" for initial display
+      applications.value = response.data.filter(app => app.application_status === 'Pending Review');
+    } else {
+      console.error('Failed to fetch applications:', response);
+      alert('Failed to load applications. Please check the console for errors.');
+    }
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    alert('Error loading applications. Please check the console for errors.');
+  } finally {
+    loading.value = false;
+  }
+};
 
 const viewApplication = (application) => {
   selectedApplication.value = application;
   isModalOpen.value = true;
 };
 
-const forwardApplication = (application) => {
-  // Implementation for forwarding the application
-  console.log('Forwarding application:', application.cidNo);
-  // You would implement the logic to forward the application here
-  // For example, show a confirmation dialog or change the status
-  alert(`Application for ${application.applicantName} has been forwarded.`);
+const forwardApplication = async (application) => {
+  if (!confirm(`Are you sure you want to forward the application for ${application.applicant_name} to the Chief?`)) {
+    return;
+  }
+
+  try {
+    const response = await apiServices.forwardEcpfApplication(application.id);
+    if (response.status === 200) {
+      alert(`Application for ${application.applicant_name} has been forwarded to the Chief.`);
+      fetchApplications();
+    } else {
+      console.error('Failed to forward application:', response);
+      alert('Failed to forward application. Please check the console for errors.');
+    }
+  } catch (error) {
+    console.error('Error forwarding application:', error);
+    alert('Error forwarding application. Please check the console for errors.');
+  }
 };
 
 const closeModal = () => {
@@ -284,20 +281,17 @@ const closeModal = () => {
 
 const handleVerificationUpdate = (updateData) => {
   console.log('Verification Updated in Parent:', updateData);
-  // Here you would typically update the application data in the `applications` ref
-  // based on `updateData` (e.g., using CID to find the right application).
-  // For mock data, you might need to find and update in the array.
-  // In a real app, you'd likely refetch the applications list.
+  // TODO: Implement API call to update verification status on backend and refresh data
 };
 
 const handleEvaluationUpdate = (updateData) => {
   console.log('Evaluation Updated in Parent:', updateData);
-  // Implement update logic similar to handleVerificationUpdate
+  // TODO: Implement API call to update evaluation status on backend and refresh data
 };
 
 const handleMouUpdate = (updateData) => {
   console.log('MoU Updated in Parent:', updateData);
-  // Implement update logic similar to handleVerificationUpdate
+  // TODO: Implement API call to update MoU status on backend and refresh data
 };
 
 const getStatusClasses = (status) => {
@@ -305,29 +299,14 @@ const getStatusClasses = (status) => {
     'px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap',
     {
       'bg-yellow-100 text-yellow-800': status === 'Pending Review',
-      'bg-green-100 text-green-800': status === 'Shortlisted',    // Adjust status names to match your data
-      'bg-red-100 text-red-800': status === 'Rejected',         // Adjust status names to match your data
-      'bg-blue-100 text-blue-800': status === 'Approved',          // Adjust status names to match your data
-      'bg-gray-100 text-gray-800': status === 'Draft',            // Adjust status names to match your data
-      // Add more status mappings as needed based on your applicationStatus values
+      'bg-green-100 text-green-800': status === 'Shortlisted',
+      'bg-red-100 text-red-800': status === 'Rejected',
+      'bg-blue-100 text-blue-800': status === 'Approved',
+      'bg-gray-100 text-gray-800': status === 'Draft',
     }
   ];
 };
 
-// Helper functions for stats cards
-const getPendingCount = () => {
-  return applications.value.filter(app => app.applicationStatus === 'Pending Review').length;
-};
-
-const getShortlistedCount = () => {
-  return applications.value.filter(app => app.applicationStatus === 'Shortlisted').length;
-};
-
-const getApprovedCount = () => {
-  return applications.value.filter(app => app.applicationStatus === 'Approved').length;
-};
-
-// Helper function to get initials from name
 const getInitials = (name) => {
   if (!name) return '';
   return name
@@ -336,4 +315,16 @@ const getInitials = (name) => {
     .join('')
     .toUpperCase();
 };
+
+// --- Computed Properties for Counts ---
+const totalApplicationsCount = computed(() => allApplications.value.length);
+const pendingCount = computed(() => allApplications.value.filter(app => app.application_status === 'Pending Review').length);
+const shortlistedCount = computed(() => allApplications.value.filter(app => app.application_status === 'Shortlisted').length);
+const approvedCount = computed(() => allApplications.value.filter(app => app.application_status === 'Approved').length);
+
+
+// --- Lifecycle Hooks ---
+onMounted(() => {
+  fetchApplications();
+});
 </script>

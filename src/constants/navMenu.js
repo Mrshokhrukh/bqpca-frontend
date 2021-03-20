@@ -73,7 +73,6 @@ const iconMap = {
   Link,
   Users2,
   Monitor,
-  // Added missing icons
   Scale,
   History,
   ClipboardList,
@@ -326,12 +325,77 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/track_applications`,
       },
-    ],
-    admin: [
       {
-        name: 'Payment Types',
-        icon: getIconComponent('CreditCard'),
-        route: (serviceType) => `/admin/admin/${serviceType}/payment_types`,
+        name: 'Upload Trade License',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/user/${serviceType}/upload_trade_license`,
+      },
+    ],
+    admin : [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('ClipboardList'), // More specific than CreditCard
+        route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Compliance Action',
+        icon: getIconComponent('ClipboardList'), // More specific than CreditCard
+        route: (serviceType) => `/admin/admin/${serviceType}/compliance_action`,
+      },
+      {
+        name: 'Compliance Action Taken',
+        icon: getIconComponent('CheckSquare'), // Represents actions completed
+        route: (serviceType) => `/admin/admin/${serviceType}/compliance_action_taken`,
+      },
+      {
+        name: 'Decisions',
+        icon: getIconComponent('Scale'), // Represents judgment/decision making
+        route: (serviceType) => `/admin/admin/${serviceType}/ecpf_decisions`,
+      },
+      {
+        name: 'Qualifications',
+        icon: getIconComponent('GraduationCap'),  //Relates to academic/professional qualifications
+        route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
+      },
+      {
+        name: 'Infrastructures',
+        icon: getIconComponent('Building2'), // Represents buildings/infrastructure
+        route: (serviceType) => `/admin/admin/${serviceType}/infrastructures`,
+      },
+      {
+        name: 'Institutes',
+        icon: getIconComponent('Building'), // Represents educational/research institutes.
+        route: (serviceType) => `/admin/admin/${serviceType}/institutes`,
+      },
+      {
+        name: 'Issue Compliances',
+        icon: getIconComponent('FileText'), //Relates to compliance documentation
+        route: (serviceType) => `/admin/admin/${serviceType}/issue_compliances`,
+      },
+      {
+        name: 'Positions',
+        icon: getIconComponent('UserCircle'), // Represents job positions
+        route: (serviceType) => `/admin/admin/${serviceType}/positions`,
+      },
+      {
+        name: 'Promotional Event Types',
+        icon: getIconComponent('Star'), // or 'Megaphone' if available, for promotion
+        route: (serviceType) => `/admin/admin/${serviceType}/promotional_event_types`,
+      },
+      {
+        name: 'Service Categories',
+        icon: getIconComponent('Layers'), // Represents different categories/layers
+        route: (serviceType) => `/admin/admin/${serviceType}/service_categories`,
+      },
+      {
+        name: 'Status',
+        icon: getIconComponent('Sliders'),// Represents progress or settings, better than Clock
+        route: (serviceType) => `/admin/admin/${serviceType}/status`,
+      },
+      {
+        name: 'Types of Firms',
+        icon: getIconComponent('Briefcase'), // Represents different types of businesses
+        route: (serviceType) => `/admin/admin/${serviceType}/types_of_firms`,
       },
     ],
     dealing_officer: [
@@ -544,6 +608,11 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/chief/${serviceType}/add_student`,
           },
         ],
+      },
+      {
+        name: 'Non-Compliance Record',
+        icon: getIconComponent('FileSearch'),
+        route: (serviceType) => `/admin/chief/${serviceType}/non_compliance_records`,
       },
       {
         name: 'Reports',
