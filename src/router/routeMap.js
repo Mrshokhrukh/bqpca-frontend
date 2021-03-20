@@ -126,6 +126,7 @@ export default {
       student_biodata: ecpfDashboard,
       profile: ecpfDashboard,
       track_applications: ecpfDashboard,
+      upload_trade_license: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,
@@ -292,6 +293,7 @@ export default {
       add_student: ecpfDashboard,
       ecpf_reports: ecpfDashboard,
       ecpf_payment_history: ecpfDashboard,
+      non_compliance_records: ecpfDashboard,
     },
     accreditation: {
       dashboard: () => import('@/views/admin/ACCRED/Dashboard.vue'),

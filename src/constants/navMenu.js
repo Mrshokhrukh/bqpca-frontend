@@ -326,6 +326,11 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/track_applications`,
       },
+      {
+        name: 'Upload Trade License',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/user/${serviceType}/upload_trade_license`,
+      },
     ],
     admin: [
       {
@@ -544,6 +549,11 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/chief/${serviceType}/add_student`,
           },
         ],
+      },
+      {
+        name: 'Non-Compliance Record',
+        icon: getIconComponent('FileSearch'),
+        route: (serviceType) => `/admin/chief/${serviceType}/non_compliance_records`,
       },
       {
         name: 'Reports',

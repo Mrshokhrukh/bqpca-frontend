@@ -145,8 +145,8 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex space-x-2">
-                    <button @click="viewApplication(application)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
-                    <button @click="forwardApplication(application)" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">Forward</button>
+                    <button @click="viewApplication(application.id)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
+                    <button @click="forwardApplication(application.id)" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">Forward</button>
                     <!-- Removed Approve and Reject buttons from here -->
                   </div>
                 </td>
@@ -290,7 +290,9 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                     </svg>
-                                    <span class="text-sm text-gray-700">{{ doc.name }}</span>
+                                    <a :href="doc.data" :download="doc.name" class="text-sm text-blue-600 hover:text-blue-800">
+                                      {{ doc.name }}
+                                    </a>
                                 </div>
                             </div>
                             <div v-else class="p-4 bg-white rounded border border-gray-200">
@@ -368,150 +370,185 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
+import apiServices from '@/services/services'; // Import apiServices
 
-const applications = ref([
-  {
-    id: 1,
-    applicantName: 'John Doe',
-    ecpfProposalDetails: { firmName: 'Doe Inc', firmLocation: 'New York' },
-    externalParty: { nameOfCollaboratingFirm: 'ABC Corp', country: 'USA', state: 'NY', firmRegistrationNumber: '12345', nameOfProprietor: 'John Doe', nationality: 'American', designation: 'CEO', emailAddress: 'john.doe@example.com', contactNumber: '555-1234', website: 'www.example.com' },
-    status: 'Pending',
-    existingEcpfName: 'Old ECPF',
-    existingLicenseNumber: '12345',
-    collaborationDetails: 'Details of the collaboration...',
-      supportingDocuments: [] // Adding supportingDocuments array
-  },
-  {
-    id: 2,
-    applicantName: 'Jane Smith',
-    ecpfProposalDetails: { firmName: 'Smith Ltd', firmLocation: 'London' },
-    externalParty: { nameOfCollaboratingFirm: 'XYZ Ltd', country: 'UK', state: null, firmRegistrationNumber: '67890', nameOfProprietor: 'Jane Smith', nationality: 'British', designation: 'Director', emailAddress: 'jane.smith@example.com', contactNumber: '44 20 7946 0500', website: 'www.example.co.uk' },
-    status: 'In Review',
-    existingEcpfName: 'Old ECPF Smith',
-    existingLicenseNumber: '67890',
-    collaborationDetails: 'More collaboration details...',
-      supportingDocuments: [] // Adding supportingDocuments array
-  },
-   {
-    id: 3,
-    applicantName: 'Alice Johnson',
-    ecpfProposalDetails: { firmName: 'Johnson Enterprises', firmLocation: 'Sydney' },
-    externalParty: { nameOfCollaboratingFirm: 'QRS Pty Ltd', country: 'Australia', state: 'NSW', firmRegistrationNumber: 'AU7890123', nameOfProprietor: 'Alice Johnson', nationality: 'Australian', designation: 'Founder', emailAddress: 'alice.j@example.com', contactNumber: '+61 2 9876 5432', website: 'www.qrs.com.au' },
-    status: 'Approved',
-    existingEcpfName: 'Alpha ECPF',
-    existingLicenseNumber: 'L123456',
-    collaborationDetails: 'Strategic collaboration for market expansion.',
-    supportingDocuments: []
-  },
-  {
-    id: 4,
-    applicantName: 'Bob Williams',
-    ecpfProposalDetails: { firmName: 'Williams Group', firmLocation: 'Toronto' },
-    externalParty: { nameOfCollaboratingFirm: 'TUV Inc', country: 'Canada', state: 'ON', firmRegistrationNumber: 'CA4567890', nameOfProprietor: 'Bob Williams', nationality: 'Canadian', designation: 'Managing Director', emailAddress: 'bob.w@example.com', contactNumber: '+1 647 555 9012', website: 'www.tuvinc.ca' },
-    status: 'Rejected',
-    existingEcpfName: 'Beta ECPF',
-    existingLicenseNumber: 'L654321',
-    collaborationDetails: 'Joint venture for product development.',
-    supportingDocuments: []
-  }
-  // Add more application data here as needed
-  ]);
-
+const applications = ref([]); // Initialize as empty array
 const isModalOpen = ref(false);
-const isEditing = ref(false); // Track edit state
+const isEditing = ref(false);
 const isRegretModalOpen = ref(false);
 const editingApplication = ref({});
 const regretMessage = ref('');
 const searchQuery = ref('');
 const statusFilter = ref('');
 const sortBy = ref('applicantName');
-let initialApplicationState = null; // Store the initial state
+let initialApplicationState = null;
 
-const viewApplication = (application) => {
-  editingApplication.value = { ...application };
-  initialApplicationState = { ...application }; // Deep copy for reset
-  isModalOpen.value = true;
-  isEditing.value = false; // Initialize edit state to false
+const fetchApplications = async () => {
+  try {
+    const response = await apiServices.getEcpfCollaborations();
+    if (response.status === 200) {
+      applications.value = response.data;
+    } else {
+      alert('Failed to load applications.');
+      console.error('Error fetching applications:', response);
+    }
+  } catch (error) {
+    alert('Error loading applications.');
+    console.error('Error fetching applications:', error);
+  }
 };
+
+onMounted(() => {
+  fetchApplications();
+});
+
+const viewApplication = async (applicationId) => {
+  try {
+    const response = await apiServices.getEcpfCollaboration(applicationId);
+    if (response.status === 200) {
+      editingApplication.value = response.data;
+      initialApplicationState = { ...response.data };
+      isModalOpen.value = true;
+      isEditing.value = false;
+    } else {
+      alert('Failed to load application details.');
+      console.error('Error fetching application details:', response);
+    }
+  } catch (error) {
+    alert('Error loading application details.');
+    console.error('Error fetching application details:', error);
+  }
+};
+
 
 const enableEditing = () => {
-  isEditing.value = true; // Enable editing mode
+  isEditing.value = true;
 };
 
-const forwardApplication = (application) => {
-  // Implement forward logic here (e.g., API call to update application status)
-  application.status = 'In Review'; //Simple status update for demonstration
-  alert(`Forwarding application: ${application.applicantName}`);
+const forwardApplication = async (applicationId) => {
+  try {
+    const response = await apiServices.patchEcpfCollaboration(applicationId, { status: 'In Review' }); // Assuming 'In Review' is the status
+    if (response.status === 200) {
+      // Update local application list
+      const index = applications.value.findIndex(app => app.id === applicationId);
+      if (index !== -1) {
+        applications.value[index].status = 'In Review';
+      }
+      alert(`Application forwarded for review.`);
+    } else {
+      alert('Failed to forward application.');
+      console.error('Error forwarding application:', response);
+    }
+  } catch (error) {
+    alert('Error forwarding application.');
+    console.error('Error forwarding application:', error);
+  }
 };
 
-// Approve and Reject are now called *within* the modal.
-const approveDirectly = (application) => {
-  application.status = 'Approved';
-  alert(`Approved application: ${application.applicantName}`);
-  closeModal(); // Close modal after approval
+const approveDirectly = async (application) => {
+  try {
+    const response = await apiServices.patchEcpfCollaboration(application.id, { status: 'Approved' });
+    if (response.status === 200) {
+      const index = applications.value.findIndex(app => app.id === application.id);
+      if (index !== -1) {
+        applications.value[index].status = 'Approved';
+      }
+      alert(`Application approved successfully.`);
+      closeModal();
+    } else {
+      alert('Failed to approve application.');
+      console.error('Error approving application:', response);
+    }
+  } catch (error) {
+    alert('Error approving application.');
+    console.error('Error approving application:', error);
+  }
 };
 
 const rejectDirectly = () => {
   isRegretModalOpen.value = true;
-  // editingApplication is already set by viewApplication
 };
 
-
-const confirmRegret = () => {
-  editingApplication.value.status = 'Rejected';
-  editingApplication.value.regretMessage = regretMessage.value;  // Store the regret message.
-  alert(`Regretting application: ${editingApplication.value.applicantName} with message: ${regretMessage.value}`);
-  closeRegretModal();
-  closeModal(); // Close the main modal after rejecting.
-};
-
-const saveChanges = () => {
-  const index = applications.value.findIndex(app => app.id === editingApplication.value.id);
-  if (index !== -1) {
-    applications.value[index] = { ...editingApplication.value };
-    alert(`Saving changes for application: ${editingApplication.value.applicantName}`);
+const confirmRegret = async () => {
+  try {
+    const response = await apiServices.patchEcpfCollaboration(editingApplication.value.id, { status: 'Rejected', rejectionReason: regretMessage.value }); // Assuming 'rejectionReason' is the field
+    if (response.status === 200) {
+      const index = applications.value.findIndex(app => app.id === editingApplication.value.id);
+      if (index !== -1) {
+        applications.value[index].status = 'Rejected';
+      }
+      alert(`Application rejected successfully.`);
+      closeRegretModal();
+      closeModal();
+    } else {
+      alert('Failed to reject application.');
+      console.error('Error rejecting application:', response);
+    }
+  } catch (error) {
+    alert('Error rejecting application.');
+    console.error('Error rejecting application:', error);
   }
-   initialApplicationState = { ...editingApplication.value }; // Update initial state after save
-  closeModal();
-  isEditing.value = false;
 };
+
+
+const saveChanges = async () => {
+  try {
+    const response = await apiServices.updateEcpfCollaboration(editingApplication.value.id, editingApplication.value); // Or patchEcpfCollaboration if you want partial update
+    if (response.status === 200) {
+      const index = applications.value.findIndex(app => app.id === editingApplication.value.id);
+      if (index !== -1) {
+        // Ideally, update with the full response data for latest info from backend
+        applications.value[index] = response.data; // Assuming backend returns updated application
+      }
+      alert(`Changes saved successfully for application: ${editingApplication.value.applicantName}`);
+      initialApplicationState = { ...response.data }; // Update initial state after successful save
+      closeModal();
+      isEditing.value = false;
+    } else {
+      alert('Failed to save changes.');
+      console.error('Error saving changes:', response);
+    }
+  } catch (error) {
+    alert('Error saving changes.');
+    console.error('Error saving changes:', error);
+  }
+};
+
 
 const uploadDocument = (event) => {
   const file = event.target.files[0];
-  if (file) { // Check if a file was actually selected
-        if (!editingApplication.value.supportingDocuments) {
-            editingApplication.value.supportingDocuments = [];
-        }
+  if (file) {
+    if (!editingApplication.value.supportingDocuments) {
+      editingApplication.value.supportingDocuments = [];
+    }
 
-      //Use FileReader to handle asynchronous file reading
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            editingApplication.value.supportingDocuments.push({
-                name: file.name,
-                data: e.target.result, //Base64 encoded data
-                //Optionally store file type if needed: type: file.type
-            })
-        }
-      reader.readAsDataURL(file); // Read the file as a Data URL (Base64)
-      alert(`Uploading document: ${file.name}`);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      editingApplication.value.supportingDocuments.push({
+        name: file.name,
+        data: e.target.result, // Base64 encoded data - adjust if your backend expects different format
+      });
+    };
+    reader.readAsDataURL(file);
+    alert(`Document ${file.name} added to application. Remember to Save Changes to persist.`);
   }
 };
+
+
 const closeModalWithoutDataReset = () => {
     isModalOpen.value = false;
 }
 
 const closeModal = () => {
-    if (isEditing.value) {
-        // Reset to initial state if in editing mode
-       Object.assign(editingApplication.value, initialApplicationState);
+    if (isEditing.value && initialApplicationState) {
+        Object.assign(editingApplication.value, initialApplicationState);
     }
   isModalOpen.value = false;
-  // editingApplication.value = {}; // Removed resetting of editingApplication
   isEditing.value = false;
   regretMessage.value = '';
-   initialApplicationState = null; // Reset initial state
+  initialApplicationState = null;
 };
 
 const closeRegretModal = () => {
@@ -522,26 +559,23 @@ const closeRegretModal = () => {
 const filteredApplications = computed(() => {
     let filtered = [...applications.value];
 
-    // Search Filter
     if (searchQuery.value) {
       const searchTerm = searchQuery.value.toLowerCase();
       filtered = filtered.filter(app =>
-          app.applicantName.toLowerCase().includes(searchTerm) ||
+          app.applicantName?.toLowerCase().includes(searchTerm) ||
           (app.ecpfProposalDetails?.firmName?.toLowerCase().includes(searchTerm)) ||
           (app.externalParty?.nameOfCollaboratingFirm?.toLowerCase().includes(searchTerm))
       );
     }
 
-    // Status Filter
     if (statusFilter.value) {
       filtered = filtered.filter(app => app.status === statusFilter.value);
     }
 
-    // Sorting
     if (sortBy.value === 'applicantName') {
-      filtered.sort((a, b) => a.applicantName.localeCompare(b.applicantName));
+      filtered.sort((a, b) => (a.applicantName || '').localeCompare(b.applicantName || ''));
     } else if (sortBy.value === 'status') {
-      filtered.sort((a, b) => a.status.localeCompare(b.status));
+      filtered.sort((a, b) => (a.status || '').localeCompare(b.status || ''));
     } else if (sortBy.value === 'ecpfName') {
         filtered.sort((a,b) => (a.ecpfProposalDetails?.firmName || '').localeCompare(b.ecpfProposalDetails?.firmName || ''))
     }
@@ -574,7 +608,6 @@ const getStatusClasses = (status) => {
   ];
 };
 
-// Watcher for isModalOpen to handle external close (like clicking backdrop)
 watch(isModalOpen, (newVal) => {
   if (!newVal && initialApplicationState) {
        Object.assign(editingApplication.value, initialApplicationState);

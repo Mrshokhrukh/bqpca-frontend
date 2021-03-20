@@ -368,7 +368,7 @@ const submitForm = async () => {
             return;
         }
       const dataToSubmit = await prepareDataForSubmission();
-        const response = await apiServices.submitCollaborationEcpfApplication(dataToSubmit); // Different API endpoint
+        const response = await apiServices.createEcpfCollaboration(dataToSubmit); // Different API endpoint
 
         if (response.status === 201) {
             alert('Application submitted successfully!');

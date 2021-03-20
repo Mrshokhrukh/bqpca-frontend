@@ -55,6 +55,7 @@ import HrBiodata from '@/components/dashboard/ecpfcomponents/user/HrBiodata.vue'
 import StudentBiodata from '@/components/dashboard/ecpfcomponents/user/StudentBiodata.vue';
 import ECPFUserProfile from '@/components/dashboard/ecpfcomponents/user/ECPFUserProfile.vue';
 import ECPFTrackApplications from '@/components/dashboard/ecpfcomponents/user/ECPFTrackApplications.vue';
+import UploadTradeLicense from '@/components/dashboard/ecpfcomponents/user/UploadTradeLicense.vue';
 // Dealing officer Components
 import ECPFDealingOfficerDashboard from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFDealingOfficerDashboard.vue';
 import IndividualEcpfApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/IndividualEcpfApplications.vue';
@@ -96,6 +97,7 @@ import ChiefAddHr from '@/components/dashboard/ecpfcomponents/chief/AddHr.vue';
 import ChiefAddStudent from '@/components/dashboard/ecpfcomponents/chief/AddStudent.vue';
 import ChiefECPFReports from '@/components/dashboard/ecpfcomponents/chief/ECPFReports.vue';
 import ChiefECPFPaymentHistory from '@/components/dashboard/ecpfcomponents/chief/ECPFPaymentHistory.vue';
+import NonCompliance from '@/components/dashboard/ecpfcomponents/chief/NonCompliance.vue';
 
 const { role, user } = useAuthStore();
 
@@ -142,6 +144,8 @@ const ecpfUserComponent = computed(() => {
       return ECPFUserProfile;
     case path.endsWith('/ecpf/track_applications'):
       return ECPFTrackApplications;
+    case path.endsWith('/ecpf/upload_trade_license'):
+      return UploadTradeLicense;  
     default:
       return null;
   }
@@ -233,6 +237,8 @@ const ecpfChiefComponent = computed(() => {
       return ChiefECPFReports;
     case path.endsWith('/ecpf/ecpf_payment_history'):
       return ChiefECPFPaymentHistory;
+    case path.endsWith('/ecpf/non_compliance_records'):
+      return NonCompliance;
     default:
       return null;
   }
