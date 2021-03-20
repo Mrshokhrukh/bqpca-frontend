@@ -199,6 +199,7 @@ export default {
       add_student: ecpfDashboard,
       ecpf_reports: ecpfDashboard,
       ecpf_payment_history: ecpfDashboard,
+      non_compliance_records: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,
