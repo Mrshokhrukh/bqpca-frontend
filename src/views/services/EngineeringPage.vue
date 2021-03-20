@@ -433,7 +433,7 @@ const handleCPDProviderRegistration = async () => {
       first_name,
       last_name,
       contact_number: cpdProviderForm.contact_number,
-      role: 'epc_cpd_provider',
+      role: 'cpd_cme_provider',
       service_type: serviceType.value,
     }
 
@@ -492,7 +492,7 @@ const handleEngineeringInstitutionRegistration = async () => {
       first_name,
       last_name,
       contact_number: engineeringInstitutionForm.contact_number,
-      role: 'epc_institutions',
+      role: 'institutions',
       service_type: serviceType.value,
       // Send the license number as cid to the backend
       cid: engineeringInstitutionForm.license_number || ''
