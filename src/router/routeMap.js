@@ -22,6 +22,18 @@ export default {
     },
     ecpf: {
       dashboard: ecpfDashboard,
+      compliance_action: ecpfDashboard,
+      compliance_action_taken: ecpfDashboard,
+      ecpf_decisions: ecpfDashboard,
+      qualifications: ecpfDashboard,
+      infrastructures: ecpfDashboard,
+      institutes: ecpfDashboard,
+      issue_compliances: ecpfDashboard,
+      positions: ecpfDashboard,
+      promotional_event_types: ecpfDashboard,
+      service_categories: ecpfDashboard,
+      status: ecpfDashboard,
+      types_of_firms: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,
