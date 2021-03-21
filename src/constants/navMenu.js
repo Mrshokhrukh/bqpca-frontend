@@ -73,7 +73,6 @@ const iconMap = {
   Link,
   Users2,
   Monitor,
-  // Added missing icons
   Scale,
   History,
   ClipboardList,
@@ -326,12 +325,77 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/track_applications`,
       },
+      {
+        name: 'Upload Trade License',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/user/${serviceType}/upload_trade_license`,
+      },
     ],
     admin: [
       {
-        name: 'Payment Types',
-        icon: getIconComponent('CreditCard'),
-        route: (serviceType) => `/admin/admin/${serviceType}/payment_types`,
+        name: 'Dashboard',
+        icon: getIconComponent('ClipboardList'), // More specific than CreditCard
+        route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Compliance Action',
+        icon: getIconComponent('ClipboardList'), // More specific than CreditCard
+        route: (serviceType) => `/admin/admin/${serviceType}/compliance_action`,
+      },
+      {
+        name: 'Compliance Action Taken',
+        icon: getIconComponent('CheckSquare'), // Represents actions completed
+        route: (serviceType) => `/admin/admin/${serviceType}/compliance_action_taken`,
+      },
+      {
+        name: 'Decisions',
+        icon: getIconComponent('Scale'), // Represents judgment/decision making
+        route: (serviceType) => `/admin/admin/${serviceType}/ecpf_decisions`,
+      },
+      {
+        name: 'Qualifications',
+        icon: getIconComponent('GraduationCap'), //Relates to academic/professional qualifications
+        route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
+      },
+      {
+        name: 'Infrastructures',
+        icon: getIconComponent('Building2'), // Represents buildings/infrastructure
+        route: (serviceType) => `/admin/admin/${serviceType}/infrastructures`,
+      },
+      {
+        name: 'Institutes',
+        icon: getIconComponent('Building'), // Represents educational/research institutes.
+        route: (serviceType) => `/admin/admin/${serviceType}/institutes`,
+      },
+      {
+        name: 'Issue Compliances',
+        icon: getIconComponent('FileText'), //Relates to compliance documentation
+        route: (serviceType) => `/admin/admin/${serviceType}/issue_compliances`,
+      },
+      {
+        name: 'Positions',
+        icon: getIconComponent('UserCircle'), // Represents job positions
+        route: (serviceType) => `/admin/admin/${serviceType}/positions`,
+      },
+      {
+        name: 'Promotional Event Types',
+        icon: getIconComponent('Star'), // or 'Megaphone' if available, for promotion
+        route: (serviceType) => `/admin/admin/${serviceType}/promotional_event_types`,
+      },
+      {
+        name: 'Service Categories',
+        icon: getIconComponent('Layers'), // Represents different categories/layers
+        route: (serviceType) => `/admin/admin/${serviceType}/service_categories`,
+      },
+      {
+        name: 'Status',
+        icon: getIconComponent('Sliders'), // Represents progress or settings, better than Clock
+        route: (serviceType) => `/admin/admin/${serviceType}/status`,
+      },
+      {
+        name: 'Types of Firms',
+        icon: getIconComponent('Briefcase'), // Represents different types of businesses
+        route: (serviceType) => `/admin/admin/${serviceType}/types_of_firms`,
       },
     ],
     dealing_officer: [
@@ -342,45 +406,52 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Applications',
-        icon: getIconComponent('Activity'), //Use activity
+        icon: getIconComponent('FileText'), // Using FileText for Applications
         children: [
           {
             name: 'Individual ECPF Applications',
+            icon: getIconComponent('UserCircle'), // User for Individual
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/individual_ecpf_applications`,
           },
           {
             name: 'Collaborated ECPF Applications',
+            icon: getIconComponent('Users2'), // Users2 for Collaboration
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/collaborated_ecpf_applications`,
           },
           {
             name: 'New Branch Applications',
+            icon: getIconComponent('BuildingPlus'), // BuildingPlus or Building2 for Branch, consider adding BuildingPlus to icon list if needed, or just use Building2
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/branch_ecpf_applications`,
           },
           {
             name: 'Renewal Applications',
+            icon: getIconComponent('RefreshCw'), // RefreshCw for Renewal
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_applications`,
           },
         ],
       },
       {
         name: 'Change Requests',
-        icon: getIconComponent('Activity'), //Use activity
+        icon: getIconComponent('Edit'), // Edit for Change Requests
         children: [
           {
             name: 'ECPF Name Change',
+            icon: getIconComponent('Edit'), // Edit for Change
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/name_change_applications`,
           },
           {
             name: 'ECPF Location Change',
+            icon: getIconComponent('Building'), // Building for Location
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/location_change_applications`,
           },
           {
             name: 'ECPF Ownership Change',
+            icon: getIconComponent('Users'), // Users for Ownership
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/ownership_change_applications`,
           },
@@ -388,55 +459,66 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Events',
-        icon: getIconComponent('Activity'), //Use activity
+        icon: getIconComponent('Briefcase'), // Briefcase for Events
         children: [
           {
             name: 'Education Fair Applications',
+            icon: getIconComponent('GraduationCap'), // GraduationCap for Education
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/education_fair_applications`,
           },
           {
             name: 'Mass Media Event Applications',
+            icon: getIconComponent('Monitor'), // Monitor for Media
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/mass_media_applications`,
           },
           {
             name: 'In House Event Applications',
+            icon: getIconComponent('Building'), // Building for In House
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/in_house_event_applications`,
           },
           {
             name: 'Hei Visit Applications',
+            icon: getIconComponent('Building2'), // Building2 for HEI
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/hei_visit_applications`,
           },
         ],
       },
       {
         name: 'ECPF Linkages',
-        icon: getIconComponent('ClipboardCheck'),
+        icon: getIconComponent('Link'), // Link for Linkages
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_link_establishment`,
       },
       {
         name: 'Bio Data',
-        icon: getIconComponent('Activity'), //Use activity
+        icon: getIconComponent('Users'), // Users for Bio Data
         children: [
           {
             name: 'Add HR',
+            icon: getIconComponent('UserPlus'), // UserPlus for Add
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/add_hr`,
           },
           {
             name: 'Add Student',
+            icon: getIconComponent('UserPlus'), // UserPlus for Add
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/add_student`,
           },
         ],
       },
       {
+        name: 'Non-Complaince Record',
+        icon: getIconComponent('XCircle'), // XCircle for Non-Compliance
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/non_compliance_records`,
+      },
+      {
         name: 'Reports',
-        icon: getIconComponent('FileSearch'),
+        icon: getIconComponent('FileBarChart'), // FileBarChart for Reports
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_reports`,
       },
       {
         name: 'Payments',
-        icon: getIconComponent('CreditCard'),
+        icon: getIconComponent('CreditCard'), // CreditCard for Payments
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_payment_history`,
       },
     ],
@@ -526,6 +608,11 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/chief/${serviceType}/add_student`,
           },
         ],
+      },
+      {
+        name: 'Non-Compliance Record',
+        icon: getIconComponent('FileSearch'),
+        route: (serviceType) => `/admin/chief/${serviceType}/non_compliance_records`,
       },
       {
         name: 'Reports',
@@ -1270,13 +1357,8 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
       },
       {
-        name: 'User Management',
-        icon: getIconComponent('Users'),
-        route: (serviceType) => `/admin/admin/${serviceType}/user_management`,
-      },
-      {
-        name: 'Masters',
-        icon: getIconComponent('Database'),
+        name: 'CME Management',
+        icon: getIconComponent('BookOpen'),
         children: [
           {
             name: 'CME Activities',
@@ -1290,10 +1372,17 @@ const serviceSpecificMenuItems = {
             name: 'CME Methodologies',
             route: (serviceType) => `/admin/admin/${serviceType}/cme_methodologies`,
           },
-          {
-            name: 'CPD Activity',
-            route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
-          },
+        ],
+      },
+      {
+        name: 'CPD Activity',
+        icon: getIconComponent('FileText'),
+        route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
+      },
+      {
+        name: 'Document Management',
+        icon: getIconComponent('File'),
+        children: [
           {
             name: 'Document Types',
             route: (serviceType) => `/admin/admin/${serviceType}/document_types`,
@@ -1303,15 +1392,45 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/e_signatures`,
           },
           {
+            name: 'File Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
+          },
+        ],
+      },
+      {
+        name: 'Fee Management',
+        icon: getIconComponent('CreditCard'),
+        children: [
+          {
             name: 'Fee Structures',
             route: (serviceType) => `/admin/admin/${serviceType}/fee_structures`,
           },
           {
-            name: 'File Types',
-            route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
+            name: 'Fees Associated For',
+            route: (serviceType) => `/admin/admin/${serviceType}/fees_associated_for`,
+          },
+        ],
+      },
+      {
+        name: 'Participation',
+        icon: getIconComponent('Users'),
+        children: [
+          {
+            name: 'Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/participation_category`,
           },
           {
-            name: 'Personnel Categories',
+            name: 'Sub Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
+          },
+        ],
+      },
+      {
+        name: 'Personnel',
+        icon: getIconComponent('UserCircle'),
+        children: [
+          {
+            name: 'Categories',
             route: (serviceType) => `/admin/admin/${serviceType}/personnel_categories`,
           },
           {
@@ -1319,32 +1438,56 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
           },
           {
-            name: 'Registration Type',
-            route: (serviceType) => `/admin/admin/${serviceType}/registration_type`,
-          },
-          {
-            name: 'Sector',
-            route: (serviceType) => `/admin/admin/${serviceType}/sector`,
+            name: 'Qualification Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/qualification_types`,
           },
         ],
       },
       {
-        name: 'CoGS Masters',
-        icon: getIconComponent('Award'),
+        name: 'Registration',
+        icon: getIconComponent('ClipboardCheck'),
         children: [
           {
-            name: 'CoGS Agency',
+            name: 'Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/registration_type`,
+          },
+          {
+            name: 'Sectors',
+            route: (serviceType) => `/admin/admin/${serviceType}/sector`,
+          },
+          {
+            name: 'Sub Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/sub_categories`,
+          },
+        ],
+      },
+      {
+        name: 'University',
+        icon: getIconComponent('BookOpen'),
+        route: (serviceType) => `/admin/admin/${serviceType}/university`,
+      },
+      {
+        name: 'COGS Management',
+        icon: getIconComponent('Building2'),
+        children: [
+          {
+            name: 'Agency',
             route: (serviceType) => `/admin/admin/${serviceType}/cogs_agency`,
           },
           {
-            name: 'CoGS Department',
+            name: 'Department',
             route: (serviceType) => `/admin/admin/${serviceType}/cogs_dept`,
           },
           {
-            name: 'CoGS Workplace',
+            name: 'Workplace',
             route: (serviceType) => `/admin/admin/${serviceType}/cogs_workplace`,
           },
         ],
+      },
+      {
+        name: 'User Management',
+        icon: getIconComponent('Users'),
+        route: (serviceType) => `/admin/admin/${serviceType}/user_management`,
       },
     ],
 
@@ -1387,13 +1530,8 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/institutions/${serviceType}/dashboard`,
       },
       {
-        name: 'Institution Profile',
-        icon: getIconComponent('Building'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
-      },
-      {
-        name: 'Applications',
-        icon: getIconComponent('FileText'),
+        name: 'EOI Management',
+        icon: getIconComponent('Activity'),
         children: [
           {
             name: 'Apply for EOI',
@@ -1403,6 +1541,12 @@ const serviceSpecificMenuItems = {
             name: 'Track EOI',
             route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
           },
+        ],
+      },
+      {
+        name: 'DPR Management',
+        icon: getIconComponent('Activity'),
+        children: [
           {
             name: 'Apply for DPR',
             route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_dpr`,
@@ -1411,24 +1555,47 @@ const serviceSpecificMenuItems = {
             name: 'Track DPR',
             route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
           },
+        ],
+      },
+      {
+        name: 'Institute Renewal',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
+      },
+      {
+        name: 'Teaching Institutes',
+        icon: getIconComponent('Activity'),
+        children: [
           {
-            name: 'My Applications',
-            route: (serviceType) => `/admin/institutions/${serviceType}/my_applications`,
+            name: 'Teaching Institutes',
+            route: (serviceType) =>
+              `/admin/institutions/${serviceType}/teaching_center_application`,
+          },
+          {
+            name: 'Track & Renewal',
+            route: (serviceType) =>
+              `/admin/institutions/${serviceType}/teaching_center_track_and_renew`,
+          },
+          {
+            name: 'New Education Program',
+            route: (serviceType) => `/admin/institutions/${serviceType}/new_education_program`,
           },
         ],
       },
       {
-        name: 'Management',
-        icon: getIconComponent('Settings'),
+        name: 'Institution Profile',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
+      },
+      {
+        name: 'CAPA',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
+      },
+      {
+        name: 'Maintenance',
+        icon: getIconComponent('Activity'),
         children: [
-          {
-            name: 'Renewal',
-            route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
-          },
-          {
-            name: 'CAPA',
-            route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
-          },
           {
             name: 'Staff Management',
             route: (serviceType) => `/admin/institutions/${serviceType}/staff_management`,
@@ -1442,11 +1609,6 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/institutions/${serviceType}/department_management`,
           },
         ],
-      },
-      {
-        name: 'Certificates',
-        icon: getIconComponent('Award'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
       },
     ],
   },

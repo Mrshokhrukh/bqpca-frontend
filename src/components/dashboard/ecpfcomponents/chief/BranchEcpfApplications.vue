@@ -1,8 +1,8 @@
-<!-- BranchEcpfApplications.vue (or your table component file) -->
+<!-- BranchEcpfApplications_Chief.vue -->
 <template>
   <div class="p-8 min-h-screen ">
     <div class="mx-auto">
-      <!-- Header with stats -->
+      <!-- Header with stats (same as Dealing Officer) -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <div class="flex items-center">
@@ -61,12 +61,12 @@
         </div>
       </div>
 
-      <!-- Main heading -->
+      <!-- Main heading (same as Dealing Officer) -->
       <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-800">ECPF Collaboration Applications</h2>
       </div>
 
-      <!-- Filter/Search bar -->
+      <!-- Filter/Search bar (same as Dealing Officer) -->
       <div class="mb-6 bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
           <div class="flex-1">
@@ -98,7 +98,7 @@
         </div>
       </div>
 
-      <!-- Table View -->
+      <!-- Table View (same as Dealing Officer) -->
       <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
@@ -148,7 +148,6 @@
                     >
                       View
                     </button>
-                    
                   </div>
                 </td>
               </tr>
@@ -160,7 +159,7 @@
         </div>
       </div>
 
-      <!-- Pagination -->
+      <!-- Pagination (same as Dealing Officer) -->
       <div class="flex items-center justify-between py-4">
         <div class="flex-1 flex justify-between sm:hidden">
           <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
@@ -201,7 +200,7 @@
         </div>
       </div>
 
-      <!--  Use the Modal Component Here -->
+      <!--  Use the Modal Component Here (same as Dealing Officer) -->
       <ecpf-application-modal
         :is-open="isModalOpen"
         :application="selectedApplication"
@@ -213,284 +212,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import EcpfApplicationModal from './modals/EcpfBranchModal.vue'; // Import the modal component
+import apiServices from '@/services/services'; // Import API service
 
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
-
-const applications = ref([
-  {
-    id: 1,
-    applicantName: 'Alice Johnson',
-    applicantInitials: 'AJ',
-    proposedECPFName: 'Johnson Enterprises',
-    externalParty: 'QRS Pty Ltd',
-    status: 'Approved',
-    statusClass: 'status-approved',
-    personalInfo: {
-      cidNo: '12345678901',
-      applicantsName: 'Alice Johnson',
-      gender: 'Female',
-      dateOfBirth: '1990-01-15',
-      contactNo: '17123456',
-      emailAddress: 'alice.johnson@example.com',
-    },
-    residentialAddress: {
-      officeNumber: '101',
-      flatNo: 'Apt 2B',
-      buildingNo: 'Building 5',
-      location: 'Thimphu',
-      gewogThrom: 'Chang Gewog',
-      dzongkhagThromde: 'Thimphu Thromde',
-    },
-    permanentAddress: {
-      villageChiwog: 'Changangkha',
-      gewog: 'Chang Gewog',
-      dungkhag: '',
-      dzongkhagThromde: 'Thimphu',
-    },
-    existingECPFDetails: {
-      nameOfExistingECPF: 'N/A',
-    },
-    proposalDetails: {
-      addressOfProposedFirm: 'New Industrial Area',
-      locationOfProposedFirm: 'Paro',
-      typeOfFirm: 'Sole Proprietorship',
-    },
-    infrastructure: [
-      { particulars: 'Office Space', description: '500 sqft', quantity: '1', remarks: 'Rented' },
-      { particulars: 'Computers', description: 'Desktop PCs', quantity: '5', remarks: 'New' },
-    ],
-    humanResource: [
-      { position: 'Manager', cid: '98765432109',
-        fullName: 'John Manager', qualification: 'MBA', contactNumber: '17654321',
-        emailAddress: 'john.manager@example.com', cvCertificates: '#' },
-    ],
-    financePlan: {
-      financePlanDetails: 'Detailed finance plan document...',
-    },
-    services: [
-      { serviceCategory: 'Consulting', details: 'Business consulting services' },
-      { serviceCategory: 'Training', details: 'Professional training programs' },
-    ],
-    swotAnalysis: {
-      strengths: 'Strong market knowledge',
-      weaknesses: 'Limited initial capital',
-      opportunities: 'Growing demand for services',
-      threats: 'Competition from established firms',
-    },
-    feeCharges: [
-      { feeBreakup: 'Registration Fee', description: 'One-time registration', amount: 500 },
-      { feeBreakup: 'Annual Fee', description: 'Yearly renewal', amount: 200 },
-    ],
-    supportingDocuments: {
-      cvApplicant: '#',
-      declaration: '#',
-    },
-  },
-  {
-    id: 2,
-    applicantName: 'Bob Williams',
-    applicantInitials: 'BW',
-    proposedECPFName: 'Williams Group',
-    externalParty: 'TUV Inc',
-    status: 'Rejected',
-    statusClass: 'status-rejected',
-     personalInfo: {
-      cidNo: '98765432102',
-      applicantsName: 'Bob Williams',
-      gender: 'Male',
-      dateOfBirth: '1985-05-20',
-      contactNo: '17456789',
-      emailAddress: 'bob.williams@example.com',
-    },
-    residentialAddress: {
-      officeNumber: '201',
-      flatNo: 'Apt 3A',
-      buildingNo: 'Building 2',
-      location: 'Paro',
-      gewogThrom: 'Paro Thromde',
-      dzongkhagThromde: 'Paro Thromde',
-    },
-    permanentAddress: {
-      villageChiwog: 'Drugyel Dzong',
-      gewog: 'Dopshari Gewog',
-      dungkhag: '',
-      dzongkhagThromde: 'Paro',
-    },
-    existingECPFDetails: {
-      nameOfExistingECPF: 'Williams Enterprises',
-    },
-    proposalDetails: {
-      addressOfProposedFirm: 'Industrial Park',
-      locationOfProposedFirm: 'Phuentsholing',
-      typeOfFirm: 'Partnership',
-    },
-    infrastructure: [
-      { particulars: 'Warehouse', description: '1000 sqft', quantity: '1', remarks: 'Owned' },
-      { particulars: 'Vehicles', description: 'Delivery Vans', quantity: '2', remarks: 'Leased' },
-    ],
-    humanResource: [
-      { position: 'Supervisor', cid: '11223344556',
-        fullName: 'Sarah Supervisor', qualification: 'B.Com', contactNumber: '17112233',
-        emailAddress: 'sarah.supervisor@example.com', cvCertificates: '#' },
-    ],
-    financePlan: {
-      financePlanDetails: 'Detailed finance plan document for Williams Group...',
-    },
-    services: [
-      { serviceCategory: 'Distribution', details: 'Product distribution services' },
-    ],
-    swotAnalysis: {
-      strengths: 'Established distribution network',
-      weaknesses: 'High operational costs',
-      opportunities: 'Expanding market reach',
-      threats: 'Economic downturn',
-    },
-    feeCharges: [
-      { feeBreakup: 'Application Fee', description: 'Initial application processing', amount: 300 },
-    ],
-    supportingDocuments: {
-      cvApplicant: '#',
-      declaration: '#',
-    },
-  },
-  {
-    id: 3,
-    applicantName: 'Jane Smith',
-    applicantInitials: 'JS',
-    proposedECPFName: 'Smith Ltd',
-    externalParty: 'XYZ Ltd',
-    status: 'In Review',
-    statusClass: 'status-in-review',
-     personalInfo: {
-      cidNo: '1234567892',
-      applicantsName: 'Jane Smith',
-      gender: 'Female',
-      dateOfBirth: '1992-08-10',
-      contactNo: '17987654',
-      emailAddress: 'jane.smith@example.com',
-    },
-    residentialAddress: {
-      officeNumber: '301',
-      flatNo: 'Apt 1C',
-      buildingNo: 'Building 7',
-      location: 'Gelephu',
-      gewogThrom: 'Gelephu Thromde',
-      dzongkhagThromde: 'Sarpang',
-    },
-    permanentAddress: {
-      villageChiwog: 'Pelrithang',
-      gewog: 'Gelephu Gewog',
-      dungkhag: 'Sarpang Dungkhag',
-      dzongkhagThromde: 'Sarpang',
-    },
-    existingECPFDetails: {
-      nameOfExistingECPF: 'N/A',
-    },
-    proposalDetails: {
-      addressOfProposedFirm: 'Commercial Area',
-      locationOfProposedFirm: 'Samdrup Jongkhar',
-      typeOfFirm: 'Limited Company',
-    },
-    infrastructure: [
-      { particulars: 'Showroom', description: '800 sqft', quantity: '1', remarks: 'Rented' },
-      { particulars: 'Display Units', description: 'Custom made', quantity: '10', remarks: 'Purchased' },
-    ],
-    humanResource: [
-      { position: 'Sales Representative', cid: '65432109876',
-        fullName: 'Peter Sales', qualification: 'High School', contactNumber: '17345678',
-        emailAddress: 'peter.sales@example.com', cvCertificates: '#' },
-    ],
-    financePlan: {
-      financePlanDetails: 'Detailed finance plan document for Smith Ltd...',
-    },
-    services: [
-      { serviceCategory: 'Retail', details: 'Retail sales of goods' },
-    ],
-    swotAnalysis: {
-      strengths: 'Prime location',
-      weaknesses: 'New brand in the market',
-      opportunities: 'Growing local market',
-      threats: 'Established retail chains',
-    },
-    feeCharges: [
-      { feeBreakup: 'License Fee', description: 'Business license', amount: 400 },
-    ],
-    supportingDocuments: {
-      cvApplicant: '#',
-      declaration: '#',
-    },
-  },
-  {
-    id: 4,
-    applicantName: 'John Doe',
-    applicantInitials: 'JD',
-    proposedECPFName: 'Doe Inc',
-    externalParty: 'ABC Corp',
-    status: 'Pending',
-    statusClass: 'status-pending',
-     personalInfo: {
-      cidNo: '54321678901',
-      applicantsName: 'John Doe',
-      gender: 'Male',
-      dateOfBirth: '1988-11-25',
-      contactNo: '17121212',
-      emailAddress: 'john.doe@example.com',
-    },
-    residentialAddress: {
-      officeNumber: '401',
-      flatNo: 'Apt 4D',
-      buildingNo: 'Building 1',
-      location: 'Trashigang',
-      gewogThrom: 'Trashigang Thromde',
-      dzongkhagThromde: 'Trashigang',
-    },
-    permanentAddress: {
-      villageChiwog: 'Kanglung',
-      gewog: 'Kanglung Gewog',
-      dungkhag: 'Trashigang Dungkhag',
-      dzongkhagThromde: 'Trashigang',
-    },
-    existingECPFDetails: {
-      nameOfExistingECPF: 'Doe Company',
-    },
-    proposalDetails: {
-      addressOfProposedFirm: 'Main Market Area',
-      locationOfProposedFirm: 'Mongar',
-      typeOfFirm: 'Corporation',
-    },
-    infrastructure: [
-      { particulars: 'Office Furniture', description: 'Desks and Chairs', quantity: '10', remarks: 'Existing' },
-      { particulars: 'Server Room', description: 'Climate controlled', quantity: '1', remarks: 'Dedicated' },
-    ],
-    humanResource: [
-      { position: 'IT Technician', cid: '98765000000',
-        fullName: 'Emily Tech', qualification: 'BSc IT', contactNumber: '17000000',
-        emailAddress: 'emily.tech@example.com', cvCertificates: '#' },
-    ],
-    financePlan: {
-      financePlanDetails: 'Detailed finance plan document for Doe Inc...',
-    },
-    services: [
-      { serviceCategory: 'IT Services', details: 'Software development and support' },
-    ],
-    swotAnalysis: {
-      strengths: 'Experienced IT team',
-      weaknesses: 'Limited client base',
-      opportunities: 'Growing IT sector',
-      threats: 'Rapid technological changes',
-    },
-    feeCharges: [
-      { feeBreakup: 'Processing Fee', description: 'Application processing', amount: 250 },
-    ],
-    supportingDocuments: {
-      cvApplicant: '#',
-      declaration: '#',
-    },
-  },
-]);
+const applications = ref([]); // Initialize as empty array
 
 const openModal = (application) => {
   selectedApplication.value = application;
@@ -544,6 +272,26 @@ const getInitials = (name) => {
     .join('')
     .toUpperCase();
 };
+
+// --- API Integration ---
+const fetchApplications = async () => {
+  try {
+    const response = await apiServices.getEcpfBranches(); // Use the correct API service method
+    if (response.status === 200) {
+      applications.value = response.data.results; // Assuming the API returns data in 'data' property
+    } else {
+      alert('Failed to fetch applications.');
+      console.error('API Error:', response);
+    }
+  } catch (error) {
+    alert('An unexpected error occurred while fetching applications.');
+    console.error('Fetch Error:', error);
+  }
+};
+
+onMounted(() => {
+  fetchApplications(); // Fetch applications on component mount
+});
 </script>
 
 <style scoped>

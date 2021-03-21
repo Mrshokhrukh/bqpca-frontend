@@ -281,42 +281,42 @@
                       </div>
                     </div>
 
-                    <!-- Decision Forms -->
+                    <!-- Final Decision Form -->
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
                       <div class="p-6 border-b border-gray-200">
                         <div class="flex items-center mb-4">
                           <div class="bg-purple-100 p-2 rounded-md">
                             <CheckBadgeIcon class="h-5 w-5 text-purple-600" />
                           </div>
-                          <h4 class="font-semibold text-gray-900 ml-2">Verification Decision</h4>
+                          <h4 class="font-semibold text-gray-900 ml-2">Final Decision</h4>
                         </div>
                         <div class="mt-2">
-                          <label for="verificationDecision" class="block text-sm font-medium text-gray-700">Verification
+                          <label for="finalDecision" class="block text-sm font-medium text-gray-700">Final
                             Decision:</label>
-                          <select id="verificationDecision" v-model="verificationForm.verificationDecision"
+                          <select id="finalDecision" v-model="finalDecisionForm.decision"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                             <option value="">Select Decision</option>
-                            <option value="Accepted for presentation">Accepted for presentation</option>
-                            <option value="Reject">Reject</option>
+                            <option value="Approved">Pull from master (Approve)</option>
+                            <option value="Regret">Regret</option>
                           </select>
                         </div>
-                        <div v-if="verificationForm.verificationDecision === 'Reject'" class="mt-2">
-                          <label for="regretReason" class="block text-sm font-medium text-gray-700">Regret Reason:</label>
-                          <textarea id="regretReason" v-model="verificationForm.regretReason" rows="2"
+                        <div v-if="finalDecisionForm.decision === 'Regret'" class="mt-2">
+                          <label for="regretRemarks" class="block text-sm font-medium text-gray-700">Regret Remarks:</label>
+                          <textarea id="regretRemarks" v-model="finalDecisionForm.remarks" rows="2"
                             class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
                         </div>
                         <div class="mt-4 flex justify-end space-x-2">
                           <button type="button"
                             class="rounded-md px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all"
-                            @click="saveVerificationDecision('Approved')">
+                            @click="saveFinalDecision('Approved')">
                             <CheckIcon class="h-4 w-4 inline-block mr-1" />
                             Approve
                           </button>
                           <button type="button"
                             class="rounded-md px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all"
-                            @click="confirmRejectVerification">
+                            @click="confirmRegretDecision">
                             <XMarkIcon class="h-4 w-4 inline-block mr-1" />
-                            Reject
+                            Regret
                           </button>
                         </div>
                       </div>
@@ -326,96 +326,74 @@
                           <div class="bg-amber-100 p-2 rounded-md">
                             <DocumentCheckIcon class="h-5 w-5 text-amber-600" />
                           </div>
-                          <h4 class="font-semibold text-gray-900 ml-2">Evaluation Decision</h4>
-                        </div>
-                        <div class="mt-2">
-                          <label for="evaluationDecision" class="block text-sm font-medium text-gray-700">Evaluation
-                            Decision:</label>
-                          <select id="evaluationDecision" v-model="evaluationForm.evaluationDecision"
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                            <option value="">Select Decision</option>
-                            <option value="Accepted & Forward">Accepted & Forward</option>
-                            <option value="Pending">Pending Changes</option>
-                            <option value="Reject">Reject</option>
-                          </select>
-                        </div>
-                        <div v-if="evaluationForm.evaluationDecision === 'Reject'" class="mt-2">
-                          <label for="evaluationRegretReason" class="block text-sm font-medium text-gray-700">Regret
-                            Reason:</label>
-                          <textarea id="evaluationRegretReason" v-model="evaluationForm.regretReason" rows="2"
-                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+                          <h4 class="font-semibold text-gray-900 ml-2">Recommendation Letter</h4>
                         </div>
                         <div class="mt-4 flex justify-end space-x-2">
                           <button type="button"
-                            class="rounded-md px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all"
-                            @click="saveEvaluationDecision('Approved')">
-                            <CheckIcon class="h-4 w-4 inline-block mr-1" />
-                            Approve
-                          </button>
-                          <button type="button"
-                            class="rounded-md px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all"
-                            @click="confirmRejectEvaluation">
-                            <XMarkIcon class="h-4 w-4 inline-block mr-1" />
-                            Reject
+                            class="rounded-md px-6 py-2 font-semibold text-white bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50 transition-all"
+                            @click="generateRecommendationLetter">
+                            <DocumentTextIcon class="h-4 w-4 inline-block mr-1" />
+                            Generate Letter
                           </button>
                         </div>
                       </div>
-                    </div>
 
-                    <!-- MoU & Undertaking Signing Form -->
+
+                    <!-- License & Registration Details Form -->
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
                       <div class="p-6">
                         <div class="flex items-center mb-4">
                           <div class="bg-green-100 p-2 rounded-md">
                             <DocumentDuplicateIcon class="h-5 w-5 text-green-600" />
                           </div>
-                          <h4 class="font-semibold text-gray-900 ml-2">MoU & Undertaking Signing</h4>
+                          <h4 class="font-semibold text-gray-900 ml-2">License & Registration Details</h4>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                           <div>
                             <label for="licenseName" class="block text-sm font-medium text-gray-700">License Name:</label>
-                            <input type="text" id="licenseName" v-model="mouForm.licenseName"
+                            <input type="text" id="licenseName" v-model="registrationForm.licenseName"
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                           </div>
                           <div>
                             <label for="licenseNumber" class="block text-sm font-medium text-gray-700">License
                               Number:</label>
-                            <input type="text" id="licenseNumber" v-model="mouForm.licenseNumber"
+                            <input type="text" id="licenseNumber" v-model="registrationForm.licenseNumber"
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                           </div>
                           <div>
                             <label for="licenseValidity" class="block text-sm font-medium text-gray-700">License
                               Validity (Years):</label>
-                            <input type="number" id="licenseValidity" v-model="mouForm.licenseValidity"
+                            <input type="number" id="licenseValidity" v-model="registrationForm.licenseValidity"
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                           </div>
                           <div>
                             <label for="mouSignDate" class="block text-sm font-medium text-gray-700">MoU Sign Date:</label>
-                            <input type="date" id="mouSignDate" v-model="mouForm.mouSignDate"
+                            <input type="date" id="mouSignDate" v-model="registrationForm.mouSignDate"
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                           </div>
                           <div>
                             <label for="mouValidityDate" class="block text-sm font-medium text-gray-700">MoU Validity
                               Date:</label>
-                            <input type="date" id="mouValidityDate" v-model="mouForm.mouValidityDate"
+                            <input type="date" id="mouValidityDate" v-model="registrationForm.mouValidityDate"
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                           </div>
                         </div>
                         <div class="mt-6 flex justify-end space-x-2">
                           <button type="button"
                             class="rounded-md px-6 py-2 font-semibold text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-all"
-                            @click="completeRegistrationHandler">
+                            @click="registerEcpfAndApproveOperation">
                             <DocumentArrowDownIcon class="h-4 w-4 inline-block mr-1" />
-                            Complete Registration
+                            Register ECPF & Approve Operation
                           </button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-
-              <!-- Footer buttons -->
+  
+                <!-- Footer buttons -->
               <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button type="button"
                   class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-all"
@@ -468,7 +446,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['close', 'update', 'update-verification', 'update-evaluation', 'update-mou'])
+const emit = defineEmits(['close', 'update', 'update-final-decision', 'generate-recommendation-letter', 'register-ecpf'])
 
 const activeTab = ref('proposal') // Default to proposal tab
 
@@ -481,18 +459,13 @@ const closeModalHandler = () => {
 }
 
 
-// Form Data for Verification, Evaluation, and MoU (local to Modal)
-const verificationForm = ref({
-  verificationDecision: '',
-  regretReason: '',
+// Form Data for Final Decision and Registration (local to Modal)
+const finalDecisionForm = ref({
+  decision: '',
+  remarks: '',
 });
 
-const evaluationForm = ref({
-  evaluationDecision: '',
-  regretReason: '',
-});
-
-const mouForm = ref({
+const registrationForm = ref({
   licenseName: '',
   licenseNumber: '',
   licenseValidity: null,
@@ -500,67 +473,48 @@ const mouForm = ref({
   mouValidityDate: '',
 });
 
-const saveVerificationDecision = (action) => {
-  console.log("saveVerificationDecision called with action:", action);  // Debugging
-  if (action === 'Approved' || verificationForm.value.verificationDecision !== 'Reject') {
-    console.log('Verification Decision Saved:', verificationForm.value, 'Action:', action, 'for CID:', props.application.cidNo);
-    emit('update-verification', {
-      cidNo: props.application.cidNo,
-      verificationData: { ...verificationForm.value, verificationStatus: action }
-    });
-    closeModal();
-  } else if (verificationForm.value.verificationDecision === 'Reject') {
-    console.log('Verification Rejected:', verificationForm.value, 'Action: Rejected', 'for CID:', props.application.cidNo);
-    emit('update-verification', {
-      cidNo: props.application.cidNo,
-      verificationData: { ...verificationForm.value, verificationStatus: 'Rejected' }
-    });
-    closeModal();
-  }
-};
 
-const confirmRejectVerification = () => {
-  console.log("confirmRejectVerification called"); // Debugging
-  if (confirm('Are you sure you want to reject this verification?')) {
-    saveVerificationDecision('Rejected');
-  }
-};
-
-const saveEvaluationDecision = (action) => {
-  console.log("saveEvaluationDecision called with action:", action)
-  if (action === 'Approved' || evaluationForm.value.evaluationDecision !== 'Reject') {
-    console.log('Evaluation Decision Saved:', evaluationForm.value, 'Action:', action, 'for CID:', props.application.cidNo);
-    emit('update-evaluation', {
+const saveFinalDecision = (action) => {
+  console.log("saveFinalDecision called with action:", action);
+  if (action === 'Approved' || finalDecisionForm.value.decision !== 'Regret') {
+    console.log('Final Decision Saved:', finalDecisionForm.value, 'Action:', action, 'for CID:', props.application.cidNo);
+    emit('update-final-decision', {
       cidNo: props.application.cidNo,
-      evaluationData: { ...evaluationForm.value, evaluationStatus: action }
+      finalDecisionData: { ...finalDecisionForm.value, finalStatus: action } // Assuming backend expects 'finalStatus'
     });
     closeModal();
-  } else if (evaluationForm.value.evaluationDecision === 'Reject') {
-    console.log('Evaluation Rejected:', evaluationForm.value, 'Action: Rejected', 'for CID:', props.application.cidNo);
-    emit('update-evaluation', {
+  } else if (finalDecisionForm.value.decision === 'Regret') {
+    console.log('Application Regretted:', finalDecisionForm.value, 'Action: Regret', 'for CID:', props.application.cidNo);
+    emit('update-final-decision', {
       cidNo: props.application.cidNo,
-      evaluationData: { ...evaluationForm.value, evaluationStatus: 'Rejected' }
+      finalDecisionData: { ...finalDecisionForm.value, finalStatus: 'Regretted' } // Assuming backend expects 'finalStatus'
     });
     closeModal();
   }
 };
 
-const confirmRejectEvaluation = () => {
-  console.log("confirmRejectEvaluation called");
-  if (confirm('Are you sure you want to reject this evaluation?')) {
-    saveEvaluationDecision('Rejected');
+const confirmRegretDecision = () => {
+  console.log("confirmRegretDecision called");
+  if (confirm('Are you sure you want to regret this application?')) {
+    saveFinalDecision('Regretted');
   }
 };
 
-const completeRegistrationHandler = () => {
-    console.log("completeRegistrationHandler called");
-    completeRegistration();
+const generateRecommendationLetter = () => {
+  console.log("generateRecommendationLetter called");
+  emit('generate-recommendation-letter', { cidNo: props.application.cidNo });
+  // In real application, you might want to handle response and show the letter or download link.
 };
 
-const completeRegistration = () => {
-  // Complete Registration Logic (backend call)
-  console.log('Registration Completed with MoU details:', mouForm.value, 'for CID:', props.application.cidNo);
-  emit('update-mou', { cidNo: props.application.cidNo, mouData: mouForm.value });
+const registerEcpfAndApproveOperation = () => {
+    console.log("registerEcpfAndApproveOperation called");
+    registerEcpf();
+};
+
+const registerEcpf = () => {
+  // Register ECPF and Approve Operation Logic (backend call)
+  console.log('ECPF Registered and Operation Approved with License details:', registrationForm.value, 'for CID:', props.application.cidNo);
+  emit('register-ecpf', { cidNo: props.application.cidNo, registrationData: registrationForm.value });
   closeModal();
 };
 

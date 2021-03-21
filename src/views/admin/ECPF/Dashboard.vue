@@ -34,7 +34,6 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-// import StatsGrid from '@/components/dashboard/roqcomponents/StatsGrid.vue';
 import ApplicationTable from '@/components/dashboard/roqcomponents/dealingOfficer/ApplicationsTable.vue';
 
 // ECPF User Components
@@ -55,6 +54,7 @@ import HrBiodata from '@/components/dashboard/ecpfcomponents/user/HrBiodata.vue'
 import StudentBiodata from '@/components/dashboard/ecpfcomponents/user/StudentBiodata.vue';
 import ECPFUserProfile from '@/components/dashboard/ecpfcomponents/user/ECPFUserProfile.vue';
 import ECPFTrackApplications from '@/components/dashboard/ecpfcomponents/user/ECPFTrackApplications.vue';
+import UploadTradeLicense from '@/components/dashboard/ecpfcomponents/user/UploadTradeLicense.vue';
 // Dealing officer Components
 import ECPFDealingOfficerDashboard from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFDealingOfficerDashboard.vue';
 import IndividualEcpfApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/IndividualEcpfApplications.vue';
@@ -73,13 +73,29 @@ import AddStudent from '@/components/dashboard/ecpfcomponents/dealingOfficer/Add
 import ECPFReports from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFReports.vue';
 import ECPFPaymentHistory from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFPaymentHistory.vue';
 import BranchEcpfApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/BranchEcpfApplications.vue';
+import ECPFNonComplaince from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFNonCompliance.vue';
+
+// Admin Components
+import ECPFAdminDashboard from '@/components/dashboard/ecpfcomponents/admin/ECPFAdminDashboard.vue';
+import ECPFComplianceAction from '@/components/dashboard/ecpfcomponents/admin/ECPFComplianceAction.vue';
+import ECPFComplianceActionTaken from '@/components/dashboard/ecpfcomponents/admin/ECPFComplianceActionTaken.vue';
+import ECPFPDecisions from '@/components/dashboard/ecpfcomponents/admin/ECPFDecisions.vue';
+import ECPFQualifications from '@/components/dashboard/ecpfcomponents/admin/ECPFQualifications.vue';
+import ECPFInfrastructures from '@/components/dashboard/ecpfcomponents/admin/ECPFInfrastructures.vue';
+import ECPFInstitutes from '@/components/dashboard/ecpfcomponents/admin/ECPFInstitutes.vue';
+import ECPFIssueCompliances from '@/components/dashboard/ecpfcomponents/admin/ECPFIssueCompliances.vue';
+import ECPFPositions from '@/components/dashboard/ecpfcomponents/admin/ECPFPositions.vue';
+import ECPFPromotionalEventTypes from '@/components/dashboard/ecpfcomponents/admin/ECPFPromotionalEventTypes.vue';
+import ECPFServiceCategories from '@/components/dashboard/ecpfcomponents/admin/ECPFServiceCategories.vue';
+import ECPFStatus from '@/components/dashboard/ecpfcomponents/admin/ECPFStatus.vue';
+import ECPFTypesOfFirms from '@/components/dashboard/ecpfcomponents/admin/ECPFTypesOfFirms.vue';
+import NotFound from '@/views/NotFound.vue'; // Or wherever your NotFound component is
 
 // Chief Components
 import ECPFChiefDashboard from '@/components/dashboard/ecpfcomponents/chief/ECPFChiefDashboard.vue';
 import ECPFFinalApproval from '@/components/dashboard/ecpfcomponents/chief/ECPFFinalApproval.vue';
-import ECPFAdminDashboard from '@/components/dashboard/ecpfcomponents/admin/ECPFAdminDashboard.vue';
 import ChiefBranchEcpfApplications from '@/components/dashboard/ecpfcomponents/chief/BranchEcpfApplications.vue';
-import ECPFUserManagement from '@/components/dashboard/ecpfcomponents/admin/ECPFUserManagement.vue';
+// import ECPFUserManagement from '@/components/dashboard/ecpfcomponents/admin/ECPFUserManagement.vue';
 import ChiefIndividualEcpfApplications from '@/components/dashboard/ecpfcomponents/chief/IndividualEcpfApplications.vue';
 import ChiefCollaboratedEcpfApplications from '@/components/dashboard/ecpfcomponents/chief/CollaboratedEcpfApplications.vue';
 import ChiefRenewalApplications from '@/components/dashboard/ecpfcomponents/chief/RenewalApplications.vue';
@@ -95,11 +111,11 @@ import ChiefAddHr from '@/components/dashboard/ecpfcomponents/chief/AddHr.vue';
 import ChiefAddStudent from '@/components/dashboard/ecpfcomponents/chief/AddStudent.vue';
 import ChiefECPFReports from '@/components/dashboard/ecpfcomponents/chief/ECPFReports.vue';
 import ChiefECPFPaymentHistory from '@/components/dashboard/ecpfcomponents/chief/ECPFPaymentHistory.vue';
+import NonCompliance from '@/components/dashboard/ecpfcomponents/chief/NonCompliance.vue';
 
-const { role, user } = useAuthStore();
+const { role } = useAuthStore();
 
 const route = useRoute();
-const applications = ref([]);
 const currentPage = ref(1);
 const perPage = ref(10);
 
@@ -141,6 +157,8 @@ const ecpfUserComponent = computed(() => {
       return ECPFUserProfile;
     case path.endsWith('/ecpf/track_applications'):
       return ECPFTrackApplications;
+    case path.endsWith('/ecpf/upload_trade_license'):
+      return UploadTradeLicense;  
     default:
       return null;
   }
@@ -184,6 +202,8 @@ const ecpfDealingOfficerComponent = computed(() => {
       return ECPFReports;
     case path.endsWith('/ecpf/ecpf_payment_history'):
       return ECPFPaymentHistory;
+    case path.endsWith('/ecpf/non_compliance_records'):
+      return ECPFNonComplaince;
 
     default:
       return null;
@@ -230,6 +250,8 @@ const ecpfChiefComponent = computed(() => {
       return ChiefECPFReports;
     case path.endsWith('/ecpf/ecpf_payment_history'):
       return ChiefECPFPaymentHistory;
+    case path.endsWith('/ecpf/non_compliance_records'):
+      return NonCompliance;
     default:
       return null;
   }
@@ -241,80 +263,32 @@ const ecpfAdminComponent = computed(() => {
   switch (true) {
     case path.endsWith('/ecpf/dashboard'):
       return ECPFAdminDashboard;
-    case path.endsWith('/ecpf/user_management'):
-      return ECPFUserManagement;
+    case path.endsWith('/ecpf/compliance_action'):
+      return ECPFComplianceAction;
+    case path.endsWith('/ecpf/compliance_action_taken'):
+      return ECPFComplianceActionTaken;
+    case path.endsWith('/ecpf/ecpf_decisions'):
+      return ECPFPDecisions;
+    case path.endsWith('/ecpf/qualifications'):
+      return ECPFQualifications;
+    case path.endsWith('/ecpf/infrastructures'):
+      return ECPFInfrastructures;
+    case path.endsWith('/ecpf/institutes'):
+      return ECPFInstitutes;
+    case path.endsWith('/ecpf/issue_compliances'):
+      return ECPFIssueCompliances;
+    case path.endsWith('/ecpf/positions'):
+      return ECPFPositions;
+    case path.endsWith('/ecpf/promotional_event_types'):
+      return ECPFPromotionalEventTypes;
+    case path.endsWith('/ecpf/service_categories'):
+      return ECPFServiceCategories;
+    case path.endsWith('/ecpf/status'):
+      return ECPFStatus;
+    case path.endsWith('/ecpf/types_of_firms'):
+      return ECPFTypesOfFirms;
     default:
-      return null;
+      return NotFound;
   }
 });
-
-// Filter applications based on role
-const filteredApplications = computed(() => {
-  switch (role) {
-    case 'user':
-      return applications.value.filter(app => app.email_address === user.email);
-
-    case 'dealing_officer':
-      return applications.value.filter(app =>
-        !app.dealing_officer_decision ||
-        (!app.chief_approved && !app.chief_regret)
-      );
-
-    case 'chief':
-      return applications.value.filter(app =>
-        app.forward &&
-        !app.chief_approved &&
-        !app.chief_regret
-      );
-
-    default:
-      return [];
-  }
-});
-
-// Calculate stats based on filtered applications
-const filteredStats = computed(() => {
-  const filtered = filteredApplications.value;
-  return {
-    totalApplied: filtered.length,
-    totalApproved: filtered.filter(app => app.chief_approved).length,
-    totalRegretted: filtered.filter(app =>
-      app.dealing_officer_regret || app.chief_regret
-    ).length,
-    totalPending: filtered.filter(app =>
-      !app.chief_approved &&
-      !app.dealing_officer_regret &&
-      !app.chief_regret
-    ).length
-  };
-});
-
-// Compute total for pagination
-const filteredTotal = computed(() => filteredApplications.value.length);
-
-// Get paginated data
-const paginatedApplications = computed(() => {
-  const start = (currentPage.value - 1) * perPage.value;
-  const end = start + perPage.value;
-
-  // Transform the data to match the table structure
-  return filteredApplications.value.slice(start, end).map(app => ({
-    id: app.id,
-    date: app.date_of_birth,
-    type: app.type_of_course,
-    status: getApplicationStatus(app),
-  }));
-});
-
-// Helper function to determine application status
-const getApplicationStatus = (application) => {
-  if (application.chief_approved) return 'Approved';
-  if (application.chief_regret) return 'Regretted';
-  if (application.dealing_officer_regret) return 'Regretted';
-  return 'Pending';
-};
-
-const handlePageChange = (newPage) => {
-  currentPage.value = newPage;
-};
 </script>

@@ -72,7 +72,7 @@
                      <!-- Status Filters -->
                     <div class="mb-4 flex space-x-4">
                         <button
-                            v-for="(status, statusIndex) in ['All', 'Under Review', 'Approved', 'Rejected', 'Pending']"
+                            v-for="(status, statusIndex) in ['All', 'Under Review', 'Approved', 'Rejected', 'Pending', 'Site Visit Scheduled', 'Visited & Verified']"
                             :key="statusIndex"
                             @click="selectedStatus = status"
                             :class="{'bg-blue-500 text-white': selectedStatus === status, 'bg-gray-100 hover:bg-gray-200 text-gray-700': selectedStatus !== status}"
@@ -99,8 +99,11 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Applied Date
                             </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Site Visit Date
+                            </th>
                             <th scope="col" class="relative px-6 py-3">
-                            <span class="sr-only">View</span>
+                            <span class="sr-only">Actions</span>
                             </th>
                         </tr>
                         </thead>
@@ -120,8 +123,14 @@
                              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ formatDate(application.appliedDate) }}
                             </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ application.siteVisitDate ? formatDate(application.siteVisitDate) : '-' }}
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="#" class="text-blue-600 hover:text-blue-900">View</a>
+                                <template v-if="shouldShowPaymentButton(application)">
+                                    <button @click="openPaymentModal(application)" class="text-green-600 hover:text-green-900 mr-2">Make Payment</button>
+                                </template>
+                                <a href="#" class="text-blue-600 hover:text-blue-900">View</a>
                             </td>
                         </tr>
                         </tbody>
@@ -133,6 +142,9 @@
             </div>
         </Transition>
 
+        <!-- Payment Modal  -->
+        <PaymentModal ref="paymentModalRef" :amount="1000" @close="closePaymentModal" />
+
     </div>
   </div>
 </template>
@@ -140,6 +152,7 @@
 <script setup>
 import { ref, onMounted, reactive, computed } from 'vue';
 import { FilePlus, ListChecks, RefreshCcw, Edit2, Users, Link, Briefcase, FileText, ChevronUp, ChevronDown, ChevronRight, Circle, X } from 'lucide-vue-next';
+import PaymentModal from "@/components/common/PaymentModal.vue"; // Import PaymentModal component
 
 // --- Application Types ---
 const applicationTypes = reactive([
@@ -173,6 +186,9 @@ const applicationTypes = reactive([
       { id: 'heiVisit', label: 'HEI Visit' },
     ],
   },
+  // REMOVE Site Visits Category:
+  // { id: 'siteVisits', label: 'Site Visits', icon: Briefcase, expandable: false },
+
 ]);
 
 // --- Application Counts (Placeholder Data)---
@@ -180,45 +196,42 @@ const applicationCounts = ref({}); //Keep it empty
 
 // --- Detailed Application Data (Placeholder) ---
 const applications = ref([
-  // New Applications - Individual ECPF
-  { id: 'IND-001', type: 'newApplications', subType: 'individualECPF', applicantName: 'John Doe', status: 'Under Review', appliedDate: '2024-01-15' },
-  { id: 'IND-002', type: 'newApplications', subType: 'individualECPF', applicantName: 'Jane Smith', status: 'Approved', appliedDate: '2024-01-10' },
-  { id: 'IND-003', type: 'newApplications', subType: 'individualECPF', applicantName: 'Alice Brown', status: 'Rejected', appliedDate: '2024-01-05' },
-  { id: 'IND-004', type: 'newApplications', subType: 'individualECPF', applicantName: 'Bob Johnson', status: 'Pending', appliedDate: '2023-12-28' },
-
-  // New Applications - Collaborated ECPF
-  { id: 'COL-001', type: 'newApplications', subType: 'collaboratedECPF', applicantName: 'Acme Corp', status: 'Under Review', appliedDate: '2024-01-20' },
-  { id: 'COL-002', type: 'newApplications', subType: 'collaboratedECPF', applicantName: 'Global Enterprises', status: 'Approved', appliedDate: '2024-01-18' },
-
-  // New Applications - New Branch
-  { id: 'BRA-001', type: 'newApplications', subType: 'newBranch', applicantName: 'XYZ Corp - Thimphu', status: 'Under Review', appliedDate: '2024-01-22' },
-
-  // ECPF Renewal
+  // ECPF Renewal - Payment on Approved
   { id: 'REN-001', type: 'ecpfRenewal', applicantName: 'Edu Solutions', status: 'Approved', appliedDate: '2024-01-12' },
 
-  // ECPF Name Change
-    { id: 'NAM-001', type: 'ecpfNameChange', applicantName: 'Study Abroad', status: 'Under Review', appliedDate: '2024-03-14' },
+  // New ECPF Establishment - Payment on Visited & Verified
+  { id: 'NEW-ECPF-001', type: 'newApplications', subType: 'individualECPF', applicantName: 'New ECPF Org', status: 'Visited & Verified', appliedDate: '2024-06-01', siteVisitDate: '2024-06-10' },
 
-    //Location Change
-    { id: 'LOC-001', type: 'locationChange', applicantName: 'Global Education', status: 'Approved', appliedDate: '2024-03-20' },
+  // Collaborated ECPF - Payment on Visited & Verified
+  { id: 'COL-ECPF-001', type: 'newApplications', subType: 'collaboratedECPF', applicantName: 'Collab ECPF Org', status: 'Visited & Verified', appliedDate: '2024-06-03', siteVisitDate: '2024-06-12' },
 
-     //Change in Ownership
-    { id: 'OWN-001', type: 'changeInOwnership', applicantName: 'Future Education', status: 'Under Review', appliedDate: '2024-04-14' },
+  // Branch ECPF - Payment on Visited & Verified
+  { id: 'BRANCH-ECPF-001', type: 'newApplications', subType: 'newBranch', applicantName: 'Branch ECPF Org', status: 'Visited & Verified', appliedDate: '2024-06-05', siteVisitDate: '2024-06-15' },
 
-    //Linkage Establishment
-    { id: 'LINK-001', type: 'linkageEstablishment', applicantName: 'Study Abroad', status: 'Under Review', appliedDate: '2024-03-14' },
+  // Change in Ownership - Payment on Visited & Verified
+  { id: 'OWN-001', type: 'changeInOwnership', applicantName: 'Ownership Change Org', status: 'Visited & Verified', appliedDate: '2024-06-07', siteVisitDate: '2024-06-18' },
 
-    //Education Fair
-    { id: 'EDU-001', type: 'educationFair', applicantName: 'Bhutan Education', status: 'Under Review', appliedDate: '2024-04-24' },
 
-    //Promotional Event - Inhouse
-    { id: 'PRO-001', type: 'promotionalEvent', subType: 'inHouseEvent', applicantName: 'Study Abroad', status: 'Approved', appliedDate: '2024-03-14' },
+  // ECPF Name Change - No Payment
+  { id: 'NAM-001', type: 'ecpfNameChange', applicantName: 'Study Abroad', status: 'Under Review', appliedDate: '2024-03-14' },
 
-    //Promotional Event - Mass Media
-    { id: 'PRO-002', type: 'promotionalEvent', subType: 'massMediaEvent', applicantName: 'Global Education', status: 'Pending', appliedDate: '2024-04-20' },
+  // Location Change - No Payment
+  { id: 'LOC-001', type: 'locationChange', applicantName: 'Global Education', status: 'Approved', appliedDate: '2024-03-20' },
 
-    //Promotional Event - HEI
-    { id: 'PRO-003', type: 'promotionalEvent', subType: 'heiVisit', applicantName: 'Future Education', status: 'Under Review', appliedDate: '2024-04-25' },
+  // Linkage Establishment - No Payment
+  { id: 'LINK-001', type: 'linkageEstablishment', applicantName: 'Study Abroad', status: 'Under Review', appliedDate: '2024-03-14' },
+
+  // Education Fair - No Payment
+  { id: 'EDU-001', type: 'educationFair', applicantName: 'Bhutan Education', status: 'Under Review', appliedDate: '2024-04-24' },
+
+  // Promotional Event - No Payment
+  { id: 'PRO-001', type: 'promotionalEvent', subType: 'inHouseEvent', applicantName: 'Study Abroad', status: 'Approved', appliedDate: '2024-03-14' },
+
+  // REMOVE Site Visits Example Applications:
+  // { id: 'SITE-001', type: 'siteVisits', applicantName: 'Visit Org 1', status: 'Site Visit Scheduled', appliedDate: '2024-05-01', siteVisitDate: '2024-05-15' },
+  // { id: 'SITE-002', type: 'siteVisits', applicantName: 'Visit Org 2', status: 'Visited & Verified', appliedDate: '2024-05-05', siteVisitDate: '2024-05-18' },
+  // { id: 'SITE-003', type: 'siteVisits', applicantName: 'Visit Org 3', status: 'Site Visit Scheduled', appliedDate: '2024-05-08', siteVisitDate: '2024-05-22' },
+  // { id: 'SITE-004', type: 'siteVisits', applicantName: 'Visit Org 4', status: 'Visited & Verified', appliedDate: '2024-05-10', siteVisitDate: '2024-05-25' },
 ]);
 
 // --- Selected Application Type ---
@@ -226,6 +239,10 @@ const selectedApplicationType = ref(null);
 const selectedSubApplicationType = ref(null);
 const selectedStatus = ref('All'); // Filter by status
 const searchTerm = ref(''); // Search term
+
+// --- Payment Modal State ---
+const paymentModalRef = ref(null); // Create a ref to access PaymentModal instance
+const selectedApplicationForPayment = ref(null);
 
 
 const getSelectedTypeIcon = computed(() => {
@@ -281,12 +298,14 @@ const getStatusClass = (count, type = 'blue') => {
   switch (type) {
     case 'green':
     case 'Approved':
+    case 'Visited & Verified': // NEW STATUS
       return `${base} bg-green-100 text-green-800`;
     case 'red':
     case 'Rejected':
       return `${base} bg-red-100 text-red-800`;
     case 'yellow':
     case 'Pending':
+    case 'Site Visit Scheduled': // NEW STATUS
       return `${base} bg-yellow-100 text-yellow-800`;
     case 'blue':
     case 'Under Review':
@@ -317,13 +336,44 @@ const setSelectedApplicationType = (applicationType, subItem = null) => {
   selectedSubApplicationType.value = subItem ? subItem.id : null; // Set sub-type if provided
   selectedStatus.value = 'All'; // Reset status filter
   searchTerm.value = ''; // Reset search term
-
 };
 
 const clearSelectedApplicationType = () => {
     selectedApplicationType.value = null;
     selectedSubApplicationType.value = null;
 };
+
+// --- Payment Modal Methods ---
+const openPaymentModal = (application) => {
+   console.log("openPaymentModal function called for application:", application.id);
+    paymentModalRef.value.openModal(); // Call the openModal method of PaymentModal using the ref
+    selectedApplicationForPayment.value = application;
+};
+
+const closePaymentModal = () => {
+    // isVisible.value = false; // No need to control parent isVisible anymore
+    selectedApplicationForPayment.value = null;
+};
+
+// --- Method to determine if payment button should be shown ---
+const shouldShowPaymentButton = (application) => {
+    const paymentRequiredTypes = [
+        'ecpfRenewal',
+        'newApplications', // Covers: Individual, Collaborated, Branch ECPF
+        'changeInOwnership',
+    ];
+
+    if (!paymentRequiredTypes.includes(application.type)) {
+        return false; // Payment not required for this application type
+    }
+
+    if (application.type === 'ecpfRenewal') {
+        return application.status === 'Approved'; // Payment for ECPF Renewal on 'Approved' status
+    } else {
+        return application.status === 'Visited & Verified'; // Payment for other types on 'Visited & Verified'
+    }
+};
+
 
 // --- Fetch Data on Mount (Replace with your API calls) ---
 onMounted(async () => {
@@ -353,10 +403,10 @@ const calculateApplicationCounts = () => {
 
         // Initialize if not already present
         if (!counts[typeId]) {
-            counts[typeId] = {UnderReview: 0, Approved: 0, Rejected: 0, Pending: 0};
+            counts[typeId] = {UnderReview: 0, Approved: 0, Rejected: 0, Pending: 0, 'Site Visit Scheduled': 0, 'Visited & Verified': 0}; // Include new statuses
         }
         if(subTypeId && !counts[typeId][subTypeId]){
-            counts[typeId][subTypeId] = {UnderReview: 0, Approved: 0, Rejected: 0, Pending: 0};
+            counts[typeId][subTypeId] = {UnderReview: 0, Approved: 0, Rejected: 0, Pending: 0, 'Site Visit Scheduled': 0, 'Visited & Verified': 0}; // Include new statuses
         }
 
         // Increment top-level count

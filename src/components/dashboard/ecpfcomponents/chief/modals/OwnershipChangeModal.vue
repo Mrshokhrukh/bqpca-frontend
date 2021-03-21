@@ -18,14 +18,16 @@
               <div v-if="application" class="px-8 py-6 bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
                 <div class="flex justify-between items-center">
                   <div>
-                    <h2 class="text-2xl font-bold tracking-tight">ECPF Ownership Change</h2>
+                    <h2 class="text-2xl font-bold tracking-tight">ECPF Ownership Change Application</h2>
                     <p class="mt-1 text-white/90">Application ID: {{ application.cidNo }}</p>
                   </div>
 
                   <!-- Edit Button -->
                   <div>
                     <button type="button"
-                      class="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                      class="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      @click="toggleEditMode"
+                    >
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v5h-5" />
                       </svg>
@@ -61,9 +63,12 @@
                           <div class="bg-indigo-100 p-2 rounded-md">
                             <UserIcon class="h-5 w-5 text-indigo-600" />
                           </div>
-                          <h4 class="font-semibold text-gray-900 ml-2">Personal Information</h4>
+                          <h4 class="font-semibold text-gray-900 ml-2">Applicant Information</h4>
                         </div>
-                        <p><strong>CID No.:</strong> <input type="text" :value="applicationData['CID No.'] || ''" class="mt-0.5 ml-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-auto sm:text-sm border-gray-300 rounded-md inline-block"></p>
+                        <p><strong>CID No.:</strong>
+                          <input v-if="isEditing" type="text" v-model="applicationData['CID No.']" class="mt-0.5 ml-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-auto sm:text-sm border-gray-300 rounded-md inline-block">
+                          <span v-else>{{ applicationData['CID No.'] || 'N/A' }}</span>
+                        </p>
                         <p><strong>Applicant's Name:</strong> {{ applicationData['Applicants Name'] || 'N/A' }}</p>
                         <p><strong>Gender:</strong> {{ applicationData['Gender'] || 'N/A' }}</p>
                         <p><strong>Date of Birth:</strong> {{ applicationData['Date of Birth'] || 'N/A' }}</p>
@@ -149,9 +154,21 @@
                         <!-- Proposal Tab -->
                         <div v-if="activeTab === 'proposal'" class="space-y-4">
                           <p><strong>Proposal for Change in Ownership of ECPF Details:</strong></p>
-                          <p>Name of the Proposed Firm: {{ applicationData['Name of the Proposed Firm'] || 'N/A' }}</p>
-                          <p>Address of the Proposed Firm: {{ applicationData['Address of the Proposed Firm'] || 'N/A' }}</p>
-                          <p>Location of the Proposed Firm: {{ applicationData['Location of the Proposed Firm'] || 'N/A' }}</p>
+                          <p>
+                            <strong>Name of the Proposed Firm:</strong>
+                            <input v-if="isEditing" type="text" v-model="applicationData['Name of the Proposed Firm']" class="mt-0.5 ml-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-auto sm:text-sm border-gray-300 rounded-md inline-block">
+                            <span v-else>{{ applicationData['Name of the Proposed Firm'] || 'N/A' }}</span>
+                          </p>
+                          <p>
+                            <strong>Address of the Proposed Firm:</strong>
+                            <input v-if="isEditing" type="text" v-model="applicationData['Address of the Proposed Firm']" class="mt-0.5 ml-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-auto sm:text-sm border-gray-300 rounded-md inline-block">
+                            <span v-else>{{ applicationData['Address of the Proposed Firm'] || 'N/A' }}</span>
+                          </p>
+                          <p>
+                            <strong>Location of the Proposed Firm:</strong>
+                            <input v-if="isEditing" type="text" v-model="applicationData['Location of the Proposed Firm']" class="mt-0.5 ml-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-auto sm:text-sm border-gray-300 rounded-md inline-block">
+                            <span v-else>{{ applicationData['Location of the Proposed Firm'] || 'N/A' }}</span>
+                          </p>
                         </div>
 
                         <!-- Linkages Tab -->
@@ -177,115 +194,123 @@
                       </div>
                     </div>
 
-                    <!-- A. Shortlisting Section -->
+                    <!-- Application Status & Chief Actions -->
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
                       <div class="p-6">
                         <div class="flex items-center mb-4">
-                          <div class="bg-yellow-100 p-2 rounded-md">
-                            <ListBulletIcon class="h-5 w-5 text-yellow-600" />
+                          <div class="bg-gray-100 p-2 rounded-md">
+                            <ListBulletIcon class="h-5 w-5 text-gray-600" />
                           </div>
-                          <h4 class="font-semibold text-gray-900 ml-2">A. Shortlisting (Review Approved/Not)</h4>
+                          <h4 class="font-semibold text-gray-900 ml-2">Application Status & Chief Actions</h4>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                          <div>
-                            <label for="shortlistedStatus" class="block text-sm font-medium text-gray-700">Shortlisted/Not</label>
-                            <select id="shortlistedStatus" v-model="shortlistingDecision" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                              <option value="">-- Select --</option>
-                              <option value="shortlisted">Shortlisted</option>
-                              <option value="rejected">Rejected</option>
-                            </select>
+                        <!-- Shortlisting Review Section -->
+                        <div class="mb-6 p-4 border border-gray-200 rounded-md">
+                          <div class="flex items-center mb-2">
+                            <div class="bg-yellow-100 p-2 rounded-md mr-2">
+                              <ListBulletIcon class="h-5 w-5 text-yellow-600" />
+                            </div>
+                            <h5 class="font-semibold text-gray-900">Shortlisting Review</h5>
                           </div>
-                          <div v-if="shortlistingDecision === 'rejected'">
-                            <label for="regretReasonShortlist" class="block text-sm font-medium text-gray-700">Regret Reason</label>
-                            <textarea id="regretReasonShortlist" v-model="regretReasonShortlist" rows="2" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
-                          </div>
-                        </div>
 
-                        <div class="flex justify-end space-x-2">
-                          <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="cancelShortlisting">
-                            Cancel
-                          </button>
-                          <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="saveShortlisting">
-                            Save
-                          </button>
-                          <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" @click="notifyApplicantShortlisting" :disabled="isNotifiedShortlisting">
-                            Notify
-                          </button>
-                          <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="viewApplication">
-                            View
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                            <div>
+                              <label for="shortlistedStatus" class="block text-sm font-medium text-gray-700">Shortlisting Status</label>
+                              <select id="shortlistedStatus" v-model="shortlistingDecision" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                <option value="">-- Select --</option>
+                                <option value="shortlisted">Shortlisted</option>
+                                <option value="rejected">Rejected</option>
+                              </select>
+                            </div>
+                            <div v-if="shortlistingDecision === 'rejected'">
+                              <label for="regretReasonShortlist" class="block text-sm font-medium text-gray-700">Rejection Reason (Shortlisting)</label>
+                              <textarea id="regretReasonShortlist" v-model="regretReasonShortlist" rows="2" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+                            </div>
+                          </div>
 
-                    <!-- B. Evaluation/Presentation Section -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
-                      <div class="p-6">
-                        <div class="flex items-center mb-4">
-                          <div class="bg-orange-100 p-2 rounded-md">
-                            <PresentationChartLineIcon class="h-5 w-5 text-orange-600" />
-                          </div>
-                          <h4 class="font-semibold text-gray-900 ml-2">B. Evaluation/Presentation to the Committee (Approved/Not)</h4>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                          <div>
-                            <label for="evaluationDecision" class="block text-sm font-medium text-gray-700">Evaluation Decision</label>
-                            <select id="evaluationDecision" v-model="evaluationDecision" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                              <option value="">-- Select --</option>
-                              <option value="approved">Approve</option>
-                              <option value="regret">Regret</option>
-                            </select>
-                          </div>
-                          <div v-if="evaluationDecision === 'regret'">
-                            <label for="regretReasonEval" class="block text-sm font-medium text-gray-700">Regret Reason</label>
-                            <textarea id="regretReasonEval" v-model="regretReasonEval" rows="2" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
-                          </div>
-                          <div v-if="evaluationDecision === 'approved'">
-                            <label for="approveDecisionText" class="block text-sm font-medium text-gray-700">Approval Decision Text</label>
-                            <textarea id="approveDecisionText" v-model="approveDecisionText" rows="2" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+                          <div class="flex justify-end space-x-2">
+                            <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="cancelShortlisting">
+                              Cancel
+                            </button>
+                            <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="saveShortlisting">
+                              Save Shortlisting
+                            </button>
+                            <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" @click="notifyApplicantShortlisting" :disabled="isNotifiedShortlisting">
+                              Notify Applicant
+                            </button>
+                            <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="viewApplication">
+                              View Application
+                            </button>
                           </div>
                         </div>
 
-                        <div class="flex justify-end space-x-2">
-                          <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="cancelEvaluation">
-                            Cancel
-                          </button>
-                          <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="saveEvaluation">
-                            Save
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- C. MoU & Undertaking Signing Section -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
-                      <div class="p-6">
-                        <div class="flex items-center mb-4">
-                          <div class="bg-teal-100 p-2 rounded-md">
-                            <DocumentCheckIcon class="h-5 w-5 text-teal-600" />
+                        <!-- Evaluation/Presentation Section -->
+                        <div class="mb-6 p-4 border border-gray-200 rounded-md">
+                          <div class="flex items-center mb-2">
+                            <div class="bg-orange-100 p-2 rounded-md mr-2">
+                              <PresentationChartLineIcon class="h-5 w-5 text-orange-600" />
+                            </div>
+                            <h5 class="font-semibold text-gray-900">Evaluation/Presentation Review</h5>
                           </div>
-                          <h4 class="font-semibold text-gray-900 ml-2">C. MoU & Undertaking Signing</h4>
+
+                          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                            <div>
+                              <label for="evaluationDecision" class="block text-sm font-medium text-gray-700">Evaluation Decision</label>
+                              <select id="evaluationDecision" v-model="evaluationDecision" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                <option value="">-- Select --</option>
+                                <option value="approved">Approve</option>
+                                <option value="regret">Reject</option>
+                              </select>
+                            </div>
+                            <div v-if="evaluationDecision === 'regret'">
+                              <label for="regretReasonEval" class="block text-sm font-medium text-gray-700">Rejection Reason (Evaluation)</label>
+                              <textarea id="regretReasonEval" v-model="regretReasonEval" rows="2" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+                            </div>
+                            <div v-if="evaluationDecision === 'approved'">
+                              <label for="approveDecisionText" class="block text-sm font-medium text-gray-700">Approval Remarks</label>
+                              <textarea id="approveDecisionText" v-model="approveDecisionText" rows="2" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+                            </div>
+                          </div>
+
+                          <div class="flex justify-end space-x-2">
+                            <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="cancelEvaluation">
+                              Cancel
+                            </button>
+                            <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="saveEvaluation">
+                              Save Evaluation
+                            </button>
+                          </div>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                          <div>
-                            <label for="mouSignedDate" class="block text-sm font-medium text-gray-700">MoU Signed Date</label>
-                            <input type="date" id="mouSignedDate" v-model="mouSignedDate" class="mt-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                        <!-- MoU & Undertaking Signing Section -->
+                        <div class="mb-6 p-4 border border-gray-200 rounded-md">
+                          <div class="flex items-center mb-2">
+                            <div class="bg-teal-100 p-2 rounded-md mr-2">
+                              <DocumentCheckIcon class="h-5 w-5 text-teal-600" />
+                            </div>
+                            <h5 class="font-semibold text-gray-900">MoU & Undertaking Finalization</h5>
                           </div>
-                          <div>
-                            <label for="mouExpiryDate" class="block text-sm font-medium text-gray-700">MoU Expiry Date</label>
-                            <input type="date" id="mouExpiryDate" v-model="mouExpiryDate" class="mt-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+
+                          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                            <div>
+                              <label for="mouSignedDate" class="block text-sm font-medium text-gray-700">MoU Signed Date</label>
+                              <input type="date" id="mouSignedDate" v-model="mouSignedDate" class="mt-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                              <label for="mouExpiryDate" class="block text-sm font-medium text-gray-700">MoU Expiry Date</label>
+                              <input type="date" id="mouExpiryDate" v-model="mouExpiryDate" class="mt-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                            </div>
+                            <div></div>
                           </div>
-                          <div></div> 
+
+                          <div class="flex justify-end">
+                            <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" @click="completeRegistration">
+                              Complete Registration
+                            </button>
+                          </div>
                         </div>
 
-                        <div class="flex justify-end">
-                          <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" @click="completeRegistration">
-                            Complete Registration
-                          </button>
-                        </div>
+
                       </div>
                     </div>
 
@@ -338,6 +363,7 @@ const closeModal = () => {
 
 const applicationData = ref({});
 const activeTab = ref('proposal');
+const isEditing = ref(false); // Track if chief is in edit mode
 
 // Shortlisting Section Data
 const shortlistingDecision = ref('');
@@ -403,6 +429,20 @@ const tabs = ref([
   { id: 'linkages', name: 'Linkages' },
   { id: 'documents', name: 'Documents' },
 ]);
+
+// Edit Mode Functionality
+const toggleEditMode = () => {
+  isEditing.value = !isEditing.value;
+  if (isEditing.value) {
+    // Actions to perform when edit mode is enabled (if any)
+    console.log('Edit mode enabled');
+  } else {
+    // Actions to perform when edit mode is disabled (e.g., save changes)
+    console.log('Edit mode disabled, saving changes (simulated)');
+    // In real scenario, you would send the updated applicationData.value to the backend to save.
+  }
+};
+
 
 // Shortlisting Section Methods
 const saveShortlisting = () => {

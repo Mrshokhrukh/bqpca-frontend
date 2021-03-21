@@ -19,9 +19,9 @@
                 <div class="flex justify-between items-center">
                   <div>
                     <DialogTitle as="h3" class="text-2xl font-bold tracking-tight">
-                      ECPF Location Change Application
+                      ECPF Location Change Review
                     </DialogTitle>
-                    <p class="mt-1 text-white/90">Application Details</p>
+                    <p class="mt-1 text-white/90">Chief's Review Panel</p>
                   </div>
                   <div class="flex items-center space-x-4">
                     <!-- Edit Button -->
@@ -112,43 +112,62 @@
                     </div>
                   </div>
 
-                  <!-- Rejection Reason (Conditionally Rendered) -->
-                  <div v-if="actionMode === 'reject'" class="bg-white rounded-xl border border-red-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                  <!-- Regret Reason (Conditionally Rendered) -->
+                  <div v-if="actionMode === 'regret'" class="bg-white rounded-xl border border-red-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
                     <div class="p-6">
                       <div class="flex items-center mb-4">
                         <div class="bg-red-100 p-2 rounded-md">
                           <XMarkIcon class="h-5 w-5 text-red-600" />
                         </div>
-                        <h4 class="font-semibold text-red-900 ml-2">Rejection Reason <span class="text-red-500">*</span></h4>
+                        <h4 class="font-semibold text-red-900 ml-2">Regret Reason <span class="text-red-500">*</span></h4>
                       </div>
                       <textarea
-                        v-model="rejectionReasonMessage"
+                        v-model="regretReasonMessage"
                         rows="3"
-                        placeholder="Please provide the reason for rejecting this application"
+                        placeholder="Please provide the reason for regretting this application"
                         class="form-textarea border-red-300 focus:border-red-500 focus:ring-red-500 w-full"
                         required
                       ></textarea>
-                      <p class="mt-1 text-sm text-red-500" v-if="showValidationError && !rejectionReasonMessage.trim()">
-                        Please provide a reason for rejection
+                      <p class="mt-1 text-sm text-red-500" v-if="showValidationError && !regretReasonMessage.trim()">
+                        Please provide a reason for regretting this application
                       </p>
                     </div>
                   </div>
 
-                  <!-- Approval Message (Conditionally Rendered) -->
+                  <!-- Recommendation Letter (Conditionally Rendered) -->
                   <div v-if="actionMode === 'approve'" class="bg-white rounded-xl border border-green-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
                     <div class="p-6">
                       <div class="flex items-center mb-4">
                         <div class="bg-green-100 p-2 rounded-md">
-                          <CheckIcon class="h-5 w-5 text-green-600" />
+                          <DocumentTextIcon class="h-5 w-5 text-green-600" />
                         </div>
-                        <h4 class="font-semibold text-green-900 ml-2">Approval Message</h4>
+                        <h4 class="font-semibold text-green-900 ml-2">Recommendation Letter <span class="text-green-500">*</span></h4>
                       </div>
-                      <textarea
-                        v-model="approvalMessage"
-                        rows="3"
-                        placeholder="Enter any additional notes or instructions (optional)"
-                        class="form-textarea border-green-300 focus:border-green-500 focus:ring-green-500 w-full"
-                      ></textarea>
+                      <div class="space-y-4">
+                        <div>
+                          <label for="letter-subject" class="block text-sm font-medium text-gray-700">Subject:</label>
+                          <input 
+                            type="text" 
+                            id="letter-subject" 
+                            v-model="recommendationLetterSubject" 
+                            placeholder="Enter subject line"
+                            class="form-input"
+                          />
+                        </div>
+                        <div>
+                          <label for="letter-body" class="block text-sm font-medium text-gray-700">Letter Content:</label>
+                          <textarea
+                            id="letter-body"
+                            v-model="recommendationLetterContent"
+                            rows="5"
+                            placeholder="Enter recommendation letter content"
+                            class="form-textarea border-green-300 focus:border-green-500 focus:ring-green-500 w-full"
+                          ></textarea>
+                          <p class="mt-1 text-sm text-red-500" v-if="showValidationError && !recommendationLetterContent.trim()">
+                            Recommendation letter content is required
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -164,14 +183,14 @@
                       class="approve-button"
                       @click="initiateApprove"
                     >
-                      Approve
+                      Approve & Generate Letter
                     </button>
                     <button
                       type="button"
                       class="reject-button"
-                      @click="initiateReject"
+                      @click="initiateRegret"
                     >
-                      Reject
+                      Regret
                     </button>
                   </template>
 
@@ -217,11 +236,11 @@ import {
   UserIcon,
   DocumentTextIcon,
   PencilIcon,
-  CheckIcon,
+  
   XMarkIcon,
 } from '@heroicons/vue/24/outline'
 
-defineProps({
+const props = defineProps({
   isOpen: Boolean,
   applicationData: {
     type: Object,
@@ -229,7 +248,7 @@ defineProps({
   },
 });
 
-const emit = defineEmits(['close-modal', 'approve', 'reject', 'edit']);
+const emit = defineEmits(['close-modal', 'approve', 'regret', 'edit']);
 
 const proposedLocation = ref('');
 const proposedGewogThrom = ref('');
@@ -237,43 +256,59 @@ const proposedDzongkhagThromde = ref('');
 const proposedRemarks = ref('');
 
 // Message handling
-const actionMode = ref('none'); // 'none', 'approve', or 'reject'
-const rejectionReasonMessage = ref('');
-const approvalMessage = ref('');
+const actionMode = ref('none'); // 'none', 'approve', or 'regret'
+const regretReasonMessage = ref('');
+const recommendationLetterSubject = ref('');
+const recommendationLetterContent = ref('');
 const showValidationError = ref(false);
 
 // Initiate the approval process
 const initiateApprove = () => {
   actionMode.value = 'approve';
-};
-
-// Initiate the rejection process
-const initiateReject = () => {
-  actionMode.value = 'reject';
+  // Pre-populate recommendation letter with template
+  if (!recommendationLetterSubject.value) {
+    recommendationLetterSubject.value = `Recommendation for ECPF Location Change`;
+  }
+  if (!recommendationLetterContent.value) {
+    recommendationLetterContent.value = `This is to recommend the location change for ${props.applicationData?.ecpfName || 'the ECPF'} from ${props.applicationData?.currentLocation || 'current location'} to ${proposedLocation.value || '[new location]'}.`;
+  }
   showValidationError.value = false;
 };
 
-// Confirm the selected action (approve or reject)
+// Initiate the regret process
+const initiateRegret = () => {
+  actionMode.value = 'regret';
+  showValidationError.value = false;
+};
+
+// Confirm the selected action (approve or regret)
 const confirmAction = () => {
-  if (actionMode.value === 'reject') {
-    // Validate rejection reason is provided
-    if (!rejectionReasonMessage.value.trim()) {
+  if (actionMode.value === 'regret') {
+    // Validate regret reason is provided
+    if (!regretReasonMessage.value.trim()) {
       showValidationError.value = true;
       return;
     }
 
-    // Emit reject event with message
-    emit('reject', {
-      message: rejectionReasonMessage.value,
+    // Emit regret event with message
+    emit('regret', {
+      message: regretReasonMessage.value,
       proposedLocation: proposedLocation.value,
       proposedGewogThrom: proposedGewogThrom.value,
       proposedDzongkhagThromde: proposedDzongkhagThromde.value,
       proposedRemarks: proposedRemarks.value
     });
   } else if (actionMode.value === 'approve') {
-    // Emit approve event with optional message
+    // Validate recommendation letter is provided
+    if (!recommendationLetterContent.value.trim()) {
+      showValidationError.value = true;
+      return;
+    }
+    
+    // Emit approve event with recommendation letter
     emit('approve', {
-      message: approvalMessage.value,
+      recommendationLetterSubject: recommendationLetterSubject.value,
+      recommendationLetterContent: recommendationLetterContent.value,
       proposedLocation: proposedLocation.value,
       proposedGewogThrom: proposedGewogThrom.value,
       proposedDzongkhagThromde: proposedDzongkhagThromde.value,
@@ -294,15 +329,16 @@ const cancelAction = () => {
 // Reset and close the modal
 function closeModal() {
   actionMode.value = 'none';
-  rejectionReasonMessage.value = '';
-  approvalMessage.value = '';
+  regretReasonMessage.value = '';
+  recommendationLetterSubject.value = '';
+  recommendationLetterContent.value = '';
   showValidationError.value = false;
   emit('close-modal');
 }
 </script>
 
 <style scoped>
-/* Modal Styles - Replicated from EcpfApplicationModal.vue and adapted */
+/* Modal Styles - Replicated from the original modal and adapted */
 .dialog-panel {
   @apply w-full max-w-3xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all max-h-screen sm:max-h-[calc(100vh-80px)] overflow-y-auto;
 }

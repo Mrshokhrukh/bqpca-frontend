@@ -58,7 +58,7 @@ import { useAuthStore } from '@/stores/authStore';
 // Engineering Component Imports
 import EngineeringAdminDashboard from '@/components/dashboard/engineeringcomponents/admin/EngineeringAdminDashboard.vue';
 import EngineeringUserManagement from '@/components/dashboard/engineeringcomponents/admin/EngineeringUserManagement.vue';
-import EngineeringUserDashboard from '@/components/dashboard/engineeringcomponents/user/UserEngineeringDashboard.vue';
+import EngineeringUserDashboard from '@/components/dashboard/engineeringcomponents/user/UserEpcDashboard.vue';
 import EngineeringDealingOfficerDashboard from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringDealingOfficerDashboard.vue';
 import EngineeringChiefDashboard from '@/components/dashboard/engineeringcomponents/chief/EngineeringChiefDashboard.vue';
 import EngineeringDirectorDashboard from '@/components/dashboard/engineeringcomponents/director/EngineeringDirectorDashboard.vue';
@@ -66,22 +66,21 @@ import EngineeringInstitutionsDashboard from '@/components/dashboard/engineering
 import EngineeringSuperAdminDashboard from '@/components/dashboard/engineeringcomponents/superAdmin/EngineeringSuperAdminDashboard.vue';
 
 // Engineering user components
-import CPDcomponent from '@/components/dashboard/engineeringcomponents/user/CPDcomponent.vue';
-import CoGSComponet from '@/components/dashboard/engineeringcomponents/user/CoGSComponet.vue';
-import UserProfileComponent from '@/components/dashboard/engineeringcomponents/user/UserProfileComponent.vue';
-import PaymentComponent from '@/components/dashboard/engineeringcomponents/user/PaymentComponent.vue';
-import PaymentHistoryComponent from '@/components/dashboard/engineeringcomponents/user/PaymentHistoryComponent.vue';
+import CPDApplication from '@/components/dashboard/engineeringcomponents/user/cpdApplication/CPDApplication.vue';
+import CoGSComponent from '@/components/dashboard/engineeringcomponents/user/CoGSApplication/CoGSComponent.vue';
+import EPCUserProfile from '@/components/dashboard/engineeringcomponents/user/EPCUserProfile.vue';
+import PaymentComponent from '@/components/dashboard/engineeringcomponents/user/certificateApplication/PaymentComponent.vue';
+import PaymentHistoryComponent from '@/components/dashboard/engineeringcomponents/user/certificateApplication/PaymentHistoryComponent.vue';
 import ReportsComponent from '@/components/dashboard/engineeringcomponents/user/ReportsComponent.vue';
-import ReRegistrationComponent from '@/components/dashboard/engineeringcomponents/user/ReRegistrationComponent.vue';
-import AdditionalQualificationComponent from '@/components/dashboard/engineeringcomponents/user/AdditionalQualificationComponent.vue';
-import ApplicationsTable from '@/components/dashboard/engineeringcomponents/user/ApplicationsTable.vue';
-import CPDTracker from '@/components/dashboard/engineeringcomponents/user/CPDTracker.vue';
-import CoGSTracker from '@/components/dashboard/engineeringcomponents/user/CoGSTracker.vue';
-
+import ReRegistration from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ReRegistration.vue';
+import AdditionalQualification from '@/components/dashboard/engineeringcomponents/user/certificateApplication/AdditionalQualification.vue';
+import ApplicationTracker from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ApplicationTracker.vue';
+import CPDTracker from '@/components/dashboard/engineeringcomponents/user/cpdApplication/CPDTracker.vue';
+import CoGSTracker from '@/components/dashboard/engineeringcomponents/user/CoGSApplication/CoGSTracker.vue';
 // Practitioner Registration Components
-import PractitionerRegistration from '@/components/dashboard/engineeringcomponents/user/pracitioner_reg_and_cert/PractitionerRegistration.vue';
-import PractitionerCertification from '@/components/dashboard/engineeringcomponents/user/pracitioner_reg_and_cert/PractitionerCertification.vue';
-import PractitionerRenewal from '@/components/dashboard/engineeringcomponents/user/pracitioner_reg_and_cert/PractitionerRenewal.vue';
+import ApplicationForm from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ApplicationForm.vue';
+import CertificateRegistrationComponent from '@/components/dashboard/engineeringcomponents/user/certificateApplication/CertificateRegistrationComponent.vue';
+import ApplicationRenewal from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ApplicationRenewal.vue';
 
 // Dealing Officer Components
 import ApplicationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/ApplicationLists.vue';
@@ -130,7 +129,9 @@ import MyCapa from '@/components/dashboard/engineeringcomponents/institutions/My
 import StaffManagement from '@/components/dashboard/engineeringcomponents/institutions/StaffManagement.vue';
 import CourseManagement from '@/components/dashboard/engineeringcomponents/institutions/CourseManagement.vue';
 import DepartmentManagement from '@/components/dashboard/engineeringcomponents/institutions/DepartmentManagement.vue';
-
+import TeachingCenterApplication from '@/components/dashboard/engineeringcomponents/institutions/TeachingCenterApplication.vue';
+import TeachingCenterTrackAndRenew from '@/components/dashboard/engineeringcomponents/institutions/TeachingCenterTrackAndRenew.vue';
+import NewEducationProgram from '@/components/dashboard/engineeringcomponents/institutions/NewEducationProgram.vue';
 //Engineering masters components
 import MastersCmeActivities from '@/components/dashboard/engineeringcomponents/admin/MastersCmeActivities.vue';
 import MastersCmeCredits from '@/components/dashboard/engineeringcomponents/admin/MastersCmeCredits.vue';
@@ -222,19 +223,19 @@ const engineeringUserComponent = computed(() => {
     case path.endsWith('/engineering_certification/dashboard'):
       return EngineeringUserDashboard;
     case path.endsWith('/engineering_certification/profile'):
-      return UserProfileComponent;
+      return EPCUserProfile;
     case path.endsWith('/engineering_certification/registration'):
-      return PractitionerRegistration;
+      return CertificateRegistrationComponent;
     case path.endsWith('/engineering_certification/renewal'):
-      return PractitionerRenewal;
+      return ApplicationRenewal;
     case path.endsWith('/engineering_certification/re_registration'):
-      return ReRegistrationComponent;
+      return ReRegistration;
     case path.endsWith('/engineering_certification/additional_qualification'):
-      return AdditionalQualificationComponent;
+      return AdditionalQualification;
     case path.endsWith('/engineering_certification/CoGS'):
-      return CoGSComponet;
+      return CoGSComponent;
     case path.endsWith('/engineering_certification/cpd'):
-      return CPDcomponent;
+      return CPDApplication;
     case path.endsWith('/engineering_certification/track_cpd_applications'):
       return CPDTracker;
     case path.endsWith('/engineering_certification/track_cogs_applications'):
@@ -246,15 +247,15 @@ const engineeringUserComponent = computed(() => {
     case path.endsWith('/engineering_certification/reports'):
       return ReportsComponent;
     case path.endsWith('/engineering_certification/my_applications'):
-      return ApplicationsTable;
+      return ApplicationTracker;
 
     // Backward compatible routes
     case path.endsWith('/engineering_certification/practitioner_reg_and_cert/registration'):
-      return PractitionerRegistration;
+      return ApplicationForm;
     case path.endsWith('/engineering_certification/practitioner_reg_and_cert/certificate'):
-      return PractitionerCertification;
+      return CertificateRegistrationComponent;
     case path.endsWith('/engineering_certification/practitioner_reg_and_cert/renewal'):
-      return PractitionerRenewal;
+      return ApplicationRenewal;
     default:
       return null;
   }
@@ -370,6 +371,12 @@ const engineeringInstitutionsComponent = computed(() => {
       return ViewCertificates;
     case path.endsWith('/engineering_certification/institution_profile'):
       return InstituteProfile;
+    case path.endsWith('/engineering_certification/teaching_center_application'):
+      return TeachingCenterApplication;
+    case path.endsWith('/engineering_certification/teaching_center_track_and_renew'):
+      return TeachingCenterTrackAndRenew;
+    case path.endsWith('/engineering_certification/new_education_program'):
+      return NewEducationProgram;
     case path.endsWith('/engineering_certification/my_applications'):
       return MyApplications;
     case path.endsWith('/engineering_certification/institutes_renewal'):

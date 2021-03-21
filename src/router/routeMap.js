@@ -22,6 +22,18 @@ export default {
     },
     ecpf: {
       dashboard: ecpfDashboard,
+      compliance_action: ecpfDashboard,
+      compliance_action_taken: ecpfDashboard,
+      ecpf_decisions: ecpfDashboard,
+      qualifications: ecpfDashboard,
+      infrastructures: ecpfDashboard,
+      institutes: ecpfDashboard,
+      issue_compliances: ecpfDashboard,
+      positions: ecpfDashboard,
+      promotional_event_types: ecpfDashboard,
+      service_categories: ecpfDashboard,
+      status: ecpfDashboard,
+      types_of_firms: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,
@@ -126,6 +138,7 @@ export default {
       student_biodata: ecpfDashboard,
       profile: ecpfDashboard,
       track_applications: ecpfDashboard,
+      upload_trade_license: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,
@@ -199,6 +212,7 @@ export default {
       add_student: ecpfDashboard,
       ecpf_reports: ecpfDashboard,
       ecpf_payment_history: ecpfDashboard,
+      non_compliance_records: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,
@@ -297,6 +311,7 @@ export default {
       add_student: ecpfDashboard,
       ecpf_reports: ecpfDashboard,
       ecpf_payment_history: ecpfDashboard,
+      non_compliance_records: ecpfDashboard,
     },
     accreditation: {
       dashboard: () => import('@/views/admin/ACCRED/Dashboard.vue'),
@@ -391,6 +406,9 @@ export default {
       course_management: engineeringDashboard,
       department_management: engineeringDashboard,
       view_certificates: engineeringDashboard,
+      teaching_center_application: engineeringDashboard,
+      teaching_center_track_and_renew: engineeringDashboard,
+      new_education_program: engineeringDashboard,
     },
     health_certification: {
       dashboard: bmhcDashboard,

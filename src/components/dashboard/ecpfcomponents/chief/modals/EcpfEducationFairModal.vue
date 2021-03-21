@@ -1,4 +1,3 @@
-<!-- EducationFairModal.vue -->
 <template>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModal" class="relative z-50">
@@ -21,6 +20,23 @@
                   <div>
                     <h2 class="text-2xl font-bold tracking-tight">{{ application.ecpfName || 'Education Fair Application' }}</h2>
                     <p class="mt-1 text-white/90">Application ID: {{ application.cid }}</p>
+                  </div>
+                  <div class="space-x-2">
+                    <button
+                      @click="showEditModal = true"
+                      class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-indigo-600 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      <PencilIcon class="h-4 w-4 mr-2" />
+                      Edit Application
+                    </button>
+                    <button
+                      v-if="application.chiefDecision === 'approved'"
+                      @click="previewApprovalLetter"
+                      class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-green-600 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    >
+                      <DocumentTextIcon class="h-4 w-4 mr-2" />
+                      Preview Approval Letter
+                    </button>
                   </div>
                 </div>
               </div>
@@ -126,32 +142,32 @@
                       </div>
                     </div>
 
-                    <!-- Verification Stage Form -->
+                    <!-- Chief Decision Form -->
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
                       <div class="p-6">
                         <div class="flex items-center mb-4">
                           <div class="bg-yellow-100 p-2 rounded-md">
                             <CheckBadgeIcon class="h-5 w-5 text-yellow-600" />
                           </div>
-                          <h4 class="font-semibold text-gray-900 ml-2">Verification Stage</h4>
+                          <h4 class="font-semibold text-gray-900 ml-2">Chief Decision</h4>
                         </div>
                         <div class="mt-2 space-y-4">
                           <div>
-                            <label for="verificationDecision" class="block text-sm font-medium text-gray-700">Verification Decision:</label>
-                            <select id="verificationDecision" v-model="verificationForm.verificationDecision"
+                            <label for="chiefDecision" class="block text-sm font-medium text-gray-700">Decision:</label>
+                            <select id="chiefDecision" v-model="verificationForm.verificationDecision"
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                               <option value="">Select Decision</option>
-                              <option value="accepted">Accepted</option>
+                              <option value="approved">Approved</option>
                               <option value="regretted">Regretted</option>
                             </select>
                           </div>
                           <div v-if="verificationForm.verificationDecision === 'regretted'">
-                            <label for="regretReason" class="block text-sm font-medium text-gray-700">Regret Reason:</label>
+                            <label for="regretReason" class="block text-sm font-medium text-gray-700">Reason (if regretted):</label>
                             <textarea id="regretReason" v-model="verificationForm.regretReason" rows="2"
                               class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
                           </div>
-                          <div v-if="verificationForm.verificationDecision === 'accepted'">
-                            <label for="conditionText" class="block text-sm font-medium text-gray-700">Condition (if accepted):</label>
+                          <div v-if="verificationForm.verificationDecision === 'approved'">
+                            <label for="conditionText" class="block text-sm font-medium text-gray-700">Condition (if approved):</label>
                             <textarea id="conditionText" v-model="verificationForm.conditionText" rows="2"
                               class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
                           </div>
@@ -159,21 +175,6 @@
                             <label for="remarksText" class="block text-sm font-medium text-gray-700">Remarks:</label>
                             <textarea id="remarksText" v-model="verificationForm.remarksText" rows="2"
                               class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
-                          </div>
-
-                          <div class="mt-6 flex justify-end space-x-2">
-                            <button type="button"
-                              class="rounded-md px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all"
-                              @click="showAcceptDialog">
-                              <CheckIcon class="h-4 w-4 inline-block mr-1" />
-                              Accept
-                            </button>
-                            <button type="button"
-                              class="rounded-md px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all"
-                              @click="showRejectDialog">
-                              <XMarkIcon class="h-4 w-4 inline-block mr-1" />
-                              Regret
-                            </button>
                           </div>
                         </div>
                       </div>
@@ -183,7 +184,7 @@
               </div>
 
               <!-- Footer buttons -->
-              <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse justify-between">
                 <button type="button"
                   class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-all"
                   @click="closeModal">
@@ -192,8 +193,8 @@
                 </button>
                 <button type="button"
                   class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-                  @click="submitVerification">
-                  Submit Verification
+                  @click="submitDecision">
+                  Submit Decision
                 </button>
               </div>
             </DialogPanel>
@@ -203,118 +204,252 @@
     </Dialog>
   </TransitionRoot>
 
-  <!-- Accept Message Dialog -->
-  <TransitionRoot appear :show="showAcceptMessageDialog" as="template">
-    <Dialog as="div" @close="closeAcceptDialog" class="relative z-50">
-      <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
-        leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
-        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" aria-hidden="true" />
-      </TransitionChild>
+  <!-- Edit Modal -->
+  <Dialog :open="showEditModal" @close="showEditModal = false" class="relative z-50">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" />
+    <div class="fixed inset-0 overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4">
+        <DialogPanel class="w-full max-w-3xl transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all overflow-y-scroll max-h-[90vh]">
+          <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 mb-4">
+            Edit Education Fair Application
+          </DialogTitle>
+          <div class="mt-2 space-y-6">
+            <p class="text-sm text-gray-500">
+              Modify all sections of the application below.
+            </p>
 
-      <div class="fixed inset-0 overflow-y-auto">
-        <div class="flex min-h-full items-center justify-center p-4">
-          <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
-            enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
-            leave-to="opacity-0 scale-95">
-            <DialogPanel
-              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-              <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 flex items-center">
-                <CheckCircleIcon class="h-6 w-6 text-green-500 mr-2" />
-                Accept Application
-              </DialogTitle>
-              <div class="mt-4">
-                <p class="text-sm text-gray-500 mb-4">
-                  Please provide a message for accepting this application.
-                </p>
-                <textarea
-                  class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  rows="4"
-                  v-model="acceptMessage"
-                  placeholder="Enter acceptance message here..."></textarea>
+            <!-- Edit ECPF Details -->
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-2">ECPF Details</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label for="editEcpfName" class="block text-sm font-medium text-gray-700 mb-1">ECPF Name:</label>
+                  <input type="text" id="editEcpfName" v-model="editForm.ecpfName" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                </div>
+                <div>
+                  <label for="editLocation" class="block text-sm font-medium text-gray-700 mb-1">Location:</label>
+                  <input type="text" id="editLocation" v-model="editForm.ecpfLocation" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                </div>
+                <div>
+                  <label for="editProprietorName" class="block text-sm font-medium text-gray-700 mb-1">Name of Proprietor:</label>
+                  <input type="text" id="editProprietorName" v-model="editForm.proprietorName" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                </div>
+                <div>
+                  <label for="editCid" class="block text-sm font-medium text-gray-700 mb-1">CID:</label>
+                  <input type="text" id="editCid" v-model="editForm.cid" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                </div>
+                <div>
+                  <label for="editContactNo" class="block text-sm font-medium text-gray-700 mb-1">Contact No.:</label>
+                  <input type="text" id="editContactNo" v-model="editForm.contactNo" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                </div>
+                <div>
+                  <label for="editEmailAddress" class="block text-sm font-medium text-gray-700 mb-1">Email Address:</label>
+                  <input type="email" id="editEmailAddress" v-model="editForm.emailAddress" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                </div>
               </div>
+            </div>
 
-              <div class="mt-4 flex justify-end space-x-2">
-                <button type="button"
-                  class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  @click="closeAcceptDialog">
+            <!-- Edit Proposed Fair Details -->
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-2">Proposed Fair Details</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label for="editFairName" class="block text-sm font-medium text-gray-700 mb-1">Fair Name:</label>
+                  <input type="text" id="editFairName" v-model="editForm.fairName" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                </div>
+                <div>
+                  <label for="editFairDescription" class="block text-sm font-medium text-gray-700 mb-1">Fair Description:</label>
+                  <textarea id="editFairDescription" v-model="editForm.fairDescription" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                </div>
+                <div>
+                  <label for="editFairLocation" class="block text-sm font-medium text-gray-700 mb-1">Fair Location:</label>
+                  <input type="text" id="editFairLocation" v-model="editForm.fairLocation" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Edit Representative Details Section -->
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-2">Representative Details</h4>
+              <p class="text-sm text-gray-500 mb-2">Edit the representative details below. You can add, modify, or delete representatives.</p>
+
+              <template v-if="editForm.representatives && editForm.representatives.length > 0">
+                <div v-for="(rep, index) in editForm.representatives" :key="index" class="border rounded-md p-4 mb-4">
+                  <h5 class="font-medium text-gray-700 mb-2">Representative {{ index + 1 }}</h5>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label :for="`editRepName-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Name:</label>
+                      <input type="text" :id="`editRepName-${index}`" v-model="rep.name" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editPassportNo-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Passport No:</label>
+                      <input type="text" :id="`editPassportNo-${index}`" v-model="rep.passportNo" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editNationality-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Nationality:</label>
+                      <input type="text" :id="`editNationality-${index}`" v-model="rep.nationality" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editArrivalDate-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Arrival Date:</label>
+                      <input type="date" :id="`editArrivalDate-${index}`" v-model="rep.arrivalDate" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editDepartureDate-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Departure Date:</label>
+                      <input type="date" :id="`editDepartureDate-${index}`" v-model="rep.departureDate" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editRepCV-${index}`" class="block text-sm font-medium text-gray-700 mb-1">CV of Representative:</label>
+                      <input type="file" :id="`editRepCV-${index}`" @change="(event) => handleRepCVUpload(event, index)" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                      <span v-if="rep.cvFileName" class="text-gray-500 text-sm mt-1 block">Current File: {{ rep.cvFileName }}</span>
+                    </div>
+                  </div>
+                  <button
+                    @click="removeRepresentative(index)"
+                    type="button"
+                    class="mt-2 inline-flex items-center px-3 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all"
+                  >
+                    Remove Representative
+                  </button>
+                </div>
+              </template>
+              <button
+                @click="addRepresentative"
+                type="button"
+                class="inline-flex items-center px-4 py-2 border border-green-300 rounded-md shadow-sm text-sm font-medium text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all"
+              >
+                Add Representative
+              </button>
+            </div>
+
+            <!-- Edit Participating Institute Details Section -->
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-2">Participating Institute Details</h4>
+              <p class="text-sm text-gray-500 mb-2">Edit the participating institute details below. You can add, modify, or delete institutes.</p>
+
+              <template v-if="editForm.institutes && editForm.institutes.length > 0">
+                <div v-for="(institute, index) in editForm.institutes" :key="index" class="border rounded-md p-4 mb-4">
+                  <h5 class="font-medium text-gray-700 mb-2">Institute {{ index + 1 }}</h5>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label :for="`editInstitutionName-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Name of the Institution:</label>
+                      <input type="text" :id="`editInstitutionName-${index}`" v-model="institute.institutionName" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editLocationInstitute-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Location:</label>
+                      <input type="text" :id="`editLocationInstitute-${index}`" v-model="institute.location" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editZoneState-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Zone/State:</label>
+                      <input type="text" :id="`editZoneState-${index}`" v-model="institute.zoneState" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editCountry-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Country:</label>
+                      <input type="text" :id="`editCountry-${index}`" v-model="institute.country" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editWebsite-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Institute Website:</label>
+                      <input type="url" :id="`editWebsite-${index}`" v-model="institute.website" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editContactPerson-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Contact (focal person):</label>
+                      <input type="text" :id="`editContactPerson-${index}`" v-model="institute.contactPerson" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editAffiliatedCollege-${index}`" class="block text-sm font-medium text-gray-700 mb-1">College Affiliated to:</label>
+                      <input type="text" :id="`editAffiliatedCollege-${index}`" v-model="institute.affiliatedCollege" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editUniversityType-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Type of University:</label>
+                      <input type="text" :id="`editUniversityType-${index}`" v-model="institute.universityType" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editRecognitionCode-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Recognition Code (if any):</label>
+                      <input type="text" :id="`editRecognitionCode-${index}`" v-model="institute.recognitionCode" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editCourseDetails-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Course Offered Details:</label>
+                      <textarea :id="`editCourseDetails-${index}`" v-model="institute.courseDetails" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                    </div>
+                    <div>
+                      <label :for="`editAccreditedByInstitute-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Accredited By:</label>
+                      <input type="text" :id="`editAccreditedByInstitute-${index}`" v-model="institute.accreditedBy" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label :for="`editAuthorizationLetter-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Authorization Letter:</label>
+                      <input type="file" :id="`editAuthorizationLetter-${index}`" @change="(event) => handleAuthorizationLetterUpload(event, index)" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                      <span v-if="institute.authorizationLetterName" class="text-gray-500 text-sm mt-1 block">Current File: {{ institute.authorizationLetterName }}</span>
+                    </div>
+                    <div>
+                      <label :for="`editRemarksInstitute-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Remarks:</label>
+                      <textarea :id="`editRemarksInstitute-${index}`" v-model="institute.remarks" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                    </div>
+                  </div>
+                  <button
+                    @click="removeInstitute(index)"
+                    type="button"
+                    class="mt-2 inline-flex items-center px-3 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all"
+                  >
+                    Remove Institute
+                  </button>
+                </div>
+              </template>
+              <button
+                @click="addInstitute"
+                type="button"
+                class="inline-flex items-center px-4 py-2 border border-green-300 rounded-md shadow-sm text-sm font-medium text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all"
+              >
+                Add Institute
+              </button>
+            </div>
+
+            <div class="mt-6 flex justify-between">
+              <button
+                type="button"
+                @click="deleteApplication"
+                class="rounded-md px-4 py-2 font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all"
+              >
+                Delete Application
+              </button>
+              <div class="space-x-2">
+                <button
+                  type="button"
+                  @click="showEditModal = false"
+                  class="rounded-md px-4 py-2 font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-all"
+                >
                   Cancel
                 </button>
-                <button type="button"
-                  class="inline-flex justify-center rounded-md border border-transparent bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                  @click="confirmAccept">
-                  Confirm Accept
+                <button
+                  type="button"
+                  @click="saveFullEdit"
+                  class="rounded-md px-4 py-2 font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-all"
+                >
+                  Save Changes
                 </button>
               </div>
-            </DialogPanel>
-          </TransitionChild>
-        </div>
+            </div>
+
+
+          </div>
+        </DialogPanel>
       </div>
-    </Dialog>
-  </TransitionRoot>
+    </div>
+  </Dialog>
 
-  <!-- Reject Message Dialog -->
-  <TransitionRoot appear :show="showRejectMessageDialog" as="template">
-    <Dialog as="div" @close="closeRejectDialog" class="relative z-50">
-      <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
-        leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
-        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" aria-hidden="true" />
-      </TransitionChild>
-
-      <div class="fixed inset-0 overflow-y-auto">
-        <div class="flex min-h-full items-center justify-center p-4">
-          <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
-            enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
-            leave-to="opacity-0 scale-95">
-            <DialogPanel
-              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-              <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 flex items-center">
-                <XCircleIcon class="h-6 w-6 text-red-500 mr-2" />
-                Regret Application
-              </DialogTitle>
-              <div class="mt-4">
-                <p class="text-sm text-gray-500 mb-4">
-                  Please provide a reason for regretting this application.
-                </p>
-                <textarea
-                  class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                  rows="4"
-                  v-model="rejectMessage"
-                  placeholder="Enter regret reason here..."></textarea>
-              </div>
-
-              <div class="mt-4 flex justify-end space-x-2">
-                <button type="button"
-                  class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  @click="closeRejectDialog">
-                  Cancel
-                </button>
-                <button type="button"
-                  class="inline-flex justify-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                  @click="confirmReject">
-                  Confirm Regret
-                </button>
-              </div>
-            </DialogPanel>
-          </TransitionChild>
-        </div>
-      </div>
-    </Dialog>
-  </TransitionRoot>
 </template>
 
 <script setup>
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue';
-import { ref } from 'vue';
+import { ref, reactive, watch } from 'vue';
 import {
   UserIcon,
   DocumentTextIcon,
   DocumentDuplicateIcon,
   CheckBadgeIcon,
-  CheckIcon,
+  PencilIcon,
   XMarkIcon,
   AcademicCapIcon,
-  CheckCircleIcon,
-  XCircleIcon
+  // CheckCircleIcon, // Removed as dialogs are removed
+  // XCircleIcon,   // Removed as dialogs are removed
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -325,7 +460,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['close', 'update-verification']);
+const emit = defineEmits(['close', 'update-decision', 'edit-application', 'delete-application', 'preview-approval-letter']);
 
 const closeModal = () => {
   emit('close');
@@ -338,58 +473,173 @@ const verificationForm = ref({
   remarksText: '',
 });
 
-// Message dialog refs
-const showAcceptMessageDialog = ref(false);
-const showRejectMessageDialog = ref(false);
-const acceptMessage = ref('');
-const rejectMessage = ref('');
+const showEditModal = ref(false);
 
-// Accept dialog functions
-const showAcceptDialog = () => {
-  showAcceptMessageDialog.value = true;
-};
+// Full Edit Form Data
+const editForm = reactive({
+  ecpfName: '',
+  ecpfLocation: '',
+  proprietorName: '',
+  cid: '',
+  contactNo: '',
+  emailAddress: '',
+  fairName: '',
+  fairDescription: '',
+  fairLocation: '',
+  representatives: [],
+  institutes: []
+});
 
-const closeAcceptDialog = () => {
-  showAcceptMessageDialog.value = false;
-};
-
-const confirmAccept = () => {
-  if (acceptMessage.value.trim()) {
-    verificationForm.value.verificationDecision = 'accepted';
-    verificationForm.value.conditionText = acceptMessage.value;
-    saveVerificationDecision('Accepted');
-    closeAcceptDialog();
-  }
-};
-
-// Reject dialog functions
-const showRejectDialog = () => {
-  showRejectMessageDialog.value = true;
-};
-
-const closeRejectDialog = () => {
-  showRejectMessageDialog.value = false;
-};
-
-const confirmReject = () => {
-  if (rejectMessage.value.trim()) {
-    verificationForm.value.verificationDecision = 'regretted';
-    verificationForm.value.regretReason = rejectMessage.value;
-    saveVerificationDecision('Regretted');
-    closeRejectDialog();
-  }
-};
-
-const saveVerificationDecision = (action) => {
-  console.log('Verification Decision:', verificationForm.value, 'Action:', action, 'for CID:', props.application.cid);
-  emit('update-verification', {
-    applicationId: props.application.id, // Or use CID if ID is not available/suitable
-    verificationData: { ...verificationForm.value, verificationStatus: action }
+const submitDecision = () => {
+  emit('update-decision', {
+    applicationId: props.application.id,
+    decisionData: verificationForm.value
   });
   closeModal();
 };
 
-const submitVerification = () => {
-  saveVerificationDecision(verificationForm.value.verificationDecision === 'accepted' ? 'Accepted' : 'Regretted');
+const previewApprovalLetter = () => {
+  emit('preview-approval-letter', {
+    applicationId: props.application.id
+  });
+  // closeModal(); // Decide if you want to close modal after preview or not
 };
+
+
+const saveFullEdit = () => {
+  const formData = new FormData();
+
+  // Append basic fields from editForm
+  for (const key in editForm) {
+    if (['representatives', 'institutes'].includes(key)) continue; // Handle these separately
+    formData.append(key, editForm[key] || '');
+  }
+
+  // Handle Representatives
+  editForm.representatives.forEach((rep, index) => {
+    formData.append(`representatives[${index}][name]`, rep.name || '');
+    formData.append(`representatives[${index}][passportNo]`, rep.passportNo || '');
+    formData.append(`representatives[${index}][nationality]`, rep.nationality || '');
+    formData.append(`representatives[${index}][arrivalDate]`, rep.arrivalDate || '');
+    formData.append(`representatives[${index}][departureDate]`, rep.departureDate || '');
+    if (rep.cvFile) {
+      formData.append(`representatives[${index}][cvFile]`, rep.cvFile);
+    }
+  });
+  formData.append('representatives', JSON.stringify(editForm.representatives)); // Send array structure for backend processing
+
+  // Handle Institutes
+  editForm.institutes.forEach((institute, index) => {
+    formData.append(`institutes[${index}][institutionName]`, institute.institutionName || '');
+    formData.append(`institutes[${index}][location]`, institute.location || '');
+    formData.append(`institutes[${index}][zoneState]`, institute.zoneState || '');
+    formData.append(`institutes[${index}][country]`, institute.country || '');
+    formData.append(`institutes[${index}][website]`, institute.website || '');
+    formData.append(`institutes[${index}][contactPerson]`, institute.contactPerson || '');
+    formData.append(`institutes[${index}][affiliatedCollege]`, institute.affiliatedCollege || '');
+    formData.append(`institutes[${index}][universityType]`, institute.universityType || '');
+    formData.append(`institutes[${index}][recognitionCode]`, institute.recognitionCode || '');
+    formData.append(`institutes[${index}][courseDetails]`, institute.courseDetails || '');
+    formData.append(`institutes[${index}][accreditedBy]`, institute.accreditedBy || '');
+    formData.append(`institutes[${index}][remarks]`, institute.remarks || '');
+    if (institute.authorizationLetterFile) {
+      formData.append(`institutes[${index}][authorizationLetterFile]`, institute.authorizationLetterFile);
+    }
+  });
+  formData.append('institutes', JSON.stringify(editForm.institutes)); // Send array structure for backend processing
+
+
+  emit('edit-application', {
+    applicationId: props.application.id,
+    data: formData
+  });
+  showEditModal.value = false;
+};
+
+const deleteApplication = () => {
+  if (confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
+    emit('delete-application', {
+      applicationId: props.application.id
+    });
+    showEditModal.value = false;
+    closeModal();
+  }
+};
+
+
+// Representative Edit Functions
+const addRepresentative = () => {
+  editForm.representatives.push({
+    name: '',
+    passportNo: '',
+    nationality: '',
+    arrivalDate: '',
+    departureDate: '',
+    cvFile: null,
+    cvFileName: ''
+  });
+};
+
+const removeRepresentative = (index) => {
+  editForm.representatives.splice(index, 1);
+};
+const handleRepCVUpload = (event, index) => {
+  const file = event.target.files[0];
+  editForm.representatives[index].cvFile = file;
+  editForm.representatives[index].cvFileName = file ? file.name : '';
+};
+
+// Institute Edit Functions
+const addInstitute = () => {
+  editForm.institutes.push({
+    institutionName: '',
+    location: '',
+    zoneState: '',
+    country: '',
+    website: '',
+    contactPerson: '',
+    affiliatedCollege: '',
+    universityType: '',
+    recognitionCode: '',
+    courseDetails: '',
+    accreditedBy: '',
+    authorizationLetterFile: null,
+    authorizationLetterName: '',
+    remarks: ''
+  });
+};
+
+const removeInstitute = (index) => {
+  editForm.institutes.splice(index, 1);
+};
+const handleAuthorizationLetterUpload = (event, index) => {
+  const file = event.target.files[0];
+  editForm.institutes[index].authorizationLetterFile = file;
+  editForm.institutes[index].authorizationLetterName = file ? file.name : '';
+};
+
+
+watch(() => props.application, (newApplication) => {
+  if (newApplication) {
+    verificationForm.value.verificationDecision = newApplication.chiefDecision || ''; // Assuming backend field is chiefDecision
+    verificationForm.value.regretReason = newApplication.regretReasonChief || ''; // Assuming backend field is regretReasonChief
+    verificationForm.value.conditionText = newApplication.conditionChief || '';     // Assuming backend field is conditionChief
+    verificationForm.value.remarksText = newApplication.chiefRemarks || '';        // Assuming backend field is chiefRemarks
+
+    // Initialize Edit Form
+    editForm.ecpfName = newApplication.ecpfName || '';
+    editForm.ecpfLocation = newApplication.ecpfLocation || '';
+    editForm.proprietorName = newApplication.proprietorName || '';
+    editForm.cid = newApplication.cid || '';
+    editForm.contactNo = newApplication.contactNo || '';
+    editForm.emailAddress = newApplication.emailAddress || '';
+    editForm.fairName = newApplication.fairName || '';
+    editForm.fairDescription = newApplication.fairDescription || '';
+    editForm.fairLocation = newApplication.fairLocation || '';
+    editForm.representatives = newApplication.representatives ? newApplication.representatives.map(rep => ({ ...rep, cvFile: null, cvFileName: rep.cvFileName || '' })) : []; // Initialize files to null
+    editForm.institutes = newApplication.institutes ? newApplication.institutes.map(inst => ({ ...inst, authorizationLetterFile: null, authorizationLetterName: inst.authorizationLetterName || '' })) : []; // Initialize files to null
+
+
+  }
+}, { immediate: true });
 </script>

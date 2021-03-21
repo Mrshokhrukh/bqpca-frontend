@@ -1,4 +1,3 @@
-<!-- InHouseEventModal.vue -->
 <template>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModal" class="relative z-50">
@@ -20,6 +19,23 @@
                   <div>
                     <h2 class="text-2xl font-bold tracking-tight">In-House Event Application</h2>
                     <p class="mt-1 text-white/90">Application ID: {{ application.cid }}</p>
+                  </div>
+                  <div class="space-x-2">
+                    <button
+                      @click="showEditModal = true"
+                      class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-indigo-600 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      <PencilIcon class="h-4 w-4 mr-2" />
+                      Edit Application
+                    </button>
+                    <button
+                      v-if="application.chiefDecision === 'approved'"
+                      @click="previewApprovalLetter"
+                      class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-green-600 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    >
+                      <DocumentTextIcon class="h-4 w-4 mr-2" />
+                      Preview Approval Letter
+                    </button>
                   </div>
                 </div>
               </div>
@@ -110,54 +126,45 @@
                     </div>
                   </div>
 
-                  <!-- Verification Stage Form -->
+                  <!-- Chief Decision Form -->
                   <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
                     <div class="p-6">
                       <div class="flex items-center mb-4">
                         <div class="bg-yellow-100 p-2 rounded-md">
                           <CheckBadgeIcon class="h-5 w-5 text-yellow-600" />
                         </div>
-                        <h4 class="font-semibold text-gray-900 ml-2">Verification Stage</h4>
+                        <h4 class="font-semibold text-gray-900 ml-2">Chief Decision</h4>
                       </div>
                       <div class="mt-2 space-y-4">
                         <div>
-                          <label for="verificationDecision" class="block text-sm font-medium text-gray-700">Verification Decision:</label>
-                          <select id="verificationDecision" v-model="verificationForm.verificationDecision"
+                          <label for="chiefDecision" class="block text-sm font-medium text-gray-700">Decision:</label>
+                          <select id="chiefDecision" v-model="verificationForm.verificationDecision"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                             <option value="">Select Decision</option>
-                            <option value="accepted">Accepted</option>
+                            <option value="approved">Approved</option>
                             <option value="regretted">Regretted</option>
+                            <option value="reupload_documents">Request Re-upload</option>
                           </select>
                         </div>
                         <div v-if="verificationForm.verificationDecision === 'regretted'">
-                          <label for="regretReason" class="block text-sm font-medium text-gray-700">Regret Reason:</label>
+                          <label for="regretReason" class="block text-sm font-medium text-gray-700">Reason (if regretted):</label>
                           <textarea id="regretReason" v-model="verificationForm.regretReason" rows="2"
                             class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
                         </div>
-                        <div v-if="verificationForm.verificationDecision === 'accepted'">
-                          <label for="conditionText" class="block text-sm font-medium text-gray-700">Condition (if accepted):</label>
+                        <div v-if="verificationForm.verificationDecision === 'approved'">
+                          <label for="conditionText" class="block text-sm font-medium text-gray-700">Condition (if approved):</label>
                           <textarea id="conditionText" v-model="verificationForm.conditionText" rows="2"
                             class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+                        </div>
+                        <div v-if="verificationForm.verificationDecision === 'reupload_documents'">
+                          <label for="reuploadRequestReason" class="block text-sm font-medium text-gray-700">Reason for Re-upload Request:</label>
+                          <textarea id="reuploadRequestReason" v-model="verificationForm.reuploadRequestReason" rows="2"
+                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Specify which documents need re-upload and why."></textarea>
                         </div>
                         <div>
                           <label for="remarksText" class="block text-sm font-medium text-gray-700">Remarks:</label>
                           <textarea id="remarksText" v-model="verificationForm.remarksText" rows="2"
                             class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
-                        </div>
-
-                        <div class="mt-6 flex justify-end space-x-2">
-                          <button type="button"
-                            class="rounded-md px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all"
-                            @click="showMessageBox('accept')">
-                            <CheckIcon class="h-4 w-4 inline-block mr-1" />
-                            Accept
-                          </button>
-                          <button type="button"
-                            class="rounded-md px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all"
-                            @click="showMessageBox('reject')">
-                            <XMarkIcon class="h-4 w-4 inline-block mr-1" />
-                            Regret
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -166,7 +173,7 @@
               </div>
 
               <!-- Footer buttons -->
-              <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse justify-between">
                 <button type="button"
                   class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-all"
                   @click="closeModal">
@@ -175,8 +182,8 @@
                 </button>
                 <button type="button"
                   class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-                  @click="submitVerification">
-                  Submit Verification
+                  @click="submitDecision">
+                  Submit Decision
                 </button>
               </div>
             </DialogPanel>
@@ -186,74 +193,127 @@
     </Dialog>
   </TransitionRoot>
 
-  <!-- Message Box Modal -->
-  <TransitionRoot appear :show="isMessageBoxOpen" as="div">
-    <Dialog as="div" @close="closeMessageBox" class="relative z-50">
-      <TransitionChild as="div" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
-        leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
-        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" aria-hidden="true" />
-      </TransitionChild>
+  <!-- Edit Modal -->
+  <Dialog :open="showEditModal" @close="showEditModal = false" class="relative z-50">
+    <DialogPanel class="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all overflow-y-scroll max-h-[90vh]">
+      <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 mb-4">
+        Edit In-House Event Application
+      </DialogTitle>
+      <div class="mt-2 space-y-6">
+        <!-- Edit Promotional Event Type -->
+        <div>
+          <label for="editPromotionalEventType" class="block text-sm font-medium text-gray-700 mb-1">Promotional Event Type:</label>
+          <input type="text" id="editPromotionalEventType" v-model="editForm.promotionalEventType" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+        </div>
 
-      <div class="fixed inset-0 overflow-y-auto">
-        <div class="flex min-h-full items-center justify-center p-4">
-          <TransitionChild as="div" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
-            enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
-            leave-to="opacity-0 scale-95">
-            <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all">
-              <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">
-                {{ messageBoxAction === 'accept' ? 'Accept Application' : 'Regret Application' }}
-              </h3>
+        <!-- Edit Current Details of ECPF -->
+        <div>
+          <h4 class="font-semibold text-gray-900 mb-2">ECPF Details</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="editEcpfName" class="block text-sm font-medium text-gray-700 mb-1">ECPF Name:</label>
+              <input type="text" id="editEcpfName" v-model="editForm.ecpfName" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label for="editLocation" class="block text-sm font-medium text-gray-700 mb-1">Location:</label>
+              <input type="text" id="editLocation" v-model="editForm.ecpfLocation" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label for="editProprietorName" class="block text-sm font-medium text-gray-700 mb-1">Name of Proprietor:</label>
+              <input type="text" id="editProprietorName" v-model="editForm.proprietorName" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label for="editCid" class="block text-sm font-medium text-gray-700 mb-1">CID:</label>
+              <input type="text" id="editCid" v-model="editForm.cid" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label for="editContactNo" class="block text-sm font-medium text-gray-700 mb-1">Contact No.:</label>
+              <input type="text" id="editContactNo" v-model="editForm.contactNo" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label for="editEmailAddress" class="block text-sm font-medium text-gray-700 mb-1">Email Address:</label>
+              <input type="email" id="editEmailAddress" v-model="editForm.emailAddress" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label for="editInstitute" class="block text-sm font-medium text-gray-700 mb-1">Institute:</label>
+              <input type="text" id="editInstitute" v-model="editForm.institute" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+            </div>
+          </div>
+        </div>
 
-              <div class="mt-2">
-                <p class="text-sm text-gray-500 mb-3">
-                  {{ messageBoxAction === 'accept' ?
-                    'Please provide any additional messages for acceptance:' :
-                    'Please provide reason for regret:'
-                  }}
-                </p>
-                <textarea
-                  v-model="messageBoxText"
-                  rows="4"
-                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  :placeholder="messageBoxAction === 'accept' ? 'Enter acceptance message...' : 'Enter regret reason...'"
-                ></textarea>
-              </div>
+        <!-- Edit Proposed In-House Event Details -->
+        <div>
+          <h4 class="font-semibold text-gray-900 mb-2">Proposed In-House Event Details</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="editEventName" class="block text-sm font-medium text-gray-700 mb-1">Event Name:</label>
+              <input type="text" id="editEventName" v-model="editForm.eventName" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label for="editEventDescription" class="block text-sm font-medium text-gray-700 mb-1">Event Description:</label>
+              <textarea id="editEventDescription" v-model="editForm.eventDescription" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+            </div>
+            <div>
+              <label for="editEventPurpose" class="block text-sm font-medium text-gray-700 mb-1">Event Purpose:</label>
+              <input type="text" id="editEventPurpose" v-model="editForm.eventPurpose" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label for="editEventLocation" class="block text-sm font-medium text-gray-700 mb-1">Event Location:</label>
+              <input type="text" id="editEventLocation" v-model="editForm.eventLocation" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+            </div>
+          </div>
+        </div>
 
-              <div class="mt-5 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
-                  @click="closeMessageBox"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  @click="confirmAction"
-                >
-                  Confirm
-                </button>
-              </div>
-            </DialogPanel>
-          </TransitionChild>
+        <!-- Edit Representative Details (basic - names only for this type) -->
+        <div>
+          <h4 class="font-semibold text-gray-900 mb-2">Representative Details</h4>
+          <template v-if="editForm.representatives && editForm.representatives.length > 0">
+            <div v-for="(rep, index) in editForm.representatives" :key="index" class="mb-4">
+              <label :for="`editRepName-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Representative {{ index + 1 }} Name:</label>
+              <input type="text" :id="`editRepName-${index}`" v-model="rep.name" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+            </div>
+          </template>
+        </div>
+
+        <!-- Edit Remarks -->
+        <div>
+          <label for="editRemarks" class="block text-sm font-medium text-gray-700 mb-1">Remarks:</label>
+          <textarea id="editRemarks" v-model="editForm.remarks" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+        </div>
+
+
+        <div class="mt-6 flex justify-between">
+          <button
+            type="button"
+            @click="deleteApplication"
+            class="rounded-md px-4 py-2 font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all"
+          >
+            Delete Application
+          </button>
+          <div class="space-x-2">
+            <button type="button" @click="showEditModal = false"
+              class="rounded-md px-4 py-2 font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-all">Cancel</button>
+            <button type="button" @click="saveFullEdit"
+              class="rounded-md px-4 py-2 font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-all">Save Changes</button>
+          </div>
         </div>
       </div>
-    </Dialog>
-  </TransitionRoot>
+    </DialogPanel>
+  </Dialog>
 </template>
 
 <script setup>
-import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
-import { ref, watch } from 'vue';
+import { Dialog, DialogPanel, TransitionRoot, TransitionChild, DialogTitle } from '@headlessui/vue'
+import { ref, watch, reactive } from 'vue';
 import {
   DocumentTextIcon,
   DocumentDuplicateIcon,
   CheckBadgeIcon,
-  CheckIcon,
+
   XMarkIcon,
   UserIcon,
   ChatBubbleLeftRightIcon,
+  PencilIcon
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
@@ -264,7 +324,8 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['close', 'update-verification']);
+const emit = defineEmits(['close', 'update-decision', 'edit-application', 'delete-application', 'preview-approval-letter']);
+
 
 const closeModal = () => {
   emit('close');
@@ -275,56 +336,84 @@ const verificationForm = ref({
   regretReason: '',
   conditionText: '',
   remarksText: '',
+  reuploadRequestReason: '',
+});
+const showEditModal = ref(false);
+
+const editForm = reactive({
+  promotionalEventType: '',
+  ecpfName: '',
+  ecpfLocation: '',
+  proprietorName: '',
+  cid: '',
+  contactNo: '',
+  emailAddress: '',
+  institute: '',
+  eventName: '',
+  eventDescription: '',
+  eventPurpose: '',
+  eventLocation: '',
+  remarks: '',
+  representatives: [] // Assuming representatives is an array even for in-house
 });
 
-// Message box state
-const isMessageBoxOpen = ref(false);
-const messageBoxAction = ref('');
-const messageBoxText = ref('');
-
-const showMessageBox = (action) => {
-  messageBoxAction.value = action;
-  messageBoxText.value = '';
-  isMessageBoxOpen.value = true;
-};
-
-const closeMessageBox = () => {
-  isMessageBoxOpen.value = false;
-};
-
-const confirmAction = () => {
-  if (messageBoxAction.value === 'accept') {
-    verificationForm.value.verificationDecision = 'accepted';
-    verificationForm.value.conditionText = messageBoxText.value;
-    saveVerificationDecision('Accepted');
-  } else if (messageBoxAction.value === 'reject') {
-    verificationForm.value.verificationDecision = 'regretted';
-    verificationForm.value.regretReason = messageBoxText.value;
-    saveVerificationDecision('Regretted');
-  }
-  closeMessageBox();
-};
-
-const saveVerificationDecision = (action) => {
-  console.log('Verification Decision:', verificationForm.value, 'Action:', action, 'for CID:', props.application.cid);
-  emit('update-verification', {
-    applicationId: props.application.id, // Or use CID if ID is not available/suitable
-    verificationData: { ...verificationForm.value, verificationStatus: action }
+const submitDecision = () => {
+  emit('update-decision', {
+    applicationId: props.application.id,
+    decisionData: verificationForm.value
   });
   closeModal();
 };
 
-const submitVerification = () => {
-  saveVerificationDecision(verificationForm.value.verificationDecision === 'accepted' ? 'Accepted' : 'Regretted');
+const previewApprovalLetter = () => {
+  emit('preview-approval-letter', {
+    applicationId: props.application.id
+  });
 };
+
+const saveFullEdit = () => {
+  emit('edit-application', {
+    applicationId: props.application.id,
+    data: editForm
+  });
+  showEditModal.value = false;
+};
+const deleteApplication = () => {
+  if (confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
+    emit('delete-application', {
+      applicationId: props.application.id
+    });
+    showEditModal.value = false;
+    closeModal();
+  }
+};
+
 
 watch(() => props.application, (newApplication) => {
   if (newApplication) {
-    // Initialize verification stage fields if needed, or fetch existing values if applicable
-    verificationForm.value.verificationDecision = '';
-    verificationForm.value.regretReason = '';
-    verificationForm.value.conditionText = '';
-    verificationForm.value.remarksText = '';
+    verificationForm.value.verificationDecision = newApplication.chiefDecision || '';
+    verificationForm.value.regretReason = newApplication.regretReasonChief || '';
+    verificationForm.value.conditionText = newApplication.conditionChief || '';
+    verificationForm.value.remarksText = newApplication.chiefRemarks || '';
+    verificationForm.value.reuploadRequestReason = newApplication.reuploadRequestReasonChief || '';
+
+    // Initialize Edit Form
+    editForm.promotionalEventType = newApplication.promotionalEventType || '';
+    editForm.ecpfName = newApplication.ecpfName || '';
+    editForm.ecpfLocation = newApplication.ecpfLocation || '';
+    editForm.proprietorName = newApplication.proprietorName || '';
+    editForm.cid = newApplication.cid || '';
+    editForm.contactNo = newApplication.contactNo || '';
+    editForm.emailAddress = newApplication.emailAddress || '';
+    editForm.institute = newApplication.institute || '';
+    editForm.eventName = newApplication.eventName || '';
+    editForm.eventDescription = newApplication.eventDescription || '';
+    editForm.eventPurpose = newApplication.eventPurpose || '';
+    editForm.eventLocation = newApplication.eventLocation || '';
+    editForm.remarks = newApplication.remarks || '';
+    editForm.representatives = newApplication.representatives ? [...newApplication.representatives] : [];
+
   }
 }, { immediate: true });
+
 </script>

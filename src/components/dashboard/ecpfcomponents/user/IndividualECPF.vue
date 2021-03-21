@@ -1,397 +1,95 @@
 <template>
-  <div class="p-8 min-h-screen bg-gray-50">
-    <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Individual ECPF Establishment</h1>
-      <p class="text-gray-600">Please fill in the details below to establish your ECPF.</p>
+  <div>
+    <!-- Edit Draft Button -->
+    <button v-if="formData.isDraft" @click="editDraft">Edit Draft</button>
+
+    <!-- Submit Button -->
+    <button @click="submitForm">Submit Application</button>
+
+    <!-- Save as Draft Button -->
+    <button @click="saveAsDraft">Save as Draft</button>
+
+    <!-- Location dropdown -->
+    <select v-model="formData.location">
+      <option value="">Select Location</option>
+      <option v-for="location in locations" :key="location.id" :value="location.id">
+        {{ location.name }}
+      </option>
+    </select>
+
+    <!-- Country dropdown for linkages -->
+    <div v-for="(linkage, index) in formData.linkages" :key="index">
+      <select v-model="linkage.country">
+        <option value="">Select Country</option>
+        <option v-for="country in countries" :key="country.code" :value="country.code">
+          {{ country.name }}
+        </option>
+      </select>
+      <button @click="removeLinkage(index)">Remove Linkage</button>
     </div>
+    <button @click="addLinkage">Add Linkage</button>
 
-    <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
-      <form @submit.prevent="submitForm" ref="form">
-        <!-- Personal Information -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Personal Information</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label for="cid_no" class="block text-sm font-medium text-gray-700">CID No:</label>
-              <input id="cid_no" type="text" v-model="formData.cid_no"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                disabled>
-            </div>
-            <div>
-              <label for="applicant_name" class="block text-sm font-medium text-gray-700">Applicant's Name:</label>
-              <input id="applicant_name" type="text" v-model="formData.applicant_name"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                disabled>
-            </div>
-            <div>
-              <label for="gender" class="block text-sm font-medium text-gray-700">Gender:</label>
-              <input id="gender" type="text" v-model="formData.gender"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                disabled>
-            </div>
-            <div>
-              <label for="date_of_birth" class="block text-sm font-medium text-gray-700">Date of Birth:</label>
-              <input id="date_of_birth" type="text" v-model="formData.date_of_birth"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                disabled>
-            </div>
-            <div>
-              <label for="contact_no" class="block text-sm font-medium text-gray-700">Contact No:</label>
-              <input id="contact_no" type="number" v-model="formData.contact_no"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label for="email_address" class="block text-sm font-medium text-gray-700">Email Address:</label>
-              <input id="email_address" type="email" v-model="formData.email_address"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-          </div>
-        </section>
+  <!-- Gewog/Throm dropdown -->
+    <select v-model="formData.gewog_throm">
+      <option value="">Select Gewog/Throm</option>
+      <option v-for="gewog in gewogThroms" :key="gewog.id" :value="gewog.id">
+        {{ gewog.name }}
+      </option>
+    </select>
 
-        <!-- ... (Other sections: Residential/Present Address, Education Details, etc.) ... -->
-        <!-- Residential/Present Address -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Residential/Present Address</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label for="office_number" class="block text-sm font-medium text-gray-700">Office Number:</label>
-              <input id="office_number" type="number" v-model="formData.office_number"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label for="flat_no" class="block text-sm font-medium text-gray-700">Flat No:</label>
-              <input id="flat_no" type="text" v-model="formData.flat_no"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label for="building_no" class="block text-sm font-medium text-gray-700">Building No:</label>
-              <input id="building_no" type="text" v-model="formData.building_no"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label for="location" class="block text-sm font-medium text-gray-700">Location:</label>
-              <select id="location" v-model="formData.location"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option v-for="loc in locations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
-              </select>
-            </div>
-            <div>
-              <label for="gewog_throm" class="block text-sm font-medium text-gray-700">Gewog/Throm:</label>
-              <select id="gewog_throm" v-model="formData.gewog_throm"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option v-for="gt in gewogThroms" :key="gt.id" :value="gt.id">{{ gt.name }}</option>
-              </select>
-            </div>
-            <div>
-              <label for="dzongkhag_thromde" class="block text-sm font-medium text-gray-700">Dzongkhag/Thromde:</label>
-              <select id="dzongkhag_thromde" v-model="formData.dzongkhag_thromde"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option v-for="dt in dzongkhagThromdes" :key="dt.id" :value="dt.id">{{ dt.name }}</option>
-              </select>
-            </div>
-          </div>
-        </section>
+  <!-- Dzongkhag/Thromde dropdown -->
+    <select v-model="formData.dzongkhag_thromde">
+      <option value="">Select Dzongkhag/Thromde</option>
+      <option v-for="dzongkhag in dzongkhagThromdes" :key="dzongkhag.id" :value="dzongkhag.id">
+        {{ dzongkhag.name }}
+      </option>
+    </select>
 
-        <!-- Education Details -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Education Details</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label for="qualification" class="block text-sm font-medium text-gray-700">Qualification:</label>
-              <input id="qualification" type="text" v-model="formData.qualification"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label for="institute_name" class="block text-sm font-medium text-gray-700">Name of Institute:</label>
-              <input id="institute_name" type="text" v-model="formData.institute_name"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label for="university_name" class="block text-sm font-medium text-gray-700">Name of University:</label>
-              <input id="university_name" type="text" v-model="formData.university_name"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-          </div>
-        </section>
+    <!-- Service Categories dropdown -->
+    <div v-for="(service, index) in formData.services" :key="index">
+      <select v-model="service.category">
+        <option value="">Select Service Category</option>
+        <option v-for="category in serviceCategories" :key="category.id" :value="category.id">
+          {{ category.name }}
+        </option>
+      </select>
+      <button @click="removeService(index)">Remove Service</button>
+    </div>
+    <button @click="addService">Add Service</button>
 
-        <!-- ECPF Establishment Proposal Details -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">ECPF Establishment Proposal Details</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label for="proposed_firm_name" class="block text-sm font-medium text-gray-700">Name of the Proposed
-                Firm:</label>
-              <input id="proposed_firm_name" type="text" v-model="formData.proposed_firm_name"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label for="proposed_firm_address" class="block text-sm font-medium text-gray-700">Address of the Proposed
-                Firm:</label>
-              <input id="proposed_firm_address" type="text" v-model="formData.proposed_firm_address"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label for="proposed_firm_location" class="block text-sm font-medium text-gray-700">Location of the
-                Proposed Firm:</label>
-              <select id="proposed_firm_location" v-model="formData.proposed_firm_location"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option v-for="loc in locations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
-              </select>
-            </div>
-            <div>
-              <label for="firm_type" class="block text-sm font-medium text-gray-700">Type of Firm:</label>
-              <select id="firm_type" v-model="formData.firm_type"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option v-for="type in firmTypes" :key="type.id" :value="type.id">{{ type.name }}</option>
-              </select>
-            </div>
-          </div>
-        </section>
+    <!-- Fees -->
+    <div v-for="(fee, index) in formData.fees" :key="index">
+      <input v-model="fee.breakup" placeholder="Fee Breakup">
+      <input v-model="fee.description" placeholder="Description">
+      <input v-model="fee.amount" type="number" placeholder="Amount">
+      <button @click="removeFee(index)">Remove Fee</button>
+    </div>
+    <button @click="addFee">Add Fee</button>
 
-        <!-- Purpose of Establishment -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Purpose of Establishment</h2>
-          <div class="grid grid-cols-1 gap-6">
-            <div>
-              <label for="vision" class="block text-sm font-medium text-gray-700">Vision:</label>
-              <textarea id="vision" v-model="formData.vision"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="4"></textarea>
-            </div>
-            <div>
-              <label for="mission" class="block text-sm font-medium text-gray-700">Mission:</label>
-              <textarea id="mission" v-model="formData.mission"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="4"></textarea>
-            </div>
-            <div>
-              <label for="objective" class="block text-sm font-medium text-gray-700">Objective:</label>
-              <textarea id="objective" v-model="formData.objective"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="4"></textarea>
-            </div>
-          </div>
-        </section>
+    <!-- Firm Type dropdown -->
+    <select v-model="formData.firm_type">
+      <option value="">Select Firm Type</option>
+      <option v-for="type in firmTypes" :key="type.id" :value="type.id">
+        {{ type.name }}
+      </option>
+  </select>
 
-        <!-- Institute/Colleges/University Linkages -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Institute/Colleges/University Linkages</h2>
-          <div v-for="(linkage, index) in formData.linkages" :key="index"
-            class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 border-b pb-4">
-            <div>
-              <label :for="`college_name_${index}`" class="block text-sm font-medium text-gray-700">Name of
-                Colleges/University/institute:</label>
-              <input :id="`college_name_${index}`" type="text" v-model="linkage.college_name"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label :for="`linkage_location_${index}`" class="block text-sm font-medium text-gray-700">Location:</label>
-              <input :id="`linkage_location_${index}`" type="text" v-model="linkage.location"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label :for="`country_${index}`" class="block text-sm font-medium text-gray-700">Country:</label>
-              <select :id="`country_${index}`" v-model="linkage.country"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option v-for="country in countries" :key="country.code" :value="country.code">{{ country.name }}</option>
-              </select>
-            </div>
-            <div>
-              <label :for="`recognition_${index}`" class="block text-sm font-medium text-gray-700">Recognition/Accreditation:</label>
-              <input :id="`recognition_${index}`" type="file" @change="handleFileUpload($event, 'recognition', index)"
-                class="mt-1 block w-full">
-            </div>
-            <div>
-              <label :for="`approval_${index}`" class="block text-sm font-medium text-gray-700">Approval from
-                University:</label>
-              <input :id="`approval_${index}`" type="file" @change="handleFileUpload($event, 'approval', index)"
-                class="mt-1 block w-full">
-            </div>
-            <button type="button" @click="removeLinkage(index)" class="text-red-600 hover:text-red-800">Remove</button>
-          </div>
-          <button type="button" @click="addLinkage"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            Add More
-          </button>
-        </section>
+    <!-- Declaration Options -->
+    <select v-model="formData.declaration">
+      <option value="">Select Declaration</option>
+      <option v-for="option in declarationOptions" :key="option.id" :value="option.id">
+        {{ option.name }}
+      </option>
+    </select>
 
-        <!-- Finance Plan -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Finance Plan</h2>
-          <div>
-            <label for="finance_plan_details" class="block text-sm font-medium text-gray-700">Finance Plan
-              Details:</label>
-            <textarea id="finance_plan_details" v-model="formData.finance_plan_details"
-              class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows="4"></textarea>
-          </div>
-        </section>
-
-        <!-- Services -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Services</h2>
-          <div v-for="(service, index) in formData.services" :key="index"
-            class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 border-b pb-4">
-            <div>
-              <label :for="`service_category_${index}`" class="block text-sm font-medium text-gray-700">Service
-                Category:</label>
-              <select :id="`service_category_${index}`" v-model="service.category"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option v-for="category in serviceCategories" :key="category.id" :value="category.id">{{ category.name }}
-                </option>
-              </select>
-            </div>
-            <div>
-              <label :for="`service_details_${index}`" class="block text-sm font-medium text-gray-700">Details:</label>
-              <textarea :id="`service_details_${index}`" v-model="service.details"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="3"></textarea>
-            </div>
-            <button type="button" @click="removeService(index)" class="text-red-600 hover:text-red-800">Remove</button>
-          </div>
-          <button type="button" @click="addService"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            Add More
-          </button>
-        </section>
-
-        <!-- SWOT Analysis -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">SWOT Analysis</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label for="strengths" class="block text-sm font-medium text-gray-700">Strengths:</label>
-              <textarea id="strengths" v-model="formData.strengths"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="4"></textarea>
-            </div>
-            <div>
-              <label for="weaknesses" class="block text-sm font-medium text-gray-700">Weaknesses:</label>
-              <textarea id="weaknesses" v-model="formData.weaknesses"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="4"></textarea>
-            </div>
-            <div>
-              <label for="opportunities" class="block text-sm font-medium text-gray-700">Opportunities:</label>
-              <textarea id="opportunities" v-model="formData.opportunities"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="4"></textarea>
-            </div>
-            <div>
-              <label for="threats" class="block text-sm font-medium text-gray-700">Threats:</label>
-              <textarea id="threats" v-model="formData.threats"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="4"></textarea>
-            </div>
-          </div>
-        </section>
-
-        <!-- Fee & Charges -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Fee & Charges</h2>
-          <div v-for="(fee, index) in formData.fees" :key="index"
-            class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-4 border-b pb-4">
-            <div>
-              <label :for="`fee_breakup_${index}`" class="block text-sm font-medium text-gray-700">Fee Breakup:</label>
-              <input :id="`fee_breakup_${index}`" type="text" v-model="fee.breakup"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label :for="`description_${index}`" class="block text-sm font-medium text-gray-700">Description:</label>
-              <input :id="`description_${index}`" type="text" v-model="fee.description"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label :for="`amount_${index}`" class="block text-sm font-medium text-gray-700">Amount:</label>
-              <input :id="`amount_${index}`" type="number" v-model="fee.amount"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label :for="`total_amount_${index}`" class="block text-sm font-medium text-gray-700">Total
-                Amount:</label>
-              <input :id="`total_amount_${index}`" type="number" v-model="fee.total_amount"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <button type="button" @click="removeFee(index)" class="text-red-600 hover:text-red-800">Remove</button>
-          </div>
-          <button type="button" @click="addFee"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            Add More
-          </button>
-        </section>
-
-        <!-- Guarantor Details -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Guarantor Details</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label for="guarantor_full_name" class="block text-sm font-medium text-gray-700">Full Name:</label>
-              <input id="guarantor_full_name" type="text" v-model="formData.guarantor_full_name" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label for="guarantor_cid_number" class="block text-sm font-medium text-gray-700">CID Number:</label>
-              <input id="guarantor_cid_number" type="text" v-model="formData.guarantor_cid_number"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label for="relation_to_applicant" class="block text-sm font-medium text-gray-700">Relation to the
-                Applicant:</label>
-              <input id="relation_to_applicant" type="text" v-model="formData.relation_to_applicant"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label for="guarantor_contact_number" class="block text-sm font-medium text-gray-700">Contact
-                Number:</label>
-              <input id="guarantor_contact_number" type="number" v-model="formData.guarantor_contact_number"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label for="cid_copy" class="block text-sm font-medium text-gray-700">CID Copy:</label>
-              <input id="cid_copy" type="file" @change="handleFileUpload($event, 'cid_copy')" class="mt-1 block w-full">
-            </div>
-          </div>
-        </section>
-
-        <!-- Supporting Documents -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Supporting Documents</h2>
-          <div>
-            <label for="cv" class="block text-sm font-medium text-gray-700">CV of the Applicant:</label>
-            <input id="cv" type="file" @change="handleFileUpload($event, 'cv')" class="mt-1 block w-full">
-          </div>
-        </section>
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Declaration</h2>
-          <div>
-            <label for="declaration" class="block text-sm font-medium text-gray-700">Declaration:</label>
-            <select id="declaration" v-model="formData.declaration"
-              class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option v-for="declarationOption in declarationOptions" :key="declarationOption.id"
-                :value="declarationOption.id">{{ declarationOption.name }}</option>
-            </select>
-          </div>
-        </section>
-
-        <div class="flex justify-end space-x-4">
-          <button type="button" @click="saveAsDraft"
-            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200">
-            Save as Draft
-          </button>
-          <!-- Disable submit button if declaration is not "Agree" -->
-          <button type="submit" :disabled="formData.declaration !== 1"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50">
-            Submit
-          </button>
-             <button type="button" @click="editDraft" v-if="isDraft"
-            class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200">
-            Edit Draft
-          </button>
-        </div>
-      </form>
+    <!-- File Upload Inputs -->
+    <div>
+      <input type="file" @change="(e) => handleFileUpload(e, 'cv')" accept=".pdf,.doc,.docx">
+      <input type="file" @change="(e) => handleFileUpload(e, 'cid_copy')" accept=".pdf,.jpg,.jpeg,.png">
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import apiServices from '@/services/services'; // Import your API service
@@ -495,6 +193,7 @@ const firmTypes = ref([
     {id: 'ft1', name: 'Independent'},
     {id: 'ft2', name: 'Collaboration'}
 ]);
+// Add declaration options
 const declarationOptions = ref([
      { id: 1, name: 'Agree' },
      { id: 2, name: 'Not Agree' }
@@ -561,9 +260,18 @@ const submitForm = async () => {
             return;
         }
         const dataToSubmit = await prepareDataForSubmission();
-        const response = await apiServices.submitEcpfApplication(dataToSubmit);
+        let response;
 
-        if (response.status === 201) {
+        if (formData.value.draftId) {
+            // If draftId exists, it's an update (even on submit, assuming drafts can be further edited before final submission)
+            response = await apiServices.updateEcpfProfile(formData.value.draftId, dataToSubmit);
+        } else {
+            // If no draftId, it's a new submission
+            response = await apiServices.createEcpfProfile(dataToSubmit);
+        }
+
+
+        if (response.status === 200 || response.status === 201) { // Check for both success codes (201 for create, 200 for update)
             alert('Application submitted successfully!');
             resetForm();
              formData.value.isDraft = false; // Reset draft flag
@@ -584,15 +292,14 @@ const saveAsDraft = async () => {
     let response;
 
     if (formData.value.draftId) {
-      // Update existing draft
-      response = await apiServices.updateEcpfDraft(formData.value.draftId, dataToSubmit);
+      // Update existing draft using PATCH as it's a draft and might be partial
+      response = await apiServices.patchEcpfProfile(formData.value.draftId, dataToSubmit);
     } else {
-      // Save new draft
-      response = await apiServices.saveEcpfDraft(dataToSubmit);
+      // Save new draft using POST
+      response = await apiServices.createEcpfProfile(dataToSubmit);
     }
 
-
-    if (response.status === 200 || response.status === 201) {
+    if (response.status === 200 || response.status === 201) { // Check for both success codes
       alert('Application saved as draft successfully!');
       formData.value.isDraft = true; // Set draft flag
       formData.value.draftId = response.data.id; // Assuming the API returns the draft ID
@@ -770,7 +477,7 @@ onMounted(() => {
 // Load draft data (example - adapt to your API)
 const loadDraft = async (draftId) => {
     try {
-        const response = await apiServices.getEcpfDraft(draftId); // You need to implement this in services.js
+        const response = await apiServices.getEcpfProfile(draftId); // You need to implement this in services.js
         if (response.status === 200) {
             // Populate formData with the draft data
             Object.assign(formData.value, response.data); // Use Object.assign for reactivity
