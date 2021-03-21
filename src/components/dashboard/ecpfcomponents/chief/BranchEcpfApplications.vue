@@ -278,7 +278,7 @@ const fetchApplications = async () => {
   try {
     const response = await apiServices.getEcpfBranches(); // Use the correct API service method
     if (response.status === 200) {
-      applications.value = response.data; // Assuming the API returns data in 'data' property
+      applications.value = response.data.results; // Assuming the API returns data in 'data' property
     } else {
       alert('Failed to fetch applications.');
       console.error('API Error:', response);

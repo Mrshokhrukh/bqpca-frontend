@@ -26,7 +26,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Pending Verification</p>
-              <p class="text-xl font-bold text-gray-800">{{ getPendingVerificationCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ pendingVerificationCount }}</p>
             </div>
           </div>
         </div>
@@ -40,7 +40,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Accepted</p>
-              <p class="text-xl font-bold text-gray-800">{{ getAcceptedCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ acceptedCount }}</p>
             </div>
           </div>
         </div>
@@ -54,7 +54,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Regretted</p>
-              <p class="text-xl font-bold text-gray-800">{{ getRegrettedCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ regrettedCount }}</p>
             </div>
           </div>
         </div>
@@ -75,11 +75,11 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
-              <input type="text" class="block w-full rounded-lg border-gray-300 pl-10 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search by ECPF name, Media Name, or CID...">
+              <input v-model="searchQuery" type="text" class="block w-full rounded-lg border-gray-300 pl-10 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search by ECPF name, Media Name, or CID...">
             </div>
           </div>
           <div class="w-full md:w-1/4">
-            <select class="block w-full rounded-lg border-gray-300 py-2 focus:ring-blue-500 focus:border-blue-500">
+            <select v-model="filterStatus" class="block w-full rounded-lg border-gray-300 py-2 focus:ring-blue-500 focus:border-blue-500">
               <option value="">All Statuses</option>
               <option value="Pending Verification">Pending Verification</option>
               <option value="Accepted">Accepted</option>
@@ -116,23 +116,23 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="application in applications" :key="application.id" class="hover:bg-gray-50 transition-colors">
+              <tr v-for="application in filteredApplications" :key="application.id" class="hover:bg-gray-50 transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-semibold mr-3">
-                      {{ getInitials(application.ecpfName) }}
+                      {{ getInitials(application.ecpf_details.name) }}
                     </div>
                     <div>
-                      <div class="text-sm font-medium text-gray-900">{{ application.ecpfName }}</div>
+                      <div class="text-sm font-medium text-gray-900">{{ application.ecpf_details.name }}</div>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.massMediaPromotionalName }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.promotionalChannel }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.cid }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.event_details.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.event_details.channel }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.ecpf_details.cid }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span :class="getStatusClasses(application.verificationStatus)">
-                    {{ application.verificationStatus }}
+                  <span :class="getStatusClasses(application.verification_status)">
+                    {{ application.verification_status }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -142,7 +142,7 @@
                   </div>
                 </td>
               </tr>
-              <tr v-if="applications.length === 0">
+              <tr v-if="filteredApplications.length === 0">
                 <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No applications found.</td>
               </tr>
             </tbody>
@@ -160,45 +160,58 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import MassMediaEventModal from './modals/MassMediaEventModal.vue';
+import apiService from '@/services/services';
+import { useToast } from 'vue-toastification';
 
-const applications = ref([
-  {
-    id: 1,
-    ecpfName: 'Bhutan Counseling Center',
-    massMediaPromotionalName: 'Radio Ad Campaign',
-    promotionalChannel: 'Radio BBS',
-    cid: '12345678901',
-    verificationStatus: 'Pending Verification', // Example status
-    // ... more application data if needed for table display
-  },
-  {
-    id: 2,
-    ecpfName: 'Serene Mind ECPF',
-    massMediaPromotionalName: 'TV Commercial',
-    promotionalChannel: 'Bhutan Broadcasting Service',
-    cid: '98765432109',
-    verificationStatus: 'Accepted', // Example status
-    // ... more application data
-  },
-  {
-    id: 3,
-    ecpfName: 'Harmony ECPF',
-    massMediaPromotionalName: 'Newspaper Advertisement',
-    promotionalChannel: 'Kuensel',
-    cid: '11223344550',
-    verificationStatus: 'Regretted', // Example status
-    // ... more application data
-  },
-]);
-
+const applications = ref([]);
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
+const toast = useToast();
 
-const openModal = (application) => {
-  selectedApplication.value = application;
-  isModalOpen.value = true;
+const searchQuery = ref('');
+const filterStatus = ref('');
+
+const pendingVerificationCount = ref(0);
+const acceptedCount = ref(0);
+const regrettedCount = ref(0);
+
+const filteredApplications = computed(() => {
+  if (!Array.isArray(applications.value)) { // **ADD THIS CHECK**
+    return [];
+  }
+  let filtered = [...applications.value];
+
+  if (searchQuery.value) {
+    const lowerSearchQuery = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(app => {
+      return (
+        app.ecpf_details.name.toLowerCase().includes(lowerSearchQuery) ||
+        app.event_details.name.toLowerCase().includes(lowerSearchQuery) ||
+        app.ecpf_details.cid.toLowerCase().includes(lowerSearchQuery)
+      );
+    });
+  }
+
+  if (filterStatus.value) {
+    filtered = filtered.filter(app => app.verification_status === filterStatus.value);
+  }
+
+  return filtered;
+});
+
+
+const openModal = async (application) => {
+  try {
+    const response = await apiService.getEcpfPromotionalMassMedia(application.id);
+    selectedApplication.value = response.data;
+    isModalOpen.value = true;
+  } catch (error) {
+    console.error('Error fetching application details:', error);
+    toast.error('Failed to load application details.');
+  }
+
 };
 
 const closeModal = () => {
@@ -206,12 +219,17 @@ const closeModal = () => {
   selectedApplication.value = null;
 };
 
-const forwardApplication = (application) => {
-  // Implementation for forwarding the application
-  console.log('Forwarding application:', application.id);
-  // You would implement the logic to forward the application here
-  // For example, show a confirmation dialog or change the status
-  alert(`Application for ${application.ecpfName} (Media: ${application.massMediaPromotionalName}) has been forwarded.`);
+const forwardApplication = async (application) => {
+  try {
+    // Assuming you have a status field in your backend model and want to update it to 'Forwarded' or similar
+    await apiService.patchEcpfPromotionalMassMedia(application.id, application.id, { verification_status: 'Forwarded to Chief' }); // Adjust status as per your backend
+    toast.success(`Application for ${application.ecpf_details.name} forwarded.`);
+    // Refresh applications list after forwarding
+    fetchApplications();
+  } catch (error) {
+    console.error('Error forwarding application:', error);
+    toast.error('Failed to forward application.');
+  }
 };
 
 
@@ -222,24 +240,36 @@ const getStatusClasses = (status) => {
       'bg-yellow-100 text-yellow-800': status === 'Pending Verification',
       'bg-green-100 text-green-800': status === 'Accepted',
       'bg-red-100 text-red-800': status === 'Regretted',
-      // Add more status mappings as needed
+      'bg-blue-100 text-blue-800': status === 'Forwarded to Chief', // Add class for forwarded status
     }
   ];
 };
 
-// Helper functions for stats cards - Adapt to Mass Media Event statuses
-const getPendingVerificationCount = () => {
-  return applications.value.filter(app => app.verificationStatus === 'Pending Verification').length;
+const updateStatsCounts = () => {
+  console.log('MassMediaEvent applications.value in updateStatsCounts:', applications.value); // Debugging
+  if (!Array.isArray(applications.value)) { // **ADD THIS CHECK**
+    pendingVerificationCount.value = 0;
+    acceptedCount.value = 0;
+    regrettedCount.value = 0;
+    return;
+  }
+  pendingVerificationCount.value = applications.value.filter(app => app.verification_status === 'Pending Verification').length;
+  acceptedCount.value = applications.value.filter(app => app.verification_status === 'Accepted').length;
+  regrettedCount.value = applications.value.filter(app => app.verification_status === 'Regretted').length;
 };
 
-const getAcceptedCount = () => {
-  return applications.value.filter(app => app.verificationStatus === 'Accepted').length;
-};
 
-const getRegrettedCount = () => {
-  return applications.value.filter(app => app.verificationStatus === 'Regretted').length;
+const fetchApplications = async () => {
+  try {
+    const response = await apiService.getEcpfPromotionalMassMedias();
+    console.log('MassMediaEvent API Response Data:', response.data); // Debugging: Log API response
+    applications.value = response.data;
+    updateStatsCounts(); // Update stats after fetching applications
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    toast.error('Failed to load applications.');
+  }
 };
-
 
 // Helper function to get initials from name (using ECPF Name here)
 const getInitials = (name) => {
@@ -250,4 +280,8 @@ const getInitials = (name) => {
     .join('')
     .toUpperCase();
 };
+
+onMounted(() => {
+  fetchApplications();
+});
 </script>

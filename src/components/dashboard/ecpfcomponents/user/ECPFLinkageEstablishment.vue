@@ -109,12 +109,11 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
-import apiService from '@/services/services'; //  import your service
-
+import apiService from '@/services/services'; //  Import your service
 
 const toast = useToast();
 
-const ecpfDetails = reactive({
+const ecpfDetails = reactive({ // Replace with actual ECPF data source if needed
   name: 'Example ECPF',
   proprietor: 'John Doe',
   cid: '1234567890',
@@ -133,17 +132,17 @@ const linkageDetails = reactive({
   accreditedBy: '',
   affiliation: '',
   approval: '',
-  report: null,
+  report: null, // Store filename for display
 });
 
-const countryOptions = ref([]); // Populate with country data
-const reportFile = ref(null);
+const countryOptions = ref([]); // Array to hold countries fetched from API
+const reportFile = ref(null); // To store the actual File object
 
 onMounted(async () => {
-  // Fetch country list (replace with your actual API)
+  // Fetch country list from API
     try {
         const response = await apiService.getCountries();
-        countryOptions.value = response.data;
+        countryOptions.value = response.data; // Assuming response.data is array of countries
     } catch (error) {
         console.error('Error fetching countries:', error);
          toast.error('Failed to load countries.');
@@ -153,42 +152,70 @@ onMounted(async () => {
 const handleReportUpload = (event) => {
   const file = event.target.files[0];
     if (file) {
-        linkageDetails.report = file.name; // Just store the name for now
-        reportFile.value = file; // Keep the actual File object
-         //  Upload file using a service, and store the returned URL
+        linkageDetails.report = file.name; // Store filename for display
+        reportFile.value = file; // Store File object for upload
     } else {
         linkageDetails.report = null;
          reportFile.value = null;
     }
 };
 
-const submitForm = () => {
+const submitForm = async () => {
   // Basic validation
   if (!linkageDetails.name || !linkageDetails.website || !linkageDetails.location || !linkageDetails.country) {
     toast.error("Please fill in all required fields.");
     return;
   }
 
-    // Prepare data for submission (add ecpfDetails too)
-    const formData = {
-        ecpfDetails: ecpfDetails,
-        linkageDetails: linkageDetails,
-        // Include the report file if you're doing direct upload
-        reportFile: reportFile.value //  Only if direct upload
-    };
+    const formData = new FormData();
+    formData.append('ecpf_name', ecpfDetails.name); // Assuming backend field names
+    formData.append('ecpf_proprietor', ecpfDetails.proprietor);
+    formData.append('ecpf_cid', ecpfDetails.cid);
+    formData.append('ecpf_location', ecpfDetails.location);
+    formData.append('ecpf_contact_no', ecpfDetails.contactNo);
+    formData.append('ecpf_email', ecpfDetails.email);
 
-  console.log("Submitting:", formData);
+    formData.append('hei_name', linkageDetails.name); // Assuming backend field names
+    formData.append('hei_website', linkageDetails.website);
+    formData.append('hei_location', linkageDetails.location);
+    formData.append('hei_country', linkageDetails.country);
+    formData.append('year_established', linkageDetails.yearEstablished);
+    formData.append('recognized_by', linkageDetails.recognizedBy);
+    formData.append('accredited_by', linkageDetails.accreditedBy);
+    formData.append('affiliation', linkageDetails.affiliation);
+    formData.append('approval', linkageDetails.approval);
+    if (reportFile.value) {
+        formData.append('report_document', reportFile.value); // 'report_document' is example backend field name
+    }
 
-    //  API call to submit the linkage application (replace with actual API)
-    //   try {
-    //     const response = await axios.post('/api/linkage', formData);
-    //     toast.success("Linkage application submitted successfully!");
-    //     //  Redirect or update UI
-    //   } catch (error) {
-    //        console.error("Error submitting form:", error);
-    //        toast.error("An error occurred while submitting the application.");
-    //      }
+  console.log("Submitting FormData:", Object.fromEntries(formData.entries()));
+
+    //  API call to submit the linkage application
+    try {
+      const response = await apiService.createEcpfLinkageEstablishment(formData);
+      console.log("Linkage application submitted successfully:", response.data);
       toast.success("Linkage application submitted successfully!");
+        // Reset Form
+        linkageDetails.name = '';
+        linkageDetails.website = '';
+        linkageDetails.location = '';
+        linkageDetails.country = '';
+        linkageDetails.yearEstablished = null;
+        linkageDetails.recognizedBy = '';
+        linkageDetails.accreditedBy = '';
+        linkageDetails.affiliation = '';
+        linkageDetails.approval = '';
+        linkageDetails.report = null;
+        reportFile.value = null;
+
+    } catch (error) {
+         console.error("Error submitting form:", error);
+         toast.error("An error occurred while submitting the application.");
+         if (error.response) {
+            console.error("Error details:", error.response.data);
+            toast.error(`Error: ${error.response.data.message || 'Please check the form data'}`);
+         }
+       }
 };
 
 const saveAsDraft = () => {
@@ -199,7 +226,8 @@ const saveAsDraft = () => {
     };
     console.log("Saving draft:", draftData);
      toast.info("Draft saved.");
-}
+     // You can implement saving to local storage or an API endpoint here
+};
 
 
 </script>

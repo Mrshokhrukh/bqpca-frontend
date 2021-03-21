@@ -1,3 +1,4 @@
+<!-- ChiefDashboard.vue -->
 <template>
   <div class="p-8 min-h-screen">
     <div class="mx-auto">
@@ -26,7 +27,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Pending Review</p>
-              <p class="text-xl font-bold text-gray-800">{{ getPendingCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ pendingCount }}</p>
             </div>
           </div>
         </div>
@@ -40,7 +41,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Approved</p>
-              <p class="text-xl font-bold text-gray-800">{{ getApprovedCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ approvedCount }}</p>
             </div>
           </div>
         </div>
@@ -54,7 +55,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Rejected</p>
-              <p class="text-xl font-bold text-gray-800">{{ getRejectedCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ rejectedCount }}</p>
             </div>
           </div>
         </div>
@@ -141,7 +142,7 @@
                     >
                       View
                     </button>
-                    
+
                   </div>
                 </td>
               </tr>
@@ -202,45 +203,45 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import EcpfNameChangeModal from './modals/EcpfNameChangeModal.vue'; // Import the modal component
+import apiServices from '@/services/services'; // Import your API service
 
 const searchQuery = ref('');
 const statusFilter = ref('');
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
+const nameChangeApplications = ref([]);
+const pendingCount = ref(0);
+const approvedCount = ref(0);
+const rejectedCount = ref(0);
 
-// Mock Data for Name Change Applications
-const nameChangeApplications = ref([
-  {
-    id: 1,
-    applicantName: 'Alice Johnson',
-    currentEcpfName: 'Johnson Enterprises',
-    proposedEcpfName: 'Johnson & Co.',
-    status: 'Approved',
-  },
-  {
-    id: 2,
-    applicantName: 'Bob Williams',
-    currentEcpfName: 'Williams Group',
-    proposedEcpfName: 'Williams Holdings',
-    status: 'Rejected',
-  },
-  {
-    id: 3,
-    applicantName: 'Jane Smith',
-    currentEcpfName: 'Smith Ltd',
-    proposedEcpfName: 'Smith Corporation',
-    status: 'Pending Review',
-  },
-  {
-    id: 4,
-    applicantName: 'John Doe',
-    currentEcpfName: 'Doe Inc',
-    proposedEcpfName: 'Doe Enterprises',
-    status: 'Pending Review',
-  },
-]);
+onMounted(async () => {
+  fetchApplications();
+});
+
+const fetchApplications = async () => {
+  try {
+    const response = await apiServices.getEcpfNameChanges();
+    if (response.status === 200) {
+      nameChangeApplications.value = response.data.results;
+      updateCounts();
+    } else {
+      console.error('Failed to fetch applications:', response.status, response.data.results);
+      alert('Failed to load applications. Please check console.');
+    }
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    alert('Error loading applications. Please check console.');
+  }
+};
+
+const updateCounts = () => {
+  pendingCount.value = nameChangeApplications.value.filter(app => app.status === 'Pending Review').length;
+  approvedCount.value = nameChangeApplications.value.filter(app => app.status === 'Approved').length;
+  rejectedCount.value = nameChangeApplications.value.filter(app => app.status === 'Rejected').length;
+};
+
 
 const filteredNameChangeApplications = computed(() => {
   return nameChangeApplications.value.filter(application => {
@@ -249,12 +250,12 @@ const filteredNameChangeApplications = computed(() => {
 
     const matchesSearch =
       !searchQuery.value ||
-      application.applicantName.toLowerCase().includes(searchLower) ||
-      application.currentEcpfName.toLowerCase().includes(searchLower) ||
-      application.proposedEcpfName.toLowerCase().includes(searchLower);
+      application.applicantName?.toLowerCase().includes(searchLower) || // Use optional chaining
+      application.currentEcpfName?.toLowerCase().includes(searchLower) ||
+      application.proposedEcpfName?.toLowerCase().includes(searchLower);
 
     const matchesStatus =
-      !statusFilter.value || application.status.toLowerCase() === statusLower;
+      !statusFilter.value || application.status?.toLowerCase() === statusLower;
 
     return matchesSearch && matchesStatus;
   });
@@ -272,9 +273,20 @@ const getStatusClasses = (status) => {
   ];
 };
 
-const viewApplication = (application) => {
-  selectedApplication.value = application;
-  isModalOpen.value = true;
+const viewApplication = async (application) => {
+  try {
+    const response = await apiServices.getEcpfNameChange(application.id);
+    if (response.status === 200) {
+      selectedApplication.value = response.data.results;
+      isModalOpen.value = true;
+    } else {
+      console.error('Failed to fetch application details:', response.status, response.data.results);
+      alert('Failed to view application details.');
+    }
+  } catch (error) {
+    console.error('Error fetching application details:', error);
+    alert('Error viewing application.');
+  }
 };
 
 
@@ -283,18 +295,6 @@ const closeModal = () => {
   selectedApplication.value = null;
 };
 
-// Helper functions for stats cards
-const getPendingCount = () => {
-  return nameChangeApplications.value.filter(app => app.status === 'Pending Review').length;
-};
-
-const getApprovedCount = () => {
-  return nameChangeApplications.value.filter(app => app.status === 'Approved').length;
-};
-
-const getRejectedCount = () => {
-  return nameChangeApplications.value.filter(app => app.status === 'Rejected').length;
-};
 
 // Helper function to get initials from name
 const getInitials = (name) => {

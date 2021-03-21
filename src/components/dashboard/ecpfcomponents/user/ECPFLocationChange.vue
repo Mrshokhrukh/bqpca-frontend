@@ -1,3 +1,4 @@
+<!-- EcpfLocationChange.vue -->
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
@@ -84,37 +85,38 @@
         <button @click="saveAsDraft" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">Save as Draft</button>
          <button @click="editApplication" class="px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-md hover:bg-yellow-600">Edit</button>
         <button @click="initiatePayment" class="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600">Initiate Payment</button>
-        <button @click="emitSubmit" :disabled="locationChangeRemarks !== 'agree'" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">Submit</button>
+        <button @click="onSubmit" :disabled="locationChangeRemarks !== 'agree'" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">Submit</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, watch } from 'vue';
+import { ref, defineProps, defineEmits, watch, onMounted } from 'vue';
+import apiServices from '@/services/services'; // Import your API service
 
 const props = defineProps({
   currentDetails: {
     type: Object,
     required: true,
     default: () => ({
-      ecpfName: 'Auto',
-      location: 'Auto',
-      proprietorName: 'Auto',
-      cid: 'Auto',
-      contactNo: 'Auto',
-      emailAddress: 'Auto',
+      ecpfName: '',
+      location: '',
+      proprietorName: '',
+      cid: '',
+      contactNo: '',
+      emailAddress: '',
     }),
   },
   gewogThromOptions: {
     type: Array,
     required: true,
-    default: () => [],
+    default: () => [], // Provide default empty arrays
   },
   dzongkhagThromdeOptions: {
     type: Array,
     required: true,
-    default: () => [],
+    default: () => [], // Provide default empty arrays
   },
   initialData: {
     type: Object,
@@ -125,21 +127,54 @@ const props = defineProps({
 const newLocation = ref('');
 const selectedGewogThrom = ref('');
 const selectedDzongkhagThromde = ref('');
-const locationChangeRemarks = ref(''); //  for the dropdown
+const locationChangeRemarks = ref('');
+const currentDetails = ref({...props.currentDetails}); // Make currentDetails reactive
 
 const emit = defineEmits(['submit', 'save-draft', 'initiate-payment','edit-application']);
 
-const emitSubmit = () => {
-    if (locationChangeRemarks.value !== 'agree') {
-        alert("You must agree to the declaration to submit.")
-        return
+onMounted(async () => {
+  try {
+    const response = await apiServices.getEcpfLocationChanges(); // Adjust endpoint if needed to fetch current details
+    if (response.status === 200) {
+      currentDetails.value = response.data;
+    } else {
+      console.error('Failed to fetch current details:', response.status, response.data);
+      alert('Failed to fetch current details.');
     }
-  emit('submit', {
+  } catch (error) {
+    console.error('Error fetching current details:', error);
+    alert('Error fetching current details.');
+  }
+});
+
+
+const onSubmit = async () => {
+    if (locationChangeRemarks.value !== 'agree') {
+        alert("You must agree to the declaration to submit.");
+        return;
+    }
+
+  const payload = {
     newLocation: newLocation.value,
     selectedGewogThrom: selectedGewogThrom.value,
     selectedDzongkhagThromde: selectedDzongkhagThromde.value,
     locationChangeRemarks: locationChangeRemarks.value,
-  });
+    ...currentDetails.value // Include current details if needed
+  };
+
+  try {
+    const response = await apiServices.createEcpfLocationChange(payload); // Or use update if editing
+    if (response.status === 201 || response.status === 200) {
+      emit('submit', response.data);
+      alert('Application submitted successfully!');
+    } else {
+      console.error('Failed to submit application:', response.status, response.data);
+      alert('Failed to submit application.');
+    }
+  } catch (error) {
+    console.error('Error submitting application:', error);
+    alert('Error submitting application.');
+  }
 };
 
 // Watch for changes in initialData
@@ -154,24 +189,52 @@ watch(
   { immediate: true }
 );
 
-const saveAsDraft = () => {
-    emit('save-draft', {
+const saveAsDraft = async () => {
+    const payload = {
         newLocation: newLocation.value,
         selectedGewogThrom: selectedGewogThrom.value,
         selectedDzongkhagThromde: selectedDzongkhagThromde.value,
-        locationChangeRemarks: locationChangeRemarks.value
-    });
+        locationChangeRemarks: locationChangeRemarks.value,
+        status: 'draft' // Assuming status field in backend
+    };
+    try {
+        const response = await apiServices.patchEcpfLocationChange(/* applicationId if available for drafts */ 1, payload); // Adjust ID and endpoint
+        if (response.status === 200) {
+            emit('save-draft', response.data);
+            alert('Saved as draft!');
+        } else {
+            console.error('Failed to save as draft:', response.status, response.data);
+            alert('Failed to save as draft.');
+        }
+    } catch (error) {
+        console.error('Error saving as draft:', error);
+        alert('Error saving as draft.');
+    }
 };
 const initiatePayment = () => {
     emit('initiate-payment');
+    alert('Payment initiation logic to be implemented.');
 };
 
-const editApplication = () => {
-    emit('edit-application', {
+const editApplication = async () => {
+    const payload = {
         newLocation: newLocation.value,
         selectedGewogThrom: selectedGewogThrom.value,
         selectedDzongkhagThromde: selectedDzongkhagThromde.value,
         locationChangeRemarks: locationChangeRemarks.value
-    });
+    };
+    try {
+        const response = await apiServices.patchEcpfLocationChange(/* applicationId to edit */ 1, payload); // Adjust ID and endpoint
+        if (response.status === 200) {
+            emit('edit-application', response.data);
+            alert('Application updated in edit mode!');
+        } else {
+            console.error('Failed to update application for edit:', response.status, response.data);
+            alert('Failed to update application for edit.');
+        }
+    } catch (error) {
+        console.error('Error updating application for edit:', error);
+        alert('Error updating application for edit.');
+    }
 };
 </script>

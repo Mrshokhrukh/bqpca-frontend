@@ -27,7 +27,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Pending Verification</p>
-              <p class="text-xl font-bold text-gray-800">{{ getPendingVerificationCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ pendingVerificationCount }}</p>
             </div>
           </div>
         </div>
@@ -41,7 +41,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Accepted</p>
-              <p class="text-xl font-bold text-gray-800">{{ getAcceptedCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ acceptedCount }}</p>
             </div>
           </div>
         </div>
@@ -55,7 +55,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Regretted</p>
-              <p class="text-xl font-bold text-gray-800">{{ getRegrettedCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ regrettedCount }}</p>
             </div>
           </div>
         </div>
@@ -76,11 +76,11 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
-              <input type="text" class="block w-full rounded-lg border-gray-300 pl-10 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search by ECPF name, HEI Name, or Country...">
+              <input type="text" v-model="searchQuery" @input="handleSearch" class="block w-full rounded-lg border-gray-300 pl-10 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search by ECPF name, HEI Name, or Country...">
             </div>
           </div>
           <div class="w-full md:w-1/4">
-            <select class="block w-full rounded-lg border-gray-300 py-2 focus:ring-blue-500 focus:border-blue-500">
+            <select v-model="filterStatus" @change="handleFilter" class="block w-full rounded-lg border-gray-300 py-2 focus:ring-blue-500 focus:border-blue-500">
               <option value="">All Statuses</option>
               <option value="Pending Verification">Pending Verification</option>
               <option value="Accepted">Accepted</option>
@@ -117,33 +117,32 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="linkage in linkages" :key="linkage.id" class="hover:bg-gray-50 transition-colors">
+              <tr v-for="linkage in filteredLinkages" :key="linkage.id" class="hover:bg-gray-50 transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-semibold mr-3">
-                      {{ getInitials(linkage.ecpfName) }}
+                      {{ getInitials(linkage.ecpf_name) }}
                     </div>
                     <div>
-                      <div class="text-sm font-medium text-gray-900">{{ linkage.ecpfName }}</div>
+                      <div class="text-sm font-medium text-gray-900">{{ linkage.ecpf_name }}</div>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ linkage.heiName }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ linkage.heiLocation }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ linkage.heiCountry }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ linkage.hei_name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ linkage.hei_location }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ linkage.hei_country }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span :class="getStatusClasses(linkage.verificationStatus)">
-                    {{ linkage.verificationStatus }}
+                  <span :class="getStatusClasses(linkage.verification_status)">
+                    {{ linkage.verification_status }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex justify-end space-x-2">
                     <button @click="openModal(linkage)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
-
                   </div>
                 </td>
               </tr>
-              <tr v-if="linkages.length === 0">
+              <tr v-if="filteredLinkages.length === 0">
                 <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No linkages found.</td>
               </tr>
             </tbody>
@@ -161,52 +160,54 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import ECPFLinkageModal from './modals/ECPFLinkageModal.vue';
+import { ref, onMounted, computed } from 'vue';
+import ECPFLinkageModal from './modals/ECPFLinkageModal.vue'; // Assuming path to your modal
+import apiServices from '@/services/services'; // Import your API service
+import { useToast } from 'vue-toastification';
 
-const linkages = ref([
-  {
-    id: 1,
-    ecpfName: 'Bhutan Counseling Center',
-    heiName: 'University of एग्जांपल',
-    heiLocation: 'Example City',
-    heiCountry: 'India',
-    verificationStatus: 'Pending Verification', // Example status
-    // ... more linkage data if needed for table display
-  },
-  {
-    id: 2,
-    ecpfName: 'Serene Mind ECPF',
-    heiName: 'Global Wellness Institute',
-    heiLocation: 'New York',
-    heiCountry: 'USA',
-    verificationStatus: 'Accepted', // Example status
-    // ... more linkage data
-  },
-  {
-    id: 3,
-    ecpfName: 'Harmony ECPF',
-    heiName: 'International Counseling Academy',
-    heiLocation: 'London',
-    heiCountry: 'UK',
-    verificationStatus: 'Regretted', // Example status
-    // ... more linkage data
-  },
-]);
+const toast = useToast();
 
+const linkages = ref([]); // Store all linkages fetched from API
 const isModalOpen = ref(false);
 const selectedLinkage = ref(null);
+const searchQuery = ref('');
+const filterStatus = ref('');
+const pendingVerificationCount = ref(0);
+const acceptedCount = ref(0);
+const regrettedCount = ref(0);
 
-const openModal = (linkage) => {
-  selectedLinkage.value = linkage;
-  isModalOpen.value = true;
+const fetchLinkages = async () => {
+  try {
+    const response = await apiServices.getEcpfLinkageEstablishments();
+    linkages.value = response.data.results;
+    updateStatusCounts();
+  } catch (error) {
+    console.error('Error fetching linkages:', error);
+    toast.error('Failed to load linkages.');
+  }
+};
+const updateStatusCounts = () => {
+  pendingVerificationCount.value = linkages.value.filter(linkage => linkage.verification_status === 'Pending Verification').length;
+  acceptedCount.value = linkages.value.filter(linkage => linkage.verification_status === 'Accepted').length;
+  regrettedCount.value = linkages.value.filter(linkage => linkage.verification_status === 'Regretted').length;
+};
+
+
+const openModal = async (linkage) => {
+  try {
+    const response = await apiServices.getEcpfLinkageEstablishment(linkage.id);
+    selectedLinkage.value = response.data.results; // Fetch detailed linkage for modal
+    isModalOpen.value = true;
+  } catch (error) {
+    console.error('Error fetching linkage details:', error);
+    toast.error('Failed to load linkage details.');
+  }
 };
 
 const closeModal = () => {
   isModalOpen.value = false;
   selectedLinkage.value = null;
 };
-
 
 
 const getStatusClasses = (status) => {
@@ -221,19 +222,6 @@ const getStatusClasses = (status) => {
   ];
 };
 
-// Helper functions for stats cards - Adapt to Linkage statuses
-const getPendingVerificationCount = () => {
-  return linkages.value.filter(linkage => linkage.verificationStatus === 'Pending Verification').length;
-};
-
-const getAcceptedCount = () => {
-  return linkages.value.filter(linkage => linkage.verificationStatus === 'Accepted').length;
-};
-
-const getRegrettedCount = () => {
-  return linkages.value.filter(linkage => linkage.verificationStatus === 'Regretted').length;
-};
-
 
 // Helper function to get initials from name (using ECPF Name here)
 const getInitials = (name) => {
@@ -244,4 +232,41 @@ const getInitials = (name) => {
     .join('')
     .toUpperCase();
 };
+
+// --- Search and Filter Logic ---
+const filteredLinkages = computed(() => {
+  let filtered = [...linkages.value]; // Start with all linkages
+
+  // Filter by search query
+  if (searchQuery.value) {
+    const lowerQuery = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(linkage => {
+      return (
+        linkage.ecpf_name.toLowerCase().includes(lowerQuery) ||
+        linkage.hei_name.toLowerCase().includes(lowerQuery) ||
+        linkage.hei_country.toLowerCase().includes(lowerQuery)
+      );
+    });
+  }
+
+  // Filter by status
+  if (filterStatus.value) {
+    filtered = filtered.filter(linkage => linkage.verification_status === filterStatus.value);
+  }
+
+  return filtered;
+});
+
+const handleSearch = () => {
+  // No need to do anything here if using computed property, filtering is automatic
+};
+
+const handleFilter = () => {
+  // No need to do anything here if using computed property, filtering is automatic
+};
+
+
+onMounted(() => {
+  fetchLinkages();
+});
 </script>

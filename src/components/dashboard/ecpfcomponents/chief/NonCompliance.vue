@@ -116,15 +116,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-// import NonComplianceModal from './modals/NonComplianceModal.vue'; // NonComplianceModal Component - REMOVED
-
-// Mock Data (Replace with API calls in a real application)
-const nonComplianceRecords = ref([
-  { id: 1, ecpfName: 'ECPF 2', branchEcpf: null, dateOfNonCompliance: '2024-07-20', nonComplianceDetails: 'Minor environmental breach', categoryOfIssue: 'Environmental', action: 'Warning Letter', actionTaken: 'Issued Warning Letter', correctiveMeasuresRequired: 'Improve waste management', correctedActionReport: 'Report submitted and reviewed' },
-  { id: 2, ecpfName: 'Main ECPF 1', branchEcpf: 'Branch B', dateOfNonCompliance: '2024-07-15', nonComplianceDetails: 'HR policy violation', categoryOfIssue: 'HR', action: 'Corrective Action Plan', actionTaken: 'Corrective Action Plan Submitted', correctiveMeasuresRequired: 'Revise HR policy and training', correctedActionReport: 'Policy revised, training scheduled' },
-  // Add more mock data with dateOfNonCompliance
-]);
+import { ref, computed, onMounted } from 'vue';
+import apiServices from '@/services/services'; // Import your API service
 
 // State for Modal Visibility and Data - SIMPLIFIED, only keep viewingRecord
 const viewingRecord = ref(null);
@@ -134,7 +127,10 @@ const searchQuery = ref('');
 const categoryFilter = ref('');
 const issueCategories = ref(['Environmental', 'Social', 'Governance', 'HR', 'Operational']);
 
-// Filtered Records Computed Property
+// Records from API
+const nonComplianceRecords = ref([]); // Initialize as empty array
+
+// Filtered Records Computed Property (remains the same)
 const filteredRecords = computed(() => {
   const search = searchQuery.value.toLowerCase();
   const category = categoryFilter.value;
@@ -154,11 +150,32 @@ const filteredRecords = computed(() => {
   });
 });
 
-
 // --- Functions - SIMPLIFIED, only keep viewRecord and closeViewRecord ---
 
-const viewRecord = (id) => {
-  viewingRecord.value = nonComplianceRecords.value.find(record => record.id === id);
+const fetchRecords = async () => {
+  try {
+    const response = await apiServices.getEcpfNonCompliances();
+    nonComplianceRecords.value = response.data.results; // Assuming API returns data in 'data' property
+  } catch (error) {
+    console.error('Error fetching non-compliance records:', error);
+    // Handle error appropriately
+  }
+};
+
+onMounted(() => {
+  fetchRecords(); // Fetch records when component is mounted
+});
+
+
+const viewRecord = async (id) => {
+  try {
+    const response = await apiServices.getEcpfNonCompliance(id);
+    viewingRecord.value = response.data.results;
+  } catch (error) {
+    console.error('Error fetching record for view:', error);
+    // Handle error appropriately
+    viewingRecord.value = null; // Ensure modal closes on error
+  }
 };
 
 const closeViewRecord = () => {

@@ -258,16 +258,29 @@ const getStatusClasses = (status) => {
 
 // Helper functions for stats cards
 const getPendingCount = () => {
+  if (!applications.value || !Array.isArray(applications.value)) {
+    console.warn('applications.value is not a valid array in getPendingCount()', applications.value);
+    return 0; // Return 0 or handle appropriately if applications is not an array
+  }
   return applications.value.filter(app => app.status === 'Pending').length;
 };
 
 const getApprovedCount = () => {
+  if (!applications.value || !Array.isArray(applications.value)) {
+    console.warn('applications.value is not a valid array in getApprovedCount()', applications.value);
+    return 0; // Return 0 or handle appropriately if applications is not an array
+  }
   return applications.value.filter(app => app.status === 'Approved').length;
 };
 
 const getRejectedCount = () => {
+  if (!applications.value || !Array.isArray(applications.value)) {
+    console.warn('applications.value is not a valid array in getRejectedCount()', applications.value);
+    return 0; // Return 0 or handle appropriately if applications is not an array
+  }
   return applications.value.filter(app => app.status === 'Rejected').length;
 };
+
 
 const getInitials = (name) => {
   if (!name) return '';
@@ -281,16 +294,21 @@ const getInitials = (name) => {
 // --- API Integration ---
 const fetchApplications = async () => {
   try {
-    const response = await apiServices.getEcpfBranches(); // Use the correct API service method
-    if (response.status === 200) {
-      applications.value = response.data; // Assuming the API returns data in 'data' property
+    const response = await apiServices.getEcpfBranches();
+    console.log('API Response:', response); // Log the entire response
+    console.log('API Response Data:', response.data.results) // Log just the data
+
+    if (response.status === 200 && Array.isArray(response.data.results)) { 
+      applications.value = response.data.results;
     } else {
-      alert('Failed to fetch applications.');
-      console.error('API Error:', response);
+      console.error('API Error: Invalid response or data format', response);
+      alert('Failed to fetch applications. Please check the console for details.');
+      applications.value = []; // Set applications to an empty array to avoid errors
     }
   } catch (error) {
-    alert('An unexpected error occurred while fetching applications.');
     console.error('Fetch Error:', error);
+    alert('An unexpected error occurred while fetching applications. Please check the console for details.');
+    applications.value = []; // Set applications to an empty array in case of fetch error
   }
 };
 

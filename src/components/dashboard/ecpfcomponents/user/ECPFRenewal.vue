@@ -85,10 +85,9 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import apiServices from '@/services/services'; // Import your service
+import apiServices from '@/services/services'; 
 
-// Assuming you have an ECPF ID available, e.g., from route params or props
-const ecpfId = 1; // Replace with the actual ECPF ID you want to fetch
+const ecpfId = 1; 
 
 const ecpfData = reactive({
   ecpf_name: '',
@@ -103,7 +102,7 @@ const renewalData = reactive({
   subject: '',
   remarks: '',
   declaration: null,
-  ecpf: ecpfId, // Include ecpf ID in renewal data for backend
+  ecpf: ecpfId, 
 });
 
 const licenseValidityMessage = ref('');

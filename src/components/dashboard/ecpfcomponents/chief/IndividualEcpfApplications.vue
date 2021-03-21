@@ -227,7 +227,7 @@ const fetchApplications = async () => {
   try {
     const response = await apiServices.getEcpfProfiles();
     if (response.status === 200) {
-      applications.value = response.data;
+      applications.value = response.data.results;
     } else {
       console.error('Failed to fetch applications:', response);
       alert('Failed to load applications. Please check the console for errors.');
