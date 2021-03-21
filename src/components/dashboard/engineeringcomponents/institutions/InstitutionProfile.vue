@@ -36,14 +36,14 @@
                                 <p class="text-gray-600 font-medium">Address:</p>
                                 <p class="text-gray-800">{{ institute.address }}, {{ institute.village }}, {{
                                     institute.gewog }}, {{
-                                        institute.dzongkhag }}</p>
+                                    institute.dzongkhag }}</p>
                             </div>
                             <div>
                                 <p class="text-gray-600 font-medium">Email:</p>
                                 <p class="text-gray-800 hover:text-blue-600">
                                     <a :href="`mailto:${institute.head_of_institution_email}`"> {{
                                         institute.head_of_institution_email
-                                    }}</a>
+                                        }}</a>
                                 </p>
                             </div>
                             <div>
@@ -172,7 +172,7 @@ const formatDate = (dateString) => {
 
 const fetchInstitute = async () => {
     try {
-        const response = await apiServices.getEpcInstitutes();
+        const response = await apiServices.getBmhcInstitutes();
 
         // Corrected validation check: Access 'results' through response.data
         if (!response || !response.data || !response.data.results || !Array.isArray(response.data.results)) {

@@ -331,7 +331,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/upload_trade_license`,
       },
     ],
-    admin : [
+    admin: [
       {
         name: 'Dashboard',
         icon: getIconComponent('ClipboardList'), // More specific than CreditCard
@@ -354,7 +354,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Qualifications',
-        icon: getIconComponent('GraduationCap'),  //Relates to academic/professional qualifications
+        icon: getIconComponent('GraduationCap'), //Relates to academic/professional qualifications
         route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
       },
       {
@@ -389,7 +389,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Status',
-        icon: getIconComponent('Sliders'),// Represents progress or settings, better than Clock
+        icon: getIconComponent('Sliders'), // Represents progress or settings, better than Clock
         route: (serviceType) => `/admin/admin/${serviceType}/status`,
       },
       {
@@ -1455,13 +1455,8 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/institutions/${serviceType}/dashboard`,
       },
       {
-        name: 'Institution Profile',
-        icon: getIconComponent('Building'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
-      },
-      {
-        name: 'Applications',
-        icon: getIconComponent('FileText'),
+        name: 'EOI Management',
+        icon: getIconComponent('Activity'),
         children: [
           {
             name: 'Apply for EOI',
@@ -1471,6 +1466,12 @@ const serviceSpecificMenuItems = {
             name: 'Track EOI',
             route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
           },
+        ],
+      },
+      {
+        name: 'DPR Management',
+        icon: getIconComponent('Activity'),
+        children: [
           {
             name: 'Apply for DPR',
             route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_dpr`,
@@ -1479,24 +1480,45 @@ const serviceSpecificMenuItems = {
             name: 'Track DPR',
             route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
           },
+        ],
+      },
+      {
+        name: 'Institute Renewal',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
+      },
+      {
+        name: 'Teaching Institutes',
+        icon: getIconComponent('Activity'),
+        children: [
           {
-            name: 'My Applications',
-            route: (serviceType) => `/admin/institutions/${serviceType}/my_applications`,
+            name: 'Teaching Institutes',
+            route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_application`,
+          },
+          {
+            name: 'Track & Renewal',
+            route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_track_and_renew`,
+          },
+          {
+            name: 'New Education Program',
+            route: (serviceType) => `/admin/institutions/${serviceType}/new_education_program`,
           },
         ],
       },
       {
-        name: 'Management',
-        icon: getIconComponent('Settings'),
+        name: 'Institution Profile',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
+      },
+      {
+        name: 'CAPA',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
+      },
+      {
+        name: 'Maintenance',
+        icon: getIconComponent('Activity'),
         children: [
-          {
-            name: 'Renewal',
-            route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
-          },
-          {
-            name: 'CAPA',
-            route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
-          },
           {
             name: 'Staff Management',
             route: (serviceType) => `/admin/institutions/${serviceType}/staff_management`,
@@ -1510,11 +1532,6 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/institutions/${serviceType}/department_management`,
           },
         ],
-      },
-      {
-        name: 'Certificates',
-        icon: getIconComponent('Award'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/view_certificates`,
       },
     ],
   },

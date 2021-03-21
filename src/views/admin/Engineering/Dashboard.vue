@@ -114,7 +114,9 @@ import MyCapa from '@/components/dashboard/engineeringcomponents/institutions/My
 import StaffManagement from '@/components/dashboard/engineeringcomponents/institutions/StaffManagement.vue';
 import CourseManagement from '@/components/dashboard/engineeringcomponents/institutions/CourseManagement.vue';
 import DepartmentManagement from '@/components/dashboard/engineeringcomponents/institutions/DepartmentManagement.vue';
-
+import TeachingCenterApplication from '@/components/dashboard/engineeringcomponents/institutions/TeachingCenterApplication.vue';
+import TeachingCenterTrackAndRenew from '@/components/dashboard/engineeringcomponents/institutions/TeachingCenterTrackAndRenew.vue';
+import NewEducationProgram from '@/components/dashboard/engineeringcomponents/institutions/NewEducationProgram.vue';
 //Engineering masters components
 import MastersCmeActivities from '@/components/dashboard/engineeringcomponents/admin/MastersCmeActivities.vue';
 import MastersCmeCredits from '@/components/dashboard/engineeringcomponents/admin/MastersCmeCredits.vue';
@@ -334,6 +336,12 @@ const engineeringInstitutionsComponent = computed(() => {
       return ViewCertificates;
     case path.endsWith('/engineering_certification/institution_profile'):
       return InstituteProfile;
+    case path.endsWith('/engineering_certification/teaching_center_application'):
+      return TeachingCenterApplication;
+    case path.endsWith('/engineering_certification/teaching_center_track_and_renew'):
+      return TeachingCenterTrackAndRenew;
+    case path.endsWith('/engineering_certification/new_education_program'):
+      return NewEducationProgram;
     case path.endsWith('/engineering_certification/my_applications'):
       return MyApplications;
     case path.endsWith('/engineering_certification/institutes_renewal'):

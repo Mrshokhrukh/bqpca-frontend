@@ -400,6 +400,9 @@ export default {
       course_management: engineeringDashboard,
       department_management: engineeringDashboard,
       view_certificates: engineeringDashboard,
+      teaching_center_application: engineeringDashboard,
+      teaching_center_track_and_renew: engineeringDashboard,
+      new_education_program: engineeringDashboard,
     },
     health_certification: {
       dashboard: bmhcDashboard,
