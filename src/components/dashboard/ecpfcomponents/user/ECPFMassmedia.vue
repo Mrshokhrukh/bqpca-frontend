@@ -54,7 +54,7 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Institute</label>
-              <select v-model="selectedInstitute" 
+              <select v-model="selectedInstitute"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                 <option value="" disabled>Select an institute</option>
                 <option v-for="institute in availableInstitutes" :key="institute.id" :value="institute.id">
@@ -136,35 +136,24 @@ const toast = useToast();
 const eventType = ref('Mass Media');
 
 // --- Data ---
-const ecpfDetails = reactive({
-  name: 'Example ECPF',
-  location: 'Thimphu',
-  proprietor: 'John Doe',
-  cid: '1234567890',
-  contactNo: '+975-17123456',
-  email: 'john.doe@example.com',
+const ecpfDetails = reactive({ // Initialize as empty, will be fetched
+  name: '',
+  location: '',
+  proprietor: '',
+  cid: '',
+  contactNo: '',
+  email: '',
 });
 
-const selectedInstitute = ref(''); // Changed to single selection
-const availableInstitutes = ref([
-  { id: 1, name: 'Royal University of Bhutan' },
-  { id: 2, name: 'Jigme Singye Wangchuck School of Law' },
-  { id: 3, name: 'Khesar Gyalpo University of Medical Sciences' },
-  { id: 4, name: 'Royal Thimphu College' },
-  { id: 5, name: 'Norbuling Rigter College' },
-  { id: 6, name: 'Gedu College of Business Studies' },
-  { id: 7, name: 'Sherubtse College' },
-  { id: 8, name: 'College of Science and Technology' },
-  { id: 9, name: 'College of Natural Resources' },
-  { id: 10, name: 'Gyalpozhing College of Information Technology' }
-]); // Added dummy data
+const selectedInstitute = ref('');
+const availableInstitutes = ref([]);
 
 const eventDetails = reactive({
   name: '',
   description: '',
   purpose: '',
   channel: '',
-  content: null, //  Store the filename
+  content: null, // Store the filename
   others: '',
 });
 
@@ -174,8 +163,9 @@ const remarks = ref('');
 const handleContentUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    eventDetails.content = file.name; // Store the filename
-    //  Upload file and store URL
+    eventDetails.content = file.name; // Store the filename (or you could upload and store URL)
+    // In real application, you'd likely upload the file to backend here
+    // and store a URL or file path in eventDetails.content
   } else {
     eventDetails.content = null;
   }
@@ -193,37 +183,65 @@ const submitForm = async () => {
   }
 
   const formData = {
-    eventType: eventType.value,
-    ecpfDetails,
-    selectedInstitute: selectedInstitute.value, // Changed to single institute
-    eventDetails,
+    event_type: eventType.value, // Backend field names might be snake_case
+    ecpf_details: ecpfDetails, // Assuming backend expects nested ecpf_details
+    institute: selectedInstitute.value, // Assuming backend expects institute ID
+    event_details: {
+      name: eventDetails.name,
+      description: eventDetails.description,
+      purpose: eventDetails.purpose,
+      channel: eventDetails.channel,
+      content: eventDetails.content, // Filename or URL, adjust based on backend expectation
+      others: eventDetails.others,
+    },
     remarks: remarks.value,
   };
 
   console.log('Submitting form:', formData);
 
-  //   API call (replace with your actual API)
   try {
-    await apiService.submitMassMediaEvent(formData);
+    await apiService.createEcpfPromotionalMassMedia(formData);
     toast.success('Mass media promotion registered successfully!');
-    //   Redirect/update UI
+    // Reset form or redirect as needed
+    eventDetails.name = '';
+    eventDetails.description = '';
+    eventDetails.purpose = '';
+    eventDetails.channel = '';
+    eventDetails.content = null;
+    eventDetails.others = '';
+    remarks.value = '';
+    selectedInstitute.value = '';
   } catch (error) {
     console.error('Error submitting form:', error);
     toast.error('Failed to register the mass media promotion.');
+    if (error.response) {
+      console.error('Error details:', error.response.data); // Log detailed error from backend
+      toast.error(`Error: ${JSON.stringify(error.response.data)}`); // Display backend errors to user (for debugging, remove in production)
+    }
   }
 };
 
 onMounted(async () => {
-  // Note: Using the dummy data directly instead of API call
-  // Uncomment this section if you want to fetch from API instead
-  /*
   try {
-    const response = await apiService.getInstitutes();
-    availableInstitutes.value = response.data;
+    const institutesResponse = await apiService.getInstitutes();
+    availableInstitutes.value = institutesResponse.data;
+
+    const ecpfResponse = await apiService.getEcpfDetails(); // Fetch ECPF details
+    if (ecpfResponse.data) {
+      // Assuming the API returns an object with these fields
+      ecpfDetails.name = ecpfResponse.data.name;
+      ecpfDetails.location = ecpfResponse.data.location;
+      ecpfDetails.proprietor = ecpfResponse.data.proprietor;
+      ecpfDetails.cid = ecpfResponse.data.cid;
+      ecpfDetails.contactNo = ecpfResponse.data.contact_no; // Assuming snake_case in backend response
+      ecpfDetails.email = ecpfResponse.data.email;
+    } else {
+      toast.error('Failed to load ECPF details.');
+    }
+
   } catch (error) {
-    console.error('Error fetching institutes:', error);
-    toast.error('Failed to load institutes.');
+    console.error('Error fetching data:', error);
+    toast.error('Failed to load data. Please try again.');
   }
-  */
 });
 </script>

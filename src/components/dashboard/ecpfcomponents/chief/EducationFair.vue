@@ -1,4 +1,3 @@
-<!-- EducationFairTable.vue -->
 <template>
   <div class="p-8 min-h-screen">
     <div class=" mx-auto">
@@ -27,7 +26,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Pending Verification</p>
-              <p class="text-xl font-bold text-gray-800">{{ getPendingVerificationCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ getPendingVerificationCount }}</p>
             </div>
           </div>
         </div>
@@ -41,7 +40,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Accepted</p>
-              <p class="text-xl font-bold text-gray-800">{{ getAcceptedCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ getAcceptedCount }}</p>
             </div>
           </div>
         </div>
@@ -55,7 +54,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-gray-500 uppercase">Regretted</p>
-              <p class="text-xl font-bold text-gray-800">{{ getRegrettedCount() }}</p>
+              <p class="text-xl font-bold text-gray-800">{{ getRegrettedCount }}</p>
             </div>
           </div>
         </div>
@@ -76,11 +75,11 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
-              <input type="text" class="block w-full rounded-lg border-gray-300 pl-10 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search by ECPF name, Fair name, or CID...">
+              <input type="text" v-model="searchQuery" class="block w-full rounded-lg border-gray-300 pl-10 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search by ECPF name, Fair name, or CID...">
             </div>
           </div>
           <div class="w-full md:w-1/4">
-            <select class="block w-full rounded-lg border-gray-300 py-2 focus:ring-blue-500 focus:border-blue-500">
+            <select v-model="filterStatus" class="block w-full rounded-lg border-gray-300 py-2 focus:ring-blue-500 focus:border-blue-500">
               <option value="">All Statuses</option>
               <option value="Pending Verification">Pending Verification</option>
               <option value="Accepted">Accepted</option>
@@ -117,33 +116,33 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="application in applications" :key="application.id" class="hover:bg-gray-50 transition-colors">
+              <tr v-for="application in filteredApplications" :key="application.id" class="hover:bg-gray-50 transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-semibold mr-3">
-                      {{ getInitials(application.ecpfName) }}
+                      {{ getInitials(application.ecpf_name) }}
                     </div>
                     <div>
-                      <div class="text-sm font-medium text-gray-900">{{ application.ecpfName }}</div>
+                      <div class="text-sm font-medium text-gray-900">{{ application.ecpf_name }}</div>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.fairName }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.fairLocation }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.fair_name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.fair_location }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.cid }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span :class="getStatusClasses(application.verificationStatus)">
-                    {{ application.verificationStatus }}
+                  <span :class="getStatusClasses(application.verification_status)">
+                    {{ application.verification_status }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex justify-end space-x-2">
                     <button @click="openModal(application)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
-
+                    <button @click="forwardApplication(application)" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">Forward</button>
                   </div>
                 </td>
               </tr>
-              <tr v-if="applications.length === 0">
+              <tr v-if="filteredApplications.length === 0">
                 <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No applications found.</td>
               </tr>
             </tbody>
@@ -161,41 +160,31 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import EcpfEducationFairModal from './modals/EcpfEducationFairModal.vue';
+import { ref, onMounted, computed } from 'vue';
+import EcpfEducationFairModal from './modals/EcpfEducationFairModal.vue'; // Ensure path is correct
+import apiService from '@/services/services';
+import { useToast } from 'vue-toastification';
 
-const applications = ref([
-  {
-    id: 1,
-    ecpfName: 'Bhutan Counseling Center',
-    fairName: 'International Education Expo 2024',
-    fairLocation: 'Bangkok',
-    cid: '12345678901',
-    verificationStatus: 'Pending Verification', // Example status
-    // ... more application data if needed for table display
-  },
-  {
-    id: 2,
-    ecpfName: 'Serene Mind ECPF',
-    fairName: 'Study Abroad Fair Autumn',
-    fairLocation: 'Delhi',
-    cid: '98765432109',
-    verificationStatus: 'Accepted', // Example status
-    // ... more application data
-  },
-  {
-    id: 3,
-    ecpfName: 'Harmony ECPF',
-    fairName: 'Global Education Fair',
-    fairLocation: 'Singapore',
-    cid: '11223344550',
-    verificationStatus: 'Regretted', // Example status
-    // ... more application data
-  },
-]);
-
+const applications = ref([]);
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
+const searchQuery = ref('');
+const filterStatus = ref('');
+const toast = useToast();
+
+const fetchApplications = async () => {
+  try {
+    const response = await apiService.getEcpfEducationFairs();
+    applications.value = response.data.results;
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    toast.error('Failed to load applications.');
+  }
+};
+
+onMounted(() => {
+  fetchApplications();
+});
 
 const openModal = (application) => {
   selectedApplication.value = application;
@@ -214,25 +203,35 @@ const getStatusClasses = (status) => {
       'bg-yellow-100 text-yellow-800': status === 'Pending Verification',
       'bg-green-100 text-green-800': status === 'Accepted',
       'bg-red-100 text-red-800': status === 'Regretted',
-      // Add more status mappings as needed
     }
   ];
 };
 
-// Helper functions for stats cards - Adapt to Education Fair statuses
-const getPendingVerificationCount = () => {
-  return applications.value.filter(app => app.verificationStatus === 'Pending Verification').length;
+// Helper functions for stats cards
+const getPendingVerificationCount = computed(() => {
+  return applications.value.filter(app => app.verification_status === 'Pending Verification').length;
+});
+
+const getAcceptedCount = computed(() => {
+  return applications.value.filter(app => app.verification_status === 'Accepted').length;
+});
+
+const getRegrettedCount = computed(() => {
+  return applications.value.filter(app => app.verification_status === 'Regretted').length;
+});
+
+const forwardApplication = async (application) => {
+  try {
+    await apiService.forwardEcpfEducationFair(application.id);
+    toast.success(`Application for ${application.ecpf_name} (Fair: ${application.fair_name}) has been forwarded.`);
+    fetchApplications(); // Refresh the application list to reflect status change
+  } catch (error) {
+    console.error('Error forwarding application:', error);
+    toast.error('Failed to forward application.');
+  }
 };
 
-const getAcceptedCount = () => {
-  return applications.value.filter(app => app.verificationStatus === 'Accepted').length;
-};
-
-const getRegrettedCount = () => {
-  return applications.value.filter(app => app.verificationStatus === 'Regretted').length;
-};
-
-// Helper function to get initials from name (using ECPF Name here)
+// Helper function to get initials from name
 const getInitials = (name) => {
   if (!name) return '';
   return name
@@ -241,4 +240,18 @@ const getInitials = (name) => {
     .join('')
     .toUpperCase();
 };
+
+const filteredApplications = computed(() => {
+  return applications.value.filter(application => {
+    const searchLower = searchQuery.value.toLowerCase();
+    const matchesSearch = !searchQuery.value ||
+      application.ecpf_name.toLowerCase().includes(searchLower) ||
+      application.fair_name.toLowerCase().includes(searchLower) ||
+      application.cid.toLowerCase().includes(searchLower);
+
+    const matchesStatus = !filterStatus.value || application.verification_status === filterStatus.value;
+
+    return matchesSearch && matchesStatus;
+  });
+});
 </script>

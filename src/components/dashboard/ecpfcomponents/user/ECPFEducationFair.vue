@@ -90,7 +90,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">CV of Representative</label>
                     <div class="flex items-center space-x-2">
-                        <input type="text" :value="rep.cv ? rep.cv : 'No file chosen'" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+                        <input type="text" :value="rep.cvFileName ? rep.cvFileName : 'No file chosen'" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
                         <label class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
                         <input type="file" @change="handleCvUpload($event, index)" class="hidden" />
                         <span>Upload</span>
@@ -174,7 +174,7 @@
                          <div>
                             <label class="block text-sm font-medium text-gray-700">Authorization Letter</label>
                             <div class="flex items-center space-x-2">
-                                <input type="text" :value="institute.authorizationLetter ? institute.authorizationLetter : 'No file chosen'" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+                                <input type="text" :value="institute.authorizationLetterFileName ? institute.authorizationLetterFileName : 'No file chosen'" readonly class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
                                 <label class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
                                     <input type="file" @change="handleAuthorizationUpload($event, index)" class="hidden" />
                                     <span>Upload</span>
@@ -216,8 +216,8 @@ import apiService from '@/services/services';
 const toast = useToast();
 
 // --- Data ---
-const ecpfDetails = reactive({
-  name: 'Example ECPF',
+const ecpfDetails = reactive({ // Replace with actual data fetching if needed from backend based on logged in ECPF
+  name: 'Example ECPF', // Static example data, replace with dynamic data if needed
   location: 'Thimphu',
   proprietor: 'John Doe',
   cid: '1234567890',
@@ -232,15 +232,15 @@ const fairDetails = reactive({
 });
 
 const representatives = reactive([
-  { name: '', passportNo: '', nationality: '', arrivalDate: '', departureDate: '', cv: null },
+  { name: '', passportNo: '', nationality: '', arrivalDate: '', departureDate: '', cvFile: null, cvFileName: null }, // cvFile to store the actual file, cvFileName for display
 ]);
 const countryOptions = ref([]);
 
-const availableInstitutes = ref([]); //Available institute for the ECPF
-const universityTypes = ref(['Public', 'Private', 'Deemed']); // Example types
+const availableInstitutes = ref([]);
+const universityTypes = ref(['Public', 'Private', 'Deemed']);
 const participatingInstitutes = reactive([
    {
-    instituteId: '', //  Store the selected institute's ID
+    instituteId: '',
     location: '',
     zone: '',
     country: '',
@@ -249,9 +249,10 @@ const participatingInstitutes = reactive([
     affiliation: '',
     universityType: '',
     recognitionCode: '',
-    courses: [{ name: '' }], // Start with one empty course
+    courses: [{ name: '' }],
     accreditedBy: '',
-    authorizationLetter: null, //  Store the filename
+    authorizationLetterFile: null, // Store the actual file
+    authorizationLetterFileName: null, // Store filename for display
   },
 ]);
 
@@ -262,7 +263,7 @@ const remarks = ref('');
 // Representatives
 const addRepresentative = () => {
   if (representatives.length < 2) {
-    representatives.push({ name: '', passportNo: '', nationality: '', arrivalDate: '', departureDate: '', cv: '' });
+    representatives.push({ name: '', passportNo: '', nationality: '', arrivalDate: '', departureDate: '', cvFile: null, cvFileName: null });
   }
 };
 
@@ -273,10 +274,11 @@ const removeRepresentative = (index) => {
 const handleCvUpload = (event, index) => {
     const file = event.target.files[0];
     if (file) {
-        representatives[index].cv = file.name; // Just store the name
-        //  Upload the file (using a service) and store the returned URL
+        representatives[index].cvFile = file; // Store the file object
+        representatives[index].cvFileName = file.name; // Store file name for display
     } else {
-         representatives[index].cv = null;
+         representatives[index].cvFileName = null;
+         representatives[index].cvFile = null;
     }
 };
 
@@ -294,7 +296,8 @@ const addInstitute = () => {
         recognitionCode: '',
         courses: [{ name: '' }],
         accreditedBy: '',
-        authorizationLetter: null,
+        authorizationLetterFile: null,
+        authorizationLetterFileName: null,
     });
 };
 
@@ -314,10 +317,11 @@ const removeCourse = (instituteIndex, courseIndex) => {
 const handleAuthorizationUpload = (event, index) => {
     const file = event.target.files[0];
     if (file) {
-        participatingInstitutes[index].authorizationLetter = file.name;
-        //  Upload file and store URL
+        participatingInstitutes[index].authorizationLetterFile = file; // Store the file object
+        participatingInstitutes[index].authorizationLetterFileName = file.name; // Store filename for display
     } else {
-         participatingInstitutes[index].authorizationLetter = null;
+         participatingInstitutes[index].authorizationLetterFileName = null;
+         participatingInstitutes[index].authorizationLetterFile = null;
     }
 };
 
@@ -326,7 +330,6 @@ const handleAuthorizationUpload = (event, index) => {
 const onInstituteSelect = async (index) => {
   const instituteId = participatingInstitutes[index].instituteId;
   if (!instituteId) {
-    // Reset if no institute is selected
     Object.assign(participatingInstitutes[index], {
       location: '', zone: '', country: '', website: '', contact: '', accreditedBy: ''
     });
@@ -334,21 +337,16 @@ const onInstituteSelect = async (index) => {
   }
 
     try {
-        // Replace with your actual API call
-        // const response = await axios.get(`/api/institutes/${instituteId}`);
-        // const instituteData = response.data;
-        // Simulating
-         const instituteData = availableInstitutes.value.find(inst => inst.id === instituteId); // find data from available list
+        const instituteData = availableInstitutes.value.find(inst => inst.id === instituteId);
 
         if (instituteData) {
-            // Update the corresponding fields
             Object.assign(participatingInstitutes[index], {
                 location: instituteData.location,
                 zone: instituteData.zone,
                 country: instituteData.country,
                 website: instituteData.website,
                 contact: instituteData.contact,
-                accreditedBy: instituteData.accreditedBy,
+                accreditedBy: instituteData.accredited_by, // Assuming backend field is accredited_by
             });
 
         } else {
@@ -363,8 +361,7 @@ const onInstituteSelect = async (index) => {
 
 
 const submitForm = async () => {
-
-  // Basic validation
+  // Basic validation - same as before
     if (!fairDetails.name || !fairDetails.location) {
         toast.error("Please fill in all required fair details.");
         return;
@@ -378,23 +375,79 @@ const submitForm = async () => {
         return;
     }
 
-   const formData = {
-        ecpfDetails,
-        fairDetails,
-        representatives,
-        participatingInstitutes,
-        remarks: remarks.value,
-    };
-     console.log('Submitting form:', formData);
+    const formData = new FormData();
 
-    //   API call (replace with your actual API)
+    // Fair Details
+    formData.append('fair_name', fairDetails.name); // Adjust field names to match backend
+    formData.append('fair_description', fairDetails.description);
+    formData.append('fair_location', fairDetails.location);
+
+    // Representative Details
+    representatives.forEach((rep, index) => {
+        formData.append(`representatives[${index}][name]`, rep.name);
+        formData.append(`representatives[${index}][passport_no]`, rep.passportNo); // Adjust field names
+        formData.append(`representatives[${index}][nationality]`, rep.nationality);
+        formData.append(`representatives[${index}][arrival_date]`, rep.arrivalDate);
+        formData.append(`representatives[${index}][departure_date]`, rep.departureDate);
+        if (rep.cvFile) {
+            formData.append(`representatives[${index}][cv]`, rep.cvFile); // Send the file object
+        }
+    });
+
+    // Participating Institute Details
+    participatingInstitutes.forEach((inst, index) => {
+        formData.append(`participating_institutes[${index}][institute_id]`, inst.instituteId); // Assuming you send institute_id
+        formData.append(`participating_institutes[${index}][affiliation]`, inst.affiliation);
+        formData.append(`participating_institutes[${index}][university_type]`, inst.universityType); // Adjust field names
+        formData.append(`participating_institutes[${index}][recognition_code]`, inst.recognitionCode);
+        inst.courses.forEach((course, courseIndex) => {
+            formData.append(`participating_institutes[${index}][courses][${courseIndex}][name]`, course.name);
+        });
+        if (inst.authorizationLetterFile) {
+            formData.append(`participating_institutes[${index}][authorization_letter]`, inst.authorizationLetterFile); // Send file object
+        }
+    });
+
+    // Remarks
+    formData.append('remarks', remarks.value);
+
     try {
-    //   const response = await axios.post('/api/fair-registration', formData);
+        // Fixed: Either don't assign the result to a variable, or use the variable
+        await apiService.createEcpfEducationFair(formData); // Using await without storing the response
+        
         toast.success('Successfully registered for the fair!');
-        //   Redirect or update UI as needed
+        // Reset form or redirect as needed
+        fairDetails.name = '';
+        fairDetails.description = '';
+        fairDetails.location = '';
+        representatives.splice(0, representatives.length); // Clear representatives array
+        representatives.push({ name: '', passportNo: '', nationality: '', arrivalDate: '', departureDate: '', cvFile: null, cvFileName: null }); // Add back initial representative
+        participatingInstitutes.splice(0, participatingInstitutes.length); // Clear institutes
+        participatingInstitutes.push({ // Add back initial institute
+            instituteId: '',
+            location: '',
+            zone: '',
+            country: '',
+            website: '',
+            contact: '',
+            affiliation: '',
+            universityType: '',
+            recognitionCode: '',
+            courses: [{ name: '' }],
+            accreditedBy: '',
+            authorizationLetterFile: null,
+            authorizationLetterFileName: null,
+        });
+        remarks.value = '';
+
+
     } catch (error) {
-    console.error('Error submitting form:', error);
+        console.error('Error submitting form:', error);
         toast.error('Failed to register for the fair.');
+        if (error.response) {
+            console.log('Detailed error response:', error.response.data); // Log detailed error response for debugging
+            toast.error(`Validation Error: ${JSON.stringify(error.response.data)}`); // Display validation errors if available
+        }
     }
 };
 
@@ -405,12 +458,8 @@ onMounted(async () => {
         countryOptions.value = countriesResponse.data;
 
          //Fetch Available institute
-        //  const response = await axios.get('/api/available-institutes'); // Replace with your endpoint
-        //  availableInstitutes.value = response.data;
-         availableInstitutes.value = [ //Simulate
-            { id: '1', name: 'Institute A', location: 'Location A', zone: 'Zone A', country: 'Country A', website: 'http://a.com', contact: 'Contact A', accreditedBy: 'Accreditor A' },
-            { id: '2', name: 'Institute B', location: 'Location B', zone: 'Zone B', country: 'Country B', website: 'http://b.com', contact: 'Contact B', accreditedBy: 'Accreditor B' },
-        ];
+         const institutesResponse = await apiService.getAvailableInstitutes();
+         availableInstitutes.value = institutesResponse.data;
 
     } catch (error) {
         console.error('Error fetching data:', error);

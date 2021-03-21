@@ -61,7 +61,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700">Institute</label>
-              <select v-model="selectedInstitute" 
+              <select v-model="selectedInstitute"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                 <option value="" disabled>Select an institute</option>
                 <option v-for="institute in availableInstitutes" :key="institute.id" :value="institute.id">
@@ -135,14 +135,15 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
+import apiServices from '@/services/services'; // Import your API service
 
 const toast = useToast();
 
 const eventType = ref('HEI Visit'); // Set the fixed event type
 
 // --- Data ---
-const ecpfDetails = reactive({
-  name: 'Example ECPF',
+const ecpfDetails = reactive({ // Replace with actual data fetching if needed
+  name: 'Example ECPF', // Replace with actual ECPF data source
   location: 'Thimphu',
   proprietor: 'John Doe',
   cid: '1234567890',
@@ -151,18 +152,7 @@ const ecpfDetails = reactive({
 });
 
 const selectedInstitute = ref(''); // Single institute selection
-const availableInstitutes = ref([
-  { id: 1, name: 'Royal University of Bhutan' },
-  { id: 2, name: 'Jigme Singye Wangchuck School of Law' },
-  { id: 3, name: 'Khesar Gyalpo University of Medical Sciences' },
-  { id: 4, name: 'Royal Thimphu College' },
-  { id: 5, name: 'Norbuling Rigter College' },
-  { id: 6, name: 'Gedu College of Business Studies' },
-  { id: 7, name: 'Sherubtse College' },
-  { id: 8, name: 'College of Science and Technology' },
-  { id: 9, name: 'College of Natural Resources' },
-  { id: 10, name: 'Gyalpozhing College of Information Technology' }
-]);
+const availableInstitutes = ref([]); // Array to hold institutes fetched from API
 
 const eventDetails = reactive({
   programDetail: '',
@@ -171,7 +161,7 @@ const eventDetails = reactive({
   fromDate: '',
   toDate: '',
   others: '',
-  supportingDocument: null, // Store filename
+  supportingDocument: null, // Store filename (you might need to handle file upload differently based on backend)
 });
 
 const remarks = ref('');
@@ -181,9 +171,8 @@ const supportingDocFile = ref(null);
 const handleSupportingDocumentUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    eventDetails.supportingDocument = file.name; // Store the filename
-    supportingDocFile.value = file;
-    // Upload file using a service, and store the URL
+    eventDetails.supportingDocument = file.name; // Store the filename for display
+    supportingDocFile.value = file; // Store the File object for later upload
   } else {
     eventDetails.supportingDocument = null;
     supportingDocFile.value = null;
@@ -196,50 +185,74 @@ const submitForm = async () => {
     toast.error('Please select an institute.');
     return;
   }
-  
+
   if (!eventDetails.fromDate || !eventDetails.toDate) {
     toast.error('Please select both from and to dates.');
     return;
   }
-  
+
   if (eventDetails.fromDate > eventDetails.toDate) {
     toast.error('From Date cannot be greater than To Date.');
     return;
   }
 
-  const formData = {
-    eventType: eventType.value,
-    ecpfDetails,
-    selectedInstitute: selectedInstitute.value,
-    eventDetails,
-    remarks: remarks.value,
-    supportingDocumentFile: supportingDocFile.value // If direct upload
-  };
+  const formData = new FormData(); // Use FormData to handle file uploads
+  formData.append('event_type', eventType.value); // Assuming backend expects 'event_type'
+  formData.append('ecpf_name', ecpfDetails.name); // Assuming backend expects 'ecpf_name' and so on for other ecpfDetails
+  formData.append('ecpf_location', ecpfDetails.location);
+  formData.append('ecpf_proprietor', ecpfDetails.proprietor);
+  formData.append('ecpf_cid', ecpfDetails.cid);
+  formData.append('ecpf_contact_no', ecpfDetails.contactNo);
+  formData.append('ecpf_email', ecpfDetails.email);
+  formData.append('institute_id', selectedInstitute.value); // Assuming backend expects 'institute_id'
+  formData.append('program_detail', eventDetails.programDetail);
+  formData.append('description', eventDetails.description);
+  formData.append('purpose', eventDetails.purpose);
+  formData.append('from_date', eventDetails.fromDate); // Ensure dates are in correct format if needed
+  formData.append('to_date', eventDetails.toDate);
+  formData.append('others', eventDetails.others);
+  formData.append('remarks', remarks.value);
+  if (supportingDocFile.value) {
+    formData.append('supporting_document', supportingDocFile.value); // 'supporting_document' is the field name backend expects
+  }
 
-  console.log('Submitting form:', formData);
+  console.log('Submitting form data:', Object.fromEntries(formData.entries())); // Log FormData content for debugging
 
-  // API call (replace with your actual API)
+  // API call
   try {
-    // const response = await apiService.submitHeiVisit(formData);
+    const response = await apiServices.createEcpfPromotionalHeiVisit(formData);
+    console.log('Registration successful:', response.data);
     toast.success('HEI visit promotion registered successfully!');
-    // Redirect or update UI.
+    // Reset form or redirect as needed
+    // Reset form example:
+    selectedInstitute.value = '';
+    eventDetails.programDetail = '';
+    eventDetails.description = '';
+    eventDetails.purpose = '';
+    eventDetails.fromDate = '';
+    eventDetails.toDate = '';
+    eventDetails.others = '';
+    eventDetails.supportingDocument = null;
+    supportingDocFile.value = null;
+    remarks.value = '';
+
   } catch (error) {
     console.error('Error submitting form:', error);
     toast.error('Failed to register the HEI visit promotion.');
+    if (error.response) {
+      console.error('Error details:', error.response.data); // Log detailed error from backend
+      toast.error(`Error: ${error.response.data.message || 'Please check the form data'}`); // Display backend error message if available
+    }
   }
 };
 
 onMounted(async () => {
-  // Note: Using the dummy data directly instead of API call
-  // Uncomment this section if you want to fetch from API instead
-  /*
   try {
-    const response = await apiService.getInstitutes();
-    availableInstitutes.value = response.data;
+    const response = await apiServices.getInstitutes();
+    availableInstitutes.value = response.data; // Assuming response.data is an array of institutes
   } catch (error) {
     console.error('Error fetching institutes:', error);
     toast.error('Failed to load institutes.');
   }
-  */
 });
 </script>

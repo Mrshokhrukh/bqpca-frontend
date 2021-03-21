@@ -388,8 +388,10 @@ let initialApplicationState = null;
 const fetchApplications = async () => {
   try {
     const response = await apiServices.getEcpfCollaborations();
+    console.log('API Response:', response); // Log the entire response
+    console.log('API Response Data:', response.data.results); // Log just the data
     if (response.status === 200) {
-      applications.value = response.data;
+      applications.value = response.data.results;
     } else {
       alert('Failed to load applications.');
       console.error('Error fetching applications:', response);
@@ -557,6 +559,12 @@ const closeRegretModal = () => {
 };
 
 const filteredApplications = computed(() => {
+    console.log('filteredApplications computed - applications.value type:', typeof applications.value); // Debugging
+    if (!Array.isArray(applications.value)) { // Defensive check
+        console.warn('applications.value is not an array in filteredApplications', applications.value);
+        return [];
+    }
+
     let filtered = [...applications.value];
 
     if (searchQuery.value) {
@@ -583,9 +591,30 @@ const filteredApplications = computed(() => {
     return filtered;
   });
 
-const pendingCount = computed(() => applications.value.filter(app => app.status === 'Pending').length);
-const approvedCount = computed(() => applications.value.filter(app => app.status === 'Approved').length);
-const rejectedCount = computed(() => applications.value.filter(app => app.status === 'Rejected').length);
+const pendingCount = computed(() => {
+    console.log('pendingCount computed - applications.value type:', typeof applications.value); // Debugging
+    if (!Array.isArray(applications.value)) { // Defensive check
+        console.warn('applications.value is not an array in pendingCount', applications.value);
+        return 0;
+    }
+    return applications.value.filter(app => app.status === 'Pending').length;
+});
+const approvedCount = computed(() => {
+    console.log('approvedCount computed - applications.value type:', typeof applications.value); // Debugging
+    if (!Array.isArray(applications.value)) { // Defensive check
+        console.warn('applications.value is not an array in approvedCount', applications.value);
+        return 0;
+    }
+    return applications.value.filter(app => app.status === 'Approved').length;
+});
+const rejectedCount = computed(() => {
+    console.log('rejectedCount computed - applications.value type:', typeof applications.value); // Debugging
+    if (!Array.isArray(applications.value)) { // Defensive check
+        console.warn('applications.value is not an array in rejectedCount', applications.value);
+        return 0;
+    }
+    return applications.value.filter(app => app.status === 'Rejected').length;
+});
 
 const getInitials = (name) => {
   if (!name) return '';

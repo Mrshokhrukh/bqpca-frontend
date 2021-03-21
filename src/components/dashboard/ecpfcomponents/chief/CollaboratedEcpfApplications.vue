@@ -385,7 +385,7 @@ const fetchApplications = async () => {
   try {
     const response = await apiServices.getEcpfCollaborations();
     if (response.status === 200) {
-      applications.value = response.data;
+      applications.value = response.data.results;
     } else {
       alert('Failed to load applications.');
       console.error('Error fetching applications:', response);
@@ -404,8 +404,8 @@ const viewApplication = async (application) => {
   try {
     const response = await apiServices.getEcpfCollaboration(application.id);
     if (response.status === 200) {
-      editingApplication.value = response.data;
-      initialApplicationState = { ...response.data };
+      editingApplication.value = response.data.results;
+      initialApplicationState = { ...response.data.results };
       isModalOpen.value = true;
       isEditing.value = false;
     } else {
@@ -477,10 +477,10 @@ const saveChanges = async () => {
       const index = applications.value.findIndex(app => app.id === editingApplication.value.id);
       if (index !== -1) {
         // Ideally, update with the full response data for latest info from backend
-        applications.value[index] = response.data; // Assuming backend returns updated application
+        applications.value[index] = response.data.results; // Assuming backend returns updated application
       }
       alert(`Changes saved successfully for application: ${editingApplication.value.applicantName}`);
-      initialApplicationState = { ...response.data }; // Update initial state after successful save
+      initialApplicationState = { ...response.data.results }; // Update initial state after successful save
       closeModal();
       isEditing.value = false;
     } else {

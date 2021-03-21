@@ -185,27 +185,25 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import NonComplianceModal from './modals/NonComplianceModal.vue';
-
-// Mock Data (Replace with API calls in a real application)
-const nonComplianceRecords = ref([
-  { id: 1, ecpfName: 'ECPF 2', branchEcpf: null, nonComplianceDetails: 'Minor environmental breach', categoryOfIssue: 'Environmental', action: 'Warning Letter', actionTaken: 'Issued Warning Letter', correctiveMeasuresRequired: 'Improve waste management', correctedActionReport: 'Report submitted and reviewed' },
-  { id: 2, ecpfName: 'Main ECPF 1', branchEcpf: 'Branch B', nonComplianceDetails: 'HR policy violation', categoryOfIssue: 'HR', action: 'Corrective Action Plan', actionTaken: 'Corrective Action Plan Submitted', correctiveMeasuresRequired: 'Revise HR policy and training', correctedActionReport: 'Policy revised, training scheduled' },
-]);
+import apiServices from '@/services/services'; // Import your API service
 
 // State for Modal Visibility and Data
 const showModal = ref(false);
 const editingRecordId = ref(null);
-const editingRecord = ref(null); // To pass the record to be edited to the modal
+const editingRecord = ref(null);
 const viewingRecord = ref(null);
 
 // Search and Filter State
 const searchQuery = ref('');
 const categoryFilter = ref('');
-const issueCategories = ref(['Environmental', 'Social', 'Governance', 'HR', 'Operational']); // Categories for filter
+const issueCategories = ref(['Environmental', 'Social', 'Governance', 'HR', 'Operational']);
 
-// Filtered Records Computed Property
+// Records from API
+const nonComplianceRecords = ref([]); // Initialize as empty array
+
+// Filtered Records Computed Property (remains the same)
 const filteredRecords = computed(() => {
   const search = searchQuery.value.toLowerCase();
   const category = categoryFilter.value;
@@ -223,51 +221,92 @@ const filteredRecords = computed(() => {
 });
 
 // --- Functions ---
+const fetchRecords = async () => {
+  try {
+    const response = await apiServices.getEcpfNonCompliances();
+    console.log("API Response:", response); // Log the entire response object
+    console.log("API Response Data:", response.data.results); // Log just the data part
+
+    if (Array.isArray(response.data.results)) {
+      nonComplianceRecords.value = response.data.results;
+    } else {
+      console.error("API response data is not an array:", response.data.results);
+      nonComplianceRecords.value = []; // To prevent further errors, set it to an empty array
+    }
+
+  } catch (error) {
+    console.error('Error fetching non-compliance records:', error);
+    nonComplianceRecords.value = []; // Set to empty array in case of error as well
+  }
+};
+
+onMounted(() => {
+  fetchRecords(); // Fetch records when component is mounted
+});
+
 const openAddModal = () => {
   editingRecordId.value = null;
-  editingRecord.value = null; // Clear editing record for add mode
+  editingRecord.value = null;
   showModal.value = true;
 };
 
-const editRecord = (id) => {
+const editRecord = async (id) => {
   editingRecordId.value = id;
-  editingRecord.value = nonComplianceRecords.value.find(record => record.id === id);
-  showModal.value = true;
+  try {
+    const response = await apiServices.getEcpfNonCompliance(id);
+    editingRecord.value = response.data.results;
+    showModal.value = true;
+  } catch (error) {
+    console.error('Error fetching record for edit:', error);
+    // Handle error appropriately
+  }
 };
 
-const viewRecord = (id) => {
-  viewingRecord.value = nonComplianceRecords.value.find(record => record.id === id);
+const viewRecord = async (id) => {
+  try {
+    const response = await apiServices.getEcpfNonCompliance(id);
+    viewingRecord.value = response.data.results;
+  } catch (error) {
+    console.error('Error fetching record for view:', error);
+    // Handle error appropriately
+    viewingRecord.value = null; // Ensure modal closes on error
+  }
 };
 
 const closeViewRecord = () => {
   viewingRecord.value = null;
 };
 
-const deleteRecord = (id) => {
+const deleteRecord = async (id) => {
   if (confirm('Are you sure you want to delete this record?')) {
-    nonComplianceRecords.value = nonComplianceRecords.value.filter(record => record.id !== id);
-    // In a real app, you would also make an API call to delete from the backend
+    try {
+      await apiServices.deleteEcpfNonCompliance(id);
+      // Refresh records after successful deletion
+      fetchRecords();
+    } catch (error) {
+      console.error('Error deleting record:', error);
+      // Handle error appropriately
+    }
   }
 };
 
-const handleSaveRecord = (recordData) => {
-  if (editingRecordId.value) {
-    // Update existing record
-    const index = nonComplianceRecords.value.findIndex(record => record.id === editingRecordId.value);
-    if (index !== -1) {
-      nonComplianceRecords.value[index] = { ...nonComplianceRecords.value[index], ...recordData, id: editingRecordId.value }; // Keep the ID
+const handleSaveRecord = async (recordData) => {
+  try {
+    if (editingRecordId.value) {
+      // Update existing record
+      await apiServices.updateEcpfNonCompliance(editingRecordId.value, recordData);
+    } else {
+      // Add new record
+      await apiServices.createEcpfNonCompliance(recordData);
     }
-  } else {
-    // Add new record
-    const newId = nonComplianceRecords.value.length > 0 ? Math.max(...nonComplianceRecords.value.map(r => r.id)) + 1 : 1;
-    nonComplianceRecords.value.push({ id: newId, ...recordData });
+    closeModal();
+    fetchRecords(); // Refresh records after saving
+    editingRecordId.value = null;
+    editingRecord.value = null;
+  } catch (error) {
+    console.error('Error saving/updating record:', error);
+    // Handle error appropriately (e.g., display error message in modal)
   }
-
-  closeModal();
-  editingRecordId.value = null;
-  editingRecord.value = null;
-  // In a real app, you would make an API call to save/update data to the backend
-  console.log('Record saved/updated:', nonComplianceRecords.value); // For demonstration
 };
 
 const closeModal = () => {
