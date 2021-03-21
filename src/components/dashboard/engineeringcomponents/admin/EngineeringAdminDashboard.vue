@@ -100,7 +100,7 @@
 import { ref, onMounted } from 'vue';
 import epcServices from '@/services/epcServices';
 import {
-    BookOpen, // CME
+    BookOpen, // CPD
     ClipboardList, // CPD
     FileText, // Document
     DollarSign, // Fee
@@ -160,30 +160,33 @@ const iconMap = {
     cogsManagement: Briefcase,
 };
 
+// Base path for admin engineering routes
+const basePath = '/admin/admin/engineering_certification';
+
 // --- Configuration Cards Data ---
 const configurationCards = [
     {
         id: 'cmeManagement',
-        title: 'CME Management',
-        description: 'Manage Continuing Medical Education activities',
+        title: 'CPD Management',
+        description: 'Manage Continuing Professional Development activities',
         countLabel: 'Active Activities',
         countRef: 'cmeActivities',
         countSuffix: 'items',
         usedIn: ['Professional Development', 'Certification'],
         children: [
             {
-                text: 'CME Activities',
-                route: '/admin/admin/engineering/cme_activities',
+                text: 'CPD Activities',
+                route: `${basePath}/cme_activities`,
                 icon: null,
             },
             {
-                text: 'CME Credits',
-                route: '/admin/admin/engineering/cme_credits',
+                text: 'CPD Credits',
+                route: `${basePath}/cme_credits`,
                 icon: null,
             },
             {
-                text: 'CME Methodologies',
-                route: '/admin/admin/engineering/cme_methodologies',
+                text: 'CPD Methodologies',
+                route: `${basePath}/cme_methodologies`,
                 icon: null,
             },
         ],
@@ -195,14 +198,19 @@ const configurationCards = [
     },
     {
         id: 'cpdActivity',
-        title: 'CPD Activity',
-        description: 'Manage Continuing Professional Development activities',
+        title: 'Technical Activity',
+        description: 'Manage Engineering Technical Development activities',
         countLabel: 'Active Activities',
         countRef: 'cpdActivities',
         countSuffix: 'activities',
         usedIn: ['Professional Development'],
-        route: '/admin/admin/engineering/cpd_activity',
-        buttonText: 'Manage CPD Activities',
+        children: [
+            {
+                text: 'Manage Technical Activities',
+                route: `${basePath}/cpd_activity`,
+                icon: null,
+            }
+        ],
         gradient: gradientClasses('indigo', 'indigo'),
         iconBg: iconBgClass('indigo'),
         iconColor: iconColorClass('indigo'),
@@ -212,7 +220,7 @@ const configurationCards = [
     {
         id: 'documentManagement',
         title: 'Document Management',
-        description: 'Manage document types and configurations',
+        description: 'Manage engineering document types and configurations',
         countLabel: 'Total Types',
         countRef: 'documentTypes',
         countSuffix: 'types',
@@ -220,17 +228,17 @@ const configurationCards = [
         children: [
             {
                 text: 'Document Types',
-                route: '/admin/admin/engineering/document_types',
+                route: `${basePath}/document_types`,
                 icon: null,
             },
             {
                 text: 'E-Signatures',
-                route: '/admin/admin/engineering/e_signatures',
+                route: `${basePath}/e_signatures`,
                 icon: null,
             },
             {
                 text: 'File Types',
-                route: '/admin/admin/engineering/file_types',
+                route: `${basePath}/file_types`,
                 icon: null,
             },
         ],
@@ -243,13 +251,23 @@ const configurationCards = [
     {
         id: 'feeManagement',
         title: 'Fee Management',
-        description: 'Configure fee structures and settings',
+        description: 'Configure engineering fee structures and settings',
         countLabel: 'Fee Structures',
         countRef: 'feeStructures',
         countSuffix: 'structures',
         usedIn: ['Registration', 'Payments'],
-        route: '/admin/admin/engineering/fee_structures',
-        buttonText: 'Manage Fees',
+        children: [
+            {
+                text: 'Fee Structures',
+                route: `${basePath}/fee_structures`,
+                icon: null,
+            },
+            {
+                text: 'Fees Associated For',
+                route: `${basePath}/fees_associated_for`,
+                icon: null,
+            }
+        ],
         gradient: gradientClasses('amber', 'amber'),
         iconBg: iconBgClass('amber'),
         iconColor: iconColorClass('amber'),
@@ -259,7 +277,7 @@ const configurationCards = [
     {
         id: 'participation',
         title: 'Participation',
-        description: 'Manage participation categories',
+        description: 'Manage engineering participation categories',
         countLabel: 'Categories',
         countRef: 'participationCategories',
         countSuffix: 'categories',
@@ -267,12 +285,12 @@ const configurationCards = [
         children: [
             {
                 text: 'Categories',
-                route: '/admin/admin/engineering/participation_category',
+                route: `${basePath}/participation_category`,
                 icon: null,
             },
             {
                 text: 'Sub Categories',
-                route: '/admin/admin/engineering/participation_sub_category',
+                route: `${basePath}/participation_sub_category`,
                 icon: null,
             },
         ],
@@ -285,7 +303,7 @@ const configurationCards = [
     {
         id: 'personnel',
         title: 'Personnel',
-        description: 'Manage personnel categories and qualifications',
+        description: 'Manage engineering personnel categories and qualifications',
         countLabel: 'Categories',
         countRef: 'personnelCategories',
         countSuffix: 'categories',
@@ -293,17 +311,17 @@ const configurationCards = [
         children: [
             {
                 text: 'Categories',
-                route: '/admin/admin/engineering/personnel_categories',
+                route: `${basePath}/personnel_categories`,
                 icon: null,
             },
             {
                 text: 'Qualifications',
-                route: '/admin/admin/engineering/qualifications',
+                route: `${basePath}/qualifications`,
                 icon: null,
             },
             {
                 text: 'Qualification Types',
-                route: '/admin/admin/engineering/qualification_types',
+                route: `${basePath}/qualification_types`,
                 icon: null,
             },
         ],
@@ -316,7 +334,7 @@ const configurationCards = [
     {
         id: 'registration',
         title: 'Registration',
-        description: 'Manage registration types and settings',
+        description: 'Manage engineering registration types and settings',
         countLabel: 'Types',
         countRef: 'registrationTypes',
         countSuffix: 'types',
@@ -324,17 +342,17 @@ const configurationCards = [
         children: [
             {
                 text: 'Types',
-                route: '/admin/admin/engineering/registration_type',
+                route: `${basePath}/registration_type`,
                 icon: null,
             },
             {
                 text: 'Sectors',
-                route: '/admin/admin/engineering/sector',
+                route: `${basePath}/sector`,
                 icon: null,
             },
             {
                 text: 'Sub Categories',
-                route: '/admin/admin/engineering/sub_categories',
+                route: `${basePath}/sub_categories`,
                 icon: null,
             },
         ],
@@ -347,13 +365,18 @@ const configurationCards = [
     {
         id: 'university',
         title: 'University',
-        description: 'Manage university information',
+        description: 'Manage engineering universities and institutions',
         countLabel: 'Universities',
         countRef: 'universities',
         countSuffix: 'institutions',
         usedIn: ['Registration', 'Verification'],
-        route: '/admin/admin/engineering/university',
-        buttonText: 'Manage Universities',
+        children: [
+            {
+                text: 'Manage Universities',
+                route: `${basePath}/university`,
+                icon: null,
+            }
+        ],
         gradient: gradientClasses('violet', 'violet'),
         iconBg: iconBgClass('violet'),
         iconColor: iconColorClass('violet'),
@@ -363,7 +386,7 @@ const configurationCards = [
     {
         id: 'cogsManagement',
         title: 'COGS Management',
-        description: 'Manage COGS agencies and workplaces',
+        description: 'Manage engineering COGS agencies and workplaces',
         countLabel: 'Agencies',
         countRef: 'cogsAgencies',
         countSuffix: 'agencies',
@@ -371,17 +394,17 @@ const configurationCards = [
         children: [
             {
                 text: 'Agency',
-                route: '/admin/admin/engineering/cogs_agency',
+                route: `${basePath}/cogs_agency`,
                 icon: null,
             },
             {
                 text: 'Department',
-                route: '/admin/admin/engineering/cogs_dept',
+                route: `${basePath}/cogs_dept`,
                 icon: null,
             },
             {
                 text: 'Workplace',
-                route: '/admin/admin/engineering/cogs_workplace',
+                route: `${basePath}/cogs_workplace`,
                 icon: null,
             },
         ],
