@@ -4,7 +4,7 @@ import bmhcServices from './bmhcservices';
 import accreditationServices from './accreditationservices';
 import roqservices from './roqservices';
 import ecpfServices from './ecpfServices';
-// import epcServices from './epcServices';
+import epcServices from './epcServices';
 import userservices from './userservices';
 
 
@@ -44,5 +44,5 @@ export default {
   ...ecpfServices,
   ...accreditationServices,
   ...roqservices,
-  // ...epcServices,
+  ...epcServices,
 }

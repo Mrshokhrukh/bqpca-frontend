@@ -1174,6 +1174,10 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_application_review`,
           },
           {
+            name: 'Self CPD Awards',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/self_cpd_awards`,
+          },
+          {
             name: 'CPD Provider Management',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_provider_management`,
           },
@@ -1196,7 +1200,27 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/dpr_application`,
           },
           {
-            name: 'Institute Reports',
+            name: 'CAPA Management',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/capa_management`,
+          },
+          {
+            name: 'All Institute Profile',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/all_institute_profile`,
+          },
+          {
+            name: 'Teaching Institute',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_institute`,
+          },
+          {
+            name: 'Education Program',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/education_program`,
+          },
+          {
+            name: 'Teaching Institute Renewals',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_institute_renewals`,
+          },
+          {
+            name: 'Reports',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_report`,
           },
         ],
@@ -1210,11 +1234,6 @@ const serviceSpecificMenuItems = {
         name: 'CoGS Management',
         icon: getIconComponent('Award'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/cogs`,
-      },
-      {
-        name: 'CAPA',
-        icon: getIconComponent('CheckSquare'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/capa`,
       },
       {
         name: 'Payments',

@@ -85,16 +85,31 @@ import PractitionerRenewal from '@/components/dashboard/engineeringcomponents/us
 
 // Dealing Officer Components
 import ApplicationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/ApplicationLists.vue';
-import RenewalLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/RenewalLists.vue';
-import CpdManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CpdManagement.vue';
-import InstituteManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/InstituteManagement.vue';
+import Additional_Qualification from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/AdditionalApplication.vue';
+import RenewalLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/RenewalLists.vue';
+import ReRegistrationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/ReRegistrationLists.vue';
+// import RenewalLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/RenewalLists.vue';
+import CpdManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdManagement.vue';
+import CpdProviderManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdProviderManagement.vue';
+import Self_cpd_awards from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdAwardCredits.vue';
+//Institute Management
+import InstituteManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteManagement.vue';
+import EoiApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/EoiApplication.vue';
+import DPRApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/DPRApplication.vue';
+import InstituteReport from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteReport.vue';
+import CAPAManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/CapaManagement.vue';
+import All_institute_profile from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteProfiles.vue';
+import Teaching_Institute from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/TeachingInstitute.vue';
+import Education_Program from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/EducationPrograms.vue';
+import Teaching_Institute_Renewals from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/TeachingHospitalRenewals.vue';
+
 import ProfessionalProfiles from '@/components/dashboard/engineeringcomponents/dealingOfficer/ProfessionalProfiles.vue';
-import CogsManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CogsManagement.vue';
-import EngineeringCapa from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringCapa.vue';
+import CogsManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/CogsManagement.vue';
+// import EngineeringCapa from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringCapa.vue';
 import EngineeringPayments from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringPayments.vue';
-import EngineeringReports from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringReports.vue';
-import ReRegistrationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/ReRegistrationLists.vue';
-import AdditionalApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/AdditionalApplication.vue';
+import Reports from '@/components/dashboard/engineeringcomponents/dealingOfficer/Reports.vue';
+// import ReRegistrationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/ReRegistrationLists.vue';
+// import AdditionalApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/AdditionalApplication.vue';
 
 // CPD Provider Components
 import EngineeringProviderDashboard from '@/components/dashboard/engineeringcomponents/cpdCmeProvider/EngineeringCpdCmeProviderDashboard.vue';
@@ -253,14 +268,36 @@ const engineeringDealingOfficerComponent = computed(() => {
       return EngineeringDealingOfficerDashboard;
     case path.endsWith('/engineering_certification/application_lists'):
       return ApplicationLists;
+    case path.endsWith('/engineering_certification/additional_application'):
+      return Additional_Qualification;
     case path.endsWith('/engineering_certification/renewal_lists'):
       return RenewalLists;
     case path.endsWith('/engineering_certification/re_registration_lists'):
       return ReRegistrationLists;
     case path.endsWith('/engineering_certification/cpd_application_review'):
       return CpdManagement;
+    case path.endsWith('/engineering_certification/cpd_provider_management'):
+      return CpdProviderManagement;
+    case path.endsWith('/engineering_certification/self_cpd_awards'):
+      return Self_cpd_awards;
     case path.endsWith('/engineering_certification/institutes'):
       return InstituteManagement;
+    case path.endsWith('/engineering_certification/eoi_application'):
+      return EoiApplication;
+    case path.endsWith('/engineering_certification/dpr_application'):
+      return DPRApplication;
+    case path.endsWith('/engineering_certification/capa_management'):
+      return CAPAManagement;
+    case path.endsWith('/engineering_certification/all_institute_profile'):
+      return All_institute_profile;
+    case path.endsWith('/engineering_certification/teaching_institute'):
+      return Teaching_Institute;
+    case path.endsWith('/engineering_certification/education_program'):
+      return Education_Program;
+    case path.endsWith('/engineering_certification/teaching_institute_renewals'):
+      return Teaching_Institute_Renewals;
+    case path.endsWith('/engineering_certification/institute_report'):
+      return InstituteReport;
     case path.endsWith('/engineering_certification/profiles'):
       return ProfessionalProfiles;
     case path.endsWith('/engineering_certification/cogs'):
@@ -270,9 +307,7 @@ const engineeringDealingOfficerComponent = computed(() => {
     case path.endsWith('/engineering_certification/payments'):
       return EngineeringPayments;
     case path.endsWith('/engineering_certification/reports'):
-      return EngineeringReports;
-    case path.endsWith('/engineering_certification/additional_application'):
-      return AdditionalApplication;
+      return Reports;
     default:
       return null;
   }

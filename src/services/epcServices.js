@@ -280,8 +280,7 @@ export default {
   deleteEpcInstitute(id) {
     return apiClient.delete(`/epc/epc-institutes/${id}/`)
   },
-
-  // EPC New Application endpoints
+// EPC New Application endpoints
   getEpcNewApplications() {
     return apiClient.get('/epc/epc-new-application/')
   },

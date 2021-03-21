@@ -471,6 +471,7 @@ export default {
     return apiClient.delete(`/bmhc/masters-cogs-workplaces/${id}/`)
   },
 
+  
   // BMHC Application Endpoints
   getBhmcNewApplications() {
     return apiClient.get('/bmhc/bmhc-new-application/')

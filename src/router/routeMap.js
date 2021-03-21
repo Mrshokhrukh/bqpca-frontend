@@ -223,12 +223,18 @@ export default {
       // CPD Management routes - missing cpd_provider_management
       cpd_application_review: engineeringDashboard,
       cpd_provider_management: engineeringDashboard,
+      self_cpd_awards: engineeringDashboard,
 
       // Institute Management routes - missing several routes
       institutes: engineeringDashboard,
       eoi_application: engineeringDashboard,
       dpr_application: engineeringDashboard,
       institute_report: engineeringDashboard,
+      capa_management: engineeringDashboard,
+      all_institute_profile: engineeringDashboard,
+      teaching_institute: engineeringDashboard,
+      education_program: engineeringDashboard,
+      teaching_institute_renewals: engineeringDashboard,
 
       // Other management routes
       profiles: engineeringDashboard,
