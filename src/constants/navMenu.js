@@ -1338,13 +1338,8 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
       },
       {
-        name: 'User Management',
-        icon: getIconComponent('Users'),
-        route: (serviceType) => `/admin/admin/${serviceType}/user_management`,
-      },
-      {
-        name: 'Masters',
-        icon: getIconComponent('Database'),
+        name: 'CME Management',
+        icon: getIconComponent('BookOpen'),
         children: [
           {
             name: 'CME Activities',
@@ -1358,10 +1353,17 @@ const serviceSpecificMenuItems = {
             name: 'CME Methodologies',
             route: (serviceType) => `/admin/admin/${serviceType}/cme_methodologies`,
           },
-          {
-            name: 'CPD Activity',
-            route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
-          },
+        ],
+      },
+      {
+        name: 'CPD Activity',
+        icon: getIconComponent('FileText'),
+        route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
+      },
+      {
+        name: 'Document Management',
+        icon: getIconComponent('File'),
+        children: [
           {
             name: 'Document Types',
             route: (serviceType) => `/admin/admin/${serviceType}/document_types`,
@@ -1371,15 +1373,45 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/e_signatures`,
           },
           {
+            name: 'File Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
+          },
+        ],
+      },
+      {
+        name: 'Fee Management',
+        icon: getIconComponent('CreditCard'),
+        children: [
+          {
             name: 'Fee Structures',
             route: (serviceType) => `/admin/admin/${serviceType}/fee_structures`,
           },
           {
-            name: 'File Types',
-            route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
+            name: 'Fees Associated For',
+            route: (serviceType) => `/admin/admin/${serviceType}/fees_associated_for`,
+          },
+        ],
+      },
+      {
+        name: 'Participation',
+        icon: getIconComponent('Users'),
+        children: [
+          {
+            name: 'Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/participation_category`,
           },
           {
-            name: 'Personnel Categories',
+            name: 'Sub Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
+          },
+        ],
+      },
+      {
+        name: 'Personnel',
+        icon: getIconComponent('UserCircle'),
+        children: [
+          {
+            name: 'Categories',
             route: (serviceType) => `/admin/admin/${serviceType}/personnel_categories`,
           },
           {
@@ -1387,32 +1419,56 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
           },
           {
-            name: 'Registration Type',
-            route: (serviceType) => `/admin/admin/${serviceType}/registration_type`,
-          },
-          {
-            name: 'Sector',
-            route: (serviceType) => `/admin/admin/${serviceType}/sector`,
+            name: 'Qualification Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/qualification_types`,
           },
         ],
       },
       {
-        name: 'CoGS Masters',
-        icon: getIconComponent('Award'),
+        name: 'Registration',
+        icon: getIconComponent('ClipboardCheck'),
         children: [
           {
-            name: 'CoGS Agency',
+            name: 'Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/registration_type`,
+          },
+          {
+            name: 'Sectors',
+            route: (serviceType) => `/admin/admin/${serviceType}/sector`,
+          },
+          {
+            name: 'Sub Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/sub_categories`,
+          },
+        ],
+      },
+      {
+        name: 'University',
+        icon: getIconComponent('BookOpen'),
+        route: (serviceType) => `/admin/admin/${serviceType}/university`,
+      },
+      {
+        name: 'COGS Management',
+        icon: getIconComponent('Building2'),
+        children: [
+          {
+            name: 'Agency',
             route: (serviceType) => `/admin/admin/${serviceType}/cogs_agency`,
           },
           {
-            name: 'CoGS Department',
+            name: 'Department',
             route: (serviceType) => `/admin/admin/${serviceType}/cogs_dept`,
           },
           {
-            name: 'CoGS Workplace',
+            name: 'Workplace',
             route: (serviceType) => `/admin/admin/${serviceType}/cogs_workplace`,
           },
         ],
+      },
+      {
+        name: 'User Management',
+        icon: getIconComponent('Users'),
+        route: (serviceType) => `/admin/admin/${serviceType}/user_management`,
       },
     ],
 
@@ -1493,11 +1549,13 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Teaching Institutes',
-            route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_application`,
+            route: (serviceType) =>
+              `/admin/institutions/${serviceType}/teaching_center_application`,
           },
           {
             name: 'Track & Renewal',
-            route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_track_and_renew`,
+            route: (serviceType) =>
+              `/admin/institutions/${serviceType}/teaching_center_track_and_renew`,
           },
           {
             name: 'New Education Program',
