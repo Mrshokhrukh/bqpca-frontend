@@ -659,18 +659,3 @@ const fetchTeachingCenters = async () => {
 // Fetch data on component mount
 onMounted(fetchTeachingCenters);
 </script>
-
-<script>
-import apiClient from '@/services/apiClient' // Assuming apiClient.js is in the '@/services/' directory
-
-export default {
-  // ... (rest of your apiService.js content -  *ensure this is in a separate file `apiService.js` in your `@/services` directory*)
-  getEpcTeachingCenters() {
-    return apiClient.get('/epc/epc-teaching-centers/') // GET request to fetch all centers
-  },
-  patchEpcTeachingCenter(id, data) {
-    return apiClient.patch(`/epc/epc-teaching-centers/${id}/`, data) // PATCH request to update a specific center by ID
-  },
-  // ... (other api service functions)
-}
-</script>
