@@ -357,9 +357,22 @@ const fetchApplicationData = async () => {
         // Otherwise get application by CID
         const response = await apiService.getApplicationWithCid(cid);
 
-        if (Array.isArray(response.data) && response.data.length > 0) {
-          // Find the most recent active application
-          latestApplication = response.data.find(app => app.is_active === true) || response.data[0];
+        // Handle the paginated response format
+        if (response.data && Array.isArray(response.data.results)) {
+          // Find the application for the current user
+          const userApplications = response.data.results.filter(app => app.cid_no === cid);
+
+          if (userApplications.length > 0) {
+            // Find the most recent active application
+            latestApplication = userApplications.find(app => app.is_active === true) || userApplications[0];
+          }
+        } else if (Array.isArray(response.data)) {
+          // Handle old format (direct array)
+          const userApplications = response.data.filter(app => app.cid_no === cid || app.cid === cid);
+
+          if (userApplications.length > 0) {
+            latestApplication = userApplications.find(app => app.is_active === true) || userApplications[0];
+          }
         }
       }
     } catch (error) {
@@ -376,39 +389,58 @@ const fetchApplicationData = async () => {
     // Set the form data with the application details
     formData.value = {
       id: latestApplication.id,
-      cid: latestApplication.cid || '',
+      cid: latestApplication.cid_no || latestApplication.cid || '',
       full_name: latestApplication.full_name || '',
       gender: latestApplication.gender || '',
       date_of_birth: latestApplication.date_of_birth || '',
-      contact_number: latestApplication.contact_number || '',
-      email: latestApplication.email || '',
-      permanent_village: latestApplication.permanent_village || '',
-      permanent_gewog: latestApplication.permanent_gewog || '',
-      permanent_dzongkhag: latestApplication.permanent_dzongkhag || '',
+      contact_number: latestApplication.contact_no || latestApplication.contact_number || '',
+      email: latestApplication.email_address || latestApplication.email || '',
+      permanent_village: latestApplication.village || latestApplication.permanent_village || '',
+      permanent_gewog: latestApplication.gewog || latestApplication.permanent_gewog || '',
+      permanent_dzongkhag: latestApplication.dzongkhag || latestApplication.permanent_dzongkhag || '',
       is_active: latestApplication.is_active || false
     };
 
-    // Get registration details from renewals
-    try {
-      const renewalsResponse = await apiService.getEpcRenewals();
-      const userRenewals = renewalsResponse.data.results.filter( // Changed to response.data.results
-        renewal => renewal.application === latestApplication.id
-      );
+    // Use values straight from the application if available
+    if (latestApplication.registration_date && latestApplication.expiry_date) {
+      registrationDetails.value = {
+        registration_date: latestApplication.registration_date || '',
+        expiry_date: latestApplication.expiry_date || '',
+        registration_no: latestApplication.registration_no || ''
+      };
+    } else {
+      // Otherwise, get registration details from renewals
+      try {
+        const renewalsResponse = await apiService.getEpcRenewals();
 
-      if (userRenewals.length > 0) {
-        // Sort by date to get the most recent renewal
-        userRenewals.sort((a, b) => new Date(b.registration_date) - new Date(a.registration_date));
-        const latestRenewal = userRenewals[0];
+        // Handle different response formats
+        let renewals = [];
+        if (renewalsResponse.data && Array.isArray(renewalsResponse.data.results)) {
+          renewals = renewalsResponse.data.results;
+        } else if (Array.isArray(renewalsResponse.data)) {
+          renewals = renewalsResponse.data;
+        }
 
-        registrationDetails.value = {
-          registration_date: latestRenewal.registration_date,
-          expiry_date: latestRenewal.expiry_date,
-          registration_no: latestRenewal.registration_no
-        };
+        // Find renewals for this specific application
+        const userRenewals = renewals.filter(
+          renewal => renewal.application === latestApplication.id
+        );
+
+        if (userRenewals.length > 0) {
+          // Sort by date to get the most recent renewal
+          userRenewals.sort((a, b) => new Date(b.registration_date) - new Date(a.registration_date));
+          const latestRenewal = userRenewals[0];
+
+          registrationDetails.value = {
+            registration_date: latestRenewal.registration_date,
+            expiry_date: latestRenewal.expiry_date,
+            registration_no: latestRenewal.registration_no
+          };
+        }
+      } catch (error) {
+        console.error('Error fetching renewals:', error);
+        // Continue with the application data we already have
       }
-    } catch (error) {
-      console.error('Error fetching renewals:', error);
-      // Continue with the application data we already have
     }
 
   } catch (error) {

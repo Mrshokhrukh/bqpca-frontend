@@ -53,9 +53,12 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
         // Assuming there's an endpoint for fetching user details
         const response = await epcServices.getApplicationWithCid(cid)
 
-        if (response.data && response.data.length > 0) {
+        // Check if response.data is an array, if not check for results property
+        const userData = Array.isArray(response.data) ? response.data : response.data?.results || []
+
+        if (userData.length > 0) {
           // Get the most recent application with user details
-          const latestApplication = response.data.sort(
+          const latestApplication = userData.sort(
             (a, b) => new Date(b.created_at) - new Date(a.created_at),
           )[0]
 
@@ -80,14 +83,21 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
         // Fetch all applications for the user
         const response = await epcServices.getApplicationWithCid(cid)
 
-        if (response.data) {
-          this.applications = response.data.map((app) => ({
+        // Check if response.data is an array, if not check for results property
+        const applicationsData = Array.isArray(response.data)
+          ? response.data
+          : response.data?.results || []
+
+        if (applicationsData.length > 0) {
+          this.applications = applicationsData.map((app) => ({
             id: app.id,
             type: app.registration_type || 'Registration',
             status: app.status || 'Pending',
             date: app.created_at || new Date().toISOString(),
             message: app.remarks || '',
           }))
+        } else {
+          this.applications = [] // Ensure it's an empty array if no data
         }
       } catch (error) {
         console.error('Error fetching applications:', error)
@@ -99,11 +109,12 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
         // Fetch CPD credits
         const response = await epcServices.getEpcCpdTasks()
 
-        if (response.data) {
-          // Filter tasks for the current user and calculate total credits
-          const userTasks = response.data.filter((task) => task.cid === cid)
-          this.cpdCredits = userTasks.reduce((total, task) => total + (task.credits || 0), 0)
-        }
+        // Check if response.data is an array, if not check for results property
+        const cpdData = Array.isArray(response.data) ? response.data : response.data?.results || []
+
+        // Filter tasks for the current user and calculate total credits
+        const userTasks = cpdData.filter((task) => task.cid === cid)
+        this.cpdCredits = userTasks.reduce((total, task) => total + (task.credits || 0), 0)
       } catch (error) {
         console.error('Error fetching CPD credits:', error)
       }
@@ -118,23 +129,35 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
 
         const activities = []
 
+        // Check if appResponse.data is an array, if not check for results property
+        const appData = Array.isArray(appResponse.data)
+          ? appResponse.data
+          : appResponse.data?.results || []
+
         // Add application activities
-        if (appResponse.data) {
-          appResponse.data.forEach((app) => {
+        if (appData.length > 0) {
+          appData.forEach((app) => {
             activities.push({
               id: `app-${app.id}`,
               type: 'Application',
               status: app.status,
               date: app.updated_at || app.created_at,
-              title: `${app.registration_type || 'Registration'} application ${app.status.toLowerCase()}`,
-              description: app.remarks || `Your application has been ${app.status.toLowerCase()}`,
+              title: `${app.registration_type || 'Registration'} application ${app.status?.toLowerCase() || 'pending'}`,
+              description:
+                app.remarks ||
+                `Your application has been ${app.status?.toLowerCase() || 'processed'}`,
             })
           })
         }
 
+        // Check if cpdResponse.data is an array, if not check for results property
+        const cpdData = Array.isArray(cpdResponse.data)
+          ? cpdResponse.data
+          : cpdResponse.data?.results || []
+
         // Add CPD activities
-        if (cpdResponse.data) {
-          const userCpdTasks = cpdResponse.data.filter((task) => task.cid === cid)
+        if (cpdData.length > 0) {
+          const userCpdTasks = cpdData.filter((task) => task.cid === cid)
           userCpdTasks.forEach((cpd) => {
             activities.push({
               id: `cpd-${cpd.id}`,
@@ -163,9 +186,14 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
 
         const deadlines = []
 
+        // Check if appResponse.data is an array, if not check for results property
+        const appData = Array.isArray(appResponse.data)
+          ? appResponse.data
+          : appResponse.data?.results || []
+
         // Add renewal deadlines
-        if (appResponse.data && appResponse.data.length > 0) {
-          const approvedApplications = appResponse.data.filter(
+        if (appData.length > 0) {
+          const approvedApplications = appData.filter(
             (app) => app.status === 'Approved' && app.expiry_date,
           )
 
@@ -282,16 +310,17 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
             // Fetch full application details for the certificate
             const response = await epcServices.getEpcNewApplication(approvedApp.id)
 
-            if (response.data) {
-              this.selectedApplication = {
-                ...response.data,
-                // Add any additional formatting needed for certificate display
-                registrationNumber: response.data.registration_number || 'N/A',
-                fullName: response.data.full_name || 'N/A',
-                issueDate: response.data.approved_date || response.data.updated_at,
-                expiryDate: response.data.expiry_date || null,
-                qualificationName: response.data.qualification_name || 'N/A',
-              }
+            // Check if response.data exists
+            const applicationData = response.data || {}
+
+            this.selectedApplication = {
+              ...applicationData,
+              // Add any additional formatting needed for certificate display
+              registrationNumber: applicationData.registration_number || 'N/A',
+              fullName: applicationData.full_name || 'N/A',
+              issueDate: applicationData.approved_date || applicationData.updated_at,
+              expiryDate: applicationData.expiry_date || null,
+              qualificationName: applicationData.qualification_name || 'N/A',
             }
           } catch (error) {
             console.error('Error fetching application details for certificate:', error)
