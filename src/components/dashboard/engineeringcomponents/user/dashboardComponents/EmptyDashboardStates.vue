@@ -68,7 +68,7 @@ defineProps({
 
 const checkApplicationStatus = () => {
   if (typeof router.push === 'function') {
-    router.push('/admin/user/engineering/my_applications'); // Adjusted to engineering path
+    router.push('/admin/user/engineering_certification/my_applications'); // Adjusted to engineering path
   } else {
     console.error('router.push is not a function');
   }

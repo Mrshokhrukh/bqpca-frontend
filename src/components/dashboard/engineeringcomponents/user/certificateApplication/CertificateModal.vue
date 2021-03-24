@@ -14,7 +14,7 @@
           <!-- A4 proportions -->
           <!-- Watermark -->
           <div class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-            <img src="@/assets/epc-logo.png" alt="Watermark" class="w-2/3 max-w-xl" />
+            <img src="@/assets/engineering-logo.png" alt="Watermark" class="w-2/3 max-w-xl" />
           </div>
 
           <!-- Header Section -->
@@ -39,7 +39,7 @@
 
             <!-- Right Logo -->
             <div class="text-center w-32">
-              <img src="@/assets/epc-logo.png" alt="EPC Logo" class="h-24 mx-auto" />
+              <img src="@/assets/engineering-logo.png" alt="EPC Logo" class="h-24 mx-auto" />
               <p class="mt-2 text-sm font-semibold">EPC</p>
             </div>
           </div>
@@ -53,7 +53,7 @@
                 <div>{{ application.full_name }}</div>
 
                 <div class="font-semibold">Citizenship ID No.:</div>
-                <div>{{ application.cid }}</div>
+                <div>{{ application.cid_no }}</div>
 
                 <div class="font-semibold">Registration No.:</div>
                 <div>{{ application.registration_no }}</div>

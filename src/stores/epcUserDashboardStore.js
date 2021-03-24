@@ -1,6 +1,8 @@
 // src/stores/epcUserDashboardStore.js
 import { defineStore } from 'pinia'
-import epcServices from '@/services/epcServices'
+import apiServices from '@/services/services'
+import { useAuthStore } from '@/stores/authStore' // Import useAuthStore
+
 
 export const useEpcDashboardStore = defineStore('epcDashboard', {
   state: () => ({
@@ -19,6 +21,149 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
     selectedApplication: null,
     showCertificateModal: false,
   }),
+
+  // Getters (computed properties) -  Adapt getters from source store
+  getters: {
+    currentUserApplication() {
+      const authStore = useAuthStore();  // Use authStore
+      if (!this.applications || !authStore.user?.cid) { // check if user object and cid exists
+        return null;
+      }
+
+      const userApplications = this.applications
+        .filter(app => app.cid === authStore.user.cid) //use the cid for filtering.
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      return userApplications[0] || null;
+    },
+
+    hasApplication() {
+      return Boolean(this.currentUserApplication);
+    },
+    //Renamed from hasSubmittedApplication to hasSubmitted in order to keep original names
+    hasSubmitted() {
+      const application = this.currentUserApplication;
+      // changed to check status
+      return Boolean(application?.status);
+    },
+    //renamed to hasApprovedApp
+    hasApprovedApp() {
+      const application = this.currentUserApplication;
+      if (!application) return false;
+      return application.status === 'Approved';  // Directly check the status
+    },
+
+    isRenewalPeriod() {
+      const application = this.currentUserApplication;
+      if (!application?.licenseExpiryDate || !this.hasApprovedApp) return false;
+
+      const expiryDate = new Date(application.licenseExpiryDate);
+      const today = new Date();
+      const monthsRemaining = (expiryDate - today) / (1000 * 60 * 60 * 24 * 30);
+
+      return monthsRemaining <= 3 && monthsRemaining > 0;
+    },
+
+    isInReregistrationPeriod() {
+      const application = this.currentUserApplication;
+      if (!application?.licenseExpiryDate || !this.hasApprovedApp) return false;
+
+      const expiryDate = new Date(application.licenseExpiryDate);
+      const today = new Date();
+      const monthsSinceExpiry = (today - expiryDate) / (1000 * 60 * 60 * 24 * 30);
+
+      return monthsSinceExpiry > 0 && monthsSinceExpiry <= 2;
+    },
+    visibleMenus() {
+      // 1. After Registration (but before application):
+      if (!this.hasSubmitted) {
+        return {
+          baseMenus: {
+            dashboard: true,
+            certification: true,
+            cpdManagement: false,
+            cogsManagement: false, // Assuming this doesn't exist in EPC, keep it false.
+            profile: true,
+          },
+          certificationSubMenus: {  //adjusting these names to represent general functions in epc store.
+            applyForCertification: true, //generic name.
+            myApplications: false,
+            renewal: false,
+            reRegistration: false,
+            additionalQualification: false, // keep original structure.
+          },
+        };
+      }
+
+      // 2. Once Application is Applied (but not yet approved):
+      if (this.hasSubmitted && !this.hasApprovedApp) {
+        return {
+          baseMenus: {
+            dashboard: true,
+            certification: true,
+            cpdManagement: false,
+            cogsManagement: false, // Assuming this doesn't exist in EPC, keep it false.
+            profile: true,
+          },
+          certificationSubMenus: {
+            applyForCertification: true,
+            myApplications: true,
+            renewal: false,
+            reRegistration: false,
+            additionalQualification: false,
+          },
+        };
+      }
+
+      // 3. Once Application is Approved:
+      if (this.hasApprovedApp) {
+        let baseMenus = {
+          dashboard: true,
+          certification: true,
+          cpdManagement: true, //should exist in epc.
+          cogsManagement: false,  // Assuming this doesn't exist in EPC, keep it false.
+          profile: true,
+        };
+
+        let certificationSubMenus = {
+          applyForCertification: true,
+          myApplications: true,
+          renewal: false,
+          reRegistration: false,
+          additionalQualification: true, // Set to true when approved!  keeping original structure.
+        };
+
+        // 4. Renewal Period:
+        if (this.isRenewalPeriod) {
+          certificationSubMenus.renewal = true;
+        }
+
+        // 5. Re-registration Period:
+        if (this.isInReregistrationPeriod) {
+          certificationSubMenus.reRegistration = true;
+        }
+
+        return { baseMenus, certificationSubMenus };
+      }
+      //default menus incase of an error or unexpected state.
+      return {
+        baseMenus: {
+          dashboard: true,
+          certification: false,
+          cpdManagement: false,
+          cogsManagement: false,
+          profile: true,
+        },
+        certificationSubMenus: {
+          applyForCertification: false,
+          myApplications: false,
+          renewal: false,
+          reRegistration: false,
+          additionalQualification: false,
+        },
+      };
+    }
+  },
 
   actions: {
     async fetchAllData(cid) {
@@ -51,7 +196,7 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
     async fetchUserDetails(cid) {
       try {
         // Assuming there's an endpoint for fetching user details
-        const response = await epcServices.getApplicationWithCid(cid)
+        const response = await apiServices.getApplicationWithCid(cid)
 
         // Check if response.data is an array, if not check for results property
         const userData = Array.isArray(response.data) ? response.data : response.data?.results || []
@@ -81,7 +226,7 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
     async fetchApplications(cid) {
       try {
         // Fetch all applications for the user
-        const response = await epcServices.getApplicationWithCid(cid)
+        const response = await apiServices.getApplicationWithCid(cid)
 
         // Check if response.data is an array, if not check for results property
         const applicationsData = Array.isArray(response.data)
@@ -95,6 +240,8 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
             status: app.status || 'Pending',
             date: app.created_at || new Date().toISOString(),
             message: app.remarks || '',
+            cid: app.cid, // IMPORTANT:  Add the cid to each application.
+            expiryDate: app.expiry_date //Add expiry date
           }))
         } else {
           this.applications = [] // Ensure it's an empty array if no data
@@ -107,7 +254,7 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
     async fetchCpdCredits(cid) {
       try {
         // Fetch CPD credits
-        const response = await epcServices.getEpcCpdTasks()
+        const response = await apiServices.getEpcCpdTasks()
 
         // Check if response.data is an array, if not check for results property
         const cpdData = Array.isArray(response.data) ? response.data : response.data?.results || []
@@ -124,8 +271,8 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
       try {
         // Fetch recent activities
         // This could be a combination of application updates, CPD submissions, etc.
-        const appResponse = await epcServices.getApplicationWithCid(cid)
-        const cpdResponse = await epcServices.getEpcCpdTasks()
+        const appResponse = await apiServices.getApplicationWithCid(cid)
+        const cpdResponse = await apiServices.getEpcCpdTasks()
 
         const activities = []
 
@@ -182,7 +329,7 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
     async fetchDeadlines(cid) {
       try {
         // Fetch deadlines - could include renewal dates, CPD submission deadlines, etc.
-        const appResponse = await epcServices.getApplicationWithCid(cid)
+        const appResponse = await apiServices.getApplicationWithCid(cid)
 
         const deadlines = []
 
@@ -308,7 +455,7 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
         if (approvedApp) {
           try {
             // Fetch full application details for the certificate
-            const response = await epcServices.getEpcNewApplication(approvedApp.id)
+            const response = await apiServices.getEpcNewApplication(approvedApp.id)
 
             // Check if response.data exists
             const applicationData = response.data || {}
@@ -330,5 +477,50 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
 
       this.showCertificateModal = show
     },
+    // --- Actions adapted from source store ---
+    async fetchApplicationDetails() { //renamed to initializeApplications
+      this.isLoading = true;
+      this.error = null; // Assuming you add an error ref to the state
+
+      try {
+        //using already existing function.
+        await this.fetchApplications(useAuthStore().user.cid) // Fetch applications based on CID.
+
+      } catch (err) {
+        console.error('Error fetching application details:', err);
+        this.error = err.response?.data?.message || 'Failed to fetch application details'; // Assuming you add an error ref
+        this.applications = []; //  set to empty if there's an error
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async initialize() {
+      const authStore = useAuthStore();
+      if (authStore.isAuthenticated) {
+        await this.fetchApplicationDetails(); // Call the new method to load application details
+      }
+    },
+    resetStore() {
+      // Reset all state properties to their initial values
+      Object.assign(this, {
+        userDetail: null,
+        applications: [],
+        cpdCredits: 0,
+        licenseExpiryDate: null,
+        licenseStatus: 'Inactive',
+        renewalMessage: '',
+        showViewCertificateButton: false,
+        recentActivities: [],
+        upcomingDeadlines: [],
+        selectedApplications: [],
+        modalTitle: '',
+        isLoading: false,
+        selectedApplication: null,
+        showCertificateModal: false,
+        error: null, // Assuming you also want to reset error
+      });
+
+    },
+
   },
 })

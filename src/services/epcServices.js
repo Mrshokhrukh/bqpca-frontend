@@ -299,6 +299,12 @@ export default {
   deleteEpcNewApplication(id) {
     return apiClient.delete(`/epc/epc-new-application/${id}/`)
   },
+  getEpcApplicationsByCid(cid) {
+    return apiClient.get(`/epc/epc-get-application-list/get_by_cid/?cid=${cid}`)
+  },
+  getEpcFullApplicationListByCid(cid) {
+    return apiClient.get(`/epc/epc-new-application/?cid=${cid}`)
+  },
 
   // EPC New Qualification endpoints
   getEpcNewQualifications() {

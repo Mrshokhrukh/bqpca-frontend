@@ -142,7 +142,7 @@ const visitApplication = (app) => {
 // Handle View Certificate
 const handleViewCertificate = () => {
   dashboardStore.setShowCertificateModal(true);
-  
+
   // Find the primary and approved qualification
   const primaryApprovedQualification = getPrimaryQualifications.value[0]; // Get the first one
 
@@ -179,7 +179,7 @@ watch(applications, (newApplications) => {
     console.log('User has approved applications');
   } else {
     // Disable functionality for approved applications
-    console.log('User has no approved applications');
+    console.error('User has no approved applications');
   }
 }, { deep: true });
 
