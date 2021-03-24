@@ -117,7 +117,7 @@ const fetchApplications = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await apiService.getEpcInstitutes(); // Changed to getEpcInstitutes (plural)
+    const response = await apiService.getEpcInstitutes(); 
     applications.value = response.data.results;
     console.log(applications.value)
   } catch (err) {
@@ -143,7 +143,7 @@ const closeApplication = () => {
 const saveApplication = async (applicationId, updatedApplication) => {
   console.log("Saving application", applicationId, "with updates:", updatedApplication);
   try {
-    await apiService.patchEpcInstitute(applicationId, updatedApplication); // patchEpcInstitute is correct for updating
+    await apiService.patchEpcInstitute(applicationId, updatedApplication); 
     // Optionally, refresh the application list after saving
     await fetchApplications();
     closeApplication();

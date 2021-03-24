@@ -1,7 +1,7 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Teaching Hospitals</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">Teaching Institutes</h1>
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
@@ -51,7 +51,7 @@
 
     <div v-else-if="teachingCenters.length === 0"
       class="bg-white p-8 text-center text-gray-500 rounded-xl shadow-sm border border-gray-100">
-      <p>No teaching hospitals found</p>
+      <p>No teaching Institutes found</p>
     </div>
 
     <div v-else class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -204,7 +204,7 @@ const fetchTeachingCenters = async () => {
     loading.value = true;
 
     // Fetch Teaching Centers for the table
-    const response = await apiServices.getBmhcTeachingCenters();
+    const response = await apiServices.getEpcTeachingCenters(); // Changed to getEpcTeachingCenters
 
     // axios wraps response in data property
     if (response && response.data && response.data.results) {
@@ -282,7 +282,7 @@ const confirmAction = async () => {
     }
 
     // Update the teaching center
-    await apiServices.patchBmhcTeachingCenter(id, updateData);
+    await apiServices.patchEpcTeachingCenter(id, updateData); // Changed to patchEpcTeachingCenter
 
     // Update local data to reflect the change
     const index = teachingCenters.value.findIndex(center => center.id === id);

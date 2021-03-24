@@ -372,7 +372,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
-import apiService from '@/services/services';
+import apiService from '@/services/services'; // Make sure this path is correct
 import { Loader } from 'lucide-vue-next'
 
 // State variables
@@ -639,8 +639,8 @@ const fetchTeachingCenters = async () => {
   errorMessage.value = '';
 
   try {
-    // Fetch teaching centers
-    const response = await apiService.patchEpcTeachingCenter();
+    // Fetch teaching centers using the correct GET endpoint
+    const response = await apiService.getEpcTeachingCenters();
 
     if (response && response.data && response.data.results) {
       teachingCenters.value = response.data.results;
@@ -658,4 +658,19 @@ const fetchTeachingCenters = async () => {
 
 // Fetch data on component mount
 onMounted(fetchTeachingCenters);
+</script>
+
+<script>
+import apiClient from '@/services/apiClient' // Assuming apiClient.js is in the '@/services/' directory
+
+export default {
+  // ... (rest of your apiService.js content -  *ensure this is in a separate file `apiService.js` in your `@/services` directory*)
+  getEpcTeachingCenters() {
+    return apiClient.get('/epc/epc-teaching-centers/') // GET request to fetch all centers
+  },
+  patchEpcTeachingCenter(id, data) {
+    return apiClient.patch(`/epc/epc-teaching-centers/${id}/`, data) // PATCH request to update a specific center by ID
+  },
+  // ... (other api service functions)
+}
 </script>
