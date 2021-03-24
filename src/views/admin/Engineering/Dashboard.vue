@@ -72,7 +72,6 @@ import EPCUserProfile from '@/components/dashboard/engineeringcomponents/user/EP
 import PaymentComponent from '@/components/dashboard/engineeringcomponents/user/certificateApplication/PaymentComponent.vue';
 import PaymentHistoryComponent from '@/components/dashboard/engineeringcomponents/user/certificateApplication/PaymentHistoryComponent.vue';
 import ReportsComponent from '@/components/dashboard/engineeringcomponents/user/ReportsComponent.vue';
-import ReRegistration from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ReRegistration.vue';
 import AdditionalQualification from '@/components/dashboard/engineeringcomponents/user/certificateApplication/AdditionalQualification.vue';
 import ApplicationTracker from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ApplicationTracker.vue';
 import CPDTracker from '@/components/dashboard/engineeringcomponents/user/cpdApplication/CPDTracker.vue';
@@ -230,8 +229,6 @@ const engineeringUserComponent = computed(() => {
       return CertificateRegistrationComponent;
     case path.endsWith('/engineering_certification/renewal'):
       return ApplicationRenewal;
-    case path.endsWith('/engineering_certification/re_registration'):
-      return ReRegistration;
     case path.endsWith('/engineering_certification/additional_qualification'):
       return AdditionalQualification;
     case path.endsWith('/engineering_certification/CoGS'):

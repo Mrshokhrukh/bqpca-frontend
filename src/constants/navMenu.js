@@ -1157,10 +1157,6 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/user/${serviceType}/renewal`,
           },
           {
-            name: 'Re-registration',
-            route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
-          },
-          {
             name: 'Additional Qualification',
             route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
           },

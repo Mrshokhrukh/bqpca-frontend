@@ -155,7 +155,6 @@ export default {
       registration: engineeringDashboard,
       institute_renewals: engineeringDashboard,
       renewal: engineeringDashboard,
-      re_registration: engineeringDashboard,
       additional_qualification: engineeringDashboard,
       CoGS: engineeringDashboard,
       cpd: engineeringDashboard,

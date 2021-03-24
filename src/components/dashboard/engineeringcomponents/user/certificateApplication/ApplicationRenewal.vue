@@ -115,21 +115,21 @@
         <!-- Registration Details -->
         <div class="col-span-1">
           <div :class="[
-            'rounded-xl p-4',
-            hasExpired ? 'bg-red-50 border border-red-200' : 'bg-blue-50 border border-blue-200'
-          ]">
+      'rounded-xl p-4',
+      hasExpired ? 'bg-red-50 border border-red-200' : 'bg-blue-50 border border-blue-200'
+    ]">
             <div class="flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" :class="[
-                'h-5 w-5 mr-2',
-                hasExpired ? 'text-red-600' : 'text-blue-600'
-              ]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      'h-5 w-5 mr-2',
+      hasExpired ? 'text-red-600' : 'text-blue-600'
+    ]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span :class="[
-                'text-sm font-medium',
-                hasExpired ? 'text-red-900' : 'text-blue-900'
-              ]">Registration Information</span>
+      'text-sm font-medium',
+      hasExpired ? 'text-red-900' : 'text-blue-900'
+    ]">Registration Information</span>
             </div>
             <div class="mt-2 grid grid-cols-2 gap-1">
               <div>
@@ -170,8 +170,9 @@
             </span>
           </div>
           <p class="mt-2 text-sm" :class="formData.is_active ? 'text-green-700' : 'text-yellow-700'">
-            {{ formData.is_active
-              ? 'Your application is currently active. Renewing will extend the validity period.' : 'Your application is currently inactive. Renewing will activate your application and extend the validity period.'
+            {{ formData.is_active 
+              ? 'Your application is currently active. Renewing will extend the validity period.' 
+              : 'Your application is currently inactive. Renewing will activate your application and extend the validity period.'
             }}
           </p>
         </div>
@@ -539,13 +540,7 @@ body {
 }
 
 /* Make sure only one container handles scrolling */
-.max-w-7xl {
-  height: calc(100vh - 60px);
-  /* Adjust based on your header/footer height */
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  /* Smooth scrolling on iOS/macOS */
-}
+
 
 /* Safari-specific fixes */
 @media not all and (min-resolution:.001dpcm) {
