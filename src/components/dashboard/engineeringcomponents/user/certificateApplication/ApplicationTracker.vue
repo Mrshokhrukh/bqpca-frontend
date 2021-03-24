@@ -4,7 +4,7 @@
       <h3 class="text-lg leading-6 font-medium text-gray-900">Applications</h3>
       <p class="mt-1 max-w-2xl text-sm text-gray-500">View and track all your engineering applications.</p>
     </div>
-    
+
     <div class="border-t border-gray-200 px-4 py-5 sm:p-6">
       <div class="flex flex-col">
         <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -121,12 +121,12 @@ const getStatusClass = (status) => {
 // Check if an application is nearing expiry (within 3 months)
 const isExpiring = (application) => {
   if (!application.expiry_date) return false;
-  
+
   const expiryDate = new Date(application.expiry_date);
   const today = new Date();
   const threeMonthsFromNow = new Date();
   threeMonthsFromNow.setMonth(today.getMonth() + 3);
-  
+
   return expiryDate < threeMonthsFromNow;
 };
 
@@ -134,7 +134,7 @@ const isExpiring = (application) => {
 const viewApplication = (application) => {
   // Determine the route based on application type
   let route = '/admin/user/engineering/';
-  
+
   switch (application.type) {
     case 'New Registration':
       route += 'practitioner_reg_and_cert/registration';
@@ -151,7 +151,7 @@ const viewApplication = (application) => {
     default:
       route += 'dashboard';
   }
-  
+
   // Navigate to the application with id parameter
   router.push({ path: route, query: { id: application.id } });
 };
@@ -164,7 +164,7 @@ const trackApplication = (application) => {
 const resubmitApplication = (application) => {
   // Navigate to resubmission page based on application type
   let route = '/admin/user/engineering/';
-  
+
   switch (application.type) {
     case 'New Registration':
       route += 'practitioner_reg_and_cert/registration';
@@ -181,7 +181,7 @@ const resubmitApplication = (application) => {
     default:
       route += 'dashboard';
   }
-  
+
   // Add resubmit flag and application id
   router.push({ path: route, query: { resubmit: true, id: application.id } });
 };
@@ -195,25 +195,31 @@ const renewApplication = (application) => {
 const fetchApplications = async () => {
   try {
     loading.value = true;
-    
+
     if (!authStore.user?.cid) {
       toast.error('User CID not found. Please log in again.');
       return;
     }
-    
+
     const response = await epcServices.getApplicationWithCid(authStore.user.cid);
-    
+
+    // Check if response data exists
     if (response.data) {
+      // Handle the specific API response structure with results array
+      const dataArray = response.data.results || [];
+
       // Transform data to match our component's structure
-      applications.value = response.data.map(app => ({
+      applications.value = dataArray.map(app => ({
         id: app.id,
-        type: app.registration_type || 'New Registration',
-        status: app.status || 'Pending',
+        type: app.registration_type_name || 'New Registration',
+        status: app.user_qualifications?.[0]?.application_review_status || 'Pending',
         created_at: app.created_at,
         updated_at: app.updated_at,
         expiry_date: app.expiry_date,
-        remarks: app.remarks
+        remarks: app.user_qualifications?.[0]?.remarks
       }));
+    } else {
+      applications.value = [];
     }
   } catch (error) {
     console.error('Error fetching applications:', error);

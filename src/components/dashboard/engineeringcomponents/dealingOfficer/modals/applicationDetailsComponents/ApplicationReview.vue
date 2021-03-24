@@ -65,9 +65,9 @@
               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               <option value="Pending">Pending Review</option>
               <option value="Approved">Approve Documents</option>
-              <option value="Regretted">Regret Documents</option>
+              <option value="Rejected">Regret Documents</option>
             </select>
-            <textarea v-if="editableData.application_review_status === 'Regretted'"
+            <textarea v-if="editableData.application_review_status === 'Rejected'"
               v-model="editableData.application_review_remark" placeholder="Provide rejection reason..."
               class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               rows="3"></textarea>
@@ -82,9 +82,9 @@
               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               <option value="Pending">Pending Verification</option>
               <option value="Approved">Verify Documents</option>
-              <option value="Regretted">Regret Verification</option>
+              <option value="Rejected">Regret Verification</option>
             </select>
-            <textarea v-if="editableData.physical_review_status === 'Regretted'"
+            <textarea v-if="editableData.physical_review_status === 'Rejected'"
               v-model="editableData.physical_review_remark" placeholder="Provide rejection reason..."
               class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               rows="3"></textarea>
@@ -99,10 +99,10 @@
               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               <option value="Pending">Pending Decision</option>
               <option value="Approved">Endorse Application</option>
-              <option value="Regretted">Regret Application</option>
+              <option value="Rejected">Regret Application</option>
             </select>
-            <textarea v-if="editableData.endorsement_decision === 'Regretted'"
-              v-model="editableData.endorsement_remarks" placeholder="Provide rejection reason..."
+            <textarea v-if="editableData.endorsement_decision === 'Rejected'" v-model="editableData.endorsement_remarks"
+              placeholder="Provide rejection reason..."
               class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               rows="3"></textarea>
           </div>
