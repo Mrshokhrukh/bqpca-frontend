@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto p-8">
+  <div class="mx-auto py-8">
     <FormHeader />
     <LoadingOverlay :loading="loading" />
     <AlertMessage :messages="validationErrors" type="error" />
