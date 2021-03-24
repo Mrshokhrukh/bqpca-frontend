@@ -406,7 +406,7 @@ const fetchApplications = async () => {
   try {
     let response;
     if (userCid.value) {
-      response = await apiService.getFullApplicationListByCid(userCid.value);
+      response = await apiService.getMhpcFullApplicationListByCid(userCid.value);
     }
 
 
@@ -504,7 +504,7 @@ const handlePaymentCompleted = async (paymentData) => {
     updateFormData.append('payment_id', paymentId);
     updateFormData.append('payment_status', "processing_payment");
 
-    await apiService.patchBhmcNewQualification(qualificationId, updateFormData);
+    await apiService.patchMhpcNewQualification(qualificationId, updateFormData);
 
     // 3. Local state update (optional)
     selectedQualification.value.payment_id = paymentId;

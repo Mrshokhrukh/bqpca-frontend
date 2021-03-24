@@ -120,7 +120,7 @@ onMounted(async () => {
   loading.value = true;
   error.value = null; // Reset error on each fetch
   try {
-    const response = await apiServices.getBmhcInstitutes();
+    const response = await apiServices.getMhpcInstitutes();
 
     // Corrected access to results: response.data.results
     if (response && response.data && Array.isArray(response.data.results)) {

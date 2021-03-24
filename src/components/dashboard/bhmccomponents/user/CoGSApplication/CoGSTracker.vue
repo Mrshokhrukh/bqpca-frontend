@@ -147,7 +147,7 @@ const fetchApplications = async () => {
   apiError.value = false;
 
   try {
-    const response = await apiService.getBmhcCogs();
+    const response = await apiService.getMhpcCogs();
     // Access the 'results' property of the response data.
     if (Array.isArray(response.data.results)) {
       applications.value = response.data.results;
@@ -281,7 +281,7 @@ const handlePaymentCompleted = async (paymentData) => {
     updateFormData.append('payment_id', paymentId);
 
     //PATCH COGS application
-    await apiService.patchBhmcCogs(applicationId, updateFormData);
+    await apiService.patchMhpcCogs(applicationId, updateFormData);
 
     // 3.  Update local state to reflect changes
     const updatedApplicationIndex = applications.value.findIndex(app => app.id === applicationId);

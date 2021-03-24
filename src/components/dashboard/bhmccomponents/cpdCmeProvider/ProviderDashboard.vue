@@ -46,7 +46,8 @@
           <button @click="viewAllSessions" class="text-blue-600 text-sm hover:text-blue-800">View All</button>
         </div>
         <div class="space-y-4">
-          <div v-for="session in trainingSessions.slice(0, 3)" :key="session.id" class="border-b last:border-0 pb-4 last:pb-0">
+          <div v-for="session in trainingSessions.slice(0, 3)" :key="session.id"
+            class="border-b last:border-0 pb-4 last:pb-0">
             <div class="flex justify-between items-start">
               <div class="space-y-1">
                 <h4 class="font-medium">{{ session.title }}</h4>
@@ -72,15 +73,15 @@
                 </div>
               </div>
               <span :class="[
-                'px-2 py-1 rounded-full text-xs',
-                session.status === 'Approved'
-                  ? 'bg-green-100 text-green-800'
-                  : session.status === 'Pending'
-                    ? 'bg-yellow-100 text-yellow-800'
-                    : session.status === 'Upcoming'
-                      ? 'bg-blue-100 text-blue-800'
-                      : 'bg-purple-100 text-purple-800',
-              ]">
+              'px-2 py-1 rounded-full text-xs',
+              session.status === 'Approved'
+                ? 'bg-green-100 text-green-800'
+                : session.status === 'Pending'
+                  ? 'bg-yellow-100 text-yellow-800'
+                  : session.status === 'Upcoming'
+                    ? 'bg-blue-100 text-blue-800'
+                    : 'bg-purple-100 text-purple-800',
+            ]">
                 {{ session.status }}
               </span>
             </div>
@@ -212,7 +213,7 @@ const viewAllSessions = () => {
 onMounted(async () => {
   loading.value = true;
   try {
-    const cpdRecordsResponse = await apiservice.getBmhcCpdTask();
+    const cpdRecordsResponse = await apiservice.getMhpcCpdTask();
     const cpdData = cpdRecordsResponse.data.results || [];
 
     // Filter data based on user's CID

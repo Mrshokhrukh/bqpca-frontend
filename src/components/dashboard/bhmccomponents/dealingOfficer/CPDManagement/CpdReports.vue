@@ -142,7 +142,7 @@ const formatDate = (dateString) => {
 onMounted(async () => {
   isLoading.value = true;
   try {
-    const response = await apiServices.getBmhcCpdRecords();
+    const response = await apiServices.getMhpcCpdRecords();
     if (response && response.data && response.data.results) {
       reports.value = response.data.results.map(item => ({
         id: item.id,

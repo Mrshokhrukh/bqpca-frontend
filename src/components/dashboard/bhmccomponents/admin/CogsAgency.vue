@@ -165,7 +165,7 @@ const agencyToDelete = ref(null);
 // Fetch agencies on component mount
 onMounted(async () => {
     try {
-        const response = await services.getBmhcCogsAgencies();
+        const response = await services.getMhpcCogsAgencies();
         console.log('API Response:', response.data); // DEBUG: Inspect the data
 
         // Check if response.data.results exists and is an array
@@ -204,13 +204,13 @@ const paginatedAgencies = computed(() => {
 const handleSubmit = async () => {
     try {
         if (isEditing.value) {
-            const response = await services.updateBmhcCogsAgency(formData.value.id, formData.value);
+            const response = await services.updateMhpcCogsAgency(formData.value.id, formData.value);
             const index = agencies.value.findIndex(dt => dt.id === formData.value.id);
             if (index !== -1) {
                 agencies.value[index] = response.data;
             }
         } else {
-            const response = await services.createBmhcCogsAgency(formData.value);
+            const response = await services.createMhpcCogsAgency(formData.value);
             agencies.value.push(response.data);
         }
         resetForm();
@@ -242,7 +242,7 @@ const confirmDelete = async () => {
     if (!agencyToDelete.value) return;
 
     try {
-        await services.deleteBmhcCogsAgency(agencyToDelete.value.id);
+        await services.deleteMhpcCogsAgency(agencyToDelete.value.id);
         const index = agencies.value.findIndex(dt => dt.id === agencyToDelete.value.id);
         if (index !== -1) {
             agencies.value.splice(index, 1);

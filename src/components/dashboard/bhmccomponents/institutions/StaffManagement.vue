@@ -9,11 +9,11 @@
             'bg-blue-50 border-l-4 border-blue-500'
       ]">
         <div :class="[
-          'flex-shrink-0 w-6 h-6',
-          notification.type === 'success' ? 'text-green-500' :
-            notification.type === 'error' ? 'text-red-500' :
-              'text-blue-500'
-        ]">
+        'flex-shrink-0 w-6 h-6',
+        notification.type === 'success' ? 'text-green-500' :
+          notification.type === 'error' ? 'text-red-500' :
+            'text-blue-500'
+      ]">
           <svg v-if="notification.type === 'success'" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -29,19 +29,19 @@
         </div>
         <div class="ml-3">
           <h3 :class="[
-            'text-sm font-medium',
-            notification.type === 'success' ? 'text-green-800' :
-              notification.type === 'error' ? 'text-red-800' :
-                'text-blue-800'
-          ]">
+        'text-sm font-medium',
+        notification.type === 'success' ? 'text-green-800' :
+          notification.type === 'error' ? 'text-red-800' :
+            'text-blue-800'
+      ]">
             {{ notification.title }}
           </h3>
           <p :class="[
-            'text-sm mt-1',
-            notification.type === 'success' ? 'text-green-700' :
-              notification.type === 'error' ? 'text-red-700' :
-                'text-blue-700'
-          ]">
+        'text-sm mt-1',
+        notification.type === 'success' ? 'text-green-700' :
+          notification.type === 'error' ? 'text-red-700' :
+            'text-blue-700'
+      ]">
             {{ notification.message }}
           </p>
         </div>
@@ -147,7 +147,7 @@
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
                 Date of Joining
                 <span v-if="sortColumn === 'date_of_joining'" class="ml-1">{{ sortDirection === 'asc' ? '↑' : '↓'
-                }}</span>
+                  }}</span>
               </th>
               <th @click="sortBy('department')"
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
@@ -215,7 +215,7 @@
           <div>
             <p class="text-sm text-gray-700">
               Showing <span class="font-medium">{{ paginationStart + 1 }}</span> to <span class="font-medium">{{
-                paginationEnd }}</span> of <span class="font-medium">{{ totalStaff }}</span> results
+        paginationEnd }}</span> of <span class="font-medium">{{ totalStaff }}</span> results
             </p>
           </div>
           <div class="flex">
@@ -261,7 +261,7 @@
               </h2>
               <p class="text-sm text-gray-500">
                 {{ modalMode === 'add' ? 'Create a new staff record' : modalMode === 'edit' ? 'Update staff information'
-                  : 'View staff information' }}
+        : 'View staff information' }}
               </p>
             </div>
 
@@ -433,7 +433,7 @@ const paginationEnd = computed(() =>
 const fetchStaff = async () => {
   isLoading.value = true;
   try {
-    const response = await apiServices.getBmhcInstituteStaff();
+    const response = await apiServices.getMhpcInstituteStaff();
 
     if (response && response.data) {
       staffList.value = response.data.results || [];
@@ -463,7 +463,7 @@ const fetchNextPage = async () => {
     const page = url.searchParams.get('page');
     if (page) currentPage.value = parseInt(page);
 
-    const response = await apiServices.getBmhcInstituteStaff(page);
+    const response = await apiServices.getMhpcInstituteStaff(page);
 
     if (response && response.data) {
       staffList.value = response.data.results || [];
@@ -488,7 +488,7 @@ const fetchPreviousPage = async () => {
     const page = url.searchParams.get('page');
     if (page) currentPage.value = parseInt(page);
 
-    const response = await apiServices.getBmhcInstituteStaff(page);
+    const response = await apiServices.getMhpcInstituteStaff(page);
 
     if (response && response.data) {
       staffList.value = response.data.results || [];
@@ -595,10 +595,10 @@ const saveStaff = async () => {
   isLoading.value = true;
   try {
     if (modalMode.value === 'add') {
-      await apiServices.createBmhcInstituteStaff(form.value);
+      await apiServices.createMhpcInstituteStaff(form.value);
       showNotification('success', 'Staff Added', 'New staff member has been added successfully');
     } else if (modalMode.value === 'edit') {
-      await apiServices.updateBmhcInstituteStaff(form.value.id, form.value);
+      await apiServices.updateMhpcInstituteStaff(form.value.id, form.value);
       showNotification('success', 'Staff Updated', 'Staff information has been updated successfully');
     }
 
@@ -623,7 +623,7 @@ const deleteStaff = async () => {
 
   isLoading.value = true;
   try {
-    await apiServices.deleteBmhcInstituteStaff(staffToDelete.value.id);
+    await apiServices.deleteMhpcInstituteStaff(staffToDelete.value.id);
     showNotification('success', 'Staff Deleted', 'Staff member has been deleted successfully');
 
     // Refresh staff list

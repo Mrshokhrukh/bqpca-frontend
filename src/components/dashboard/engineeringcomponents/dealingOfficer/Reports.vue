@@ -88,13 +88,13 @@
                 <template v-if="header.sortable">
                   <button @click="handleSort(header.key)" class="ml-1 focus:outline-none">
                     <i :class="[
-                      'fas',
-                      sortBy === header.key
-                        ? sortOrder === 'asc'
-                          ? 'fa-sort-up'
-                          : 'fa-sort-down'
-                        : 'fa-sort'
-                    ]"></i>
+          'fas',
+          sortBy === header.key
+            ? sortOrder === 'asc'
+              ? 'fa-sort-up'
+              : 'fa-sort-down'
+            : 'fa-sort'
+        ]"></i>
                   </button>
                 </template>
               </div>
@@ -237,7 +237,7 @@ const apiMethods = {
     })
   },
   cpd: {
-    fetch: bmhcServices.getBmhcNewQualifications,
+    fetch: bmhcServices.getMhpcNewQualifications,
     transform: (data) => ({
       ...data,
       status: data.is_cpd_approved ? 'Approved' : 'Pending'

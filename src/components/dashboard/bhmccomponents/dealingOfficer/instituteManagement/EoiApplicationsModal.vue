@@ -291,7 +291,7 @@ const approveApplication = async () => {
   }
 
   try {
-    const response = await apiService.patchBmhcInstitute(props.application.id, {
+    const response = await apiService.patchMhpcInstitute(props.application.id, {
       review_decision: 'Approved',  // CHANGED: Using review_decision instead of status
       approvalNotes: notes,
     });
@@ -318,7 +318,7 @@ const rejectApplication = async () => {
   }
 
   try {
-    const response = await apiService.patchBmhcInstitute(props.application.id, {
+    const response = await apiService.patchMhpcInstitute(props.application.id, {
       review_decision: 'Regretted',  // CHANGED: Using review_decision instead of status
       reason_if_rejected: reason,
     });

@@ -509,7 +509,7 @@ const submitPartial = async () => {
 
 
     //Use your API service to send the data.
-    const response = await bmhcService.createBmhcInstitute(submitData);
+    const response = await bmhcService.createMhpcInstitute(submitData);
 
 
     if (response.data) {
@@ -570,7 +570,7 @@ const handleSubmit = async () => {
       }
     });
 
-    const response = await bmhcService.createBmhcInstitute(submitData);
+    const response = await bmhcService.createMhpcInstitute(submitData);
 
     if (response.data) {
       toast.success('Application submitted successfully!');

@@ -333,7 +333,7 @@ const fetchCounselor = async () => {
   apiError.value = false;
 
   try {
-    const response = await apiService.getBmhcCounsellors();
+    const response = await apiService.getMhpcCounsellors();
     if (response && response.data && response.data.results) {
       applications.value = response.data.results;
     } else {

@@ -29,10 +29,10 @@
                 <div @click="navigate"
                   class="flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer"
                   :class="[
-                    isActive
-                      ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
-                      : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
-                  ]">
+        isActive
+          ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
+          : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
+      ]">
                   <component :is="item.icon" class="h-5 w-5 mr-3" :class="{ 'text-primary': isActive }" />
                   {{ item.name }}
                 </div>
@@ -44,10 +44,10 @@
               <button @click="toggleSubMenu(item)"
                 class="flex items-center justify-between w-full px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer group"
                 :class="[
-                  isChildActive(item.children)
-                    ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
-                    : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
-                ]">
+        isChildActive(item.children)
+          ? 'bg-slate-700/70 text-white shadow-lg shadow-slate-900/20'
+          : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:translate-x-1',
+      ]">
                 <div class="flex items-center">
                   <component :is="item.icon" class="h-5 w-5 mr-3" />
                   {{ item.name }}
@@ -66,10 +66,10 @@
                     v-slot="{ isActive, navigate }" custom>
                     <div @click="navigate"
                       class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors duration-200" :class="[
-                        isActive
-                          ? 'bg-slate-700/50 text-white font-medium'
-                          : 'text-slate-300 hover:bg-slate-700/30 hover:text-white',
-                      ]">
+        isActive
+          ? 'bg-slate-700/50 text-white font-medium'
+          : 'text-slate-300 hover:bg-slate-700/30 hover:text-white',
+      ]">
                       <span class="w-2 h-2 mr-3 rounded-full bg-slate-400/50"></span>
                       {{ child.name }}
 
@@ -118,7 +118,7 @@
       </header>
 
       <!-- Main Content -->
-      <main class="flex-1 overflow-auto bg-slate-50 p-6" style="overflow-y: auto;">
+      <main class="flex-1 overflow-auto bg-slate-50 p-6 min-h-auto" style="overflow-y: auto;">
         <router-view />
       </main>
 
@@ -246,23 +246,6 @@ const handleLogout = async () => {
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 20px;
 }
-
-/* Fix for macOS scrollbar issues
-@media screen and (min-width: 0) and (min-resolution: 72dpi) {
-  .custom-scrollbar {
-    overflow: auto !important;
-  }
-} */
-
-/* Hide default scrollbar on macOS */
-/* @media not all and (min-resolution:.001dpcm) {
-  @supports (-webkit-appearance:none) {
-    .custom-scrollbar {
-      -webkit-appearance: none;
-      appearance: none;
-    }
-  }
-} */
 
 /* Smooth transitions */
 .transition-all {

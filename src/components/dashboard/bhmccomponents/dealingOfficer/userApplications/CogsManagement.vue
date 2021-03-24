@@ -182,7 +182,6 @@
                     <button
                       v-if="application.review_status === 'Approved' && application.endorsement_decision === 'Approved' && application.is_payment_complete"
                       @click="reviewApplication(application)"
-
                       class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                       <EyeIcon class="h-4 w-4 mr-1" />
                       View
@@ -371,7 +370,7 @@ const fetchData = async () => {
   isLoading.value = true;
   error.value = null;
   try {
-    const response = await services.getBmhcCogs();
+    const response = await services.getMhpcCogs();
     applications.value = response.data.results;
   } catch (err) {
     error.value = 'Failed to load applications. Please try again later.';
@@ -450,7 +449,7 @@ const confirmReviewAction = async () => {
   if (!confirmData.value) return;
 
   try {
-    const response = await services.patchBmhcCogs(selectedApplication.value.id, confirmData.value);
+    const response = await services.patchMhpcCogs(selectedApplication.value.id, confirmData.value);
     if (response.status === 200) {
       const index = applications.value.findIndex(app => app.id === selectedApplication.value.id);
       if (index !== -1) {

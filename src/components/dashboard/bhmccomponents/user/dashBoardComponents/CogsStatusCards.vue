@@ -37,7 +37,7 @@ const application = ref(null);
 
 const fetchApplications = async () => {
   try {
-    const response = await apiService.getBmhcCogs();
+    const response = await apiService.getMhpcCogs();
     applications.value = Array.isArray(response.data.results)
       ? response.data.results
       : [];

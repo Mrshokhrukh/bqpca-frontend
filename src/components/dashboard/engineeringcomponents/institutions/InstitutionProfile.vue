@@ -35,15 +35,15 @@
                             <div>
                                 <p class="text-gray-600 font-medium">Address:</p>
                                 <p class="text-gray-800">{{ institute.address }}, {{ institute.village }}, {{
-                                    institute.gewog }}, {{
-                                    institute.dzongkhag }}</p>
+                institute.gewog }}, {{
+                institute.dzongkhag }}</p>
                             </div>
                             <div>
                                 <p class="text-gray-600 font-medium">Email:</p>
                                 <p class="text-gray-800 hover:text-blue-600">
                                     <a :href="`mailto:${institute.head_of_institution_email}`"> {{
-                                        institute.head_of_institution_email
-                                        }}</a>
+                institute.head_of_institution_email
+            }}</a>
                                 </p>
                             </div>
                             <div>
@@ -86,11 +86,11 @@
                             <div>
                                 <p class="text-gray-600 font-medium">Review Decision:</p>
                                 <p :class="{
-                                    'text-green-600': institute.review_decision === 'Approved',
-                                    'text-yellow-600': institute.review_decision === 'Pending',
-                                    'text-red-600': institute.review_decision !== 'Approved' && institute.review_decision !== 'Pending',
-                                    'font-semibold': true
-                                }">
+                'text-green-600': institute.review_decision === 'Approved',
+                'text-yellow-600': institute.review_decision === 'Pending',
+                'text-red-600': institute.review_decision !== 'Approved' && institute.review_decision !== 'Pending',
+                'font-semibold': true
+            }">
                                     {{ institute.review_decision }}
                                 </p>
                             </div>
@@ -172,7 +172,7 @@ const formatDate = (dateString) => {
 
 const fetchInstitute = async () => {
     try {
-        const response = await apiServices.getBmhcInstitutes();
+        const response = await apiServices.getMhpcInstitutes();
 
         // Corrected validation check: Access 'results' through response.data
         if (!response || !response.data || !response.data.results || !Array.isArray(response.data.results)) {

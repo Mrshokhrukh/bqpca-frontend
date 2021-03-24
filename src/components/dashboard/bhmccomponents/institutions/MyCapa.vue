@@ -112,7 +112,7 @@ const toast = useToast();
 
 const fetchCapas = async () => {
   try {
-    const response = await apiservice.getBmhcCapas();
+    const response = await apiservice.getMhpcCapas();
     capas.value = response.data.results;
     console.log(capas.value);
   } catch (error) {

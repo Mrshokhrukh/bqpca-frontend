@@ -187,7 +187,7 @@ const saveChanges = async () => {
       }
     }
 
-    await apiServices.patchBhmcNewQualification(props.qualification.id, formData);
+    await apiServices.patchMhpcNewQualification(props.qualification.id, formData);
     originalData.value = JSON.parse(JSON.stringify(editableData.value));
     isEditing.value = false;
     emit('update'); // Notify parent

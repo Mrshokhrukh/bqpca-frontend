@@ -160,7 +160,7 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
     error.value = null
 
     try {
-      const response = await bmhcServices.getBhmcNewApplications()
+      const response = await bmhcServices.getMhpcNewApplications()
       if (response?.data) {
         applicationDetails.value = response.data
       } else {

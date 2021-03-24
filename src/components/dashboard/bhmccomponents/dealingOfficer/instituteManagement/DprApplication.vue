@@ -84,16 +84,9 @@
     </div>
 
     <!-- Modal -->
-    <DprModal
-      v-if="isModalOpen"
-      :isOpen="isModalOpen"
-      :application="selectedApplication"
-      @close="closeApplication"
-      @save="saveApplication"
-      @approve="onApplicationApproved"
-      @reject="onApplicationRejected"
-      :key="selectedApplication ? selectedApplication.id : 'no-application'"
-    />
+    <DprModal v-if="isModalOpen" :isOpen="isModalOpen" :application="selectedApplication" @close="closeApplication"
+      @save="saveApplication" @approve="onApplicationApproved" @reject="onApplicationRejected"
+      :key="selectedApplication ? selectedApplication.id : 'no-application'" />
   </div>
 </template>
 
@@ -117,7 +110,7 @@ const fetchApplications = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await apiService.getBmhcInstitutes(); // Use apiService
+    const response = await apiService.getMhpcInstitutes(); // Use apiService
     applications.value = response.data.results;
     console.log(applications.value)
   } catch (err) {
@@ -143,7 +136,7 @@ const closeApplication = () => {
 const saveApplication = async (applicationId, updatedApplication) => {
   console.log("Saving application", applicationId, "with updates:", updatedApplication);
   try {
-    await apiService.patchBmhcInstitute(applicationId, updatedApplication); // Use apiService
+    await apiService.patchMhpcInstitute(applicationId, updatedApplication); // Use apiService
     // Optionally, refresh the application list after saving
     await fetchApplications();
     closeApplication();

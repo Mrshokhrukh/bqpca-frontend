@@ -61,19 +61,19 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
                   <button @click="handleApprove(institute)" :disabled="institute.review_decision !== 'Pending'" :class="[
-                    'font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200',
-                    institute.review_decision === 'Pending'
-                      ? 'bg-green-600 hover:bg-green-700 text-white'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  ]">
+            'font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200',
+            institute.review_decision === 'Pending'
+              ? 'bg-green-600 hover:bg-green-700 text-white'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          ]">
                     Approve
                   </button>
                   <button @click="handleRegret(institute)" :disabled="institute.review_decision !== 'Pending'" :class="[
-                    'font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200',
-                    institute.review_decision === 'Pending'
-                      ? 'bg-red-600 hover:bg-red-700 text-white'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  ]">
+            'font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200',
+            institute.review_decision === 'Pending'
+              ? 'bg-red-600 hover:bg-red-700 text-white'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          ]">
                     Regret
                   </button>
                   <button @click="openModal(institute)"
@@ -137,7 +137,7 @@ onMounted(async () => {
 const fetchInstitutes = async () => {
   isLoading.value = true;
   try {
-    const response = await apiService.getBmhcInstitutes();
+    const response = await apiService.getMhpcInstitutes();
     console.log('API Response:', response); // Debug response structure
 
     // Check the structure of the response
@@ -193,7 +193,7 @@ const handleApprove = async (institute) => {
       valid_till: validTill.toISOString().split('T')[0],
     };
 
-    await apiService.patchBmhcInstitute(institute.id, updatedData);
+    await apiService.patchMhpcInstitute(institute.id, updatedData);
 
     // Rest of your code remains the same
     await fetchInstitutes();
@@ -221,7 +221,7 @@ const handleRegret = async (institute) => {
       reason_if_rejected: reason || 'No reason provided',
     };
 
-    await apiService.patchBmhcInstitute(institute.id, updatedData);
+    await apiService.patchMhpcInstitute(institute.id, updatedData);
 
     // Refresh the institutes list
     await fetchInstitutes();

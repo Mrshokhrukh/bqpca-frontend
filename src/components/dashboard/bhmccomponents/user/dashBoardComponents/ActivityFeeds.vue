@@ -111,7 +111,7 @@ const fetchActivities = async () => {
 
     // Fetch CPD Records
     try {
-      const cpdResponse = await apiClient.getBmhcCpdRecords();
+      const cpdResponse = await apiClient.getMhpcCpdRecords();
       const cpdData = getDataArray(cpdResponse);
 
       getUserRecords(cpdData, cid).forEach(record => {
@@ -129,7 +129,7 @@ const fetchActivities = async () => {
 
     // Fetch Applications
     try {
-      const appsResponse = await apiClient.getBhmcNewApplications();
+      const appsResponse = await apiClient.getMhpcNewApplications();
       const appsData = getDataArray(appsResponse);
 
       getUserRecords(appsData, cid).forEach(app => {

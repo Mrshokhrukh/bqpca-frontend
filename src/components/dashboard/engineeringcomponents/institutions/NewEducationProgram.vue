@@ -277,7 +277,7 @@ const fetchInstituteData = async () => {
   apiError.value = false;
 
   try {
-    const response = await bmhcService.getBmhcInstitutes();
+    const response = await bmhcService.getMhpcInstitutes();
 
     if (response && response.data && response.data.results) {
       const userInstitutes = response.data.results.filter(institute =>
@@ -363,11 +363,11 @@ const handleSubmit = async () => {
       submissionData.append('institute_attachments', selectedFile.value);
     }
 
-    await bmhcService.createBmhcCourseDetail(submissionData);
+    await bmhcService.createMhpcCourseDetail(submissionData);
 
     toast.success('Educational programme application submitted successfully!');
 
-    router.push('/bmhc/course-applications');
+    router.push('/mhpc/course-applications');
 
   } catch (error) {
     console.error('Error submitting form:', error);
@@ -402,7 +402,7 @@ const handleSaveDraft = async () => {
     if (selectedFile.value) {
       draftData.append('institute_attachments', selectedFile.value);
     }
-    await bmhcService.createBmhcCourseDetail(draftData);
+    await bmhcService.createMhpcCourseDetail(draftData);
 
     toast.success('Draft saved successfully!');
 

@@ -413,9 +413,9 @@ onMounted(async () => {
             bmhcService.getMastersSectors(),
             bmhcService.getMastersSubCategories(),
             bmhcService.getMastersUniversities(),
-            bmhcService.getBmhcCogsAgencies(),
-            bmhcService.getBmhcCogsDepartments(),
-            bmhcService.getBmhcCogsWorkplaces(),
+            bmhcService.getMhpcCogsAgencies(),
+            bmhcService.getMhpcCogsDepartments(),
+            bmhcService.getMhpcCogsWorkplaces(),
         ];
 
         const results = await Promise.all(countPromises);

@@ -476,8 +476,8 @@ onMounted(fetchData);
 async function fetchData() {
     try {
         const [tasksResponse, participantsResponse] = await Promise.all([
-            apiService.getBmhcCpdTasks(),
-            apiService.getBmhcCounsellors()
+            apiService.getMhpcCpdTasks(),
+            apiService.getMhpcCounsellors()
         ]);
 
         cpdTasks.value = tasksResponse.data;
@@ -544,7 +544,7 @@ async function submitForm() {
         formDataToSend.append('cpd_task', formData.cpdTask);
         formDataToSend.append('participant_reg_no', formData.participantRegNo);
 
-        await apiService.createBmhcCpdTaskParticipant(formDataToSend);
+        await apiService.createMhpcCpdTaskParticipant(formDataToSend);
 
         showMessage('Participant added successfully!', 'success');
         resetForm();
@@ -566,7 +566,7 @@ async function submitBulkForm() {
         formDataToSend.append('cpd_task', bulkFormData.cpdTask);
         formDataToSend.append('participants_csv', csvFile.value);
 
-        await apiService.bulkCreateBmhcCpdTaskParticipants(formDataToSend);
+        await apiService.bulkCreateMhpcCpdTaskParticipants(formDataToSend);
 
         showMessage('Participants uploaded successfully!', 'success');
         resetBulkForm();

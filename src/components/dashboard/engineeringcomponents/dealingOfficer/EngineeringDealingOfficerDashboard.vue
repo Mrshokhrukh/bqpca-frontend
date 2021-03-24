@@ -508,7 +508,7 @@ onMounted(async () => {
 
     priorityTasks.value[0].pending_Counts = pendingApplicationCount.value;
 
-    const cpdRecordsResponse = await apiservice.getBmhcCpdRecords();
+    const cpdRecordsResponse = await apiservice.getMhpcCpdRecords();
     const cpdData = cpdRecordsResponse.data.results || [];
     pendingCpdCount.value = cpdData.filter(cpd => cpd.review_status === 'Pending').length;
     priorityTasks.value[1].pending_Counts = pendingCpdCount.value;

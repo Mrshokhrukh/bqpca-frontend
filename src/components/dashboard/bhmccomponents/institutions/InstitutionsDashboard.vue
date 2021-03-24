@@ -465,7 +465,7 @@ const closeCertificateDialog = () => {
 onMounted(async () => {
   try {
     isLoading.value = true;
-    const response = await apiservices.getBmhcInstitutes();
+    const response = await apiservices.getMhpcInstitutes();
     const allInstitutes = response.data.results || [];
 
     // Filter data based on user's CID
@@ -474,7 +474,7 @@ onMounted(async () => {
 
     // Fetch teaching centers
     try {
-      const tcResponse = await apiservices.getBmhcTeachingCenters();
+      const tcResponse = await apiservices.getMhpcTeachingCenters();
       if (tcResponse && tcResponse.data && tcResponse.data.results) {
         // Store teaching centers
         teachingCenters.value = tcResponse.data.results;

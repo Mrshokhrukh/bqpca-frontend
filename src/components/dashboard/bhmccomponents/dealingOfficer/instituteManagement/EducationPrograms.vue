@@ -96,10 +96,10 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-3 py-1 rounded-full text-xs font-medium" :class="{
-                  'bg-yellow-100 text-yellow-800': program.ins_review_decision === 'Pending',
-                  'bg-green-100 text-green-800': program.ins_review_decision === 'Approved',
-                  'bg-red-100 text-red-800': program.ins_review_decision === 'Regretted'
-                }">
+            'bg-yellow-100 text-yellow-800': program.ins_review_decision === 'Pending',
+            'bg-green-100 text-green-800': program.ins_review_decision === 'Approved',
+            'bg-red-100 text-red-800': program.ins_review_decision === 'Regretted'
+          }">
                   {{ program.ins_review_decision }}
                 </span>
               </td>
@@ -211,7 +211,7 @@ const fetchEducationPrograms = async () => {
     loading.value = true;
 
     // Fetch Education Programs from the API
-    const response = await apiServices.getBmhcCourseDetails();
+    const response = await apiServices.getMhpcCourseDetails();
     console.log('API Response:', response);
 
     // Extract data from response based on structure
@@ -304,7 +304,7 @@ const confirmAction = async () => {
     console.log('Updating program with data:', updateData);
 
     // Update the education program via API
-    const response = await apiServices.patchBmhcCourseDetail(id, updateData);
+    const response = await apiServices.patchMhpcCourseDetail(id, updateData);
     console.log('API update response:', response);
 
     // Update local data to reflect the change

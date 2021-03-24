@@ -91,10 +91,10 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-3 py-1 rounded-full text-xs font-medium" :class="{
-                  'bg-yellow-100 text-yellow-800': center.tc_review_decision === 'Pending',
-                  'bg-green-100 text-green-800': center.tc_review_decision === 'Approved',
-                  'bg-red-100 text-red-800': center.tc_review_decision === 'Regretted'
-                }">
+            'bg-yellow-100 text-yellow-800': center.tc_review_decision === 'Pending',
+            'bg-green-100 text-green-800': center.tc_review_decision === 'Approved',
+            'bg-red-100 text-red-800': center.tc_review_decision === 'Regretted'
+          }">
                   {{ center.tc_review_decision }}
                 </span>
               </td>

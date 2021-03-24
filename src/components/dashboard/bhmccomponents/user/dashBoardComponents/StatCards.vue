@@ -73,7 +73,7 @@ const fetchApplications = async () => {
   apiError.value = false;
 
   try {
-    const response = await apiService.getBmhcCpdRecords();
+    const response = await apiService.getMhpcCpdRecords();
     if (Array.isArray(response.data.results)) {
       applications.value = response.data.results;
     } else {

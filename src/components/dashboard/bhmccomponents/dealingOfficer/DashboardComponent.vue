@@ -497,7 +497,7 @@ const stats = computed(() => {
 
 onMounted(async () => {
   try {
-    const applicantsResponse = await apiservice.getBhmcNewQualifications();
+    const applicantsResponse = await apiservice.getMhpcNewQualifications();
     const applicantsData = applicantsResponse.data.results || [];
 
     totalApplicationsCount.value = applicantsData.length;
@@ -508,14 +508,14 @@ onMounted(async () => {
 
     priorityTasks.value[0].pending_Counts = pendingApplicationCount.value;
 
-    const cpdRecordsResponse = await apiservice.getBmhcCpdRecords();
+    const cpdRecordsResponse = await apiservice.getMhpcCpdRecords();
     const cpdData = cpdRecordsResponse.data.results || [];
     pendingCpdCount.value = cpdData.filter(cpd => cpd.review_status === 'Pending').length;
     priorityTasks.value[1].pending_Counts = pendingCpdCount.value;
 
     priorityTasks.value[2].pending_Counts = pendingPhysicalCount.value;
 
-    const cogsRecordsResponse = await apiservice.getBmhcCogs();
+    const cogsRecordsResponse = await apiservice.getMhpcCogs();
     const cogsData = cogsRecordsResponse.data.results || [];
     pendingCogsCount.value = cogsData.filter(cogs => cogs.review_status === 'Pending').length;
     priorityTasks.value[3].pending_Counts = pendingCogsCount.value;

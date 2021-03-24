@@ -222,7 +222,7 @@ const endIndex = computed(() => Math.min(startIndex.value + ITEMS_PER_PAGE, tota
 // API mapping object for different report types
 const apiMethods = {
   registrations: {
-    fetch: bmhcServices.getBhmcNewQualifications,
+    fetch: bmhcServices.getMhpcNewQualifications,
     transform: (data) => ({
       ...data,
       applicant_name: data.application?.full_name,
@@ -230,21 +230,21 @@ const apiMethods = {
     })
   },
   renewals: {
-    fetch: bmhcServices.getBhmcRenewals,
+    fetch: bmhcServices.getMhpcRenewals,
     transform: (data) => ({
       ...data,
       renewal_id: `REN-${data.id}`
     })
   },
   cpd: {
-    fetch: bmhcServices.getBmhcNewQualifications,
+    fetch: bmhcServices.getMhpcNewQualifications,
     transform: (data) => ({
       ...data,
       status: data.is_cpd_approved ? 'Approved' : 'Pending'
     })
   },
   cogs: {
-    fetch: bmhcServices.getBmhcCogs,
+    fetch: bmhcServices.getMhpcCogs,
     transform: (data) => ({
       ...data,
       cogs_number: `COGS-${data.registration_no}`

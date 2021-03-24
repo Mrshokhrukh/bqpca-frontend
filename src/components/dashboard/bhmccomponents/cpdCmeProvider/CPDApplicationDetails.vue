@@ -657,7 +657,7 @@ const toggleApprovedFields = () => {
     approvalLetter.value = null;
     attachment.value = null;
   }
-  
+
   // Update the parent component with new values
   updateModelValue();
 };
@@ -720,7 +720,7 @@ const fetchResourcePersonDetails = async (person) => {
     loading.value = true;
 
     // First try approach - Use the application list and find by registration number
-    const response = await apiservice.getApplicationsByCid('');
+    const response = await apiservice.getMhpcApplicationsByCid('');
 
     if (response.data && Array.isArray(response.data)) {
       // Find the application with matching registration number
@@ -819,7 +819,7 @@ const fetchParticipantName = async (participant) => {
     loading.value = true;
 
     // First try approach - Use the application list and find by registration number
-    const response = await apiservice.getApplicationsByCid('');
+    const response = await apiservice.getMhpcApplicationsByCid('');
 
     if (response.data && Array.isArray(response.data)) {
       // Find the application with matching registration number
@@ -1125,7 +1125,7 @@ const saveDraft = async () => {
     const formData = prepareFormData(true);
 
     // Send to API
-    const response = await apiservice.createBmhcCpdTask(formData);
+    const response = await apiservice.createMhpcCpdTask(formData);
     console.log('Draft saved successfully', response.data);
 
     // Show success message
@@ -1206,7 +1206,7 @@ const confirmSubmit = async () => {
     const formData = prepareFormData(false);
 
     // Send to API
-    const response = await apiservice.createBmhcCpdTask(formData);
+    const response = await apiservice.createMhpcCpdTask(formData);
     console.log('Form submitted successfully', response.data);
 
     // Show success message
@@ -1276,7 +1276,7 @@ const fetchUserRegistrations = async () => {
   try {
     loading.value = true;
     // First try to get registrations by user's CID
-    const response = await apiservice.getApplicationsByCid(applicant.cidNumber);
+    const response = await apiservice.getMhpcApplicationsByCid(applicant.cidNumber);
 
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
       userRegistrations.value = response.data;
@@ -1287,7 +1287,7 @@ const fetchUserRegistrations = async () => {
       }
     } else {
       // If no registrations found for user CID, fetch all applications as a fallback
-      const allApplicationsResponse = await apiservice.getBhmcNewApplications();
+      const allApplicationsResponse = await apiservice.getMhpcNewApplications();
 
       if (allApplicationsResponse.data && allApplicationsResponse.data.results &&
         Array.isArray(allApplicationsResponse.data.results)) {

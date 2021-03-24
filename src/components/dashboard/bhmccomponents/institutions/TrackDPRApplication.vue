@@ -25,9 +25,9 @@
               <h3 class="text-lg font-semibold text-gray-900 mb-2">
                 {{ application.name_of_institution }}
                 <span :class="[
-                  'ml-2 px-2 py-1 text-xs rounded-full',
-                  getStatusColor(application.do_dpr_review_decision)
-                ]">
+      'ml-2 px-2 py-1 text-xs rounded-full',
+      getStatusColor(application.do_dpr_review_decision)
+    ]">
                   {{ application.do_dpr_review_decision }}
                 </span>
               </h3>
@@ -72,7 +72,7 @@
               <div>
                 <p class="text-sm font-medium text-gray-900 mb-2">DPR Review Summary</p>
                 <p class="text-sm text-gray-600 line-clamp-3">{{ application.do_dpr_review_summary || 'Pending Review'
-                }}</p>
+                  }}</p>
               </div>
             </div>
           </div>
@@ -152,7 +152,7 @@ const fetchApplications = async () => {
   errorMessage.value = '';
 
   try {
-    const response = await bmhcService.getBmhcInstitutes();
+    const response = await bmhcService.getMhpcInstitutes();
 
     if (response && response.data && response.data.results) {
       // Filter applications based on user's CID from auth store

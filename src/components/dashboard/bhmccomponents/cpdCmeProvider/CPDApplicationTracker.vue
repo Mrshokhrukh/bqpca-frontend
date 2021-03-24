@@ -129,9 +129,9 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
               <span :class="[
-                'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                getStatusClass(application)
-              ]">
+      'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
+      getStatusClass(application)
+    ]">
                 {{ getStatusText(application) }}
               </span>
             </td>
@@ -211,9 +211,9 @@
               <div>
                 <p class="text-sm font-medium text-gray-500">Status</p>
                 <span :class="[
-                  'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
-                  getStatusClass(selectedApplication)
-                ]">
+      'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
+      getStatusClass(selectedApplication)
+    ]">
                   {{ getStatusText(selectedApplication) }}
                 </span>
               </div>
@@ -306,15 +306,15 @@
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ participant.participant_reg_no }}
                     </td>
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ participant.participant_name ||
-                      'N/A' }}</td>
+      'N/A' }}</td>
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ participant.cpd_credits }}</td>
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                       <span :class="[
-                        'px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full',
-                        participant.review_status === 'Approved' ? 'bg-green-100 text-green-800' :
-                          participant.review_status === 'Rejected' ? 'bg-red-100 text-red-800' :
-                            'bg-yellow-100 text-yellow-800'
-                      ]">
+      'px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full',
+      participant.review_status === 'Approved' ? 'bg-green-100 text-green-800' :
+        participant.review_status === 'Rejected' ? 'bg-red-100 text-red-800' :
+          'bg-yellow-100 text-yellow-800'
+    ]">
                         {{ participant.review_status }}
                       </span>
                     </td>
@@ -422,7 +422,7 @@ const fetchApplications = async () => {
     error.value = null;
 
     // Fetch CPD applications from the backend - single API call
-    const response = await apiservice.getBmhcCpdTask();
+    const response = await apiservice.getMhpcCpdTask();
 
     // Process the response
     if (response.data && response.data.results) {

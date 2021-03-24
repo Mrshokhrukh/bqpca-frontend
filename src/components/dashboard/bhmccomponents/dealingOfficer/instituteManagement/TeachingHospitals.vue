@@ -91,10 +91,10 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-3 py-1 rounded-full text-xs font-medium" :class="{
-                  'bg-yellow-100 text-yellow-800': center.tc_review_decision === 'Pending',
-                  'bg-green-100 text-green-800': center.tc_review_decision === 'Approved',
-                  'bg-red-100 text-red-800': center.tc_review_decision === 'Regretted'
-                }">
+            'bg-yellow-100 text-yellow-800': center.tc_review_decision === 'Pending',
+            'bg-green-100 text-green-800': center.tc_review_decision === 'Approved',
+            'bg-red-100 text-red-800': center.tc_review_decision === 'Regretted'
+          }">
                   {{ center.tc_review_decision }}
                 </span>
               </td>
@@ -204,7 +204,7 @@ const fetchTeachingCenters = async () => {
     loading.value = true;
 
     // Fetch Teaching Centers for the table
-    const response = await apiServices.getBmhcTeachingCenters();
+    const response = await apiServices.getMhpcTeachingCenters();
 
     // axios wraps response in data property
     if (response && response.data && response.data.results) {
@@ -282,7 +282,7 @@ const confirmAction = async () => {
     }
 
     // Update the teaching center
-    await apiServices.patchBmhcTeachingCenter(id, updateData);
+    await apiServices.patchMhpcTeachingCenter(id, updateData);
 
     // Update local data to reflect the change
     const index = teachingCenters.value.findIndex(center => center.id === id);

@@ -21,7 +21,8 @@
       <div class="flex">
         <div class="flex-shrink-0">
           <svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
         <div class="ml-3">
@@ -30,7 +31,8 @@
             <p>{{ loadError }}</p>
           </div>
           <div class="mt-4">
-            <button type="button" @click="fetchApplicationData" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+            <button type="button" @click="fetchApplicationData"
+              class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
               Try Again
             </button>
           </div>
@@ -81,7 +83,7 @@
           <input type="text" v-model="formData.contact_no" disabled
             class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
         </div>
-        
+
         <!-- Email Address (if available) -->
         <div class="col-span-1" v-if="formData.email_address">
           <label class="block text-sm font-medium text-gray-700">Email Address</label>
@@ -113,20 +115,21 @@
         <!-- Registration Details -->
         <div class="col-span-1">
           <div :class="[
-            'rounded-xl p-4',
-            hasExpired ? 'bg-red-50 border border-red-200' : 'bg-blue-50 border border-blue-200'
-          ]">
+      'rounded-xl p-4',
+      hasExpired ? 'bg-red-50 border border-red-200' : 'bg-blue-50 border border-blue-200'
+    ]">
             <div class="flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" :class="[
-                'h-5 w-5 mr-2',
-                hasExpired ? 'text-red-600' : 'text-blue-600'
-              ]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      'h-5 w-5 mr-2',
+      hasExpired ? 'text-red-600' : 'text-blue-600'
+    ]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span :class="[
-                'text-sm font-medium',
-                hasExpired ? 'text-red-900' : 'text-blue-900'
-              ]">Registration Information</span>
+      'text-sm font-medium',
+      hasExpired ? 'text-red-900' : 'text-blue-900'
+    ]">Registration Information</span>
             </div>
             <div class="mt-2 grid grid-cols-2 gap-1">
               <div>
@@ -139,7 +142,8 @@
                 <div :class="['text-sm', hasExpired ? 'text-red-700' : 'text-blue-700']">Expiry Date</div>
                 <div :class="['text-sm font-medium', hasExpired ? 'text-red-900' : 'text-blue-900']">
                   {{ formatDisplayDate(formData.expiry_date) }}
-                  <span v-if="hasExpired" class="ml-1 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">Expired</span>
+                  <span v-if="hasExpired"
+                    class="ml-1 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">Expired</span>
                 </div>
               </div>
             </div>
@@ -151,25 +155,28 @@
       <div v-if="!isSubmitting" class="border-t border-gray-200 bg-gray-50 p-6 mt-6">
         <h3 class="text-lg font-semibold text-gray-900">Renewal Confirmation</h3>
         <p class="mt-1 text-sm text-gray-500">Confirm your application details and submit for renewal.</p>
-        
+
         <!-- Application Status -->
         <div class="mt-6 p-4 rounded-lg" :class="formData.is_active ? 'bg-green-50' : 'bg-yellow-50'">
           <div class="flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" :class="formData.is_active ? 'text-green-600' : 'text-yellow-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2"
+              :class="formData.is_active ? 'text-green-600' : 'text-yellow-600'" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span class="text-sm font-medium" :class="formData.is_active ? 'text-green-900' : 'text-yellow-900'">
               Application Status: {{ formData.is_active ? 'Active' : 'Inactive' }}
             </span>
           </div>
           <p class="mt-2 text-sm" :class="formData.is_active ? 'text-green-700' : 'text-yellow-700'">
-            {{ formData.is_active 
-              ? 'Your application is currently active. Renewing will extend the validity period.'
-              : 'Your application is currently inactive. Renewing will activate your application and extend the validity period.'
+            {{ formData.is_active
+      ? 'Your application is currently active. Renewing will extend the validity period.'
+      : 'Your application is inactive. Renewing will activate your application and extend the validity.'
             }}
           </p>
         </div>
-        
+
         <!-- Remarks Field -->
         <div class="mt-6">
           <label class="block text-sm font-medium text-gray-700">Remarks (Optional)</label>
@@ -177,7 +184,7 @@
             class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
             placeholder="Enter any additional information or remarks for your renewal application"></textarea>
         </div>
-        
+
         <!-- Declaration Checkbox -->
         <div class="mt-6">
           <div class="flex items-start space-x-3 bg-white p-4 rounded-lg">
@@ -203,7 +210,7 @@
           class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
           Cancel
         </button>
-        <button @click="handleSubmit" :disabled="isSubmitting || !declaration" 
+        <button @click="handleSubmit" :disabled="isSubmitting || !declaration"
           class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
           Submit Renewal Application
         </button>
@@ -240,7 +247,7 @@
                     </DialogTitle>
                     <div class="mt-2">
                       <p class="text-sm text-gray-500">
-                        You are about to submit your renewal application. This action cannot be undone. 
+                        You are about to submit your renewal application. This action cannot be undone.
                         Are you sure you want to proceed?
                       </p>
                     </div>
@@ -302,10 +309,10 @@ const isSubmitting = ref(false);
 const loadError = ref('');
 const hasExpired = computed(() => {
   if (!formData.value.expiry_date) return false;
-  
+
   const expiryDate = new Date(formData.value.expiry_date);
   const today = new Date();
-  
+
   return expiryDate < today;
 });
 const declaration = ref(false);
@@ -318,29 +325,29 @@ onMounted(async () => {
 const fetchApplicationData = async () => {
   isLoading.value = true;
   loadError.value = '';
-  
+
   try {
     // Get user ID from auth store
     const userId = authStore.userId;
-    
+
     if (!userId) {
       throw new Error('User ID not found. Please log in again.');
     }
-    
+
     // First try to get specific application by ID if we have one
     // This might come from a route parameter or state
     let latestApplication = null;
     const routeApplicationId = router.currentRoute.value.params.id;
-    
+
     try {
       if (routeApplicationId) {
         // If we have an ID from the route, get that specific application
-        const specificResponse = await apiService.getBhmcNewApplication(routeApplicationId);
+        const specificResponse = await apiService.getMhpcNewApplication(routeApplicationId);
         latestApplication = specificResponse.data;
       } else {
         // Otherwise get all applications
-        const response = await apiService.getBhmcNewApplications();
-        
+        const response = await apiService.getMhpcNewApplications();
+
         // Process response data
         let applications = [];
         if (Array.isArray(response.data)) {
@@ -348,17 +355,17 @@ const fetchApplicationData = async () => {
         } else if (response.data && Array.isArray(response.data.results)) {
           applications = response.data.results;
         }
-        
-        // Find the user's active application 
+
+        // Find the user's active application
         // Look for an active application first
-        latestApplication = applications.find(app => 
-          app.is_active === true && 
+        latestApplication = applications.find(app =>
+          app.is_active === true &&
           (app.email_address === authStore.user.email || app.contact_no === authStore.user.phone)
         );
-        
+
         // If no active application found, try to find any application that matches the user
         if (!latestApplication) {
-          latestApplication = applications.find(app => 
+          latestApplication = applications.find(app =>
             app.email_address === authStore.user.email || app.contact_no === authStore.user.phone
           );
         }
@@ -367,14 +374,14 @@ const fetchApplicationData = async () => {
       console.error('Error fetching applications list:', error);
       // Continue to try direct API call with user info
     }
-    
+
     if (!latestApplication) {
       // If we still don't have an application, show appropriate error message
       throw new Error('No existing application found. Please complete a new application first.');
     }
-    
+
     console.log('Found application:', latestApplication);
-    
+
     // Set the form data with the application details
     formData.value = {
       id: latestApplication.id,
@@ -390,7 +397,7 @@ const fetchApplicationData = async () => {
       registration_date: latestApplication.registration_date || '',
       expiry_date: latestApplication.expiry_date || '',
     };
-    
+
   } catch (error) {
     console.error('Error fetching application data:', error);
     loadError.value = error.message || 'Failed to load application data. Please try again.';
@@ -401,7 +408,7 @@ const fetchApplicationData = async () => {
 
 const formatDisplayDate = (dateString) => {
   if (!dateString) return 'N/A';
-  
+
   try {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
@@ -409,8 +416,9 @@ const formatDisplayDate = (dateString) => {
       month: 'short',
       day: 'numeric'
     }).format(date);
-  } catch (e) {
-    return dateString; // Return original string if parsing fails
+  } catch (error) {
+    console.log(error)
+    return dateString;
   }
 };
 
@@ -427,20 +435,20 @@ const handleSubmit = () => {
     toast.warning('Please accept the declaration to proceed.');
     return;
   }
-  
+
   showConfirmation.value = true;
 };
 
 const confirmSubmit = async () => {
   showConfirmation.value = false;
   isSubmitting.value = true;
-  
+
   try {
     // Calculate new expiry date (5 years from today)
     const today = new Date();
     const expiryDate = new Date(today);
     expiryDate.setFullYear(today.getFullYear() + 5);
-    
+
     // Prepare renewal data using patch format since we're updating an existing application
     const renewalData = {
       registration_date: formatDateForAPI(today),
@@ -449,15 +457,15 @@ const confirmSubmit = async () => {
       declaration: true,
       is_active: true  // Ensure application is active
     };
-    
+
     // Use the patch endpoint to update the existing application
-    await apiService.patchBhmcNewApplication(formData.value.id, renewalData);
-    
+    await apiService.patchMhpcNewApplication(formData.value.id, renewalData);
+
     toast.success('Renewal application submitted successfully!');
-    
+
     // Redirect to dashboard or appropriate page
     router.push('/admin/user/health_certification/dashboard');
-    
+
   } catch (error) {
     console.error('Error submitting renewal:', error);
     toast.error(error.response?.data?.message || 'Failed to submit renewal. Please try again.');

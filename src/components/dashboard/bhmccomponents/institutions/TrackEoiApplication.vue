@@ -25,9 +25,9 @@
               <h3 class="text-lg font-semibold text-gray-900 mb-2">
                 {{ application.name_of_institution }}
                 <span :class="[
-                  'ml-2 px-2 py-1 text-xs rounded-full',
-                  getStatusColor(application.review_decision)
-                ]">
+      'ml-2 px-2 py-1 text-xs rounded-full',
+      getStatusColor(application.review_decision)
+    ]">
                   {{ application.review_decision }}
                 </span>
               </h3>
@@ -83,7 +83,8 @@
           </div>
 
           <!-- Message for Approved Applications -->
-          <div v-if="application.review_decision === 'Approved'" class="mt-4 p-4 bg-green-100 text-green-700 rounded-lg">
+          <div v-if="application.review_decision === 'Approved'"
+            class="mt-4 p-4 bg-green-100 text-green-700 rounded-lg">
             Now you can proceed to DRP Application
           </div>
         </div>
@@ -141,7 +142,7 @@ const fetchApplications = async () => {
   errorMessage.value = '';
 
   try {
-    const response = await bmhcService.getBmhcInstitutes();
+    const response = await bmhcService.getMhpcInstitutes();
 
     if (response && response.data && response.data.results) {
       // Filter applications based on user's CID from auth store

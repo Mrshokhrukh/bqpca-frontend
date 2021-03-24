@@ -268,7 +268,7 @@ const dzongkhagOptions = ref([
 
 onMounted(async () => {
   try {
-    const institutesResponse = await apiServices.getBmhcInstitutes();
+    const institutesResponse = await apiServices.getMhpcInstitutes();
     const institutesArray = institutesResponse.data.results;
 
     instituteOptions.value = institutesArray.map(institute => ({
@@ -357,7 +357,7 @@ const handleSubmit = async () => {
 
 
     try {
-      const response = await apiServices.createBmhcTeachingCenter(form, {
+      const response = await apiServices.createMhpcTeachingCenter(form, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -405,7 +405,7 @@ const handleCancel = () => {
 const handleSaveDraft = async () => {
   console.log('Form saved as draft:', formData.value);
   try {
-    const response = await apiServices.createBmhcTeachingCenter(formData.value);
+    const response = await apiServices.createMhpcTeachingCenter(formData.value);
     console.log('Form saved as draft successfully!', response.data);
     alert('Form saved as draft!');
   } catch (error) {

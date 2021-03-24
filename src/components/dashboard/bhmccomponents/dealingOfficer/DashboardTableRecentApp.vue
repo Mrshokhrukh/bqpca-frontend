@@ -10,7 +10,8 @@
       <table class="min-w-full">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant / Institute</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant /
+              Institute</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -35,7 +36,7 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                 :class="getStatusClass(application.status)">
-                {{getStatusText(application.status)  }}
+                {{ getStatusText(application.status) }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -76,7 +77,7 @@ const allApplications = ref([]); //Store all applications
 
 onMounted(async () => {
   try {
-    const applicantsResponse = await apiservice.getBhmcNewApplications();
+    const applicantsResponse = await apiservice.getMhpcNewApplications();
     const applicantsData = applicantsResponse.data.results || [];
     const mappedApplicants = applicantsData.map(app => ({
       id: app.id,
@@ -86,7 +87,7 @@ onMounted(async () => {
       date: app.user_qualifications?.[0]?.updated_at || app.created_at,
     }));
 
-    const cpdRecordsResponse = await apiservice.getBmhcCpdRecords();
+    const cpdRecordsResponse = await apiservice.getMhpcCpdRecords();
     const cpdData = cpdRecordsResponse.data.results || [];
     const mappedCpd = cpdData.map(cpd => ({
       id: cpd.id,
@@ -96,7 +97,7 @@ onMounted(async () => {
       date: cpd.updated_at,
     }));
 
-    const cogsRecordsResponse = await apiservice.getBmhcCogs();
+    const cogsRecordsResponse = await apiservice.getMhpcCogs();
     const cogsData = cogsRecordsResponse.data.results || [];
     const mappedCogs = cogsData.map(cogs => ({
       id: cogs.id,
@@ -107,23 +108,23 @@ onMounted(async () => {
     }));
 
     // Corrected CAPA API call with parentheses
-  const capaRecordsResponse = await apiservice.getBmhcCapas();
-  const capaData = capaRecordsResponse.data.results || [];
-  const mappedcapa = capaData.map(capa => ({
-    id: capa.id,
-    name: capa.teaching_center.institute_name,
-    type: 'CAPA',
-    status: capa.status,
-    date: capa.updated_at,
-  }));
+    const capaRecordsResponse = await apiservice.getMhpcCapas();
+    const capaData = capaRecordsResponse.data.results || [];
+    const mappedcapa = capaData.map(capa => ({
+      id: capa.id,
+      name: capa.teaching_center.institute_name,
+      type: 'CAPA',
+      status: capa.status,
+      date: capa.updated_at,
+    }));
 
-  allApplications.value = [...mappedApplicants, ...mappedCpd, ...mappedCogs, ...mappedcapa];
-  allApplications.value.sort((a, b) => new Date(b.date) - new Date(a.date));
-  recentApplications.value = allApplications.value.slice(0, 5);
+    allApplications.value = [...mappedApplicants, ...mappedCpd, ...mappedCogs, ...mappedcapa];
+    allApplications.value.sort((a, b) => new Date(b.date) - new Date(a.date));
+    recentApplications.value = allApplications.value.slice(0, 5);
 
-} catch (error) {
-  console.error('Error fetching data:', error);
-}
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
 });
 
 const toggleViewAll = () => {
@@ -165,7 +166,7 @@ const getStatusClass = (status) => {
     'Approved': 'bg-green-100 text-green-800',
     'Rejected': 'bg-red-100 text-red-800',
     'Regret': 'bg-red-100 text-red-800',
-    'R' : 'bg-green-100 text-green-800',
+    'R': 'bg-green-100 text-green-800',
 
   };
   return classes[status] || 'bg-gray-100 text-gray-800';

@@ -221,10 +221,10 @@ const errors = reactive({});
 // Fetch registration number with user CID
 const fetchRegistrationNumber = async (cid) => {
   try {
-    const response = await apiService.getApplicationsByCid(cid);
+    const response = await apiService.getMhpcApplicationsByCid(cid);
 
     // Log the entire response to inspect the data structure
-    console.log('Data from getApplicationsByCid:', response);
+    console.log('Data from getMhpcApplicationsByCid:', response);
     console.log('Response data array:', response?.data);
     if (response?.data?.length > 0) {
       console.log('First application:', response.data[0]);
@@ -389,7 +389,7 @@ const handleSubmit = async () => {
     });
 
     // Submit the form
-    await apiService.createBmhcCounsellor(formData);
+    await apiService.createMhpcCounsellor(formData);
 
     toast.success('Counselor application submitted successfully!');
     router.push('/admin/user/health_certification/dashboard');

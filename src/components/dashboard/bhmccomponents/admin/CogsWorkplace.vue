@@ -166,7 +166,7 @@ const workplaceToDelete = ref(null);
 // Fetch workplaces on component mount
 onMounted(async () => {
     try {
-        const response = await services.getBmhcCogsWorkplaces();
+        const response = await services.getMhpcCogsWorkplaces();
         console.log('API Response:', response.data);
 
         if (Array.isArray(response.data.results)) {
@@ -203,13 +203,13 @@ const paginatedWorkplaces = computed(() => {
 const handleSubmit = async () => {
     try {
         if (isEditing.value) {
-            const response = await services.updateBmhcCogsWorkplace(formData.value.id, formData.value);
+            const response = await services.updateMhpcCogsWorkplace(formData.value.id, formData.value);
             const index = workplaces.value.findIndex(dt => dt.id === formData.value.id);
             if (index !== -1) {
                 workplaces.value[index] = response.data;
             }
         } else {
-            const response = await services.createBmhcCogsWorkplace(formData.value);
+            const response = await services.createMhpcCogsWorkplace(formData.value);
             workplaces.value.push(response.data);
         }
         resetForm();
@@ -241,7 +241,7 @@ const confirmDelete = async () => {
     if (!workplaceToDelete.value) return;
 
     try {
-        await services.deleteBmhcCogsWorkplace(workplaceToDelete.value.id);
+        await services.deleteMhpcCogsWorkplace(workplaceToDelete.value.id);
         const index = workplaces.value.findIndex(dt => dt.id === workplaceToDelete.value.id);
         if (index !== -1) {
             workplaces.value.splice(index, 1);

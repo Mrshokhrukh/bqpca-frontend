@@ -502,7 +502,7 @@ const confirmApprove = async () => {
     };
 
     // Send PATCH request to update center
-    await bmhcService.patchBmhcTeachingCenter(selectedCenter.value.id, approvalData);
+    await bmhcService.patchMhpcTeachingCenter(selectedCenter.value.id, approvalData);
 
     // Update local data
     teachingCenters.value = teachingCenters.value.map(center => {
@@ -550,7 +550,7 @@ const confirmReject = async () => {
     };
 
     // Send PATCH request to update center
-    await bmhcService.patchBmhcTeachingCenter(selectedCenter.value.id, rejectionData);
+    await bmhcService.patchMhpcTeachingCenter(selectedCenter.value.id, rejectionData);
 
     // Update local data
     teachingCenters.value = teachingCenters.value.map(center => {
@@ -606,7 +606,7 @@ const submitReview = async () => {
     }
 
     // Send PATCH request to update teaching center
-    await bmhcService.patchBmhcTeachingCenter(selectedCenter.value.id, formData);
+    await bmhcService.patchMhpcTeachingCenter(selectedCenter.value.id, formData);
 
     // Update local data
     teachingCenters.value = teachingCenters.value.map(center => {
@@ -640,7 +640,7 @@ const fetchTeachingCenters = async () => {
 
   try {
     // Fetch teaching centers
-    const response = await bmhcService.getBmhcTeachingCenters();
+    const response = await bmhcService.getMhpcTeachingCenters();
 
     if (response && response.data && response.data.results) {
       teachingCenters.value = response.data.results;

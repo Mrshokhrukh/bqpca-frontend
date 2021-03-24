@@ -102,7 +102,7 @@ const fetchInstitutes = async () => {
   isLoading.value = true;
   error.value = null;
   try {
-    const response = await services.getBmhcInstitutes();
+    const response = await services.getMhpcInstitutes();
     institutes.value = response.data.results;
   } catch (err) {
     error.value = 'Failed to load institutes. Please try again later.';
@@ -116,7 +116,7 @@ const fetchCapas = async () => {
   isLoading.value = true;
   error.value = null;
   try {
-    const response = await services.getBmhcCapas();
+    const response = await services.getMhpcCapas();
     capas.value = response.data.results;
     processCapas();
   } catch (err) {
@@ -175,7 +175,7 @@ const closeViewDetailsModal = () => {
 // CRUD Operations
 const handleSaveCapa = async (capaData) => {
   try {
-    await services.createBmhcCapa({
+    await services.createMhpcCapa({
       ...capaData,
       institute: selectedInstituteId.value,
     });
@@ -189,7 +189,7 @@ const handleSaveCapa = async (capaData) => {
 
 const handleEditCapa = async (capaData) => {
   try {
-    await services.updateBmhcCapa(capaData.id, capaData);
+    await services.updateMhpcCapa(capaData.id, capaData);
     await fetchCapas();
     closeViewDetailsModal();
   } catch (err) {
@@ -201,7 +201,7 @@ const handleEditCapa = async (capaData) => {
 const deleteCapa = async (id) => {
   if (confirm('Are you sure you want to delete this CAPA?')) {
     try {
-      await services.deleteBmhcCapa(id);
+      await services.deleteMhpcCapa(id);
       await fetchCapas();
     } catch (err) {
       console.error('Error deleting CAPA:', err);

@@ -278,7 +278,7 @@ const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 const fetchApplications = async () => {
   loading.value = true;
   try {
-    const response = await apiService.getBhmcNewApplications(); // Use the correct endpoint
+    const response = await apiService.getMhpcNewApplications(); // Use the correct endpoint
     //console.log("API Response:", response);
 
     if (response?.data?.results && Array.isArray(response.data.results)) {

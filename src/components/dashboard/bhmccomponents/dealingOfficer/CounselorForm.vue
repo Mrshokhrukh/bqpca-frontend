@@ -575,7 +575,7 @@ const filteredCounsellors = computed(() => {
 const fetchCounsellors = async () => {
   loading.value = true;
   try {
-    const response = await apiService.getBmhcCounsellors();
+    const response = await apiService.getMhpcCounsellors();
     counsellors.value = response.data.results;
   } catch (error) {
     console.error('Error fetching counsellors:', error);
@@ -623,7 +623,7 @@ const confirmUpdateStatus = async () => {
   const status = confirmAction.value === 'approve' ? 'Approved' : 'Regretted';
 
   try {
-    await apiService.patchBmhcCounsellor(selectedCounsellor.value.id, {
+    await apiService.patchMhpcCounsellor(selectedCounsellor.value.id, {
       review_decision: status,
       review_remarks: reviewRemarks.value || null
     });

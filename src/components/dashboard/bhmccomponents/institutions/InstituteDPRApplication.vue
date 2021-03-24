@@ -486,7 +486,7 @@ onMounted(async () => {
   console.log("userCID:", userCID);
 
   try {
-    const response = await apiService.getBmhcInstitutes();
+    const response = await apiService.getMhpcInstitutes();
     const institutes = response.data.results;
     console.log("All institutes:", institutes);
 
@@ -520,7 +520,7 @@ onMounted(async () => {
 
 const fetchInstituteName = async () => {
   try {
-    const response = await apiService.getBmhcInstitute(instituteId.value);
+    const response = await apiService.getMhpcInstitute(instituteId.value);
     if (response.data && response.data.name_of_institution) {
       instituteName.value = response.data.name_of_institution;
     }
@@ -532,7 +532,7 @@ const fetchInstituteName = async () => {
 
 const fetchDprData = async () => {
   try {
-    const response = await apiService.getBmhcInstitute(instituteId.value);
+    const response = await apiService.getMhpcInstitute(instituteId.value);
     if (response.data) {
       // *ONLY* populate the fields you intend to update:
       formData.value.dpr_name = response.data.dpr_name || '';
@@ -626,7 +626,7 @@ const handleSubmit = async () => {
 
   try {
     isSubmitting.value = true;
-    const response = await apiService.patchBmhcInstitute(instituteId.value, submitData);
+    const response = await apiService.patchMhpcInstitute(instituteId.value, submitData);
     if (response.status === 200 || response.status === 204) {
       toast.success('DPR submitted successfully!'); // Success toast
       setTimeout(() => {
@@ -687,7 +687,7 @@ const handleSaveDraft = async () => {
 
   try {
     isSubmitting.value = true;
-    const response = await apiService.patchBmhcInstitute(instituteId.value, draftData); // Same API
+    const response = await apiService.patchMhpcInstitute(instituteId.value, draftData); // Same API
 
     if (response.status >= 200 && response.status < 300) {
       toast.success("Draft saved successfully!"); // Success toast

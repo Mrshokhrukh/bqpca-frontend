@@ -68,10 +68,10 @@
         <div class="p-6">
           <!-- Expiration Alert -->
           <div v-if="center.is_active && getDaysUntilExpiration(center) <= 90" class="mb-6 p-4 rounded-lg" :class="[
-            getDaysUntilExpiration(center) <= 30
-              ? 'bg-red-50 text-red-700 border border-red-200'
-              : 'bg-yellow-50 text-yellow-700 border border-yellow-200',
-          ]">
+      getDaysUntilExpiration(center) <= 30
+        ? 'bg-red-50 text-red-700 border border-red-200'
+        : 'bg-yellow-50 text-yellow-700 border border-yellow-200',
+    ]">
             <div class="flex items-start">
               <div class="flex-shrink-0 mt-0.5">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -83,8 +83,8 @@
               <div class="ml-3">
                 <h3 class="text-sm font-medium">
                   {{
-                    getDaysUntilExpiration(center) <= 0 ? 'Registration Expired!' : getDaysUntilExpiration(center) <= 30
-                      ? 'Registration Expiring Soon!' : 'Registration Renewal Recommended' }} </h3>
+      getDaysUntilExpiration(center) <= 0 ? 'Registration Expired!' : getDaysUntilExpiration(center) <= 30
+        ? 'Registration Expiring Soon!' : 'Registration Renewal Recommended' }} </h3>
                     <div class="mt-1 text-sm">
                       <p v-if="getDaysUntilExpiration(center) <= 0">
                         Your teaching center registration has expired. Please renew immediately to
@@ -93,8 +93,8 @@
                       </p>
                       <p v-else>
                         Your teaching center registration will expire in {{
-                          getDaysUntilExpiration(center)
-                        }} days
+      getDaysUntilExpiration(center)
+    }} days
                         ({{ formatDate(center.valid_till) }}). Please renew your registration to
                         maintain your status.
                       </p>
@@ -128,24 +128,24 @@
                   <div>
                     <p class="text-xs text-gray-500">Valid Until</p>
                     <p class="text-sm font-medium" :class="[
-                      !center.valid_till
-                        ? 'text-gray-800'
-                        : getDaysUntilExpiration(center) <= 0
-                          ? 'text-red-600'
-                          : getDaysUntilExpiration(center) <= 30
-                            ? 'text-orange-600'
-                            : 'text-gray-800',
-                    ]">
+      !center.valid_till
+        ? 'text-gray-800'
+        : getDaysUntilExpiration(center) <= 0
+          ? 'text-red-600'
+          : getDaysUntilExpiration(center) <= 30
+            ? 'text-orange-600'
+            : 'text-gray-800',
+    ]">
                       {{ formatDate(center.valid_till) }}
                     </p>
                   </div>
                   <div>
                     <p class="text-xs text-gray-500">Review Decision</p>
                     <p class="text-sm font-medium" :class="{
-                      'text-green-600': center.tc_review_decision === 'Approved',
-                      'text-yellow-600': center.tc_review_decision === 'Pending',
-                      'text-red-600': center.tc_review_decision === 'Rejected',
-                    }">
+      'text-green-600': center.tc_review_decision === 'Approved',
+      'text-yellow-600': center.tc_review_decision === 'Pending',
+      'text-red-600': center.tc_review_decision === 'Rejected',
+    }">
                       {{ center.tc_review_decision }}
                     </p>
                   </div>
@@ -501,7 +501,7 @@ const setDefaultDates = async (center) => {
     };
 
     // Send PATCH request to update teaching center
-    await apiServices.patchBmhcTeachingCenter(center.id, updateData);
+    await apiServices.patchMhpcTeachingCenter(center.id, updateData);
 
     // Update local data
     const updatedCenters = teachingCenters.value.map((c) => {
@@ -595,7 +595,7 @@ const confirmRenewal = async () => {
     }
 
     // Send PATCH request to update teaching center
-    await apiServices.patchBmhcTeachingCenter(selectedCenter.value.id, formData);
+    await apiServices.patchMhpcTeachingCenter(selectedCenter.value.id, formData);
 
     // Update local data
     const updatedCenters = teachingCenters.value.map((center) => {
@@ -637,7 +637,7 @@ const fetchData = async () => {
 
   try {
     // Fetch teaching centers
-    const response = await apiServices.getBmhcTeachingCenters();
+    const response = await apiServices.getMhpcTeachingCenters();
 
     if (response && response.data && response.data.results) {
       teachingCenters.value = response.data.results;

@@ -1,7 +1,9 @@
 <template>
-  <Transition enter-active-class="transition ease-out duration-300" enter-from-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+  <Transition enter-active-class="transition ease-out duration-300"
+    enter-from-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
     enter-to-class="opacity-100 translate-y-0 sm:scale-100" leave-active-class="transition ease-in duration-200"
-    leave-from-class="opacity-100 translate-y-0 sm:scale-100" leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+    leave-from-class="opacity-100 translate-y-0 sm:scale-100"
+    leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
     <div v-if="show" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="view-details-modal-title" role="dialog"
       aria-modal="true">
       <div class="flex items-center justify-center min-h-screen px-4 text-center sm:p-0">
@@ -191,7 +193,7 @@ const getStatusText = (status) => {
 const togglePhysicalVerification = async () => {
   const newStatus = !capa.value.physical_verification_status;
   try {
-    await apiservice.patchBmhcCapa(capa.value.id, {
+    await apiservice.patchMhpcCapa(capa.value.id, {
       physical_verification_status: newStatus,
     });
 
@@ -207,7 +209,7 @@ const togglePhysicalVerification = async () => {
 const updateRemarks = async () => {
   if (editableRemarks.value !== capa.value.DO_remarks) {
     try {
-      await apiservice.patchBmhcCapa(capa.value.id, { DO_remarks: editableRemarks.value });
+      await apiservice.patchMhpcCapa(capa.value.id, { DO_remarks: editableRemarks.value });
       capa.value.DO_remarks = editableRemarks.value;
       emits('capa-updated');
     } catch (error) {
@@ -222,7 +224,7 @@ const resolveCapa = async () => {
   const remarks = prompt('Please enter Dealing Officer Remarks/Reason for Resolved:');
   if (remarks) {
     try {
-      await apiservice.patchBmhcCapa(capa.value.id, {
+      await apiservice.patchMhpcCapa(capa.value.id, {
         status: 'R',
         DO_remarks: remarks,
         physical_verification_status: true,

@@ -388,7 +388,7 @@ const messageClass = ref('');
 
 const fetchRegistrationNumber = async (cid) => {
   try {
-    const response = await apiService.getApplicationsByCid(cid);
+    const response = await apiService.getMhpcApplicationsByCid(cid);
     if (response.data && response.data.length > 0) {
       return response.data[0].registration_no;
     }
@@ -402,7 +402,7 @@ const fetchRegistrationNumber = async (cid) => {
 
 const fetchMasterData = async () => {
   try {
-    const agenciesResponse = await apiService.getBmhcCogsAgencies();
+    const agenciesResponse = await apiService.getMhpcCogsAgencies();
     agencyOptions.value = agenciesResponse.data.results;
   } catch (error) {
     toast.error("Failed to fetch master data: " + error.message);
@@ -515,7 +515,7 @@ const submitForm = async () => {
     };
 
     try {
-      const response = await apiService.createBmhcCogs(requestData);
+      const response = await apiService.createMhpcCogs(requestData);
 
       if (response.status === 201) {
         toast.success('Application submitted successfully!');

@@ -248,7 +248,7 @@ const saveChanges = async () => {
     }
 
     // PATCH to the *qualification* endpoint, not the application
-    await apiServices.patchBhmcNewQualification(selectedQualificationId.value, formData);
+    await apiServices.patchMhpcNewQualification(selectedQualificationId.value, formData);
     originalData.value = JSON.parse(JSON.stringify(editableData.value));
     isEditing.value = false;
     emit('update'); // Refresh the main application data
@@ -270,7 +270,7 @@ const togglePrimaryQualification = async () => {
     const newValue = !selectedQualification.value.is_primary_qualification;
     const formData = new FormData();
     formData.append('is_primary_qualification', newValue);
-    await apiServices.patchBhmcNewQualification(selectedQualificationId.value, formData);
+    await apiServices.patchMhpcNewQualification(selectedQualificationId.value, formData);
 
     // Update ALL qualifications (not just the selected one)
     props.application.user_qualifications.forEach(q => {

@@ -793,7 +793,7 @@ const handleNext = async () => {
 
     try {
       // Submit the first part of the form data
-      const response = await apiService.createBhmcNewApplication(apiFormData);
+      const response = await apiService.createMhpcNewApplication(apiFormData);
 
       // Capture the application ID from the response
       applicationId.value = response.data.id;
@@ -853,7 +853,7 @@ const handleSubmitActual = async () => { // Modified to submit and redirect
     });
 
     // Send everything in a single request
-    await apiService.createBhmcNewQualification(formData);
+    await apiService.createMhpcNewQualification(formData);
 
     toast.success('Application submitted successfully!');
     // Redirect to the dashboard after successful submission

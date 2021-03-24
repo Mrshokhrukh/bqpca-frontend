@@ -70,7 +70,7 @@ export const useInstitutionStore = defineStore('institution', () => {
     error.value = null
 
     try {
-      const response = await bmhcServices.getBmhcInstitutes()
+      const response = await bmhcServices.getMhpcInstitutes()
       if (response?.data?.results) {
         institutionData.value = response.data.results
       } else {

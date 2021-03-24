@@ -9,11 +9,11 @@
             'bg-blue-50 border-l-4 border-blue-500'
       ]">
         <div :class="[
-          'flex-shrink-0 w-6 h-6',
-          notification.type === 'success' ? 'text-green-500' :
-            notification.type === 'error' ? 'text-red-500' :
-              'text-blue-500'
-        ]">
+        'flex-shrink-0 w-6 h-6',
+        notification.type === 'success' ? 'text-green-500' :
+          notification.type === 'error' ? 'text-red-500' :
+            'text-blue-500'
+      ]">
           <svg v-if="notification.type === 'success'" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -29,19 +29,19 @@
         </div>
         <div class="ml-3">
           <h3 :class="[
-            'text-sm font-medium',
-            notification.type === 'success' ? 'text-green-800' :
-              notification.type === 'error' ? 'text-red-800' :
-                'text-blue-800'
-          ]">
+        'text-sm font-medium',
+        notification.type === 'success' ? 'text-green-800' :
+          notification.type === 'error' ? 'text-red-800' :
+            'text-blue-800'
+      ]">
             {{ notification.title }}
           </h3>
           <p :class="[
-            'text-sm mt-1',
-            notification.type === 'success' ? 'text-green-700' :
-              notification.type === 'error' ? 'text-red-700' :
-                'text-blue-700'
-          ]">
+        'text-sm mt-1',
+        notification.type === 'success' ? 'text-green-700' :
+          notification.type === 'error' ? 'text-red-700' :
+            'text-blue-700'
+      ]">
             {{ notification.message }}
           </p>
         </div>
@@ -111,8 +111,8 @@
         <h3 class="mt-2 text-base font-medium text-gray-900">No participants found</h3>
         <p class="mt-1 text-sm text-gray-500">
           {{ participants.length > 0
-            ? 'No participants match your current filters.'
-            : 'No CPD participants have been submitted for review.' }}
+        ? 'No participants match your current filters.'
+        : 'No CPD participants have been submitted for review.' }}
         </p>
       </div>
 
@@ -177,7 +177,7 @@
             <div>
               <p class="text-sm text-gray-700">
                 Showing <span class="font-medium">{{ paginationStart + 1 }}</span> to <span class="font-medium">{{
-                  paginationEnd }}</span> of <span class="font-medium">{{ filteredParticipants.length }}</span> results
+        paginationEnd }}</span> of <span class="font-medium">{{ filteredParticipants.length }}</span> results
               </p>
             </div>
             <div class="flex">
@@ -239,10 +239,10 @@
             <div class="flex items-center gap-2">
               <div v-if="selectedParticipant?.reviewStatus"
                 class="px-3 py-1 rounded-full flex items-center gap-2 text-sm" :class="{
-                  'bg-green-100 text-green-800': selectedParticipant?.reviewStatus === 'Approved',
-                  'bg-yellow-100 text-yellow-800': selectedParticipant?.reviewStatus === 'Pending',
-                  'bg-red-100 text-red-800': selectedParticipant?.reviewStatus === 'Rejected'
-                }">
+        'bg-green-100 text-green-800': selectedParticipant?.reviewStatus === 'Approved',
+        'bg-yellow-100 text-yellow-800': selectedParticipant?.reviewStatus === 'Pending',
+        'bg-red-100 text-red-800': selectedParticipant?.reviewStatus === 'Rejected'
+      }">
                 <span v-if="selectedParticipant?.reviewStatus === 'Approved'"
                   class="w-2 h-2 bg-green-500 rounded-full"></span>
                 <span v-else-if="selectedParticipant?.reviewStatus === 'Pending'"
@@ -478,7 +478,7 @@
                 </label>
                 <div class="relative">
                   <input id="credits" v-model.number="creditScore" type="number" step="0.5" min="0" required
-                    class="block w-full px-4 py-2 rounded-md border border-gray-300 bg-white shadow-sm 
+                    class="block w-full px-4 py-2 rounded-md border border-gray-300 bg-white shadow-sm
                     focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                     [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="0.0">
                 </div>
@@ -490,12 +490,12 @@
 
             <!-- Action Buttons -->
             <div class="flex justify-end gap-4">
-              <button type="button" @click="closeAwardModal" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 
+              <button type="button" @click="closeAwardModal" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50
                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 Cancel
               </button>
 
-              <button @click="awardCredits" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 
+              <button @click="awardCredits" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700
                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 Award Credits
               </button>
@@ -672,7 +672,7 @@ const awardCredits = () => {
   isLoading.value = true;
 
   // Make the API call to update the participant's credits
-  apiServices.patchBmhcCpdRecord(selectedParticipant.value.id, updatedData)
+  apiServices.patchMhpcCpdRecord(selectedParticipant.value.id, updatedData)
     .then(() => {
       const participantIndex = participants.value.findIndex(p => p.id === selectedParticipant.value.id);
       if (participantIndex !== -1) {
@@ -711,7 +711,7 @@ const awardCredits = () => {
 onMounted(async () => {
   isLoading.value = true;
   try {
-    const response = await apiServices.getBmhcCpdRecords();
+    const response = await apiServices.getMhpcCpdRecords();
     console.log("API Response:", response);
 
     if (response && response.data && response.data.results) {

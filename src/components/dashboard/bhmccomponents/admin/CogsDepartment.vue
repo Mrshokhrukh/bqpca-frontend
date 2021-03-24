@@ -166,7 +166,7 @@ const departmentToDelete = ref(null);
 // Fetch departments on component mount
 onMounted(async () => {
     try {
-        const response = await services.getBmhcCogsDepartments();
+        const response = await services.getMhpcCogsDepartments();
         console.log('API Response:', response.data);
 
         if (Array.isArray(response.data.results)) {
@@ -203,13 +203,13 @@ const paginatedDepartments = computed(() => {
 const handleSubmit = async () => {
     try {
         if (isEditing.value) {
-            const response = await services.updateBmhcCogsDepartment(formData.value.id, formData.value);
+            const response = await services.updateMhpcCogsDepartment(formData.value.id, formData.value);
             const index = departments.value.findIndex(dt => dt.id === formData.value.id);
             if (index !== -1) {
                 departments.value[index] = response.data;
             }
         } else {
-            const response = await services.createBmhcCogsDepartment(formData.value);
+            const response = await services.createMhpcCogsDepartment(formData.value);
             departments.value.push(response.data);
         }
         resetForm();
@@ -241,7 +241,7 @@ const confirmDelete = async () => {
     if (!departmentToDelete.value) return;
 
     try {
-        await services.deleteBmhcCogsDepartment(departmentToDelete.value.id);
+        await services.deleteMhpcCogsDepartment(departmentToDelete.value.id);
         const index = departments.value.findIndex(dt => dt.id === departmentToDelete.value.id);
         if (index !== -1) {
             departments.value.splice(index, 1);

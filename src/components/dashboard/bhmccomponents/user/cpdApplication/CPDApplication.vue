@@ -204,7 +204,7 @@ const validateForm = () => {
 
 const fetchRegistrationNumber = async (cid) => {
   try {
-    const response = await apiService.getApplicationsByCid(cid); // Ensure correct endpoint
+    const response = await apiService.getMhpcApplicationsByCid(cid); // Ensure correct endpoint
     if (response.data && response.data.length > 0) {
       return response.data[0].id;
     }
@@ -245,7 +245,7 @@ const handleSubmit = async () => {
 
 
   try {
-    const response = await apiService.createBmhcCpdRecord(formData);
+    const response = await apiService.createMhpcCpdRecord(formData);
 
     if (response.status >= 200 && response.status < 300) {
       toast.success('CPD Registration submitted successfully!');

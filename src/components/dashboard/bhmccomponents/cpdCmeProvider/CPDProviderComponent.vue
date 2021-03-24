@@ -8,14 +8,15 @@
           Your CPD application has been approved. Please add participants below to complete the process.
         </p>
       </div>
-      
+
       <!-- After Approval Participants Component -->
       <AfterApprovalParticipants :cpd-id="approvedCpdId" :calculated-credits="calculatedCredits" />
     </div>
-    
+
     <!-- Regular CPD Application Form -->
     <div v-else>
-      <CPDApplicationDetails v-model="formData" :application-id="applicationId" @application-loaded="handleApplicationLoaded" />
+      <CPDApplicationDetails v-model="formData" :application-id="applicationId"
+        @application-loaded="handleApplicationLoaded" />
     </div>
   </div>
 </template>
@@ -54,13 +55,13 @@ onMounted(async () => {
   const id = route.query.id;
   if (id) {
     applicationId.value = parseInt(id);
-    
+
     // Check if we're meant to add participants
     if (route.query.add_participants === 'true') {
       try {
         // Fetch the application to verify it's approved
-        const response = await apiservice.getBmhcCpdTaskById(id);
-        
+        const response = await apiservice.getMhpcCpdTaskById(id);
+
         if (response.data && response.data.review_status === 'Approved') {
           approvedCpdId.value = parseInt(id);
           calculatedCredits.value = response.data.credit || 0;
@@ -81,14 +82,14 @@ onMounted(async () => {
 // Handle when application is loaded from CPDApplicationDetails
 const handleApplicationLoaded = (applicationData) => {
   // Check if the application is approved and needs participants
-  if (applicationData && 
-      applicationData.review_status === 'Approved' && 
-      (!applicationData.participants || applicationData.participants.length === 0)) {
-    
+  if (applicationData &&
+    applicationData.review_status === 'Approved' &&
+    (!applicationData.participants || applicationData.participants.length === 0)) {
+
     // Set up state for adding participants
     approvedCpdId.value = applicationData.id;
     calculatedCredits.value = applicationData.credit || 0;
-    
+
     // Ask if user wants to add participants now
     const addNow = confirm('This application is approved. Would you like to add participants now?');
     if (addNow) {

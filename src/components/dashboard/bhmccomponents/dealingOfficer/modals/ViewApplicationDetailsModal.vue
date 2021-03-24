@@ -30,10 +30,10 @@
                           <div class="flex items-center justify-between">
                             <span class="text-sm text-gray-600">
                               {{
-                                application.is_counselor
-                                ? 'Registered Counselor'
-                                : 'Not a Counselor'
-                              }}
+    application.is_counselor
+      ? 'Registered Counselor'
+      : 'Not a Counselor'
+  }}
                             </span>
                             <CounselorStatus :application="application" @update="refreshApplication" />
                           </div>
@@ -52,15 +52,16 @@
                   </div>
                 </div>
               </div>
-              <FooterButtons v-if="application" :application="application" @open-certificate-modal="openCertificateModal"
-                @update="refreshApplication" :is-loading="isLoading" @close="closeModal"/>
+              <FooterButtons v-if="application" :application="application"
+                @open-certificate-modal="openCertificateModal" @update="refreshApplication" :is-loading="isLoading"
+                @close="closeModal" />
             </DialogPanel>
           </TransitionChild>
         </div>
       </div>
     </Dialog>
   </TransitionRoot>
-  <MHPCCertificateModal v-if="isCertificateModalOpen" :application="application"  @close="closeCertificateModal" />
+  <MHPCCertificateModal v-if="isCertificateModalOpen" :application="application" @close="closeCertificateModal" />
 </template>
 
 <script setup>
@@ -128,7 +129,7 @@ const refreshApplication = async () => {
   if (!props.application?.id) return // Ensure application ID exists
   isLoading.value = true
   try {
-    const response = await apiServices.getBhmcNewApplication(props.application.id)
+    const response = await apiServices.getMhpcNewApplication(props.application.id)
     emit('update', response.data)
     await nextTick() // Ensure DOM updates
   } catch (error) {

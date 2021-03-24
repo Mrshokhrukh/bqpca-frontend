@@ -352,7 +352,7 @@ const isValidEmail = (email) => {
 onMounted(async () => {
   // Load Work Addresses
   try {
-    const response = await apiService.getBhmcNewApplications();
+    const response = await apiService.getMhpcNewApplications();
     const userCid = authStore.user?.cid;
 
     if (response.data && Array.isArray(response.data.results)) {

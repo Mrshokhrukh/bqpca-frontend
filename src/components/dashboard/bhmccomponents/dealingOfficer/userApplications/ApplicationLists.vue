@@ -262,7 +262,7 @@ const fetchMasterData = async () => {
 
 const fetchApplications = async () => {
   try {
-    const response = await apiServices.getBhmcNewApplications();
+    const response = await apiServices.getMhpcNewApplications();
     applications.value = response.data.results || []; // Use .results directly
   } catch (error) {
     console.error('Error fetching applications:', error);
@@ -286,8 +286,8 @@ const viewDetails = async (application) => {
   } catch (error) {
     console.error('Error fetching details:', error);
     // Still open the modal, but with a fallback
-        selectedApplication.value = { ...application, is_counselor: false, userDetails: null };
-        isModalOpen.value = true;
+    selectedApplication.value = { ...application, is_counselor: false, userDetails: null };
+    isModalOpen.value = true;
   }
 };
 

@@ -458,7 +458,7 @@ const isSubmitting = ref(false); //Submitting state
 const fetchRegistrationNumber = async (cid) => {
   isLoading.value = true;
   try {
-    const response = await apiService.getApplicationsByCid(cid);
+    const response = await apiService.getMhpcApplicationsByCid(cid);
     if (response.data && response.data.length > 0) {
       return response.data[0].registration_no;
     }

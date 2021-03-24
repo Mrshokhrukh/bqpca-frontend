@@ -75,8 +75,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 <!-- Primary Qualification Display -->
                 <template v-if="app.user_qualifications && app.user_qualifications.length > 0">
-                  <template
-                    v-for="qualification in app.user_qualifications.filter(q => q.is_primary_qualification)"
+                  <template v-for="qualification in app.user_qualifications.filter(q => q.is_primary_qualification)"
                     :key="qualification.id">
                     <div>
                       <span :class="getQualificationStatusClasses(qualification.endorsement_decision)"
@@ -239,12 +238,12 @@ const paginationEnd = computed(() => {
 });
 
 const getStatus = (app) => {
-    const primaryQualification = app.user_qualifications?.find(q => q.is_primary_qualification);
-    if(primaryQualification){
-        return primaryQualification.endorsement_decision;
-    }
+  const primaryQualification = app.user_qualifications?.find(q => q.is_primary_qualification);
+  if (primaryQualification) {
+    return primaryQualification.endorsement_decision;
+  }
 
-    return 'Pending'
+  return 'Pending'
 };
 
 const getQualificationStatusClasses = (status) => {
@@ -294,7 +293,7 @@ const fetchMasterData = async () => {
 
 const fetchApplications = async () => {
   try {
-    const response = await apiServices.getBhmcNewApplications();
+    const response = await apiServices.getMhpcNewApplications();
     applications.value = response.data.results || [];
   } catch (error) {
     console.error('Error fetching applications:', error);

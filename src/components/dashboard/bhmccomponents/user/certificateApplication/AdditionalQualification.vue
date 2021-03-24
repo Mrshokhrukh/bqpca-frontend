@@ -282,7 +282,7 @@ const fetchApplications = async () => {
       toast.error("CID not found.  Please ensure you are logged in.");
       return;
     }
-    const response = await apiService.getApplicationsByCid(cid);
+    const response = await apiService.getMhpcApplicationsByCid(cid);
     applications.value = response.data;
 
     // Set the application ID in localFormData *if* we have one application
@@ -429,7 +429,7 @@ const handleSubmitActual = async () => {
     });
 
     // Send everything in a single request
-    const response = await apiService.createBhmcNewQualification(formData);
+    const response = await apiService.createMhpcNewQualification(formData);
 
     if (response.status >= 200 && response.status < 300) {
       toast.success('Application submitted successfully!');

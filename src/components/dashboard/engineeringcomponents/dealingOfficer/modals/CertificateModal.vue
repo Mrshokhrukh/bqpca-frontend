@@ -677,11 +677,11 @@ const saveChanges = async () => {
         }]
       };
 
-      await apiServices.patchBhmcNewApplication(props.application.id, applicationData);
+      await apiServices.patchMhpcNewApplication(props.application.id, applicationData);
     }
 
     // 3. Get fresh application data
-    const response = await apiServices.getBhmcNewApplication(props.application.id);
+    const response = await apiServices.getMhpcNewApplication(props.application.id);
     emit('update', response.data);
     isEditing.value = false;
 

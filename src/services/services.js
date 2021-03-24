@@ -24,7 +24,7 @@ export default {
     if (params.service_type == 'roq') {
       return apiClient.get(`/recognitions/recognition-of-qualifications/verify-certification/`, { params });
     } else if (params.service_type == 'health_certification') {
-      return apiClient.get(`/bmhc/bmhc-new-application/verify-certification/`, { params });
+      return apiClient.get(`/mhpc/mhpc-new-application/verify-certification/`, { params });
     }
   },
 

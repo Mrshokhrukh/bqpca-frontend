@@ -206,7 +206,7 @@ const submitCapa = async () => {
       user_remarks: internalCapa.value.user_remarks,
     };
 
-    const response = await apiservice.patchBmhcCapa(internalCapa.value.id, dataToSubmit);
+    const response = await apiservice.patchMhpcCapa(internalCapa.value.id, dataToSubmit);
 
     // Emit the updated data:
     emit('capa-updated', response.data);

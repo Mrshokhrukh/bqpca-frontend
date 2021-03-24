@@ -32,19 +32,19 @@ export const useDashboardStore = defineStore('dashboard', {
 
       try {
         // Run each API call independently with its own error handling
-        const cogsData = await apiServices.getBmhcCogsByCid(cid)
+        const cogsData = await apiServices.getMhpcCogsByCid(cid)
           .catch(error => {
             console.error('Error fetching COGS data:', error);
             return null;
           });
 
-        const applicationsData = await apiServices.getFullApplicationListByCid(cid)
+        const applicationsData = await apiServices.getMhpcFullApplicationListByCid(cid)
           .catch(error => {
             console.error('Error fetching applications data:', error);
             return null;
           });
 
-        const cpdData = await apiServices.getBmhcCpdRecordsByCid(cid)
+        const cpdData = await apiServices.getMhpcCpdRecordsByCid(cid)
           .catch(error => {
             console.error('Error fetching CPD data:', error);
             return null;
