@@ -1,6 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <header class="fixed w-full top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+  <header class="fixed w-full top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100"
+    style="height: auto; max-height: 97px;">
     <!-- Top accent line -->
     <div class="h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20"></div>
 
@@ -62,9 +63,10 @@
       </div>
     </nav>
 
-    <!-- Enhanced Mobile Menu with smooth transitions -->
+    <!-- Enhanced Mobile Menu with controlled height -->
     <div v-show="isMenuOpen"
-      class="md:hidden absolute w-full bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-lg">
+      class="md:hidden absolute w-full bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-lg"
+      style="max-height: 80vh; overflow-y: auto;">
       <div class="max-w-7xl mx-auto px-4 pt-3 pb-4 space-y-1.5">
         <a v-for="item in navItems" :key="item.name" :href="item.route"
           class="block px-5 py-3 rounded-xl text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50/80 transition-all duration-300">
@@ -86,7 +88,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { Menu, X, UserCircle, User } from 'lucide-vue-next'
 
 const isMenuOpen = ref(false)
@@ -111,6 +113,28 @@ const navigateToServices = () => {
   }
   isMenuOpen.value = false // Close mobile menu if open
 }
+
+// Add a function for the missing scrollToServices method
+const scrollToServices = (event) => {
+  event.preventDefault()
+  navigateToServices()
+}
+
+// Close menu when resizing to desktop
+const handleResize = () => {
+  if (window.innerWidth >= 768 && isMenuOpen.value) {
+    isMenuOpen.value = false
+  }
+}
+
+// Add event listeners for resize
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <style scoped>
@@ -125,5 +149,17 @@ const navigateToServices = () => {
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Fixed height ensure for the header */
+header {
+  min-height: 97px !important;
+  height: auto !important;
+  max-height: unset !important;
+}
+
+/* Ensure the mobile menu doesn't affect header height */
+header>div[v-show="isMenuOpen"] {
+  top: 97px;
 }
 </style>

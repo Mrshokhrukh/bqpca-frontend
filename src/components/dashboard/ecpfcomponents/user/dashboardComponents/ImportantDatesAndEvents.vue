@@ -98,7 +98,6 @@
 import {
   Calendar, Users, FileText, BarChart2, GraduationCap, Link, MapPin, PlusCircle
 } from 'lucide-vue-next';
-import { defineProps } from 'vue';
 
 defineProps({
   events: {
