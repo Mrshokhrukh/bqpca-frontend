@@ -114,7 +114,7 @@ import CogsWorkplace from '@/components/dashboard/bhmccomponents/admin/CogsWorkp
 import CounselorForm from '@/components/dashboard/bhmccomponents/dealingOfficer/CounselorForm.vue';
 import BMHCUserProfile from '@/components/dashboard/bhmccomponents/user/BMHCUserProfile.vue';
 import ProviderDashboard from '@/components/dashboard/bhmccomponents/cpdCmeProvider/ProviderDashboard.vue';
-import CPDApplicationDetails from '@/components/dashboard/bhmccomponents/cpdCmeProvider/CPDApplicationDetails.vue';
+import CPDApplicationDetails from '@/components/dashboard/engineeringcomponents/cpdCmeProvider/CPDApplicationDetails.vue';
 import CPDApplicationTracker from '@/components/dashboard/bhmccomponents/cpdCmeProvider/CPDApplicationTracker.vue';
 
 //institute components
