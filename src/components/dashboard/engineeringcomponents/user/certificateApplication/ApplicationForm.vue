@@ -85,33 +85,31 @@
             <!-- CID Fields -->
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">CID No.</label>
-              <input v-model="localFormData.cid" type="number" maxlength="11"
+              <input v-model="localFormData.cid_no" type="number" maxlength="11"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
                 placeholder="Enter CID number" @input="fetchDCRCData" />
-              <span v-if="errors.cid" class="text-sm text-red-500 mt-1">{{ errors.cid }}</span>
+              <span v-if="errors.cid_no" class="text-sm text-red-500 mt-1">{{ errors.cid_no }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Dzongkhag</label>
-              <input type="text" v-model="localFormData.permanent_dzongkhag"
+              <input type="text" v-model="localFormData.dzongkhag"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
-              <span v-if="errors.permanent_dzongkhag" class="text-sm text-red-500 mt-1">{{ errors.permanent_dzongkhag
-                }}</span>
+              <span v-if="errors.dzongkhag" class="text-sm text-red-500 mt-1">{{ errors.dzongkhag }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Gewog</label>
-              <input type="text" v-model="localFormData.permanent_gewog"
+              <input type="text" v-model="localFormData.gewog"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
-              <span v-if="errors.permanent_gewog" class="text-sm text-red-500 mt-1">{{ errors.permanent_gewog }}</span>
+              <span v-if="errors.gewog" class="text-sm text-red-500 mt-1">{{ errors.gewog }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Village</label>
-              <input type="text" v-model="localFormData.permanent_village"
+              <input type="text" v-model="localFormData.village"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
-              <span v-if="errors.permanent_village" class="text-sm text-red-500 mt-1">{{ errors.permanent_village
-                }}</span>
+              <span v-if="errors.village" class="text-sm text-red-500 mt-1">{{ errors.village }}</span>
             </div>
           </template>
 
@@ -131,10 +129,10 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Email Address</label>
-              <input v-model="localFormData.email" type="email"
+              <input v-model="localFormData.email_address" type="email"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
                 placeholder="Email Address" />
-              <span v-if="errors.email" class="text-sm text-red-500 mt-1">{{ errors.email }}</span>
+              <span v-if="errors.email_address" class="text-sm text-red-500 mt-1">{{ errors.email_address }}</span>
             </div>
 
             <div class="col-span-1">
@@ -196,9 +194,9 @@
             <select v-model="localFormData.gender"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
               <option value="">Select Gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="O">Other</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
             </select>
             <span v-if="errors.gender" class="text-sm text-red-500 mt-1">{{ errors.gender }}</span>
           </div>
@@ -212,10 +210,23 @@
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Contact Number</label>
-            <input v-model="localFormData.contact_number" type="tel"
+            <input v-model="localFormData.contact_no" type="tel"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
               placeholder="Enter phone number" />
-            <span v-if="errors.contact_number" class="text-sm text-red-500 mt-1">{{ errors.contact_number }}</span>
+            <span v-if="errors.contact_no" class="text-sm text-red-500 mt-1">{{ errors.contact_no }}</span>
+          </div>
+
+          <!-- Registration Type Field (Updated to use 'name' field) -->
+          <div class="col-span-1">
+            <label class="block text-sm font-medium text-gray-700 required">Registration Type</label>
+            <select v-model="localFormData.registration_type"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
+              <option value="">Select Registration Type</option>
+              <option v-for="regType in registrationTypes" :key="regType.id" :value="regType.id">
+                {{ regType.name }}
+              </option>
+            </select>
+            <span v-if="errors.registration_type" class="text-sm text-red-500 mt-1">{{ errors.registration_type }}</span>
           </div>
         </div>
 
@@ -416,6 +427,7 @@ const emit = defineEmits(['update:modelValue', 'submit', 'back', 'create', 'canc
 
 const stage = ref(1);
 const applicationId = ref(null);
+const registrationTypes = ref([]); // Added for registration types
 
 const fetchedDocumentTypes = ref([]);
 
@@ -487,6 +499,11 @@ const universities = ref([]);
 
 onMounted(async () => {
   try {
+    // Fetch registration types (new addition)
+    const registrationTypesResponse = await apiService.getMastersRegistrationTypes();
+    registrationTypes.value = registrationTypesResponse.data.results;
+    console.log('Registration Types:', registrationTypes.value);
+
     const qualificationTypesResponse = await apiService.getMastersQualificationTypes();
     const qualificationsResponse = await apiService.getMastersQualifications();
     const universitiesResponse = await apiService.getMastersUniversities();
@@ -509,7 +526,7 @@ const localFormData = reactive({
   ...props.modelValue,
   cid_holder: props.selectedType === 'cid',
   nationality: props.selectedType === 'cid' ? 'Bhutanese' : '',
-  email: user.email,
+  email_address: user.email,
   workPermitNo: '',
   mobileNumber: '',
   full_name: '',
@@ -518,6 +535,13 @@ const localFormData = reactive({
   city: '',
   state: '',
   country: '',
+  // Updated field names to match API requirements
+  cid_no: '',
+  dzongkhag: '',
+  gewog: '',
+  village: '',
+  contact_no: '',
+  // End of field names
   passport_photo: null,
   documents: [],
   remarks: '',
@@ -532,7 +556,7 @@ const localFormData = reactive({
   year_of_completion: null,
   is_active: false,
   application: null,
-  registration_type: '1',
+  registration_type: '', // Will be populated from dropdown
 });
 
 const errors = reactive({});
@@ -542,7 +566,7 @@ const toast = useToast();
 const isLoadingDCRC = ref(false);
 
 const isCIDValid = computed(() => {
-  return /^\d{11}$/.test(localFormData.cid);
+  return /^\d{11}$/.test(localFormData.cid_no);
 });
 
 watch(
@@ -560,23 +584,26 @@ const validateFormStageOne = () => {
   if (!localFormData.full_name) { errors.full_name = 'Full name is required'; isValid = false; }
   if (!localFormData.gender) { errors.gender = 'Gender is required'; isValid = false; }
   if (!localFormData.date_of_birth) { errors.date_of_birth = 'Date of birth is required'; isValid = false; }
-  if (!localFormData.contact_number) { errors.contact_number = 'Contact number is required'; isValid = false; }
+  if (!localFormData.contact_no) { errors.contact_no = 'Contact number is required'; isValid = false; }
   if (!localFormData.passport_photo) { errors.passport_photo = 'Passport photo is required'; isValid = false; }
+  // Validate registration type
+  if (!localFormData.registration_type) { errors.registration_type = 'Registration type is required'; isValid = false; }
 
   if (props.selectedType === 'cid') {
-    if (!localFormData.cid) {
-      errors.cid = 'CID is required';
+    if (!localFormData.cid_no) {
+      errors.cid_no = 'CID is required';
       isValid = false;
-    } else if (localFormData.cid.length > 11) {
-      errors.cid = 'CID must be no more than 11 digits.';
+    } else if (localFormData.cid_no.length > 11) {
+      errors.cid_no = 'CID must be no more than 11 digits.';
       isValid = false;
     }
 
-    if (!localFormData.permanent_dzongkhag) { errors.permanent_dzongkhag = 'Dzongkhag is required'; isValid = false; }
-    if (!localFormData.permanent_village) { errors.permanent_village = 'Village is required'; isValid = false; }
+    if (!localFormData.dzongkhag) { errors.dzongkhag = 'Dzongkhag is required'; isValid = false; }
+    if (!localFormData.gewog) { errors.gewog = 'Gewog is required'; isValid = false; }
+    if (!localFormData.village) { errors.village = 'Village is required'; isValid = false; }
   } else {
     if (!localFormData.nationality) { errors.nationality = 'Nationality is required'; isValid = false; }
-    if (!localFormData.email) { errors.email = 'Email is required'; isValid = false; }
+    if (!localFormData.email_address) { errors.email_address = 'Email is required'; isValid = false; }
     if (!localFormData.workPermitNo) { errors.workPermitNo = 'Work permit number is required'; isValid = false; }
     if (!localFormData.country) { errors.country = 'Country is required'; isValid = false; }
     if (!localFormData.mobileNumber) {
@@ -603,23 +630,26 @@ const validateForm = () => {
   if (!localFormData.full_name) { errors.full_name = 'Full name is required'; isValid = false; }
   if (!localFormData.gender) { errors.gender = 'Gender is required'; isValid = false; }
   if (!localFormData.date_of_birth) { errors.date_of_birth = 'Date of birth is required'; isValid = false; }
-  if (!localFormData.contact_number) { errors.contact_number = 'Contact number is required'; isValid = false; }
+  if (!localFormData.contact_no) { errors.contact_no = 'Contact number is required'; isValid = false; }
   if (!localFormData.passport_photo) { errors.passport_photo = 'Passport photo is required'; isValid = false; }
+  // Validate registration type
+  if (!localFormData.registration_type) { errors.registration_type = 'Registration type is required'; isValid = false; }
 
   if (props.selectedType === 'cid') {
-    if (!localFormData.cid) {
-      errors.cid = 'CID is required';
+    if (!localFormData.cid_no) {
+      errors.cid_no = 'CID is required';
       isValid = false;
-    } else if (localFormData.cid.length > 11) {
-      errors.cid = 'CID must be no more than 11 digits.';
+    } else if (localFormData.cid_no.length > 11) {
+      errors.cid_no = 'CID must be no more than 11 digits.';
       isValid = false;
     }
 
-    if (!localFormData.permanent_dzongkhag) { errors.permanent_dzongkhag = 'Dzongkhag is required'; isValid = false; }
-    if (!localFormData.permanent_village) { errors.permanent_village = 'Village is required'; isValid = false; }
+    if (!localFormData.dzongkhag) { errors.dzongkhag = 'Dzongkhag is required'; isValid = false; }
+    if (!localFormData.gewog) { errors.gewog = 'Gewog is required'; isValid = false; }
+    if (!localFormData.village) { errors.village = 'Village is required'; isValid = false; }
   } else {
     if (!localFormData.nationality) { errors.nationality = 'Nationality is required'; isValid = false; }
-    if (!localFormData.email) { errors.email = 'Email is required'; isValid = false; }
+    if (!localFormData.email_address) { errors.email_address = 'Email is required'; isValid = false; }
     if (!localFormData.workPermitNo) { errors.workPermitNo = 'Work permit number is required'; isValid = false; }
     if (!localFormData.country) { errors.country = 'Country is required'; isValid = false; }
     if (!localFormData.mobileNumber) {
@@ -678,22 +708,23 @@ const fetchDCRCData = async () => {
   isLoadingDCRC.value = true;
   try {
     // Pass userId as a query parameter
-    const response = await apiService.fetchCitizenDetails(localFormData.cid, { params: { user_id: userId } });
+    const response = await apiService.fetchCitizenDetails(localFormData.cid_no, { params: { user_id: userId } });
 
+    // Updated gender mapping to match backend expectations
     const genderMap = {
-      'F': 'female', // Map to itself
-      'M': 'male', // Map to itself
-      'O': 'O'  // Add 'O' if you have an "Other" option in your API
+      'F': 'Female', // Map 'F' to 'Female'
+      'M': 'Male',   // Map 'M' to 'Male'
+      'O': 'Other'   // Map 'O' to 'Other'
     };
 
     Object.assign(localFormData, {
       full_name: response.data.applicants_name,
       date_of_birth: formatDateForInput(response.data.date_of_birth),
       gender: genderMap[response.data.gender] || '',
-      permanent_dzongkhag: response.data.dzongkhag,
-      permanent_gewog: response.data.gewog,
-      permanent_village: response.data.village,
-      contact_number: response.data.mobile_number || localFormData.contact_number,
+      dzongkhag: response.data.dzongkhag,
+      gewog: response.data.gewog,
+      village: response.data.village,
+      contact_no: response.data.mobile_number || localFormData.contact_no,
     });
 
     toast.success('DCRC data fetched successfully');
@@ -710,10 +741,10 @@ const fetchDCRCData = async () => {
     localFormData.full_name = '';
     localFormData.date_of_birth = '';
     localFormData.gender = '';
-    localFormData.permanent_dzongkhag = '';
-    localFormData.permanent_gewog = '';
-    localFormData.permanent_village = '';
-    localFormData.contact_number = '';
+    localFormData.dzongkhag = '';
+    localFormData.gewog = '';
+    localFormData.village = '';
+    localFormData.contact_no = '';
   } finally {
     isLoadingDCRC.value = false;
   }
@@ -738,6 +769,14 @@ const formatDateForAPI = (date) => {
   return `${year}-${month}-${day}`;
 };
 
+// Debug function to log form data before submission
+// const logFormData = (formData) => {
+//   console.log('Form data being submitted:');
+//   for (let pair of formData.entries()) {
+//     console.log(pair[0] + ': ' + pair[1]);
+//   }
+// };
+
 const handleNext = async () => {
   if (validateFormStageOne()) {
     // Prepare the data for the first stage submission
@@ -745,17 +784,22 @@ const handleNext = async () => {
 
     // Transform data if it's a Non-CID application
     if (props.selectedType !== 'cid') {
-      formDataStageOne.cid = formDataStageOne.workPermitNo;
-      formDataStageOne.permanent_village = formDataStageOne.city;
-      formDataStageOne.permanent_gewog = formDataStageOne.state;
-      formDataStageOne.permanent_dzongkhag = formDataStageOne.country;
-      formDataStageOne.registration_type = '1';
+      formDataStageOne.cid_no = formDataStageOne.workPermitNo;
+      formDataStageOne.village = formDataStageOne.city;
+      formDataStageOne.gewog = formDataStageOne.state;
+      formDataStageOne.dzongkhag = formDataStageOne.country;
 
       delete formDataStageOne.city;
       delete formDataStageOne.state;
       delete formDataStageOne.country;
       delete formDataStageOne.workPermitNo;
     }
+
+    // Save registration_type before deleting it from formDataStageOne
+    const registrationType = formDataStageOne.registration_type;
+
+    // Remove fields not needed for first stage
+    // delete formDataStageOne.registration_type;
     delete formDataStageOne.documents;
     delete formDataStageOne.remarks;
     delete formDataStageOne.declaration;
@@ -778,15 +822,28 @@ const handleNext = async () => {
 
     // Create FormData for the API, including the passport photo
     const apiFormData = new FormData();
+
     for (const key in formDataStageOne) {
-      if (Object.prototype.hasOwnProperty.call(formDataStageOne, key)) {
-        if (key === 'passport_photo' && formDataStageOne[key] instanceof File) {
-          apiFormData.append('passport_photo', formDataStageOne[key]);
-        } else {
-          apiFormData.append(key, formDataStageOne[key]);
-        }
-      }
+  if (Object.prototype.hasOwnProperty.call(formDataStageOne, key)) {
+    if (key === 'passport_photo' && formDataStageOne[key] instanceof File) {
+      apiFormData.append('passport_photo', formDataStageOne[key]);
+    } else if (key === 'cid_holder') {
+      // Convert boolean to string 'true'/'false' for API
+      apiFormData.append(key, formDataStageOne[key] ? 'true' : 'false');
+    } else if (key === 'is_active') {
+      // Convert boolean to string 'true'/'false' for API
+      apiFormData.append(key, formDataStageOne[key] ? 'true' : 'false');
+    } else if (key === 'registration_type') {
+      // Convert registration_type to a number
+      apiFormData.append(key, Number(formDataStageOne[key]));
+    } else if (formDataStageOne[key] !== null && formDataStageOne[key] !== undefined) {
+      apiFormData.append(key, formDataStageOne[key]);
     }
+  }
+}
+
+// Double check registration_type is included
+console.log('Registration Type in Stage 1 FormData:', apiFormData.get('registration_type'));
 
     try {
       // Submit the first part of the form data
@@ -796,6 +853,9 @@ const handleNext = async () => {
       applicationId.value = response.data.id;
       localFormData.application = response.data.id;
 
+      // Store the registration_type for later use in stage 2
+      localFormData.registration_type = registrationType;
+
       // Show a success toast
       toast.success('Personal information saved!');
 
@@ -803,7 +863,33 @@ const handleNext = async () => {
       stage.value = 2;
     } catch (error) {
       console.error('Error submitting personal information:', error);
-      toast.error(`Failed to save personal information: ${error.response?.data?.message || error.message}`);
+      if (error.response) {
+        console.error('Response status:', error.response.status);
+        console.error('Response data:', error.response.data);
+
+        if (error.response.data) {
+          // Show detailed error message from backend
+          const errorData = error.response.data;
+          let errorMessage = 'Failed to save personal information: ';
+
+          // Format error messages from API response
+          if (typeof errorData === 'object') {
+            for (const field in errorData) {
+              if (Array.isArray(errorData[field])) {
+                errorMessage += `${field}: ${errorData[field].join(', ')}; `;
+              }
+            }
+          } else if (typeof errorData === 'string') {
+            errorMessage += errorData;
+          }
+
+          toast.error(errorMessage);
+        } else {
+          toast.error(`Failed to save personal information: Server error (${error.response.status})`);
+        }
+      } else {
+        toast.error(`Failed to save personal information: ${error.message}`);
+      }
     }
   }
 };
@@ -822,31 +908,49 @@ const handleSubmitActual = async () => {
     // Create the FormData object
     const formData = new FormData();
 
-    // Add all the regular fields to FormData
-    formData.append('completion_year', new Date(localFormData.year_of_completion).getFullYear());
-    formData.append('declaration', 'True');
-    formData.append('remarks', localFormData.remarks);
+    // IMPORTANT: Add registration_type at the TOP LEVEL of the form data
+    console.log('Submitting with registration_type:', localFormData.registration_type);
+    formData.append('registration_type', Number(localFormData.registration_type));
+
+    // Parse year_of_completion to ensure valid integer
+    const completionYear = localFormData.year_of_completion ?
+      new Date(localFormData.year_of_completion).getFullYear() :
+      null;
+
+    // Add qualification data
+    formData.append('completion_year', completionYear);
+    formData.append('declaration', true);
+    formData.append('remarks', localFormData.remarks || '');
     formData.append('registration_date', formatDateForAPI(new Date()));
     formData.append('expiry_date', formatDateForAPI(new Date(new Date().setFullYear(new Date().getFullYear() + 5))));
     formData.append('payment_status', 'pending');
     formData.append('payment_id', '');
-    formData.append('is_active', 'False');
+    formData.append('is_active', false);
     formData.append('application', localFormData.application);
-    formData.append('qualification_name', localFormData.qualification_name);
-    formData.append('qualification_type', localFormData.qualification_type);
-    formData.append('institute_university', localFormData.institute);
-    formData.append('is_primary_qualification', 'True');
-    formData.append('registration_type', 1);
+
+    // Convert IDs to numbers
+    formData.append('qualification_name', Number(localFormData.qualification_name));
+    formData.append('qualification_type', Number(localFormData.qualification_type));
+    formData.append('institute_university', Number(localFormData.institute));
+    formData.append('is_primary_qualification', true);
 
     // Handle file attachments
     localFormData.documents.forEach((doc, index) => {
       if (doc.files && doc.files.length > 0) {
         doc.files.forEach(file => {
           formData.append(`attachments-${index}-file`, file);
-          formData.append(`attachments-${index}-file_type`, doc.type);
+          formData.append(`attachments-${index}-file_type`, Number(doc.type));
         });
       }
     });
+
+    // Log form data for debugging
+    console.log('Form data being submitted:');
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ' + pair[1]);
+    }
+    // Double check registration_type is included
+    console.log('Registration Type in FormData:', formData.get('registration_type'));
 
     // Send everything in a single request
     await apiService.createEpcNewQualification(formData);
@@ -857,13 +961,39 @@ const handleSubmitActual = async () => {
 
   } catch (error) {
     console.error('Error submitting application:', error);
-    toast.error(`Application submission failed: ${error.response?.data?.message || error.message}`);
+
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+
+      if (error.response.data) {
+        // Show detailed error message from backend
+        const errorData = error.response.data;
+        let errorMessage = 'Application submission failed: ';
+
+        // Format error messages from API response
+        if (typeof errorData === 'object') {
+          for (const field in errorData) {
+            if (Array.isArray(errorData[field])) {
+              errorMessage += `${field}: ${errorData[field].join(', ')}; `;
+            }
+          }
+        } else if (typeof errorData === 'string') {
+          errorMessage += errorData;
+        }
+
+        toast.error(errorMessage);
+      } else {
+        toast.error(`Application submission failed: Server error (${error.response.status})`);
+      }
+    } else {
+      toast.error(`Application submission failed: ${error.message}`);
+    }
   } finally {
     isSubmitting.value = false;
   }
 };
 </script>
-
 <style scoped>
 .required::after {
   content: " *";

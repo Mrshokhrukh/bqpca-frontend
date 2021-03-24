@@ -372,7 +372,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
-import apiservice from '@/services/bmhcservices';
+import apiservice from '@/services/epcServices';
 import { useToast } from 'vue-toastification';
 
 const router = useRouter();
@@ -443,7 +443,6 @@ const fetchApplications = async () => {
         error.value = null;
 
         // Fetch CPD applications from the backend - single API call
-        // Updated to use the engineering API endpoint
         const response = await apiservice.getEpcCpdTasks();
 
         // Process the response
