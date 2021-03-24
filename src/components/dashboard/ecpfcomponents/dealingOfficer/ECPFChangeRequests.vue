@@ -27,35 +27,34 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ECPFChangeRequests',
-  data() {
-    return {
-      requests: []
-    }
-  },
-  methods: {
-    formatDate(date) {
-      return new Date(date).toLocaleDateString()
-    },
-    viewRequest(id) {
-      // Handle viewing request details
-      console.log(`Viewing request ${id}`)
-    },
-    async fetchRequests() {
-      try {
-        // Add API call here to fetch requests
-        this.requests = [] // Replace with actual API call
-      } catch (error) {
-        console.error('Error fetching requests:', error)
-      }
-    }
-  },
-  mounted() {
-    this.fetchRequests()
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const requests = ref([]);
+
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString();
+};
+
+const viewRequest = (id) => {
+  // Handle viewing request details
+  console.log(`Viewing request ${id}`);
+};
+
+const fetchRequests = async () => {
+  try {
+    // Add API call here to fetch requests
+    // Example using fetch:
+    // const response = await fetch('/api/requests');
+    // requests.value = await response.json();
+    requests.value = []; // Replace with actual API call
+  } catch (error) {
+    console.error('Error fetching requests:', error);
   }
-}
+};
+
+onMounted(fetchRequests);
+
 </script>
 
 <style scoped>
@@ -72,7 +71,8 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #ddd;

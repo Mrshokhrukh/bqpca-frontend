@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Engineering E-Signature Management</h1>
 
@@ -151,7 +151,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
-import epcServices from '@/services/epcServices';
+import apiServices from '@/services/services';
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -182,7 +182,7 @@ const eSignatureToDelete = ref(null);
 // Fetch e-signatures on component mount
 onMounted(async () => {
   try {
-    const response = await epcServices.getMastersESignatures();
+    const response = await apiServices.getMastersESignatures();
     eSignatures.value = response.data.results;
   } catch (error) {
     console.error('Error fetching e-signatures:', error);
@@ -218,13 +218,13 @@ const handleSubmit = async () => {
     formDataToSend.append('status', formData.value.status);
 
     if (isEditing.value) {
-      const response = await epcServices.updateMastersESignature(formData.value.id, formDataToSend);
+      const response = await apiServices.updateMastersESignature(formData.value.id, formDataToSend);
       const index = eSignatures.value.findIndex(es => es.id === formData.value.id);
       if (index !== -1) {
         eSignatures.value[index] = response.data;
       }
     } else {
-      const response = await epcServices.createMastersESignature(formDataToSend);
+      const response = await apiServices.createMastersESignature(formDataToSend);
       eSignatures.value.push(response.data);
     }
     resetForm();
@@ -261,7 +261,7 @@ const confirmDelete = async () => {
   if (!eSignatureToDelete.value) return;
 
   try {
-    await epcServices.deleteMastersESignature(eSignatureToDelete.value.id);
+    await apiServices.deleteMastersESignature(eSignatureToDelete.value.id);
     const index = eSignatures.value.findIndex(es => es.id === eSignatureToDelete.value.id);
     if (index !== -1) {
       eSignatures.value.splice(index, 1);

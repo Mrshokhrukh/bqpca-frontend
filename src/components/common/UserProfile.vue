@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-7xl mx-auto">
       <!-- Header Section with Profile Overview -->
       <div class="mb-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">

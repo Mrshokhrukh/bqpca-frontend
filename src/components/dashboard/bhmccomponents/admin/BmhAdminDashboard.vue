@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4">
         <div class="max-w-[95rem] mx-auto">
             <!-- Header -->
             <div class="mb-8">
@@ -25,18 +25,18 @@
 
                         <!-- Card Content -->
                         <div :class="[
-                            baseCardClasses,
-                            'relative flex flex-col h-full overflow-hidden',
-                        ]">
+                        baseCardClasses,
+                        'relative flex flex-col h-full overflow-hidden',
+                    ]">
                             <div class="p-6 flex-grow">
                                 <!-- Card Header -->
                                 <div class="flex items-start justify-between mb-6">
                                     <div>
                                         <div class="flex items-center gap-3 mb-3">
                                             <div :class="[
-                                                iconBgClass(config.icon.split(/(?=[A-Z])/)[0].toLowerCase()),
-                                                'p-2 rounded-lg transition-colors duration-300 group-hover:bg-opacity-20',
-                                            ]">
+                        iconBgClass(config.icon.split(/(?=[A-Z])/)[0].toLowerCase()),
+                        'p-2 rounded-lg transition-colors duration-300 group-hover:bg-opacity-20',
+                    ]">
                                                 <component :is="iconMap[config.id]"
                                                     :class="iconColorClass(config.icon.split(/(?=[A-Z])/)[0].toLowerCase())" />
                                             </div>
@@ -72,9 +72,9 @@
                                 <div class="space-y-2">
                                     <router-link v-for="child in config.children" :key="child.route" :to="child.route"
                                         :class="[
-                                            config.button,
-                                            'inline-flex items-center gap-2 text-sm px-4 py-2 rounded-lg transition-colors duration-300 font-medium group w-full justify-between',
-                                        ]">
+                        config.button,
+                        'inline-flex items-center gap-2 text-sm px-4 py-2 rounded-lg transition-colors duration-300 font-medium group w-full justify-between',
+                    ]">
                                         <span class="flex items-center gap-2">
                                             <!-- Child Icon (Optional, shown if present) -->
                                             <component v-if="child.icon" :is="child.icon"

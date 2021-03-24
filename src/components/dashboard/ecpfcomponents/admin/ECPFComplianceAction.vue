@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Master Compliance Actions</h1>
 
@@ -158,8 +158,8 @@ onMounted(async () => {
     const response = await services.getMasterComplianceActions();
     actions.value = response.data.results;
     if (actions.value.length > 0 && !actions.value[0].hasOwnProperty.call('action_name')) {
-        console.warn("The API response does not contain 'action_name'.  Check your API.");
-      }
+      console.warn("The API response does not contain 'action_name'.  Check your API.");
+    }
   } catch (error) {
     toast.error("Failed to fetch compliance actions." + error); // Error toast
   }
@@ -198,20 +198,20 @@ const handleSubmit = async () => {
     }
     resetForm();
   } catch (error) {
-      let errorMessage = "An error occurred.";
-        if (error.response && error.response.data) {
-          // Check if it's a validation error from DRF
-          if (typeof error.response.data === 'object') {
-            const errors = error.response.data;
-              errorMessage = "";
-              for (const field in errors){
-                errorMessage += `${field}: ${errors[field].join(', ')}\n`;
-              }
-          } else {
-            errorMessage = error.response.data; // Use the response data as the error message
-          }
+    let errorMessage = "An error occurred.";
+    if (error.response && error.response.data) {
+      // Check if it's a validation error from DRF
+      if (typeof error.response.data === 'object') {
+        const errors = error.response.data;
+        errorMessage = "";
+        for (const field in errors) {
+          errorMessage += `${field}: ${errors[field].join(', ')}\n`;
+        }
+      } else {
+        errorMessage = error.response.data; // Use the response data as the error message
       }
-      toast.error(errorMessage); // Error toast with more detail
+    }
+    toast.error(errorMessage); // Error toast with more detail
   }
 };
 

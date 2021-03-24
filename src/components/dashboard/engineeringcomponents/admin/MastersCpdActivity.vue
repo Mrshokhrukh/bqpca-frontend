@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Engineering CPD Activity Management</h1>
 
@@ -141,7 +141,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
-import epcServices from '@/services/epcServices';
+import apiServices from '@/services/services';
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -170,7 +170,7 @@ const cpdActivityToDelete = ref(null);
 // Fetch CPD activities on component mount
 onMounted(async () => {
   try {
-    const response = await epcServices.getMastersCpdActivity();
+    const response = await apiServices.getMastersCpdActivity();
     cpdActivities.value = response.data.results;
   } catch (error) {
     console.error('Error fetching CPD activities:', error);
@@ -200,13 +200,13 @@ const paginatedCpdActivities = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await epcServices.updateMastersCpdActivity(formData.value.id, formData.value);
+      const response = await apiServices.updateMastersCpdActivity(formData.value.id, formData.value);
       const index = cpdActivities.value.findIndex(dt => dt.id === formData.value.id);
       if (index !== -1) {
         cpdActivities.value[index] = response.data;
       }
     } else {
-      const response = await epcServices.createMastersCpdActivity(formData.value);
+      const response = await apiServices.createMastersCpdActivity(formData.value);
       cpdActivities.value.push(response.data);
     }
     resetForm();
@@ -238,7 +238,7 @@ const confirmDelete = async () => {
   if (!cpdActivityToDelete.value) return;
 
   try {
-    await epcServices.deleteMastersCpdActivity(cpdActivityToDelete.value.id);
+    await apiServices.deleteMastersCpdActivity(cpdActivityToDelete.value.id);
     const index = cpdActivities.value.findIndex(dt => dt.id === cpdActivityToDelete.value.id);
     if (index !== -1) {
       cpdActivities.value.splice(index, 1);

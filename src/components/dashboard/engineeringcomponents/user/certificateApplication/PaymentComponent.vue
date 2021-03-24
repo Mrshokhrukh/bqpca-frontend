@@ -4,11 +4,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'PaymentComponent'
-}
-</script>
 
 <style scoped>
 h1 {

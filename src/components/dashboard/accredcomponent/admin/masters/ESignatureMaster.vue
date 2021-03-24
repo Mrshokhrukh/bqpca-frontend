@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">E-Signature Management</h1>
 
@@ -105,10 +105,10 @@
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm">
                     <span :class="{
-                      'px-2 py-1 text-xs font-semibold rounded-full': true,
-                      'bg-green-100 text-green-800': signature.status,
-                      'bg-slate-100 text-slate-700': !signature.status,
-                    }">
+              'px-2 py-1 text-xs font-semibold rounded-full': true,
+              'bg-green-100 text-green-800': signature.status,
+              'bg-slate-100 text-slate-700': !signature.status,
+            }">
                       {{ signature.status ? 'Active' : 'Inactive' }}
                     </span>
                   </td>

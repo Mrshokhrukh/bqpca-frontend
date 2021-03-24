@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Engineering Participation Category Management</h1>
 
@@ -47,7 +47,7 @@
               <h2 class="text-xl font-semibold text-slate-900">Participation Categories List</h2>
               <span class="text-sm text-slate-500">
                 {{ filteredParticipationCategories.length }} Participation Category{{
-                  filteredParticipationCategories.length !== 1 ? 's' : '' }}
+              filteredParticipationCategories.length !== 1 ? 's' : '' }}
               </span>
             </div>
 
@@ -146,7 +146,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
-import epcServices from '@/services/epcServices';
+import apiServices from '@/services/services';
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -175,7 +175,7 @@ const participationCategoryToDelete = ref(null);
 // Fetch participation categories on component mount
 onMounted(async () => {
   try {
-    const response = await epcServices.getMastersParticipationCategories();
+    const response = await apiServices.getMastersParticipationCategories();
     participationCategories.value = response.data.results;
   } catch (error) {
     console.error('Error fetching participation categories:', error);
@@ -205,13 +205,13 @@ const paginatedParticipationCategories = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await epcServices.updateMastersParticipationCategory(formData.value.id, formData.value);
+      const response = await apiServices.updateMastersParticipationCategory(formData.value.id, formData.value);
       const index = participationCategories.value.findIndex(dt => dt.id === formData.value.id);
       if (index !== -1) {
         participationCategories.value[index] = response.data;
       }
     } else {
-      const response = await epcServices.createMastersParticipationCategory(formData.value);
+      const response = await apiServices.createMastersParticipationCategory(formData.value);
       participationCategories.value.push(response.data);
     }
     resetForm();
@@ -243,7 +243,7 @@ const confirmDelete = async () => {
   if (!participationCategoryToDelete.value) return;
 
   try {
-    await epcServices.deleteMastersParticipationCategory(participationCategoryToDelete.value.id);
+    await apiServices.deleteMastersParticipationCategory(participationCategoryToDelete.value.id);
     const index = participationCategories.value.findIndex(dt => dt.id === participationCategoryToDelete.value.id);
     if (index !== -1) {
       participationCategories.value.splice(index, 1);

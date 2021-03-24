@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4">
     <!-- Header Section with stats overview -->
     <div class="max-w-[95rem] mx-auto mb-8">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">

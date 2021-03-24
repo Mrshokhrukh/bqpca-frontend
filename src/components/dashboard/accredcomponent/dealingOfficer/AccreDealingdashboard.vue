@@ -159,80 +159,79 @@
   </div>
 </template>
 
-<script>
-import { ref, onMounted } from 'vue'
+<script setup>
+import { ref, onMounted } from 'vue';
 
-export default {
-  name: 'HEQCDashboard',
-  setup() {
-    const pendingCount = ref(0)
-    const inProgressCount = ref(0)
-    const completedCount = ref(0)
-    const applications = ref([])
+const pendingCount = ref(0);
+const inProgressCount = ref(0);
+const completedCount = ref(0);
+const applications = ref([]);
 
-    const fetchDashboardData = async () => {
-      try {
-        // TODO: Implement API call to fetch dashboard data
-        pendingCount.value = 5
-        inProgressCount.value = 3
-        completedCount.value = 10
-        applications.value = [
-          {
-            id: 'APP001',
-            companyName: 'Tech Solutions Inc.',
-            status: 'Pending',
-            submissionDate: new Date()
-          },
-          {
-            id: 'APP002',
-            companyName: 'Global Industries',
-            status: 'In Progress',
-            submissionDate: new Date(Date.now() - 86400000)
-          },
-          {
-            id: 'APP003',
-            companyName: 'Digital Ventures',
-            status: 'Completed',
-            submissionDate: new Date(Date.now() - 172800000)
-          },
-          {
-            id: 'APP004',
-            companyName: 'Innovation Corp',
-            status: 'In Progress',
-            submissionDate: new Date(Date.now() - 259200000)
-          },
-          {
-            id: 'APP005',
-            companyName: 'Pioneer Enterprises',
-            status: 'Pending',
-            submissionDate: new Date(Date.now() - 345600000)
-          }
-        ]
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error)
-      }
-    }
+const fetchDashboardData = async () => {
+  try {
+    // TODO: Implement API call to fetch dashboard data
+    // Example using a mock API call (replace with your actual API call)
+    // const response = await fetch('/api/dashboard');
+    // const data = await response.json();
 
-    const formatDate = (date) => {
-      return new Date(date).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric'
-      })
-    }
+    // pendingCount.value = data.pendingCount;
+    // inProgressCount.value = data.inProgressCount;
+    // completedCount.value = data.completedCount;
+    // applications.value = data.applications;
 
-    onMounted(() => {
-      fetchDashboardData()
-    })
 
-    return {
-      pendingCount,
-      inProgressCount,
-      completedCount,
-      applications,
-      formatDate
-    }
+    //Mock data, as in the original code.
+    pendingCount.value = 5;
+    inProgressCount.value = 3;
+    completedCount.value = 10;
+    applications.value = [
+      {
+        id: 'APP001',
+        companyName: 'Tech Solutions Inc.',
+        status: 'Pending',
+        submissionDate: new Date(),
+      },
+      {
+        id: 'APP002',
+        companyName: 'Global Industries',
+        status: 'In Progress',
+        submissionDate: new Date(Date.now() - 86400000),
+      },
+      {
+        id: 'APP003',
+        companyName: 'Digital Ventures',
+        status: 'Completed',
+        submissionDate: new Date(Date.now() - 172800000),
+      },
+      {
+        id: 'APP004',
+        companyName: 'Innovation Corp',
+        status: 'In Progress',
+        submissionDate: new Date(Date.now() - 259200000),
+      },
+      {
+        id: 'APP005',
+        companyName: 'Pioneer Enterprises',
+        status: 'Pending',
+        submissionDate: new Date(Date.now() - 345600000),
+      },
+    ];
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
   }
-}
+};
+
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+};
+
+onMounted(() => {
+  fetchDashboardData();
+});
+
 </script>
 
 <style scoped>

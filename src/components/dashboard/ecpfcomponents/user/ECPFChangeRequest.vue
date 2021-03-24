@@ -278,316 +278,305 @@ Modernized Vue 3 ECPF Change Request Forms
     </div>
   </div>
 </template>
-<script>
+
+<script setup>
 import { ref, reactive, onMounted } from 'vue';
 
-export default {
-  setup() {
-    // Form navigation
-    const forms = [
-      { id: 'nameChange', label: 'Name Change' },
-      { id: 'locationChange', label: 'Location Change' },
-      { id: 'ownershipChange', label: 'Ownership Change' }
-    ];
-    const activeForm = ref('nameChange');
+// Form navigation
+const forms = [
+  { id: 'nameChange', label: 'Name Change' },
+  { id: 'locationChange', label: 'Location Change' },
+  { id: 'ownershipChange', label: 'Ownership Change' }
+];
+const activeForm = ref('nameChange');
 
-    // Utility function for formatting labels
-    const formatLabel = (key) => {
-      return key
-        .replace(/([A-Z])/g, ' $1')
-        .replace(/^./, str => str.toUpperCase());
-    };
-
-    // Name Change Form Logic
-    const nameChange = reactive({
-      currentECPFData: null,
-      formData: {
-        proposedName: '',
-        remarks: ''
-      },
-      isSubmitting: false,
-      successMessage: '',
-      errorMessage: '',
-      applicationStatus: '',
-
-      async fetchCurrentECPFData() {
-        try {
-          // Simulated API call
-          const response = await new Promise(resolve => {
-            setTimeout(() => {
-              resolve({
-                name: 'Existing ECPF Name',
-                licenseNo: 'ECPF-12345',
-                location: 'Existing Location',
-                proprietor: 'Existing Proprietor',
-                cid: '12345678901',
-                contactNo: '9876543210',
-                email: 'existing@example.com'
-              });
-            }, 500);
-          });
-          this.currentECPFData = response;
-        } catch (error) {
-          console.error('Error fetching ECPF data:', error);
-          this.errorMessage = 'Failed to load ECPF details.';
-        }
-      },
-
-      async handleSubmit() {
-        this.isSubmitting = true;
-        this.successMessage = '';
-        this.errorMessage = '';
-
-        try {
-          // Simulated API call
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          this.successMessage = 'Name change request submitted successfully!';
-          this.applicationStatus = 'Submitted for review.';
-          this.formData.proposedName = '';
-          this.formData.remarks = '';
-        } catch (error) {
-          console.error('Submission error:', error);
-          this.errorMessage = 'Failed to submit request. Please try again.';
-        } finally {
-          this.isSubmitting = false;
-        }
-      },
-
-      handleEdit() {
-        // Implement edit functionality
-        console.log('Edit functionality to be implemented');
-      },
-
-      handleView() {
-        // Implement view functionality
-        console.log('View functionality to be implemented');
-      }
-    });
-
-    // Location Change Form Logic
-    const locationChange = reactive({
-      currentECPFData: null,
-      formData: {
-        location: '',
-        gewog: '',
-        dzongkhag: '',
-        remarks: ''
-      },
-      isSubmitting: false,
-      successMessage: '',
-      errorMessage: '',
-      applicationStatus: '',
-      gewogOptions: [
-        { label: 'Gewog A', value: 'gewogA' },
-        { label: 'Gewog B', value: 'gewogB' }
-      ],
-      dzongkhagOptions: [
-        { label: 'Dzongkhag X', value: 'dzongkhagX' },
-        { label: 'Dzongkhag Y', value: 'dzongkhagY' }
-      ],
-
-      async fetchCurrentECPFData() {
-        try {
-          // Simulated API call
-          const response = await new Promise(resolve => {
-            setTimeout(() => {
-              resolve({
-                name: 'Existing ECPF Name',
-                location: 'Existing Location',
-                proprietor: 'Existing Proprietor',
-                cid: '12345678901',
-                contactNo: '9876543210',
-                email: 'existing@example.com'
-              });
-            }, 500);
-          });
-          this.currentECPFData = response;
-        } catch (error) {
-          console.error('Error fetching ECPF data:', error);
-          this.errorMessage = 'Failed to load ECPF details.';
-        }
-      },
-
-      async handleSubmit() {
-        this.isSubmitting = true;
-        this.successMessage = '';
-        this.errorMessage = '';
-
-        if (!this.formData.location || !this.formData.gewog || !this.formData.dzongkhag) {
-          this.errorMessage = 'All fields are required.';
-          this.isSubmitting = false;
-          return;
-        }
-
-        try {
-          // Simulated API call
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          this.successMessage = 'Location change request submitted successfully!';
-          this.applicationStatus = 'Submitted for review.';
-          this.formData.location = '';
-          this.formData.gewog = '';
-          this.formData.dzongkhag = '';
-          this.formData.remarks = '';
-        } catch (error) {
-          console.error('Submission error:', error);
-          this.errorMessage = 'Failed to submit request. Please try again.';
-        } finally {
-          this.isSubmitting = false;
-        }
-      },
-
-      handleEdit() {
-        // Implement edit functionality
-        console.log('Edit functionality to be implemented');
-      },
-
-      handleView() {
-        // Implement view functionality
-        console.log('View functionality to be implemented');
-      }
-    });
-
-    // Ownership Change Form Logic
-    const ownershipChange = reactive({
-      currentECPFDetails: {
-        ecpfLicenseNo: 'Auto-generated',
-        nameOfECPF: 'Auto-generated',
-        proprietorOfECPF: 'Auto-generated',
-        locationOfECPF: 'Auto-generated'
-      },
-      newApplicant: {
-        cidNo: '',
-        applicantName: '',
-        gender: '',
-        dateOfBirth: '',
-        contactNo: '',
-        emailAddress: '',
-        officeNumber: '',
-        flatNo: '',
-        buildingNo: '',
-        location: '',
-        gewogThrom: '',
-        dzongkhagThromde: '',
-        villageChiwog: '',
-        gewog: '',
-        dungkhag: '',
-        permanentDzongkhagThromde: '',
-        courseQualification: '',
-        nameOfInstitute: '',
-        nameOfUniversity: ''
-      },
-      linkages: [],
-      successMessage: '',
-      errorMessage: '',
-      applicationStatus: '',
-
-      addLinkage() {
-        this.linkages.push({
-          name: '',
-          location: '',
-          country: '',
-          recognition: null,
-          approval: null
-        });
-      },
-
-      deleteLinkage(index) {
-        this.linkages.splice(index, 1);
-      },
-
-      handleFileChange(event, linkage, type) {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            linkage[type] = e.target.result;
-          };
-          reader.readAsDataURL(file);
-        }
-      },
-
-      async searchCID() {
-        if (this.newApplicant.cidNo) {
-          try {
-            // Simulated API call
-            const response = await new Promise(resolve => {
-              setTimeout(() => {
-                resolve({
-                  applicantName: 'John Doe',
-                  gender: 'Male',
-                  dateOfBirth: '01/01/1990',
-                  contactNo: '1234567890',
-                  emailAddress: 'john.doe@example.com',
-                  officeNumber: '123',
-                  flatNo: '456',
-                  buildingNo: '789',
-                  location: 'City',
-                  gewogThrom: 'Gewog',
-                  dzongkhagThromde: 'Dzongkhag',
-                  villageChiwog: 'Village',
-                  gewog: 'Gewog',
-                  dungkhag: 'Dungkhag',
-                  permanentDzongkhagThromde: 'Dzongkhag',
-                  courseQualification: 'Course',
-                  nameOfInstitute: 'Institute',
-                  nameOfUniversity: 'University'
-                });
-              }, 500);
-            });
-
-            Object.assign(this.newApplicant, response);
-          } catch (error) {
-            console.error('Error searching CID:', error);
-            this.errorMessage = 'Error retrieving applicant data.';
-          }
-        }
-      },
-
-      async handleSubmit() {
-        try {
-          // Simulated API call
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          this.successMessage = 'Ownership change request submitted successfully!';
-          this.applicationStatus = 'Submitted for review.';
-        } catch (error) {
-          console.error('Submission error:', error);
-          this.errorMessage = 'Failed to submit request. Please try again.';
-        }
-      },
-
-      viewApplication() {
-        // Implement view functionality
-        console.log('View functionality to be implemented');
-      },
-
-      editApplication() {
-        // Implement edit functionality
-        console.log('Edit functionality to be implemented');
-      },
-
-      cancelChanges() {
-        // Implement cancel functionality
-        console.log('Cancel functionality to be implemented');
-      }
-    });
-
-    // Initialize data on component mount
-    onMounted(() => {
-      nameChange.fetchCurrentECPFData();
-      locationChange.fetchCurrentECPFData();
-      ownershipChange.addLinkage();
-    });
-
-    return {
-      forms,
-      activeForm,
-      formatLabel,
-      nameChange,
-      locationChange,
-      ownershipChange
-    };
-  }
+// Utility function for formatting labels
+const formatLabel = (key) => {
+  return key
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, str => str.toUpperCase());
 };
+
+// Name Change Form Logic
+const nameChange = reactive({
+  currentECPFData: null,
+  formData: {
+    proposedName: '',
+    remarks: ''
+  },
+  isSubmitting: false,
+  successMessage: '',
+  errorMessage: '',
+  applicationStatus: '',
+
+  async fetchCurrentECPFData() {
+    try {
+      // Simulated API call
+      const response = await new Promise(resolve => {
+        setTimeout(() => {
+          resolve({
+            name: 'Existing ECPF Name',
+            licenseNo: 'ECPF-12345',
+            location: 'Existing Location',
+            proprietor: 'Existing Proprietor',
+            cid: '12345678901',
+            contactNo: '9876543210',
+            email: 'existing@example.com'
+          });
+        }, 500);
+      });
+      nameChange.currentECPFData = response; // Use nameChange.currentECPFData
+    } catch (error) {
+      console.error('Error fetching ECPF data:', error);
+      nameChange.errorMessage = 'Failed to load ECPF details.'; // Use nameChange.errorMessage
+    }
+  },
+
+  async handleSubmit() {
+    nameChange.isSubmitting = true; // Use nameChange.isSubmitting
+    nameChange.successMessage = ''; // Use nameChange.successMessage
+    nameChange.errorMessage = '';   // Use nameChange.errorMessage
+
+    try {
+      // Simulated API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      nameChange.successMessage = 'Name change request submitted successfully!'; // Use nameChange.successMessage
+      nameChange.applicationStatus = 'Submitted for review.';                 // Use nameChange.applicationStatus
+      nameChange.formData.proposedName = ''; // Access form data correctly.
+      nameChange.formData.remarks = '';     // Access form data correctly.
+    } catch (error) {
+      console.error('Submission error:', error);
+      nameChange.errorMessage = 'Failed to submit request. Please try again.'; // Use nameChange.errorMessage
+    } finally {
+      nameChange.isSubmitting = false; // Use nameChange.isSubmitting
+    }
+  },
+
+  handleEdit() {
+    // Implement edit functionality
+    console.log('Edit functionality to be implemented');
+  },
+
+  handleView() {
+    // Implement view functionality
+    console.log('View functionality to be implemented');
+  }
+});
+
+// Location Change Form Logic
+const locationChange = reactive({
+  currentECPFData: null,
+  formData: {
+    location: '',
+    gewog: '',
+    dzongkhag: '',
+    remarks: ''
+  },
+  isSubmitting: false,
+  successMessage: '',
+  errorMessage: '',
+  applicationStatus: '',
+  gewogOptions: [
+    { label: 'Gewog A', value: 'gewogA' },
+    { label: 'Gewog B', value: 'gewogB' }
+  ],
+  dzongkhagOptions: [
+    { label: 'Dzongkhag X', value: 'dzongkhagX' },
+    { label: 'Dzongkhag Y', value: 'dzongkhagY' }
+  ],
+
+  async fetchCurrentECPFData() {
+    try {
+      // Simulated API call
+      const response = await new Promise(resolve => {
+        setTimeout(() => {
+          resolve({
+            name: 'Existing ECPF Name',
+            location: 'Existing Location',
+            proprietor: 'Existing Proprietor',
+            cid: '12345678901',
+            contactNo: '9876543210',
+            email: 'existing@example.com'
+          });
+        }, 500);
+      });
+      locationChange.currentECPFData = response; // Use locationChange.currentECPFData
+    } catch (error) {
+      console.error('Error fetching ECPF data:', error);
+      locationChange.errorMessage = 'Failed to load ECPF details.'; // Use locationChange.errorMessage
+    }
+  },
+
+  async handleSubmit() {
+    locationChange.isSubmitting = true;  // Use locationChange.isSubmitting
+    locationChange.successMessage = '';  // Use locationChange.successMessage
+    locationChange.errorMessage = '';    // Use locationChange.errorMessage
+
+    if (!locationChange.formData.location || !locationChange.formData.gewog || !locationChange.formData.dzongkhag) {
+      locationChange.errorMessage = 'All fields are required.'; // Use locationChange.errorMessage
+      locationChange.isSubmitting = false;                     // Use locationChange.isSubmitting
+      return;
+    }
+
+    try {
+      // Simulated API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      locationChange.successMessage = 'Location change request submitted successfully!'; // Use locationChange.successMessage
+      locationChange.applicationStatus = 'Submitted for review.';                 // Use locationChange.applicationStatus
+      locationChange.formData.location = '';  // Use correct access to formData
+      locationChange.formData.gewog = '';    // Use correct access to formData
+      locationChange.formData.dzongkhag = '';// Use correct access to formData
+      locationChange.formData.remarks = '';  // Use correct access to formData
+    } catch (error) {
+      console.error('Submission error:', error);
+      locationChange.errorMessage = 'Failed to submit request. Please try again.'; // Use locationChange.errorMessage
+    } finally {
+      locationChange.isSubmitting = false; // Use locationChange.isSubmitting
+    }
+  },
+
+  handleEdit() {
+    // Implement edit functionality
+    console.log('Edit functionality to be implemented');
+  },
+
+  handleView() {
+    // Implement view functionality
+    console.log('View functionality to be implemented');
+  }
+});
+
+// Ownership Change Form Logic
+const ownershipChange = reactive({
+  currentECPFDetails: {
+    ecpfLicenseNo: 'Auto-generated',
+    nameOfECPF: 'Auto-generated',
+    proprietorOfECPF: 'Auto-generated',
+    locationOfECPF: 'Auto-generated'
+  },
+  newApplicant: {
+    cidNo: '',
+    applicantName: '',
+    gender: '',
+    dateOfBirth: '',
+    contactNo: '',
+    emailAddress: '',
+    officeNumber: '',
+    flatNo: '',
+    buildingNo: '',
+    location: '',
+    gewogThrom: '',
+    dzongkhagThromde: '',
+    villageChiwog: '',
+    gewog: '',
+    dungkhag: '',
+    permanentDzongkhagThromde: '',
+    courseQualification: '',
+    nameOfInstitute: '',
+    nameOfUniversity: ''
+  },
+  linkages: [],
+  successMessage: '',
+  errorMessage: '',
+  applicationStatus: '',
+
+  addLinkage() {
+    ownershipChange.linkages.push({ // Use ownershipChange.linkages
+      name: '',
+      location: '',
+      country: '',
+      recognition: null,
+      approval: null
+    });
+  },
+
+  deleteLinkage(index) {
+    ownershipChange.linkages.splice(index, 1); // Use ownershipChange.linkages
+  },
+
+  handleFileChange(event, linkage, type) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        linkage[type] = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  },
+
+  async searchCID() {
+    if (ownershipChange.newApplicant.cidNo) { // Use ownershipChange.newApplicant
+      try {
+        // Simulated API call
+        const response = await new Promise(resolve => {
+          setTimeout(() => {
+            resolve({
+              applicantName: 'John Doe',
+              gender: 'Male',
+              dateOfBirth: '01/01/1990',
+              contactNo: '1234567890',
+              emailAddress: 'john.doe@example.com',
+              officeNumber: '123',
+              flatNo: '456',
+              buildingNo: '789',
+              location: 'City',
+              gewogThrom: 'Gewog',
+              dzongkhagThromde: 'Dzongkhag',
+              villageChiwog: 'Village',
+              gewog: 'Gewog',
+              dungkhag: 'Dungkhag',
+              permanentDzongkhagThromde: 'Dzongkhag',
+              courseQualification: 'Course',
+              nameOfInstitute: 'Institute',
+              nameOfUniversity: 'University'
+            });
+          }, 500);
+        });
+
+        Object.assign(ownershipChange.newApplicant, response); // Use ownershipChange.newApplicant
+      } catch (error) {
+        console.error('Error searching CID:', error);
+        ownershipChange.errorMessage = 'Error retrieving applicant data.'; // Use ownershipChange.errorMessage
+      }
+    }
+  },
+
+  async handleSubmit() {
+    try {
+      // Simulated API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      ownershipChange.successMessage = 'Ownership change request submitted successfully!'; // Use ownershipChange.successMessage
+      ownershipChange.applicationStatus = 'Submitted for review.';                 // Use ownershipChange.applicationStatus
+    } catch (error) {
+      console.error('Submission error:', error);
+      ownershipChange.errorMessage = 'Failed to submit request. Please try again.'; // Use ownershipChange.errorMessage
+    }
+  },
+
+  viewApplication() {
+    // Implement view functionality
+    console.log('View functionality to be implemented');
+  },
+
+  editApplication() {
+    // Implement edit functionality
+    console.log('Edit functionality to be implemented');
+  },
+
+  cancelChanges() {
+    // Implement cancel functionality
+    console.log('Cancel functionality to be implemented');
+  }
+});
+
+// Initialize data on component mount
+onMounted(() => {
+  nameChange.fetchCurrentECPFData();
+  locationChange.fetchCurrentECPFData();
+  ownershipChange.addLinkage();
+});
+
 </script>
 
 <style scoped>

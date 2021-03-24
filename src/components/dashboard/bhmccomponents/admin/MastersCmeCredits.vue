@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
         <div class="max-w-[1600px] mx-auto">
             <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">CME Credits Management</h1>
 
@@ -85,11 +85,11 @@
                                 <tr v-for="credit in paginatedCredits" :key="credit.id"
                                     class="hover:bg-blue-50/30 transition-colors duration-200">
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-900">{{
-                                        credit.cme_credit_duration }}</td>
+                            credit.cme_credit_duration }}</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-700">{{ credit.credits }}
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-700">{{
-                                        getActivityName(credit.cme_activity_name) }}</td>
+                            getActivityName(credit.cme_activity_name) }}</td>
                                     <td
                                         class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                         <div class="flex justify-end gap-2">

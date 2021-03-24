@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Engineering User Management</h1>
 
@@ -218,7 +218,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
-import epcServices from '@/services/epcServices';
+import apiServices from '@/services/services';
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -251,8 +251,8 @@ const userToDelete = ref(null);
 // Fetch users on component mount
 onMounted(async () => {
   try {
-    // Replace with the actual method to get users from epcServices when available
-    const response = await epcServices.getEpcInstituteStaff();
+    // Replace with the actual method to get users from apiServices when available
+    const response = await apiServices.getEpcInstituteStaff();
     if (Array.isArray(response.data.results)) {
       users.value = response.data.results;
     } else {
@@ -290,15 +290,15 @@ const paginatedUsers = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      // Replace with the actual method to update users from epcServices when available
-      const response = await epcServices.updateEpcInstituteStaffMember(formData.value.id, formData.value);
+      // Replace with the actual method to update users from apiServices when available
+      const response = await apiServices.updateEpcInstituteStaffMember(formData.value.id, formData.value);
       const index = users.value.findIndex(user => user.id === formData.value.id);
       if (index !== -1) {
         users.value[index] = response.data;
       }
     } else {
-      // Replace with the actual method to create users from epcServices when available
-      const response = await epcServices.createEpcInstituteStaff(formData.value);
+      // Replace with the actual method to create users from apiServices when available
+      const response = await apiServices.createEpcInstituteStaff(formData.value);
       users.value.push(response.data);
     }
     resetForm();
@@ -333,8 +333,8 @@ const confirmDelete = async () => {
   if (!userToDelete.value) return;
 
   try {
-    // Replace with the actual method to delete users from epcServices when available
-    await epcServices.deleteEpcInstituteStaffMember(userToDelete.value.id);
+    // Replace with the actual method to delete users from apiServices when available
+    await apiServices.deleteEpcInstituteStaffMember(userToDelete.value.id);
     const index = users.value.findIndex(user => user.id === userToDelete.value.id);
     if (index !== -1) {
       users.value.splice(index, 1);

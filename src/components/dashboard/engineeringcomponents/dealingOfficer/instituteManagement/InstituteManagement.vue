@@ -208,213 +208,178 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, computed } from 'vue';
 import InstituteViewDetailsModal from '../modals/InstituteViewDetailsModal.vue';
 import InstituteReviewApplicationModal from '../modals/InstituteReviewApplicationModal.vue';
 import InstituteManageCapaModal from '../modals/InstituteManageCapaModal.vue';
 
-export default {
-  name: 'InstituteManagement',
-  components: { 
-    InstituteViewDetailsModal,
-    InstituteReviewApplicationModal,
-    InstituteManageCapaModal,
+const activeTab = ref('eoi'); // Default tab
+const searchQuery = ref('');
+const reportSearchQuery = ref('');
+const reportFilterStatus = ref('');
+const selectedInstitute = ref(null);
+const reviewingInstitute = ref(null);
+const capaInstitute = ref(null);
+
+const institutes = ref([
+  {
+    id: 1,
+    name: 'XYZ Institute',
+    location: 'Thimphu',
+    eoiStatus: 'Pending',
+    dprStatus: 'Pending',
+    capaIssues: [
+      { description: 'Inadequate facilities', status: 'Pending', remarks: '', timestamp: '2023-10-01' },
+    ],
+    details: 'Details about XYZ Institute...',
+    dprDocument: 'https://example.com/dpr1.pdf',
   },
-  setup() {
-    const activeTab = ref('eoi'); // Default tab
-    const searchQuery = ref('');
-    const reportSearchQuery = ref('');
-    const reportFilterStatus = ref('');
-    const selectedInstitute = ref(null);
-    const reviewingInstitute = ref(null);
-    const capaInstitute = ref(null);
-
-    const institutes = ref([
-      {
-        id: 1,
-        name: 'XYZ Institute',
-        location: 'Thimphu',
-        eoiStatus: 'Pending',
-        dprStatus: 'Pending',
-        capaIssues: [
-          { description: 'Inadequate facilities', status: 'Pending', remarks: '', timestamp: '2023-10-01' },
-        ],
-        details: 'Details about XYZ Institute...',
-        dprDocument: 'https://example.com/dpr1.pdf',
-      },
-      {
-        id: 2,
-        name: 'ABC Institute',
-        location: 'Paro',
-        eoiStatus: 'Approved',
-        dprStatus: 'Pending',
-        capaIssues: [],
-        details: 'Details about ABC Institute...',
-        dprDocument: 'https://example.com/dpr2.pdf',
-      },
-      {
-        id: 3,
-        name: 'DEF Institute',
-        location: 'Phuentsholing',
-        eoiStatus: 'Rejected',
-        dprStatus: 'N/A',
-        capaIssues: [
-          { description: 'Staff training required', status: 'Resolved', remarks: 'Training completed on 2023-09-20.', timestamp: '2023-09-15', resolvedTimestamp: '2023-09-20' },
-        ],
-        details: 'Details about DEF Institute...',
-      },
-    ]);
-
-    const filteredEOIInstitutes = computed(() => {
-      return institutes.value.filter((institute) =>
-        institute.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-      );
-    });
-
-    const filteredDPRInstitutes = computed(() => {
-      return institutes.value.filter((institute) =>
-        institute.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-      );
-    });
-
-    const filteredCAPAInstitutes = computed(() => {
-      return institutes.value.filter((institute) =>
-        institute.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-      );
-    });
-
-    const filteredReportInstitutes = computed(() => {
-      return institutes.value
-        .filter((institute) =>
-          institute.name.toLowerCase().includes(reportSearchQuery.value.toLowerCase())
-        )
-        .filter((institute) =>
-          reportFilterStatus.value
-            ? institute.eoiStatus === reportFilterStatus.value || institute.dprStatus === reportFilterStatus.value
-            : true
-        );
-    });
-
-    const statusClass = (status) => {
-      return {
-        'bg-green-100 text-green-800': status === 'Approved',
-        'bg-yellow-100 text-yellow-800': status === 'Pending',
-        'bg-red-100 text-red-800': status === 'Rejected',
-      };
-    };
-
-    const viewDetails = (institute) => {
-      selectedInstitute.value = institute;
-    };
-
-    const reviewEOI = (institute) => {
-      reviewingInstitute.value = institute;
-    };
-
-    const reviewDPR = (institute) => {
-      reviewingInstitute.value = institute;
-    };
-
-    const manageCAPA = (institute) => {
-      capaInstitute.value = institute;
-    };
-
-    const updateCAPAIssues = (updatedIssues) => {
-      const institute = institutes.value.find((inst) => inst.id === capaInstitute.value.id);
-      if (institute) {
-        institute.capaIssues = updatedIssues;
-      }
-    };
-
-    const handleApprove = () => {
-      if (reviewingInstitute.value.eoiStatus === 'Pending') {
-        reviewingInstitute.value.eoiStatus = 'Approved';
-      } else if (reviewingInstitute.value.dprStatus === 'Pending') {
-        reviewingInstitute.value.dprStatus = 'Approved';
-      }
-      reviewingInstitute.value = null;
-    };
-
-    const handleReject = (reason) => {
-      if (reviewingInstitute.value.eoiStatus === 'Pending') {
-        reviewingInstitute.value.eoiStatus = 'Rejected';
-      } else if (reviewingInstitute.value.dprStatus === 'Pending') {
-        reviewingInstitute.value.dprStatus = 'Rejected';
-      }
-      reviewingInstitute.value.rejectionReason = reason;
-      reviewingInstitute.value = null;
-    };
-
-    const exportReport = () => {
-      const filteredData = filteredReportInstitutes.value.map((institute) => ({
-        name: institute.name,
-        location: institute.location,
-        eoiStatus: institute.eoiStatus,
-        dprStatus: institute.dprStatus,
-        pendingCAPA: institute.capaIssues.filter((issue) => issue.status === 'Pending').length,
-      }));
-
-      const csvContent =
-        'data:text/csv;charset=utf-8,' +
-        filteredData
-          .map((row) => Object.values(row).join(','))
-          .join('\n');
-
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement('a');
-      link.setAttribute('href', encodedUri);
-      link.setAttribute('download', 'institute_report.csv');
-      document.body.appendChild(link);
-      link.click();
-    };
-
-    const tabClass = (tab) => {
-      return activeTab.value === tab
-        ? 'bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200'
-        : 'bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-200';
-    };
-
-    const downloadDPR = (institute) => {
-      if (institute.dprDocument) {
-        // Create a temporary link element
-        const link = document.createElement('a');
-        link.href = institute.dprDocument;
-        link.target = '_blank';
-        link.download = `DPR_${institute.name.replace(/\s+/g, '_')}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        alert('DPR document not available for download');
-      }
-    };
-
-    return {
-      activeTab,
-      searchQuery,
-      reportSearchQuery,
-      reportFilterStatus,
-      selectedInstitute,
-      reviewingInstitute,
-      capaInstitute,
-      institutes,
-      filteredEOIInstitutes,
-      filteredDPRInstitutes,
-      filteredCAPAInstitutes,
-      filteredReportInstitutes,
-      statusClass,
-      viewDetails,
-      reviewEOI,
-      reviewDPR,
-      manageCAPA,
-      updateCAPAIssues,
-      handleApprove,
-      handleReject,
-      exportReport,
-      tabClass,
-      downloadDPR,
-    };
+  {
+    id: 2,
+    name: 'ABC Institute',
+    location: 'Paro',
+    eoiStatus: 'Approved',
+    dprStatus: 'Pending',
+    capaIssues: [],
+    details: 'Details about ABC Institute...',
+    dprDocument: 'https://example.com/dpr2.pdf',
   },
+  {
+    id: 3,
+    name: 'DEF Institute',
+    location: 'Phuentsholing',
+    eoiStatus: 'Rejected',
+    dprStatus: 'N/A',
+    capaIssues: [
+      { description: 'Staff training required', status: 'Resolved', remarks: 'Training completed on 2023-09-20.', timestamp: '2023-09-15', resolvedTimestamp: '2023-09-20' },
+    ],
+    details: 'Details about DEF Institute...',
+  },
+]);
+
+const filteredEOIInstitutes = computed(() => {
+  return institutes.value.filter((institute) =>
+    institute.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
+
+const filteredDPRInstitutes = computed(() => {
+  return institutes.value.filter((institute) =>
+    institute.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
+
+const filteredCAPAInstitutes = computed(() => {
+  return institutes.value.filter((institute) =>
+    institute.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
+
+const filteredReportInstitutes = computed(() => {
+  return institutes.value
+    .filter((institute) =>
+      institute.name.toLowerCase().includes(reportSearchQuery.value.toLowerCase())
+    )
+    .filter((institute) =>
+      reportFilterStatus.value
+        ? institute.eoiStatus === reportFilterStatus.value || institute.dprStatus === reportFilterStatus.value
+        : true
+    );
+});
+
+const statusClass = (status) => {
+  return {
+    'bg-green-100 text-green-800': status === 'Approved',
+    'bg-yellow-100 text-yellow-800': status === 'Pending',
+    'bg-red-100 text-red-800': status === 'Rejected',
+  };
+};
+
+const viewDetails = (institute) => {
+  selectedInstitute.value = institute;
+};
+
+const reviewEOI = (institute) => {
+  reviewingInstitute.value = institute;
+};
+
+const reviewDPR = (institute) => {
+  reviewingInstitute.value = institute;
+};
+
+const manageCAPA = (institute) => {
+  capaInstitute.value = institute;
+};
+
+const updateCAPAIssues = (updatedIssues) => {
+  const institute = institutes.value.find((inst) => inst.id === capaInstitute.value.id);
+  if (institute) {
+    institute.capaIssues = updatedIssues;
+  }
+};
+
+const handleApprove = () => {
+  if (reviewingInstitute.value.eoiStatus === 'Pending') {
+    reviewingInstitute.value.eoiStatus = 'Approved';
+  } else if (reviewingInstitute.value.dprStatus === 'Pending') {
+    reviewingInstitute.value.dprStatus = 'Approved';
+  }
+  reviewingInstitute.value = null;
+};
+
+const handleReject = (reason) => {
+  if (reviewingInstitute.value.eoiStatus === 'Pending') {
+    reviewingInstitute.value.eoiStatus = 'Rejected';
+  } else if (reviewingInstitute.value.dprStatus === 'Pending') {
+    reviewingInstitute.value.dprStatus = 'Rejected';
+  }
+  reviewingInstitute.value.rejectionReason = reason; // Make sure this property exists in your institute objects
+  reviewingInstitute.value = null;
+};
+
+const exportReport = () => {
+  const filteredData = filteredReportInstitutes.value.map((institute) => ({
+    name: institute.name,
+    location: institute.location,
+    eoiStatus: institute.eoiStatus,
+    dprStatus: institute.dprStatus,
+    pendingCAPA: institute.capaIssues.filter((issue) => issue.status === 'Pending').length,
+  }));
+
+  const csvContent =
+    'data:text/csv;charset=utf-8,' +
+    filteredData
+      .map((row) => Object.values(row).join(','))
+      .join('\n');
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', 'institute_report.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link); // Clean up after download.
+};
+
+const tabClass = (tab) => {
+  return activeTab.value === tab
+    ? 'bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200'
+    : 'bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-200';
+};
+
+const downloadDPR = (institute) => {
+  if (institute.dprDocument) {
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = institute.dprDocument;
+    link.target = '_blank';
+    link.download = `DPR_${institute.name.replace(/\s+/g, '_')}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    alert('DPR document not available for download');
+  }
 };
 </script>

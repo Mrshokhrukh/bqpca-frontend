@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Engineering Qualification Management</h1>
 
@@ -146,7 +146,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
-import epcServices from '@/services/epcServices';
+import apiServices from '@/services/services';
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -177,8 +177,8 @@ const qualificationToDelete = ref(null);
 onMounted(async () => {
   try {
     const [qualificationsResponse, qualificationTypesResponse] = await Promise.all([
-      epcServices.getMastersQualifications(),
-      epcServices.getMastersQualificationTypes()
+      apiServices.getMastersQualifications(),
+      apiServices.getMastersQualificationTypes()
     ]);
     qualifications.value = qualificationsResponse.data.results;
     qualificationTypes.value = qualificationTypesResponse.data.results;
@@ -209,13 +209,13 @@ const paginatedQualifications = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await epcServices.updateMastersQualification(formData.value.id, formData.value);
+      const response = await apiServices.updateMastersQualification(formData.value.id, formData.value);
       const index = qualifications.value.findIndex(q => q.id === formData.value.id);
       if (index !== -1) {
         qualifications.value[index] = response.data;
       }
     } else {
-      const response = await epcServices.createMastersQualification(formData.value);
+      const response = await apiServices.createMastersQualification(formData.value);
       qualifications.value.push(response.data);
     }
     resetForm();
@@ -247,7 +247,7 @@ const confirmDelete = async () => {
   if (!qualificationToDelete.value) return;
 
   try {
-    await epcServices.deleteMastersQualification(qualificationToDelete.value.id);
+    await apiServices.deleteMastersQualification(qualificationToDelete.value.id);
     const index = qualifications.value.findIndex(q => q.id === qualificationToDelete.value.id);
     if (index !== -1) {
       qualifications.value.splice(index, 1);

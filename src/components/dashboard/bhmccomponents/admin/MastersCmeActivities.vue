@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
         <div class="max-w-[1600px] mx-auto">
             <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">CME Activities Management</h1>
 
@@ -71,9 +71,9 @@
                                 <tr v-for="activity in paginatedActivities" :key="activity.id"
                                     class="hover:bg-blue-50/30 transition-colors duration-200">
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-900">{{
-                                        activity.cme_activity_name }}</td>
+                            activity.cme_activity_name }}</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-700">{{
-                                        activity.cme_activity_description }}</td>
+                            activity.cme_activity_description }}</td>
                                     <td
                                         class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                         <div class="flex justify-end gap-2">

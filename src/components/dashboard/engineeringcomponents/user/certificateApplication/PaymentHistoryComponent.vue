@@ -4,11 +4,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'PaymentHistoryComponent'
-}
-</script>
 
 <style scoped>
 .payment-history {

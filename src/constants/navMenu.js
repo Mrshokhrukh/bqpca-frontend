@@ -1357,8 +1357,8 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
       },
       {
-        name: 'CME Management',
-        icon: getIconComponent('BookOpen'),
+        name: 'Content & Learning',
+        icon: getIconComponent('BookOpen'), // Suggest changing to a more appropriate icon if needed
         children: [
           {
             name: 'CME Activities',
@@ -1372,66 +1372,27 @@ const serviceSpecificMenuItems = {
             name: 'CME Methodologies',
             route: (serviceType) => `/admin/admin/${serviceType}/cme_methodologies`,
           },
-        ],
-      },
-      {
-        name: 'CPD Activity',
-        icon: getIconComponent('FileText'),
-        route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
-      },
-      {
-        name: 'Document Management',
-        icon: getIconComponent('File'),
-        children: [
           {
-            name: 'Document Types',
-            route: (serviceType) => `/admin/admin/${serviceType}/document_types`,
-          },
-          {
-            name: 'E-Signatures',
-            route: (serviceType) => `/admin/admin/${serviceType}/e_signatures`,
-          },
-          {
-            name: 'File Types',
-            route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
+            name: 'CPD Activity',
+            route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
           },
         ],
       },
       {
-        name: 'Fee Management',
-        icon: getIconComponent('CreditCard'),
-        children: [
-          {
-            name: 'Fee Structures',
-            route: (serviceType) => `/admin/admin/${serviceType}/fee_structures`,
-          },
-          {
-            name: 'Fees Associated For',
-            route: (serviceType) => `/admin/admin/${serviceType}/fees_associated_for`,
-          },
-        ],
-      },
-      {
-        name: 'Participation',
+        name: 'User Management',
         icon: getIconComponent('Users'),
         children: [
           {
-            name: 'Categories',
-            route: (serviceType) => `/admin/admin/${serviceType}/participation_category`,
+            name: 'Users', // Kept 'Users' as it seems to refer to general user management in this context
+            route: (serviceType) => `/admin/admin/${serviceType}/user_management`, // Assuming this route is for general user list/management
           },
           {
-            name: 'Sub Categories',
-            route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
-          },
-        ],
-      },
-      {
-        name: 'Personnel',
-        icon: getIconComponent('UserCircle'),
-        children: [
-          {
-            name: 'Categories',
+            name: 'Personnel Categories',
             route: (serviceType) => `/admin/admin/${serviceType}/personnel_categories`,
+          },
+          {
+            name: 'Personnel Sub Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/sub_categories`,
           },
           {
             name: 'Qualifications',
@@ -1445,49 +1406,67 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Registration',
-        icon: getIconComponent('ClipboardCheck'),
+        icon: getIconComponent('ClipboardCheck'), // Suggest changing to a more appropriate icon if needed
         children: [
           {
-            name: 'Types',
+            name: 'Registration Types',
             route: (serviceType) => `/admin/admin/${serviceType}/registration_type`,
           },
           {
-            name: 'Sectors',
+            name: 'Registration Sectors',
             route: (serviceType) => `/admin/admin/${serviceType}/sector`,
           },
           {
-            name: 'Sub Categories',
-            route: (serviceType) => `/admin/admin/${serviceType}/sub_categories`,
+            name: 'Participation Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/participation_category`,
+          },
+          {
+            name: 'Participation Sub Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
           },
         ],
       },
       {
-        name: 'University',
-        icon: getIconComponent('BookOpen'),
-        route: (serviceType) => `/admin/admin/${serviceType}/university`,
-      },
-      {
-        name: 'COGS Management',
-        icon: getIconComponent('Building2'),
+        name: 'System Configuration',
+        icon: getIconComponent('Settings'), // Suggest using a 'Settings' icon if available
         children: [
           {
-            name: 'Agency',
+            name: 'Document Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/document_types`,
+          },
+          {
+            name: 'E-Signatures',
+            route: (serviceType) => `/admin/admin/${serviceType}/e_signatures`,
+          },
+          {
+            name: 'File Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
+          },
+          {
+            name: 'Fee Structures',
+            route: (serviceType) => `/admin/admin/${serviceType}/fee_structures`,
+          },
+          {
+            name: 'Fees Associated For',
+            route: (serviceType) => `/admin/admin/${serviceType}/fees_associated_for`,
+          },
+          {
+            name: 'COGS Agency',
             route: (serviceType) => `/admin/admin/${serviceType}/cogs_agency`,
           },
           {
-            name: 'Department',
+            name: 'COGS Department',
             route: (serviceType) => `/admin/admin/${serviceType}/cogs_dept`,
           },
           {
-            name: 'Workplace',
+            name: 'COGS Workplace',
             route: (serviceType) => `/admin/admin/${serviceType}/cogs_workplace`,
           },
+          {
+            name: 'University Management',
+            route: (serviceType) => `/admin/admin/${serviceType}/university`,
+          },
         ],
-      },
-      {
-        name: 'User Management',
-        icon: getIconComponent('Users'),
-        route: (serviceType) => `/admin/admin/${serviceType}/user_management`,
       },
     ],
 

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="biodata-container">
     <h2>Dealing Officer Biodata</h2>
@@ -18,19 +19,15 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'OfficerBiodata',
-  data() {
-    return {
-      officerData: {
-        fullName: '',
-        employeeId: '',
-        department: ''
-      }
-    }
-  }
-}
+<script setup>
+import { reactive } from 'vue';
+
+const officerData = reactive({
+  fullName: '',
+  employeeId: '',
+  department: ''
+});
+
 </script>
 
 <style scoped>
