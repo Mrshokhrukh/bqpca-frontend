@@ -21,7 +21,7 @@
               </option>
             </select>
             <p v-if="userRegistrations.length === 0" class="mt-1 text-sm text-red-600">
-              No valid registration numbers found. Please ensure you are registered in the system.
+              No users found. Please ensure there are registered users in the system.
             </p>
           </div>
 

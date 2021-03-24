@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-8">
+  <div class=" mx-auto py-8">
     <!-- Confirmation Modal -->
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
       <Dialog as="div" class="relative z-10 fixed.inset-0.z-10.w-screen" @close="isConfirmationModalOpen = false">
@@ -227,7 +227,7 @@
               </option>
             </select>
             <span v-if="errors.registration_type" class="text-sm text-red-500 mt-1">{{ errors.registration_type
-            }}</span>
+              }}</span>
           </div>
         </div>
 
@@ -277,8 +277,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
-                errors.qualification_type
-              }}</span>
+      errors.qualification_type
+    }}</span>
             </div>
 
             <div class="col-span-1">
@@ -291,8 +291,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
-                errors.qualification_name
-              }}</span>
+      errors.qualification_name
+    }}</span>
             </div>
 
             <div class="col-span-1">
@@ -313,8 +313,8 @@
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
                 placeholder="YYYY" />
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
-                errors.year_of_completion
-              }}</span>
+      errors.year_of_completion
+    }}</span>
             </div>
           </div>
         </div>
@@ -337,8 +337,7 @@
                 </select>
               </div>
               <div class="flex-1 flex items-center space-x-2">
-                <input type="file" @change="(e) => handleFileSelect(e, index)" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4
-                           file:rounded-lg file:border-0 file:text-sm file:font-semibold
+                <input type="file" @change="(e) => handleFileSelect(e, index)" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold
                            file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple />
                 <button @click="removeDocument(index)" type="button"
@@ -937,7 +936,7 @@ const handleSubmitActual = async () => {
 
     // Handle file attachments
     localFormData.documents.forEach((doc, index) => {
-      if (doc.files && doc.files.length > 0) {
+      if (doc.files && doc.files.length > 0 && doc.type) { // Only proceed if type is not empty
         doc.files.forEach(file => {
           formData.append(`attachments-${index}-file`, file);
           formData.append(`attachments-${index}-file_type`, Number(doc.type));

@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+  <div class=" mx-auto py-10 px-4 sm:px-6 lg:px-8">
     <!-- Profile Header with Avatar -->
     <div class="mb-8 flex flex-col md:flex-row items-center md:items-start gap-6">
       <div class="relative">
@@ -358,24 +358,24 @@ onMounted(async () => {
   try {
     // Get the user's CID
     const userCid = authStore.user?.cid;
-    
+
     if (userCid) {
       // Get EPC applications for this user
       const response = await epcServices.getEpcNewApplications();
-      
+
       if (response.data && Array.isArray(response.data.results)) {
         const userApplications = response.data.results.filter(app => app.cid_no === userCid);
-        
+
         if (userApplications.length > 0) {
           // Extract work addresses from qualifications
           const workplaces = userApplications.flatMap(app => app.user_qualifications)
             .filter(qual => qual.practice_address);
-          
+
           workAddresses.value = workplaces.map(workplace => ({
             id: workplace.id,
             name: workplace.practice_address
           }));
-          
+
           // Set default work address if available
           if (workAddresses.value.length > 0) {
             profileForm.value.workAddressId = workAddresses.value[0].id;

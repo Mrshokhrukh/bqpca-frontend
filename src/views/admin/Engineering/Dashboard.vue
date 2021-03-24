@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="p-4">
+  <div class="p-4 h-screen">
     <!-- User Section -->
     <template v-if="role === 'user'">
       <component :is="engineeringUserComponent" />
@@ -305,14 +305,14 @@ const engineeringDealingOfficerComponent = computed(() => {
       return ProfessionalProfiles;
     case path.endsWith('/engineering_certification/cogs'):
       return CogsManagement;
-    
+
     case path.endsWith('/engineering_certification/payments'):
       return EngineeringPayments;
     case path.endsWith('/engineering_certification/reports'):
       return Reports;
     case path.endsWith('/engineering_certification/institute_renewals'):
       return InstituteRenewals;
-     
+
 
     default:
       return null;

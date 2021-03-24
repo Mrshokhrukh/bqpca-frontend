@@ -1,6 +1,5 @@
-
 <template>
-  <div class="max-w-7xl mx-auto">
+  <div class="mx-auto p-8">
     <FormHeader />
     <LoadingOverlay :loading="loading" />
     <AlertMessage :messages="validationErrors" type="error" />
