@@ -337,8 +337,7 @@
                 </select>
               </div>
               <div class="flex-1 flex items-center space-x-2">
-                <input type="file" @change="(e) => handleFileSelect(e, index)" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4
-                           file:rounded-lg file:border-0 file:text-sm file:font-semibold
+                <input type="file" @change="(e) => handleFileSelect(e, index)" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold
                            file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple />
                 <button @click="removeDocument(index)" type="button"
@@ -937,7 +936,7 @@ const handleSubmitActual = async () => {
 
     // Handle file attachments
     localFormData.documents.forEach((doc, index) => {
-      if (doc.files && doc.files.length > 0) {
+      if (doc.files && doc.files.length > 0 && doc.type) { // Only proceed if type is not empty
         doc.files.forEach(file => {
           formData.append(`attachments-${index}-file`, file);
           formData.append(`attachments-${index}-file_type`, Number(doc.type));
