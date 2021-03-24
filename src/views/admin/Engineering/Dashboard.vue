@@ -87,6 +87,8 @@ import ApplicationLists from '@/components/dashboard/engineeringcomponents/deali
 import Additional_Qualification from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/AdditionalApplication.vue';
 import RenewalLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/RenewalLists.vue';
 import ReRegistrationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/ReRegistrationLists.vue';
+import InstituteRenewals from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteRenewals.vue';
+import DPRApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/DprApplication.vue';
 // import RenewalLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/RenewalLists.vue';
 import CpdManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdManagement.vue';
 import CpdProviderManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdProviderManagement.vue';
@@ -94,7 +96,7 @@ import Self_cpd_awards from '@/components/dashboard/engineeringcomponents/dealin
 //Institute Management
 import InstituteManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteManagement.vue';
 import EoiApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/EoiApplication.vue';
-import DPRApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/DPRApplication.vue';
+
 import InstituteReport from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteReport.vue';
 import CAPAManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/CapaManagement.vue';
 import All_institute_profile from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteProfiles.vue';
@@ -303,12 +305,15 @@ const engineeringDealingOfficerComponent = computed(() => {
       return ProfessionalProfiles;
     case path.endsWith('/engineering_certification/cogs'):
       return CogsManagement;
-    case path.endsWith('/engineering_certification/capa'):
-      return EngineeringCapa;
+    
     case path.endsWith('/engineering_certification/payments'):
       return EngineeringPayments;
     case path.endsWith('/engineering_certification/reports'):
       return Reports;
+    case path.endsWith('/engineering_certification/institute_renewals'):
+      return InstituteRenewals;
+     
+
     default:
       return null;
   }

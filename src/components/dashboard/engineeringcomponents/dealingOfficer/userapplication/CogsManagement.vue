@@ -289,7 +289,7 @@ import {
   ChevronsRightIcon,
   XIcon
 } from 'lucide-vue-next'
-import services from '@/services/services'
+import apiServices from '@/services/services'
 import CogsReviewModal from '../modals/CogsReviewModal.vue'
 import CogsConfirmationModal from '../modals/CogsConfirmationModal.vue'
 
@@ -371,7 +371,7 @@ const fetchData = async () => {
   isLoading.value = true;
   error.value = null;
   try {
-    const response = await services.getEpcCogs();
+    const response = await apiServices.getEpcCogs();
     applications.value = response.data.results;
   } catch (err) {
     error.value = 'Failed to load applications. Please try again later.';
@@ -413,7 +413,7 @@ const reviewApplication = (application) => {
 
 const downloadCertificate = async (id) => {
   try {
-    const response = await services.downloadCogsCertificate(id);
+    const response = await apiServices.downloadCogsCertificate(id);
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
@@ -450,7 +450,7 @@ const confirmReviewAction = async () => {
   if (!confirmData.value) return;
 
   try {
-    const response = await services.patchEpcCogs(selectedApplication.value.id, confirmData.value);
+    const response = await apiServices.patchEpcCogs(selectedApplication.value.id, confirmData.value);
     if (response.status === 200) {
       const index = applications.value.findIndex(app => app.id === selectedApplication.value.id);
       if (index !== -1) {

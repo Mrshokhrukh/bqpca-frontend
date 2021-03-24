@@ -391,7 +391,7 @@ const fetchApplicationData = async () => {
     // Get registration details from renewals
     try {
       const renewalsResponse = await apiService.getEpcRenewals();
-      const userRenewals = renewalsResponse.data.results.filter(
+      const userRenewals = renewalsResponse.data.results.filter( // Changed to response.data.results
         renewal => renewal.application === latestApplication.id
       );
 
@@ -429,7 +429,7 @@ const formatDisplayDate = (dateString) => {
       month: 'short',
       day: 'numeric'
     }).format(date);
-  } catch (e) {
+  } catch {
     return dateString; // Return original string if parsing fails
   }
 };

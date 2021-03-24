@@ -41,7 +41,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
-import services from '@/services/services';
+import apiServices from '@/services/services';
 import HeaderSection from './capaComponents/HeaderSection.vue';
 import LoadingState from './capaComponents/LoadingState.vue';
 import ErrorState from './capaComponents/ErrorState.vue';
@@ -102,7 +102,7 @@ const fetchInstitutes = async () => {
   isLoading.value = true;
   error.value = null;
   try {
-    const response = await services.getEpcInstitutes();
+    const response = await apiServices.getEpcInstitutes();
     institutes.value = response.data.results;
   } catch (err) {
     error.value = 'Failed to load institutes. Please try again later.';
@@ -116,7 +116,7 @@ const fetchCapas = async () => {
   isLoading.value = true;
   error.value = null;
   try {
-    const response = await services.getEpcCapas();
+    const response = await apiServices.getEpcCapas();
     capas.value = response.data.results;
     processCapas();
   } catch (err) {
@@ -175,7 +175,7 @@ const closeViewDetailsModal = () => {
 // CRUD Operations
 const handleSaveCapa = async (capaData) => {
   try {
-    await services.createEpcCapa({
+    await apiServices.createEpcCapa({
       ...capaData,
       institute: selectedInstituteId.value,
     });
@@ -189,7 +189,7 @@ const handleSaveCapa = async (capaData) => {
 
 const handleEditCapa = async (capaData) => {
   try {
-    await services.updateEpcCapa(capaData.id, capaData);
+    await apiServices.updateEpcCapa(capaData.id, capaData);
     await fetchCapas();
     closeViewDetailsModal();
   } catch (err) {
@@ -201,7 +201,7 @@ const handleEditCapa = async (capaData) => {
 const deleteCapa = async (id) => {
   if (confirm('Are you sure you want to delete this CAPA?')) {
     try {
-      await services.deleteEpcCapa(id);
+      await apiServices.deleteEpcCapa(id);
       await fetchCapas();
     } catch (err) {
       console.error('Error deleting CAPA:', err);

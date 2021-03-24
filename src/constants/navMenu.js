@@ -1239,17 +1239,19 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/application_lists`,
           },
           {
+            name: 'Additional Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/additional_application`,
+          },
+          {
             name: 'Renewal Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_lists`,
           },
           {
-            name: 'Re-Registration Applications',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/re_registration_lists`,
+            name: 'CoGS Management',
+            icon: getIconComponent('Award'),
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cogs`,
           },
-          {
-            name: 'Additional Applications',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/additional_application`,
-          },
+
         ],
       },
       {
@@ -1261,11 +1263,11 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_application_review`,
           },
           {
-            name: 'Self CPD Awards',
+            name: 'Self Assesses CPD Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/self_cpd_awards`,
           },
           {
-            name: 'CPD Provider Management',
+            name: 'Manage Providers',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_provider_management`,
           },
         ],
@@ -1274,10 +1276,6 @@ const serviceSpecificMenuItems = {
         name: 'Institute Management',
         icon: getIconComponent('Building'),
         children: [
-          {
-            name: 'Institutes',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institutes`,
-          },
           {
             name: 'EOI Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/eoi_application`,
@@ -1290,6 +1288,8 @@ const serviceSpecificMenuItems = {
             name: 'CAPA Management',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/capa_management`,
           },
+
+
           {
             name: 'All Institute Profile',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/all_institute_profile`,
@@ -1299,8 +1299,12 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_institute`,
           },
           {
-            name: 'Education Program',
+            name: 'Education Programs',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/education_program`,
+          },
+          {
+            name: 'Institute Renewals',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_renewals`,
           },
           {
             name: 'Teaching Institute Renewals',
@@ -1317,11 +1321,7 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('Users'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/profiles`,
       },
-      {
-        name: 'CoGS Management',
-        icon: getIconComponent('Award'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/cogs`,
-      },
+
       {
         name: 'Payments',
         icon: getIconComponent('DollarSign'),

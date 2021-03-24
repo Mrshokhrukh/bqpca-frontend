@@ -273,7 +273,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import apiServices from '@/services/services'; // Import your API service
+import apiServices from '@/services/services'; 
 import UserDetailsModal from './modals/UserDetailsModal.vue';
 
 const filters = ref({

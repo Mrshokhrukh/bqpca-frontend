@@ -372,7 +372,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
-import bmhcService from '@/services/epcServices';
+import apiService from '@/services/services';
 import { Loader } from 'lucide-vue-next'
 
 // State variables
@@ -502,7 +502,7 @@ const confirmApprove = async () => {
     };
 
     // Send PATCH request to update center
-    await bmhcService.patchEpcTeachingCenter(selectedCenter.value.id, approvalData);
+    await apiService.patchEpcTeachingCenter(selectedCenter.value.id, approvalData);
 
     // Update local data
     teachingCenters.value = teachingCenters.value.map(center => {
@@ -550,7 +550,7 @@ const confirmReject = async () => {
     };
 
     // Send PATCH request to update center
-    await bmhcService.patchEpcTeachingCenter(selectedCenter.value.id, rejectionData);
+    await apiService.patchEpcTeachingCenter(selectedCenter.value.id, rejectionData);
 
     // Update local data
     teachingCenters.value = teachingCenters.value.map(center => {
@@ -606,7 +606,7 @@ const submitReview = async () => {
     }
 
     // Send PATCH request to update teaching center
-    await bmhcService.patchEpcTeachingCenter(selectedCenter.value.id, formData);
+    await apiService.patchEpcTeachingCenter(selectedCenter.value.id, formData);
 
     // Update local data
     teachingCenters.value = teachingCenters.value.map(center => {
@@ -640,7 +640,7 @@ const fetchTeachingCenters = async () => {
 
   try {
     // Fetch teaching centers
-    const response = await bmhcService.patchEpcTeachingCenter();
+    const response = await apiService.patchEpcTeachingCenter();
 
     if (response && response.data && response.data.results) {
       teachingCenters.value = response.data.results;

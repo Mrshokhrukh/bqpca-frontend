@@ -2,7 +2,7 @@
   <div class="p-8 min-h-screen bg-gray-50">
     <!-- Page Header -->
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Application List</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">EPC Institute Application List</h1>
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
@@ -117,7 +117,7 @@ const fetchApplications = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await apiService.getEpcInstitute(); // Use apiService
+    const response = await apiService.getEpcInstitutes(); // Changed to getEpcInstitutes (plural)
     applications.value = response.data.results;
     console.log(applications.value)
   } catch (err) {
@@ -143,7 +143,7 @@ const closeApplication = () => {
 const saveApplication = async (applicationId, updatedApplication) => {
   console.log("Saving application", applicationId, "with updates:", updatedApplication);
   try {
-    await apiService.patchEpcInstitute(applicationId, updatedApplication); // Use apiService
+    await apiService.patchEpcInstitute(applicationId, updatedApplication); // patchEpcInstitute is correct for updating
     // Optionally, refresh the application list after saving
     await fetchApplications();
     closeApplication();

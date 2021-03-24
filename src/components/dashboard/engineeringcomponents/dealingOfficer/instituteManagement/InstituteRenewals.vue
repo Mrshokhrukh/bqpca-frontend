@@ -1,7 +1,7 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Institute Renewal Applications</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">EPC Renewal Applications</h1>
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
@@ -137,7 +137,7 @@ onMounted(async () => {
 const fetchInstitutes = async () => {
   isLoading.value = true;
   try {
-    const response = await apiService.getBmhcInstitutes();
+    const response = await apiService.getEpcRenewals(); // Changed to getEpcRenewals
     console.log('API Response:', response); // Debug response structure
 
     // Check the structure of the response
@@ -187,13 +187,13 @@ const handleApprove = async (institute) => {
     // Update the institute status with is_active set to true
     const updatedData = {
       review_decision: 'Approved',
-      do_dpr_review_decision: 'Approved', // Set both review fields
+      do_dpr_review_decision: 'Approved', // Set both review fields - adjust if EPC renewals have different fields
       is_active: true, // This is the missing key field
       valid_since: currentDate.toISOString().split('T')[0],
       valid_till: validTill.toISOString().split('T')[0],
     };
 
-    await apiService.patchBmhcInstitute(institute.id, updatedData);
+    await apiService.patchEpcRenewal(institute.id, updatedData); // Changed to patchEpcRenewal
 
     // Rest of your code remains the same
     await fetchInstitutes();
@@ -218,10 +218,10 @@ const handleRegret = async (institute) => {
     // Update the institute status
     const updatedData = {
       review_decision: 'Regretted', // Changed from 'Rejected' to 'Regretted'
-      reason_if_rejected: reason || 'No reason provided',
+      reason_if_rejected: reason || 'No reason provided', // adjust field name if different for EPC renewals
     };
 
-    await apiService.patchBmhcInstitute(institute.id, updatedData);
+    await apiService.patchEpcRenewal(institute.id, updatedData); // Changed to patchEpcRenewal
 
     // Refresh the institutes list
     await fetchInstitutes();
