@@ -226,7 +226,8 @@
                 {{ regType.name }}
               </option>
             </select>
-            <span v-if="errors.registration_type" class="text-sm text-red-500 mt-1">{{ errors.registration_type }}</span>
+            <span v-if="errors.registration_type" class="text-sm text-red-500 mt-1">{{ errors.registration_type
+            }}</span>
           </div>
         </div>
 
@@ -277,7 +278,7 @@
               </select>
               <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
                 errors.qualification_type
-                }}</span>
+              }}</span>
             </div>
 
             <div class="col-span-1">
@@ -291,7 +292,7 @@
               </select>
               <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
                 errors.qualification_name
-                }}</span>
+              }}</span>
             </div>
 
             <div class="col-span-1">
@@ -313,7 +314,7 @@
                 placeholder="YYYY" />
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
                 errors.year_of_completion
-                }}</span>
+              }}</span>
             </div>
           </div>
         </div>
@@ -556,7 +557,7 @@ const localFormData = reactive({
   year_of_completion: null,
   is_active: false,
   application: null,
-  registration_type: '', // Will be populated from dropdown
+  registration_type: '',
 });
 
 const errors = reactive({});
@@ -824,26 +825,26 @@ const handleNext = async () => {
     const apiFormData = new FormData();
 
     for (const key in formDataStageOne) {
-  if (Object.prototype.hasOwnProperty.call(formDataStageOne, key)) {
-    if (key === 'passport_photo' && formDataStageOne[key] instanceof File) {
-      apiFormData.append('passport_photo', formDataStageOne[key]);
-    } else if (key === 'cid_holder') {
-      // Convert boolean to string 'true'/'false' for API
-      apiFormData.append(key, formDataStageOne[key] ? 'true' : 'false');
-    } else if (key === 'is_active') {
-      // Convert boolean to string 'true'/'false' for API
-      apiFormData.append(key, formDataStageOne[key] ? 'true' : 'false');
-    } else if (key === 'registration_type') {
-      // Convert registration_type to a number
-      apiFormData.append(key, Number(formDataStageOne[key]));
-    } else if (formDataStageOne[key] !== null && formDataStageOne[key] !== undefined) {
-      apiFormData.append(key, formDataStageOne[key]);
+      if (Object.prototype.hasOwnProperty.call(formDataStageOne, key)) {
+        if (key === 'passport_photo' && formDataStageOne[key] instanceof File) {
+          apiFormData.append('passport_photo', formDataStageOne[key]);
+        } else if (key === 'cid_holder') {
+          // Convert boolean to string 'true'/'false' for API
+          apiFormData.append(key, formDataStageOne[key] ? 'true' : 'false');
+        } else if (key === 'is_active') {
+          // Convert boolean to string 'true'/'false' for API
+          apiFormData.append(key, formDataStageOne[key] ? 'true' : 'false');
+        } else if (key === 'registration_type') {
+          // Convert registration_type to a number
+          apiFormData.append(key, Number(formDataStageOne[key]));
+        } else if (formDataStageOne[key] !== null && formDataStageOne[key] !== undefined) {
+          apiFormData.append(key, formDataStageOne[key]);
+        }
+      }
     }
-  }
-}
 
-// Double check registration_type is included
-console.log('Registration Type in Stage 1 FormData:', apiFormData.get('registration_type'));
+    // Double check registration_type is included
+    console.log('Registration Type in Stage 1 FormData:', apiFormData.get('registration_type'));
 
     try {
       // Submit the first part of the form data
@@ -919,20 +920,20 @@ const handleSubmitActual = async () => {
 
     // Add qualification data
     formData.append('completion_year', completionYear);
-    formData.append('declaration', true);
+    formData.append('declaration', 'True');
     formData.append('remarks', localFormData.remarks || '');
     formData.append('registration_date', formatDateForAPI(new Date()));
     formData.append('expiry_date', formatDateForAPI(new Date(new Date().setFullYear(new Date().getFullYear() + 5))));
     formData.append('payment_status', 'pending');
     formData.append('payment_id', '');
-    formData.append('is_active', false);
+    formData.append('is_active', 'False');
     formData.append('application', localFormData.application);
 
     // Convert IDs to numbers
     formData.append('qualification_name', Number(localFormData.qualification_name));
     formData.append('qualification_type', Number(localFormData.qualification_type));
     formData.append('institute_university', Number(localFormData.institute));
-    formData.append('is_primary_qualification', true);
+    formData.append('is_primary_qualification', 'True');
 
     // Handle file attachments
     localFormData.documents.forEach((doc, index) => {
