@@ -1194,25 +1194,7 @@ const serviceSpecificMenuItems = {
           },
         ],
       },
-      {
-        name: 'Payment',
-        icon: getIconComponent('Wallet'),
-        children: [
-          {
-            name: 'Make Payment',
-            route: (serviceType) => `/admin/user/${serviceType}/payment`,
-          },
-          {
-            name: 'Payment History',
-            route: (serviceType) => `/admin/user/${serviceType}/payment_history`,
-          },
-        ],
-      },
-      {
-        name: 'Reports',
-        icon: getIconComponent('FileBarChart'),
-        route: (serviceType) => `/admin/user/${serviceType}/reports`,
-      },
+      
       {
         name: 'Profile',
         icon: getIconComponent('UserCircle'),
