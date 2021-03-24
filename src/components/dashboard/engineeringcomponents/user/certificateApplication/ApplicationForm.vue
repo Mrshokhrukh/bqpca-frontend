@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-8">
+  <div class=" mx-auto py-8">
     <!-- Confirmation Modal -->
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
       <Dialog as="div" class="relative z-10 fixed.inset-0.z-10.w-screen" @close="isConfirmationModalOpen = false">
@@ -227,7 +227,7 @@
               </option>
             </select>
             <span v-if="errors.registration_type" class="text-sm text-red-500 mt-1">{{ errors.registration_type
-            }}</span>
+              }}</span>
           </div>
         </div>
 
@@ -277,8 +277,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
-                errors.qualification_type
-              }}</span>
+      errors.qualification_type
+    }}</span>
             </div>
 
             <div class="col-span-1">
@@ -291,8 +291,8 @@
                 </option>
               </select>
               <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
-                errors.qualification_name
-              }}</span>
+      errors.qualification_name
+    }}</span>
             </div>
 
             <div class="col-span-1">
@@ -313,8 +313,8 @@
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
                 placeholder="YYYY" />
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
-                errors.year_of_completion
-              }}</span>
+      errors.year_of_completion
+    }}</span>
             </div>
           </div>
         </div>

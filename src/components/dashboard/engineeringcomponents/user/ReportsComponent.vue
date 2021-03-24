@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="mx-auto py-8">
     <!-- Enhanced Header with Gradient -->
     <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-xl">
       <h2 class="text-4xl font-bold mb-4 text-center">
@@ -248,29 +248,29 @@ const fetchData = async () => {
     // Fetch user application data for registration info
     if (authStore.user?.cid) {
       const appResponse = await epcServices.getApplicationWithCid(authStore.user.cid);
-      
+
       if (appResponse.data && appResponse.data.length > 0) {
         // Get the most recent application
         const latestApp = appResponse.data.sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at)
         )[0];
-        
+
         profileData.value = {
           registrationNumber: latestApp.registration_number || 'Pending',
           fullName: latestApp.full_name || authStore.fullName,
           email: latestApp.email || authStore.email,
           contactNumber: latestApp.contact_number || authStore.contactNumber
         };
-        
+
         // Extract education data from applications
         const qualifications = appResponse.data.flatMap(app => app.user_qualifications || []);
-        
+
         educationData.value = qualifications.map(qual => ({
           degree: qual.qualification_name || 'Engineering Qualification',
           institution: qual.institute_name || 'Institution not specified',
           year: qual.completion_date ? new Date(qual.completion_date).getFullYear().toString() : 'N/A'
         }));
-        
+
         // Extract registration history
         registrationHistory.value = appResponse.data
           .filter(app => app.status === 'Approved')
@@ -280,14 +280,14 @@ const fetchData = async () => {
             status: app.expiry_date && new Date(app.expiry_date) > new Date() ? 'Active' : 'Expired'
           }));
       }
-      
+
       // Fetch CPD history
       const cpdResponse = await epcServices.getEpcCpdTasks();
-      
+
       if (cpdResponse.data) {
         // Filter CPD tasks for the current user
         const userCpdTasks = cpdResponse.data.filter(task => task.cid === authStore.user.cid);
-        
+
         cpdHistory.value = userCpdTasks.map(cpd => ({
           id: cpd.id,
           title: cpd.title || 'Engineering CPD Activity',
@@ -303,7 +303,7 @@ const fetchData = async () => {
 
 onMounted(() => {
   fetchData();
-  
+
   // If API calls fail or no data is found, use this default data
   if (!profileData.value) {
     profileData.value = {
@@ -313,7 +313,7 @@ onMounted(() => {
       contactNumber: authStore.contactNumber,
     };
   }
-  
+
   if (educationData.value.length === 0) {
     educationData.value = [
       {
@@ -324,14 +324,14 @@ onMounted(() => {
       { degree: "Master of Engineering", institution: "Asian Institute of Technology", year: "2021" },
     ];
   }
-  
+
   if (registrationHistory.value.length === 0) {
     registrationHistory.value = [
       { registrationDate: "2023-01-15", expiryDate: "2026-01-15", status: "Active" },
       { registrationDate: "2020-01-15", expiryDate: "2023-01-15", status: "Expired" },
     ];
   }
-  
+
   if (cpdHistory.value.length === 0) {
     cpdHistory.value = [
       { id: 1, title: "Structural Engineering Workshop", credits: 10, date: "2023-03-10" },
