@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
         <div class="max-w-[1600px] mx-auto">
             <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">University Management</h1>
 
@@ -54,7 +54,7 @@
                             <h2 class="text-xl font-semibold text-slate-900">Universities List</h2>
                             <span class="text-sm text-slate-500">
                                 {{ filteredUniversities.length }} University{{ filteredUniversities.length !== 1 ? 's' :
-                                '' }}
+                            '' }}
                             </span>
                         </div>
 

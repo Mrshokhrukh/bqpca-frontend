@@ -1,8 +1,8 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
       <div class="max-w-[1600px] mx-auto">
         <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">CPD Activity Management</h1>
-  
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <!-- Left Column - Add/Edit Form -->
           <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8">
@@ -33,7 +33,7 @@
                     required
                   ></textarea>
                 </div>
-  
+
                 <div class="flex gap-3">
                   <button
                     type="submit"
@@ -53,7 +53,7 @@
               </div>
             </form>
           </div>
-  
+
           <!-- Right Column - CPD Activities List -->
           <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
             <div class="mb-6 space-y-4">
@@ -63,7 +63,7 @@
                   {{ filteredCpdActivities.length }} CPD Activity{{ filteredCpdActivities.length !== 1 ? 's' : '' }}
                 </span>
               </div>
-  
+
               <!-- Search Bar -->
               <div class="relative">
                 <input
@@ -83,7 +83,7 @@
                 </svg>
               </div>
             </div>
-  
+
             <!-- CPD Activities Grid -->
             <div class="space-y-4 mb-6">
               <TransitionGroup name="list">
@@ -120,13 +120,13 @@
                   </div>
                 </div>
               </TransitionGroup>
-  
+
               <!-- Empty State -->
               <div v-if="filteredCpdActivities.length === 0" class="text-center py-8">
                 <p class="text-slate-500">No CPD activities found</p>
               </div>
             </div>
-  
+
             <!-- Pagination -->
             <div v-if="filteredCpdActivities.length > itemsPerPage"
                  class="flex justify-center gap-2">
@@ -150,7 +150,7 @@
             </div>
           </div>
         </div>
-  
+
         <!-- Confirmation modal -->
         <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
           <AlertDialogContent
@@ -178,7 +178,7 @@
       </div>
     </div>
   </template>
-  
+
   <script setup>
   import { ref, computed, watch, onMounted } from 'vue';
   import services from '@/services/services';
@@ -191,7 +191,7 @@
     AlertDialogRoot,
     AlertDialogTitle,
   } from 'radix-vue';
-  
+
   // State
   const cpdActivities = ref([]);
   const formData = ref({
@@ -203,10 +203,10 @@
   const searchQuery = ref('');
   const currentPage = ref(1);
   const itemsPerPage = 5;
-  
+
   const isDeleteModalOpen = ref(false);
   const cpdActivityToDelete = ref(null);
-  
+
   // Fetch CPD activities on component mount
   onMounted(async () => {
     try {
@@ -216,7 +216,7 @@
       console.error('Error fetching CPD activities:', error);
     }
   });
-  
+
   // Computed
   const filteredCpdActivities = computed(() => {
     return cpdActivities.value.filter(cpdActivity => {
@@ -225,17 +225,17 @@
              cpdActivity.description.toLowerCase().includes(query);
     });
   });
-  
+
   const totalPages = computed(() => {
     return Math.ceil(filteredCpdActivities.value.length / itemsPerPage);
   });
-  
+
   const paginatedCpdActivities = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     return filteredCpdActivities.value.slice(start, end);
   });
-  
+
   // Methods
   const handleSubmit = async () => {
     try {
@@ -254,29 +254,29 @@
       console.error('Error saving CPD activity:', error);
     }
   };
-  
+
   const startEdit = (cpdActivity) => {
     formData.value = { ...cpdActivity };
     isEditing.value = true;
   };
-  
+
   const cancelEdit = () => {
     resetForm();
   };
-  
+
   const openDeleteModal = (cpdActivity) => {
     cpdActivityToDelete.value = cpdActivity;
     isDeleteModalOpen.value = true;
   };
-  
+
   const closeDeleteModal = () => {
     isDeleteModalOpen.value = false;
     cpdActivityToDelete.value = null;
   };
-  
+
   const confirmDelete = async () => {
     if (!cpdActivityToDelete.value) return;
-  
+
     try {
       await services.deleteMastersCpdActivity(cpdActivityToDelete.value.id);
       const index = cpdActivities.value.findIndex(dt => dt.id === cpdActivityToDelete.value.id);
@@ -288,7 +288,7 @@
       console.error('Error deleting CPD activity:', error);
     }
   };
-  
+
   const resetForm = () => {
     formData.value = {
       id: null,
@@ -297,25 +297,25 @@
     };
     isEditing.value = false;
   };
-  
+
   // Watch for search query changes to reset pagination
   watch(searchQuery, () => {
     currentPage.value = 1;
   });
   </script>
-  
+
   <style scoped>
   .list-enter-active,
   .list-leave-active {
     transition: all 0.3s ease;
   }
-  
+
   .list-enter-from,
   .list-leave-to {
     opacity: 0;
     transform: translateX(30px);
   }
-  
+
   .list-move {
     transition: transform 0.3s ease;
   }

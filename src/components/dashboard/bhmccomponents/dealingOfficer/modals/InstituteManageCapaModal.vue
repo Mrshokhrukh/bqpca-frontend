@@ -43,54 +43,52 @@
   </div>
 </template>
 
-<script>
-import { ref } from 'vue';
+<script setup>
+import { ref, watch } from 'vue';
 
-export default {
-  name: 'InstituteManageCapaModal',
-  props: {
-    institute: {
-      type: Object,
-      required: true,
-    },
+const props = defineProps({
+  institute: {
+    type: Object,
+    required: true,
   },
-  setup(props, { emit }) {
-    const newIssue = ref('');
-    const capaIssues = ref(props.institute.capaIssues || []);
+});
 
-    const addIssue = () => {
-      if (newIssue.value.trim()) {
-        capaIssues.value.push({
-          description: newIssue.value,
-          status: 'Pending',
-          remarks: '',
-          timestamp: new Date().toLocaleString(),
-        });
-        newIssue.value = '';
-      }
-    };
+const emit = defineEmits(['close', 'update-capa']);
 
-    const resolveIssue = (index) => {
-      if (capaIssues.value[index].remarks.trim()) {
-        capaIssues.value[index].status = 'Resolved';
-        capaIssues.value[index].resolvedTimestamp = new Date().toLocaleString();
-        emit('update-capa', capaIssues.value); // Emit updated CAPA issues
-      } else {
-        alert('Please provide remarks before resolving the issue.');
-      }
-    };
+const newIssue = ref('');
+const capaIssues = ref(props.institute.capaIssues || []);
 
-    const closeModal = () => {
-      emit('close');
-    };
+// Watch for changes in the prop and update the local ref
+watch(() => props.institute.capaIssues, (newCapaIssues) => {
+  capaIssues.value = newCapaIssues || [];
+}, { deep: true });
 
-    return {
-      newIssue,
-      capaIssues,
-      addIssue,
-      resolveIssue,
-      closeModal,
-    };
-  },
+
+const addIssue = () => {
+  if (newIssue.value.trim()) {
+    capaIssues.value.push({
+      description: newIssue.value,
+      status: 'Pending',
+      remarks: '',
+      timestamp: new Date().toLocaleString(),
+    });
+    emit('update-capa', capaIssues.value); // Emit after adding
+    newIssue.value = '';
+  }
 };
+
+const resolveIssue = (index) => {
+  if (capaIssues.value[index] && capaIssues.value[index].remarks.trim()) { //check if it exists.
+    capaIssues.value[index].status = 'Resolved';
+    capaIssues.value[index].resolvedTimestamp = new Date().toLocaleString();
+    emit('update-capa', capaIssues.value); // Emit after resolving
+  } else {
+    alert('Please provide remarks before resolving the issue.');
+  }
+};
+
+const closeModal = () => {
+  emit('close');
+};
+
 </script>

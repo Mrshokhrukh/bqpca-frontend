@@ -24,51 +24,48 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ECPFEvents',
-  data() {
-    return {
-      loading: true,
-      events: []
-    }
-  },
-  methods: {
-    formatDate(date) {
-      return new Date(date).toLocaleDateString()
-    },
-    async fetchEvents() {
-      try {
-        // Replace with actual API call
-        this.loading = true
-        // Simulated API response
-        this.events = [
-          {
-            id: 1,
-            title: 'Application Review',
-            description: 'Initial review of ECPF application',
-            date: '2024-01-15',
-            status: 'pending'
-          },
-          {
-            id: 2,
-            title: 'Document Verification',
-            description: 'Verification of submitted documents',
-            date: '2024-01-16',
-            status: 'completed'
-          }
-        ]
-      } catch (error) {
-        console.error('Error fetching events:', error)
-      } finally {
-        this.loading = false
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const loading = ref(true);
+const events = ref([]);
+
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString();
+};
+
+const fetchEvents = async () => {
+  try {
+    // Replace with actual API call
+    loading.value = true;
+    // Simulated API response (Replace this with your actual API call)
+    // Example:
+    // const response = await fetch('/api/events');
+    // events.value = await response.json();
+    events.value = [
+      {
+        id: 1,
+        title: 'Application Review',
+        description: 'Initial review of ECPF application',
+        date: '2024-01-15',
+        status: 'pending'
+      },
+      {
+        id: 2,
+        title: 'Document Verification',
+        description: 'Verification of submitted documents',
+        date: '2024-01-16',
+        status: 'completed'
       }
-    }
-  },
-  mounted() {
-    this.fetchEvents()
+    ];
+  } catch (error) {
+    console.error('Error fetching events:', error);
+  } finally {
+    loading.value = false;
   }
-}
+};
+
+onMounted(fetchEvents);
 </script>
 
 <style scoped>
@@ -116,7 +113,8 @@ export default {
   color: #155724;
 }
 
-.loading, .no-events {
+.loading,
+.no-events {
   text-align: center;
   padding: 20px;
   color: #666;

@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
         <div class="max-w-[1600px] mx-auto">
             <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Assessor Pool Management</h1>
 
@@ -120,13 +120,13 @@
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-900">{{ assessor.assessor
                                         }}</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-700">{{
-                                        assessor.institution_profile }}</td>
+                            assessor.institution_profile }}</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm">
                                         <span :class="{
-                                            'px-2 py-1 text-xs font-semibold rounded-full': true,
-                                            'bg-red-100 text-red-800': assessor.conflict_of_interest,
-                                            'bg-green-100 text-green-800': !assessor.conflict_of_interest,
-                                        }">
+                            'px-2 py-1 text-xs font-semibold rounded-full': true,
+                            'bg-red-100 text-red-800': assessor.conflict_of_interest,
+                            'bg-green-100 text-green-800': !assessor.conflict_of_interest,
+                        }">
                                             {{ assessor.conflict_of_interest ? 'Yes' : 'No' }}
                                         </span>
                                     </td>

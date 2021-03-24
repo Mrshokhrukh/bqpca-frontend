@@ -153,6 +153,7 @@ export default {
       dashboard: engineeringDashboard,
       profile: engineeringDashboard,
       registration: engineeringDashboard,
+      institute_renewals: engineeringDashboard,
       renewal: engineeringDashboard,
       re_registration: engineeringDashboard,
       additional_qualification: engineeringDashboard,
@@ -249,6 +250,7 @@ export default {
       teaching_institute: engineeringDashboard,
       education_program: engineeringDashboard,
       teaching_institute_renewals: engineeringDashboard,
+      institute_renewals: engineeringDashboard,
 
       // Other management routes
       profiles: engineeringDashboard,

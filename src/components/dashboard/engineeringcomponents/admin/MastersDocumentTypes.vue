@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Engineering Document Type Management</h1>
 
@@ -150,7 +150,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
-import epcServices from '@/services/epcServices';
+import apiServices from '@/services/services';
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -180,7 +180,7 @@ const documentTypeToDelete = ref(null);
 // Fetch document types on component mount
 onMounted(async () => {
   try {
-    const response = await epcServices.getMastersDocumentTypes();
+    const response = await apiServices.getMastersDocumentTypes();
     documentTypes.value = response.data.results;
   } catch (error) {
     console.error('Error fetching document types:', error);
@@ -210,13 +210,13 @@ const paginatedDocumentTypes = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await epcServices.updateMastersDocumentType(formData.value.id, formData.value);
+      const response = await apiServices.updateMastersDocumentType(formData.value.id, formData.value);
       const index = documentTypes.value.findIndex(dt => dt.id === formData.value.id);
       if (index !== -1) {
         documentTypes.value[index] = response.data;
       }
     } else {
-      const response = await epcServices.createMastersDocumentType(formData.value);
+      const response = await apiServices.createMastersDocumentType(formData.value);
       documentTypes.value.push(response.data);
     }
     resetForm();
@@ -248,7 +248,7 @@ const confirmDelete = async () => {
   if (!documentTypeToDelete.value) return;
 
   try {
-    await epcServices.deleteMastersDocumentType(documentTypeToDelete.value.id);
+    await apiServices.deleteMastersDocumentType(documentTypeToDelete.value.id);
     const index = documentTypes.value.findIndex(dt => dt.id === documentTypeToDelete.value.id);
     if (index !== -1) {
       documentTypes.value.splice(index, 1);

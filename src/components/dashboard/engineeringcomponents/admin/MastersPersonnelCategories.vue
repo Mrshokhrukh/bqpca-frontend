@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Engineering Personnel Category Management</h1>
 
@@ -50,7 +50,7 @@
               <h2 class="text-xl font-semibold text-slate-900">Personnel Categories List</h2>
               <span class="text-sm text-slate-500">
                 {{ filteredPersonnelCategories.length }} Personnel Category{{ filteredPersonnelCategories.length !== 1 ?
-                'ies' : 'y' }}
+              'ies' : 'y' }}
               </span>
             </div>
 
@@ -149,7 +149,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
-import epcServices from '@/services/epcServices';
+import apiServices from '@/services/services';
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -179,7 +179,7 @@ const personnelCategoryToDelete = ref(null);
 // Fetch personnel categories on component mount
 onMounted(async () => {
   try {
-    const response = await epcServices.getMastersPersonnelCategories();
+    const response = await apiServices.getMastersPersonnelCategories();
     personnelCategories.value = response.data.results;
   } catch (error) {
     console.error('Error fetching personnel categories:', error);
@@ -209,13 +209,13 @@ const paginatedPersonnelCategories = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await epcServices.updateMastersPersonnelCategory(formData.value.id, formData.value);
+      const response = await apiServices.updateMastersPersonnelCategory(formData.value.id, formData.value);
       const index = personnelCategories.value.findIndex(pc => pc.id === formData.value.id);
       if (index !== -1) {
         personnelCategories.value[index] = response.data;
       }
     } else {
-      const response = await epcServices.createMastersPersonnelCategory(formData.value);
+      const response = await apiServices.createMastersPersonnelCategory(formData.value);
       personnelCategories.value.push(response.data);
     }
     resetForm();
@@ -247,7 +247,7 @@ const confirmDelete = async () => {
   if (!personnelCategoryToDelete.value) return;
 
   try {
-    await epcServices.deleteMastersPersonnelCategory(personnelCategoryToDelete.value.id);
+    await apiServices.deleteMastersPersonnelCategory(personnelCategoryToDelete.value.id);
     const index = personnelCategories.value.findIndex(pc => pc.id === personnelCategoryToDelete.value.id);
     if (index !== -1) {
       personnelCategories.value.splice(index, 1);

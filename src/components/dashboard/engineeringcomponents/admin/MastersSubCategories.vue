@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 lg:p-8">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Engineering Sub Categories Management</h1>
 
@@ -12,27 +12,64 @@
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
-                <label for="name" class="block text-sm font-medium text-slate-700">Sub Category Name</label>
+                <label for="category_name" class="block text-sm font-medium text-slate-700">Category Name</label>
+                <select
+                  id="category_name"
+                  v-model="formData.category_name"
+                  class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                >
+                  <option value="" disabled>Select a Category</option>
+                  <option v-for="category in categories" :key="category.id" :value="category.id">
+                    {{ category.category_name }}
+                  </option>
+                </select>
+              </div>
+              <div>
+                <label for="sub_category_name" class="block text-sm font-medium text-slate-700">Sub Category Name</label>
                 <input
                   type="text"
-                  id="name"
-                  v-model="formData.name"
+                  id="sub_category_name"
+                  v-model="formData.sub_category_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter sub category name"
                   required
                 />
               </div>
               <div>
-                <label for="description" class="block text-sm font-medium text-slate-700">Description</label>
+                <label for="sub_category_description" class="block text-sm font-medium text-slate-700">Description</label>
                 <textarea
-                  id="description"
-                  v-model="formData.description"
+                  id="sub_category_description"
+                  v-model="formData.sub_category_description"
                   rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter description"
                   required
                 ></textarea>
               </div>
+              <div>
+                <label for="registration_code" class="block text-sm font-medium text-slate-700">Registration Code</label>
+                <input
+                  type="text"
+                  id="registration_code"
+                  v-model="formData.registration_code"
+                  class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter registration code"
+                  required
+                />
+              </div>
+              <div>
+                <label for="renewal_fee" class="block text-sm font-medium text-slate-700">Renewal Fee</label>
+                <input
+                  type="number"
+                  id="renewal_fee"
+                  v-model="formData.renewal_fee"
+                  class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter renewal fee"
+                  required
+                />
+              </div>
+
               <div class="flex gap-3">
                 <button
                   type="submit"
@@ -93,9 +130,12 @@
               >
                 <div class="flex justify-between items-start gap-4">
                   <div>
-                    <h3 class="font-medium text-slate-900">{{ subCategory.name }}</h3>
-                    <p class="text-sm text-slate-600 mt-1">{{ subCategory.description }}</p>
-                  </div>
+                    <h3 class="font-medium text-slate-900">{{ subCategory.sub_category_name }}</h3>
+                    <p class="text-sm text-slate-600 mt-1">{{ subCategory.sub_category_description }}</p>
+                    <p class="text-sm text-slate-600 mt-1">Category: {{ subCategory.personnel_category.category_name }}</p>
+                    <p class="text-sm text-slate-600 mt-1">Code: {{ subCategory.registration_code }}</p>
+                    <p class="text-sm text-slate-600 mt-1">Fee: {{ subCategory.renewal_fee }}</p>
+                   </div>
                   <div class="flex gap-2">
                     <button
                       @click="startEdit(subCategory)"
@@ -159,7 +199,7 @@
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
             This action cannot be undone. This will permanently delete the sub category
-            "{{ subCategoryToDelete?.name }}".
+            "{{ subCategoryToDelete?.sub_category_name }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
             <AlertDialogCancel class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
@@ -180,7 +220,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
-import epcServices from '@/services/epcServices';
+import apiServices from '@/services/services';
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -193,10 +233,14 @@ import {
 
 // State
 const subCategories = ref([]);
+const categories = ref([]); // For the categories dropdown
 const formData = ref({
   id: null,
-  name: '',
-  description: ''
+  sub_category_name: '',
+  sub_category_description: '',
+  registration_code: '',
+  renewal_fee: '',
+  category_name: 0,
 });
 const isEditing = ref(false);
 const searchQuery = ref('');
@@ -206,22 +250,38 @@ const itemsPerPage = 5;
 const isDeleteModalOpen = ref(false);
 const subCategoryToDelete = ref(null);
 
-// Fetch sub categories on component mount
+// Fetch sub categories and categories on component mount
 onMounted(async () => {
+  fetchSubCategories();
+  fetchCategories();
+});
+
+
+const fetchSubCategories = async () => {
   try {
-    const response = await epcServices.getMastersSubCategories();
+    const response = await apiServices.getMastersSubCategories();
     subCategories.value = response.data.results;
   } catch (error) {
     console.error('Error fetching sub categories:', error);
   }
-});
+};
+
+const fetchCategories = async () => {
+  try {
+    const response = await apiServices.getMastersPersonnelCategories();
+    categories.value = response.data.results;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+  }
+};
 
 // Computed
 const filteredSubCategories = computed(() => {
   return subCategories.value.filter(subCategory => {
     const query = searchQuery.value.toLowerCase();
-    return subCategory.name.toLowerCase().includes(query) ||
-           subCategory.description.toLowerCase().includes(query);
+    return subCategory.sub_category_name.toLowerCase().includes(query) ||
+           subCategory.sub_category_description.toLowerCase().includes(query) ||
+           (subCategory.category_name && subCategory.category_name.toLowerCase().includes(query)); // Check for null
   });
 });
 
@@ -239,18 +299,19 @@ const paginatedSubCategories = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await epcServices.updateMastersSubCategory(formData.value.id, formData.value);
+      const response = await apiServices.updateMastersSubCategory(formData.value.id, formData.value);
       const index = subCategories.value.findIndex(sc => sc.id === formData.value.id);
       if (index !== -1) {
         subCategories.value[index] = response.data;
       }
     } else {
-      const response = await epcServices.createMastersSubCategory(formData.value);
+      const response = await apiServices.createMastersSubCategory(formData.value);
       subCategories.value.push(response.data);
     }
     resetForm();
   } catch (error) {
     console.error('Error saving sub category:', error);
+    // Handle specific field errors, if your API returns them in a usable format.
   }
 };
 
@@ -277,7 +338,7 @@ const confirmDelete = async () => {
   if (!subCategoryToDelete.value) return;
 
   try {
-    await epcServices.deleteMastersSubCategory(subCategoryToDelete.value.id);
+    await apiServices.deleteMastersSubCategory(subCategoryToDelete.value.id);
     const index = subCategories.value.findIndex(sc => sc.id === subCategoryToDelete.value.id);
     if (index !== -1) {
       subCategories.value.splice(index, 1);
@@ -290,9 +351,12 @@ const confirmDelete = async () => {
 
 const resetForm = () => {
   formData.value = {
-    id: null,
-    name: '',
-    description: ''
+      id: null,
+      sub_category_name: '',
+      sub_category_description: '',
+      registration_code: '',
+      renewal_fee: '',
+      category_name: ''  // Reset category_name
   };
   isEditing.value = false;
 };
