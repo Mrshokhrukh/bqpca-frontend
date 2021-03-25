@@ -78,8 +78,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import apiservice from '@/services/bmhcservices';
+import { ref, computed, onMounted, } from 'vue';
+import apiservice from '@/services/services';
 import { useToast } from 'vue-toastification';
 
 const props = defineProps({

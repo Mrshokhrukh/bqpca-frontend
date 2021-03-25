@@ -94,7 +94,6 @@ const iconMap = {
 import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
 import { useAuthStore } from '@/stores/authStore'
 import { useInstitutionStore } from '@/stores/institutionNavigationStore'
-import { useEngineeringCertificationStore } from '@/stores/engineeringNavigationStore'
 
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
@@ -1144,67 +1143,32 @@ const serviceSpecificMenuItems = {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
-        hidden: () => !useEngineeringCertificationStore().visibleMenus.baseMenus.dashboard,
       },
       {
         name: 'Certification',
         icon: getIconComponent('ClipboardCheck'),
-        hidden: () => !useEngineeringCertificationStore().visibleMenus.baseMenus.certification,
-        children: () => {
-          const store = useEngineeringCertificationStore()
-          const { certificationSubMenus } = store.visibleMenus
-
-          const items = []
-
-          if (certificationSubMenus.registration) {
-            items.push({
-              name: 'Registration',
-              route: (serviceType) => `/admin/user/${serviceType}/registration`,
-            })
-          }
-
-          if (certificationSubMenus.myApplications) {
-            items.push({
-              name: 'My Applications',
-              route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
-            })
-          }
-
-          if (certificationSubMenus.trackApplication) {
-            items.push({
-              name: 'Track Application',
-              route: (serviceType) => `/admin/user/${serviceType}/track_application`,
-            })
-          }
-
-          if (certificationSubMenus.renewal) {
-            items.push({
-              name: 'Renewal',
-              route: (serviceType) => `/admin/user/${serviceType}/renewal`,
-            })
-          }
-
-          if (certificationSubMenus.reRegistration) {
-            items.push({
-              name: 'Re-Registration',
-              route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
-            })
-          }
-
-          if (certificationSubMenus.additionalQualification) {
-            items.push({
-              name: 'Additional Qualification',
-              route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
-            })
-          }
-
-          return items
-        },
+        children: [
+          {
+            name: 'Registration',
+            route: (serviceType) => `/admin/user/${serviceType}/registration`,
+          },
+          {
+            name: 'Renewal',
+            route: (serviceType) => `/admin/user/${serviceType}/renewal`,
+          },
+          {
+            name: 'Additional Qualification',
+            route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
+          },
+          {
+            name: 'My Applications',
+            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+          },
+        ],
       },
       {
         name: 'CPD Management',
         icon: getIconComponent('BookOpen'),
-        hidden: () => !useEngineeringCertificationStore().visibleMenus.baseMenus.cpdManagement,
         children: [
           {
             name: 'Apply for CPD',
@@ -1219,7 +1183,6 @@ const serviceSpecificMenuItems = {
       {
         name: 'CoGS Management',
         icon: getIconComponent('CreditCard'),
-        hidden: () => !useEngineeringCertificationStore().visibleMenus.baseMenus.cogsManagement,
         children: [
           {
             name: 'Apply for CoGS',
@@ -1231,11 +1194,11 @@ const serviceSpecificMenuItems = {
           },
         ],
       },
+
       {
         name: 'Profile',
         icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/profile`,
-        hidden: () => !useEngineeringCertificationStore().visibleMenus.baseMenus.profile,
       },
     ],
 

@@ -19,17 +19,16 @@
 
         <ApplicationHistoryCard :applications="applications" @show-rejected="showRejectedApplications" />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <DeadlinesList title="Upcoming Deadlines" :deadlines="upcomingDeadlines" />
-        </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <DeadlinesList title="Upcoming Deadlines" :deadlines="upcomingDeadlines" />
+      </div>
 
-        <ApplicationModal v-if="selectedApplications.length" :applications="selectedApplications" :title="modalTitle"
-          @close="closeApplicationsModal" @visit="visitApplication" />
+      <ApplicationModal v-if="selectedApplications.length" :applications="selectedApplications" :title="modalTitle"
+        @close="closeApplicationsModal" @visit="visitApplication" />
 
-        <!-- Pass selectedApplication to the modal -->
-        <CertificateModal v-if="showCertificateModal" :application="selectedApplication"
-          @close="closeCertificateModal" />
-      </template>
+      <!-- Pass selectedApplication to the modal -->
+      <CertificateModal v-if="showCertificateModal" :application="selectedApplication"
+        @close="closeCertificateModal" />
 
       <LoadingSpinner v-if="isLoading" />
     </div>
@@ -52,8 +51,9 @@ import DeadlinesList from './dashboardComponents/DeadlinesLists.vue';
 import ApplicationModal from './dashboardComponents/ApplicationModal.vue';
 import CertificateModal from '../../../common/EPC/EPCCertificateModal.vue';
 import LoadingSpinner from '../../../common/EPC/EPCLoadingSpinner.vue';
-import EmptyDashboardState from './dashboardComponents/EmptyDashboardStates.vue';
-import FirstDashboardState from './dashboardComponents/FirstDashboardStates.vue';
+// Removed Empty State Components
+// import EmptyDashboardState from './dashboardComponents/EmptyDashboardStates.vue';
+// import FirstDashboardState from './dashboardComponents/FirstDashboardStates.vue';
 
 // Store setup
 const authStore = useAuthStore();
