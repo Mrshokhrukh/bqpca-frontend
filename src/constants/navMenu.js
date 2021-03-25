@@ -1163,6 +1163,20 @@ const serviceSpecificMenuItems = {
             })
           }
 
+          if (certificationSubMenus.myApplications) {
+            items.push({
+              name: 'My Applications',
+              route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+            })
+          }
+
+          if (certificationSubMenus.trackApplication) {
+            items.push({
+              name: 'Track Application',
+              route: (serviceType) => `/admin/user/${serviceType}/track_application`,
+            })
+          }
+
           if (certificationSubMenus.renewal) {
             items.push({
               name: 'Renewal',
@@ -1170,17 +1184,17 @@ const serviceSpecificMenuItems = {
             })
           }
 
+          if (certificationSubMenus.reRegistration) {
+            items.push({
+              name: 'Re-Registration',
+              route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
+            })
+          }
+
           if (certificationSubMenus.additionalQualification) {
             items.push({
               name: 'Additional Qualification',
               route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
-            })
-          }
-
-          if (certificationSubMenus.myApplications) {
-            items.push({
-              name: 'My Applications',
-              route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
             })
           }
 
