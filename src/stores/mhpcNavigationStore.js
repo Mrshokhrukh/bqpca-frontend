@@ -1,7 +1,7 @@
 // src/stores/mhpcNavigationStore.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import bmhcServices from '@/services/bmhcservices'
+import apiServices from '@/services/services'
 import { useAuthStore } from '@/stores/authStore'
 
 export const useHealthCertificationStore = defineStore('healthCertification', () => {
@@ -160,7 +160,7 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
     error.value = null
 
     try {
-      const response = await bmhcServices.getMhpcNewApplications()
+      const response = await apiServices.getMhpcNewApplications()
       if (response?.data) {
         applicationDetails.value = response.data
       } else {

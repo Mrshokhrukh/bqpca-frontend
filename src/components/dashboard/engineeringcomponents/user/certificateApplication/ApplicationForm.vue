@@ -1,5 +1,5 @@
 <template>
-  <div class=" mx-auto py-8">
+  <div class="mx-auto py-8">
     <!-- Confirmation Modal -->
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
       <Dialog as="div" class="relative z-10 fixed.inset-0.z-10.w-screen" @close="isConfirmationModalOpen = false">
