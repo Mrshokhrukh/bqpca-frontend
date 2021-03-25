@@ -1,39 +1,28 @@
 <template>
   <div class="bg-gray-50 p-6 min-h-screen">
     <div class="max-w-7xl mx-auto space-y-6">
-      <!-- Loading State -->
+      <ProfileHeader :user-detail="userDetail" :renewal-message="renewalStatus"
+        :qualifications="getPrimaryQualifications" @view-certificate="handleViewCertificate" />
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <StatCard title="CPD Credits" icon="Award" :progress="cpdCredits" :total="50" type="progress" />
+        <CogsStatusCard :expiry-date="licenseExpiryDate" :status="licenseStatus" />
+        <ActivityFeed title="Recent Activities" :activities="recentActivities" />
+      </div>
+
+      <ApplicationHistoryCard :applications="applications" @show-rejected="showRejectedApplications" />
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <DeadlinesList title="Upcoming Deadlines" :deadlines="upcomingDeadlines" />
+      </div>
+
+      <ApplicationModal v-if="selectedApplications.length" :applications="selectedApplications" :title="modalTitle"
+        @close="closeApplicationsModal" @visit="visitApplication" />
+
+      <!-- Pass selectedApplication to the modal -->
+      <CertificateModal v-if="showCertificateModal" :application="selectedApplication"
+        @close="closeCertificateModal" />
+
       <LoadingSpinner v-if="isLoading" />
-
-      <!-- No Applications At All -->
-      <FirstDashboardState v-else-if="hasNoApplications" message="You don't have any applications yet." />
-
-      <!-- Applications Exist, But None Approved -->
-      <EmptyDashboardState v-else-if="!hasApprovedApplications"
-        message="You don't have any approved applications yet. Once approved, you will have access to the dashboard." />
-
-      <!-- Approved Applications Exist -->
-      <template v-else>
-        <ProfileHeader :user-detail="userDetail" :renewal-message="renewalStatus"
-          :qualifications="getPrimaryQualifications" @view-certificate="handleViewCertificate" />
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard title="CPD Credits" icon="Award" :progress="cpdCredits" :total="50" type="progress" />
-          <CogsStatusCard :expiry-date="licenseExpiryDate" :status="licenseStatus" />
-          <ActivityFeed title="Recent Activities" :activities="recentActivities" />
-        </div>
-
-        <ApplicationHistoryCard :applications="applications" @show-rejected="showRejectedApplications" />
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <DeadlinesList title="Upcoming Deadlines" :deadlines="upcomingDeadlines" />
-        </div>
-
-        <ApplicationModal v-if="selectedApplications.length" :applications="selectedApplications" :title="modalTitle"
-          @close="closeApplicationsModal" @visit="visitApplication" />
-
-        <!-- Pass selectedApplication to the modal -->
-        <CertificateModal v-if="showCertificateModal" :application="selectedApplication"
-          @close="closeCertificateModal" />
-      </template>
     </div>
   </div>
 </template>
@@ -54,8 +43,9 @@ import DeadlinesList from './dashboardComponents/DeadlinesLists.vue';
 import ApplicationModal from './dashboardComponents/ApplicationModal.vue';
 import CertificateModal from '../../../common/EPC/EPCCertificateModal.vue';
 import LoadingSpinner from '../../../common/EPC/EPCLoadingSpinner.vue';
-import EmptyDashboardState from './dashboardComponents/EmptyDashboardStates.vue';
-import FirstDashboardState from './dashboardComponents/FirstDashboardStates.vue';
+// Removed Empty State Components
+// import EmptyDashboardState from './dashboardComponents/EmptyDashboardStates.vue';
+// import FirstDashboardState from './dashboardComponents/FirstDashboardStates.vue';
 
 // Store setup
 const authStore = useAuthStore();
@@ -86,18 +76,6 @@ const getPrimaryQualifications = computed(() => {
   return allQualifications.filter(q => q.is_primary_qualification && q.endorsement_decision === 'Approved');
 });
 
-// Computed property to check if user has any approved applications
-const hasApprovedApplications = computed(() => {
-  return applications.value?.some(app =>
-    app.user_qualifications?.some(qualification =>
-      qualification.endorsement_decision === 'Approved'
-    )
-  ) || false; // Default to false if applications.value is null or undefined
-});
-
-const hasNoApplications = computed(() => {
-  return !applications.value || applications.value.length === 0;
-});
 
 // Methods
 const fetchDashboardData = async () => {
