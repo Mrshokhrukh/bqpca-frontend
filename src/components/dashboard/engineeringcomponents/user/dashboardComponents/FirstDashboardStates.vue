@@ -43,7 +43,7 @@ defineProps({
 
 const applyNow = () => {
   if (typeof router.push === 'function') {
-    router.push('/admin/user/engineering/practitioner_reg_and_cert/registration'); // Adjusted to engineering path
+    router.push('/admin/user/engineering_certification/registration'); // Adjusted to engineering path
   } else {
     console.error('router.push is not a function');
   }

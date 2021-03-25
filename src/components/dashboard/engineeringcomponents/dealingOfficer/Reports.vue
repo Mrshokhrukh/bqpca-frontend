@@ -149,7 +149,7 @@ import debounce from 'lodash/debounce';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
-import bmhcServices from '@/services/epcServices';
+import apiServices from '@/services/services'; 
 
 const toast = useToast();
 
@@ -222,37 +222,50 @@ const endIndex = computed(() => Math.min(startIndex.value + ITEMS_PER_PAGE, tota
 // API mapping object for different report types
 const apiMethods = {
   registrations: {
-    fetch: bmhcServices.getEpcNewQualifications,
+    fetch: apiServices.getEpcNewQualifications, 
     transform: (data) => ({
       ...data,
       applicant_name: data.application?.full_name,
-      payment_status: data.is_payment_complete ? 'Paid' : 'Unpaid'
+      payment_status: data.is_payment_complete ? 'Paid' : 'Unpaid',
+      registration_no: data.registration_number 
     })
   },
   renewals: {
-    fetch: bmhcServices.getEpcRenewals,
+    fetch: apiServices.getEpcRenewals, // Using the correct service method
     transform: (data) => ({
       ...data,
-      renewal_id: `REN-${data.id}`
+      renewal_id: `REN-${data.id}`,
+      registration_no: data.user_qualification?.registration_no // Assuming this is the correct nested path
     })
   },
   cpd: {
-    fetch: bmhcServices.getMhpcNewQualifications,
+    fetch: apiServices.getMastersCpdActivity, // Using the correct service method - double check this is the correct endpoint for EPC CPD reports
     transform: (data) => ({
       ...data,
-      status: data.is_cpd_approved ? 'Approved' : 'Pending'
+      title_of_cpd: data.title, // Adjust if the API response field is different
+      credit: data.credit_value, // Adjust if the API response field is different
+      number_of_participants: data.participants_count, // Adjust if the API response field is different
+      from_date: data.start_date, // Adjust if the API response field is different
+      to_date: data.end_date, // Adjust if the API response field is different
+      is_cpd_approved: data.is_approved, // Adjust if the API response field is different
+      status: data.is_approved ? 'Approved' : 'Pending' // Adjust status mapping if needed
     })
   },
   cogs: {
-    fetch: bmhcServices.getEpcCogs,
+    fetch: apiServices.getEpcCogs, // Using the correct service method
     transform: (data) => ({
       ...data,
-      cogs_number: `COGS-${data.registration_no}`
+      cogs_number: `COGS-${data.registration_no}`,
+      registration_no: data.registration_no, // Keeping original registration_no for display
+      full_name: data.application?.full_name, // Assuming applicant name is under 'application'
+      cogs_approved_date: data.approved_date, // Adjust if the API response field is different
+      review_status: data.review_status // Keeping original review_status for display
     })
   }
 };
 
-// Methods
+// Methods - keep the rest of your methods as they are (fetchData, debouncedFetchData, handleSort, handleReportTypeChange, prevPage, nextPage, exportToExcel, exportToPDF, fetchAllData, formatDate, formatCurrency, statusBadge, getNestedValue, statusOptions)
+
 const fetchData = async () => {
   isLoading.value = true;
   error.value = null;
@@ -263,10 +276,23 @@ const fetchData = async () => {
       page_size: ITEMS_PER_PAGE,
       ordering: sortBy.value ? `${sortOrder.value === 'desc' ? '-' : ''}${sortBy.value}` : '',
       search: filters.search,
-      status: filters.status,
+      review_status: filters.status, // Changed 'status' to 'review_status' for backend if needed - adjust as per actual backend filter parameter for status
       ...filters.startDate && { start_date: filters.startDate },
       ...filters.endDate && { end_date: filters.endDate }
     };
+
+    // Adjust status parameter based on report type if needed. Example for CPD status filter:
+    if (activeReport.value === 'cpd' && filters.status) {
+      params.is_cpd_approved = filters.status === 'Approved'; // Assuming backend filters CPD status with is_cpd_approved boolean
+      delete params.review_status; // Remove generic status if CPD uses a specific filter
+    } else if (activeReport.value === 'registrations') {
+        params.application_review_status = filters.status; // Assuming backend filter for registration status
+        delete params.review_status;
+    } else if (activeReport.value === 'renewals') {
+        params.renewal_review_status = filters.status; // Assuming backend filter for renewal status
+        delete params.review_status;
+    }
+
 
     const response = await apiMethods[activeReport.value].fetch(params);
 
@@ -284,10 +310,8 @@ const fetchData = async () => {
   }
 };
 
-// Debounced search
 const debouncedFetchData = debounce(fetchData, 300);
 
-// Event Handlers
 const handleSort = (key) => {
   if (sortBy.value === key) {
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
@@ -321,7 +345,6 @@ const nextPage = () => {
   }
 };
 
-// Export Functions
 const exportToExcel = async () => {
   try {
     isLoading.value = true;
@@ -389,7 +412,6 @@ const exportToPDF = async () => {
   }
 };
 
-// Utility Functions
 const fetchAllData = async () => {
   const allData = [];
   let page = 1;
@@ -401,10 +423,22 @@ const fetchAllData = async () => {
       page_size: 100, // Fetch in larger chunks for export
       ordering: sortBy.value ? `${sortOrder.value === 'desc' ? '-' : ''}${sortBy.value}` : '',
       search: filters.search,
-      status: filters.status,
+      review_status: filters.status, // Changed 'status' to 'review_status' for backend if needed - adjust as per actual backend filter parameter for status
       ...filters.startDate && { start_date: filters.startDate },
       ...filters.endDate && { end_date: filters.endDate }
     };
+
+        // Adjust status parameter based on report type if needed. Example for CPD status filter:
+    if (activeReport.value === 'cpd' && filters.status) {
+      params.is_cpd_approved = filters.status === 'Approved'; // Assuming backend filters CPD status with is_cpd_approved boolean
+      delete params.review_status; // Remove generic status if CPD uses a specific filter
+    } else if (activeReport.value === 'registrations') {
+        params.application_review_status = filters.status; // Assuming backend filter for registration status
+        delete params.review_status;
+    } else if (activeReport.value === 'renewals') {
+        params.renewal_review_status = filters.status; // Assuming backend filter for renewal status
+        delete params.review_status;
+    }
 
     try {
       const response = await apiMethods[activeReport.value].fetch(params);
@@ -479,6 +513,7 @@ onMounted(() => {
   fetchData();
 });
 </script>
+
 
 <style scoped>
 .filter-label {
