@@ -41,7 +41,7 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'vue-router';
-import apiservice from '@/services/services';
+import apiService from '@/services/services'; // Changed import to apiService - assuming the provided apiService.js is placed here
 
 // Import child components
 import FormHeader from './cpdProviderApplicationComponents/FormHeader.vue';
@@ -206,6 +206,7 @@ const handleCertificateUpload = (event) => {
   } else {
     alert('Please upload a PDF file less than 5MB');
     event.target.value = '';
+    event.target.value = '';
   }
 };
 const handleCourseDocumentUpload = (event) => {
@@ -246,9 +247,11 @@ const fetchResourcePersonDetails = async (person) => {
 
   try {
     loading.value = true;
-    const response = await apiservice.getMhpcApplicationsByCid('');
-    if (response.data && Array.isArray(response.data)) {
-      const matchingApplication = response.data.find(app => app.registration_no === person.regNo);
+    // Use getMhpcFullApplicationListByCid to fetch all applications and then filter
+    const response = await apiService.getMhpcFullApplicationListByCid('');
+    if (response.data && response.data.results && Array.isArray(response.data.results)) {
+      // Find the application by registration number
+      const matchingApplication = response.data.results.find(app => app.registration_no === person.regNo);
       person.name = matchingApplication ? matchingApplication.full_name || 'Unknown' : '';
     } else {
       const manualName = prompt(`Please enter name for resource person with registration number ${person.regNo}:`);
@@ -309,9 +312,11 @@ const fetchParticipantName = async (participant) => {
 
   try {
     loading.value = true;
-    const response = await apiservice.getMhpcApplicationsByCid('');
-    if (response.data && Array.isArray(response.data)) {
-      const matchingApplication = response.data.find(app => app.registration_no === participant.regNo);
+    // Use getMhpcFullApplicationListByCid to fetch all applications and then filter
+    const response = await apiService.getMhpcFullApplicationListByCid('');
+    if (response.data && response.data.results && Array.isArray(response.data.results)) {
+      // Find the application by registration number
+      const matchingApplication = response.data.results.find(app => app.registration_no === participant.regNo);
       participant.name = matchingApplication ? matchingApplication.full_name || 'Unknown' : '';
     } else {
       const manualName = prompt(`Please enter name for participant with registration number ${participant.regNo}:`);
@@ -470,7 +475,7 @@ const saveDraft = async () => {
     loading.value = true;
     validationErrors.value = [];
     const formData = prepareFormData(true);
-    await apiservice.createEngineeringCpdTask(formData);
+    await apiService.createMhpcCpdTask(formData); // Changed to createMhpcCpdTask
     successMessage.value = 'Draft saved successfully!';
     setTimeout(() => { successMessage.value = ''; }, 3000);
 
@@ -520,11 +525,11 @@ const confirmSubmit = async () => {
     loading.value = true;
     validationErrors.value = [];
     const formData = prepareFormData(false);
-    const response = await apiservice.createEngineeringCpdTask(formData);
+    const response = await apiService.createMhpcCpdTask(formData); // Changed to createMhpcCpdTask
     console.log('Form submitted successfully', response.data);
     successMessage.value = 'CPD application submitted successfully!';
     setTimeout(() => {
-      router.push('/engineering_certification/track_cpd_applications');
+      router.push('/health_certification/track_cpd_applications'); // Make sure this path is correct for MHPC
     }, 2000);
 
   } catch (error) {
@@ -561,14 +566,14 @@ const confirmSubmit = async () => {
 };
 
 const cancelForm = () => {
-  router.push('/engineering_certification/dashboard');
+  router.push('/health_certification/dashboard'); // Make sure this path is correct for MHPC
 };
 
 const fetchUserRegistrations = async () => {
   try {
     loading.value = true;
-    // Removed CID-specific fetching, as it's not relevant anymore
-    const allApplicationsResponse = await apiservice.getEngineeringNewApplications();
+    // Use getMhpcNewApplications to fetch MHPC applications
+    const allApplicationsResponse = await apiService.getMhpcNewApplications(); // Changed to getMhpcNewApplications
 
     if (allApplicationsResponse.data && allApplicationsResponse.data.results &&
       Array.isArray(allApplicationsResponse.data.results)) {
@@ -593,22 +598,22 @@ const loadDropdownOptions = async () => {
   try {
     loading.value = true;
 
-    const agencyResponse = await apiservice.getProvidingAgency();
+    const agencyResponse = await apiService.getProvidingAgency();
     agencyOptions.value = agencyResponse.data?.results.map(agency => ({ text: agency.name, value: agency.id })) || [];
 
-    const reasonResponse = await apiservice.getReasonForCoducting();
+    const reasonResponse = await apiService.getReasonForCoducting();
     reasonOptions.value = reasonResponse.data?.results.map(reason => ({ text: reason.name, value: reason.id })) || [];
 
-    const cpdTypeResponse = await apiservice.getMastersCmeActivities();
+    const cpdTypeResponse = await apiService.getMastersCmeActivities();
     cpdTypeOptions.value = cpdTypeResponse.data?.results.map(type => ({ text: type.cme_activity_name, value: type.id })) || [];
 
-    const methodologyResponse = await apiservice.getMastersCmeMethodologies();
+    const methodologyResponse = await apiService.getMastersCmeMethodologies();
     methodologyOptions.value = methodologyResponse.data?.results.map(method => ({ text: method.methodology_name, value: method.id })) || [];
 
-    const categoriesResponse = await apiservice.getMastersParticipationCategories();
+    const categoriesResponse = await apiService.getMastersParticipationCategories();
     participationCategoryOptions.value = categoriesResponse.data?.results.map(category => ({ text: category.participation_category_name, value: category.id })) || [];
 
-    const subcategoriesResponse = await apiservice.getMastersParticipationSubCategories();
+    const subcategoriesResponse = await apiService.getMastersParticipationSubCategories();
     participantSubcategoryOptions.value = subcategoriesResponse.data?.results.map(subcategory => ({
       text: subcategory.participation_sub_category_name,
       value: subcategory.id,
