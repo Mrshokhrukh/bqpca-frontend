@@ -1,12 +1,17 @@
 <template>
   <div class="bg-gray-50 p-6 min-h-screen">
     <div class="max-w-7xl mx-auto space-y-6">
-      <!-- Empty state when no approved applications -->
-      <FirstDashboardState v-if="hasNoApplications && !isLoading"
-        message="You don't have any approved applications yet. Once approved, you will have access to the dashboard." />
-      <EmptyDashboardState v-else-if="!hasApprovedApplications && !isLoading"
+      <!-- Loading State -->
+      <LoadingSpinner v-if="isLoading" />
+
+      <!-- No Applications At All -->
+      <FirstDashboardState v-else-if="hasNoApplications" message="You don't have any applications yet." />
+
+      <!-- Applications Exist, But None Approved -->
+      <EmptyDashboardState v-else-if="!hasApprovedApplications"
         message="You don't have any approved applications yet. Once approved, you will have access to the dashboard." />
 
+      <!-- Approved Applications Exist -->
       <template v-else>
         <ProfileHeader :user-detail="userDetail" :renewal-message="renewalStatus"
           :qualifications="getPrimaryQualifications" @view-certificate="handleViewCertificate" />
@@ -29,14 +34,12 @@
         <CertificateModal v-if="showCertificateModal" :application="selectedApplication"
           @close="closeCertificateModal" />
       </template>
-
-      <LoadingSpinner v-if="isLoading" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import { storeToRefs } from 'pinia';
 import { useEpcDashboardStore } from '@/stores/epcUserDashboardStore';
@@ -79,31 +82,21 @@ const {
 // Computed property to get primary qualifications for the ProfileHeader
 const getPrimaryQualifications = computed(() => {
   if (!applications.value) return [];
-
-  // Flatten all qualifications from all applications into a single array
   const allQualifications = applications.value.flatMap(app => app.user_qualifications || []);
-
-  // Filter and return
   return allQualifications.filter(q => q.is_primary_qualification && q.endorsement_decision === 'Approved');
 });
 
 // Computed property to check if user has any approved applications
 const hasApprovedApplications = computed(() => {
-  if (!applications.value || applications.value.length === 0) return false;
-
-  return applications.value.some(app => {
-    // Check if application has user_qualifications array
-    if (!app.user_qualifications || !Array.isArray(app.user_qualifications)) return false;
-
-    // Check if any qualification meets the criteria
-    return app.user_qualifications.some(qualification =>
+  return applications.value?.some(app =>
+    app.user_qualifications?.some(qualification =>
       qualification.endorsement_decision === 'Approved'
-    );
-  });
+    )
+  ) || false; // Default to false if applications.value is null or undefined
 });
 
 const hasNoApplications = computed(() => {
-  return applications.value?.length === 0; // Check if there are no applications
+  return !applications.value || applications.value.length === 0;
 });
 
 // Methods
@@ -169,24 +162,4 @@ const closeCertificateModal = () => {
 
 onMounted(fetchDashboardData);
 
-// Watch for changes in applications array
-watch(applications, (newApplications) => {
-  // Check for approved applications
-  const approvedApplication = newApplications.find(app => app.status === 'Approved');
-
-  if (approvedApplication) {
-    // Enable functionality for approved applications
-    console.log('User has approved applications');
-  } else {
-    // Disable functionality for approved applications
-    console.error('User has no approved applications');
-  }
-}, { deep: true });
-
-// Watch for changes in userDetail
-watch(userDetail, (newUserDetails) => {
-  if (newUserDetails && newUserDetails.username) {
-    fetchDashboardData();
-  }
-}, { deep: true });
 </script>
