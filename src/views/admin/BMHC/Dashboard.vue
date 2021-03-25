@@ -42,7 +42,7 @@ import { useAuthStore } from '@/stores/authStore';
 // BMHC Component Imports
 import BmhAdminDashboard from '@/components/dashboard/bhmccomponents/admin/BmhAdminDashboard.vue';
 import BmhUserManagement from '@/components/dashboard/bhmccomponents/admin/BmhUserManagement.vue';
-import BmhUserDashboard from '@/components/dashboard/bhmccomponents/user/UserMhpcDashboard.vue';
+import BmhUserDashboard from '@/components/dashboard/bhmccomponents/user/UserBmhcDashboard.vue';
 import BmhDealingOfficerDashboard from '@/components/dashboard/bhmccomponents/dealingOfficer/DashboardComponent.vue';
 import BmhInstitutionsDashboard from '@/components/dashboard/bhmccomponents/institutions/InstitutionsDashboard.vue';
 import BmhSuperAdminDashboard from '@/components/dashboard/bhmccomponents/superAdmin/BmhSuperAdminDashboard.vue';

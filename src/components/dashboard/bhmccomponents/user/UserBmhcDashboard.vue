@@ -7,7 +7,7 @@
       <EmptyDashboardState v-else-if="!hasApprovedApplications && !isLoading"
         message="You don't have any approved applications yet.  Once approved, you will have access to the dashboard." />
 
-        
+
       <template v-else >
         <ProfileHeader :user-detail="userDetail" :renewal-message="renewalStatus"
           :qualifications="getPrimaryQualifications" @view-certificate="handleViewCertificate" />
