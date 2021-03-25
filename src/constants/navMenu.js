@@ -94,6 +94,7 @@ const iconMap = {
 import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
 import { useAuthStore } from '@/stores/authStore'
 import { useInstitutionStore } from '@/stores/institutionNavigationStore'
+import { useEngineeringCertificationStore } from '@/stores/engineeringNavigationStore'
 
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
@@ -1143,32 +1144,53 @@ const serviceSpecificMenuItems = {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
+        hidden: () => !useEngineeringCertificationStore().visibleMenus.baseMenus.dashboard,
       },
       {
         name: 'Certification',
         icon: getIconComponent('ClipboardCheck'),
-        children: [
-          {
-            name: 'Registration',
-            route: (serviceType) => `/admin/user/${serviceType}/registration`,
-          },
-          {
-            name: 'Renewal',
-            route: (serviceType) => `/admin/user/${serviceType}/renewal`,
-          },
-          {
-            name: 'Additional Qualification',
-            route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
-          },
-          {
-            name: 'My Applications',
-            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
-          },
-        ],
+        hidden: () => !useEngineeringCertificationStore().visibleMenus.baseMenus.certification,
+        children: () => {
+          const store = useEngineeringCertificationStore()
+          const { certificationSubMenus } = store.visibleMenus
+
+          const items = []
+
+          if (certificationSubMenus.registration) {
+            items.push({
+              name: 'Registration',
+              route: (serviceType) => `/admin/user/${serviceType}/registration`,
+            })
+          }
+
+          if (certificationSubMenus.renewal) {
+            items.push({
+              name: 'Renewal',
+              route: (serviceType) => `/admin/user/${serviceType}/renewal`,
+            })
+          }
+
+          if (certificationSubMenus.additionalQualification) {
+            items.push({
+              name: 'Additional Qualification',
+              route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
+            })
+          }
+
+          if (certificationSubMenus.myApplications) {
+            items.push({
+              name: 'My Applications',
+              route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+            })
+          }
+
+          return items
+        },
       },
       {
         name: 'CPD Management',
         icon: getIconComponent('BookOpen'),
+        hidden: () => !useEngineeringCertificationStore().visibleMenus.baseMenus.cpdManagement,
         children: [
           {
             name: 'Apply for CPD',
@@ -1183,6 +1205,7 @@ const serviceSpecificMenuItems = {
       {
         name: 'CoGS Management',
         icon: getIconComponent('CreditCard'),
+        hidden: () => !useEngineeringCertificationStore().visibleMenus.baseMenus.cogsManagement,
         children: [
           {
             name: 'Apply for CoGS',
@@ -1194,11 +1217,11 @@ const serviceSpecificMenuItems = {
           },
         ],
       },
-      
       {
         name: 'Profile',
         icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/profile`,
+        hidden: () => !useEngineeringCertificationStore().visibleMenus.baseMenus.profile,
       },
     ],
 
@@ -1229,7 +1252,6 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('Award'),
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cogs`,
           },
-
         ],
       },
       {
@@ -1267,7 +1289,6 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/capa_management`,
           },
 
-
           {
             name: 'All Institute Profile',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/all_institute_profile`,
@@ -1286,7 +1307,8 @@ const serviceSpecificMenuItems = {
           },
           {
             name: 'Teaching Institute Renewals',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_institute_renewals`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/teaching_institute_renewals`,
           },
           {
             name: 'Reports',
