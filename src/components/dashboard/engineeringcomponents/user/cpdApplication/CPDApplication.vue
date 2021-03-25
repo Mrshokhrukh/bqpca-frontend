@@ -145,7 +145,7 @@
               <label for="attachment" class="text-sm font-medium text-gray-700">Supporting Documents <span class="text-red-500 ml-1">*</span></label>
               <div class="relative">
                 <input id="attachment" type="file" @change="handleFileUpload"
-                  class="w-full px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 hover:border-indigo-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-indigo-100 file:text-indigo-700 hover:file:bg-indigo-200" 
+                  class="w-full px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 hover:border-indigo-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-indigo-100 file:text-indigo-700 hover:file:bg-indigo-200"
                   required/>
                 <p class="mt-2 text-xs text-gray-500 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
@@ -153,7 +153,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  PDF, DOC, JPG, PNG (Max: 2MB)
+                  PDF, DOC, (Max: 2MB)
                 </p>
               </div>
               <span v-if="errors.attachment" class="text-sm text-red-500 block">{{ errors.attachment }}</span>
@@ -178,10 +178,10 @@
 </template>
 
 <script setup>
-import { reactive, onMounted, ref, computed } from 'vue';
+import { reactive, onMounted, ref, } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useAuthStore } from '@/stores/authStore';
-import epcServices from '@/services/epcServices';
+import apiServices from '@/services/services';
 import { useRouter } from 'vue-router';
 
 const toast = useToast();
@@ -235,7 +235,7 @@ const validateForm = () => {
 
 const fetchRegistrationNumber = async (cid) => {
   try {
-    const response = await epcServices.getApplicationWithCid(cid);
+    const response = await apiServices.getApplicationWithCid(cid);
     if (response.data && response.data.length > 0) {
       return response.data[0].id;
     }
@@ -274,7 +274,7 @@ const handleSubmit = async () => {
   }
 
   try {
-    const response = await epcServices.createEpcCpdTask(formData);
+    const response = await apiServices.createEpcCpdTask(formData);
 
     if (response.status >= 200 && response.status < 300) {
       toast.success('CPD application submitted successfully!');
@@ -292,7 +292,7 @@ const handleSubmit = async () => {
   } catch (error) {
     toast.error('Submission failed: ' + (error.response?.data?.message || error.message));
     console.error("Error submitting form:", error);
-    
+
     if (error.response?.data?.errors) {
       Object.entries(error.response.data.errors).forEach(([key, value]) => {
         errors[key] = Array.isArray(value) ? value[0] : value;
@@ -331,68 +331,81 @@ const handleFileUpload = (event) => {
 const fetchMasterData = async () => {
   try {
     const [
-      learningMethodsResponse, 
-      methodologiesResponse, 
-      providingAgenciesResponse, 
+      learningMethodsResponse,
+      methodologiesResponse,
+      providingAgenciesResponse,
       reasonsResponse
     ] = await Promise.all([
-      epcServices.getEpcCpdTaskLearningMethods(),
-      epcServices.getEpcCpdTaskMethodologies(),
-      epcServices.getEpcCpdProvidingAgencies(),
-      epcServices.getEpcCpdReasonsForConducting()
+      apiServices.getEpcCpdTaskLearningMethods(),
+      apiServices.getEpcCpdTaskMethodologies(),
+      apiServices.getEpcCpdProvidingAgencies(),
+      apiServices.getEpcCpdReasonsForConducting()
     ]);
 
-    learningMethods.value = learningMethodsResponse.data.map(item => ({
-      id: item.id,
-      name: item.name || item.description || `Learning Method ${item.id}`
-    }));
-    
-    methodologies.value = methodologiesResponse.data.map(item => ({
-      id: item.id,
-      name: item.name || item.description || `Methodology ${item.id}`
-    }));
-    
-    providingAgencies.value = providingAgenciesResponse.data.map(item => ({
-      id: item.id,
-      name: item.name || item.agency_name || `Agency ${item.id}`
-    }));
-    
-    reasonsForConducting.value = reasonsResponse.data.map(item => ({
-      id: item.id,
-      name: item.name || item.reason || `Reason ${item.id}`
-    }));
+    if (learningMethodsResponse && learningMethodsResponse.data && Array.isArray(learningMethodsResponse.data.results)) { // Access .data.results
+      learningMethods.value = learningMethodsResponse.data.results.map(item => ({ // Map over .data.results
+        id: item.id,
+        name: item.name || item.description || `Learning Method ${item.id}`
+      }));
+    } else {
+      console.error("Error: learningMethodsResponse.data.results is not an array or is missing. Falling back to default data.", learningMethodsResponse);
+      learningMethods.value = [
+        { id: 1, name: 'Workshop' },
+        { id: 2, name: 'Seminar' },
+        { id: 3, name: 'Online Course' },
+        { id: 4, name: 'Conference' }
+      ];
+    }
+
+    if (methodologiesResponse && methodologiesResponse.data && Array.isArray(methodologiesResponse.data.results)) { // Access .data.results
+      methodologies.value = methodologiesResponse.data.results.map(item => ({ // Map over .data.results
+        id: item.id,
+        name: item.name || item.description || `Methodology ${item.id}`
+      }));
+    } else {
+      console.error("Error: methodologiesResponse.data.results is not an array or is missing. Falling back to default data.", methodologiesResponse);
+      methodologies.value = [
+        { id: 1, name: 'Lecture' },
+        { id: 2, name: 'Hands-on Practice' },
+        { id: 3, name: 'Case Study' },
+        { id: 4, name: 'Group Discussion' }
+      ];
+    }
+
+    if (providingAgenciesResponse && providingAgenciesResponse.data && Array.isArray(providingAgenciesResponse.data.results)) { // Access .data.results
+      providingAgencies.value = providingAgenciesResponse.data.results.map(item => ({ // Map over .data.results
+        id: item.id,
+        name: item.name || item.agency_name || `Agency ${item.id}`
+      }));
+    } else {
+      console.error("Error: providingAgenciesResponse.data.results is not an array or is missing. Falling back to default data.", providingAgenciesResponse);
+      providingAgencies.value = [
+        { id: 1, name: 'Engineering Council' },
+        { id: 2, name: 'Professional Association' },
+        { id: 3, name: 'Training Institute' },
+        { id: 4, name: 'University' }
+      ];
+    }
+
+    if (reasonsResponse && reasonsResponse.data && Array.isArray(reasonsResponse.data.results)) { // Access .data.results
+      reasonsForConducting.value = reasonsResponse.data.results.map(item => ({ // Map over .data.results
+        id: item.id,
+        name: item.name || item.reason || `Reason ${item.id}`
+      }));
+    } else {
+      console.error("Error: reasonsResponse.data.results is not an array or is missing. Falling back to default data.", reasonsResponse);
+      reasonsForConducting.value = [
+        { id: 1, name: 'Professional Development' },
+        { id: 2, name: 'License Renewal' },
+        { id: 3, name: 'Skill Enhancement' },
+        { id: 4, name: 'Knowledge Update' }
+      ];
+    }
+
   } catch (error) {
     toast.error('Failed to fetch master data: ' + error.message);
     console.error('Error fetching master data:', error);
-    
-    // Fallback data if API fails
-    learningMethods.value = [
-      { id: 1, name: 'Workshop' },
-      { id: 2, name: 'Seminar' },
-      { id: 3, name: 'Online Course' },
-      { id: 4, name: 'Conference' }
-    ];
-    
-    methodologies.value = [
-      { id: 1, name: 'Lecture' },
-      { id: 2, name: 'Hands-on Practice' },
-      { id: 3, name: 'Case Study' },
-      { id: 4, name: 'Group Discussion' }
-    ];
-    
-    providingAgencies.value = [
-      { id: 1, name: 'Engineering Council' },
-      { id: 2, name: 'Professional Association' },
-      { id: 3, name: 'Training Institute' },
-      { id: 4, name: 'University' }
-    ];
-    
-    reasonsForConducting.value = [
-      { id: 1, name: 'Professional Development' },
-      { id: 2, name: 'License Renewal' },
-      { id: 3, name: 'Skill Enhancement' },
-      { id: 4, name: 'Knowledge Update' }
-    ];
+    // Fallback data is handled within each if/else block now.
   }
 };
 
@@ -407,7 +420,7 @@ onMounted(async () => {
       form.registration_no = registrationNumber;
     }
   }
-  
+
   await fetchMasterData();
 });
 </script>

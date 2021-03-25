@@ -297,7 +297,7 @@ const fetchUsers = async () => {
   loading.value = true;
   try {
     const response = await apiServices.getAllUsers();
-    records.value = response.data.results.filter((user) => user.role === 'user' && user.service_type === 'health_certification');
+    records.value = response.data.results.filter((user) => user.role === 'user' && user.service_type === 'engineering_certification');
     loading.value = false;
   } catch (error) {
     console.error("Error fetching users:", error);

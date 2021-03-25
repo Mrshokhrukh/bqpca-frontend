@@ -397,7 +397,7 @@
 <script setup>
 import { ref, reactive, onMounted, watch, computed } from 'vue';
 import { useToast } from 'vue-toastification';
-import apiService from '@/services/services';
+import apiServices from '@/services/services'; // Corrected import: using epcServices
 import { useAuthStore } from '@/stores/authStore';
 import {
   Dialog,
@@ -458,7 +458,7 @@ const isSubmitting = ref(false); //Submitting state
 const fetchRegistrationNumber = async (cid) => {
   isLoading.value = true;
   try {
-    const response = await apiService.getMhpcApplicationsByCid(cid);
+    const response = await apiServices.getEpcApplicationsByCid(cid); // Corrected service call
     if (response.data && response.data.length > 0) {
       return response.data[0].registration_no;
     }
@@ -476,11 +476,28 @@ const fetchRegistrationNumber = async (cid) => {
 const fetchMasterData = async () => {
   isLoading.value = true;
   try {
-    const agenciesResponse = await apiService.getEpcCogsAgencies();
-    agencyOptions.value = agenciesResponse.data.results;
+    const agenciesResponse = await apiServices.getMastersCogsAgencies(); // Corrected service call and function name
+    if (agenciesResponse && agenciesResponse.data && Array.isArray(agenciesResponse.data.results)) { // Pagination handling
+      agencyOptions.value = agenciesResponse.data.results.map(item => ({
+        id: item.id,
+        name: item.agency_name || item.name || `Agency ${item.id}` // Use agency_name or name from response
+      }));
+    } else {
+      console.error("Error: agenciesResponse.data.results is not an array or is missing. Falling back to default agencies.", agenciesResponse);
+      agencyOptions.value = [ // Fallback agencies
+        { id: 1, name: 'Agency A' },
+        { id: 2, name: 'Agency B' },
+        { id: 3, name: 'Agency C' }
+      ];
+    }
   } catch (error) {
     toast.error("Failed to fetch master data.  Please check your network connection and try again later.");
     console.error("Error fetching master data:", error);
+    agencyOptions.value = [ // Fallback agencies in case of API error
+      { id: 1, name: 'Agency X' },
+      { id: 2, name: 'Agency Y' },
+      { id: 3, name: 'Agency Z' }
+    ];
     // Consider a fallback or retry mechanism here
   } finally {
     isLoading.value = false;
@@ -606,7 +623,7 @@ const submitForm = async () => {
     };
 
     try {
-      const response = await apiService.createEpcCogs(requestData);
+      const response = await apiServices.createEpcCogs(requestData); // Corrected service call
 
       if (response.status === 201) {
         toast.success('Application submitted successfully! You will receive an email notification for payment.');
