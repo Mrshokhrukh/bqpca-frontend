@@ -9,11 +9,11 @@
             'bg-blue-50 border-l-4 border-blue-500'
       ]">
         <div :class="[
-          'flex-shrink-0 w-6 h-6',
-          notification.type === 'success' ? 'text-green-500' :
-            notification.type === 'error' ? 'text-red-500' :
-              'text-blue-500'
-        ]">
+        'flex-shrink-0 w-6 h-6',
+        notification.type === 'success' ? 'text-green-500' :
+          notification.type === 'error' ? 'text-red-500' :
+            'text-blue-500'
+      ]">
           <svg v-if="notification.type === 'success'" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -29,19 +29,19 @@
         </div>
         <div class="ml-3">
           <h3 :class="[
-            'text-sm font-medium',
-            notification.type === 'success' ? 'text-green-800' :
-              notification.type === 'error' ? 'text-red-800' :
-                'text-blue-800'
-          ]">
+        'text-sm font-medium',
+        notification.type === 'success' ? 'text-green-800' :
+          notification.type === 'error' ? 'text-red-800' :
+            'text-blue-800'
+      ]">
             {{ notification.title }}
           </h3>
           <p :class="[
-            'text-sm mt-1',
-            notification.type === 'success' ? 'text-green-700' :
-              notification.type === 'error' ? 'text-red-700' :
-                'text-blue-700'
-          ]">
+        'text-sm mt-1',
+        notification.type === 'success' ? 'text-green-700' :
+          notification.type === 'error' ? 'text-red-700' :
+            'text-blue-700'
+      ]">
             {{ notification.message }}
           </p>
         </div>
@@ -112,8 +112,8 @@
         <h3 class="mt-2 text-base font-medium text-gray-900">No applications found</h3>
         <p class="mt-1 text-sm text-gray-500">
           {{ applications.length > 0
-            ? 'No applications match your current filters.'
-            : 'No CPD applications have been submitted for review.' }}
+        ? 'No applications match your current filters.'
+        : 'No CPD applications have been submitted for review.' }}
         </p>
       </div>
 
@@ -175,7 +175,7 @@
             <div>
               <p class="text-sm text-gray-700">
                 Showing <span class="font-medium">{{ paginationStart + 1 }}</span> to <span class="font-medium">{{
-                  paginationEnd }}</span> of <span class="font-medium">{{ filteredApplications.length }}</span> results
+        paginationEnd }}</span> of <span class="font-medium">{{ filteredApplications.length }}</span> results
               </p>
             </div>
             <div class="flex">
@@ -360,7 +360,7 @@ const saveApplication = async (updatedApp) => {
     loading.value = true;
 
     // Changed to use the CPD Task API endpoint
-    await apiServices.patchEpcCpdTask(updatedApp.id, {
+    await apiServices.patchMhpcCpdTask(updatedApp.id, {
       credit: updatedApp.cpdCredits
     });
 
@@ -408,7 +408,7 @@ const approveApplication = async (applicationData) => {
       };
 
       // Update the application status in the database
-      await apiServices.patchEpcCpdTask(updatedApplication.id, patchData);
+      await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
 
       showNotification('success', 'Application Approved', 'The CPD application has been approved successfully.');
       closeViewModal();
@@ -445,7 +445,7 @@ const approveApplication = async (applicationData) => {
         };
 
         // Send the PATCH request to update the CPD task in the database
-        await apiServices.patchEpcCpdTask(updatedApplication.id, patchData);
+        await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
 
         // Update the application data in the component's state
         const appIndex = applications.value.findIndex(app => app.id === updatedApplication.id);
@@ -466,7 +466,7 @@ const approveApplication = async (applicationData) => {
           review_status: 'Approved'
         };
 
-        await apiServices.patchEpcCpdTask(updatedApplication.id, patchData);
+        await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
       }
     } else {
       // If there are no participants, directly update the application status
@@ -474,7 +474,7 @@ const approveApplication = async (applicationData) => {
         review_status: 'Approved'
       };
 
-      await apiServices.patchEpcCpdTask(updatedApplication.id, patchData);
+      await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
     }
 
     showNotification('success', 'Application Approved', 'The CPD application has been approved successfully.');
@@ -520,7 +520,7 @@ const rejectApplication = async (rejectionData) => {
       };
 
       // Update the application status in the database
-      await apiServices.patchEpcCpdTask(updatedApplication.id, patchData);
+      await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
 
       showNotification('success', 'Application Rejected', 'The CPD application has been rejected.');
       closeViewModal();
@@ -558,7 +558,7 @@ const rejectApplication = async (rejectionData) => {
         };
 
         // Send the PATCH request to update the CPD task in the database
-        await apiServices.patchEpcCpdTask(updatedApplication.id, patchData);
+        await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
 
         // Update the application data in the component's state
         const appIndex = applications.value.findIndex(app => app.id === updatedApplication.id);
@@ -580,7 +580,7 @@ const rejectApplication = async (rejectionData) => {
           review_remarks: updatedApplication.remarks || ''
         };
 
-        await apiServices.patchEpcCpdTask(updatedApplication.id, patchData);
+        await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
       }
     } else {
       // If there are no participants, directly update the application status
@@ -589,7 +589,7 @@ const rejectApplication = async (rejectionData) => {
         review_remarks: updatedApplication.remarks || ''
       };
 
-      await apiServices.patchEpcCpdTask(updatedApplication.id, patchData);
+      await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
     }
 
     showNotification('success', 'Application Rejected', 'The CPD application has been rejected.');
@@ -612,7 +612,7 @@ const fetchApplications = async () => {
   try {
     loading.value = true;
     // Changed to use the CPD Task API endpoint
-    const response = await apiServices.patchEpcCpdTask();
+    const response = await apiServices.getMhpcCpdTask();
 
     if (response.data && response.data.results && Array.isArray(response.data.results)) {
       processApiResponse(response.data.results);

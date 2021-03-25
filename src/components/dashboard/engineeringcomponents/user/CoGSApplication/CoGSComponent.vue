@@ -506,13 +506,13 @@ const fetchMasterData = async () => {
 
 onMounted(async () => {
   if (authStore.user) {
+    // Prefill form fields from authStore.user
     form.cid_no = authStore.user.cid;
-    form.full_name = authStore.user.middle_name
-      ? `${authStore.user.first_name} ${authStore.user.middle_name} ${authStore.user.last_name}`
-      : `${authStore.user.first_name} ${authStore.user.last_name}`;
+    form.full_name = authStore.user.fullName; // Use fullName getter from authStore
     form.gender = authStore.user.gender;
-    form.user_contact_number = authStore.user.contact_number;
-    form.user_email = authStore.user.email;
+    // contact_number and email_address are for supervisor, not user.
+    // If you want to prefill user's contact and email for recipient when "Self" is selected,
+    // it's handled in the updateRecipientDetails function and watch effect.
 
     const registrationNumber = await fetchRegistrationNumber(form.cid_no);
     if (registrationNumber) {
@@ -607,8 +607,8 @@ const submitForm = async () => {
       contact_number: form.contact_number, // Supervisor's contact
       email_address: form.email_address, // Supervisor's email
       recipient_name: isRecipientSelf.value ? form.full_name : form.recipient_name,
-      recipient_contact_number: isRecipientSelf.value ? form.user_contact_number : form.recipient_contact_number,
-      recipient_email: isRecipientSelf.value ? form.user_email : form.recipient_email,
+      recipient_contact_number: isRecipientSelf.value ? authStore.user.contactNumber : form.recipient_contact_number, // Use contactNumber getter
+      recipient_email: isRecipientSelf.value ? authStore.user.email : form.recipient_email, // Use email getter
       address: isRecipientSelf.value ? '' : form.address,
       po_box: isRecipientSelf.value ? '' : form.po_box,
       zip_code: isRecipientSelf.value ? '' : form.zip_code,
