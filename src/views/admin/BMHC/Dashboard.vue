@@ -133,7 +133,8 @@ import MyCapa from '@/components/dashboard/bhmccomponents/institutions/MyCapa.vu
 import StaffManagement from '@/components/dashboard/bhmccomponents/institutions/StaffManagement.vue';
 import CourseManagement from '@/components/dashboard/bhmccomponents/institutions/CourseManagement.vue';
 import DepartmentManagement from '@/components/dashboard/bhmccomponents/institutions/DepartmentManagement.vue';
-import CPDapprovedAddParticipants from '@/components/dashboard/bhmccomponents/cpdCmeProvider/CPDapprovedAddParticipants.vue';
+import CPDapprovedAddParticipants from '@/components/dashboard/bhmccomponents/cpdCmeProvider/Participantscomponents/CPDapprovedAddParticipants.vue';
+
 const { role } = useAuthStore();
 const route = useRoute();
 
