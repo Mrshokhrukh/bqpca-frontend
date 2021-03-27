@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-12">
-    <div class="mx-auto px-4">
+    <div class="max-w-7xl mx-auto px-4">
       <!-- Enhanced Header with Animation -->
       <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
         <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
@@ -21,7 +21,7 @@
         <input type="hidden" v-model="form.gender" />
 
         <!-- Supervisor Details Section -->
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b">
             <div class="flex items-center space-x-3">
               <div
@@ -130,7 +130,7 @@
         </div>
 
         <!-- Recipient Details Section -->
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b">
             <div class="flex items-center space-x-3">
               <div
@@ -230,7 +230,7 @@
         </div>
 
         <!-- Declaration Section -->
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b">
             <div class="flex items-center space-x-3">
               <div
@@ -267,10 +267,9 @@
             class="px-6 py-3 rounded-xl text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
             Cancel
           </button>
-          <button type="submit" :disabled="!form.declaration || isSubmitting"
+          <button type="submit" :disabled="!form.declaration"
             class="px-6 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
-            <span v-if="isSubmitting">Submitting...</span>
-            <span v-else>Submit Application</span>
+            Submit Application
           </button>
         </div>
       </form>
@@ -323,73 +322,6 @@
           </div>
         </Dialog>
       </TransitionRoot>
-
-      <!-- Payment Section -->
-      <TransitionRoot as="template" :show="showPaymentSection">
-        <div class="mt-8 bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-8">
-            <div class="flex items-center space-x-3">
-              <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <CreditCardIcon class="h-6 w-6 text-green-600" />
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-gray-900">Payment Required</h3>
-                <p class="mt-1 text-gray-600">Complete your payment to proceed</p>
-              </div>
-            </div>
-          </div>
-          <div class="p-8">
-            <p class="text-gray-600 mb-6">
-              An email notification with payment instructions has been sent to your registered email address.
-            </p>
-            <button @click="simulatePayment"
-              class="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-              <CreditCardIcon class="h-5 w-5 mr-2" />
-              Proceed to Payment
-            </button>
-          </div>
-        </div>
-      </TransitionRoot>
-
-      <!-- Certificate Section -->
-      <TransitionRoot as="template" :show="showCertificateSection">
-        <div class="mt-8 bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 p-8">
-            <div class="flex items-center space-x-3">
-              <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <DocumentTextIcon class="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-gray-900">Certificate Generation</h3>
-                <p class="mt-1 text-gray-600">Your certificate is ready to be generated</p>
-              </div>
-            </div>
-          </div>
-          <div class="p-8">
-            <button @click="generateCertificate"
-              class="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-              <DocumentIcon class="h-5 w-5 mr-2" />
-              Generate Certificate
-            </button>
-
-            <TransitionRoot as="template" :show="certificateGenerated">
-              <div class="mt-6 border border-gray-200 rounded-xl p-6 bg-gray-50">
-                <div class="flex items-center justify-between mb-4">
-                  <h4 class="text-lg font-semibold text-gray-900">Certificate of Good Standing</h4>
-                  <button @click="printCertificate"
-                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    <PrinterIcon class="h-5 w-5 mr-2" />
-                    Print
-                  </button>
-                </div>
-                <div class="p-4 border border-gray-200 rounded-lg bg-white">
-                  <p class="text-gray-600">Certificate preview will appear here...</p>
-                </div>
-              </div>
-            </TransitionRoot>
-          </div>
-        </div>
-      </TransitionRoot>
     </div>
   </div>
 </template>
@@ -397,8 +329,9 @@
 <script setup>
 import { ref, reactive, onMounted, watch, computed } from 'vue';
 import { useToast } from 'vue-toastification';
-import apiServices from '@/services/services'; // Corrected import: using epcServices
+import apiService from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
+import { useRouter } from 'vue-router';  // Import useRouter
 import {
   Dialog,
   DialogOverlay,
@@ -413,15 +346,15 @@ import {
 } from '@headlessui/vue'
 import {
   CheckIcon,
-  CreditCardIcon,
-  DocumentTextIcon,
-  DocumentIcon,
-  PrinterIcon,
+  // Removed unused icons:
+  // CreditCardIcon,
+  // DocumentTextIcon,
+  // PrinterIcon,
 } from '@heroicons/vue/24/outline'
-//import * as yup from 'yup'; // Install VeeValidate or Yup for complex validation rules
 
 const toast = useToast();
 const authStore = useAuthStore();
+const router = useRouter(); // Initialize useRouter
 
 const form = reactive({
   registration_no: '',
@@ -449,70 +382,43 @@ const showTermsModal = ref(false);
 const agencyOptions = ref([]);
 const message = ref('');
 const messageClass = ref('');
-const showPaymentSection = ref(false);
-const showCertificateSection = ref(false);
-const certificateGenerated = ref(false);
-const isLoading = ref(false); //Loading state
-const isSubmitting = ref(false); //Submitting state
+// const showPaymentSection = ref(false);       // Removed
+// const showCertificateSection = ref(false);   // Removed
+// const certificateGenerated = ref(false);     // Removed
 
 const fetchRegistrationNumber = async (cid) => {
-  isLoading.value = true;
   try {
-    const response = await apiServices.getEpcApplicationsByCid(cid); // Corrected service call
+    const response = await apiService.getEpcApplicationsByCid(cid);
     if (response.data && response.data.length > 0) {
       return response.data[0].registration_no;
     }
     return null;
   } catch (error) {
-    toast.error("Failed to fetch registration number. Please try again later.");
+    toast.error("Failed to fetch registration number: " + error.message);
     console.error("Error fetching registration number:", error);
-    // Consider a fallback or retry mechanism here
     return null;
-  } finally {
-    isLoading.value = false;
   }
 };
 
 const fetchMasterData = async () => {
-  isLoading.value = true;
   try {
-    const agenciesResponse = await apiServices.getMastersCogsAgencies(); // Corrected service call and function name
-    if (agenciesResponse && agenciesResponse.data && Array.isArray(agenciesResponse.data.results)) { // Pagination handling
-      agencyOptions.value = agenciesResponse.data.results.map(item => ({
-        id: item.id,
-        name: item.agency_name || item.name || `Agency ${item.id}` // Use agency_name or name from response
-      }));
-    } else {
-      console.error("Error: agenciesResponse.data.results is not an array or is missing. Falling back to default agencies.", agenciesResponse);
-      agencyOptions.value = [ // Fallback agencies
-        { id: 1, name: 'Agency A' },
-        { id: 2, name: 'Agency B' },
-        { id: 3, name: 'Agency C' }
-      ];
-    }
+    const agenciesResponse = await apiService.getEpcCogsAgencies();
+    agencyOptions.value = agenciesResponse.data.results;
   } catch (error) {
-    toast.error("Failed to fetch master data.  Please check your network connection and try again later.");
+    toast.error("Failed to fetch master data: " + error.message);
     console.error("Error fetching master data:", error);
-    agencyOptions.value = [ // Fallback agencies in case of API error
-      { id: 1, name: 'Agency X' },
-      { id: 2, name: 'Agency Y' },
-      { id: 3, name: 'Agency Z' }
-    ];
-    // Consider a fallback or retry mechanism here
-  } finally {
-    isLoading.value = false;
   }
 };
 
 onMounted(async () => {
   if (authStore.user) {
-    // Prefill form fields from authStore.user
     form.cid_no = authStore.user.cid;
-    form.full_name = authStore.user.fullName; // Use fullName getter from authStore
+    form.full_name = authStore.user.middle_name
+      ? `${authStore.user.first_name} ${authStore.user.middle_name} ${authStore.user.last_name}`
+      : `${authStore.user.first_name} ${authStore.user.last_name}`;
     form.gender = authStore.user.gender;
-    // contact_number and email_address are for supervisor, not user.
-    // If you want to prefill user's contact and email for recipient when "Self" is selected,
-    // it's handled in the updateRecipientDetails function and watch effect.
+    form.user_contact_number = authStore.user.contact_number;
+    form.user_email = authStore.user.email;
 
     const registrationNumber = await fetchRegistrationNumber(form.cid_no);
     if (registrationNumber) {
@@ -551,12 +457,6 @@ const validateForm = () => {
     errors.email_address = 'Supervisor Email is required';
     isValid = false;
   }
-  // Example validation rule for email format (not comprehensive, consider using a regex)
-  if (form.email_address && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email_address)) {
-    errors.email_address = 'Invalid email format';
-    isValid = false;
-  }
-  //Consider using yup or vee-validate for robust validation
 
   if (!isRecipientSelf.value) {
     if (!form.recipient_name) {
@@ -571,12 +471,6 @@ const validateForm = () => {
       errors.recipient_email = 'Recipient Email is required';
       isValid = false;
     }
-    //Example validation rule for recipient email format
-    if (form.recipient_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.recipient_email)) {
-      errors.recipient_email = 'Invalid email format';
-      isValid = false;
-    }
-
     if (!form.address) {
       errors.address = 'Recipient Address is required';
       isValid = false;
@@ -591,8 +485,6 @@ const validateForm = () => {
 
 const submitForm = async () => {
   if (validateForm()) {
-    isSubmitting.value = true; //Set loading state
-
     const requestData = {
       registration_no: form.registration_no,
       cid_no: form.cid_no,
@@ -607,8 +499,8 @@ const submitForm = async () => {
       contact_number: form.contact_number, // Supervisor's contact
       email_address: form.email_address, // Supervisor's email
       recipient_name: isRecipientSelf.value ? form.full_name : form.recipient_name,
-      recipient_contact_number: isRecipientSelf.value ? authStore.user.contactNumber : form.recipient_contact_number, // Use contactNumber getter
-      recipient_email: isRecipientSelf.value ? authStore.user.email : form.recipient_email, // Use email getter
+      recipient_contact_number: isRecipientSelf.value ? form.user_contact_number : form.recipient_contact_number,
+      recipient_email: isRecipientSelf.value ? form.user_email : form.recipient_email,
       address: isRecipientSelf.value ? '' : form.address,
       po_box: isRecipientSelf.value ? '' : form.po_box,
       zip_code: isRecipientSelf.value ? '' : form.zip_code,
@@ -617,17 +509,18 @@ const submitForm = async () => {
       review_remark: "",
       endorsement_decision: "Pending",
       endorsement_remark: "",
-      is_payment_complete: false,
+      is_payment_complete: false, // Removed payment and certificate related fields
       payment_id: "",
       is_active: true,
     };
 
     try {
-      const response = await apiServices.createEpcCogs(requestData); // Corrected service call
+      const response = await apiService.createEpcCogs(requestData);
 
       if (response.status === 201) {
-        toast.success('Application submitted successfully! You will receive an email notification for payment.');
-        showPaymentSection.value = true;
+        toast.success('Application submitted successfully!');
+        // Redirect to dashboard after successful submission
+        router.push('/admin/user/health_certification/dashboard');
       } else {
         toast.error('An unexpected error occurred. Please try again.');
         console.error("Unexpected response status:", response.status);
@@ -644,8 +537,6 @@ const submitForm = async () => {
       } else {
         toast.error('An error occurred: ' + error.message);
       }
-    } finally {
-      isSubmitting.value = false; //Reset Loading state
     }
   } else {
     toast.error('Please correct the errors in the form.');
@@ -684,28 +575,12 @@ const cancelForm = () => {
   }, 3000);
 };
 
-const simulatePayment = () => {
-  message.value = 'Processing payment...';
-  messageClass.value = 'text-yellow-500';
-  setTimeout(() => {
-    message.value = 'Payment successful!';
-    messageClass.value = 'text-green-500';
-    showPaymentSection.value = false;
-    showCertificateSection.value = true;
-    setTimeout(() => {
-      message.value = '';
-      messageClass.value = '';
-    }, 3000);
-  }, 2000);
-};
 
-const generateCertificate = () => {
-  certificateGenerated.value = true
-};
 
-const printCertificate = () => {
-  window.print();
-};
+// Removed payment and certificate related methods:
+// const simulatePayment = () => { ... };
+// const generateCertificate = () => { ... };
+// const printCertificate = () => { ... };
 
 const updateRecipientDetails = () => {
   if (isRecipientSelf.value && authStore.user) {
@@ -738,6 +613,7 @@ const selectedAgencyName = computed(() => {
   const agency = agencyOptions.value.find(a => a.id === form.agency);
   return agency ? agency.name : '';
 });
+
 </script>
 
 <style scoped>
