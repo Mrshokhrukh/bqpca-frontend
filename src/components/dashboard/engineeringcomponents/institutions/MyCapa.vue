@@ -108,7 +108,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import CapaDetailModal from './CapaModal.vue';
-import epcServices from '@/services/epcServices';
+import apiServices from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from "vue-toastification";
 
@@ -120,7 +120,7 @@ const toast = useToast();
 
 const fetchCapas = async () => {
     try {
-        const response = await epcServices.getEpcCapas();
+        const response = await apiServices.getEpcCapas();
         capas.value = response.data.results;
         console.log(capas.value);
     } catch (error) {

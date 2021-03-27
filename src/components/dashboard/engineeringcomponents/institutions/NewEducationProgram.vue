@@ -227,7 +227,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from 'vue-toastification';
-import bmhcService from '@/services/bmhcservices';
+import apiService from '@/services/services';
 import { Loader } from 'lucide-vue-next';
 
 const router = useRouter();
@@ -277,7 +277,7 @@ const fetchInstituteData = async () => {
   apiError.value = false;
 
   try {
-    const response = await bmhcService.getMhpcInstitutes();
+    const response = await apiService.getEpcInstitutes();
 
     if (response && response.data && response.data.results) {
       const userInstitutes = response.data.results.filter(institute =>
@@ -363,7 +363,7 @@ const handleSubmit = async () => {
       submissionData.append('institute_attachments', selectedFile.value);
     }
 
-    await bmhcService.createMhpcCourseDetail(submissionData);
+    await apiService.createEpcCourseDetail(submissionData);
 
     toast.success('Educational programme application submitted successfully!');
 
@@ -402,7 +402,7 @@ const handleSaveDraft = async () => {
     if (selectedFile.value) {
       draftData.append('institute_attachments', selectedFile.value);
     }
-    await bmhcService.createMhpcCourseDetail(draftData);
+    await apiService.createEpcCourseDetail(draftData);
 
     toast.success('Draft saved successfully!');
 

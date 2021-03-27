@@ -501,7 +501,7 @@ const setDefaultDates = async (center) => {
     };
 
     // Send PATCH request to update teaching center
-    await apiServices.patchMhpcTeachingCenter(center.id, updateData);
+    await apiServices.patchEpcTeachingCenter(center.id, updateData);
 
     // Update local data
     const updatedCenters = teachingCenters.value.map((c) => {
@@ -595,7 +595,7 @@ const confirmRenewal = async () => {
     }
 
     // Send PATCH request to update teaching center
-    await apiServices.patchMhpcTeachingCenter(selectedCenter.value.id, formData);
+    await apiServices.patchEpcTeachingCenter(selectedCenter.value.id, formData);
 
     // Update local data
     const updatedCenters = teachingCenters.value.map((center) => {
@@ -637,7 +637,7 @@ const fetchData = async () => {
 
   try {
     // Fetch teaching centers
-    const response = await apiServices.getMhpcTeachingCenters();
+    const response = await apiServices.getEpcTeachingCenters();
 
     if (response && response.data && response.data.results) {
       teachingCenters.value = response.data.results;

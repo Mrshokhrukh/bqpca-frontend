@@ -35,7 +35,7 @@ const applications = ref([]); // Start with an empty array
 const router = useRouter();
 
 const reviewApplication = (id) => {
-  router.push(`/health_certification/application/${id}`);
+  router.push(`/engineering_certification/application/${id}`);
 };
 
 onMounted(async () => {

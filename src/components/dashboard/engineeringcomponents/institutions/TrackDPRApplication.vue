@@ -115,7 +115,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
-import epcService from '@/services/epcServices';
+import apiService from '@/services/services';
 import { Loader } from 'lucide-vue-next';
 
 // State
@@ -153,7 +153,7 @@ const fetchApplications = async () => {
     errorMessage.value = '';
 
     try {
-        const response = await epcService.getEpcInstitutes();
+        const response = await apiService.getEpcInstitutes();
 
         if (response && response.data && response.data.results) {
             // Filter applications based on user's CID from auth store

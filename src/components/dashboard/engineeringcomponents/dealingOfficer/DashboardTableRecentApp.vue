@@ -64,7 +64,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import apiservice from '@/services/epcServices';
+import apiService from '@/services/services';
 import { format } from 'date-fns';
 
 const recentApplications = ref([]);
@@ -75,7 +75,7 @@ const allApplications = ref([]); //Store all applications
 
 onMounted(async () => {
   try {
-    const applicantsResponse = await apiservice.getEpcNewQualifications();
+    const applicantsResponse = await apiService.getEpcNewQualifications();
     const applicantsData = applicantsResponse.data.results || [];
     const mappedApplicants = applicantsData.map(app => ({
       id: app.id,
@@ -85,7 +85,7 @@ onMounted(async () => {
       date: app.user_qualifications?.[0]?.updated_at || app.created_at,
     }));
 
-    const cpdRecordsResponse = await apiservice.getEpcCogs();
+    const cpdRecordsResponse = await apiService.getEpcCogs();
     const cpdData = cpdRecordsResponse.data.results || [];
     const mappedCpd = cpdData.map(cpd => ({
       id: cpd.id,
@@ -95,7 +95,7 @@ onMounted(async () => {
       date: cpd.updated_at,
     }));
 
-    const cogsRecordsResponse = await apiservice.getEpcCogs();
+    const cogsRecordsResponse = await apiService.getEpcCogs();
     const cogsData = cogsRecordsResponse.data.results || [];
     const mappedCogs = cogsData.map(cogs => ({
       id: cogs.id,
@@ -106,7 +106,7 @@ onMounted(async () => {
     }));
 
     // Corrected CAPA API call with parentheses
-    const capaRecordsResponse = await apiservice.getEpcCapas();
+    const capaRecordsResponse = await apiService.getEpcCapas();
     const capaData = capaRecordsResponse.data.results || [];
     const mappedcapa = capaData.map(capa => ({
       id: capa.id,
