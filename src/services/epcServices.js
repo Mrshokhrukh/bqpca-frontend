@@ -123,27 +123,27 @@ export default {
 
   // EPC CPD Records endpoints
   getEpcCpdRecords() {
-    return apiClient.get('/mhpc/mhpc-cpd-records/')
+    return apiClient.get('/epc/epc-cpd-records/')
   },
   createEpcCpdRecord(data) {
-    return apiClient.post('/mhpc/mhpc-cpd-records/', data)
+    return apiClient.post('/epc/epc-cpd-records/', data)
   },
   getEpcCpdRecord(id) {
-    return apiClient.get(`/mhpc/mhpc-cpd-records/${id}/`)
+    return apiClient.get(`/epc/epc-cpd-records/${id}/`)
   },
   updateEpcCpdRecord(id, data) {
-    return apiClient.put(`/mhpc/mhpc-cpd-records/${id}/`, data)
+    return apiClient.put(`/epc/epc-cpd-records/${id}/`, data)
   },
   patchEpcCpdRecord(id, data) {
-    return apiClient.patch(`/mhpc/mhpc-cpd-records/${id}/`, data)
+    return apiClient.patch(`/epc/epc-cpd-records/${id}/`, data)
   },
   deleteEpcCpdRecord(id) {
-    return apiClient.delete(`/mhpc/mhpc-cpd-records/${id}/`)
+    return apiClient.delete(`/epc/epc-cpd-records/${id}/`)
   },
 
   // get cpd records based on cid
   getEpcCpdRecordsByCid(cid) {
-    return apiClient.get(`/mhpc/mhpc-cpd-records/list-my-cpd/?cid=${cid}`)
+    return apiClient.get(`/epc/epc-cpd-records/list-my-cpd/?cid=${cid}`)
   },
 
   // EPC CPD Task Learning Methods endpoints

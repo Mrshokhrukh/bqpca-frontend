@@ -360,7 +360,7 @@ const saveApplication = async (updatedApp) => {
     loading.value = true;
 
     // Changed to use the CPD Task API endpoint
-    await apiServices.patchMhpcCpdTask(updatedApp.id, {
+    await apiServices.patchEpcCpdTask(updatedApp.id, {
       credit: updatedApp.cpdCredits
     });
 
@@ -408,7 +408,7 @@ const approveApplication = async (applicationData) => {
       };
 
       // Update the application status in the database
-      await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
+      await apiServices.patchEpcCpdTask(updatedApplication.id, patchData);
 
       showNotification('success', 'Application Approved', 'The CPD application has been approved successfully.');
       closeViewModal();
@@ -445,7 +445,7 @@ const approveApplication = async (applicationData) => {
         };
 
         // Send the PATCH request to update the CPD task in the database
-        await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
+        await apiServices.patchEpcCpdTask(updatedApplication.id, patchData);
 
         // Update the application data in the component's state
         const appIndex = applications.value.findIndex(app => app.id === updatedApplication.id);
@@ -466,7 +466,7 @@ const approveApplication = async (applicationData) => {
           review_status: 'Approved'
         };
 
-        await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
+        await apiServices.patchEpcCpdTask(updatedApplication.id, patchData);
       }
     } else {
       // If there are no participants, directly update the application status
@@ -474,7 +474,7 @@ const approveApplication = async (applicationData) => {
         review_status: 'Approved'
       };
 
-      await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
+      await apiServices.patchEpcCpdTask(updatedApplication.id, patchData);
     }
 
     showNotification('success', 'Application Approved', 'The CPD application has been approved successfully.');
@@ -520,7 +520,7 @@ const rejectApplication = async (rejectionData) => {
       };
 
       // Update the application status in the database
-      await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
+      await apiServices.patchEpcCpdTask(updatedApplication.id, patchData);
 
       showNotification('success', 'Application Rejected', 'The CPD application has been rejected.');
       closeViewModal();

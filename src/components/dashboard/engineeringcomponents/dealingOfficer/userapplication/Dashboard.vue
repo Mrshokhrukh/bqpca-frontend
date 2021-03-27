@@ -89,7 +89,7 @@ import RenewalLists from '@/components/dashboard/engineeringcomponents/dealingOf
 // import RenewalLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/RenewalLists.vue';
 import CpdManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdManagement.vue';
 import CpdProviderManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdProviderManagement.vue';
-import Self_cpd_awards from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdAwardCredits.vue';
+import Self_cpd_awards from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/SelfCpdAwards.vue';
 //Institute Management
 import InstituteManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteManagement.vue';
 import EoiApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/EoiApplication.vue';

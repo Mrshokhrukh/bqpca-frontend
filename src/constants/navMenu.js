@@ -1240,7 +1240,7 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_application_review`,
           },
           {
-            name: 'Self Assesses CPD Applications',
+            name: 'Self Assessed CPD Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/self_cpd_awards`,
           },
           {

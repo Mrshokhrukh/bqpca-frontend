@@ -19,7 +19,7 @@ import { ref, computed } from 'vue';
 import CreateApplication from './CpdCreateApplication.vue';
 import ReviewApplication from './CpdApplicationReview.vue';
 import ManageProviders from './CpdProviderManagement.vue';
-import AwardCredits from './CpdAwardCredits.vue';
+import AwardCredits from './SelfCpdAwards.vue';
 import Reports from './CpdReports.vue';
 
 // Reactive state

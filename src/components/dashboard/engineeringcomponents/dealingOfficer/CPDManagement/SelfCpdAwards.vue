@@ -672,7 +672,7 @@ const awardCredits = () => {
   isLoading.value = true;
 
   // Make the API call to update the participant's credits
-  apiServices.patchMhpcCpdRecord(selectedParticipant.value.id, updatedData)
+  apiServices.patchEpcCpdRecord(selectedParticipant.value.id, updatedData)
     .then(() => {
       const participantIndex = participants.value.findIndex(p => p.id === selectedParticipant.value.id);
       if (participantIndex !== -1) {
@@ -711,7 +711,7 @@ const awardCredits = () => {
 onMounted(async () => {
   isLoading.value = true;
   try {
-    const response = await apiServices.getMhpcCpdRecords();
+    const response = await apiServices.getEpcCpdRecords();
     console.log("API Response:", response);
 
     if (response && response.data && response.data.results) {

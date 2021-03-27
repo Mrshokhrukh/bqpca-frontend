@@ -149,7 +149,7 @@
 
 <script setup>
 import { XIcon, BadgeCheck, BadgeX } from 'lucide-vue-next';
-import apiservice from '@/services/epcServices';
+import apiService from '@/services/services';
 import { toRefs, ref, watch } from 'vue';
 
 const props = defineProps({
@@ -191,7 +191,7 @@ const getStatusText = (status) => {
 const togglePhysicalVerification = async () => {
   const newStatus = !capa.value.physical_verification_status;
   try {
-    await apiservice.patchEpcCapa(capa.value.id, {
+    await apiService.patchEpcCapa(capa.value.id, {
       physical_verification_status: newStatus,
     });
 
@@ -207,7 +207,7 @@ const togglePhysicalVerification = async () => {
 const updateRemarks = async () => {
   if (editableRemarks.value !== capa.value.DO_remarks) {
     try {
-      await apiservice.patchEpcCapa(capa.value.id, { DO_remarks: editableRemarks.value });
+      await apiService.patchEpcCapa(capa.value.id, { DO_remarks: editableRemarks.value });
       capa.value.DO_remarks = editableRemarks.value;
       emits('capa-updated');
     } catch (error) {
@@ -222,7 +222,7 @@ const resolveCapa = async () => {
   const remarks = prompt('Please enter Dealing Officer Remarks/Reason for Resolved:');
   if (remarks) {
     try {
-      await apiservice.patchEpcCapa(capa.value.id, {
+      await apiService.patchEpcCapa(capa.value.id, {
         status: 'R',
         DO_remarks: remarks,
         physical_verification_status: true,
