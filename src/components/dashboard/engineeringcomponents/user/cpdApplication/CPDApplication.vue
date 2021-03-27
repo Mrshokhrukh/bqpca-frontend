@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-gray-100 to-gray-50 py-12">
+  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-50 py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Form Header -->
       <div
@@ -119,7 +119,7 @@
             </div>
 
             <!-- Credits -->
-            <div class="space-y-2">
+            <!-- <div class="space-y-2" type="hidden">
               <label for="credits" class="text-sm font-medium text-gray-700 flex items-center">
                 Credits <span class="text-red-500 ml-1">*</span>
               </label>
@@ -127,7 +127,7 @@
                 class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300"
                 required placeholder="Enter credits earned" />
               <span v-if="errors.credits" class="text-sm text-red-500 block">{{ errors.credits }}</span>
-            </div>
+            </div> -->
 
             <!-- Completed Date -->
             <div class="space-y-2">

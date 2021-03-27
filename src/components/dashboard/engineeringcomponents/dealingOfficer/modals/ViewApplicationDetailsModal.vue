@@ -23,7 +23,7 @@
                     <PersonalInformation :application="application" @update="refreshApplication" />
                     <ContactInformation :application="application" />
                     <!-- Counselor Status -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <!-- <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                       <div class="border-t border-gray-100 p-6 bg-gray-50">
                         <div class="flex flex-col space-y-4">
                           <h5 class="font-medium text-gray-900">Counselor Status</h5>
@@ -39,7 +39,7 @@
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> -->
                   </div>
 
                   <!-- Right Column -->
@@ -74,7 +74,7 @@ import ApplicationStatus from './applicationDetailsComponents/ApplicationStatus.
 import ApplicationDetailsSection from './applicationDetailsComponents/ApplicationDetailsSection.vue'
 import QualificationList from './applicationDetailsComponents/QualificationList.vue'
 import FooterButtons from './applicationDetailsComponents/FooterButtons.vue'
-import CounselorStatus from './applicationDetailsComponents/CounselorStatus.vue'
+// import CounselorStatus from './applicationDetailsComponents/CounselorStatus.vue'
 
 const props = defineProps({
   isOpen: Boolean,

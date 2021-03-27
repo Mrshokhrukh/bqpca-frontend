@@ -273,7 +273,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import apiServices from '@/services/services'; 
+import apiServices from '@/services/services';
 import UserDetailsModal from './modals/UserDetailsModal.vue';
 
 const filters = ref({
@@ -297,7 +297,7 @@ const fetchUsers = async () => {
   loading.value = true;
   try {
     const response = await apiServices.getAllUsers();
-    records.value = response.data.results.filter((user) => user.role === 'user' && user.service_type === 'engineering_certification');
+    records.value = response.data.results.filter((user) => user.role === 'user' && user.service_type === 'Engineering_Certification');
     loading.value = false;
   } catch (error) {
     console.error("Error fetching users:", error);
