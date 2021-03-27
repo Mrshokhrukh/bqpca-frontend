@@ -1,55 +1,101 @@
 <template>
   <div class="space-y-6">
+    <!-- Error Handling -->
     <div v-if="error" class="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <XCircle class="h-5 w-5 text-red-400" />
-        </div>
-        <div class="ml-3">
-          <p class="text-sm text-red-700">{{ error }}</p>
-        </div>
+      <div class="flex items-center">
+        <XCircle class="h-5 w-5 text-red-400 mr-3 flex-shrink-0" />
+        <p class="text-sm text-red-700">{{ error }}</p>
       </div>
     </div>
 
+    <!-- Loading Spinner -->
     <div v-if="isLoading" class="flex justify-center items-center h-64">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
     </div>
 
     <div v-else>
-      <!-- Stats Grid -->
+      <!-- Stats Grid with Improved Layout -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
-          <StatsCard title="Total Applications" :count="stats.totalApplications" :icon="FileText" color="blue"
-            trend="Total applications submitted" />
-          <StatsCard title="Success Rate" :count="`${successRate}%`" :icon="TrendingUp" color="emerald"
-            trend="Based on processed applications" />
+          <StatsCard 
+            title="Total Applications" 
+            :count="stats.totalApplications" 
+            :icon="FileText" 
+            color="blue"
+            trend="Total applications submitted" 
+            class="shadow-sm hover:shadow-md transition-shadow duration-300"
+          />
+          <StatsCard 
+            title="Success Rate" 
+            :count="`${successRate}%`" 
+            :icon="TrendingUp" 
+            color="emerald"
+            trend="Based on processed applications" 
+            class="shadow-sm hover:shadow-md transition-shadow duration-300"
+          />
         </div>
         <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
-          <StatsCard title="Avg. Processing Time" :count="`${avgProcessingTime.days}d ${avgProcessingTime.hours}h`"
-            :icon="Clock" color="purple" trend="Average processing duration" />
-          <StatsCard title="Total Processing" :count="stats.totalProcessing" :icon="Pencil" color="amber"
-            trend="Applications in process" />
+          <StatsCard 
+            title="Avg. Processing Time" 
+            :count="`${avgProcessingTime.days}d ${avgProcessingTime.hours}h`"
+            :icon="Clock" 
+            color="purple"
+            trend="Average processing duration" 
+            class="shadow-sm hover:shadow-md transition-shadow duration-300"
+          />
+          <StatsCard 
+            title="Total Processing" 
+            :count="stats.totalProcessing" 
+            :icon="Pencil" 
+            color="amber"
+            trend="Applications in process" 
+            class="shadow-sm hover:shadow-md transition-shadow duration-300"
+          />
         </div>
       </div>
 
-      <!-- Status Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatusCard title="Approved" :count="stats.totalApproved" :icon="CheckCircle" color="green"
-          :percentage="applications.length ? (stats.totalApproved / applications.length) * 100 : 0" />
-        <StatusCard title="Processing" :count="stats.totalProcessing" :icon="Clock" color="yellow"
-          :percentage="applications.length ? (stats.totalProcessing / applications.length) * 100 : 0" />
-        <StatusCard title="Regretted" :count="stats.totalRegretted" :icon="XCircle" color="red"
-          :percentage="applications.length ? (stats.totalRegretted / applications.length) * 100 : 0" />
+      <!-- Status Cards with Improved Alignment -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <StatusCard 
+          title="Approved" 
+          :count="stats.totalApproved" 
+          :icon="CheckCircle" 
+          color="green"
+          :percentage="applications.length ? (stats.totalApproved / applications.length) * 100 : 0" 
+          class="shadow-sm hover:shadow-md transition-shadow duration-300"
+        />
+        <StatusCard 
+          title="Processing" 
+          :count="stats.totalProcessing" 
+          :icon="Clock" 
+          color="yellow"
+          :percentage="applications.length ? (stats.totalProcessing / applications.length) * 100 : 0" 
+          class="shadow-sm hover:shadow-md transition-shadow duration-300"
+        />
+        <StatusCard 
+          title="Regretted" 
+          :count="stats.totalRegretted" 
+          :icon="XCircle" 
+          color="red"
+          :percentage="applications.length ? (stats.totalRegretted / applications.length) * 100 : 0" 
+          class="shadow-sm hover:shadow-md transition-shadow duration-300"
+        />
       </div>
 
       <!-- Timeline Chart -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-lg font-semibold mb-4">Application Timeline</h3>
+      <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
+        <h3 class="text-lg font-semibold mb-4 text-gray-700">Application Timeline</h3>
         <div class="h-[350px]" ref="chartContainer">
-          <VueApexCharts v-if="!isLoading && applications.length > 0" :options="chartOptions" :series="chartSeries"
-            height="100%" />
-          <div v-else-if="!isLoading && applications.length === 0"
-            class="flex items-center justify-center h-full text-gray-500">
+          <VueApexCharts 
+            v-if="!isLoading && applications.length > 0" 
+            :options="chartOptions" 
+            :series="chartSeries"
+            height="100%" 
+          />
+          <div 
+            v-else-if="!isLoading && applications.length === 0"
+            class="flex items-center justify-center h-full text-gray-500"
+          >
             No application data available
           </div>
         </div>

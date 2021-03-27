@@ -321,7 +321,7 @@ const updateProfile = async () => {
       village: profileData.value.village,
     };
 
-    await apiService.updateUserProfile(updateData);
+    await apiService.updateProfile(updateData);
     await authStore.updateUserAfterFetch();
     showMessage('Profile updated successfully!', 'success');
     isEditing.value = false;

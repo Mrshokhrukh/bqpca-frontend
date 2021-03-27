@@ -19,18 +19,19 @@
 
         <ApplicationHistoryCard :applications="applications" @show-rejected="showRejectedApplications" />
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <DeadlinesList title="Upcoming Deadlines" :deadlines="upcomingDeadlines" />
-      </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <DeadlinesList title="Upcoming Deadlines" :deadlines="upcomingDeadlines" />
+        </div>
 
-      <ApplicationModal v-if="selectedApplications.length" :applications="selectedApplications" :title="modalTitle"
-        @close="closeApplicationsModal" @visit="visitApplication" />
+        <ApplicationModal v-if="selectedApplications.length" :applications="selectedApplications" :title="modalTitle"
+          @close="closeApplicationsModal" @visit="visitApplication" />
 
-      <!-- Pass selectedApplication to the modal -->
-      <CertificateModal v-if="showCertificateModal" :application="selectedApplication"
-        @close="closeCertificateModal" />
+        <!-- Pass selectedApplication to the modal -->
+        <CertificateModal v-if="showCertificateModal" :application="selectedApplication"
+          @close="closeCertificateModal" />
 
-      <LoadingSpinner v-if="isLoading" />
+        <LoadingSpinner v-if="isLoading" />
+        </template>
     </div>
   </div>
 </template>
