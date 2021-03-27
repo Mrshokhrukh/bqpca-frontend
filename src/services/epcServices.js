@@ -427,62 +427,62 @@ export default {
   },
 
   // Masters COGS Agencies endpoints
-  getMastersCogsAgencies() {
+  getEpcCogsAgencies() {
     return apiClient.get('/epc/masters-cogs-agencies/')
   },
-  createMastersCogsAgency(data) {
+  createEpcCogsAgency(data) {
     return apiClient.post('/epc/masters-cogs-agencies/', data)
   },
-  getMastersCogsAgency(id) {
+  getEpcCogsAgency(id) {
     return apiClient.get(`/epc/masters-cogs-agencies/${id}/`)
   },
-  updateMastersCogsAgency(id, data) {
+  updateEpcCogsAgency(id, data) {
     return apiClient.put(`/epc/masters-cogs-agencies/${id}/`, data)
   },
-  patchMastersCogsAgency(id, data) {
+  patchEpcCogsAgency(id, data) {
     return apiClient.patch(`/epc/masters-cogs-agencies/${id}/`, data)
   },
-  deleteMastersCogsAgency(id) {
+  deleteEpcCogsAgency(id) {
     return apiClient.delete(`/epc/masters-cogs-agencies/${id}/`)
   },
 
   // Masters COGS Departments endpoints
-  getMastersCogsDepartments() {
+  getEpcCogsDepartments() {
     return apiClient.get('/epc/masters-cogs-departments/')
   },
-  createMastersCogsDepartment(data) {
+  createEpcCogsDepartment(data) {
     return apiClient.post('/epc/masters-cogs-departments/', data)
   },
-  getMastersCogsDepartment(id) {
+  getEpcCogsDepartment(id) {
     return apiClient.get(`/epc/masters-cogs-departments/${id}/`)
   },
-  updateMastersCogsDepartment(id, data) {
+  updateEpcCogsDepartment(id, data) {
     return apiClient.put(`/epc/masters-cogs-departments/${id}/`, data)
   },
-  patchMastersCogsDepartment(id, data) {
+  patchEpcCogsDepartment(id, data) {
     return apiClient.patch(`/epc/masters-cogs-departments/${id}/`, data)
   },
-  deleteMastersCogsDepartment(id) {
+  deleteEpcCogsDepartment(id) {
     return apiClient.delete(`/epc/masters-cogs-departments/${id}/`)
   },
 
   // Masters COGS Workplaces endpoints
-  getMastersCogsWorkplaces() {
+  getEpcCogsWorkplaces() {
     return apiClient.get('/epc/masters-cogs-workplaces/')
   },
-  createMastersCogsWorkplace(data) {
+  createEpcCogsWorkplace(data) {
     return apiClient.post('/epc/masters-cogs-workplaces/', data)
   },
-  getMastersCogsWorkplace(id) {
+  getEpcCogsWorkplace(id) {
     return apiClient.get(`/epc/masters-cogs-workplaces/${id}/`)
   },
-  updateMastersCogsWorkplace(id, data) {
+  updateEpcCogsWorkplace(id, data) {
     return apiClient.put(`/epc/masters-cogs-workplaces/${id}/`, data)
   },
-  patchMastersCogsWorkplace(id, data) {
+  patchEpcCogsWorkplace(id, data) {
     return apiClient.patch(`/epc/masters-cogs-workplaces/${id}/`, data)
   },
-  deleteMastersCogsWorkplace(id) {
+  deleteEpcCogsWorkplace(id) {
     return apiClient.delete(`/epc/masters-cogs-workplaces/${id}/`)
   },
 
