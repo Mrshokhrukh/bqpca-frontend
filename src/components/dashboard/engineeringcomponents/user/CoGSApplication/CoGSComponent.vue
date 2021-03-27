@@ -520,7 +520,7 @@ const submitForm = async () => {
       if (response.status === 201) {
         toast.success('Application submitted successfully!');
         // Redirect to dashboard after successful submission
-        router.push('/admin/user/health_certification/dashboard');
+        router.push('/admin/user/engineering_certification/dashboard');
       } else {
         toast.error('An unexpected error occurred. Please try again.');
         console.error("Unexpected response status:", response.status);

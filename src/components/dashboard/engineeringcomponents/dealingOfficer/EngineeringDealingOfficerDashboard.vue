@@ -342,7 +342,7 @@
 import DashboardTableRecentApp from './DashboardTableRecentApp.vue';
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import apiservice from '@/services/epcServices';
+import apiService from '@/services/services';
 import {
   DocumentTextIcon,
   AcademicCapIcon,
@@ -395,8 +395,8 @@ const quickStats = computed(() => [
     icon: 'ClipboardDocumentCheckIcon',
   },
   {
-    title: 'Active Practitioners', // //TODO: Need API endpoint for dynamic data
-    value: '5', // Static Value - Dynamic value needs a dedicated API
+    title: 'Active Engineers', // //TODO: Need API endpoint for dynamic data
+    value: '5', 
     icon: 'UserGroupIcon',
   },
   {
@@ -411,37 +411,37 @@ const priorityTasks = ref([
     id: 1,
     title: 'Application Registration',
     pending_Counts: 0,
-    urgency: 'high', // Kept for internal logic if needed, but not displayed
+    urgency: 'high', 
     icon: 'DocumentTextIcon',
-    route: '/admin/dealing_officer/health_certification/application_lists'
+    route: '/admin/dealing_officer/engineering_certification/application_lists'
   },
   {
     id: 2,
     title: 'CPD Program Approval',
     pending_Counts: 0,
-    urgency: 'critical', // Kept for internal logic if needed, but not displayed
+    urgency: 'critical', 
     icon: 'AcademicCapIcon',
-    route: '/admin/dealing_officer/health_certification/cpd_management'
+    route: '/admin/dealing_officer/engineerinh_certification/cpd_management'
   },
   {
     id: 3,
     title: 'Verify Documents',
     pending_Counts: 0,
-    urgency: 'medium', // Kept for internal logic if needed, but not displayed
+    urgency: 'medium', 
     icon: 'DocumentCheckIcon',
-    route: '/admin/dealing_officer/health_certification/application_lists'
+    route: '/admin/dealing_officer/engineering_certification/application_lists'
   },
   {
     id: 4,
     title: 'Process CoGS Request',
     pending_Counts: 0,
-    urgency: 'high', // Kept for internal logic if needed, but not displayed
+    urgency: 'high', 
     icon: 'CogIcon',
-    route: '/admin/dealing_officer/health_certification/cogs'
+    route: '/admin/dealing_officer/engineering_certification/cogs'
   }
 ]);
 
-const recentActivities = ref([ // Still Placeholder Data - Requires API
+const recentActivities = ref([ 
   {
     title: 'New Registration Submitted',
     description: 'John Smith submitted an application for Medical Laboratory Technologist registration.',
@@ -497,7 +497,7 @@ const stats = computed(() => {
 
 onMounted(async () => {
   try {
-    const applicantsResponse = await apiservice.getEpcNewQualifications();
+    const applicantsResponse = await apiService.getEpcNewQualifications();
     const applicantsData = applicantsResponse.data.results || [];
 
     totalApplicationsCount.value = applicantsData.length;
@@ -508,14 +508,14 @@ onMounted(async () => {
 
     priorityTasks.value[0].pending_Counts = pendingApplicationCount.value;
 
-    const cpdRecordsResponse = await apiservice.getMhpcCpdRecords();
+    const cpdRecordsResponse = await apiService.getEpcCpdRecords();
     const cpdData = cpdRecordsResponse.data.results || [];
     pendingCpdCount.value = cpdData.filter(cpd => cpd.review_status === 'Pending').length;
     priorityTasks.value[1].pending_Counts = pendingCpdCount.value;
 
     priorityTasks.value[2].pending_Counts = pendingPhysicalCount.value;
 
-    const cogsRecordsResponse = await apiservice.getEpcCogs();
+    const cogsRecordsResponse = await apiService.getEpcCogs();
     const cogsData = cogsRecordsResponse.data.results || [];
     pendingCogsCount.value = cogsData.filter(cogs => cogs.review_status === 'Pending').length;
     priorityTasks.value[3].pending_Counts = pendingCogsCount.value;

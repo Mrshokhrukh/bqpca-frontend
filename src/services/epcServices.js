@@ -121,6 +121,31 @@ export default {
     return apiClient.delete(`/epc/epc-cpd-reasons-for-conducting/${id}/`)
   },
 
+  // EPC CPD Records endpoints
+  getEpcCpdRecords() {
+    return apiClient.get('/mhpc/mhpc-cpd-records/')
+  },
+  createEpcCpdRecord(data) {
+    return apiClient.post('/mhpc/mhpc-cpd-records/', data)
+  },
+  getEpcCpdRecord(id) {
+    return apiClient.get(`/mhpc/mhpc-cpd-records/${id}/`)
+  },
+  updateEpcCpdRecord(id, data) {
+    return apiClient.put(`/mhpc/mhpc-cpd-records/${id}/`, data)
+  },
+  patchEpcCpdRecord(id, data) {
+    return apiClient.patch(`/mhpc/mhpc-cpd-records/${id}/`, data)
+  },
+  deleteEpcCpdRecord(id) {
+    return apiClient.delete(`/mhpc/mhpc-cpd-records/${id}/`)
+  },
+
+  // get cpd records based on cid
+  getEpcCpdRecordsByCid(cid) {
+    return apiClient.get(`/mhpc/mhpc-cpd-records/list-my-cpd/?cid=${cid}`)
+  },
+
   // EPC CPD Task Learning Methods endpoints
   getEpcCpdTaskLearningMethods() {
     return apiClient.get('/epc/epc-cpd-task-learning-methods/')

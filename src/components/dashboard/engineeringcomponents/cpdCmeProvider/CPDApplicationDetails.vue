@@ -41,7 +41,7 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'vue-router';
-import apiservice from '@/services/services';
+import apiService from '@/services/services';
 
 // Import child components
 import FormHeader from './cpdProviderApplicationComponents/FormHeader.vue';
@@ -246,7 +246,7 @@ const fetchResourcePersonDetails = async (person) => {
 
   try {
     loading.value = true;
-    const response = await apiservice.getMhpcApplicationsByCid('');
+    const response = await apiService.getEpcApplicationsByCid('');
     if (response.data && Array.isArray(response.data)) {
       const matchingApplication = response.data.find(app => app.registration_no === person.regNo);
       person.name = matchingApplication ? matchingApplication.full_name || 'Unknown' : '';
@@ -309,7 +309,7 @@ const fetchParticipantName = async (participant) => {
 
   try {
     loading.value = true;
-    const response = await apiservice.getMhpcApplicationsByCid('');
+    const response = await apiService.getEpcApplicationsByCid('');
     if (response.data && Array.isArray(response.data)) {
       const matchingApplication = response.data.find(app => app.registration_no === participant.regNo);
       participant.name = matchingApplication ? matchingApplication.full_name || 'Unknown' : '';
@@ -470,7 +470,7 @@ const saveDraft = async () => {
     loading.value = true;
     validationErrors.value = [];
     const formData = prepareFormData(true);
-    await apiservice.createEngineeringCpdTask(formData);
+    await apiService.createEpcCpdTask(formData);
     successMessage.value = 'Draft saved successfully!';
     setTimeout(() => { successMessage.value = ''; }, 3000);
 
@@ -520,7 +520,7 @@ const confirmSubmit = async () => {
     loading.value = true;
     validationErrors.value = [];
     const formData = prepareFormData(false);
-    const response = await apiservice.createEngineeringCpdTask(formData);
+    const response = await apiService.createEpcCpdTask(formData);
     console.log('Form submitted successfully', response.data);
     successMessage.value = 'CPD application submitted successfully!';
     setTimeout(() => {
@@ -568,7 +568,7 @@ const fetchUserRegistrations = async () => {
   try {
     loading.value = true;
     // Removed CID-specific fetching, as it's not relevant anymore
-    const allApplicationsResponse = await apiservice.getEngineeringNewApplications();
+    const allApplicationsResponse = await apiService.getEpcNewApplications();
 
     if (allApplicationsResponse.data && allApplicationsResponse.data.results &&
       Array.isArray(allApplicationsResponse.data.results)) {
@@ -593,22 +593,22 @@ const loadDropdownOptions = async () => {
   try {
     loading.value = true;
 
-    const agencyResponse = await apiservice.getProvidingAgency();
+    const agencyResponse = await apiService.getProvidingAgency();
     agencyOptions.value = agencyResponse.data?.results.map(agency => ({ text: agency.name, value: agency.id })) || [];
 
-    const reasonResponse = await apiservice.getReasonForCoducting();
+    const reasonResponse = await apiService.getReasonForCoducting();
     reasonOptions.value = reasonResponse.data?.results.map(reason => ({ text: reason.name, value: reason.id })) || [];
 
-    const cpdTypeResponse = await apiservice.getMastersCmeActivities();
+    const cpdTypeResponse = await apiService.getMastersCmeActivities();
     cpdTypeOptions.value = cpdTypeResponse.data?.results.map(type => ({ text: type.cme_activity_name, value: type.id })) || [];
 
-    const methodologyResponse = await apiservice.getMastersCmeMethodologies();
+    const methodologyResponse = await apiService.getMastersCmeMethodologies();
     methodologyOptions.value = methodologyResponse.data?.results.map(method => ({ text: method.methodology_name, value: method.id })) || [];
 
-    const categoriesResponse = await apiservice.getMastersParticipationCategories();
+    const categoriesResponse = await apiService.getMastersParticipationCategories();
     participationCategoryOptions.value = categoriesResponse.data?.results.map(category => ({ text: category.participation_category_name, value: category.id })) || [];
 
-    const subcategoriesResponse = await apiservice.getMastersParticipationSubCategories();
+    const subcategoriesResponse = await apiService.getMastersParticipationSubCategories();
     participantSubcategoryOptions.value = subcategoriesResponse.data?.results.map(subcategory => ({
       text: subcategory.participation_sub_category_name,
       value: subcategory.id,

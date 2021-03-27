@@ -10,13 +10,14 @@
       <table class="min-w-full">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant / Institute</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant /
+              Institute</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Submitted/Updated
             </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+            
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -35,15 +36,13 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                 :class="getStatusClass(application.status)">
-                {{getStatusText(application.status)  }}
+                {{ getStatusText(application.status) }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {{ formatDate(application.date) }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm">
-              <button class="text-blue-600 hover:text-blue-900">Review</button>
-            </td>
+            
           </tr>
         </tbody>
       </table>
@@ -107,23 +106,23 @@ onMounted(async () => {
     }));
 
     // Corrected CAPA API call with parentheses
-  const capaRecordsResponse = await apiservice.getEpcCapas();
-  const capaData = capaRecordsResponse.data.results || [];
-  const mappedcapa = capaData.map(capa => ({
-    id: capa.id,
-    name: capa.teaching_center.institute_name,
-    type: 'CAPA',
-    status: capa.status,
-    date: capa.updated_at,
-  }));
+    const capaRecordsResponse = await apiservice.getEpcCapas();
+    const capaData = capaRecordsResponse.data.results || [];
+    const mappedcapa = capaData.map(capa => ({
+      id: capa.id,
+      name: capa.teaching_center.institute_name,
+      type: 'CAPA',
+      status: capa.status,
+      date: capa.updated_at,
+    }));
 
-  allApplications.value = [...mappedApplicants, ...mappedCpd, ...mappedCogs, ...mappedcapa];
-  allApplications.value.sort((a, b) => new Date(b.date) - new Date(a.date));
-  recentApplications.value = allApplications.value.slice(0, 5);
+    allApplications.value = [...mappedApplicants, ...mappedCpd, ...mappedCogs, ...mappedcapa];
+    allApplications.value.sort((a, b) => new Date(b.date) - new Date(a.date));
+    recentApplications.value = allApplications.value.slice(0, 5);
 
-} catch (error) {
-  console.error('Error fetching data:', error);
-}
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
 });
 
 const toggleViewAll = () => {
@@ -165,7 +164,7 @@ const getStatusClass = (status) => {
     'Approved': 'bg-green-100 text-green-800',
     'Rejected': 'bg-red-100 text-red-800',
     'Regret': 'bg-red-100 text-red-800',
-    'R' : 'bg-green-100 text-green-800',
+    'R': 'bg-green-100 text-green-800',
 
   };
   return classes[status] || 'bg-gray-100 text-gray-800';

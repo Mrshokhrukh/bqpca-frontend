@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <div class="max-w-9xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <!-- Page Header -->
       <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Institute Management</h1>
