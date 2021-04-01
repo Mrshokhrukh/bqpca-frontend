@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white border-b p-8 rounde md:shadow-sm mb-6 space-y-4">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-      <h1 class="text-2xl md:text-3xl font-bold text-gray-800">BMHC Capa Management</h1>
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-800">EPC Capa Management</h1>
       <div class="mt-4 md:mt-0 flex flex-col md:flex-row gap-3">
         <div class="relative">
           <input v-model.trim="localSearchQuery" type="text" placeholder="Search institutes..."
