@@ -85,9 +85,9 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import apiServices from '@/services/services'; 
+import apiServices from '@/services/services';
 
-const ecpfId = 1; 
+const ecpfId = 1;
 
 const ecpfData = reactive({
   ecpf_name: '',
@@ -102,7 +102,7 @@ const renewalData = reactive({
   subject: '',
   remarks: '',
   declaration: null,
-  ecpf: ecpfId, 
+  ecpf: ecpfId,
 });
 
 const licenseValidityMessage = ref('');
