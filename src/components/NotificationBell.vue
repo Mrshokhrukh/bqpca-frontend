@@ -76,7 +76,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/authStore'; // Import your authStore
+// import { useAuthStore } from '@/stores/authStore'; // Import your authStore
 import {
   Bell,
   BellOff,
@@ -96,17 +96,17 @@ const showNotifications = ref(false);
 const loading = ref(false);
 const socket = ref(null);
 const router = useRouter();
-const authStore = useAuthStore(); // Use authStore
+// const authStore = useAuthStore(); // Use authStore
 
 // **Service Type Mapping**
-const serviceTypeMap = {
-  roq: 'recognition_of_qualification',
-  ecpf: 'education_consultancy_placement_firm',
-  accreditation: 'specification_for_institute_accrediation',
-  engineering: 'specification_for_engineering_certification',
-  engineering_certification: 'specification_for_engineering_certification',
-  health_certification: 'specification_for_health_certification',
-};
+// const serviceTypeMap = {
+//   roq: 'recognition_of_qualification',
+//   ecpf: 'education_consultancy_placement_firm',
+//   accreditation: 'specification_for_institute_accrediation',
+//   engineering: 'specification_for_engineering_certification',
+//   engineering_certification: 'specification_for_engineering_certification',
+//   health_certification: 'specification_for_health_certification',
+// };
 
 // Computed
 const unreadCount = computed(() => {
@@ -116,36 +116,36 @@ const unreadCount = computed(() => {
 const hasUnread = computed(() => unreadCount.value > 0);
 
 // WebSocket Setup
-const setupWebSocket = () => {
-  if (!authStore.serviceType) {
-    console.warn("Service type not available. WebSocket not initialized.");
-    return;
-  }
+// const setupWebSocket = () => {
+//   if (!authStore.serviceType) {
+//     console.warn("Service type not available. WebSocket not initialized.");
+//     return;
+//   }
 
-  const backendAppName = serviceTypeMap[authStore.serviceType];
+//   const backendAppName = serviceTypeMap[authStore.serviceType];
 
-  if (!backendAppName) {
-    console.error(`No backend app name mapping found for service type: ${authStore.serviceType}`);
-    return; // Or handle the error appropriately, maybe default to a public channel
-  }
+//   if (!backendAppName) {
+//     console.error(`No backend app name mapping found for service type: ${authStore.serviceType}`);
+//     return; // Or handle the error appropriately, maybe default to a public channel
+//   }
 
-  const wsChannel = backendAppName.replace(/_/g, '_'); // backend app names are already good for channel. if not replace with '-' to '_'
-  const wsUrl = `ws://127.0.0.1:8000/ws/notifications/${wsChannel}/`;
-  socket.value = new WebSocket(wsUrl);
+//   const wsChannel = backendAppName.replace(/_/g, '_'); // backend app names are already good for channel. if not replace with '-' to '_'
+//   const wsUrl = `ws://127.0.0.1:8000/ws/notifications/${wsChannel}/`;
+//   socket.value = new WebSocket(wsUrl);
 
-  socket.value.onmessage = () => {
-    fetchNotifications(); // Re-fetch notifications when any event occurs
-  };
+//   socket.value.onmessage = () => {
+//     fetchNotifications(); // Re-fetch notifications when any event occurs
+//   };
 
-  socket.value.onclose = () => {
-    // Attempt to reconnect after 30 minutes
-    setTimeout(setupWebSocket, 1800000);
-  };
+//   socket.value.onclose = () => {
+//     // Attempt to reconnect after 30 minutes
+//     setTimeout(setupWebSocket, 1800000);
+//   };
 
-  socket.value.onerror = (error) => {
-    console.error('WebSocket error:', error);
-  };
-};
+//   socket.value.onerror = (error) => {
+//     console.error('WebSocket error:', error);
+//   };
+// };
 
 // Methods
 const toggleNotifications = () => {
@@ -233,12 +233,11 @@ const getNotificationIconColor = (type) => {
 // Lifecycle Hooks
 onMounted(() => {
   // Initialize auth first to get serviceType reliably
-  authStore.initializeAuth(); // Make sure auth is initialized
-  if (authStore.serviceType) {
-    setupWebSocket();
-  } else {
-    console.warn("Service type not yet available on mount. WebSocket setup deferred.");
-  }
+  // authStore.initializeAuth(); // Make sure auth is initialized
+  // if (authStore.serviceType) {
+  //   setupWebSocket();
+  // } else {
+  console.warn("Service type not yet available on mount. WebSocket setup deferred.");
 });
 
 onBeforeUnmount(() => {
