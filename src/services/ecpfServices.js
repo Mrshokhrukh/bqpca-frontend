@@ -145,6 +145,9 @@ export default {
   getEcpfProfiles() {
     return apiClient.get('/ecpf/ecpf-profile/');
   },
+  getEcpfDetailsByCID(cid) {
+    return apiClient.get(`/ecpf/ecpf-profile/${cid}/`);
+  },
   createEcpfProfile(data) {
     return apiClient.post('/ecpf/ecpf-profile/', data);
   },
