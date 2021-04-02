@@ -1,6 +1,6 @@
 <template>
   <section class="p-6 bg-white rounded-lg shadow">
-      <h2 class="text-xl font-semibold mb-4 text-indigo-700">Institute/Colleges/University Linkages</h2>
+      <h2 class="text-xl font-semibold mb-4 text-blue-700">Institute/Colleges/University Linkages</h2>
       <div v-if="linkages.length === 0" class="text-center text-gray-500 py-4">
           No linkages added yet. Click "Add Linkage" to start.
       </div>
@@ -16,23 +16,23 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                   <label :for="'linkName-' + index" class="block text-sm font-medium text-gray-700">Name</label>
-                  <input type="text" :id="'linkName-' + index" v-model="linkage.name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <input type="text" :id="'linkName-' + index" v-model="linkage.name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
               </div>
               <div>
                   <label :for="'linkLocation-' + index" class="block text-sm font-medium text-gray-700">Location</label>
-                  <input type="text" :id="'linkLocation-' + index" v-model="linkage.location" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <input type="text" :id="'linkLocation-' + index" v-model="linkage.location" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
               </div>
               <div>
                   <label :for="'linkCountry-' + index" class="block text-sm font-medium text-gray-700">Country</label>
-                  <input type="text" :id="'linkCountry-' + index" v-model="linkage.country" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <input type="text" :id="'linkCountry-' + index" v-model="linkage.country" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
               </div>
               <div class="md:col-span-2 lg:col-span-1">
                   <label :for="'linkRecognition-' + index" class="block text-sm font-medium text-gray-700">Recognition/Accreditation</label>
-                  <input type="text" :id="'linkRecognition-' + index" v-model="linkage.recognition" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <input type="text" :id="'linkRecognition-' + index" v-model="linkage.recognition" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
               </div>
               <div class="md:col-span-2">
                   <label :for="'linkApproval-' + index" class="block text-sm font-medium text-gray-700">Approval from University</label>
-                  <input type="text" :id="'linkApproval-' + index" v-model="linkage.approval" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <input type="text" :id="'linkApproval-' + index" v-model="linkage.approval" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
               </div>
           </div>
       </div>
@@ -51,14 +51,17 @@ const props = defineProps({
   }
 });
 
-// Methods modify the prop array directly (Vue's reactivity handles this)
+// Changed: Moved defineEmits to top level
+const emit = defineEmits(['update:linkages']);
+// End Change
+
 const addLinkage = () => {
-const emit = defineEmits(['update:linkages']); // Move this to the top level of the script setup
-emit('update:linkages', [...props.linkages, { name: '', location: '', country: '', recognition: '', approval: '' }]);
+  // Changed: Removed defineEmits from here
+  emit('update:linkages', [...props.linkages, { name: '', location: '', country: '', recognition: '', approval: '' }]);
 };
 
 const removeLinkage = (index) => {
-const emit = defineEmits(['update:linkages']);
-emit('update:linkages', props.linkages.filter((_, i) => i !== index));
+  // Changed: Removed defineEmits from here
+  emit('update:linkages', props.linkages.filter((_, i) => i !== index));
 };
 </script>

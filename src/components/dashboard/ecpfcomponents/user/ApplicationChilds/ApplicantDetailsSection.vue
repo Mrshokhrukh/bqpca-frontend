@@ -1,6 +1,6 @@
 <template>
   <section class="p-6 bg-white rounded-lg shadow">
-    <h2 class="text-xl font-semibold mb-4 text-indigo-700">Applicant Details (Auto-fetched)</h2>
+    <h2 class="text-xl font-semibold mb-4 text-blue-700">Applicant Details (Auto-fetched)</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <div>
         <label class="block text-sm font-medium text-gray-700">CID No.</label>

@@ -1,6 +1,6 @@
 <template>
   <section class="p-6 bg-white rounded-lg shadow">
-    <h2 class="text-xl font-semibold mb-4 text-indigo-700">Supporting Documents</h2>
+    <h2 class="text-xl font-semibold mb-4 text-blue-700">Supporting Documents</h2>
     <div>
       <label for="cvUpload" class="block text-sm font-medium text-gray-700">Applicant's CV Upload <span class="text-red-500">*</span></label>
       <input
@@ -9,7 +9,7 @@
         @change="handleFileUpload($event, 'cvFile')"
         required
         accept=".pdf,.doc,.docx"
-        class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+        class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
       />
       <span v-if="cvFileName" class="text-xs text-gray-600 mt-1 block">
         Selected: {{ cvFileName }}

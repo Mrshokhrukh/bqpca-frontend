@@ -1,6 +1,6 @@
 <template>
   <section class="p-6 bg-white rounded-lg shadow">
-    <h2 class="text-xl font-semibold mb-4 text-indigo-700">Fee & Charges</h2>
+    <h2 class="text-xl font-semibold mb-4 text-blue-700">Fee & Charges</h2>
     <div v-if="fees.length === 0" class="text-center text-gray-500 py-4">
       Click "Add Fee Item" to define fees.
     </div>
@@ -16,19 +16,23 @@
         <div>
           <label :for="'feeBreakup-' + index" class="block text-sm font-medium text-gray-700">Fee Breakup <span
               class="text-red-500">*</span></label>
-          <input type="text" :id="'feeBreakup-' + index" v-model="fee.breakup" required
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          <!-- Changed: Use v-model directly -->
+          <input type="text" :id="'feeBreakup-' + index" :value="fees[index].breakup" @input="e => emit('update:fees', fees.map((f, i) => i === index ? {...f, breakup: e.target.value} : f))" required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
         </div>
         <div>
           <label :for="'feeDescription-' + index" class="block text-sm font-medium text-gray-700">Description</label>
-          <input type="text" :id="'feeDescription-' + index" v-model="fee.description"
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          <!-- Changed: Use v-model directly -->
+          <input type="text" :id="'feeDescription-' + index" :value="fees[index].description" @input="e => emit('update:fees', fees.map((f, i) => i === index ? {...f, description: e.target.value} : f))"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
         </div>
         <div>
           <label :for="'feeAmount-' + index" class="block text-sm font-medium text-gray-700">Amount (Nu.) <span
               class="text-red-500">*</span></label>
-          <input type="number" :id="'feeAmount-' + index" v-model.number="fee.amount" required min="0" step="any"
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          <!-- Changed: Use v-model directly -->
+          <input type="number" :id="'feeAmount-' + index" :value="fees[index].amount" @input="e => emit('update:fees', fees.map((f, i) => i === index ? {...f, amount: Number(e.target.value)} : f))" required min="0"
+            step="any"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
         </div>
       </div>
     </div>
@@ -51,30 +55,25 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  totalFeeAmount: { // Receive total from parent
+  totalFeeAmount: {
     type: Number,
     required: true
   }
 });
 
-// Methods modify the prop array directly
+// Changed: Define emit once at the top level
+const emit = defineEmits(['update:fees']);
+// End Change
+
+// Methods modify the prop array directly using emit
 const addFee = () => {
-  const emit = defineEmits(['update:fees']);
+  // Changed: Use the emit defined above
   emit('update:fees', [...props.fees, { breakup: '', description: '', amount: null }]);
 };
 
 const removeFee = (index) => {
-  // Keep the logic to prevent removing the last item if desired,
-  // or allow removing all items. Let's allow removing all for now.
-  const emit = defineEmits(['update:fees']);
+  // Changed: Use the emit defined above
   emit('update:fees', props.fees.filter((_, i) => i !== index));
-  // If you want to ensure at least one item:
-  // if (props.fees.length > 1) {
-  //    props.fees.splice(index, 1);
-  // } else if (props.fees.length === 1) {
-  //     // Clear the fields of the last remaining item
-  //     Object.assign(props.fees[0], { breakup: '', description: '', amount: null });
-  //     alert("At least one fee item structure is recommended. Please fill it or add a new one.");
-  // }
 };
+
 </script>
