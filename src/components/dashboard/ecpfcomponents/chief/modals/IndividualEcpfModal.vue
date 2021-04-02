@@ -19,7 +19,8 @@
               <div v-if="application" class="px-8 py-6 bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
                 <div class="flex justify-between items-center">
                   <div>
-                    <h2 class="text-2xl font-bold tracking-tight">{{ application.ecpfProposalDetails?.firmName || 'Application Details' }}</h2>
+                    <h2 class="text-2xl font-bold tracking-tight">{{ application.ecpfProposalDetails?.firmName ||
+    'Application Details' }}</h2>
                     <p class="mt-1 text-white/90">Application ID: {{ application.cidNo }}</p>
                   </div>
 
@@ -38,7 +39,8 @@
                   <!-- Left Column -->
                   <div class="lg:col-span-1 space-y-6">
                     <!-- Personal Information -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                    <div
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
                       <div class="p-6">
                         <div class="flex items-center mb-4">
                           <div class="bg-blue-100 p-2 rounded-md">
@@ -56,7 +58,8 @@
                     </div>
 
                     <!-- Contact Information -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                    <div
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
                       <div class="p-6">
                         <div class="flex items-center mb-4">
                           <div class="bg-indigo-100 p-2 rounded-md">
@@ -65,23 +68,26 @@
                           <h4 class="font-semibold text-gray-900 ml-2">Contact Information</h4>
                         </div>
                         <p><strong>Present Address:</strong></p>
-                        <p>Office Number: {{ application.presentAddress.officeNumber }}</p>
-                        <p>Flat No: {{ application.presentAddress.flatNo }}</p>
-                        <p>Building No: {{ application.presentAddress.buildingNo }}</p>
-                        <p>Location: {{ application.presentAddress.location }}</p>
-                        <p>Gewog/Throm: {{ application.presentAddress.gewogThrom }}</p>
-                        <p>Dzongkhag/Thromde: {{ application.presentAddress.dzongkhagThromde }}</p>
+                        <!-- CORRECTED ACCESS -->
+                        <p>Office Number: {{ application.office_number }}</p>
+                        <p>Flat No: {{ application.flat_no }}</p>
+                        <p>Building No: {{ application.building_no }}</p>
+                        <p>Location: {{ application.location }}</p>
+                        <p>Gewog/Throm: {{ application.gewog_throm }}</p>
+                        <p>Dzongkhag/Thromde: {{ application.dzongkhag_thromde }}</p>
                         <br>
                         <p><strong>Permanent Address:</strong></p>
-                        <p>Village/Chiwog: {{ application.permanentAddress.villageChiwog }}</p>
-                        <p>Gewog: {{ application.permanentAddress.gewog }}</p>
-                        <p>Dungkhag: {{ application.permanentAddress.dungkhag }}</p>
-                        <p>Dzongkhag/Thromde: {{ application.permanentAddress.dzongkhagThromde }}</p>
+                        <!-- CORRECTED ACCESS -->
+                        <p>Village/Chiwog: {{ application.permanent_village }}</p>
+                        <p>Gewog: {{ application.permanent_gewog }}</p>
+                        <p>Dungkhag: {{ application.permanent_dungkhag }}</p>
+                        <p>Dzongkhag/Thromde: {{ application.permanent_dzongkhag }}</p>
                       </div>
                     </div>
 
                     <!-- Timeline Card (New) -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                    <div
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
                       <div class="p-6">
                         <div class="flex items-center mb-4">
                           <div class="bg-purple-100 p-2 rounded-md">
@@ -95,15 +101,20 @@
                             <p class="text-sm font-medium text-green-600">Application Created</p>
                             <p class="text-xs text-gray-500">{{ formatDate(application.createdAt || new Date()) }}</p>
                           </div>
-                          <div v-if="application.verificationStatus" class="relative pl-6 pb-4 border-l-2 border-blue-500">
+                          <div v-if="application.verificationStatus"
+                            class="relative pl-6 pb-4 border-l-2 border-blue-500">
                             <div class="absolute -left-1.5 top-0 h-3 w-3 rounded-full bg-blue-500"></div>
-                            <p class="text-sm font-medium text-blue-600">Verification {{ application.verificationStatus }}</p>
-                            <p class="text-xs text-gray-500">{{ formatDate(application.verificationDate || new Date()) }}</p>
+                            <p class="text-sm font-medium text-blue-600">Verification {{ application.verificationStatus
+                              }}</p>
+                            <p class="text-xs text-gray-500">{{ formatDate(application.verificationDate || new Date())
+                              }}</p>
                           </div>
                           <div v-if="application.evaluationStatus" class="relative pl-6 border-l-2 border-purple-500">
                             <div class="absolute -left-1.5 top-0 h-3 w-3 rounded-full bg-purple-500"></div>
-                            <p class="text-sm font-medium text-purple-600">Evaluation {{ application.evaluationStatus }}</p>
-                            <p class="text-xs text-gray-500">{{ formatDate(application.evaluationDate || new Date()) }}</p>
+                            <p class="text-sm font-medium text-purple-600">Evaluation {{ application.evaluationStatus }}
+                            </p>
+                            <p class="text-xs text-gray-500">{{ formatDate(application.evaluationDate || new Date()) }}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -113,7 +124,8 @@
                   <!-- Right Column -->
                   <div class="lg:col-span-2 space-y-6">
                     <!-- Application Details Section -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                    <div
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
                       <div class="p-6">
                         <div class="flex items-center mb-4">
                           <div class="bg-green-100 p-2 rounded-md">
@@ -125,17 +137,12 @@
                         <!-- Tab Navigation (New) -->
                         <div class="border-b border-gray-200 mb-6">
                           <nav class="-mb-px flex space-x-6">
-                            <button
-                              v-for="(tab, index) in tabs"
-                              :key="index"
-                              @click="activeTab = tab.id"
-                              class="py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap"
-                              :class="[
-                                activeTab === tab.id
-                                  ? 'border-blue-500 text-blue-600'
-                                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                              ]"
-                            >
+                            <button v-for="(tab, index) in tabs" :key="index" @click="activeTab = tab.id"
+                              class="py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap" :class="[
+    activeTab === tab.id
+      ? 'border-blue-500 text-blue-600'
+      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+  ]">
                               {{ tab.name }}
                             </button>
                           </nav>
@@ -182,9 +189,10 @@
                             <p><strong>Human Resources:</strong></p>
                           </div>
 
-                          <div v-if="application.humanResource && application.humanResource.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div v-if="application.humanResource && application.humanResource.length > 0"
+                            class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div v-for="(hr, index) in application.humanResource" :key="index"
-                                class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-all">
+                              class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-all">
                               <p class="font-medium text-blue-700">{{ hr.position }}</p>
                               <p><span class="text-gray-600">Name:</span> {{ hr.fullName }}</p>
                               <p><span class="text-gray-600">CID:</span> {{ hr.cid }}</p>
@@ -206,9 +214,10 @@
                           </div>
 
                           <p><strong>Services:</strong></p>
-                          <div v-if="application.services && application.services.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div v-if="application.services && application.services.length > 0"
+                            class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div v-for="(service, index) in application.services" :key="index"
-                                class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-all">
+                              class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-all">
                               <p class="font-medium text-indigo-700">{{ service.category }}</p>
                               <p class="text-gray-700">{{ service.details }}</p>
                             </div>
@@ -244,13 +253,20 @@
                         <!-- Fees & Guarantor Tab -->
                         <div v-if="activeTab === 'fees'" class="space-y-4">
                           <p><strong>Fee & Charges:</strong></p>
-                          <div v-if="application.feeCharges && application.feeCharges.length > 0" class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                          <div v-if="application.feeCharges && application.feeCharges.length > 0"
+                            class="bg-white rounded-lg border border-gray-200 overflow-hidden">
                             <table class="min-w-full divide-y divide-gray-200">
                               <thead class="bg-gray-50">
                                 <tr>
-                                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fee Breakup</th>
-                                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                                  <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                  <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Fee Breakup</th>
+                                  <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Description</th>
+                                  <th
+                                    class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Amount</th>
                                 </tr>
                               </thead>
                               <tbody class="bg-white divide-y divide-gray-200">
@@ -260,8 +276,10 @@
                                   <td class="px-4 py-3 text-sm text-gray-900 text-right">{{ fee.amount }}</td>
                                 </tr>
                                 <tr class="bg-gray-50">
-                                  <td colspan="2" class="px-4 py-3 text-sm font-medium text-gray-900 text-right">Total Amount:</td>
-                                  <td class="px-4 py-3 text-sm font-medium text-gray-900 text-right">{{ application.feeCharges[0].totalAmount }}</td>
+                                  <td colspan="2" class="px-4 py-3 text-sm font-medium text-gray-900 text-right">Total
+                                    Amount:</td>
+                                  <td class="px-4 py-3 text-sm font-medium text-gray-900 text-right">{{
+    application.feeCharges[0].totalAmount }}</td>
                                 </tr>
                               </tbody>
                             </table>
@@ -271,18 +289,24 @@
                           </div>
 
                           <p><strong>Guarantor Details:</strong></p>
-                          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <p><span class="text-gray-600">Full Name:</span> {{ application.guarantorDetails.fullName }}</p>
-                            <p><span class="text-gray-600">CID Number:</span> {{ application.guarantorDetails.cidNumber }}</p>
-                            <p><span class="text-gray-600">Relation:</span> {{ application.guarantorDetails.relation }}</p>
-                            <p><span class="text-gray-600">Contact Number:</span> {{ application.guarantorDetails.contactNumber }}</p>
+                          <div
+                            class="bg-gray-50 p-4 rounded-lg border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <p><span class="text-gray-600">Full Name:</span> {{ application.guarantorDetails.fullName }}
+                            </p>
+                            <p><span class="text-gray-600">CID Number:</span> {{ application.guarantorDetails.cidNumber
+                              }}</p>
+                            <p><span class="text-gray-600">Relation:</span> {{ application.guarantorDetails.relation }}
+                            </p>
+                            <p><span class="text-gray-600">Contact Number:</span> {{
+    application.guarantorDetails.contactNumber }}</p>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <!-- Final Decision Form -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                    <div
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
                       <div class="p-6 border-b border-gray-200">
                         <div class="flex items-center mb-4">
                           <div class="bg-purple-100 p-2 rounded-md">
@@ -301,7 +325,8 @@
                           </select>
                         </div>
                         <div v-if="finalDecisionForm.decision === 'Regret'" class="mt-2">
-                          <label for="regretRemarks" class="block text-sm font-medium text-gray-700">Regret Remarks:</label>
+                          <label for="regretRemarks" class="block text-sm font-medium text-gray-700">Regret
+                            Remarks:</label>
                           <textarea id="regretRemarks" v-model="finalDecisionForm.remarks" rows="2"
                             class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
                         </div>
@@ -339,52 +364,55 @@
                       </div>
 
 
-                    <!-- License & Registration Details Form -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
-                      <div class="p-6">
-                        <div class="flex items-center mb-4">
-                          <div class="bg-green-100 p-2 rounded-md">
-                            <DocumentDuplicateIcon class="h-5 w-5 text-green-600" />
+                      <!-- License & Registration Details Form -->
+                      <div
+                        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                        <div class="p-6">
+                          <div class="flex items-center mb-4">
+                            <div class="bg-green-100 p-2 rounded-md">
+                              <DocumentDuplicateIcon class="h-5 w-5 text-green-600" />
+                            </div>
+                            <h4 class="font-semibold text-gray-900 ml-2">License & Registration Details</h4>
                           </div>
-                          <h4 class="font-semibold text-gray-900 ml-2">License & Registration Details</h4>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                          <div>
-                            <label for="licenseName" class="block text-sm font-medium text-gray-700">License Name:</label>
-                            <input type="text" id="licenseName" v-model="registrationForm.licenseName"
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                            <div>
+                              <label for="licenseName" class="block text-sm font-medium text-gray-700">License
+                                Name:</label>
+                              <input type="text" id="licenseName" v-model="registrationForm.licenseName"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            </div>
+                            <div>
+                              <label for="licenseNumber" class="block text-sm font-medium text-gray-700">License
+                                Number:</label>
+                              <input type="text" id="licenseNumber" v-model="registrationForm.licenseNumber"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            </div>
+                            <div>
+                              <label for="licenseValidity" class="block text-sm font-medium text-gray-700">License
+                                Validity (Years):</label>
+                              <input type="number" id="licenseValidity" v-model="registrationForm.licenseValidity"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            </div>
+                            <div>
+                              <label for="mouSignDate" class="block text-sm font-medium text-gray-700">MoU Sign
+                                Date:</label>
+                              <input type="date" id="mouSignDate" v-model="registrationForm.mouSignDate"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            </div>
+                            <div>
+                              <label for="mouValidityDate" class="block text-sm font-medium text-gray-700">MoU Validity
+                                Date:</label>
+                              <input type="date" id="mouValidityDate" v-model="registrationForm.mouValidityDate"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            </div>
                           </div>
-                          <div>
-                            <label for="licenseNumber" class="block text-sm font-medium text-gray-700">License
-                              Number:</label>
-                            <input type="text" id="licenseNumber" v-model="registrationForm.licenseNumber"
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                          </div>
-                          <div>
-                            <label for="licenseValidity" class="block text-sm font-medium text-gray-700">License
-                              Validity (Years):</label>
-                            <input type="number" id="licenseValidity" v-model="registrationForm.licenseValidity"
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                          </div>
-                          <div>
-                            <label for="mouSignDate" class="block text-sm font-medium text-gray-700">MoU Sign Date:</label>
-                            <input type="date" id="mouSignDate" v-model="registrationForm.mouSignDate"
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                          </div>
-                          <div>
-                            <label for="mouValidityDate" class="block text-sm font-medium text-gray-700">MoU Validity
-                              Date:</label>
-                            <input type="date" id="mouValidityDate" v-model="registrationForm.mouValidityDate"
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                          </div>
-                        </div>
-                        <div class="mt-6 flex justify-end space-x-2">
-                          <button type="button"
-                            class="rounded-md px-6 py-2 font-semibold text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-all"
-                            @click="registerEcpfAndApproveOperation">
-                            <DocumentArrowDownIcon class="h-4 w-4 inline-block mr-1" />
-                            Register ECPF & Approve Operation
-                          </button>
+                          <div class="mt-6 flex justify-end space-x-2">
+                            <button type="button"
+                              class="rounded-md px-6 py-2 font-semibold text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-all"
+                              @click="registerEcpfAndApproveOperation">
+                              <DocumentArrowDownIcon class="h-4 w-4 inline-block mr-1" />
+                              Register ECPF & Approve Operation
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -392,8 +420,8 @@
                   </div>
                 </div>
               </div>
-  
-                <!-- Footer buttons -->
+
+              <!-- Footer buttons -->
               <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button type="button"
                   class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-all"
@@ -507,8 +535,8 @@ const generateRecommendationLetter = () => {
 };
 
 const registerEcpfAndApproveOperation = () => {
-    console.log("registerEcpfAndApproveOperation called");
-    registerEcpf();
+  console.log("registerEcpfAndApproveOperation called");
+  registerEcpf();
 };
 
 const registerEcpf = () => {
@@ -527,15 +555,15 @@ const formatDate = (dateString) => {
 
 //Computed property to get Application Status.
 const getApplicationStatus = computed(() => {
-    // Default Status
-    let status = "Pending";
-    if (props.application && props.application.verificationStatus === "Approved" && props.application.evaluationStatus === "Approved") {
-      status = "Approved";
-    } else if (props.application && (props.application.verificationStatus === "Rejected" || props.application.evaluationStatus === "Rejected")) {
-      status = "Rejected";
-    }
-    return status;
-  });
+  // Default Status
+  let status = "Pending";
+  if (props.application && props.application.verificationStatus === "Approved" && props.application.evaluationStatus === "Approved") {
+    status = "Approved";
+  } else if (props.application && (props.application.verificationStatus === "Rejected" || props.application.evaluationStatus === "Rejected")) {
+    status = "Rejected";
+  }
+  return status;
+});
 
 // Tab data
 const tabs = ref([
