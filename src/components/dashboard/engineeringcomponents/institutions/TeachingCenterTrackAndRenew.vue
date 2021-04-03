@@ -38,7 +38,7 @@
     <div v-else>
       <!-- Teaching Center Cards -->
       <div v-for="center in filteredTeachingCenters" :key="center.id"
-        class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+        class="bg-white rounded-xl shadow-md overflow-hidden mb-6 relative">
         <!-- Center Status Header -->
         <div class="p-6">
           <!-- Status Indicator -->
@@ -62,16 +62,16 @@
           </div>
         </div>
 
-
-
         <!-- Center Details -->
         <div class="p-6">
           <!-- Expiration Alert -->
           <div v-if="center.is_active && getDaysUntilExpiration(center) <= 90" class="mb-6 p-4 rounded-lg" :class="[
-      getDaysUntilExpiration(center) <= 30
-        ? 'bg-red-50 text-red-700 border border-red-200'
-        : 'bg-yellow-50 text-yellow-700 border border-yellow-200',
-    ]">
+              getDaysUntilExpiration(center) <= 0
+                ? 'bg-red-50 text-red-700 border border-red-200'
+                : getDaysUntilExpiration(center) <= 30
+                  ? 'bg-red-50 text-red-700 border border-red-200'
+                  : 'bg-yellow-50 text-yellow-700 border border-yellow-200',
+            ]">
             <div class="flex items-start">
               <div class="flex-shrink-0 mt-0.5">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -83,18 +83,16 @@
               <div class="ml-3">
                 <h3 class="text-sm font-medium">
                   {{
-      getDaysUntilExpiration(center) <= 0 ? 'Registration Expired!' : getDaysUntilExpiration(center) <= 30
-        ? 'Registration Expiring Soon!' : 'Registration Renewal Recommended' }} </h3>
+                      getDaysUntilExpiration(center) <= 0 ? 'Registration Expired!' : getDaysUntilExpiration(center) <= 30
+                        ? 'Registration Expiring Soon!' : 'Registration Renewal Recommended' }} </h3>
                     <div class="mt-1 text-sm">
                       <p v-if="getDaysUntilExpiration(center) <= 0">
-                        Your teaching center registration has expired. Please renew immediately to
-                        maintain your
-                        registration status.
+                        Your teaching center registration has expired on {{ formatDate(center.valid_till) }}. Please renew immediately to maintain your registration status.
                       </p>
                       <p v-else>
                         Your teaching center registration will expire in {{
-      getDaysUntilExpiration(center)
-    }} days
+                            getDaysUntilExpiration(center)
+                          }} days
                         ({{ formatDate(center.valid_till) }}). Please renew your registration to
                         maintain your status.
                       </p>
@@ -105,6 +103,7 @@
 
           <!-- Center Information -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- Registration Details Block -->
             <div>
               <h4 class="text-sm font-medium text-gray-500 mb-1">Registration Details</h4>
               <div class="p-4 bg-gray-50 rounded-lg">
@@ -112,47 +111,44 @@
                   <div>
                     <p class="text-xs text-gray-500">Registration Status</p>
                     <p class="text-sm font-medium" :class="center.is_active ? 'text-green-600' : 'text-yellow-600'">
-                      {{ center.is_active ? 'Active' : 'Pending' }}
+                      {{ center.is_active ? 'Active' : 'Pending Review' }}
                     </p>
                   </div>
                   <div>
                     <p class="text-xs text-gray-500">Valid From</p>
                     <p class="text-sm font-medium text-gray-800">
                       {{ formatDate(center.valid_since) }}
-                      <button v-if="!center.valid_since" @click="setDefaultDates(center)"
-                        class="ml-2 text-xs text-blue-600 hover:text-blue-800">
-                        Set Default Dates
-                      </button>
                     </p>
                   </div>
                   <div>
                     <p class="text-xs text-gray-500">Valid Until</p>
                     <p class="text-sm font-medium" :class="[
-      !center.valid_till
-        ? 'text-gray-800'
-        : getDaysUntilExpiration(center) <= 0
-          ? 'text-red-600'
-          : getDaysUntilExpiration(center) <= 30
-            ? 'text-orange-600'
-            : 'text-gray-800',
-    ]">
+                        !center.valid_till
+                          ? 'text-gray-800'
+                          : getDaysUntilExpiration(center) <= 0
+                            ? 'text-red-600 font-bold'
+                            : getDaysUntilExpiration(center) <= 30
+                              ? 'text-orange-600'
+                              : 'text-gray-800',
+                      ]">
                       {{ formatDate(center.valid_till) }}
                     </p>
                   </div>
                   <div>
                     <p class="text-xs text-gray-500">Review Decision</p>
                     <p class="text-sm font-medium" :class="{
-      'text-green-600': center.tc_review_decision === 'Approved',
-      'text-yellow-600': center.tc_review_decision === 'Pending',
-      'text-red-600': center.tc_review_decision === 'Rejected',
-    }">
-                      {{ center.tc_review_decision }}
+                        'text-green-600': center.tc_review_decision === 'Approved',
+                        'text-yellow-600': center.tc_review_decision === 'Pending',
+                        'text-red-600': center.tc_review_decision === 'Rejected',
+                      }">
+                      {{ center.tc_review_decision || 'N/A' }}
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
+            <!-- Center Information Block -->
             <div>
               <h4 class="text-sm font-medium text-gray-500 mb-1">Center Information</h4>
               <div class="p-4 bg-gray-50 rounded-lg">
@@ -200,40 +196,24 @@
             </div>
           </div>
 
-          <!-- Renewal Button - only show if active, within 3 months of expiration, and not already in renewal process -->
-          <div class="flex justify-end mt-8"
+          <!-- RENEWAL ACTION AREA -->
+          <div class="flex justify-center mt-8"
             v-if="center.is_active && getDaysUntilExpiration(center) <= 90 && !isRenewalInProgress(center)">
             <button @click="openRenewalDialog(center)"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline"
-              :class="{ 'animate-pulse': getDaysUntilExpiration(center) <= 30 }">
-              Renew Teaching Center
+              :class="[
+                'text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out',
+                getDaysUntilExpiration(center) <= 0
+                  ? 'bg-red-600 hover:bg-red-700'
+                  : 'bg-blue-600 hover:bg-blue-700',
+                { 'animate-pulse': getDaysUntilExpiration(center) <= 30 }
+              ]">
+              {{ getDaysUntilExpiration(center) <= 0 ? 'Renew Expired Registration' : 'Renew Teaching Center' }}
             </button>
           </div>
-          <!-- Action Buttons -->
-          <div class="flex justify-end mt-8 space-x-4">
-            <!-- View Certificate Button - only show if active -->
-            <button v-if="center.is_active" @click="openCertificateDialog(center)"
-              class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline">
-              <span class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                View Certificate
-              </span>
-            </button>
+          <!-- END RENEWAL ACTION AREA -->
 
-            <!-- Renewal Button - only show if active, within 3 months of expiration, and not already in renewal process -->
-            <button v-if="center.is_active && getDaysUntilExpiration(center) <= 90 && !isRenewalInProgress(center)"
-              @click="openRenewalDialog(center)"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline"
-              :class="{ 'animate-pulse': getDaysUntilExpiration(center) <= 30 }">
-              Renew Teaching Center
-            </button>
-          </div>
 
-          <!-- Renewal in progress message / Application in progress-->
+          <!-- Renewal in progress message / Application in progress -->
           <div v-if="isRenewalInProgress(center)"
             class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700">
             <h4 class="font-medium">Renewal In Progress</h4>
@@ -258,13 +238,12 @@
             <p class="mt-1 text-sm">
               Reason: {{ center.tc_reason_if_rejected }}
             </p>
-            <div class="mt-3">
+            <div class="mt-3 flex justify-center">
               <button @click="openRenewalDialog(center)"
                 class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline">
                 Apply Again
               </button>
             </div>
-
           </div>
         </div>
       </div>
@@ -274,9 +253,7 @@
     <div v-if="showRenewalDialog" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-2xl w-full">
         <h3 class="text-xl font-bold text-gray-900 mb-4">Teaching Center Renewal Application</h3>
-
-        <!-- Renewal Form -->
-        <form @submit.prevent="confirmRenewal" class="space-y-6">
+         <form @submit.prevent="confirmRenewal" class="space-y-6">
           <div v-if="selectedCenter">
             <!-- Teaching Center Details -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -350,8 +327,8 @@
           </div>
 
           <div v-if="isRenewing" class="flex items-center justify-center mb-4">
-            <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
-            <p>Processing renewal...</p>
+            <Loader class="inline-block animate-spin text-blue-600 w-6 h-6 mr-2" />
+            <p class="text-gray-600">Processing renewal...</p>
           </div>
 
           <div class="flex justify-end space-x-4">
@@ -369,21 +346,15 @@
         </form>
       </div>
     </div>
-    <!-- Certificate Dialog -->
-    <CertificateDialog v-if="showCertificateDialog" :show="showCertificateDialog" :center-data="selectedCenter"
-      :cert-type="'teaching-center'" @close="closeCertificateDialog" />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useAuthStore } from '@/stores/authStore'; // Corrected import
+import { useAuthStore } from '@/stores/authStore';
 import { useToast } from 'vue-toastification';
 import apiServices from '@/services/services';
-import { Loader } from 'lucide-vue-next'
-import CertificateDialog from './CertificateDialog.vue'; // Add this import
-
-
+import { Loader } from 'lucide-vue-next';
 
 // State variables
 const teachingCenters = ref([]);
@@ -395,9 +366,6 @@ const isRenewing = ref(false);
 const selectedCenter = ref(null);
 const selectedFile = ref(null);
 const selectedFileName = ref('');
-const showCertificateDialog = ref(false);
-
-
 
 // Renewal form data
 const renewalFormData = ref({
@@ -407,15 +375,17 @@ const renewalFormData = ref({
 });
 
 const toast = useToast();
-const authStore = useAuthStore(); // Use the auth store
-
-console.log('cid is ', authStore.user.cid)
+const authStore = useAuthStore();
 
 // Computed property for filtered teaching centers
 const filteredTeachingCenters = computed(() => {
+  if (!authStore.user || !authStore.user.cid) {
+      console.warn('User CID not available in authStore');
+      return [];
+  }
   return teachingCenters.value.filter(center => {
-    console.log('cid in reposnse is ', center.institute.CID)
-    return center.institute && center.institute.CID === authStore.user.cid;
+    const centerCid = center.institute?.CID;
+    return centerCid === authStore.user.cid;
   });
 });
 
@@ -423,20 +393,45 @@ const filteredTeachingCenters = computed(() => {
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
   try {
-    return new Date(dateString).toLocaleDateString();
+    const date = new Date(dateString);
+     if (isNaN(date.getTime())) {
+        throw new Error("Invalid date string provided");
+     }
+     if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const [year, month, day] = dateString.split('-').map(Number);
+        return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString();
+     }
+    return date.toLocaleDateString();
+
   } catch (e) {
-    console.error('Error formatting date:', e);
-    return 'N/A';
+    console.error('Error formatting date:', dateString, e);
+    return 'Invalid Date';
   }
 };
 
 // Calculate days until expiration
 const getDaysUntilExpiration = (center) => {
   if (!center.valid_till) return 0;
+  if(!center.is_active) return Infinity;
 
   try {
     const today = new Date();
-    const expirationDate = new Date(center.valid_till);
+    today.setHours(0, 0, 0, 0);
+
+     let expirationDate;
+     if (String(center.valid_till).match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const [year, month, day] = center.valid_till.split('-').map(Number);
+        expirationDate = new Date(Date.UTC(year, month - 1, day));
+     } else {
+       expirationDate = new Date(center.valid_till);
+     }
+
+    if (isNaN(expirationDate.getTime())) {
+       console.error("Invalid expiration date parsed:", center.valid_till);
+       return 0;
+    }
+    expirationDate.setHours(0, 0, 0, 0);
+
     const timeDiff = expirationDate.getTime() - today.getTime();
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   } catch (e) {
@@ -445,81 +440,37 @@ const getDaysUntilExpiration = (center) => {
   }
 };
 
+
 // Check if renewal is in progress
 const isRenewalInProgress = (center) => {
   return center.tc_review_decision === 'Pending' && !center.is_active;
 };
 
-//Function to check if the application is a renewal or new
+// Function to check if the application record represents a renewal
 const isRenewal = (center) => {
-  if (!center.created_at) return false;
-  const createdDate = new Date(center.created_at);
-  const today = new Date();
-  const diffInMonths = (today.getFullYear() - createdDate.getFullYear()) * 12 + (today.getMonth() - createdDate.getMonth());
-  return diffInMonths >= 12;
+  return !!center.valid_since;
 };
 
-// Get status header class based on expiration
-// Updated getStatusHeaderClass function
+
+// Get status indicator class based on status and expiration
 const getStatusIndicatorClass = (center) => {
   if (!center.is_active) {
+    if (center.tc_review_decision === 'Rejected') {
+      return 'bg-red-600';
+    }
     return 'bg-yellow-600';
   }
-  if (getDaysUntilExpiration(center) <= 0) {
+  const daysLeft = getDaysUntilExpiration(center);
+  if (daysLeft <= 0) {
     return 'bg-red-600';
   }
-  if (getDaysUntilExpiration(center) <= 30) {
-    return 'bg-orange-600';
+  if (daysLeft <= 30) {
+    return 'bg-orange-500';
   }
-  if (getDaysUntilExpiration(center) <= 90) {
-    return 'bg-yellow-600'
+  if (daysLeft <= 90) {
+    return 'bg-yellow-500';
   }
   return 'bg-green-600';
-};
-
-// Function to set default dates if they're missing
-const setDefaultDates = async (center) => {
-  if (!center || !center.id) {
-    toast.error('Teaching center data not available');
-    return;
-  }
-
-  try {
-    // Set default values for validity dates
-    const today = new Date();
-    const oneYearFromNow = new Date(today);
-    oneYearFromNow.setFullYear(today.getFullYear() + 1);
-
-    // Format dates for API
-    const validSince = today.toISOString().split('T')[0];
-    const validTill = oneYearFromNow.toISOString().split('T')[0];
-
-    // Prepare payload for PATCH request
-    const updateData = {
-      valid_since: validSince,
-      valid_till: validTill,
-    };
-
-    // Send PATCH request to update teaching center
-    await apiServices.patchEpcTeachingCenter(center.id, updateData);
-
-    // Update local data
-    const updatedCenters = teachingCenters.value.map((c) => {
-      if (c.id === center.id) {
-        return { ...c, valid_since: validSince, valid_till: validTill };
-      }
-      return c;
-    });
-
-    teachingCenters.value = updatedCenters;
-
-    toast.success('Default dates set successfully!');
-  } catch (error) {
-    console.error('Error setting default dates:', error);
-    toast.error(
-      error.response?.data?.message || 'Failed to set default dates. Please try again.'
-    );
-  }
 };
 
 // File upload handler
@@ -528,9 +479,11 @@ const handleFileUpload = (event) => {
   if (file) {
     selectedFile.value = file;
     selectedFileName.value = file.name;
+    renewalFormData.value.tc_attachments = file;
   } else {
     selectedFile.value = null;
     selectedFileName.value = '';
+     renewalFormData.value.tc_attachments = null;
   }
 };
 
@@ -542,8 +495,11 @@ const openRenewalDialog = (center) => {
     remarks: '',
     tc_declaration: false,
   };
+  selectedFile.value = null;
+  selectedFileName.value = '';
   showRenewalDialog.value = true;
 };
+
 
 // Close renewal dialog
 const closeRenewalDialog = () => {
@@ -551,6 +507,11 @@ const closeRenewalDialog = () => {
   selectedCenter.value = null;
   selectedFile.value = null;
   selectedFileName.value = '';
+   renewalFormData.value = {
+    tc_attachments: null,
+    remarks: '',
+    tc_declaration: false,
+  };
 };
 
 // Submit renewal request
@@ -562,115 +523,114 @@ const confirmRenewal = async () => {
   }
 
   if (!renewalFormData.value.tc_declaration) {
-    toast.error('Please accept the declaration');
+    toast.warning('Please accept the declaration before submitting.');
     return;
   }
 
   isRenewing.value = true;
 
   try {
-    // Calculate new valid till date (current valid_till + 1 day + 12 months)
-    let currentValidTill = new Date(selectedCenter.value.valid_till || new Date());
-    let newValidTill = new Date(currentValidTill);
-    newValidTill.setDate(newValidTill.getDate() + 1); // Add 1 day
-    newValidTill.setMonth(newValidTill.getMonth() + 12); // Add 12 months
-
-    // Prepare FormData for PATCH request with file upload
     const formData = new FormData();
 
-    // Add renewal fields
     formData.append('tc_review_decision', 'Pending');
     formData.append('is_payment_complete', false);
     formData.append('is_active', false);
     formData.append('remarks', renewalFormData.value.remarks || '');
-    formData.append('tc_declaration', true);
+    formData.append('tc_declaration', renewalFormData.value.tc_declaration);
+    formData.append('valid_since', new Date().toISOString().split('T')[0]);
 
-    // Add dates
-    formData.append('valid_since', new Date().toISOString().split('T')[0]); // Today's date
-    formData.append('valid_till', newValidTill.toISOString().split('T')[0]); // New expiration date
-
-    // Add file if selected
     if (selectedFile.value) {
-      formData.append('tc_attachments', selectedFile.value);
+      formData.append('tc_attachments', selectedFile.value, selectedFileName.value);
     }
 
-    // Send PATCH request to update teaching center
-    await apiServices.patchEpcTeachingCenter(selectedCenter.value.id, formData);
+    if (selectedCenter.value.institute?.id) {
+        formData.append('institute', selectedCenter.value.institute.id);
+    } else {
+        console.warn("Institute ID not found for selected center. Renewal might fail if required.");
+    }
 
-    // Update local data
-    const updatedCenters = teachingCenters.value.map((center) => {
-      if (center.id === selectedCenter.value.id) {
-        return {
-          ...center,
-          tc_review_decision: 'Pending',
-          is_payment_complete: false,
-          is_active: false,
-          valid_since: new Date().toISOString().split('T')[0],
-          valid_till: newValidTill.toISOString().split('T')[0],
-          remarks: renewalFormData.value.remarks || center.remarks,
-          tc_declaration: true,
-        };
-      }
-      return center;
-    });
+    console.log("Submitting renewal data for center ID:", selectedCenter.value.id);
+    for (let pair of formData.entries()) {
+        console.log(pair[0]+ ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+    }
 
-    teachingCenters.value = updatedCenters;
+    const response = await apiServices.patchEpcTeachingCenter(selectedCenter.value.id, formData);
+    console.log("Renewal API Response:", response);
 
-    toast.success('Teaching center renewal initiated successfully!');
+    await fetchData();
 
-    // Close dialog
+    toast.success('Teaching center renewal submitted successfully! Status is pending review.');
     closeRenewalDialog();
+
   } catch (error) {
     console.error('Error initiating teaching center renewal:', error);
-    toast.error(
-      error.response?.data?.message || 'Failed to initiate renewal. Please try again.'
-    );
+    if (error.response) {
+        console.error("Error Response Data:", error.response.data);
+        const apiErrorMessage = typeof error.response.data === 'string' ? error.response.data : (error.response.data?.message || error.response.data?.detail || 'Detailed error message not provided by server.');
+        errorMessage.value = `Renewal failed: ${apiErrorMessage} (Status: ${error.response.status})`;
+    } else if (error.request) {
+        errorMessage.value = 'Renewal failed: No response received from server. Check network connection.';
+    } else {
+        errorMessage.value = `Renewal failed: ${error.message}`;
+    }
+     toast.error(errorMessage.value);
   } finally {
     isRenewing.value = false;
   }
 };
 
+
 // Fetch teaching centers data
 const fetchData = async () => {
   isLoading.value = true;
   apiError.value = false;
+  errorMessage.value = '';
 
   try {
-    // Fetch teaching centers
+    console.log("Fetching teaching centers...");
     const response = await apiServices.getEpcTeachingCenters();
+    console.log("API Response:", response);
 
-    if (response && response.data && response.data.results) {
+    if (response?.data?.results) {
       teachingCenters.value = response.data.results;
+      console.log("Teaching centers loaded:", teachingCenters.value.length);
+      teachingCenters.value.forEach(c => console.log(`Loaded Center ID: ${c.id}, Institute CID: ${c.institute?.CID}`));
     } else {
       teachingCenters.value = [];
+       console.log("No teaching center results found in response.");
     }
   } catch (error) {
     console.error('Error fetching teaching centers:', error);
-    errorMessage.value =
-      error.response?.data?.message || 'Error fetching teaching center data. Please try again.';
+     if (error.response) {
+        errorMessage.value = `Error fetching data: ${error.response.data?.detail || error.response.statusText} (Status: ${error.response.status})`;
+    } else if (error.request) {
+         errorMessage.value = 'Error fetching data: No response from server.';
+    } else {
+         errorMessage.value = `Error fetching data: ${error.message}`;
+    }
     apiError.value = true;
+    teachingCenters.value = [];
   } finally {
     isLoading.value = false;
   }
 };
 
-// Add these functions with your other functions
-
-// Open certificate dialog
-const openCertificateDialog = (center) => {
-  selectedCenter.value = center;
-  showCertificateDialog.value = true;
-};
-
-// Close certificate dialog
-const closeCertificateDialog = () => {
-  showCertificateDialog.value = false;
-  selectedCenter.value = null;
-};
 // Fetch data on component mount
-onMounted(fetchData);
+onMounted(() => {
+    if (authStore.user && authStore.user.cid) {
+        fetchData();
+    } else {
+        console.warn("User info not available on mount, delaying fetch or handle appropriately.");
+        isLoading.value = false;
+        apiError.value = true;
+        errorMessage.value = "User information not loaded. Please ensure you are logged in.";
+    }
+});
+
 </script>
 
 <style scoped>
-/* Add any component-specific styles here if needed */
+button {
+  transition: background-color 0.2s ease-in-out;
+}
 </style>
