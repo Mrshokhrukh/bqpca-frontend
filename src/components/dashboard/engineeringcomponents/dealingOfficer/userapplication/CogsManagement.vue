@@ -179,14 +179,14 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex flex-col space-y-2">
+                    <!-- MODIFIED: Removed the restrictive v-if condition -->
                     <button
-                      v-if="application.review_status === 'Approved' && application.endorsement_decision === 'Approved' && application.is_payment_complete"
                       @click="reviewApplication(application)"
-
                       class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                       <EyeIcon class="h-4 w-4 mr-1" />
-                      View
+                      View Details <!-- Optional: Changed text slightly -->
                     </button>
+                    <!-- Kept the conditional logic for the download button -->
                     <button v-if="application.endorsement_decision === 'Approved'"
                       @click="downloadCertificate(application.id)"
                       class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
@@ -289,9 +289,9 @@ import {
   ChevronsRightIcon,
   XIcon
 } from 'lucide-vue-next'
-import apiServices from '@/services/services'
-import CogsReviewModal from '../modals/CogsReviewModal.vue'
-import CogsConfirmationModal from '../modals/CogsConfirmationModal.vue'
+import apiServices from '@/services/services' // Adjust path if necessary
+import CogsReviewModal from '../modals/CogsReviewModal.vue' // Adjust path if necessary
+import CogsConfirmationModal from '../modals/CogsConfirmationModal.vue' // Adjust path if necessary
 
 const applications = ref([])
 const isLoading = ref(false)
@@ -299,7 +299,7 @@ const error = ref(null)
 const searchQuery = ref('')
 const statusFilter = ref('')
 const currentPage = ref(1)
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(10) // You can adjust items per page here
 const selectedApplication = ref(null)
 const showConfirmation = ref(false)
 const confirmationMessage = ref('')
@@ -336,15 +336,18 @@ const getInitials = (name) => {
     .toUpperCase();
 };
 
+// Computed property for filtered applications based on search and status
 const filteredApplications = computed(() => {
   let filtered = applications.value;
 
+  // Filter by status
   if (statusFilter.value) {
     filtered = filtered.filter(app =>
       app.review_status === statusFilter.value || app.endorsement_decision === statusFilter.value
     );
   }
 
+  // Filter by search query
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(app =>
@@ -357,40 +360,48 @@ const filteredApplications = computed(() => {
   return filtered;
 });
 
+// Computed property for total pages based on filtered applications
 const totalPages = computed(() => {
   return Math.ceil(filteredApplications.value.length / itemsPerPage.value);
 });
 
+// Computed property for applications to display on the current page
 const displayedApplications = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
   return filteredApplications.value.slice(start, end);
 });
 
+// Fetch data from API
 const fetchData = async () => {
   isLoading.value = true;
   error.value = null;
   try {
+    // Replace with your actual API endpoint call
     const response = await apiServices.getEpcCogs();
-    applications.value = response.data.results;
+    // Assuming the API returns data in response.data or response.data.results
+    applications.value = response.data.results || response.data || [];
   } catch (err) {
     error.value = 'Failed to load applications. Please try again later.';
     console.error('Error fetching applications:', err);
+    applications.value = []; // Clear applications on error
   } finally {
     isLoading.value = false;
   }
 };
 
+// Get Tailwind classes for status badges
 const getStatusClass = (status) => {
   const classes = {
     'Pending': 'bg-yellow-100 text-yellow-800',
     'Approved': 'bg-green-100 text-green-800',
     'Rejected': 'bg-red-100 text-red-800',
-    'Processing': 'bg-blue-100 text-blue-800',
+    'Processing': 'bg-blue-100 text-blue-800', // Example for another status
   };
-  return classes[status] || 'bg-gray-100 text-gray-800';
+  return classes[status] || 'bg-gray-100 text-gray-800'; // Default/fallback style
 };
 
+// Get Tailwind classes for status dots
 const getStatusDotClass = (status) => {
   const classes = {
     'Pending': 'bg-yellow-500',
@@ -401,99 +412,142 @@ const getStatusDotClass = (status) => {
   return classes[status] || 'bg-gray-500';
 };
 
+// Reset search and filter parameters
 const resetFilters = () => {
   searchQuery.value = '';
   statusFilter.value = '';
-  currentPage.value = 1;
+  currentPage.value = 1; // Reset to first page
 };
 
+// Open the review modal
 const reviewApplication = (application) => {
   selectedApplication.value = application;
 };
 
+// Download certificate function
 const downloadCertificate = async (id) => {
+  // Add loading state for download if needed
   try {
-    const response = await apiServices.downloadCogsCertificate(id);
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `COGS_Certificate_${id}.pdf`);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    const response = await apiServices.downloadCogsCertificate(id); // Ensure this service exists and is correctly implemented
 
-    // Show success toast
-    toastMessage.value = 'Certificate downloaded successfully';
-    showSuccessToast.value = true;
-    setTimeout(() => {
-      showSuccessToast.value = false;
-    }, 3000);
+    // Check if the response is successful and is a blob (file)
+    if (response.status === 200 && response.data instanceof Blob) {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        // Extract filename from content-disposition header if available, otherwise use a default name
+        const contentDisposition = response.headers['content-disposition'];
+        let filename = `COGS_Certificate_${id}.pdf`; // Default filename
+        if (contentDisposition) {
+            const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+            const matches = filenameRegex.exec(contentDisposition);
+            if (matches != null && matches[1]) {
+                filename = matches[1].replace(/['"]/g, '');
+            }
+        }
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url); // Clean up the object URL
+
+        // Show success toast
+        toastMessage.value = 'Certificate downloaded successfully';
+        showSuccessToast.value = true;
+        setTimeout(() => {
+            showSuccessToast.value = false;
+        }, 3000);
+    } else {
+       throw new Error('Invalid response received for download');
+    }
   } catch (err) {
     console.error('Error downloading certificate:', err);
-    error.value = 'Failed to download certificate. Please try again later.';
+    error.value = 'Failed to download certificate. Please ensure the file exists and the server is responding correctly.';
+    // Optionally show an error toast
   }
 };
 
+
+// Handle update event from the modal (before confirmation)
 const handleUpdate = (data) => {
   // Set confirmation data and show confirmation modal
   confirmData.value = data;
 
-  const action = data.review_status || data.endorsement_decision;
-  const type = data.review_status ? 'review' : 'endorsement';
+  const action = data.review_status || data.endorsement_decision || 'update';
+  const type = data.review_status ? 'review' : (data.endorsement_decision ? 'endorsement' : 'application');
 
   confirmationMessage.value = `Are you sure you want to ${action.toLowerCase()} this ${type}?`;
   showConfirmation.value = true;
 };
 
+// Confirm the action after user clicks 'Confirm' in the modal
 const confirmReviewAction = async () => {
   showConfirmation.value = false;
-  if (!confirmData.value) return;
+  if (!confirmData.value || !selectedApplication.value) return;
+
+  isLoading.value = true; // Indicate processing
+  error.value = null;
 
   try {
+    // Replace with your actual API endpoint call for patching/updating
     const response = await apiServices.patchEpcCogs(selectedApplication.value.id, confirmData.value);
+
     if (response.status === 200) {
+      // Find and update the application in the local list
       const index = applications.value.findIndex(app => app.id === selectedApplication.value.id);
       if (index !== -1) {
-        applications.value = [
-          ...applications.value.slice(0, index),
-          { ...applications.value[index], ...response.data },
-          ...applications.value.slice(index + 1)
-        ];
+        // Create a new array with the updated item to maintain reactivity
+        const updatedApp = { ...applications.value[index], ...response.data };
+        const newApplications = [...applications.value];
+        newApplications[index] = updatedApp;
+        applications.value = newApplications;
       }
 
       // Show success toast
-      const action = confirmData.value.review_status || confirmData.value.endorsement_decision;
-      const type = confirmData.value.review_status ? 'Review' : 'Endorsement';
+      const action = confirmData.value.review_status || confirmData.value.endorsement_decision || 'updated';
+      const type = confirmData.value.review_status ? 'Review' : (confirmData.value.endorsement_decision ? 'Endorsement' : 'Application');
       toastMessage.value = `${type} ${action.toLowerCase()} successfully`;
       showSuccessToast.value = true;
       setTimeout(() => {
         showSuccessToast.value = false;
-      }, 3000);
+      }, 3000); // Hide toast after 3 seconds
 
-      closeReviewModal();
+      closeReviewModal(); // Close the review modal
     } else {
-      console.error("Failed to update application", response);
-      error.value = "Failed to update application. Please try again.";
+      // Handle non-200 success responses if necessary
+      console.error("Failed to update application, status:", response.status, response.data);
+      error.value = `Failed to update application. Server responded with status ${response.status}.`;
     }
   } catch (err) {
-    console.error('Error updating application:', err);
-    error.value = "Failed to update application, please try again.";
+    console.error('Error updating application:', err.response?.data || err.message || err);
+    error.value = `Failed to update application: ${err.response?.data?.detail || err.message || 'Please try again.'}`;
+    // Optionally show an error toast here
+  } finally {
+    isLoading.value = false;
+    confirmData.value = null; // Clear confirmation data
   }
 };
 
+
+// Close the review modal
 const closeReviewModal = () => {
   selectedApplication.value = null;
 };
 
+// Cancel the action from the confirmation modal
 const cancelReviewAction = () => {
   showConfirmation.value = false;
-  confirmData.value = null;
+  confirmData.value = null; // Clear potentially staged data
 };
 
+// Watch for changes in search query or status filter to reset pagination
 watch([searchQuery, statusFilter], () => {
-  currentPage.value = 1;
+  if (currentPage.value !== 1) {
+    currentPage.value = 1; // Go back to page 1 when filters change
+  }
 });
 
+// Fetch data when the component mounts
 onMounted(fetchData);
 </script>
 
@@ -509,9 +563,9 @@ onMounted(fetchData);
   transition: box-shadow 0.2s ease-in-out;
 }
 
-/* Optional: Add subtle hover effect to the table rows */
+/* Optional: Add subtle hover effect to the table rows with a left border indicator */
 tbody tr {
-  position: relative;
+  position: relative; /* Needed for absolute positioning of the pseudo-element */
 }
 
 tbody tr:hover::after {
@@ -519,8 +573,29 @@ tbody tr:hover::after {
   position: absolute;
   left: 0;
   top: 0;
-  height: 100%;
-  width: 4px;
-  background-color: #3b82f6;
+  bottom: 0; /* Use top/bottom or height */
+  width: 4px; /* Width of the indicator */
+  background-color: #3b82f6; /* Tailwind's blue-500 */
+  border-top-left-radius: 2px; /* Optional: slightly rounded corners */
+  border-bottom-left-radius: 2px;
+  transition: background-color 0.2s ease-in-out; /* Match hover transition */
 }
+
+/* Ensure pagination buttons have clear focus styles for accessibility */
+button:focus-visible {
+    outline: 2px solid #2563eb; /* Tailwind's blue-600 */
+    outline-offset: 2px;
+}
+
+/* Smooth transition for the toast notification */
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+.opacity-0 { opacity: 0; }
+.opacity-100 { opacity: 1; }
+.translate-y-8 { transform: translateY(2rem); }
+.translate-y-0 { transform: translateY(0); }
+
 </style>
