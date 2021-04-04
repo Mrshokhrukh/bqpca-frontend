@@ -5,7 +5,7 @@
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-          Total: {{ filteredApplications.length }}
+          Total Matches: {{ filteredCombinedData.length }}
         </span>
         <span class="mx-4">|</span>
         <span class="flex items-center">
@@ -44,63 +44,66 @@
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Applicant
               </th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Registration
-                No.</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reg. No.</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Primary
                 Qualification</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Renewal
                 Status</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Expiry Date
-              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Original
+                Expiry</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
-            <tr v-for="app in paginatedApplications" :key="app.id" class="hover:bg-gray-50 transition-colors">
+            <tr v-for="item in paginatedCombinedData" :key="item.renewal_id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                #{{ app.id }}
+                #{{ item.renewal_id }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                    <span class="text-gray-600 text-xs">{{ getInitials(app) }}</span>
+                    <span class="text-gray-600 text-xs">{{ getInitials(item) }}</span>
                   </div>
                   <div>
-                    <div class="text-sm font-medium text-gray-900">{{ app.full_name }}</div>
-                    <div class="text-sm text-gray-500">{{ app.cid_no }}</div>
+                    <div class="text-sm font-medium text-gray-900">{{ item.full_name }}</div>
+                    <div class="text-sm text-gray-500">{{ item.cid_no }}</div>
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {{ app.registration_no || 'N/A' }}
+                {{ item.registration_no }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                <template v-if="getPrimaryQualification(app)">
-                  {{ getPrimaryQualification(app).qualification_name_display || 'N/A' }}
+                <template v-if="getPrimaryQualification(item)">
+                  {{ getPrimaryQualification(item).qualification_name_display || 'N/A' }}
                 </template>
                 <template v-else>
                   N/A
                 </template>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="getRenewalStatusClasses(app)">
-                  {{ getRenewalStatus(app) }}
+                <span :class="getRenewalStatusClasses(item)">
+                  {{ getRenewalStatus(item) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(app.expiry_date) }}
+                {{ formatDate(item.expiry_date) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
-                  <button @click="viewDetails(app)"
+                  <button @click="viewDetails(item)"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
                 </div>
               </td>
             </tr>
-            <tr v-if="paginatedApplications.length === 0">
+            <tr v-if="!isLoading && paginatedCombinedData.length === 0">
               <td colspan="7" class="px-6 py-8 text-center text-gray-500">
-                {{ isLoading ? 'Loading application data...' : 'No renewal applications found that match your criteria'
-                }}
+                {{ 'No renewal applications found that match your criteria' }}
+              </td>
+            </tr>
+            <tr v-if="isLoading">
+              <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                Loading renewal application data...
               </td>
             </tr>
           </tbody>
@@ -108,7 +111,18 @@
       </div>
     </div>
 
-    <div class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+    <div v-if="!isLoading && filteredCombinedData.length > itemsPerPage"
+      class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+      <div class="flex-1 flex justify-between sm:hidden">
+        <button @click="prevPage" :disabled="currentPage === 1"
+          class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+          Previous
+        </button>
+        <button @click="nextPage" :disabled="currentPage === totalPages"
+          class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+          Next
+        </button>
+      </div>
       <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
           <p class="text-sm text-gray-700">
@@ -117,7 +131,7 @@
             to
             <span class="font-medium">{{ paginationEnd }}</span>
             of
-            <span class="font-medium">{{ filteredApplications.length }}</span>
+            <span class="font-medium">{{ filteredCombinedData.length }}</span>
             results
           </p>
         </div>
@@ -126,18 +140,24 @@
             <button @click="prevPage" :disabled="currentPage === 1"
               class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
               <span class="sr-only">Previous</span>
-              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                aria-hidden="true">
                 <path fill-rule="evenodd"
-                  d="M12 1.586l-9.707 9.707a1 1 0 0 1-1.414-1.414l10.414-10.414a1 1 0 0 1 1.414 0l10.414 10.414a1 1 0 0 1-1.414 1.414L12 1.586z"
+                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
                   clip-rule="evenodd" />
               </svg>
             </button>
+            <span
+              class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+              Page {{ currentPage }} of {{ totalPages }}
+            </span>
             <button @click="nextPage" :disabled="currentPage === totalPages"
               class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
               <span class="sr-only">Next</span>
-              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                aria-hidden="true">
                 <path fill-rule="evenodd"
-                  d="M12 18.414l9.707-9.707a1 1 0 0 0-1.414-1.414L12 15.586 3.707 7.293a1 1 0 0 0-1.414 1.414l9.707 9.707z"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                   clip-rule="evenodd" />
               </svg>
             </button>
@@ -146,228 +166,298 @@
       </div>
     </div>
 
-    <RenewalDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
-      @update="handleUpdate" :personnel-categories="personnelCategories"
-      :personnel-subcategories="personnelSubcategories" :sectors="sectors" />
+    <RenewalDetailsModal :is-open="isModalOpen" :application="selectedItem" @close="closeModal" @update="handleUpdate"
+      :personnel-categories="personnelCategories" :personnel-subcategories="personnelSubcategories"
+      :sectors="sectors" />
+
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import apiServices from '@/services/services';
-import RenewalDetailsModal from '../modals/RenewalDetailsModal.vue';
+import apiServices from '@/services/services'; // Adjust path if needed
+import RenewalDetailsModal from '../modals/RenewalDetailsModal.vue'; // Adjust path if needed
 import { useToast } from 'vue-toastification';
 
-const applications = ref([]);
-const renewals = ref([]);
+// --- State ---
+const renewals = ref([]); // Raw data from /mhpc-renewals/
+const qualificationsData = ref([]); // Raw data from /mhpc-new-qualification/
 const filterStatus = ref('all');
 const searchQuery = ref('');
 const currentPage = ref(1);
 const itemsPerPage = 10;
 const isModalOpen = ref(false);
-const selectedApplication = ref(null);
+// selectedItem holds the combined object for the modal
+const selectedItem = ref(null);
 const personnelCategories = ref([]);
 const personnelSubcategories = ref([]);
 const sectors = ref([]);
 const toast = useToast();
+// isLoading now tracks the combined loading state
 const isLoading = ref(true);
+const isFetchingRenewals = ref(false);
+const isFetchingQualifications = ref(false);
 
-// Reset pagination when filters change
+// --- Watchers ---
 watch([searchQuery, filterStatus], () => {
   currentPage.value = 1;
 });
 
-// Map to track renewals by application ID
-const renewalByApplicationMap = computed(() => {
+// Combined loading state watcher
+watch([isFetchingRenewals, isFetchingQualifications], ([renewing, qualifying]) => {
+  isLoading.value = renewing || qualifying;
+});
+
+
+// --- Computed Properties ---
+
+// Map for quick lookup of qualification/application data by ID
+const qualificationMap = computed(() => {
   const map = {};
-  renewals.value.forEach(renewal => {
-    if (renewal.application) {
-      map[renewal.application] = renewal;
-    }
-  });
+  if (Array.isArray(qualificationsData.value)) {
+    qualificationsData.value.forEach(qual => {
+      if (qual && qual.id != null) {
+        map[qual.id] = qual;
+      }
+    });
+  }
   return map;
 });
 
-// Filter for applications that can be renewed
-const filteredApplications = computed(() => {
-  return applications.value
-    .filter(app => {
-      // Only consider applications that are of type Renewal
-      return app.registration_type_name === 'Renewal';
-    })
-    .filter(app => {
-      if (filterStatus.value !== 'all') {
-        return getRenewalStatus(app) === filterStatus.value;
-      }
-      return true;
-    })
-    .filter(app => {
-      if (searchQuery.value) {
-        const query = searchQuery.value.toLowerCase();
-        const name = (app.full_name || '').toLowerCase();
-        const cid = (app.cid_no || '').toLowerCase();
-        const regNo = (app.registration_no || '').toLowerCase();
-        return (
-          name.includes(query) ||
-          cid.includes(query) ||
-          regNo.includes(query)
-        );
-      }
-      return true;
-    });
+// 1. Combine renewal data with qualification data
+const combinedData = computed(() => {
+  if (!Array.isArray(renewals.value)) return [];
+
+  return renewals.value.map(renewal => {
+    const qualification = qualificationMap.value[renewal.user_qualification];
+    // Create a combined object
+    return {
+      // Renewal fields
+      renewal_id: renewal.id,
+      renewal_status: renewal.renewal_endorsement_decision || 'Pending',
+      new_expiry_date: renewal.new_expiry_date,
+      renewal_review_status: renewal.renewal_review_status,
+      renewal_review_remarks: renewal.renewal_review_remarks,
+      endorsement_remarks: renewal.endorsement_remarks,
+      created_at: renewal.created_at,
+
+      // Qualification/Application fields (use defaults if lookup failed)
+      // IMPORTANT: Verify these field names against your actual API response for qualificationsData
+      application_id: qualification?.id ?? null,
+      full_name: qualification?.full_name || 'N/A',
+      cid_no: qualification?.cid_no || 'N/A',
+      registration_no: qualification?.registration_no || 'N/A',
+      expiry_date: qualification?.expiry_date || null, // Original expiry date
+      // Assuming 'user_qualifications' is the field containing the array for display purposes
+      user_qualifications: qualification?.user_qualifications || [],
+      // Add other fields from 'qualification' if needed by template/modal/helpers
+    };
+  });
 });
 
-const pendingCount = computed(() => {
-  return filteredApplications.value.filter(app => getRenewalStatus(app) === 'Pending').length;
+// 2. Filter the combined data
+const filteredCombinedData = computed(() => {
+  if (!Array.isArray(combinedData.value)) return [];
+
+  return combinedData.value.filter(item => {
+    // Filter by status
+    if (filterStatus.value !== 'all') {
+      if (item.renewal_status !== filterStatus.value) return false;
+    }
+
+    // Filter by search query
+    if (searchQuery.value) {
+      const query = searchQuery.value.toLowerCase();
+      const name = (item.full_name || '').toLowerCase();
+      const cid = (item.cid_no || '').toLowerCase();
+      const regNo = (item.registration_no || '').toLowerCase();
+
+      const nameMatch = name !== 'n/a' && name.includes(query);
+      const cidMatch = cid !== 'n/a' && cid.includes(query);
+      const regNoMatch = regNo !== 'n/a' && regNo.includes(query);
+
+      if (!(nameMatch || cidMatch || regNoMatch)) {
+        if (query === 'n/a' && (item.full_name === 'N/A' || item.cid_no === 'N/A' || item.registration_no === 'N/A')) {
+          return true;
+        }
+        return false;
+      }
+    }
+    return true; // Passed filters
+  });
 });
 
-const paginatedApplications = computed(() => {
+// 3. Paginate the filtered data
+const paginatedCombinedData = computed(() => {
+  if (!Array.isArray(filteredCombinedData.value)) return [];
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  return filteredApplications.value.slice(start, end);
+  return filteredCombinedData.value.slice(start, end);
+});
+
+
+// --- Other Computed Properties (Counts, Pagination Info) ---
+
+const pendingCount = computed(() => {
+  return filteredCombinedData.value.filter(item => item.renewal_status === 'Pending').length;
 });
 
 const totalPages = computed(() => {
-  return Math.max(1, Math.ceil(filteredApplications.value.length / itemsPerPage));
+  if (!Array.isArray(filteredCombinedData.value)) return 1;
+  return Math.max(1, Math.ceil(filteredCombinedData.value.length / itemsPerPage));
 });
 
 const paginationStart = computed(() => {
-  if (filteredApplications.value.length === 0) return 0;
+  if (!Array.isArray(filteredCombinedData.value) || filteredCombinedData.value.length === 0) return 0;
   return ((currentPage.value - 1) * itemsPerPage) + 1;
 });
 
 const paginationEnd = computed(() => {
-  return Math.min(currentPage.value * itemsPerPage, filteredApplications.value.length);
+  if (!Array.isArray(filteredCombinedData.value)) return 0;
+  return Math.min(currentPage.value * itemsPerPage, filteredCombinedData.value.length);
 });
 
-// Get the primary qualification from an application
-const getPrimaryQualification = (app) => {
-  if (app.user_qualifications && app.user_qualifications.length > 0) {
-    return app.user_qualifications.find(q => q.is_primary_qualification);
+
+// --- Methods ---
+
+// Helper functions operate on the 'item' (combined object)
+const getPrimaryQualification = (item) => {
+  if (Array.isArray(item.user_qualifications) && item.user_qualifications.length > 0) {
+    return item.user_qualifications.find(q => q.is_primary_qualification);
   }
   return null;
 };
 
-// Generate initials for the avatar
-const getInitials = (app) => {
-  const name = app.full_name || '';
-  if (!name) return '?';
-
+const getInitials = (item) => {
+  const name = item.full_name;
+  if (!name || name === 'N/A') return '?';
   return name
     .split(' ')
-    .map(word => word[0])
+    .map(word => word?.[0] || '')
     .join('')
     .toUpperCase()
     .substring(0, 2);
 };
 
-// Get the renewal status of an application
-const getRenewalStatus = (app) => {
-  const renewal = renewalByApplicationMap.value[app.id];
-  if (renewal) {
-    return renewal.renewal_endorsement_decision || 'Pending';
-  }
-  return 'Pending';
+const getRenewalStatus = (item) => {
+  return item.renewal_status || 'Pending';
 };
 
-// Get CSS classes for renewal status
-const getRenewalStatusClasses = (app) => {
-  const status = getRenewalStatus(app);
+const getRenewalStatusClasses = (item) => {
+  const status = getRenewalStatus(item);
   return [
-    'px-3 py-1 rounded-full text-xs font-medium',
+    'px-3 py-1 rounded-full text-xs font-medium inline-block',
     {
       'bg-yellow-100 text-yellow-800': status === 'Pending',
       'bg-green-100 text-green-800': status === 'Approved',
-      'bg-red-100 text-red-800': status === 'Regretted'
+      'bg-red-100 text-red-800': status === 'Regretted',
+      'bg-gray-100 text-gray-800': !['Pending', 'Approved', 'Regretted'].includes(status)
     }
   ];
 };
 
-const formatDate = (date) => {
-  if (!date) return 'N/A';
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'N/A';
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric', month: 'short', day: 'numeric'
+    });
+  } catch {
+    return 'N/A';
+  }
 };
 
+// Fetch Master Data
 const fetchMasterData = async () => {
   try {
-    const [categoriesRes, subcategoriesRes, sectorsRes] = await Promise.all([
+    const responses = await Promise.allSettled([
       apiServices.getMastersPersonnelCategories(),
       apiServices.getMastersSubCategories(),
       apiServices.getMastersSectors(),
     ]);
-
-    personnelCategories.value = categoriesRes.data.results || [];
-    personnelSubcategories.value = subcategoriesRes.data.results || [];
-    sectors.value = sectorsRes.data.results || [];
+    if (responses[0].status === 'fulfilled' && responses[0].value.data) { personnelCategories.value = responses[0].value.data.results || responses[0].value.data || []; } else { console.error('Failed fetch personnel categories:', responses[0].reason); }
+    if (responses[1].status === 'fulfilled' && responses[1].value.data) { personnelSubcategories.value = responses[1].value.data.results || responses[1].value.data || []; } else { console.error('Failed fetch personnel subcategories:', responses[1].reason); }
+    if (responses[2].status === 'fulfilled' && responses[2].value.data) { sectors.value = responses[2].value.data.results || responses[2].value.data || []; } else { console.error('Failed fetch sectors:', responses[2].reason); }
   } catch (error) {
-    console.error('Error fetching master data:', error);
+    console.error('Error fetching master data container:', error);
     toast.error('Failed to load master data');
   }
 };
 
-// Fetch applications from the correct endpoint
-const fetchApplications = async () => {
-  try {
-    const response = await apiServices.getMhpcNewApplications();
-    applications.value = response.data.results || [];
-
-    // Log the first application for debugging
-    if (applications.value.length > 0) {
-      console.log('First application data:', applications.value[0]);
-    }
-  } catch (error) {
-    console.error('Error fetching applications:', error);
-    toast.error('Failed to load application data');
-  }
-};
-
-// Fetch renewal data to map to applications
+// Fetch Renewals
 const fetchRenewals = async () => {
+  isFetchingRenewals.value = true;
+  renewals.value = [];
   try {
     const response = await apiServices.getMhpcRenewals();
-    renewals.value = response.data.results || [];
+    if (response.data && Array.isArray(response.data.results)) {
+      renewals.value = response.data.results;
+    } else if (Array.isArray(response.data)) {
+      renewals.value = response.data;
+    } else {
+      console.error("Unexpected API response structure for renewals:", response.data);
+      toast.error('Received invalid renewal data structure.');
+    }
   } catch (error) {
     console.error('Error fetching renewals:', error);
-    toast.error('Failed to load renewal data');
+    const errorMsg = error.response?.data?.detail || error.message || 'Unknown error';
+    toast.error(`Failed to load renewal data: ${errorMsg}`);
+  } finally {
+    isFetchingRenewals.value = false;
   }
 };
 
-const viewDetails = async (application) => {
+// Fetch Qualifications/Application Details
+const fetchQualifications = async () => {
+  isFetchingQualifications.value = true;
+  qualificationsData.value = [];
   try {
-    // Find if there's an existing renewal for this application
-    const existingRenewal = renewalByApplicationMap.value[application.id];
-
-    // Make deep copy to avoid reactivity issues
-    const applicationData = JSON.parse(JSON.stringify(application));
-
-    // Add renewal data if it exists
-    if (existingRenewal) {
-      applicationData.renewalData = existingRenewal;
+    // IMPORTANT: Verify getMhpcNewQualifications fetches the needed list/details
+    const response = await apiServices.getMhpcNewQualifications();
+    if (response.data && Array.isArray(response.data.results)) {
+      qualificationsData.value = response.data.results;
+    } else if (Array.isArray(response.data)) {
+      qualificationsData.value = response.data;
+    } else {
+      console.error("Unexpected API response structure for qualifications:", response.data);
+      toast.error('Received invalid qualification data structure.');
     }
-
-    selectedApplication.value = applicationData;
-    isModalOpen.value = true;
   } catch (error) {
-    console.error('Error preparing application details:', error);
-    toast.error('Failed to prepare application details');
+    console.error('Error fetching qualifications:', error);
+    const errorMsg = error.response?.data?.detail || error.message || 'Unknown error';
+    toast.error(`Failed to load qualification/application details: ${errorMsg}`);
+  } finally {
+    isFetchingQualifications.value = false;
   }
 };
 
+
+// View Details passes the combined item
+const viewDetails = (item) => {
+  selectedItem.value = JSON.parse(JSON.stringify(item));
+  isModalOpen.value = true;
+};
+
+// Handle Update needs to refetch both lists potentially
 const handleUpdate = async () => {
-  await Promise.all([fetchApplications(), fetchRenewals()]);
+  isLoading.value = true; // Show loading indicator during refetch
+  await Promise.allSettled([
+    fetchRenewals(),
+    fetchQualifications()
+  ]);
   closeModal();
   toast.success('Renewal application processed successfully');
+  // isLoading will update via watcher
 };
 
 const closeModal = () => {
   isModalOpen.value = false;
-  selectedApplication.value = null;
+  selectedItem.value = null;
 };
 
+// Pagination methods
 const prevPage = () => {
   if (currentPage.value > 1) currentPage.value--;
 };
@@ -376,16 +466,21 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++;
 };
 
+// --- Lifecycle Hooks ---
 onMounted(async () => {
   isLoading.value = true;
-  try {
-    // Fetch applications and renewals
-    await Promise.all([fetchApplications(), fetchRenewals(), fetchMasterData()]);
-  } catch (error) {
-    console.error('Error initializing data:', error);
-    toast.error('Failed to initialize application data');
-  } finally {
-    isLoading.value = false;
-  }
+  await Promise.allSettled([
+    fetchMasterData(),
+    fetchRenewals(),
+    fetchQualifications()
+  ]);
+  // isLoading will update via watcher
 });
 </script>
+
+<style scoped>
+/* Component-specific styles */
+td .flex {
+  flex-wrap: nowrap;
+}
+</style>
