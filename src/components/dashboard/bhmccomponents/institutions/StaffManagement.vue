@@ -173,7 +173,7 @@
                 <div class="text-sm text-gray-900">{{ formatDate(staff.date_of_joining) }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ getDepartmentName(staff.department) }}</div>
+                <div class="text-sm text-gray-900">{{ staff.department?.department_name || 'N/A' }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-center">
                 <div class="flex justify-center space-x-3">
@@ -300,12 +300,12 @@
               <!-- Department -->
               <div>
                 <label for="department" class="block text-sm font-medium text-gray-700">Department</label>
-                <select id="department" v-model="form.department" :disabled="modalMode === 'view'"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                  <option disabled value="">Select a department</option>
-                  <option v-for="dept in departments" :key="dept.id" :value="dept.id">
-                    {{ dept.name }}
-                  </option>
+                <select id="department" v-model="form.department_id" :disabled="modalMode === 'view'"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <option disabled value="">Select a department</option>
+              <option v-for="dept in departments" :key="dept.id" :value="dept.id">
+                {{ dept.name }}
+              </option>
                 </select>
               </div>
             </div>
@@ -356,6 +356,7 @@
   </div>
 </template>
 
+
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import apiServices from '@/services/services';
@@ -370,30 +371,65 @@ const currentPage = ref(1);
 const nextPageUrl = ref(null);
 const previousPageUrl = ref(null);
 const totalStaff = ref(0);
-const pageSize = ref(10);
+const pageSize = ref(10); // Assuming default page size, adjust if API differs
 
 // Modal state
 const isModalVisible = ref(false);
 const modalMode = ref(null); // 'add', 'edit', 'view'
+
+// --- FIX 1: Update form ref ---
 const form = ref({
+  id: null, // Add id for edit mode
   staff_name: '',
   designation: '',
   date_of_joining: '',
-  department: ''
+  department_id: '' // Use department_id instead of department
 });
 
 // Delete modal state
 const showDeleteModal = ref(false);
 const staffToDelete = ref(null);
 
-// Sample departments data - Replace with API call if available
-const departments = ref([
-  { id: 1, name: 'Computer Science' },
-  { id: 2, name: 'Mathematics' },
-  { id: 3, name: 'Physics' },
-  { id: 4, name: 'Biology' },
-  { id: 5, name: 'Chemistry' }
-]);
+// Departments fetching
+const departments = ref([]);
+
+const fetchDepartments = async () => {
+  try {
+    const response = await apiServices.getMhpcInstituteDepartments();
+    if (response && response.data) {
+        // Adapt based on your actual API response structure for departments
+        if (response.data.results && Array.isArray(response.data.results)) {
+            departments.value = response.data.results.map(dept => ({
+                id: dept.id,
+                name: dept.department_name // Adjust if property name is different
+            }));
+        } else if (Array.isArray(response.data)) { // Handle if API returns a flat array
+             departments.value = response.data.map(dept => ({
+                id: dept.id,
+                name: dept.department_name // Adjust if property name is different
+            }));
+        }
+         else {
+            console.warn('Unexpected departments API response structure:', response);
+            showNotification('warning', 'Data Format', 'Received departments in unexpected format');
+            departments.value = [];
+         }
+    } else {
+      console.warn('No data in departments API response');
+      departments.value = [];
+    }
+  } catch (error) {
+    console.error('Error fetching departments:', error);
+    showNotification('error', 'Error Loading Departments', 'Failed to load department data');
+    departments.value = [];
+  }
+};
+
+// Call fetchDepartments when the component mounts
+onMounted(() => {
+  fetchStaff();
+  fetchDepartments();
+});
 
 // Notification state
 const notification = ref({
@@ -406,102 +442,170 @@ const notification = ref({
 
 // Computed properties
 const filteredStaff = computed(() => {
+  // Keep existing search logic (assuming staff data from API has 'department' as ID)
   if (!searchQuery.value) return staffList.value;
 
   const query = searchQuery.value.toLowerCase();
   return staffList.value.filter(staff => {
+    // IMPORTANT: Assuming getDepartmentName correctly looks up by ID (staff.department)
+    const deptName = getDepartmentName(staff.department).toLowerCase();
     return (
       staff.staff_name.toLowerCase().includes(query) ||
       staff.designation.toLowerCase().includes(query) ||
-      getDepartmentName(staff.department).toLowerCase().includes(query)
+      deptName.includes(query)
     );
   });
 });
 
+
 const hasNextPage = computed(() => !!nextPageUrl.value);
 const hasPreviousPage = computed(() => !!previousPageUrl.value);
 
-const paginationStart = computed(() =>
-  (currentPage.value - 1) * pageSize.value
-);
+const paginationStart = computed(() => {
+    if (totalStaff.value === 0) return 0;
+    // Adjust pagination start calculation based on API response if it's not page-based
+    // This example assumes page-based pagination where page size is known/estimated
+    const calculatedStart = (currentPage.value - 1) * pageSize.value;
+     // Ensure pageSize is updated if the API response indicates a different limit
+    if(staffList.value.length > 0 && pageSize.value !== staffList.value.length) {
+       // Potentially update pageSize based on results length if API limit changes?
+       // Or rely on API providing total count and current page info if available
+    }
+    return calculatedStart;
+});
 
-const paginationEnd = computed(() =>
-  Math.min(paginationStart.value + pageSize.value, totalStaff.value)
-);
+
+const paginationEnd = computed(() => {
+    if (totalStaff.value === 0) return 0;
+    // Use totalStaff.value which should come from the API's 'count'
+     return Math.min(paginationStart.value + pageSize.value, totalStaff.value);
+    // Alternative if page size varies or isn't fixed:
+    // return paginationStart.value + staffList.value.length;
+});
+
 
 // Methods
-const fetchStaff = async () => {
+const fetchStaff = async (page = 1) => { // Accept page parameter
   isLoading.value = true;
   try {
-    const response = await apiServices.getMhpcInstituteStaff();
+    // Pass the page number to the API call
+    const response = await apiServices.getMhpcInstituteStaff(page);
 
     if (response && response.data) {
       staffList.value = response.data.results || [];
       totalStaff.value = response.data.count || 0;
       nextPageUrl.value = response.data.next;
       previousPageUrl.value = response.data.previous;
+
+      // Update current page based on response (if not explicitly passed or inferred)
+      // This part depends heavily on how your API structures pagination URLs or response data
+      if (page) {
+          currentPage.value = page;
+      } else {
+          // Try to infer from previousPageUrl if page wasn't passed
+          if (previousPageUrl.value) {
+              try {
+                  const url = new URL(previousPageUrl.value);
+                  const prevPage = url.searchParams.get('page');
+                  if (prevPage) {
+                      currentPage.value = parseInt(prevPage) + 1;
+                  } else {
+                       currentPage.value = 2; // Guess if no page param but prev exists
+                  }
+              } catch (e) { /* ignore URL parsing error */ }
+          } else {
+              currentPage.value = 1; // Assume page 1 if no previous link
+          }
+      }
+
+      // Infer page size if needed (e.g., if it's not fixed)
+      if (staffList.value.length > 0) {
+          pageSize.value = staffList.value.length; // Update based on results returned
+      }
+
+
     } else {
       showNotification('error', 'Error Loading Data', 'Failed to load staff data');
       staffList.value = [];
+      totalStaff.value = 0; // Reset count on error
     }
   } catch (error) {
     console.error('Error fetching staff:', error);
     showNotification('error', 'Error Loading Data', 'Failed to connect to the server');
     staffList.value = [];
+    totalStaff.value = 0; // Reset count on error
   } finally {
     isLoading.value = false;
   }
 };
 
+
 const fetchNextPage = async () => {
   if (!nextPageUrl.value) return;
 
-  isLoading.value = true;
+  // Extract page number from the next URL
+  let nextPage = null;
   try {
-    // Extract page number from URL
     const url = new URL(nextPageUrl.value);
-    const page = url.searchParams.get('page');
-    if (page) currentPage.value = parseInt(page);
-
-    const response = await apiServices.getMhpcInstituteStaff(page);
-
-    if (response && response.data) {
-      staffList.value = response.data.results || [];
-      nextPageUrl.value = response.data.next;
-      previousPageUrl.value = response.data.previous;
+    const pageParam = url.searchParams.get('page');
+    if (pageParam) {
+      nextPage = parseInt(pageParam);
+    } else {
+        // Fallback if page param missing - might need adjustment
+        nextPage = currentPage.value + 1;
     }
-  } catch (error) {
-    console.error('Error fetching next page:', error);
-    showNotification('error', 'Pagination Error', 'Failed to load the next page');
-  } finally {
-    isLoading.value = false;
+  } catch (e) {
+    console.error("Could not parse next page URL", e);
+    showNotification('error', 'Pagination Error', 'Invalid next page link');
+    return; // Don't proceed if URL is invalid
+  }
+
+  if (nextPage) {
+    fetchStaff(nextPage); // Pass the extracted page number
+  } else {
+     console.warn("Could not determine next page number from URL:", nextPageUrl.value);
+     // Maybe try fetching page currentPage + 1 as a guess? Or disable button?
+     showNotification('warning', 'Pagination Info', 'Could not determine next page number.');
   }
 };
 
 const fetchPreviousPage = async () => {
   if (!previousPageUrl.value) return;
 
-  isLoading.value = true;
-  try {
-    // Extract page number from URL
+  // Extract page number from the previous URL
+  let prevPage = null;
+   try {
     const url = new URL(previousPageUrl.value);
-    const page = url.searchParams.get('page');
-    if (page) currentPage.value = parseInt(page);
-
-    const response = await apiServices.getMhpcInstituteStaff(page);
-
-    if (response && response.data) {
-      staffList.value = response.data.results || [];
-      nextPageUrl.value = response.data.next;
-      previousPageUrl.value = response.data.previous;
+    const pageParam = url.searchParams.get('page');
+    if (pageParam) {
+      prevPage = parseInt(pageParam);
+    } else {
+        // If 'page' param is missing but it's the first page, API might return null or omit it.
+        // If previous URL exists but no 'page', it's often page 1.
+         if (previousPageUrl.value && !pageParam) {
+             prevPage = 1;
+         } else {
+            // Fallback if page param missing - might need adjustment
+            prevPage = currentPage.value - 1;
+         }
     }
-  } catch (error) {
-    console.error('Error fetching previous page:', error);
-    showNotification('error', 'Pagination Error', 'Failed to load the previous page');
-  } finally {
-    isLoading.value = false;
+  } catch (e) {
+    console.error("Could not parse previous page URL", e);
+    showNotification('error', 'Pagination Error', 'Invalid previous page link');
+    return; // Don't proceed if URL is invalid
+  }
+
+   if (prevPage && prevPage > 0) {
+    fetchStaff(prevPage); // Pass the extracted page number
+  } else if (prevPage === 1) { // Handle explicit page 1 case
+     fetchStaff(1);
+  }
+   else {
+     console.warn("Could not determine previous page number from URL:", previousPageUrl.value);
+      showNotification('warning', 'Pagination Info', 'Could not determine previous page number.');
   }
 };
+
 
 const sortBy = (column) => {
   if (sortColumn.value === column) {
@@ -511,17 +615,17 @@ const sortBy = (column) => {
     sortDirection.value = 'asc';
   }
 
-  // Re-sort the staff list
   staffList.value.sort((a, b) => {
     let valueA = a[column];
     let valueB = b[column];
 
-    // Handle special sorting for department which is an ID
+    // Handle sorting for department name (using the ID from staff data)
     if (column === 'department') {
-      valueA = getDepartmentName(valueA);
-      valueB = getDepartmentName(valueB);
+      valueA = getDepartmentName(valueA); // Lookup name based on ID
+      valueB = getDepartmentName(valueB); // Lookup name based on ID
     }
 
+    // Basic comparison (can be enhanced for dates, numbers)
     if (valueA < valueB) return sortDirection.value === 'asc' ? -1 : 1;
     if (valueA > valueB) return sortDirection.value === 'asc' ? 1 : -1;
     return 0;
@@ -530,84 +634,143 @@ const sortBy = (column) => {
 
 const getDepartmentName = (departmentId) => {
   const department = departments.value.find(d => d.id === departmentId);
-  return department ? department.name : 'Unknown Department';
+  return department ? department.department_name : 'Unknown'; // More concise fallback
 };
 
 const getDesignationColor = (designation) => {
-  const designationLower = designation.toLowerCase();
-  if (designationLower.includes('professor')) return 'bg-green-100 text-green-800';
-  if (designationLower.includes('lecturer')) return 'bg-blue-100 text-blue-800';
-  if (designationLower.includes('assistant')) return 'bg-purple-100 text-purple-800';
-  if (designationLower.includes('associate')) return 'bg-yellow-100 text-yellow-800';
-  return 'bg-gray-100 text-gray-800';
+    if (!designation) return 'bg-gray-100 text-gray-800'; // Handle null/undefined
+    const designationLower = designation.toLowerCase();
+    if (designationLower.includes('admin')) return 'bg-red-100 text-red-800';
+    if (designationLower.includes('professor')) return 'bg-green-100 text-green-800';
+    if (designationLower.includes('lecturer')) return 'bg-blue-100 text-blue-800';
+    if (designationLower.includes('assistant')) return 'bg-purple-100 text-purple-800';
+    if (designationLower.includes('associate')) return 'bg-yellow-100 text-yellow-800';
+    return 'bg-gray-100 text-gray-800'; // Default fallback
 };
+
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleDateString();
+  try {
+    // Attempt to create a date object. Handles YYYY-MM-DD directly.
+    const date = new Date(dateString);
+    // Check if the date is valid after parsing
+    if (isNaN(date.getTime())) {
+        return 'Invalid Date';
+    }
+    // Use toLocaleDateString for locale-aware formatting
+    return date.toLocaleDateString(undefined, { // 'undefined' uses browser default locale
+      year: 'numeric',
+      month: 'short', // e.g., Apr
+      day: 'numeric'
+    });
+  } catch (e) {
+    console.error("Error formatting date:", dateString, e);
+    return 'Invalid Date'; // Return error indication if parsing fails
+  }
 };
 
+
 // Modal Functions
+// --- FIX 3a: Update form reset in Add Modal ---
 const openAddStaffModal = () => {
   form.value = {
+    id: null,
     staff_name: '',
     designation: '',
-    date_of_joining: new Date().toISOString().split('T')[0],
-    department: ''
+    date_of_joining: new Date().toISOString().split('T')[0], // Default to today
+    department_id: '' // Reset department_id
   };
   modalMode.value = 'add';
   isModalVisible.value = true;
 };
 
+// --- FIX 3b: Update form population in Edit Modal ---
 const openEditStaffModal = (staff) => {
-  form.value = { ...staff };
+  form.value = {
+      id: staff.id,
+      staff_name: staff.staff_name,
+      designation: staff.designation,
+      date_of_joining: staff.date_of_joining, // Assumes API returns 'YYYY-MM-DD'
+      department_id: staff.department // Map staff.department (ID) to form.department_id
+  };
   modalMode.value = 'edit';
   isModalVisible.value = true;
 };
 
+// --- FIX 3c: Update form population in View Modal ---
 const openViewStaffModal = (staff) => {
-  form.value = { ...staff };
+  form.value = {
+      id: staff.id,
+      staff_name: staff.staff_name,
+      designation: staff.designation,
+      date_of_joining: staff.date_of_joining,
+      department_id: staff.department // Map staff.department (ID) to form.department_id
+  };
   modalMode.value = 'view';
   isModalVisible.value = true;
 };
 
+// --- FIX 3d: Update form reset in Close Modal ---
 const closeModal = () => {
   isModalVisible.value = false;
   setTimeout(() => {
     form.value = {
+      id: null,
       staff_name: '',
       designation: '',
       date_of_joining: '',
-      department: ''
+      department_id: '' // Reset department_id
     };
     modalMode.value = null;
-  }, 300);
+  }, 300); // Wait for fade out
 };
 
+
 const saveStaff = async () => {
-  // Form validation
-  if (!form.value.staff_name || !form.value.designation || !form.value.date_of_joining || !form.value.department) {
-    showNotification('error', 'Validation Error', 'Please fill out all required fields');
+  // --- FIX 4: Update form validation ---
+  if (!form.value.staff_name || !form.value.designation || !form.value.date_of_joining || !form.value.department_id) {
+    showNotification('error', 'Validation Error', 'Please fill out all required fields, including Department.');
     return;
   }
 
-  isLoading.value = true;
-  try {
+  // Prepare payload - it already uses form.value which now has department_id
+  const payload = { ...form.value };
+    // Remove 'id' from payload if it's an add operation, backend might not expect it
     if (modalMode.value === 'add') {
-      await apiServices.createMhpcInstituteStaff(form.value);
-      showNotification('success', 'Staff Added', 'New staff member has been added successfully');
-    } else if (modalMode.value === 'edit') {
-      await apiServices.updateMhpcInstituteStaff(form.value.id, form.value);
-      showNotification('success', 'Staff Updated', 'Staff information has been updated successfully');
+        delete payload.id;
     }
 
-    // Refresh staff list
-    fetchStaff();
+
+  isLoading.value = true; // Consider a separate loading state for modal actions
+  try {
+    if (modalMode.value === 'add') {
+       // Send the payload (which has department_id)
+      await apiServices.createMhpcInstituteStaff(payload);
+      showNotification('success', 'Staff Added', `${payload.staff_name} has been added successfully.`);
+    } else if (modalMode.value === 'edit') {
+       // Send the payload (which has department_id) for update
+      await apiServices.updateMhpcInstituteStaff(form.value.id, payload);
+      showNotification('success', 'Staff Updated', `${payload.staff_name}'s information has been updated.`);
+    }
+
+    fetchStaff(currentPage.value); // Refetch the *current* page after save
     closeModal();
   } catch (error) {
     console.error('Error saving staff:', error);
-    showNotification('error', 'Save Failed', 'There was an error processing your request');
+     // Attempt to parse backend error messages
+     let errorMessage = 'There was an error processing your request.';
+     if (error.response && error.response.data) {
+         // Example: Combine field errors into a single message
+         const errors = error.response.data;
+         const messages = Object.entries(errors).map(([field, msgs]) =>
+            `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`
+         );
+         if (messages.length > 0) {
+             errorMessage = messages.join('; ');
+         }
+     }
+     showNotification('error', 'Save Failed', errorMessage);
   } finally {
     isLoading.value = false;
   }
@@ -621,18 +784,24 @@ const confirmDelete = (staff) => {
 const deleteStaff = async () => {
   if (!staffToDelete.value) return;
 
-  isLoading.value = true;
+  isLoading.value = true; // Consider separate loading state
   try {
     await apiServices.deleteMhpcInstituteStaff(staffToDelete.value.id);
-    showNotification('success', 'Staff Deleted', 'Staff member has been deleted successfully');
+    showNotification('success', 'Staff Deleted', `${staffToDelete.value.staff_name} has been deleted.`);
 
-    // Refresh staff list
-    fetchStaff();
+    // Refresh staff list - fetch page 1 if the deleted item was the last on the current page
+    const remainingOnPage = staffList.value.length - 1;
+    if (remainingOnPage === 0 && currentPage.value > 1) {
+        fetchStaff(currentPage.value - 1);
+    } else {
+        fetchStaff(currentPage.value);
+    }
+
     showDeleteModal.value = false;
     staffToDelete.value = null;
   } catch (error) {
     console.error('Error deleting staff:', error);
-    showNotification('error', 'Delete Failed', 'There was an error processing your request');
+    showNotification('error', 'Delete Failed', 'There was an error deleting the staff member.');
   } finally {
     isLoading.value = false;
   }
@@ -640,25 +809,12 @@ const deleteStaff = async () => {
 
 // Notification functions
 const showNotification = (type, title, message, duration = 5000) => {
-  // Clear any existing timeout
   if (notification.value.timeout) {
     clearTimeout(notification.value.timeout);
   }
-
-  // Set notification values
-  notification.value = {
-    show: true,
-    type,
-    title,
-    message,
-    timeout: null
-  };
-
-  // Auto close after duration
+  notification.value = { show: true, type, title, message, timeout: null };
   if (duration > 0) {
-    notification.value.timeout = setTimeout(() => {
-      closeNotification();
-    }, duration);
+    notification.value.timeout = setTimeout(closeNotification, duration);
   }
 };
 
@@ -670,17 +826,28 @@ const closeNotification = () => {
   }
 };
 
-// Search reset pagination
-watch(searchQuery, () => {
-  if (searchQuery.value.trim() === '') {
-    // If search is cleared, refetch first page
-    fetchStaff();
-  }
+// Watch search query to refetch or filter locally
+watch(searchQuery, (newValue) => {
+    // Decide whether to fetch from backend on search or filter locally
+    // Fetching from backend is better for large datasets
+    // fetchStaff(1); // Reset to page 1 when search changes - uncomment if using backend search
+
+    // For local filtering, the computed property `filteredStaff` handles it.
+    // No explicit action needed here if filtering locally, unless you want pagination reset.
+     if (newValue.trim() !== '') {
+         // Optional: Reset to page 1 when starting a search if pagination is local
+         // currentPage.value = 1;
+     } else {
+         // Optional: Refetch page 1 when search is cleared if pagination was reset
+         // fetchStaff(1);
+     }
 });
 
-// Fetch data on component mount
+
+// Initial fetch
 onMounted(() => {
-  fetchStaff();
+  fetchStaff(1); // Fetch page 1 initially
+  fetchDepartments();
 });
 </script>
 
