@@ -8,11 +8,14 @@
       <div
         class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full"
         role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-        <!-- Modal header -->
+
         <div class="px-6 py-4 bg-gray-50 border-b border-gray-100">
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-900" id="modal-headline">
-              Renewal Application {{ qualification?.renewalData ? '(Already Processed)' : '' }}
+              Renewal Application {{ application && application.renewal_status !== 'Pending' ? '(Already Processed)' :
+              '' }}
+              <span v-if="application?.renewal_id" class="text-sm font-normal text-gray-500 ml-2">(ID: {{
+                application.renewal_id }})</span>
             </h3>
             <button @click="closeModal" class="text-gray-400 hover:text-gray-500 focus:outline-none">
               <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -22,107 +25,112 @@
           </div>
         </div>
 
-        <div v-if="qualification" class="p-6">
-          <!-- Status Badge (if renewal exists) -->
-          <div v-if="qualification.renewalData" class="mb-6">
+        <div v-if="application" class="p-6">
+          <div v-if="application.renewal_status && application.renewal_status !== 'Pending'" class="mb-6">
             <div class="inline-flex items-center px-4 py-2 rounded-full"
-              :class="getRenewalStatusClasses(qualification.renewalData.renewal_endorsement_decision)">
+              :class="getRenewalStatusClasses(application.renewal_status)">
               <span class="text-sm font-medium">
-                Renewal Status: {{ qualification.renewalData.renewal_endorsement_decision || 'Pending' }}
+                Renewal Status: {{ application.renewal_status }}
               </span>
-              <span class="ml-2 text-xs text-opacity-75">
-                (Processed on {{ formatDate(qualification.renewalData.updated_at) }})
+              <span v-if="application.created_at" class="ml-2 text-xs text-opacity-75">
+                (Processed on {{ formatDate(application.created_at) }})
               </span>
             </div>
           </div>
 
-          <!-- Applicant Information -->
           <div class="mb-8 p-6 bg-white rounded-lg border border-gray-200">
             <h4 class="text-lg font-medium text-gray-900 mb-4">Applicant Information</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Name</span>
-                <span class="font-medium text-gray-900">{{ qualification.user?.full_name || 'Unknown' }}</span>
+                <span class="font-medium text-gray-900">{{ application.full_name || 'N/A' }}</span>
               </div>
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">CID Number</span>
-                <span class="font-medium text-gray-900">{{ qualification.user?.cid || 'N/A' }}</span>
+                <span class="font-medium text-gray-900">{{ application.cid_no || 'N/A' }}</span>
               </div>
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Registration Number</span>
-                <span class="font-medium text-gray-900">{{ qualification.registration_no || 'N/A' }}</span>
+                <span class="font-medium text-gray-900">{{ application.registration_no || 'N/A' }}</span>
               </div>
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Registration Date</span>
-                <span class="font-medium text-gray-900">{{ formatDate(qualification.registration_date) }}</span>
+                <span class="font-medium text-gray-900">{{ formatDate(application.registration_date) }}</span>
               </div>
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Current Expiry Date</span>
-                <span class="font-medium text-gray-900">{{ formatDate(qualification.expiry_date) }}</span>
+                <span class="font-medium text-gray-900">{{ formatDate(application.expiry_date) }}</span>
               </div>
-              <div v-if="qualification.renewalData" class="flex flex-col">
+              <div v-if="application.new_expiry_date" class="flex flex-col">
                 <span class="text-sm text-gray-500">New Expiry Date</span>
-                <span class="font-medium text-gray-900">{{ formatDate(qualification.renewalData.new_expiry_date)
-                }}</span>
+                <span class="font-medium text-gray-900">{{ formatDate(application.new_expiry_date) }}</span>
               </div>
             </div>
           </div>
 
-          <!-- Qualification Information -->
           <div class="mb-8 p-6 bg-white rounded-lg border border-gray-200">
             <h4 class="text-lg font-medium text-gray-900 mb-4">Qualification Information</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Qualification</span>
-                <span class="font-medium text-gray-900">{{ qualification.qualification_name_display || 'N/A' }}</span>
+                <span class="font-medium text-gray-900">{{
+                  getPrimaryQualification(application)?.qualification_name_display || 'N/A' }}</span>
               </div>
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Qualification Type</span>
-                <span class="font-medium text-gray-900">{{ qualification.qualification_type_display || 'N/A' }}</span>
+                <span class="font-medium text-gray-900">{{
+                  getPrimaryQualification(application)?.qualification_type_display || 'N/A' }}</span>
               </div>
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Institute/University</span>
-                <span class="font-medium text-gray-900">{{ qualification.institute_university_display || 'N/A' }}</span>
+                <span class="font-medium text-gray-900">{{
+                  getPrimaryQualification(application)?.institute_university_display || 'N/A' }}</span>
               </div>
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Personnel Category</span>
-                <span class="font-medium text-gray-900">{{ qualification.personnel_category_name || 'N/A' }}</span>
+                <span class="font-medium text-gray-900">{{ getPrimaryQualification(application)?.personnel_category_name
+                  || 'N/A' }}</span>
               </div>
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Personnel Sub-Category</span>
-                <span class="font-medium text-gray-900">{{ qualification.personnel_sub_category_name || 'N/A' }}</span>
+                <span class="font-medium text-gray-900">{{
+                  getPrimaryQualification(application)?.personnel_sub_category_name || 'N/A' }}</span>
               </div>
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Sector</span>
-                <span class="font-medium text-gray-900">{{ qualification.select_sector_name || 'N/A' }}</span>
+                <span class="font-medium text-gray-900">{{ getPrimaryQualification(application)?.select_sector_name ||
+                  'N/A' }}</span>
               </div>
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Completion Year</span>
-                <span class="font-medium text-gray-900">{{ qualification.completion_year || 'N/A' }}</span>
+                <span class="font-medium text-gray-900">{{ getPrimaryQualification(application)?.completion_year ||
+                  'N/A' }}</span>
               </div>
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Practice Address</span>
-                <span class="font-medium text-gray-900">{{ qualification.practice_address || 'N/A' }}</span>
+                <span class="font-medium text-gray-900">{{ getPrimaryQualification(application)?.practice_address ||
+                  'N/A' }}</span>
               </div>
               <div class="flex flex-col">
-                <span class="text-sm text-gray-500">Status</span>
-                <span :class="getQualificationStatusClasses(qualification.endorsement_decision)"
+                <span class="text-sm text-gray-500">Qualification Status</span>
+                <span v-if="getPrimaryQualification(application)?.endorsement_decision"
+                  :class="getQualificationStatusClasses(getPrimaryQualification(application).endorsement_decision)"
                   class="inline-flex px-2 py-1 rounded text-xs">
-                  {{ qualification.endorsement_decision }}
+                  {{ getPrimaryQualification(application).endorsement_decision }}
                 </span>
+                <span v-else class="font-medium text-gray-900">N/A</span>
               </div>
             </div>
           </div>
 
-          <!-- Attachments -->
           <div class="mb-8 p-6 bg-white rounded-lg border border-gray-200">
             <h4 class="text-lg font-medium text-gray-900 mb-4">Attachments</h4>
-            <div v-if="qualification.user_qualification_attachments?.length > 0">
+            <div v-if="getPrimaryQualification(application)?.user_qualification_attachments?.length > 0">
               <ul class="divide-y divide-gray-200">
-                <li v-for="attachment in qualification.user_qualification_attachments" :key="attachment.id"
-                  class="py-3 flex justify-between items-center">
+                <li v-for="attachment in getPrimaryQualification(application).user_qualification_attachments"
+                  :key="attachment.id" class="py-3 flex justify-between items-center">
                   <div>
-                    <p class="font-medium text-gray-900">{{ attachment.file_type_name }}</p>
+                    <p class="font-medium text-gray-900">{{ attachment.file_type_name || 'Attachment' }}</p>
                     <p class="text-sm text-gray-500">Uploaded: {{ formatDate(attachment.uploaded_at) }}</p>
                   </div>
                   <a :href="attachment.file" target="_blank"
@@ -138,43 +146,41 @@
               </ul>
             </div>
             <div v-else class="text-center py-4 text-gray-500">
-              No attachments available
+              No attachments available for the primary qualification.
             </div>
           </div>
 
-          <!-- Existing Renewal Information (if any) -->
-          <div v-if="qualification.renewalData" class="mb-8 p-6 bg-white rounded-lg border border-gray-200">
+          <div v-if="application.renewal_status && application.renewal_status !== 'Pending'"
+            class="mb-8 p-6 bg-white rounded-lg border border-gray-200">
             <h4 class="text-lg font-medium text-gray-900 mb-4">Renewal Information</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Review Status</span>
-                <span :class="getStatusTagClass(qualification.renewalData.renewal_review_status)"
+                <span :class="getStatusTagClass(application.renewal_review_status)"
                   class="mt-1 inline-flex px-2 py-1 rounded text-xs">
-                  {{ qualification.renewalData.renewal_review_status || 'Pending' }}
+                  {{ application.renewal_review_status || 'N/A' }}
                 </span>
               </div>
               <div class="flex flex-col">
                 <span class="text-sm text-gray-500">Endorsement Decision</span>
-                <span :class="getStatusTagClass(qualification.renewalData.renewal_endorsement_decision)"
+                <span :class="getStatusTagClass(application.renewal_status)"
                   class="mt-1 inline-flex px-2 py-1 rounded text-xs">
-                  {{ qualification.renewalData.renewal_endorsement_decision || 'Pending' }}
+                  {{ application.renewal_status || 'N/A' }}
                 </span>
               </div>
               <div class="flex flex-col col-span-2">
                 <span class="text-sm text-gray-500">Review Remarks</span>
-                <span class="font-medium text-gray-900">{{ qualification.renewalData.renewal_review_remarks ||
-                  'Noremarks' }}</span>
+                <span class="font-medium text-gray-900">{{ application.renewal_review_remarks || 'No remarks' }}</span>
               </div>
               <div class="flex flex-col col-span-2">
                 <span class="text-sm text-gray-500">Endorsement Remarks</span>
-                <span class="font-medium text-gray-900">{{ qualification.renewalData.endorsement_remarks || 'No remarks'
-                }}</span>
+                <span class="font-medium text-gray-900">{{ application.endorsement_remarks || 'No remarks' }}</span>
               </div>
             </div>
           </div>
 
-          <!-- Review Section for Officer (if not already processed) -->
-          <div class="mb-8 p-6 bg-white rounded-lg border border-gray-200" v-if="!qualification.renewalData">
+          <div class="mb-8 p-6 bg-white rounded-lg border border-gray-200"
+            v-if="application.renewal_status === 'Pending'">
             <h4 class="text-lg font-medium text-gray-900 mb-4">Process Renewal</h4>
 
             <div class="mb-6">
@@ -228,14 +234,13 @@
             </div>
           </div>
 
-          <!-- Action Buttons -->
           <div class="flex justify-end space-x-3 mt-8">
             <button @click="closeModal"
               class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
               Cancel
             </button>
-            <button v-if="!qualification.renewalData" @click="submitRenewal" :disabled="isSubmitting"
-              :class="{ 'opacity-50 cursor-not-allowed': isSubmitting }"
+            <button v-if="application.renewal_status === 'Pending'" @click="submitRenewalUpdate"
+              :disabled="isSubmitting" :class="{ 'opacity-50 cursor-not-allowed': isSubmitting }"
               class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
               <svg v-if="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -244,15 +249,13 @@
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                 </path>
               </svg>
-              {{ isSubmitting ? 'Processing...' : 'Submit Renewal' }}
-            </button>
+              {{ isSubmitting ? 'Processing...' : 'Update Renewal' }} </button>
           </div>
         </div>
 
-        <!-- Loading State -->
         <div v-else class="p-6 text-center">
           <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          <p class="mt-2 text-sm text-gray-600">Loading qualification details...</p>
+          <p class="mt-2 text-sm text-gray-600">Loading details...</p>
         </div>
       </div>
     </div>
@@ -261,15 +264,16 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import apiServices from '@/services/services';
+import apiServices from '@/services/services'; // Adjust path if needed
 import { useToast } from 'vue-toastification';
 
+// Props definition - Expects 'application' which is the combined object
 const props = defineProps({
   isOpen: {
     type: Boolean,
     default: false
   },
-  qualification: {
+  application: {
     type: Object,
     default: null
   },
@@ -300,40 +304,70 @@ const reviewForm = ref({
   endorsement_remarks: ''
 });
 
-// Reset form when modal opens with new qualification
-watch(() => props.qualification, (newQualification) => {
-  if (newQualification) {
+// Helper function to get primary qualification
+const getPrimaryQualification = (app) => {
+  if (app && Array.isArray(app.user_qualifications) && app.user_qualifications.length > 0) {
+    // Ensure the find method doesn't crash if items are malformed
+    return app.user_qualifications.find(q => q && q.is_primary_qualification);
+  }
+  return null;
+};
+
+
+// Watch the incoming application data to reset/prefill the form
+watch(() => props.application, (newApplication) => {
+  if (newApplication) {
+    // Pre-fill form based on existing renewal data if available (though typically this form is only shown for 'Pending')
     // Calculate a default expiry date (3 years from current expiry)
     let defaultNewExpiryDate = null;
-    if (newQualification.expiry_date) {
-      const currentExpiry = new Date(newQualification.expiry_date);
-      currentExpiry.setFullYear(currentExpiry.getFullYear() + 3);
-      defaultNewExpiryDate = currentExpiry.toISOString().split('T')[0];
-    } else {
-      // Fallback to 3 years from today
+    if (newApplication.expiry_date) {
+      try {
+        const currentExpiry = new Date(newApplication.expiry_date);
+        if (!isNaN(currentExpiry.getTime())) {
+          currentExpiry.setFullYear(currentExpiry.getFullYear() + 3);
+          defaultNewExpiryDate = currentExpiry.toISOString().split('T')[0];
+        }
+      } catch (e) { console.error("Error parsing expiry date:", newApplication.expiry_date, e); }
+    }
+    if (!defaultNewExpiryDate) { // Fallback
       const today = new Date();
       today.setFullYear(today.getFullYear() + 3);
       defaultNewExpiryDate = today.toISOString().split('T')[0];
     }
 
+    // Reset form values, potentially pre-filling if needed (but usually not needed as form is for 'Pending' status)
+    reviewForm.value = {
+      renewal_review_status: newApplication.renewal_review_status || 'Pending', // Use existing if available? Or always default? Defaulting seems safer for processing workflow.
+      renewal_review_remarks: newApplication.renewal_review_remarks || '',
+      new_expiry_date: newApplication.new_expiry_date || defaultNewExpiryDate, // Use existing new date if set, else default
+      renewal_endorsement_decision: newApplication.renewal_status || 'Pending', // Use existing if available? Defaulting seems safer.
+      endorsement_remarks: newApplication.endorsement_remarks || ''
+    };
+  } else {
+    // Clear form if no application is passed
     reviewForm.value = {
       renewal_review_status: 'Pending',
       renewal_review_remarks: '',
-      new_expiry_date: defaultNewExpiryDate,
+      new_expiry_date: null,
       renewal_endorsement_decision: 'Pending',
       endorsement_remarks: ''
     };
   }
-}, { immediate: true });
+}, { immediate: true, deep: true });
+
 
 // Format date for display
-const formatDate = (date) => {
-  if (!date) return 'N/A';
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'N/A';
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric', month: 'short', day: 'numeric'
+    });
+  } catch (error) {
+    return 'N/A';
+  }
 };
 
 // Get CSS classes for qualification status display
@@ -342,6 +376,7 @@ const getQualificationStatusClasses = (status) => {
     'bg-yellow-100 text-yellow-800': status === 'Pending',
     'bg-green-100 text-green-800': status === 'Approved',
     'bg-red-100 text-red-800': status === 'Regretted',
+    'bg-gray-100 text-gray-800': !['Pending', 'Approved', 'Regretted'].includes(status)
   };
 };
 
@@ -350,17 +385,14 @@ const getRenewalStatusClasses = (status) => {
   return {
     'bg-yellow-100 text-yellow-800': status === 'Pending',
     'bg-green-100 text-green-800': status === 'Approved',
-    'bg-red-100 text-red-800': status === 'Regretted'
+    'bg-red-100 text-red-800': status === 'Regretted',
+    'bg-gray-100 text-gray-800': !['Pending', 'Approved', 'Regretted'].includes(status)
   };
 };
 
-// Get CSS classes for status tag
+// Get CSS classes for status tag (can be reused)
 const getStatusTagClass = (status) => {
-  return {
-    'bg-yellow-100 text-yellow-800': status === 'Pending',
-    'bg-green-100 text-green-800': status === 'Approved',
-    'bg-red-100 text-red-800': status === 'Regretted',
-  };
+  return getRenewalStatusClasses(status); // Reuse the logic
 };
 
 // Close the modal
@@ -370,10 +402,13 @@ const closeModal = () => {
   }
 };
 
-// Submit the renewal
-const submitRenewal = async () => {
-  if (!props.qualification) {
-    toast.error('No qualification data available');
+// ***** MODIFIED FUNCTION *****
+// Submit the renewal UPDATE
+const submitRenewalUpdate = async () => {
+  // Use props.application which holds the combined data
+  if (!props.application || props.application.renewal_id == null) { // Check for renewal_id
+    toast.error('Renewal data is missing or invalid');
+    console.error("Missing application or renewal_id in props:", props.application);
     return;
   }
 
@@ -382,33 +417,47 @@ const submitRenewal = async () => {
     toast.error('New expiry date is required when approving the renewal');
     return;
   }
+  if (!reviewForm.value.renewal_review_status || !reviewForm.value.renewal_endorsement_decision) {
+    toast.error('Review Status and Endorsement Decision are required.');
+    return;
+  }
 
   try {
     isSubmitting.value = true;
 
-    // Prepare data for submission
-    const renewalData = {
-      application: props.qualification.id,
-      user_qualification: props.qualification.id,
+    // Prepare data ONLY with fields to be updated (for PATCH)
+    const patchData = {
       renewal_review_status: reviewForm.value.renewal_review_status,
-      renewal_review_remarks: reviewForm.value.renewal_review_remarks,
+      renewal_review_remarks: reviewForm.value.renewal_review_remarks || "",
       renewal_endorsement_decision: reviewForm.value.renewal_endorsement_decision,
-      endorsement_remarks: reviewForm.value.endorsement_remarks
+      endorsement_remarks: reviewForm.value.endorsement_remarks || ""
     };
 
-    // Only include new_expiry_date if it has a value
-    if (reviewForm.value.new_expiry_date) {
-      renewalData.new_expiry_date = reviewForm.value.new_expiry_date;
+    // Only include new_expiry_date if status is Approved and date is set
+    if (reviewForm.value.renewal_review_status === 'Approved' && reviewForm.value.new_expiry_date) {
+      patchData.new_expiry_date = reviewForm.value.new_expiry_date;
+    } else {
+      // Explicitly set to null if not approved or not provided?
+      // Depending on backend logic, you might need this if the backend
+      // doesn't automatically ignore it or handle null correctly.
+      // patchData.new_expiry_date = null;
     }
 
-    // Create the renewal
-    await apiServices.createMhpcRenewal(renewalData);
 
-    toast.success('Renewal application processed successfully');
-    emit('update');
+    const renewalId = props.application.renewal_id; // Get the ID of the renewal to update
+
+    console.log(`Submitting Renewal Update for ID: ${renewalId}`, patchData);
+
+    // Call the API service to PATCH the existing renewal record
+    // Ensure you have 'patchMhpcRenewal' defined in your apiServices
+    await apiServices.patchMhpcRenewal(renewalId, patchData);
+
+    toast.success('Renewal application updated successfully');
+    emit('update'); // Signal parent to refetch data
   } catch (error) {
-    console.error('Error processing renewal:', error);
-    toast.error('Failed to process renewal application');
+    console.error('Error updating renewal:', error);
+    const errorMsg = error.response?.data ? JSON.stringify(error.response.data) : (error.message || 'Unknown error');
+    toast.error(`Failed to update renewal application: ${errorMsg}`);
   } finally {
     isSubmitting.value = false;
   }
