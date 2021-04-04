@@ -48,10 +48,10 @@
                 No.</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Primary
                 Qualification</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Additional
-                Qualification</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Renewal
+                Status</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Expiry Date
+              </th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
@@ -62,7 +62,9 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
-                  <img :src="app.passport_photo || ''" class="h-8 w-8 rounded-full object-cover mr-3">
+                  <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
+                    <span class="text-gray-600 text-xs">{{ getInitials(app) }}</span>
+                  </div>
                   <div>
                     <div class="text-sm font-medium text-gray-900">{{ app.full_name }}</div>
                     <div class="text-sm text-gray-500">{{ app.cid_no }}</div>
@@ -70,59 +72,35 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {{ app.registration_no }}
+                {{ app.registration_no || 'N/A' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                <!-- Primary Qualification Display -->
-                <template v-if="app.user_qualifications && app.user_qualifications.length > 0">
-                  <template v-for="qualification in app.user_qualifications.filter(q => q.is_primary_qualification)"
-                    :key="qualification.id">
-                    <div>
-                      <span :class="getQualificationStatusClasses(qualification.endorsement_decision)"
-                        class="px-2 py-1 rounded text-xs">
-                        {{ qualification.endorsement_decision }}
-                      </span>
-                      <span class="text-xs text-gray-600 ml-1">({{ qualification.qualification_name_display }})</span>
-                    </div>
-                  </template>
+                <template v-if="getPrimaryQualification(app)">
+                  {{ getPrimaryQualification(app).qualification_name_display || 'N/A' }}
                 </template>
-                <template
-                  v-if="!app.user_qualifications || !app.user_qualifications.some(q => q.is_primary_qualification)">
-                  <div class="text-xs text-orange-500">
-                    <span class="font-medium">⚠️</span> Primary Qualification Missing
-                  </div>
-                </template>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                <!-- Display multiple additional qualifications -->
-                <template v-if="app.user_qualifications && app.user_qualifications.length > 0">
-                  <div v-for="qualification in app.user_qualifications.filter(q => !q.is_primary_qualification)"
-                    :key="qualification.id" class="mb-2 last:mb-0">
-                    <span :class="getQualificationStatusClasses(qualification.endorsement_decision)"
-                      class="px-2 py-1 rounded text-xs">
-                      {{ qualification.endorsement_decision }}
-                    </span>
-                    <span class="text-xs text-gray-600 ml-1">({{ qualification.qualification_name_display }})</span>
-
-                  </div>
-                </template>
-                <template v-if="!app.user_qualifications.some(q => !q.is_primary_qualification)">
+                <template v-else>
                   N/A
                 </template>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="getStatusClasses(app)">
-                  {{ getStatus(app) }}
+                <span :class="getRenewalStatusClasses(app)">
+                  {{ getRenewalStatus(app) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(app.registration_date) }}
+                {{ formatDate(app.expiry_date) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
                   <button @click="viewDetails(app)"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
                 </div>
+              </td>
+            </tr>
+            <tr v-if="paginatedApplications.length === 0">
+              <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                {{ isLoading ? 'Loading application data...' : 'No renewal applications found that match your criteria'
+                }}
               </td>
             </tr>
           </tbody>
@@ -168,19 +146,20 @@
       </div>
     </div>
 
-    <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
+    <RenewalDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
       @update="handleUpdate" :personnel-categories="personnelCategories"
       :personnel-subcategories="personnelSubcategories" :sectors="sectors" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import apiServices from '@/services/services';
-import ViewDetailsModal from '../modals/ViewApplicationDetailsModal.vue';
+import RenewalDetailsModal from '../modals/RenewalDetailsModal.vue';
 import { useToast } from 'vue-toastification';
 
 const applications = ref([]);
+const renewals = ref([]);
 const filterStatus = ref('all');
 const searchQuery = ref('');
 const currentPage = ref(1);
@@ -191,32 +170,55 @@ const personnelCategories = ref([]);
 const personnelSubcategories = ref([]);
 const sectors = ref([]);
 const toast = useToast();
+const isLoading = ref(true);
 
-
-const pendingCount = computed(() => {
-  return filteredApplications.value.filter(app => getStatus(app) === 'Pending').length;
+// Reset pagination when filters change
+watch([searchQuery, filterStatus], () => {
+  currentPage.value = 1;
 });
 
-// Filter for "Renewal"
+// Map to track renewals by application ID
+const renewalByApplicationMap = computed(() => {
+  const map = {};
+  renewals.value.forEach(renewal => {
+    if (renewal.application) {
+      map[renewal.application] = renewal;
+    }
+  });
+  return map;
+});
+
+// Filter for applications that can be renewed
 const filteredApplications = computed(() => {
-  return applications.value.filter(app => app.registration_type_name === 'Renewal')
+  return applications.value
+    .filter(app => {
+      // Only consider applications that are of type Renewal
+      return app.registration_type_name === 'Renewal';
+    })
     .filter(app => {
       if (filterStatus.value !== 'all') {
-        return getStatus(app) === filterStatus.value;
+        return getRenewalStatus(app) === filterStatus.value;
       }
       return true;
     })
     .filter(app => {
       if (searchQuery.value) {
         const query = searchQuery.value.toLowerCase();
+        const name = (app.full_name || '').toLowerCase();
+        const cid = (app.cid_no || '').toLowerCase();
+        const regNo = (app.registration_no || '').toLowerCase();
         return (
-          app.full_name?.toLowerCase().includes(query) ||
-          app.cid_no?.toLowerCase().includes(query) ||
-          app.registration_no?.toLowerCase().includes(query)
+          name.includes(query) ||
+          cid.includes(query) ||
+          regNo.includes(query)
         );
       }
       return true;
     });
+});
+
+const pendingCount = computed(() => {
+  return filteredApplications.value.filter(app => getRenewalStatus(app) === 'Pending').length;
 });
 
 const paginatedApplications = computed(() => {
@@ -226,10 +228,11 @@ const paginatedApplications = computed(() => {
 });
 
 const totalPages = computed(() => {
-  return Math.ceil(filteredApplications.value.length / itemsPerPage);
+  return Math.max(1, Math.ceil(filteredApplications.value.length / itemsPerPage));
 });
 
 const paginationStart = computed(() => {
+  if (filteredApplications.value.length === 0) return 0;
   return ((currentPage.value - 1) * itemsPerPage) + 1;
 });
 
@@ -237,25 +240,39 @@ const paginationEnd = computed(() => {
   return Math.min(currentPage.value * itemsPerPage, filteredApplications.value.length);
 });
 
-const getStatus = (app) => {
-  const primaryQualification = app.user_qualifications?.find(q => q.is_primary_qualification);
-  if (primaryQualification) {
-    return primaryQualification.endorsement_decision;
+// Get the primary qualification from an application
+const getPrimaryQualification = (app) => {
+  if (app.user_qualifications && app.user_qualifications.length > 0) {
+    return app.user_qualifications.find(q => q.is_primary_qualification);
   }
-
-  return 'Pending'
+  return null;
 };
 
-const getQualificationStatusClasses = (status) => {
-  return {
-    'bg-yellow-100 text-yellow-800': status === 'Pending',
-    'bg-green-100 text-green-800': status === 'Approved',
-    'bg-red-100 text-red-800': status === 'Regretted',
-  };
+// Generate initials for the avatar
+const getInitials = (app) => {
+  const name = app.full_name || '';
+  if (!name) return '?';
+
+  return name
+    .split(' ')
+    .map(word => word[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2);
 };
 
-const getStatusClasses = (app) => {
-  const status = getStatus(app);
+// Get the renewal status of an application
+const getRenewalStatus = (app) => {
+  const renewal = renewalByApplicationMap.value[app.id];
+  if (renewal) {
+    return renewal.renewal_endorsement_decision || 'Pending';
+  }
+  return 'Pending';
+};
+
+// Get CSS classes for renewal status
+const getRenewalStatusClasses = (app) => {
+  const status = getRenewalStatus(app);
   return [
     'px-3 py-1 rounded-full text-xs font-medium',
     {
@@ -267,7 +284,7 @@ const getStatusClasses = (app) => {
 };
 
 const formatDate = (date) => {
-  if (!date) return '';
+  if (!date) return 'N/A';
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -288,41 +305,62 @@ const fetchMasterData = async () => {
     sectors.value = sectorsRes.data.results || [];
   } catch (error) {
     console.error('Error fetching master data:', error);
+    toast.error('Failed to load master data');
   }
 };
 
+// Fetch applications from the correct endpoint
 const fetchApplications = async () => {
   try {
     const response = await apiServices.getMhpcNewApplications();
     applications.value = response.data.results || [];
+
+    // Log the first application for debugging
+    if (applications.value.length > 0) {
+      console.log('First application data:', applications.value[0]);
+    }
   } catch (error) {
     console.error('Error fetching applications:', error);
+    toast.error('Failed to load application data');
+  }
+};
+
+// Fetch renewal data to map to applications
+const fetchRenewals = async () => {
+  try {
+    const response = await apiServices.getMhpcRenewals();
+    renewals.value = response.data.results || [];
+  } catch (error) {
+    console.error('Error fetching renewals:', error);
+    toast.error('Failed to load renewal data');
   }
 };
 
 const viewDetails = async (application) => {
   try {
-    const response = await apiServices.getAllUsers();
-    const users = response.data.results || [];
-    const matchingUser = users.find(user => user.cid === application.cid_no);
+    // Find if there's an existing renewal for this application
+    const existingRenewal = renewalByApplicationMap.value[application.id];
 
-    selectedApplication.value = {
-      ...application,
-      is_counselor: matchingUser?.is_counselor || false,
-      userDetails: matchingUser,
-    };
+    // Make deep copy to avoid reactivity issues
+    const applicationData = JSON.parse(JSON.stringify(application));
 
+    // Add renewal data if it exists
+    if (existingRenewal) {
+      applicationData.renewalData = existingRenewal;
+    }
+
+    selectedApplication.value = applicationData;
     isModalOpen.value = true;
   } catch (error) {
-    console.error('Error fetching details:', error);
-    selectedApplication.value = { ...application, is_counselor: false, userDetails: null };
-    isModalOpen.value = true;
+    console.error('Error preparing application details:', error);
+    toast.error('Failed to prepare application details');
   }
 };
+
 const handleUpdate = async () => {
-  await fetchApplications();
+  await Promise.all([fetchApplications(), fetchRenewals()]);
   closeModal();
-  toast.success('Application updated successfully');
+  toast.success('Renewal application processed successfully');
 };
 
 const closeModal = () => {
@@ -339,6 +377,15 @@ const nextPage = () => {
 };
 
 onMounted(async () => {
-  await Promise.all([fetchApplications(), fetchMasterData()]);
+  isLoading.value = true;
+  try {
+    // Fetch applications and renewals
+    await Promise.all([fetchApplications(), fetchRenewals(), fetchMasterData()]);
+  } catch (error) {
+    console.error('Error initializing data:', error);
+    toast.error('Failed to initialize application data');
+  } finally {
+    isLoading.value = false;
+  }
 });
 </script>
