@@ -697,7 +697,7 @@ const handleSubmitActual = async () => {
           payerEmail: application.emailAddress,
           mobileNo: application.contactNumber,
           totalPayableAmount: 1000.00,
-          serviceCode: 'accreditation_fee', // Use an appropriate service code
+          serviceCode: '100194', // Use an appropriate service code
           description: 'Payment for Accreditation Application',
           payableAmount: 1000.00,
           taxPayerName: application.institutionName,
