@@ -1,6 +1,7 @@
 <template>
   <div>
-    <PaymentModal ref="paymentModal" @payment-completed="onPaymentCompleted" @close="onPaymentModalClose" />
+    <PaymentModal ref="paymentModal" :amount="1000" @payment-completed="onPaymentCompleted"
+      @close="onPaymentModalClose" />
     <form @submit.prevent="handleSubmit" class="space-y-6">
       <!-- Autocomplete Dropdown for Original Application -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
@@ -352,10 +353,10 @@ const onPaymentModalClose = () => {
 };
 
 const onPaymentCompleted = (paymentData) => {
-    form.is_payment_complete = false;
-    form.payment_id = paymentData.paymentHash;
-    form.status = "processing_payment";
-    handleSubmitActual();
+  form.is_payment_complete = false;
+  form.payment_id = paymentData.paymentHash;
+  form.status = "processing_payment";
+  handleSubmitActual();
 };
 
 // Fetch original applications and reasons for second copy
@@ -488,67 +489,67 @@ const handleSubmitActual = async () => {
     formData.append("is_second_copy", "true");
 
 
-      // Payment Request
-        const paymentData = {
-            platform: 'web',
-            refNo: form.payment_id,  // Use the payment_id from the form
-            taxPayerNo: form.cid_no,
-            taxPayerDocumentNo: 'BAOW', //AGENCYCODE replaced with literal
-            payerEmail: form.email_address,
-            mobileNo: form.contact_no,
-            totalPayableAmount: 1000.00,
-            serviceCode: 'BAOW',    //AGENCYCODE replaced with literal
-            description: 'Payment for Second Copy ROQ', // Updated Description
-            payableAmount: 1000.00,
-            taxPayerName: form.applicants_name,
-            application_no: form.payment_id,
-            app_type: 'ROQ', // This might need adjustment for second copy
-            user_id: authStore.userId,
-        };
+    // Payment Request
+    const paymentData = {
+      platform: 'web',
+      refNo: form.payment_id,  // Use the payment_id from the form
+      taxPayerNo: form.cid_no,
+      taxPayerDocumentNo: 'BAOW', //AGENCYCODE replaced with literal
+      payerEmail: form.email_address,
+      mobileNo: form.contact_no,
+      totalPayableAmount: 1000.00,
+      serviceCode: '100193',    //AGENCYCODE replaced with literal
+      description: 'Payment for Second Copy ROQ', // Updated Description
+      payableAmount: 1000.00,
+      taxPayerName: form.applicants_name,
+      application_no: form.payment_id,
+      app_type: 'ROQ', // This might need adjustment for second copy
+      user_id: authStore.userId,
+    };
 
-      try {
-        const paymentResponse = await apiService.makePayment(paymentData);
+    try {
+      const paymentResponse = await apiService.makePayment(paymentData);
 
-        if (paymentResponse.status !== 201 && paymentResponse.status !== 200) {
-            throw new Error("Payment request failed");
-        }
-
-      } catch (paymentError) {
-        console.error("Error making payment:", paymentError);
-        toast.error("Payment request failed: " + (paymentError.response?.data?.message || paymentError.message));
-        isSubmitting.value = false;
-        return; // Stop if payment fails
+      if (paymentResponse.status !== 201 && paymentResponse.status !== 200) {
+        throw new Error("Payment request failed");
       }
+
+    } catch (paymentError) {
+      console.error("Error making payment:", paymentError);
+      toast.error("Payment request failed: " + (paymentError.response?.data?.message || paymentError.message));
+      isSubmitting.value = false;
+      return; // Stop if payment fails
+    }
 
 
     // Append other form fields, including date formatting
     for (const key in form) {
-        if (Object.prototype.hasOwnProperty.call(form, key)) {
-            let value = form[key];
+      if (Object.prototype.hasOwnProperty.call(form, key)) {
+        let value = form[key];
 
-            if (value instanceof File) {
-              formData.append(key, value);
-            }
-            else if (key === 'date_of_birth') {
-              formData.append(key, formatDate(value));  // Format Date
-            } else if (typeof value === 'boolean') {
-              formData.append(key, value.toString());
-            }
-            else if (value !== null && value !== undefined) {
-              formData.append(key, value.toString());
-            }
+        if (value instanceof File) {
+          formData.append(key, value);
         }
+        else if (key === 'date_of_birth') {
+          formData.append(key, formatDate(value));  // Format Date
+        } else if (typeof value === 'boolean') {
+          formData.append(key, value.toString());
+        }
+        else if (value !== null && value !== undefined) {
+          formData.append(key, value.toString());
+        }
+      }
     }
 
     // Submit the form
-    const response =  await apiService.createRecognitionOfQualification(formData); // Call the correct endpoint.
-     if (response.status === 201) {
-        toast.success("Second copy application submitted successfully. Please check your email to complete the payment.");
-        emit("application-submitted");
-      }
+    const response = await apiService.createRecognitionOfQualification(formData); // Call the correct endpoint.
+    if (response.status === 201) {
+      toast.success("Second copy application submitted successfully. Please check your email to complete the payment.");
+      emit("application-submitted");
+    }
 
   } catch (error) {
-    toast.error("Failed to submit application: " + (error.response?.data?.message || error.message ));
+    toast.error("Failed to submit application: " + (error.response?.data?.message || error.message));
     console.error("Error submitting application:", error);
   } finally {
     isSubmitting.value = false;
