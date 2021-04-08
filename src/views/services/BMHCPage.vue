@@ -192,6 +192,13 @@
                   </div>
 
                   <div>
+                    <label for="license_number" class="block text-sm font-medium text-slate-700">Provider License
+                      Number</label>
+                    <input type="text" id="license_number" v-model="cmeProviderForm.license_number"
+                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500" />
+                  </div>
+
+                  <div>
                     <label for="contact_number" class="block text-sm font-medium text-slate-700">Contact Number</label>
                     <input type="tel" id="contact_number" v-model="cmeProviderForm.contact_number"
                       class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500" />
@@ -389,6 +396,7 @@ const cmeProviderForm = reactive({
   password: '',
   confirm_password: '',
   contact_number: '',
+  license_number: '',
 })
 
 const showCMEProviderModal = ref(false)
@@ -406,6 +414,7 @@ const closeCMEProviderModal = () => {
     password: '',
     confirm_password: '',
     contact_number: '',
+    license_number: '',
   })
 }
 
@@ -430,6 +439,7 @@ const handleCMEProviderRegistration = async () => {
       contact_number: cmeProviderForm.contact_number,
       role: 'cpd_cme_provider',
       service_type: serviceType.value,
+      cid: cmeProviderForm.license_number || '',
     }
 
     await apiService.register(payload)

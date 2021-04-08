@@ -1,3 +1,4 @@
+<!-- src/components/DepartmentManagement.vue -->
 <template>
   <div class="container mx-auto p-4 sm:p-6 lg:p-8">
       <h1 class="text-2xl font-bold text-gray-800 mb-6"> EPC Department Management</h1>

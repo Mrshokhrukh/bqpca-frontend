@@ -221,11 +221,16 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue';
-import apiServices from '@/services/services';
+import apiServices from '@/services/services'; // Assuming this service fetches institute data
+
+// Stores { value: id, label: name } for the dropdown
+const instituteOptions = ref([]);
+// Stores the FULL details of all fetched institutes
+const allInstitutesDetails = ref([]);
 
 const formData = ref({
   institute_id: '',
-  country: 'Bhutan',
+  country: 'Bhutan', 
   dzongkhag: '',
   cityGewog: '',
   addressLocation: '',
@@ -247,13 +252,7 @@ const formData = ref({
   declaration: false,
 });
 
-
-const instituteOptions = ref([
-  { value: 1, label: 'Royal Institute of Health Sciences' },
-  { value: 2, label: 'Khesar Gyalpo University of Medical Sciences' },
-  { value: 3, label: 'Jigme Dorji Wangchuck National Referral Hospital' }
-]);
-
+// --- Options for other dropdowns (keep as they are) ---
 const cityGewogOptions = ref([
   { value: 'TT', label: 'Thimphu Thromde' },
   { value: 'CT', label: 'Changzamtog' },
@@ -266,57 +265,78 @@ const dzongkhagOptions = ref([
   { value: 'PR', label: 'Paro' }
 ]);
 
+// --- Fetch Data on Mount ---
 onMounted(async () => {
   try {
+    // Fetch the list of institutes
     const institutesResponse = await apiServices.getEpcInstitutes();
-    const institutesArray = institutesResponse.data.results;
 
-    instituteOptions.value = institutesArray.map(institute => ({
-      value: institute.id,
-      label: institute.name_of_institution
-    }));
+    if (institutesResponse.data && institutesResponse.data.results) {
+      const institutesArray = institutesResponse.data.results;
 
+      // Store the full details for later lookup
+      allInstitutesDetails.value = institutesArray;
+
+      // Populate the dropdown options
+      instituteOptions.value = institutesArray.map(institute => ({
+        value: institute.id, // Assuming 'id' is the unique identifier
+        label: institute.name_of_institution // Assuming 'name_of_institution' is the display name
+      }));
+    } else {
+        console.error('Unexpected API response structure for institutes:', institutesResponse.data);
+        alert('Failed to load institute options due to unexpected data format.');
+    }
+
+    // --- Fetch other dropdown options if needed ---
+    // Example: Fetch City/Gewog and Dzongkhag options if they come from an API
+    // try {
+    //   const [citiesRes, dzongkhagsRes] = await Promise.all([
+    //     apiServices.getCities(), // Replace with your actual API call
+    //     apiServices.getDzongkhags() // Replace with your actual API call
+    //   ]);
+    //   cityGewogOptions.value = citiesRes.data.map(c => ({ value: c.id, label: c.name }));
+    //   dzongkhagOptions.value = dzongkhagsRes.data.map(d => ({ value: d.id, label: d.name }));
+    // } catch (error) {
+    //   console.error('Error fetching City/Gewog or Dzongkhag options:', error);
+    // }
 
   } catch (error) {
     console.error('Error fetching dropdown options:', error);
-    alert('Failed to load dropdown options. Please check the console.');
+    alert('Failed to load initial dropdown options. Please check the console.');
   }
 });
 
+// --- Watch for Institute Selection Change ---
+watch(() => formData.value.institute_id, (newInstituteId) => {
+  // Find the full details of the selected institute
+  const selectedInstituteDetails = allInstitutesDetails.value.find(inst => inst.id === newInstituteId);
 
-watch(() => formData.value.institute_id, (newValue) => {
-  const selectedInstitute = instituteOptions.value.find(inst => inst.value === newValue);
-  if (selectedInstitute && selectedInstitute.label === 'Royal Institute of Health Sciences') {
-    formData.value.country = 'Bhutan';
-    formData.value.dzongkhag = 'Thimphu';
-    formData.value.cityGewog = 'Thimphu Thromde';
-    formData.value.addressLocation = 'Thimphu, Bhutan';
-    formData.value.contactNo = '+(975) 2 322057';
-    formData.value.emailAddress = 'info@rihs.edu.bt';
-  } else if (selectedInstitute && selectedInstitute.label === 'Khesar Gyalpo University of Medical Sciences of Bhutan') {
-    formData.value.country = 'Bhutan';
-    formData.value.dzongkhag = 'Thimphu';
-    formData.value.cityGewog = 'Thimphu Thromde';
-    formData.value.addressLocation = 'Thimphu, Bhutan';
-    formData.value.contactNo = '+(975) 2 330556';
-    formData.value.emailAddress = 'info@kgumsb.edu.bt';
-  } else if (selectedInstitute && selectedInstitute.label === 'Other Institute') {
-    formData.value.country = '';
-    formData.value.dzongkhag = '';
-    formData.value.cityGewog = '';
-    formData.value.addressLocation = '';
-    formData.value.contactNo = '';
-    formData.value.emailAddress = '';
+  if (selectedInstituteDetails) {
+    // --- Populate Proponent Details ---
+    // IMPORTANT: Adjust the property names below (e.g., 'country', 'dzongkhag_name', 'gewog_name', 'address', 'contact_number', 'email')
+    //            to match the ACTUAL property names returned by your API for an institute object.
+    formData.value.country = selectedInstituteDetails.country || 'Bhutan'; // Default to Bhutan if not provided
+    formData.value.dzongkhag = selectedInstituteDetails.dzongkhag_name || ''; // Example: Assuming API returns 'dzongkhag_name'
+    formData.value.cityGewog = selectedInstituteDetails.gewog_name || ''; // Example: Assuming API returns 'gewog_name'
+    formData.value.addressLocation = selectedInstituteDetails.address || ''; // Example: Assuming API returns 'address'
+    formData.value.contactNo = selectedInstituteDetails.contact_number || ''; // Example: Assuming API returns 'contact_number'
+    formData.value.emailAddress = selectedInstituteDetails.email || ''; // Example: Assuming API returns 'email'
+
   } else {
-    formData.value.country = '';
+    // Clear the fields if no institute is selected or details are not found
+    formData.value.country = 'Bhutan'; // Reset to default
     formData.value.dzongkhag = '';
     formData.value.cityGewog = '';
     formData.value.addressLocation = '';
     formData.value.contactNo = '';
     formData.value.emailAddress = '';
+    if (newInstituteId) {
+        console.warn(`Details not found for institute ID: ${newInstituteId}. Fields cleared.`);
+    }
   }
 });
 
+// --- File Handlers (keep as they are) ---
 const handleAttachmentChange = (event) => {
   formData.value.tc_attachments = event.target.files;
 };
@@ -325,58 +345,96 @@ const handleReportFileChange = (event) => {
   formData.value.tc_report = event.target.files[0];
 };
 
-
+// --- Form Actions (keep as they are) ---
 const handleSubmit = async () => {
+  if (!formData.value.institute_id) {
+       alert('Please select a Training Institute.');
+       return;
+   }
   if (formData.value.declaration) {
     const form = new FormData();
 
+    // Append all necessary fields, including the auto-populated ones
     form.append('institute_id', formData.value.institute_id);
     form.append('center_name', formData.value.center_name);
     form.append('center_location', formData.value.center_location);
     form.append('city_gewog', formData.value.city_gewog);
     form.append('state_dzongkhag', formData.value.state_dzongkhag);
     form.append('target_category', formData.value.target_category);
-    form.append('remarks', formData.value.remarks);
+    form.append('remarks', formData.value.remarks || ''); // Handle potentially empty remarks
     form.append('tc_remarks', formData.value.tc_remarks);
     form.append('tc_renewal_review_name', formData.value.tc_renewal_review_name);
     form.append('tc_review_summary', formData.value.tc_review_summary);
     form.append('valid_till', formData.value.valid_till);
     form.append('payment_id', formData.value.payment_id);
-    form.append('declaration', formData.value.declaration);
+    form.append('declaration', formData.value.declaration); // Should be boolean true
+
+    // Append proponent details (even though auto-filled, they are part of the form data conceptually)
+    // NOTE: Your backend might not need these if it can look them up via institute_id,
+    // but it's safer to send them unless you know otherwise.
+    form.append('proponent_country', formData.value.country);
+    form.append('proponent_dzongkhag', formData.value.dzongkhag);
+    form.append('proponent_city_gewog', formData.value.cityGewog);
+    form.append('proponent_address', formData.value.addressLocation);
+    form.append('proponent_contact_no', formData.value.contactNo);
+    form.append('proponent_email', formData.value.emailAddress);
 
 
-    if (formData.value.tc_attachments) {
+    // Append files
+    if (formData.value.tc_attachments && formData.value.tc_attachments.length > 0) {
       for (let i = 0; i < formData.value.tc_attachments.length; i++) {
         form.append('tc_attachments', formData.value.tc_attachments[i]);
       }
+    } else {
+        // Add validation or alert if attachments are required but missing
+        // alert('Please attach required documents.');
+        // return;
     }
 
     if (formData.value.tc_report) {
       form.append('tc_report', formData.value.tc_report);
+    } else {
+        // Add validation or alert if report file is required but missing
+        // alert('Please attach the report file.');
+        // return;
     }
 
 
     try {
-      const response = await apiServices.createEpcTeachingCenter(form, {
+      console.log("Submitting form data:", Object.fromEntries(form.entries())); // Log form data before sending
+      const response = await apiServices.createEpcTeachingCenter(form, { // Use your actual service method
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       console.log('Form submitted successfully!', response.data);
       alert('Application submitted successfully!');
-      handleCancel();
+      handleCancel(); // Reset form after successful submission
     } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Error submitting application. Please check the console for details.');
-      console.error('Detailed error:', error.response);
+       console.error('Error submitting form:', error);
+       let errorMessage = 'Error submitting application.';
+       if (error.response) {
+           // Backend returned an error response
+           console.error('Detailed error response:', error.response.data);
+           // Try to extract a meaningful message
+           errorMessage += ` Server responded with status ${error.response.status}. Details: ${JSON.stringify(error.response.data)}`;
+       } else if (error.request) {
+           // Request was made but no response received
+           errorMessage += ' No response received from server.';
+       } else {
+           // Error setting up the request
+           errorMessage += ` Request setup error: ${error.message}`;
+       }
+       alert(errorMessage + ' Please check the console for more details.');
     }
   } else {
-    alert('Please declare that the information is correct before submitting.');
+    alert('Please accept the declaration before submitting.');
   }
 };
 
 const handleCancel = () => {
   console.log('Form cancelled');
+  // Reset formData to initial state
   formData.value = {
     institute_id: '',
     country: 'Bhutan',
@@ -400,21 +458,30 @@ const handleCancel = () => {
     payment_id: '',
     declaration: false,
   };
+  // Reset file inputs if necessary (programmatically tricky, usually just replacing the key works)
+  // Example: Add a :key attribute to the file input elements bound to a counter that increments on cancel.
 };
 
 const handleSaveDraft = async () => {
+    // Implement draft saving logic - similar to handleSubmit but might go to a different endpoint
+    // or have a different status flag. Often sends JSON instead of FormData.
   console.log('Form saved as draft:', formData.value);
+  // Make sure to handle file data appropriately for drafts if needed
+  // (e.g., storing file metadata or requiring re-upload later)
+  const draftData = { ...formData.value };
+  // Remove file objects before sending JSON if your API expects that
+  delete draftData.tc_attachments;
+  delete draftData.tc_report;
+  // Add a status field maybe?
+  // draftData.status = 'draft';
+
   try {
-    const response = await apiServices.createEpcTeachingCenter(formData.value);
-    console.log('Form saved as draft successfully!', response.data);
-    alert('Form saved as draft!');
+    // const response = await apiServices.saveDraftTeachingCenter(draftData); // Example API call
+    // console.log('Form saved as draft successfully!', response.data);
+    alert('Draft saving not fully implemented yet.'); // Placeholder alert
   } catch (error) {
     console.error('Error saving form as draft:', error);
     alert('Error saving form as draft. Please check the console for details.');
   }
 };
 </script>
-
-<style scoped>
-/* You can add more specific styles here if needed */
-</style>
