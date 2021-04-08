@@ -3,7 +3,7 @@
     <div class="mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Payment History</h1>
-        <p class="text-gray-600">View payment records for BMHC certifications, renewals, CPDs, and more.</p>
+        <p class="text-gray-600">View payment records for EPC certifications, renewals, CPDs, and more.</p>
       </div>
 
       <div class="bg-white rounded-xl shadow-md p-6 mb-6">

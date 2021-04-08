@@ -265,7 +265,6 @@ export default {
   deleteEpcInstituteDepartment(id) {
     return apiClient.delete(`/epc/epc-institute-departments/${id}/`)
   },
-
   // EPC Institute Staff endpoints
   getEpcInstituteStaff() {
     return apiClient.get('/epc/epc-institute-staff/')

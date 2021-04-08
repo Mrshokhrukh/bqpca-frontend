@@ -274,7 +274,7 @@ const handleSubmit = async () => {
   }
 
   try {
-    const response = await apiServices.createEpcCpdTask(formData);
+    const response = await apiServices.createEpcCpdRecord(formData);
 
     if (response.status >= 200 && response.status < 300) {
       toast.success('CPD application submitted successfully!');

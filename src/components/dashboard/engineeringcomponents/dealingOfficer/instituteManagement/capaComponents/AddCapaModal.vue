@@ -148,6 +148,7 @@ const capaForm = ref({
 
 });
 
+
 const resetForm = () => {
   capaForm.value = {
     inspection_from_date: '',
