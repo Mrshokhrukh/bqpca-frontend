@@ -105,7 +105,7 @@
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
-                    View / Action
+                    View
                   </button>
                   <!-- Add other potential actions like quick approve/reject here if needed -->
                 </div>
@@ -240,7 +240,7 @@ const handleApprove = async (instituteToUpdate) => { // Receives data from modal
              }
         } catch(e) {
              currentValidTill = currentDate;
-             console.warn(`Error parsing valid_till date for institute ${instituteToUpdate.id}, using current date.`);
+             console.warn(`Error parsing valid_till date for institute ${instituteToUpdate.id}, using current date:`, e);
         }
     } else {
         currentValidTill = currentDate;
@@ -393,7 +393,7 @@ const getValidityClass = (validTillDate) => {
          expiryDate = new Date(validTillDate);
          if (isNaN(expiryDate.getTime())) throw new Error("Invalid Date");
          expiryDate.setHours(0,0,0,0); // Normalize expiry date
-    } catch(e) {
+    } catch {
         return 'text-purple-600 font-medium'; // Indicate invalid date format
     }
 
