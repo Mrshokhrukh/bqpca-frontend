@@ -91,8 +91,8 @@ const iconMap = {
   GraduationCap,
   Sliders,
 }
-import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
-import { useAuthStore } from '@/stores/authStore'
+// import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
+// import { useAuthStore } from '@/stores/authStore'
 // import { useInstitutionStore } from '@/stores/institutionNavigationStore'
 
 // Helper function to get the icon component
@@ -634,56 +634,39 @@ const serviceSpecificMenuItems = {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
-        hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.dashboard,
+        hidden: () => false,
       },
       {
         name: 'Certification',
         icon: getIconComponent('Certificate'),
-        hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.certification,
+        hidden: () => false,
         children: () => {
-          const store = useHealthCertificationStore()
-          const { certificationSubMenus } = store.visibleMenus
-
           const items = []
 
-          // Only add "Apply for Certification" if "My Applications" is not visible
-          if (
-            certificationSubMenus.applyForCertification &&
-            !certificationSubMenus.myApplications
-          ) {
-            items.push({
-              name: 'Apply for Certification',
-              route: (serviceType) => `/admin/user/${serviceType}/registration`,
-            })
-          }
+          items.push({
+            name: 'Apply for Certification',
+            route: (serviceType) => `/admin/user/${serviceType}/registration`,
+          })
 
-          if (certificationSubMenus.myApplications) {
-            items.push({
-              name: 'My Applications',
-              route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
-            })
-          }
+          items.push({
+            name: 'My Applications',
+            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+          })
 
-          if (certificationSubMenus.renewal) {
-            items.push({
-              name: 'Renewal',
-              route: (serviceType) => `/admin/user/${serviceType}/renewal`,
-            })
-          }
+          items.push({
+            name: 'Renewal',
+            route: (serviceType) => `/admin/user/${serviceType}/renewal`,
+          })
 
-          if (certificationSubMenus.reRegistration) {
-            items.push({
-              name: 'Re-Registration',
-              route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
-            })
-          }
+          items.push({
+            name: 'Re-Registration',
+            route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
+          })
 
-          if (certificationSubMenus.additionalQualification) {
-            items.push({
-              name: 'Additional Qualification',
-              route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
-            })
-          }
+          items.push({
+            name: 'Additional Qualification',
+            route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
+          })
 
           return items
         },
@@ -691,7 +674,7 @@ const serviceSpecificMenuItems = {
       {
         name: 'CPD Management',
         icon: getIconComponent('BookOpen'),
-        hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.cpdManagement,
+        hidden: () => false,
         children: [
           {
             name: 'Apply for CPD',
@@ -706,7 +689,7 @@ const serviceSpecificMenuItems = {
       {
         name: 'CoGS Management',
         icon: getIconComponent('Users'),
-        hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.cogsManagement,
+        hidden: () => false,
         children: [
           {
             name: 'Apply for CoGS',
@@ -721,11 +704,7 @@ const serviceSpecificMenuItems = {
       {
         name: 'Counselor Management',
         icon: getIconComponent('FileText'),
-        // Show this parent menu if the user is a counselor
-        hidden: () => {
-          const authStore = useAuthStore()
-          return !authStore.user?.is_counselor
-        },
+        hidden: () => false,
         children: [
           {
             name: 'Submit Application',
@@ -741,14 +720,14 @@ const serviceSpecificMenuItems = {
         name: 'Profile',
         icon: getIconComponent('Users'),
         route: (serviceType) => `/admin/user/${serviceType}/user_profile`,
-        hidden: () => !useHealthCertificationStore().visibleMenus.baseMenus.profile,
+        hidden: () => false,
       },
 
       {
         name: 'Reports',
         icon: getIconComponent('FileSearch'),
         route: (serviceType) => `/admin/user/${serviceType}/reports`,
-        hidden: () => true, // Always hidden, not in your requirements
+        hidden: () => false,
       },
     ],
     admin: [
