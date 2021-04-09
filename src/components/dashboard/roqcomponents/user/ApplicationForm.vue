@@ -1021,8 +1021,8 @@ const handleSubmitActual = async (isDraft = false) => {
         payerEmail: form.email_address,
         mobileNo: form.contact_no,
         totalPayableAmount: 1000.00,
-        serviceCode: 'additional_qualification_fee',
-        description: 'Payment for ROQ',
+        serviceCode: '100192',
+        description: 'Payment for ROQ Application',
         payableAmount: 1000.00,
         taxPayerName: form.applicants_name,
         application_no: form.payment_id, // Use payment_id, consistent with refNo

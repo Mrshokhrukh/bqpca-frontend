@@ -172,7 +172,7 @@ const formatDate = (dateString) => {
 
 const fetchInstitute = async () => {
     try {
-        const response = await apiServices.getMhpcInstitutes();
+        const response = await apiServices.getEpcInstitutes();
 
         // Corrected validation check: Access 'results' through response.data
         if (!response || !response.data || !response.data.results || !Array.isArray(response.data.results)) {

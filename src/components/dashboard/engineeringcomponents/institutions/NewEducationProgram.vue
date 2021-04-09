@@ -1,6 +1,6 @@
 <template>
   <div class="p-8 rounded-xl bg-gray-50 min-h-screen">
-    <h2 class="text-3xl font-bold text-gray-800 mb-8">New Educational Programme Application</h2>
+    <h2 class="text-3xl font-bold text-gray-800 mb-8">EPC New Educational Programme Application</h2>
 
     <!-- Loading state -->
     <div v-if="isLoading" class="flex justify-center items-center my-16">
@@ -578,7 +578,7 @@ const handleSubmit = async () => {
     await apiService.createEpcCourseDetail(finalFormData); // Use your actual API service method
 
     toast.success('Educational programme application submitted successfully!');
-    router.push('/admin/institutions/engineering_certification/dashboard');  
+    router.push('/admin/institutions/engineering_certification/dashboard');
   } catch (error) {
     console.error('Error submitting form:', error);
     // Parse API validation errors

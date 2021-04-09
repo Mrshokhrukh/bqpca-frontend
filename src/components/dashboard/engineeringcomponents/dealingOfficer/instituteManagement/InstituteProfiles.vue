@@ -125,6 +125,7 @@ onMounted(async () => {
     // Corrected access to results: response.data.results
     if (response && response.data && Array.isArray(response.data.results)) {
       institutes.value = response.data.results;
+      console.log("Institutes fetched successfully:", institutes.value);
     } else {
       // Handle unexpected response structure
       console.error("Unexpected API response:", response);

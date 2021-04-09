@@ -9,7 +9,7 @@
           Your Engineering Certification application status.
         </p>
       </div>
-  
+
       <div class="max-w-7xl mx-auto px-4 py-8">
         <!-- Results Section -->
         <div v-if="filteredApplications.length > 0" class="space-y-6">
@@ -24,7 +24,7 @@
                 </h3>
                 <p class="text-sm text-gray-600 mt-1">Submitted on {{ formatDate(application.created_at) }}</p>
               </div>
-  
+
               <!-- Action Buttons -->
               <div class="flex space-x-3">
                 <!-- Payment Button -->
@@ -36,7 +36,7 @@
                 </button>
               </div>
             </div>
-  
+
             <!-- Application Details Grid -->
             <div class="grid md:grid-cols-3 gap-6 p-6 bg-white">
               <!-- Personal Information Column -->
@@ -48,7 +48,7 @@
                   <detail-row icon="Target" label="Gender" :value="application.gender" />
                 </div>
               </div>
-  
+
               <!-- Contact Information Column -->
               <div>
                 <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Contact Details</h4>
@@ -58,7 +58,7 @@
                   <detail-row icon="BookOpen" label="Workplace" :value="application.workplace || 'Not Specified'" />
                 </div>
               </div>
-  
+
               <!-- Application Status Column -->
               <div>
                 <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Application Status</h4>
@@ -70,7 +70,7 @@
                 </div>
               </div>
             </div>
-  
+
             <!-- Additional Details and Remarks -->
             <div v-if="application.review_remark" class="bg-gray-50 p-6 border-t">
               <h4 class="text-lg font-semibold text-gray-800 mb-3">Review Remarks</h4>
@@ -78,7 +78,7 @@
             </div>
           </div>
         </div>
-  
+
         <!-- No Results Message -->
         <div v-if="filteredApplications.length === 0 && !isLoading && !apiError"
           class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
@@ -102,7 +102,7 @@
         @close="closePaymentModal" />
     </div>
   </template>
-  
+
   <script setup>
   import { ref, h, defineComponent, onMounted, computed } from 'vue';
   import apiService from '@/services/services';
@@ -120,9 +120,9 @@
   import { useAuthStore } from '@/stores/authStore'; // Import Auth Store
   import PaymentModal from '@/components/common/PaymentModal.vue'; // Import PaymentModal
   import { useToast } from 'vue-toastification';
-  
+
   const toast = useToast();
-  
+
   // State
   const applications = ref([]);
   const isLoading = ref(false);
@@ -130,27 +130,28 @@
   const authStore = useAuthStore(); // Use the auth store
   const paymentModal = ref(null);
   const selectedApplication = ref(null); // Track the application for payment
-  
+
   // Computed Property for filtered applications
   const filteredApplications = computed(() => {
     if (!authStore.user || !authStore.user.cid) {
       return []; // Return empty if user or cid is not available
     }
-  
+
     return applications.value.filter(app => app.cid === authStore.user.cid);
   });
-  
-  
+
+
   // Methods
   const fetchApplications = async () => {
     isLoading.value = true;
     apiError.value = false;
-  
+
     try {
       const response = await apiService.getEpcNewApplications();
       // Access the 'results' property of the response data.
       if (Array.isArray(response.data.results)) {
         applications.value = response.data.results;
+        console
       } else {
         applications.value = [];
         console.error("API did not return an array in results:", response.data);
@@ -164,8 +165,8 @@
       isLoading.value = false;
     }
   };
-  
-  
+
+
   const StatusBadge = defineComponent({
     props: {
       status: String
@@ -176,13 +177,13 @@
         'Approved': 'bg-green-100 text-green-800',
         'Rejected': 'bg-red-100 text-red-800'
       };
-  
+
       return h('span', {
         class: `px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${statusClasses[this.status] || ''}`
       }, this.status);
     }
   });
-  
+
   // Detail Row Component
   const DetailRow = defineComponent({
     props: {
@@ -194,9 +195,9 @@
       const icons = {
         User, IdCard, Phone, Mail, FileText, Target, BookOpen, CreditCard, Info
       };
-  
+
       const IconComponent = icons[this.icon];
-  
+
       return h('div', { class: 'flex items-center space-x-3' }, [
         h(IconComponent, { class: 'w-5 h-5 text-blue-500' }),
         h('div', [
@@ -206,7 +207,7 @@
       ]);
     }
   });
-  
+
   // Helper function to format date
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -215,7 +216,7 @@
       day: 'numeric'
     });
   };
-  
+
   const getPaymentButtonText = (application) => {
       if(application.is_payment_complete){
           return 'Payment Completed';
@@ -226,36 +227,36 @@
           return 'Complete Payment';
       }
   };
-  
+
   const initiatePayment = (application) => {
     selectedApplication.value = application;
     paymentModal.value.openModal();
   };
-  
+
   const closePaymentModal = () => {
     selectedApplication.value = null; // Reset on close
   };
-  
+
   const handlePaymentCompleted = async (paymentData) => {
-  
+
     if (!selectedApplication.value) {
       toast.error("No application selected for payment.");
       return;
     }
-  
+
     const applicationId = selectedApplication.value.id;
     const paymentId = paymentData.paymentHash;
     const user = authStore.user;
-  
+
     if (!user || !user.contact_number || !user.email || !user.cid) {
       toast.error("Missing user information. Please update your profile.");
       return;
     }
-  
-  
+
+
     try {
       isLoading.value = true;
-  
+
       // 1. Initiate Payment (Actual payment processing) - Using FormData, as in your example
       const paymentInitiationFormData = new FormData();
       paymentInitiationFormData.append('refNo', paymentId);  // Use paymentId from paymentData
@@ -271,27 +272,27 @@
       paymentInitiationFormData.append('payableAmount', 500); // Correct amount
       paymentInitiationFormData.append('application_no', selectedApplication.value.id);
       paymentInitiationFormData.append('app_type', 'engineering_certification_fee'); // Updated app_type
-  
+
       // Make the payment *before* updating the application
       await apiService.makePayment(paymentInitiationFormData);
-  
+
       // 2. Update Application - PATCH request with FormData
       const updateFormData = new FormData();
       updateFormData.append('is_payment_complete', 'true'); // Use string 'true'
       updateFormData.append('payment_id', paymentId);
-  
+
       // Update EPC application
       await apiService.patchEpcNewApplication(applicationId, updateFormData);
-  
+
       // 3.  Update local state to reflect changes
       const updatedApplicationIndex = applications.value.findIndex(app => app.id === applicationId);
       if (updatedApplicationIndex !== -1) {
         applications.value[updatedApplicationIndex].is_payment_complete = true;
         applications.value[updatedApplicationIndex].payment_id = paymentId;
       }
-  
+
       toast.success(`Payment initiated! ID: ${paymentId}. ${paymentData.message}`);
-  
+
     } catch (error) {
       console.error("Payment update error:", error);
       // Error handling (as in your provided code)
@@ -310,16 +311,16 @@
       } else {
         toast.error('Payment request generated successfully, but there was an error confirming the payment. Contact us with the payment id for the next course of action: ' + paymentId);
       }
-  
+
     } finally {
       isLoading.value = false;
       selectedApplication.value = null; // Reset after processing
       fetchApplications();
     }
   };
-  
+
   onMounted(async () => {
     await fetchApplications();
   });
-  
+
   </script>

@@ -1,203 +1,441 @@
 <!-- src/components/DepartmentManagement.vue -->
 <template>
-  <div class="bg-white rounded-lg shadow p-6 md:p-8"> <!-- Container matching EOI form style -->
-    <h3 class="text-xl font-semibold text-gray-900 mb-6">Department Management</h3>
+  <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+      <h1 class="text-2xl font-bold text-gray-800 mb-6"> EPC Department Management</h1>
 
-    <!-- Add Button -->
-    <div class="mb-6">
-      <button @click="handleAdd"
-        class="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
-         <!-- Plus Icon (Heroicons) -->
-         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-2 -ml-1">
-            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-         </svg>
-        Add New Department
+      <!-- Add Department Button -->
+      <button
+          @click="openAddModal"
+          class="mb-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow"
+      >
+          Add Department
       </button>
-    </div>
 
-    <!-- Department Table -->
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Head of Department</th>
-            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-if="departmentList.length === 0">
-              <td colspan="4" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center italic">No departments found.</td>
-          </tr>
-          <tr v-for="dept in departmentList" :key="dept.id" class="hover:bg-gray-50 transition-colors duration-150">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ dept.code }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ dept.name }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ dept.head }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-              <div class="flex items-center justify-center space-x-2">
-                 <!-- Edit Button -->
-                 <button @click="handleEdit(dept)" title="Edit Department"
-                    class="inline-flex items-center justify-center rounded border border-transparent bg-yellow-100 p-1.5 text-xs font-medium text-yellow-700 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors duration-200">
-                    <!-- Pencil Icon (Heroicons) -->
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                        <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
-                    </svg>
-                 </button>
-                 <!-- Delete Button -->
-                 <button @click="handleDelete(dept.id)" title="Delete Department"
-                    class="inline-flex items-center justify-center rounded border border-transparent bg-red-100 p-1.5 text-xs font-medium text-red-700 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200">
-                     <!-- Trash Icon (Heroicons) -->
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                        <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.58.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193v-.443A2.75 2.75 0 0011.25 1H8.75zM10 4.5a.75.75 0 01.75.75v8.5a.75.75 0 01-1.5 0v-8.5A.75.75 0 0110 4.5z" clip-rule="evenodd" />
-                    </svg>
-                 </button>
+      <!-- Loading Indicator for Institutes -->
+      <div v-if="isLoadingInstitutes && !showModal" class="text-center text-gray-500 py-4">
+          Loading institute data...
+      </div>
+
+      <!-- Error Display for fetching institutes -->
+      <div v-if="error" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          {{ error }}
+      </div>
+
+      <!-- Success message area -->
+      <div v-if="successMessage" class="mt-4 mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+          {{ successMessage }}
+      </div>
+
+      <!-- Departments Table -->
+      <div class="mt-6 overflow-hidden shadow-md rounded-lg">
+          <div v-if="isLoadingDepartments" class="text-center text-gray-500 py-4">
+              Loading departments...
+          </div>
+          <div v-else-if="departments.length === 0" class="text-center text-gray-500 py-4">
+              No departments found. Add your first department using the button above.
+          </div>
+          <div v-else class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                      <tr>
+                          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department Name</th>
+                          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institution</th>
+                          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                      <tr v-for="department in departments" :key="department.id">
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ department.id }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ department.department_name }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ department.institute?.name_of_institution }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              <button
+                                  @click="viewDepartmentDetails(department)"
+                                  class="text-blue-600 hover:text-blue-900 mr-2"
+                              >
+                                  View
+                              </button>
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+      </div>
+
+      <!-- Add Department Modal -->
+      <Transition name="modal-fade">
+          <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" @click.self="closeModal">
+              <div class="bg-white rounded-lg shadow-xl overflow-hidden w-full max-w-md mx-4">
+                  <form @submit.prevent="addDepartment">
+                      <!-- Modal Header -->
+                      <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                          <h5 class="text-lg font-semibold text-gray-800">Add Department</h5>
+                          <button type="button" class="text-gray-400 hover:text-gray-600" @click="closeModal" aria-label="Close">
+                              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                          </button>
+                      </div>
+
+                      <!-- Modal Body -->
+                      <div class="p-6 space-y-4">
+                          <!-- Error within modal -->
+                          <div v-if="modalError" class="p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+                              {{ modalError }}
+                          </div>
+
+                          <div>
+                              <label for="departmentName" class="block text-sm font-medium text-gray-700 mb-1">Department Name</label>
+                              <input
+                                  type="text"
+                                  id="departmentName"
+                                  v-model="newDepartment.department_name"
+                                  required
+                                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              />
+                          </div>
+                          <div>
+                              <label for="instituteSelect" class="block text-sm font-medium text-gray-700 mb-1">Name of Institution</label>
+                              <select
+                                  id="instituteSelect"
+                                  v-model="newDepartment.institute_id"
+                                  required
+                                  class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md appearance-none"
+                              >
+                                  <option :value="null" disabled>-- Select Institute --</option>
+                                  <option v-for="institute in institutes" :key="institute.id" :value="institute.id">
+                                      {{ institute.name_of_institution }}
+                                  </option>
+                              </select>
+                              <div v-if="isLoadingInstitutes" class="text-xs text-gray-500 mt-1">Loading institutes...</div>
+                          </div>
+                      </div>
+
+                      <!-- Modal Footer -->
+                      <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3 bg-gray-50 rounded-b-lg">
+                          <button
+                              type="button"
+                              @click="closeModal"
+                              class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 text-sm font-medium"
+                          >
+                              Cancel
+                          </button>
+                          <button
+                              type="submit"
+                              :disabled="isSaving"
+                              class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                              {{ isSaving ? 'Saving...' : 'Save Department' }}
+                          </button>
+                      </div>
+                  </form>
               </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+          </div>
+      </Transition>
 
-    <!-- Add/Edit Modal -->
-    <SimpleModal :is-open="isModalOpen" :title="modalTitle" @close="closeModal">
-       <form @submit.prevent="handleSave" class="space-y-4">
-        <div>
-          <label for="dept-code" class="block text-sm font-medium text-gray-700 mb-1 required-label">Department Code:</label>
-          <input type="text" id="dept-code" v-model="formData.code" required :disabled="!!currentDeptId"
-                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed" />
-           <p v-if="currentDeptId" class="mt-1 text-xs text-gray-500">Department code cannot be changed after creation.</p>
-        </div>
-        <div>
-          <label for="dept-name" class="block text-sm font-medium text-gray-700 mb-1 required-label">Department Name:</label>
-          <input type="text" id="dept-name" v-model="formData.name" required
-                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2" />
-        </div>
-        <div>
-          <label for="dept-head" class="block text-sm font-medium text-gray-700 mb-1 required-label">Head of Department:</label>
-          <!-- TODO: Consider dropdown populated from Staff list -->
-          <input type="text" id="dept-head" v-model="formData.head" required
-                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2" />
-        </div>
+      <!-- Department Details Modal -->
+      <Transition name="modal-fade">
+          <div v-if="showDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" @click.self="closeDetailsModal">
+              <div class="bg-white rounded-lg shadow-xl overflow-hidden w-full max-w-2xl mx-4">
+                  <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                      <h5 class="text-lg font-semibold text-gray-800">Department Details</h5>
+                      <button type="button" class="text-gray-400 hover:text-gray-600" @click="closeDetailsModal" aria-label="Close">
+                          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                      </button>
+                  </div>
 
-        <!-- Modal Actions -->
-        <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 mt-6">
-           <button type="button" @click="closeModal"
-               class="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
-               Cancel
-           </button>
-           <button type="submit" :disabled="isSubmitting"
-               class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50">
-               {{ isSubmitting ? 'Saving...' : (currentDeptId ? 'Save Changes' : 'Add Department') }}
-           </button>
-        </div>
-      </form>
-    </SimpleModal>
+                  <div class="p-6 space-y-4 max-h-96 overflow-y-auto">
+                      <div v-if="selectedDepartment">
+                          <div class="mb-4">
+                              <h3 class="text-lg font-semibold mb-2">Department Information</h3>
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div class="bg-gray-50 p-3 rounded">
+                                      <p class="text-sm text-gray-500">ID</p>
+                                      <p class="font-medium">{{ selectedDepartment.id }}</p>
+                                  </div>
+                                  <div class="bg-gray-50 p-3 rounded">
+                                      <p class="text-sm text-gray-500">Department Name</p>
+                                      <p class="font-medium">{{ selectedDepartment.department_name }}</p>
+                                  </div>
+                              </div>
+                          </div>
+
+                          <div v-if="selectedDepartment.institute" class="mb-4">
+                              <h3 class="text-lg font-semibold mb-2">Institution Information</h3>
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div class="bg-gray-50 p-3 rounded">
+                                      <p class="text-sm text-gray-500">Institution Name</p>
+                                      <p class="font-medium">{{ selectedDepartment.institute.name_of_institution }}</p>
+                                  </div>
+                                  <div class="bg-gray-50 p-3 rounded">
+                                      <p class="text-sm text-gray-500">Institution ID</p>
+                                      <p class="font-medium">{{ selectedDepartment.institute.id }}</p>
+                                  </div>
+                                  <div class="bg-gray-50 p-3 rounded">
+                                      <p class="text-sm text-gray-500">Head of Institution</p>
+                                      <p class="font-medium">{{ selectedDepartment.institute.head_of_institution_name }}</p>
+                                  </div>
+                                  <div class="bg-gray-50 p-3 rounded">
+                                      <p class="text-sm text-gray-500">Contact</p>
+                                      <p class="font-medium">{{ selectedDepartment.institute.head_of_institution_phone_number }}</p>
+                                  </div>
+                                  <div class="bg-gray-50 p-3 rounded">
+                                      <p class="text-sm text-gray-500">Email</p>
+                                      <p class="font-medium">{{ selectedDepartment.institute.head_of_institution_email }}</p>
+                                  </div>
+                                  <div class="bg-gray-50 p-3 rounded">
+                                      <p class="text-sm text-gray-500">Location</p>
+                                      <p class="font-medium">{{ selectedDepartment.institute.address }}</p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="px-6 py-4 border-t border-gray-200 flex justify-end bg-gray-50 rounded-b-lg">
+                      <button
+                          type="button"
+                          @click="closeDetailsModal"
+                          class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 text-sm font-medium"
+                      >
+                          Close
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </Transition>
   </div>
 </template>
 
 <script setup>
-import { ref, computed,  } from 'vue';
-import SimpleModal from './SimpleModal.vue';
-import { useToast } from 'vue-toastification';
+import { ref, onMounted } from 'vue';
+import services from '@/services/services.js';
 
-const toast = useToast();
+// --- Reactive State ---
+const institutes = ref([]);
+const departments = ref([]);
+const showModal = ref(false);
+const showDetailsModal = ref(false);
+const selectedDepartment = ref(null);
+const newDepartment = ref({
+  department_name: '',
+  institute_id: null,
+});
+const isLoadingInstitutes = ref(false);
+const isLoadingDepartments = ref(false);
+const isSaving = ref(false);
+const error = ref(null);
+const modalError = ref(null);
+const successMessage = ref('');
 
-// --- MOCK DATA & STATE ---
-const initialDepartments = [
-  { id: 1, code: 'CSE', name: 'Computer Science', head: 'Dr. Alan Turing' },
-  { id: 2, code: 'MECH', name: 'Mechanical Engineering', head: 'Dr. James Watt' },
-  { id: 3, code: 'EEE', name: 'Electrical Engineering', head: 'Dr. Nikola Tesla' },
-  { id: 4, code: 'ADMIN', name: 'Administration', head: 'Ms. Ada Lovelace' },
-];
-const getDefaultFormData = () => ({ id: null, code: '', name: '', head: '' });
-const departmentList = ref([...initialDepartments]);
-const isModalOpen = ref(false);
-const currentDeptId = ref(null); // Store numeric ID for editing
-const formData = ref(getDefaultFormData());
-const isSubmitting = ref(false);
+// --- Methods ---
 
-// --- COMPUTED ---
-const modalTitle = computed(() => (currentDeptId.value ? 'Edit Department' : 'Add New Department'));
+// Fetch institutes for the dropdown
+const fetchInstitutes = async () => {
+    isLoadingInstitutes.value = true;
+    // Reset error specific to institutes if needed, or keep general page error
+    // error.value = null;
+    try {
+        const response = await services.getEpcInstitutes();
+        console.log('Raw response from getEPCInstitutes:', response); // Verify this log output!
 
-// --- METHODS ---
-const handleAdd = () => {
-  currentDeptId.value = null;
-  formData.value = getDefaultFormData();
-  isModalOpen.value = true;
+        let instituteList = []; // Initialize
+
+        // === Check for the specific paginated structure: response.data.results ===
+        // === !!! Adjust this based on the ACTUAL console log for getMhpcInstitutes !!! ===
+        if (response && response.data && Array.isArray(response.data.results)) {
+            instituteList = response.data.results; // <--- Assumed path
+            console.log("Interpreted: Institute array found in response.data.results.");
+        }
+        // === Example Fallback: If institutes API returns array directly in data ===
+        // else if (response && Array.isArray(response.data)) {
+        //    instituteList = response.data;
+        //    console.log("Interpreted: Institute array found directly in response.data.");
+        // }
+        // === Example Fallback: If institutes API returns array directly ===
+        // else if (Array.isArray(response)) {
+        //     instituteList = response;
+        //     console.log("Interpreted: Institute response is the array itself.");
+        // }
+         else {
+            // If the expected structure isn't found
+             console.warn("Could not find institute array in the expected location:", response);
+             // Set error only if institutes are crucial and failed to load
+             if (!error.value) { // Avoid overwriting a more severe error from departments fetch
+                error.value = "Unexpected data format for institutes. Dropdown may be empty.";
+             }
+             // instituteList remains []
+        }
+
+        // Assign the processed list (filtering nulls is safe practice)
+        institutes.value = (instituteList || []).filter(inst => inst != null);
+
+        if (institutes.value.length === 0 && !error.value) {
+            if (response?.data?.count > 0 && instituteList.length === 0) {
+               console.warn("API reported institutes (count > 0), but the 'results' array was empty or contained only nulls.");
+            } else {
+               console.log("No institutes found or loaded for the dropdown.");
+            }
+        }
+    } catch (err) {
+        console.error("Error fetching institutes:", err);
+        // Set a general error if institutes failed, as they are needed for adding departments
+        error.value = "Failed to load institute data. Cannot add new departments.";
+        institutes.value = []; // Ensure empty array on error
+    } finally {
+        isLoadingInstitutes.value = false;
+    }
 };
 
-const handleEdit = (dept) => {
-  currentDeptId.value = dept.id;
-  formData.value = { ...dept };
-  isModalOpen.value = true;
+// Fetch departments
+const fetchDepartments = async () => {
+    isLoadingDepartments.value = true;
+    error.value = null;
+    try {
+        const response = await services.getEpcInstituteDepartments();
+        // Log the raw response structure for verification during debugging
+        console.log('Raw response from getepcInstituteDepartments:', response);
+
+        let departmentList = []; // Initialize with an empty array
+
+        // === Check for the specific paginated structure: response.data.results ===
+        if (response && response.data && Array.isArray(response.data.results)) {
+            departmentList = response.data.results; // <--- Correct path to the array
+            console.log("Interpreted: Department array found in response.data.results.");
+        } else {
+            // If the expected structure isn't found
+             console.warn("Could not find department array in the expected location (response.data.results):", response);
+             error.value = "Unexpected data format received for departments. Expected an array within 'data.results'.";
+             // departmentList remains []
+        }
+
+        // Filter out any null/undefined entries *within* the array
+        // This handles cases like [ {dept1}, null, {dept3} ] if the API ever sends them
+        departments.value = (departmentList || []).filter(dept => dept != null);
+
+        // Log if empty, considering pagination info
+        if (departments.value.length === 0 && !error.value) {
+             if (response?.data?.count > 0 && departmentList.length === 0) {
+                console.warn("API reported items (count > 0), but the 'results' array was empty or contained only nulls.");
+             } else {
+                console.log("No departments found or loaded."); // Normal empty state if count is 0 or API structure was wrong
+             }
+        }
+
+        // Optional: Warn if filtering removed items
+        if (departmentList && departments.value.length < departmentList.length) {
+            console.warn("Filtered out null/undefined entries from the departments list.");
+        }
+
+    } catch (err) {
+        console.error("Error fetching departments:", err);
+         let errorMessage = "Failed to load departments.";
+         if (err.response) {
+             errorMessage += ` Server status: ${err.response.status}.`;
+             // Attempt to extract a more specific error message from DRF/backend
+             const detail = err.response.data?.detail || err.response.data?.message || (typeof err.response.data === 'string' ? err.response.data : null);
+             if (detail) {
+                errorMessage += ` Message: ${detail}`;
+             } else if (typeof err.response.data === 'object' && err.response.data !== null) {
+                // Handle potential validation errors (show first one)
+                 const firstErrorKey = Object.keys(err.response.data)[0];
+                 if (firstErrorKey && Array.isArray(err.response.data[firstErrorKey])) {
+                     errorMessage += ` Error: ${firstErrorKey} - ${err.response.data[firstErrorKey][0]}`;
+                 }
+             }
+         } else if (err.request) {
+             errorMessage += " No response from server.";
+         } else {
+             errorMessage += ` Error: ${err.message}`;
+         }
+         error.value = errorMessage;
+        departments.value = []; // Ensure it's an empty array on error
+    } finally {
+        isLoadingDepartments.value = false;
+    }
 };
 
-const handleDelete = (deptId) => {
-  if (confirm(`Are you sure you want to delete department with ID ${deptId}? \nConsider implications for staff/courses.`)) {
-    // TODO: API Call + handle implications (or prevent deletion if linked): DELETE /api/departments/{deptId}
-    console.log('Deleting department ID:', deptId);
-    departmentList.value = departmentList.value.filter(d => d.id !== deptId);
-    toast.success(`Department deleted successfully.`);
-  }
+// Reset the new department form
+const resetNewDepartmentForm = () => {
+  newDepartment.value = {
+      department_name: '',
+      institute_id: null,
+  };
+  modalError.value = null;
 };
 
-const handleSave = () => {
-  isSubmitting.value = true;
+// Open the modal to add a new department
+const openAddModal = () => {
+  resetNewDepartmentForm();
+  successMessage.value = '';
+  showModal.value = true;
+};
 
-   // Basic validation example
-  if (!formData.value.code || !formData.value.name || !formData.value.head) {
-      toast.error("Please fill in all required fields.");
-      isSubmitting.value = false;
+// Close the modal
+const closeModal = () => {
+  showModal.value = false;
+};
+
+// View department details
+const viewDepartmentDetails = (department) => {
+  selectedDepartment.value = department;
+  showDetailsModal.value = true;
+};
+
+// Close details modal
+const closeDetailsModal = () => {
+  showDetailsModal.value = false;
+  selectedDepartment.value = null;
+};
+
+// Add the new department
+const addDepartment = async () => {
+  isSaving.value = true;
+  modalError.value = null;
+  successMessage.value = '';
+
+  const payload = {
+      department_name: newDepartment.value.department_name?.trim(),
+      institute_id: newDepartment.value.institute_id,
+  };
+
+  // Basic validation
+  if (!payload.department_name || payload.institute_id === null) {
+      modalError.value = "Please fill in all fields.";
+      isSaving.value = false;
       return;
   }
 
-  // Simulate API Call
-  setTimeout(() => {
-    try {
-        if (currentDeptId.value) {
-          // --- Update ---
-          // TODO: API Call: PUT /api/departments/{currentDeptId.value} with formData.value
-          console.log('Updating department:', formData.value);
-          const index = departmentList.value.findIndex(d => d.id === currentDeptId.value);
-          if (index !== -1) {
-            // Use spread to maintain reactivity, ensure ID is correct
-            departmentList.value[index] = { ...formData.value, id: currentDeptId.value };
-          }
-           toast.success(`Department ${formData.value.code} updated successfully.`);
-        } else {
-          // --- Add ---
-          // Check if Code already exists
-          if (departmentList.value.some(d => d.code.toUpperCase() === formData.value.code.toUpperCase())) {
-              toast.error(`Department code ${formData.value.code} already exists!`);
-              isSubmitting.value = false;
-              return;
-          }
-          // TODO: API Call: POST /api/departments with formData.value
-          // Get ID from backend response
-          const newId = Math.max(0, ...departmentList.value.map(d => d.id)) + 1; // Mock ID
-          const newDept = { ...formData.value, id: newId };
-          console.log('Adding department:', newDept);
-          departmentList.value.push(newDept);
-           toast.success(`Department ${newDept.code} added successfully.`);
-        }
-        closeModal();
-    } catch (error) {
-         console.error("Error saving department:", error);
-         toast.error("Failed to save department.");
-    } finally {
-        isSubmitting.value = false;
-    }
-  }, 500); // Simulate delay
+  try {
+      const response = await services.createEpcInstituteDepartment(payload);
+      console.log("Department added successfully:", response.data);
+      successMessage.value = `Department "${payload.department_name}" added successfully!`;
+      closeModal();
+
+      // Refresh departments list after adding
+      await fetchDepartments();
+  } catch (err) {
+      console.error("Error adding department:", err);
+      modalError.value = err.response?.data?.message || err.message || "Failed to add department. Please check the details and try again.";
+  } finally {
+      isSaving.value = false;
+  }
 };
 
-const closeModal = () => {
-  isModalOpen.value = false;
-};
-
-// --- LIFECYCLE ---
-// onMounted(() => { /* Fetch departments if needed */ });
-
+// --- Lifecycle Hooks ---
+onMounted(async () => {
+  await Promise.all([fetchInstitutes(), fetchDepartments()]);
+});
 </script>
 
-<!-- No <style scoped> block needed -->
+<style scoped>
+/* Modal Fade Transition */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+</style>

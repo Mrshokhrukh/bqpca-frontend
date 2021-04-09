@@ -9,7 +9,8 @@
         </div>
 
         <!-- Payment Modal -->
-        <PaymentModal ref="paymentModal" :amount="1000" @payment-completed="onPaymentCompleted" @close="onPaymentModalClose" />
+        <PaymentModal ref="paymentModal" :amount="1000" @payment-completed="onPaymentCompleted"
+          @close="onPaymentModalClose" />
 
         <!-- Form -->
         <form @submit.prevent="handleSubmit" class="p-6">
@@ -86,18 +87,16 @@
             </div>
           </div>
 
-            <!-- Declaration -->
-            <div class="mb-6">
-                <label class="inline-flex items-center">
-                <input
-                    type="checkbox"
-                    v-model="appeal.declaration"
-                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                    required
-                />
-                <span class="ml-2 text-gray-700">I hereby declare that the information provided is true and accurate to the best of my knowledge.</span>
-                </label>
-            </div>
+          <!-- Declaration -->
+          <div class="mb-6">
+            <label class="inline-flex items-center">
+              <input type="checkbox" v-model="appeal.declaration"
+                class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                required />
+              <span class="ml-2 text-gray-700">I hereby declare that the information provided is true and accurate to
+                the best of my knowledge.</span>
+            </label>
+          </div>
 
 
           <!-- Actions -->
@@ -110,9 +109,9 @@
               class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
               Submit Appeal
             </button> -->
-             <button type="button" @click="openPaymentModal" :disabled="!appeal.declaration || isSubmitting"
-                class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
-                {{ isSubmitting ? "Submitting..." : "Submit" }}
+            <button type="button" @click="openPaymentModal" :disabled="!appeal.declaration || isSubmitting"
+              class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ isSubmitting ? "Submitting..." : "Submit" }}
             </button>
           </div>
         </form>
@@ -223,7 +222,7 @@ const submitAppealActual = async () => {
           payerEmail: autoFilledDetails['Email'],
           mobileNo: autoFilledDetails['Contact'],
           totalPayableAmount: 1000.00,
-          serviceCode: 'accreditation_appeal_fee',
+          serviceCode: '100195',
           description: 'Payment for Accreditation Appeal Application',
           payableAmount: 1000.00,
           taxPayerName: autoFilledDetails['Name of Institution'],
@@ -320,7 +319,7 @@ onMounted(() => {
   fetchAppealReason();
   // fetchInstitutionProfile(); //removed and replaced with below
 
-    // Populate autoFilledDetails directly from route.query
+  // Populate autoFilledDetails directly from route.query
   autoFilledDetails['Name of Institution'] = route.query.institutionName || '';
   autoFilledDetails['Address/Location'] = route.query.address || '';
   autoFilledDetails['Dzongkhag/Thromde'] = route.query.dzongkhagThromde || '';
@@ -332,10 +331,12 @@ onMounted(() => {
 <style scoped>
 /* Your component-specific styles here if needed */
 .bg-primary {
-    background-color: #3b82f6; /* Example primary color - blue-500 from Tailwind */
+  background-color: #3b82f6;
+  /* Example primary color - blue-500 from Tailwind */
 }
 
 .bg-secondary {
-    background-color: #2563eb; /* Example secondary color - blue-700 from Tailwind */
+  background-color: #2563eb;
+  /* Example secondary color - blue-700 from Tailwind */
 }
 </style>

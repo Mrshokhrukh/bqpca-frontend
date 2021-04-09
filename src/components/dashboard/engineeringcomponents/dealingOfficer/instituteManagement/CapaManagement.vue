@@ -187,6 +187,7 @@ const handleSaveCapa = async (capaData) => {
   }
 };
 
+
 const handleEditCapa = async (capaData) => {
   try {
     await apiServices.updateEpcCapa(capaData.id, capaData);
