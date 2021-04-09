@@ -213,9 +213,11 @@ const headers = {
   ],
   cogs: [
     { key: 'registration_no', label: 'CoGS Number', sortable: true },
-    { key: 'full_name', label: 'Applicant Name', sortable: true }, // Check CoGS API response for applicant name field
-    { key: 'cogs_approved_date', label: 'Issuance Date', type: 'date', sortable: true, backendSortKey: 'approved_date' },
-    { key: 'review_status', label: 'Status', sortable: true }
+    { key: 'full_name', label: 'Applicant Name', sortable: true },
+    { key: 'department_name', label: 'Department Name', sortable: true },
+    { key: 'created_at', label: 'Issuance Date', type: 'date', sortable: true, backendSortKey: 'approved_date' },
+    { key: 'payment_status', label: 'Payment Status', sortable: true },
+    { key: 'endorsement_decision', label: 'Status', sortable: true }
   ]
 };
 
@@ -242,31 +244,14 @@ const apiMethods = {
   registrations: {
     fetch: apiServices.getEpcNewQualifications,
     transform: (data) => {
-      // Log raw data received by this specific transform function
-      // console.log('[Transform Registrations] Raw Data:', JSON.parse(JSON.stringify(data)));
-
-      // **ISSUE:** Applicant name requires backend API change.
-      // The current API response provides `data.application` as an ID (e.g., 1),
-      // not an object containing the name. `data.application?.full_name` will fail.
-      // The backend needs to serialize the application details, e.g.:
-      // "application": { "id": 1, "full_name": "Applicant Name", ... }
 
       const transformed = {
         ...data, // Spread all original fields from the API response first
-
-        // Access 'registration_no' directly from API data. Handle null with 'N/A'.
-        registration_no: data.registration_no ?? 'N/A',
-
-        // Try to access applicant name. Will be 'N/A' if `data.application` is not an object with `full_name`.
-        // THIS REQUIRES A BACKEND API CHANGE TO WORK CORRECTLY.
+        registration_no: data.application?.registration_no ?? 'N/A',
         applicant_name: data.application?.full_name ?? 'N/A',
 
         // Access 'payment_status' directly from API data. Handle null/undefined with 'N/A'.
         payment_status: data.payment_status ?? 'N/A',
-
-        // Other relevant fields like 'application_review_status', 'registration_type',
-        // 'registration_date', 'expiry_date' are likely present directly in `data`
-        // due to the `...data` spread and should work if the keys match the headers.
       };
 
       // Log the final transformed object for verification
@@ -288,19 +273,19 @@ const apiMethods = {
      }
   },
   cpd: {
-      fetch: apiServices.getMastersCpdActivity, // Verify this API call
+      fetch: apiServices.getEpcCpdTasks, // Verify this API call
       transform: (data) => {
         // console.log('[Transform CPD] Raw Data:', JSON.parse(JSON.stringify(data)));
         const transformed = {
            ...data,
-           // Verify field names like 'title', 'credit_value', etc. in the CPD API response
-           title_of_cpd: data.title ?? 'N/A',
-           credit: data.credit_value ?? 0,
-           number_of_participants: data.participants_count ?? 0,
-           from_date: data.start_date ?? null,
-           to_date: data.end_date ?? null,
+           registration_no: data.registration_no ?? 'N/A',
+           title_of_cpd: data.title_of_cpd ?? 'N/A',
+           credit: data.credit ?? 0,
+           number_of_participants: data.number_of_participants ?? 0,
+           from_date: data.from_date ?? null,
+           to_date: data.to_date ?? null,
            // Map backend boolean 'is_approved' to frontend status string
-           status: data.is_approved === true ? 'Approved' : (data.is_approved === false ? 'Rejected' : 'Pending')
+           status: data.is_cpd_approved === true ? 'Approved' : (data.is_approved === false ? 'Rejected' : 'Pending')
         };
         // console.log('[Transform CPD] Transformed Data:', JSON.parse(JSON.stringify(transformed)));
         return transformed;
@@ -314,8 +299,11 @@ const apiMethods = {
            ...data,
            // Verify 'registration_no' and structure of 'application' in CoGS API response
            registration_no: data.registration_no || (data.id ? `COGS-${data.id}` : 'N/A'),
-           full_name: data.application?.full_name ?? 'N/A', // Requires backend change if application is just an ID
-           cogs_approved_date: data.approved_date ?? data.cogs_approved_date ?? null, // Verify field name
+           full_name: data.full_name ?? 'N/A', // Requires backend change if application is just an ID
+           department_name: data.department?.name ?? 'N/A', // Requires backend change if application is just an ID
+           created_at: data.created_at ?? data.cogs_approved_date ?? null, // Verify field name
+           payment_status: data.is_payment_complete === true ? 'Approved' : (data.is_approved === false ? 'Rejected' : 'Pending'),
+           status: data.endorsement_decision === true ? 'Approved' : (data.is_approved === false ? 'Rejected' : 'Pending')
         };
         // console.log('[Transform CoGS] Transformed Data:', JSON.parse(JSON.stringify(transformed)));
         return transformed;
