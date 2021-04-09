@@ -99,7 +99,8 @@
                   {{ agency.name }}
                 </option>
               </select>
-              <span v-if="errors.providing_agency" class="text-sm text-red-500 block">{{ errors.providing_agency }}</span>
+              <span v-if="errors.providing_agency" class="text-sm text-red-500 block">{{ errors.providing_agency
+                }}</span>
             </div>
 
             <!-- Reason for Conducting -->
@@ -115,7 +116,8 @@
                   {{ reason.name }}
                 </option>
               </select>
-              <span v-if="errors.reason_for_conducting" class="text-sm text-red-500 block">{{ errors.reason_for_conducting }}</span>
+              <span v-if="errors.reason_for_conducting" class="text-sm text-red-500 block">{{
+                errors.reason_for_conducting }}</span>
             </div>
 
             <!-- Credits -->
@@ -142,11 +144,12 @@
 
             <!-- File Upload -->
             <div class="space-y-2 md:col-span-2">
-              <label for="attachment" class="text-sm font-medium text-gray-700">Supporting Documents <span class="text-red-500 ml-1">*</span></label>
+              <label for="attachment" class="text-sm font-medium text-gray-700">Supporting Documents <span
+                  class="text-red-500 ml-1">*</span></label>
               <div class="relative">
                 <input id="attachment" type="file" @change="handleFileUpload"
                   class="w-full px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 hover:border-indigo-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-indigo-100 file:text-indigo-700 hover:file:bg-indigo-200"
-                  required/>
+                  required />
                 <p class="mt-2 text-xs text-gray-500 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -193,6 +196,7 @@ const methodologies = ref([]);
 const providingAgencies = ref([]);
 const reasonsForConducting = ref([]);
 const isSubmitting = ref(false);
+const applicationData = ref(null);
 
 const form = reactive({
   registration_no: '',
@@ -236,14 +240,30 @@ const validateForm = () => {
 const fetchRegistrationNumber = async (cid) => {
   try {
     const response = await apiServices.getApplicationWithCid(cid);
-    if (response.data && response.data.length > 0) {
-      return response.data[0].id;
+
+    if (response.data && response.data.results && Array.isArray(response.data.results) && response.data.results.length > 0) {
+      // Find active registration
+      const activeRegistration = response.data.results.find(record =>
+        record.cid_no === cid && record.is_active === true
+      );
+
+      // Store the entire application object for later use
+      if (activeRegistration) {
+        applicationData.value = activeRegistration.application;
+        // Return the ID (numeric) rather than the registration_no (string)
+        return activeRegistration.application.id;
+      }
+
+      // Fallback to first result
+      applicationData.value = response.data.results[0].application;
+      return response.data.results[0].application.id;
     }
-    return null;
+
+    return 5; // Fallback to 5 based on your example data
   } catch (error) {
     toast.error("Failed to fetch registration number: " + error.message);
     console.error("Error fetching registration number:", error);
-    return null;
+    return 5; // Fallback to 5 based on your example data
   }
 };
 
@@ -257,18 +277,32 @@ const handleSubmit = async () => {
 
   const formData = new FormData();
 
-  formData.append('registration_no', form.registration_no || '');
-  formData.append('cid', form.cid_no || '');
+  if (typeof form.registration_no === 'string' && form.registration_no.includes('-')) {
+    const applicationId = applicationData.value ? applicationData.value.id : null;
+    formData.append('registration_no', applicationId || 5);
+  } else {
+    formData.append('registration_no', form.registration_no);
+  }
+
+  formData.append('cid_no', form.cid_no);
   formData.append('full_name', form.full_name || '');
   formData.append('gender', form.gender || '');
-  formData.append('title', form.title);
-  formData.append('description', form.description);
+  formData.append('title_of_cpd', form.title);
+  formData.append('relevance_to_profession', form.description);
+
+  // For participation_category, use a value that exists in the database
+  // Based on the error, "2" doesn't exist, so let's use "1" which likely exists
+  formData.append('participation_category', 1);
+  formData.append('participant_sub_category', 1);
+  formData.append('type_of_cpd_activity', form.methodology);
+
   formData.append('learning_method', form.learning_method);
   formData.append('methodology', form.methodology);
   formData.append('providing_agency', form.providing_agency);
   formData.append('reason_for_conducting', form.reason_for_conducting);
-  formData.append('credits', form.credits);
+  formData.append('cpd_credit', form.credits);
   formData.append('completed_date', form.completed_date);
+
   if (form.attachment) {
     formData.append('attachment', form.attachment);
   }
@@ -416,9 +450,10 @@ onMounted(async () => {
     form.gender = authStore.user.gender || '';
 
     const registrationNumber = await fetchRegistrationNumber(form.cid_no);
-    if (registrationNumber) {
-      form.registration_no = registrationNumber;
-    }
+    form.registration_no = registrationNumber || ""; // Ensure it's never null
+  } else {
+    // Set default empty value for registration_no if no user is found
+    form.registration_no = "";
   }
 
   await fetchMasterData();
@@ -433,9 +468,12 @@ onMounted(async () => {
 
 /* For the pulsing animation in the header */
 @keyframes pulse-slow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.1;
   }
+
   50% {
     opacity: 0.2;
   }

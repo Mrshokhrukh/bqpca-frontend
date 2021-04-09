@@ -49,7 +49,7 @@
         <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 p-6">
           <div class="flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0">
             <div>
-              <h3 class="text-xl font-bold text-gray-900 mb-2">{{ record.title }}</h3>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">{{ record.title_of_cpd }}</h3>
               <div class="flex items-center space-x-3">
                 <span class="text-sm text-gray-600">Registration #{{ record.registration_no || 'N/A' }}</span>
               </div>
@@ -58,18 +58,17 @@
             <div class="flex items-center space-x-3">
               <!-- Status Badge with Dynamic Coloring -->
               <span :class="[
-                record.status === 'Approved' ? 'bg-green-100 text-green-800' :
-                  record.status === 'Rejected' ? 'bg-red-100 text-red-800' :
+                record.review_status === 'Approved' ? 'bg-green-100 text-green-800' :
+                  record.review_status === 'Rejected' ? 'bg-red-100 text-red-800' :
                     'bg-yellow-100 text-yellow-800',
                 'px-4 py-2 rounded-full text-sm font-medium shadow-sm'
               ]">
-                {{ record.status || 'Pending' }}
+                {{ record.review_status || 'Pending' }}
               </span>
 
               <!-- Credits Badge with Standout Design -->
-              <span v-if="record.status === 'Approved'"
-                class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">
-                {{ record.credits }} Credits
+              <span class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">
+                {{ record.cpd_credit }} Credits
               </span>
             </div>
           </div>
@@ -95,14 +94,14 @@
                 <CreditCard class="w-6 h-6 text-gray-500" />
                 <div>
                   <p class="text-xs text-gray-600">CID Number</p>
-                  <p class="font-medium text-gray-900">{{ record.cid || authStore.user?.cid }}</p>
+                  <p class="font-medium text-gray-900">{{ record.cid_no || authStore.user?.cid }}</p>
                 </div>
               </div>
               <div class="flex items-center space-x-4">
                 <Users class="w-6 h-6 text-gray-500" />
                 <div>
                   <p class="text-xs text-gray-600">Completed Date</p>
-                  <p class="font-medium text-gray-900">{{ formatDate(record.completed_date) }}</p>
+                  <p class="font-medium text-gray-900">{{ formatDate(record.created_at) }}</p>
                 </div>
               </div>
             </div>
@@ -118,18 +117,18 @@
               <div class="flex items-center space-x-4">
                 <BookOpen class="w-6 h-6 text-gray-500" />
                 <div>
-                  <p class="text-xs text-gray-600">Description</p>
+                  <p class="text-xs text-gray-600">Relevance to Profession</p>
                   <p class="font-medium text-gray-900">
-                    {{ record.description || 'Not specified' }}
+                    {{ record.relevance_to_profession || 'Not specified' }}
                   </p>
                 </div>
               </div>
               <div class="flex items-center space-x-4">
                 <Target class="w-6 h-6 text-gray-500" />
                 <div>
-                  <p class="text-xs text-gray-600">Learning Method</p>
+                  <p class="text-xs text-gray-600">Activity Type</p>
                   <p class="font-medium text-gray-900">
-                    {{ getLearningMethodName(record.learning_method) }}
+                    {{ record.type_of_cpd_activity_display || 'Not specified' }}
                   </p>
                 </div>
               </div>
@@ -147,12 +146,12 @@
         </div>
 
         <!-- Remarks Section (if any) -->
-        <div v-if="record.remarks" class="px-6 py-4 bg-blue-50 border-t border-blue-100">
+        <div v-if="record.remark" class="px-6 py-4 bg-blue-50 border-t border-blue-100">
           <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
             <MessageCircle class="w-5 h-5 mr-2 text-blue-600" />
             Reviewer Comments
           </h4>
-          <p class="text-gray-700 italic">{{ record.remarks }}</p>
+          <p class="text-gray-700 italic">{{ record.remark }}</p>
         </div>
 
         <!-- Attachments Section with Download Button -->
@@ -161,7 +160,7 @@
             <FileText class="w-6 h-6 text-blue-600" />
             <span class="font-medium text-gray-900">Supporting Document</span>
           </div>
-          <a v-if="record.attachment_url" :href="record.attachment_url" target="_blank"
+          <a v-if="record.attachment" :href="record.attachment" target="_blank"
             class="group flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 ease-in-out">
             <Download class="w-5 h-5 mr-2 group-hover:animate-bounce" />
             Download
@@ -175,7 +174,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import epcServices from '@/services/epcServices';
+import apiServices from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
 import {
   FileText,
@@ -198,19 +197,19 @@ const apiError = ref(false);
 const authStore = useAuthStore();
 const learningMethods = ref([]);
 
-// Computed Property for filtered applications
+// Computed Property for filtered applications - Updated to use cid_no
 const filteredApplications = computed(() => {
   if (!authStore.user || !authStore.user.cid) {
     return [];
   }
 
-  return applications.value.filter(app => app.cid === authStore.user.cid);
+  return applications.value.filter(app => app.cid_no === authStore.user.cid);
 });
 
 // Format date helper
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
-  
+
   try {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -223,20 +222,17 @@ const formatDate = (dateString) => {
   }
 };
 
-// Get learning method name from ID
-const getLearningMethodName = (methodId) => {
-  if (!methodId) return 'Not specified';
-  
-  const method = learningMethods.value.find(m => m.id === methodId);
-  return method ? method.name : 'Unknown Method';
-};
-
 // Fetch learning methods
 const fetchLearningMethods = async () => {
   try {
-    const response = await epcServices.getEpcCpdTaskLearningMethods();
-    
-    if (response.data) {
+    const response = await apiServices.getEpcCpdTaskLearningMethods();
+
+    if (response.data && response.data.results) {
+      learningMethods.value = response.data.results.map(method => ({
+        id: method.id,
+        name: method.name || method.description || `Method ${method.id}`
+      }));
+    } else if (Array.isArray(response.data)) {
       learningMethods.value = response.data.map(method => ({
         id: method.id,
         name: method.name || method.description || `Method ${method.id}`
@@ -260,8 +256,11 @@ const fetchApplications = async () => {
   apiError.value = false;
 
   try {
-    const response = await epcServices.getEpcCpdTasks();
-    
+    const response = await apiServices.getEpcCpdRecordsByCid(authStore.user.cid);
+
+    // Debug the response
+    console.log('API Response:', response);
+
     if (response.data && Array.isArray(response.data)) {
       applications.value = response.data;
     } else if (response.data && Array.isArray(response.data.results)) {
@@ -271,6 +270,9 @@ const fetchApplications = async () => {
       console.error("API did not return an array:", response.data);
       apiError.value = true;
     }
+
+    // Debug the applications array
+    console.log('Applications array:', applications.value);
   } catch (error) {
     console.error('Error fetching CPD applications:', error);
     applications.value = [];
