@@ -246,7 +246,7 @@ const formatDate = (date) => {
 const fetchMasterData = async () => {
   try {
     const [categoriesRes, subcategoriesRes, sectorsRes] = await Promise.all([
-      apiServices.getMastersParticipationCategories(),
+      apiServices.getMastersMHPCParticipationCategories(),
       apiServices.getMastersSubCategories(),
       apiServices.getMastersSectors(),
     ]);

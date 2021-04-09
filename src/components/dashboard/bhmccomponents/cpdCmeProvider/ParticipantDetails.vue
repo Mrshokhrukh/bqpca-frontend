@@ -30,7 +30,8 @@
                 @change="updateField('participantSubCategory', $event.target.value)"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 p-2.5">
                 <option value="" disabled>Select Sub-category</option>
-                <option v-for="subcategory in filteredSubcategories" :key="subcategory.value" :value="subcategory.value">
+                <option v-for="subcategory in filteredSubcategories" :key="subcategory.value"
+                    :value="subcategory.value">
                     {{ subcategory.text }}
                 </option>
             </select>
@@ -44,8 +45,7 @@
                 Number of Participants <span class="text-red-600">*</span>
             </label>
             <input type="number" id="numberOfParticipants" :value="modelValue.numberOfParticipants"
-                @input="updateField('numberOfParticipants', Number($event.target.value))"
-                min="1"
+                @input="updateField('numberOfParticipants', Number($event.target.value))" min="1"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 p-2.5" />
         </div>
 
@@ -54,8 +54,7 @@
                 Relevance to profession <span class="text-red-600">*</span>
             </label>
             <textarea id="relevanceProfession" :value="modelValue.relevanceProfession"
-                @input="updateField('relevanceProfession', $event.target.value)"
-                rows="4"
+                @input="updateField('relevanceProfession', $event.target.value)" rows="4"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 p-2.5"></textarea>
         </div>
 
@@ -63,9 +62,7 @@
             <label for="attachment" class="block text-sm font-medium text-gray-700">
                 Attachment <span class="text-red-600">*</span>
             </label>
-            <input type="file" id="attachment" accept=".pdf,.doc,.docx"
-                @change="handleFileUpload"
-                class="mt-1 block w-full text-sm text-gray-500 
+            <input type="file" id="attachment" accept=".pdf,.doc,.docx" @change="handleFileUpload" class="mt-1 block w-full text-sm text-gray-500 
                        file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 
                        file:text-sm file:font-semibold file:bg-green-50 
                        file:text-green-700 hover:file:bg-green-100" />
@@ -112,8 +109,8 @@ const loading = ref(false);
 // Computed properties
 const filteredSubcategories = computed(() => {
     if (!props.modelValue?.participationCategory) return [];
-    
-    return subcategories.value.filter(subcategory => 
+
+    return subcategories.value.filter(subcategory =>
         subcategory.categoryId === props.modelValue.participationCategory
     );
 });
@@ -121,7 +118,7 @@ const filteredSubcategories = computed(() => {
 // Methods
 const updateField = (field, value) => {
     if (!props.modelValue) return;
-    
+
     emit('update:modelValue', {
         ...props.modelValue,
         [field]: value
@@ -130,7 +127,7 @@ const updateField = (field, value) => {
 
 const updateCategory = (categoryId) => {
     if (!props.modelValue) return;
-    
+
     // When category changes, reset subcategory
     emit('update:modelValue', {
         ...props.modelValue,
@@ -141,25 +138,25 @@ const updateCategory = (categoryId) => {
 
 const handleFileUpload = (event) => {
     if (!props.modelValue) return;
-    
+
     const file = event.target.files[0];
     if (!file) return;
-    
+
     // Validate file type and size
     const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    
+
     if (!validTypes.includes(file.type)) {
         toast.error('Please upload a PDF or Word document');
         event.target.value = '';
         return;
     }
-    
+
     if (file.size > 5 * 1024 * 1024) {
         toast.error('File size must be less than 5MB');
         event.target.value = '';
         return;
     }
-    
+
     attachmentFileName.value = file.name;
     updateField('attachment', file);
 };
@@ -168,8 +165,8 @@ const handleFileUpload = (event) => {
 const fetchCategories = async () => {
     try {
         loading.value = true;
-        const response = await apiservice.getMastersParticipationCategories();
-        
+        const response = await apiservice.getMastersMHPCParticipationCategories();
+
         if (response.data && response.data.results) {
             categories.value = response.data.results.map(category => ({
                 value: category.id.toString(),
@@ -187,8 +184,8 @@ const fetchCategories = async () => {
 const fetchSubcategories = async () => {
     try {
         loading.value = true;
-        const response = await apiservice.getMastersParticipationSubCategories();
-        
+        const response = await apiservice.getMastersMhpcParticipationSubCategories();
+
         if (response.data && response.data.results) {
             subcategories.value = response.data.results.map(subcategory => ({
                 value: subcategory.id.toString(),

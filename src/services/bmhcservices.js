@@ -178,7 +178,7 @@ export default {
     return apiClient.delete(`/mhpc/masters-file-types/${id}/`)
   },
   // Masters Participation Category
-  getMastersParticipationCategories() {
+  getMastersMHPCParticipationCategories() {
     return apiClient.get('/mhpc/masters-participation-category/')
   },
   createMastersParticipationCategory(data) {
@@ -198,7 +198,7 @@ export default {
   },
 
   // Masters Participation Sub Category
-  getMastersParticipationSubCategories() {
+  getMastersMhpcParticipationSubCategories() {
     return apiClient.get('/mhpc/masters-participation-sub-category/')
   },
   createMastersParticipationSubCategory(data) {
@@ -470,7 +470,6 @@ export default {
   deleteMhpcCogsWorkplace(id) {
     return apiClient.delete(`/mhpc/masters-cogs-workplaces/${id}/`)
   },
-
 
   // BMHC Application Endpoints
   getMhpcNewApplications() {

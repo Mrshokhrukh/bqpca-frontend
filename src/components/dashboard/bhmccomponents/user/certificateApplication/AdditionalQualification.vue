@@ -342,7 +342,7 @@ const formatDateForAPI = (date) => {
 
 // Form Validation (remains largely the same)
 const validateForm = () => {
-  Object.keys(errors).forEach(key => delete errors[key]); // Clear previous errors
+  Object.keys(errors).forEach(key => delete errors[key]); 
   let isValid = true;
 
   if (!localFormData.application) {

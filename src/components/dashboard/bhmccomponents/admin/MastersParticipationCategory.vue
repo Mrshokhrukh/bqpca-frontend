@@ -47,7 +47,7 @@
               <h2 class="text-xl font-semibold text-slate-900">Participation Categories List</h2>
               <span class="text-sm text-slate-500">
                 {{ filteredParticipationCategories.length }} Participation Category{{
-              filteredParticipationCategories.length !== 1 ? 's' : '' }}
+                  filteredParticipationCategories.length !== 1 ? 's' : '' }}
               </span>
             </div>
 
@@ -175,7 +175,7 @@ const participationCategoryToDelete = ref(null);
 // Fetch participation categories on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMastersParticipationCategories();
+    const response = await services.getMastersMHPCParticipationCategories();
     participationCategories.value = response.data.results;
   } catch (error) {
     console.error('Error fetching participation categories:', error);

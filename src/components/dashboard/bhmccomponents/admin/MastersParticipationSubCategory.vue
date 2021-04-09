@@ -63,7 +63,7 @@
                             <h2 class="text-xl font-semibold text-slate-900">Participation Sub-Categories List</h2>
                             <span class="text-sm text-slate-500">
                                 {{ filteredParticipationSubCategories.length }} Participation Sub-Category{{
-                                filteredParticipationSubCategories.length !== 1 ? 's' : '' }}
+                                    filteredParticipationSubCategories.length !== 1 ? 's' : '' }}
                             </span>
                         </div>
 
@@ -201,7 +201,7 @@ const participationCategories = ref([])
 
 const getParticipationCategories = async () => {
     try {
-        const response = await services.getMastersParticipationCategories()
+        const response = await services.getMastersMHPCParticipationCategories()
         participationCategories.value = response.data.results
     } catch (error) {
         console.error('Error fetching participation categories:', error)
@@ -212,7 +212,7 @@ const getParticipationCategories = async () => {
 onMounted(async () => {
     try {
         await getParticipationCategories()
-        const response = await services.getMastersParticipationSubCategories();
+        const response = await services.getMastersMhpcParticipationSubCategories();
         participationSubCategories.value = response.data.results;
     } catch (error) {
         console.error('Error fetching participation sub-categories:', error);

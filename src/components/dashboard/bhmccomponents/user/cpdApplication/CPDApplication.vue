@@ -52,7 +52,7 @@
                 class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300"
                 required placeholder="Describe relevance to your profession" />
               <span v-if="errors.relevance_to_profession" class="text-sm text-red-500 block">{{
-        errors.relevance_to_profession }}</span>
+                errors.relevance_to_profession }}</span>
             </div>
 
             <!-- Participation Category -->
@@ -69,7 +69,7 @@
                 </option>
               </select>
               <span v-if="errors.participation_category" class="text-sm text-red-500 block">{{
-        errors.participation_category }}</span>
+                errors.participation_category }}</span>
             </div>
 
             <!-- Participant Sub-category -->
@@ -86,7 +86,7 @@
                 </option>
               </select>
               <span v-if="errors.participant_sub_category" class="text-sm text-red-500 block">{{
-        errors.participant_sub_category }}</span>
+                errors.participant_sub_category }}</span>
             </div>
 
             <!-- Activity Type -->
@@ -103,7 +103,7 @@
                 </option>
               </select>
               <span v-if="errors.type_of_cpd_activity" class="text-sm text-red-500 block">{{ errors.type_of_cpd_activity
-                }}</span>
+              }}</span>
             </div>
 
             <!-- File Upload -->
@@ -302,12 +302,14 @@ const fetchMasterData = async () => {
   try {
     const [activitiesResponse, categoriesResponse, subCategoriesResponse] = await Promise.all([
       apiService.getMastersCpdActivities(),
-      apiService.getMastersParticipationCategories(),
-      apiService.getMastersParticipationSubCategories(),
+      apiService.getMastersMHPCParticipationCategories(),
+      apiService.getMastersMhpcParticipationSubCategories(),
     ]);
 
     cpdActivities.value = activitiesResponse.data.results;  // Verify .results structure
     participationCategories.value = categoriesResponse.data.results;
+    console.log('Participation Categories:', participationCategories.value);
+    console.log('Participation Subcategories:', subCategoriesResponse.data.results);
     participationSubCategories.value = subCategoriesResponse.data.results;
   } catch (error) {
     toast.error('Failed to fetch master data: ' + error.message);

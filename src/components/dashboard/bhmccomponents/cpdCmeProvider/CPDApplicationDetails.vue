@@ -610,10 +610,10 @@ const loadDropdownOptions = async () => {
     const methodologyResponse = await apiService.getMastersCmeMethodologies();
     methodologyOptions.value = methodologyResponse.data?.results.map(method => ({ text: method.methodology_name, value: method.id })) || [];
 
-    const categoriesResponse = await apiService.getMastersParticipationCategories();
+    const categoriesResponse = await apiService.getMastersMHPCParticipationCategories();
     participationCategoryOptions.value = categoriesResponse.data?.results.map(category => ({ text: category.participation_category_name, value: category.id })) || [];
 
-    const subcategoriesResponse = await apiService.getMastersParticipationSubCategories();
+    const subcategoriesResponse = await apiService.getMastersMhpcParticipationSubCategories();
     participantSubcategoryOptions.value = subcategoriesResponse.data?.results.map(subcategory => ({
       text: subcategory.participation_sub_category_name,
       value: subcategory.id,
