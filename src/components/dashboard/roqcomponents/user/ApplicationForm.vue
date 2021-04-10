@@ -996,6 +996,18 @@ const handleSubmitActual = async (isDraft = false) => {
       if (Object.prototype.hasOwnProperty.call(form, key)) {
         let value = form[key];
 
+        // Add special handling for qualification and type_of_course here
+        if (key === 'qualification' || key === 'type_of_course') {
+          console.log(`${key} value:`, value, typeof value);
+
+          // Make sure we're sending a number, not a string or null
+          const numericValue = parseInt(value);
+          if (!isNaN(numericValue)) {
+            formData.append(key, numericValue.toString());
+            continue; // Skip the normal append below for these fields
+          }
+        }
+
         if (value instanceof File) {
           formData.append(key, value);
         }
@@ -1092,8 +1104,8 @@ const emit = defineEmits([
 ]);
 
 const handleCIDInput = (event) => {
-  const input = event.target.value.replace(/\D/g, ''); // Remove non-digits
-  form.cid_no = input.slice(0, 11); // Limit to 11 digits
+  const input = event.target.value.replace(/\D/g, '');
+  form.cid_no = input.slice(0, 11);
 
   // Validate the CID field
   validateField('cid_no');

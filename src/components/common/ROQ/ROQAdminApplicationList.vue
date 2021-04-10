@@ -1,66 +1,71 @@
+// Child Component: ROQAdminApplicationList.vue
 <template>
   <div class="w-full">
-    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-      <!-- Search and Filters -->
-      <div class="p-4 border-b border-gray-200 bg-gray-50">
-        <div class="flex flex-wrap items-center gap-4">
-          <div class="flex-1 min-w-[240px]">
+    <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
+      <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+        <div class="flex flex-wrap items-center gap-5">
+          <div class="flex-1 min-w-[240px] relative">
+            <Search class="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500 h-4 w-4" />
             <input type="search" placeholder="Search applications..."
-              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full pl-11 pr-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200"
               :value="searchQuery" @input="handleSearch" />
           </div>
-          <div class="flex gap-2">
-            <select class="px-4 py-2 rounded-lg border border-gray-300 bg-white" :value="selectedStatus"
-              @change="handleFilter">
-              <option value="">All Status</option>
-              <option v-for="status in statusOptions" :key="status" :value="status">
-                {{ formatStatus(status) }}
-              </option>
-            </select>
+          <div class="flex gap-4">
+            <div class="relative">
+              <select
+                class="pl-4 pr-10 py-3 rounded-lg border border-gray-200 bg-white appearance-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[180px] shadow-sm transition-all duration-200"
+                :value="selectedStatus" @change="handleFilter">
+                <option value="">All Status</option>
+                <option v-for="status in statusOptions" :key="status" :value="status">
+                  {{ formatStatus(status) }}
+                </option>
+              </select>
+              <ChevronDown
+                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-500 h-4 w-4 pointer-events-none" />
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Table Container with Fixed Height -->
       <div class="overflow-x-auto">
-        <div class="max-h-[70vh] overflow-y-auto">
+        <div class="max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
           <table class="min-w-full divide-y divide-gray-200 table-fixed border-collapse">
             <thead class="bg-gray-50 sticky top-0 z-10">
               <tr>
                 <th v-for="header in headers" :key="header.key"
-                  class="group px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 cursor-pointer transition-colors duration-200 border-r border-gray-200 last:border-r-0"
+                  class="group px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider hover:bg-blue-50 cursor-pointer transition-colors duration-200 border-b border-gray-200"
                   @click="sortBy(header.key)">
                   <div class="flex items-center space-x-1">
                     <span>{{ header.label }}</span>
                     <div class="flex flex-col">
-                      <ChevronUpIcon class="h-3 w-3" :class="getSortIconClass(header.key, 'asc')" />
-                      <ChevronDownIcon class="h-3 w-3" :class="getSortIconClass(header.key, 'desc')" />
+                      <ChevronUp class="h-3 w-3" :class="getSortIconClass(header.key, 'asc')" />
+                      <ChevronDown class="h-3 w-3" :class="getSortIconClass(header.key, 'desc')" />
                     </div>
                   </div>
                 </th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white divide-y divide-gray-100">
               <template v-if="!noResults">
                 <tr v-for="application in sortedApplications" :key="application.id"
-                  class="hover:bg-gray-50 transition-colors duration-200">
-                  <!-- Applicant Details -->
-                  <td class="px-6 py-4 max-w-xs border-r border-gray-200">
+                  class="hover:bg-blue-50 transition-all duration-200">
+                  <td class="px-6 py-5">
                     <div class="flex items-start space-x-4">
-                      <div class="flex-shrink-0 h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center">
-                        <UserIcon class="h-6 w-6 text-blue-600" />
+                      <div
+                        class="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md">
+                        <User class="h-5 w-5 text-white" />
                       </div>
-                      <div class="truncate">
-                        <div class="text-sm font-medium text-gray-900">
+                      <div>
+                        <div class="text-sm font-semibold text-gray-900">
                           {{ application.fullName }}
                         </div>
-                        <div class="text-sm text-gray-500 mt-1">
-                          <div class="flex items-center space-x-2 truncate">
-                            <EnvelopeIcon class="h-4 w-4 flex-shrink-0" />
-                            <span class="truncate">{{ application.emailAddress }}</span>
+                        <div class="text-xs text-gray-500 mt-1.5">
+                          <div class="flex items-center space-x-2">
+                            <Mail class="h-3.5 w-3.5 flex-shrink-0 text-blue-500" />
+                            <span class="truncate max-w-[200px]">{{ application.emailAddress }}</span>
                           </div>
-                          <div class="flex items-center space-x-2 mt-1">
-                            <PhoneIcon class="h-4 w-4 flex-shrink-0" />
+                          <div class="flex items-center space-x-2 mt-1.5">
+                            <Phone class="h-3.5 w-3.5 flex-shrink-0 text-blue-500" />
                             <span>{{ application.contactNumber }}</span>
                           </div>
                         </div>
@@ -68,90 +73,132 @@
                     </div>
                   </td>
 
-                  <!-- Course Details -->
-                  <td class="px-6 py-4 max-w-xs border-r border-gray-200">
+                  <td class="px-6 py-5">
                     <div class="space-y-2">
-                      <div class="text-sm font-medium text-gray-900 truncate">
+                      <div class="text-sm font-semibold text-gray-900 truncate max-w-[240px]">
                         {{ application.courseTitle }}
                       </div>
-                      <div class="text-sm text-gray-500">
-                        <div class="flex items-center space-x-2 truncate">
-                          <AcademicCapIcon class="h-4 w-4 flex-shrink-0" />
+                      <div class="text-xs text-gray-500 mt-1.5">
+                        <div class="flex items-center space-x-2 truncate max-w-[240px]">
+                          <GraduationCap class="h-3.5 w-3.5 flex-shrink-0 text-indigo-500" />
                           <span class="truncate">{{ application.nameOfInstitute }}</span>
                         </div>
-                        <div class="flex items-center space-x-2 mt-1">
-                          <MapPinIcon class="h-4 w-4 flex-shrink-0" />
+                        <div class="flex items-center space-x-2 mt-1.5">
+                          <MapPin class="h-3.5 w-3.5 flex-shrink-0 text-indigo-500" />
                           <span>{{ application.country }}</span>
                         </div>
-                        <div class="flex items-center space-x-2 mt-1">
-                          <CalendarIcon class="h-4 w-4 flex-shrink-0" />
+                        <div class="flex items-center space-x-2 mt-1.5">
+                          <Calendar class="h-3.5 w-3.5 flex-shrink-0 text-indigo-500" />
                           <span>{{ application.courseDuration }} years</span>
                         </div>
                       </div>
                     </div>
                   </td>
 
-                  <!-- Status -->
-                  <td class="px-6 py-4 whitespace-nowrap w-40 border-r border-gray-200">
-                    <div class="flex flex-col space-y-2">
+                  <td class="px-6 py-5 whitespace-nowrap">
+                    <div class="flex flex-col space-y-3">
                       <span :class="getStatusClass(application.status)">
                         <span class="flex items-center">
-                          <span class="h-2 w-2 rounded-full" :class="getStatusDotClass(application.status)"></span>
-                          <span class="ml-2">{{
-                            formatStatus(application.status)
-                            }}</span>
+                          <span class="h-2.5 w-2.5 rounded-full" :class="getStatusDotClass(application.status)"></span>
+                          <span class="ml-2">{{ formatStatus(application.status) }}</span>
                         </span>
                       </span>
-                      <span class="text-xs text-gray-500">
-                        Updated: {{ formatDate(application.updated_at) }}
+                      <span class="text-xs text-gray-500 flex items-center gap-1.5">
+                        <Clock class="h-3.5 w-3.5 text-gray-400" />
+                        {{ formatDate(application.updated_at) }}
                       </span>
                     </div>
                   </td>
 
-                  <!-- ROQ letter status -->
-                  <td class="px-6 py-4 whitespace-nowrap w-40 border-r border-gray-200">
-                    <div class="flex flex-col space-y-2">
-                      <span
-                        :class="application.roq_status_letter ? 'bg-green-100 text-green-800 rounded-full' : 'bg-red-100 text-red-800 rounded-full'">
-                        <span class="flex items-center">
-                          <span class="h-2 w-2 rounded-full ml-2"
-                            :class="application.roq_status_letter ? 'bg-green-600' : 'bg-red-600'"></span>
-                          <span class="ml-2">{{ application.roq_status_letter ? 'Email Sent' : 'Processing' }}</span>
-                        </span>
-                      </span>
-                      <span class="text-xs text-gray-500">
-                        Updated: {{ formatDate(application.roq_status_letter_sent_date) }}
-                      </span>
+                  <td v-if="userRole === 'dealing_officer'" class="px-6 py-5 whitespace-nowrap">
+                    <div class="flex flex-col items-center space-y-2 min-h-[60px]">
+                      <template v-if="shouldShowRoqSendButton(application)">
+                        <button @click="handleRoqStatusUpdate(application)"
+                                :disabled="isSendingStatus[application.id]"
+                                :class="[
+                                  'px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2 w-full justify-center',
+                                  'bg-blue-600 text-white hover:bg-blue-700',
+                                  (isSendingStatus[application.id]) && 'opacity-50 cursor-wait'
+                                ]">
+                          <template v-if="isSendingStatus[application.id]">
+                            <Loader2 class="h-4 w-4 animate-spin" /> Sending...
+                          </template>
+                          <template v-else>
+                            <Mail class="h-4 w-4" /> Send Status Email
+                          </template>
+                        </button>
+                      </template>
+                      <template v-else-if="application.roq_status_letter">
+                          <div :class="[
+                              'px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 w-full justify-center',
+                              'bg-green-100 text-green-800 cursor-not-allowed'
+                              ]">
+                              <CheckCircle class="h-4 w-4" /> Email Sent
+                          </div>
+                          <span v-if="application.roq_status_letter_sent_date"
+                                class="text-xs text-gray-500 flex items-center gap-1.5">
+                            <Clock class="h-3.5 w-3.5 text-gray-400" />
+                            {{ formatDate(application.roq_status_letter_sent_date) }}
+                          </span>
+                      </template>
+                      <template v-else>
+
+                      </template>
                     </div>
                   </td>
 
-                  <!-- ROQ Regret letter status -->
-                  <td class="px-6 py-4 whitespace-nowrap w-40 border-r border-gray-200">
-                    <div class="flex flex-col space-y-2">
-                      <span
-                        :class="application.roq_regret_letter ? 'bg-green-100 text-green-800 rounded-full' : 'bg-red-100 text-red-800 rounded-full'">
-                        <span class="flex items-center">
-                          <span class="h-2 w-2 rounded-full ml-2"
-                            :class="application.roq_regret_letter ? 'bg-green-600' : 'bg-red-600'"></span>
-                          <span class="ml-2">{{ application.roq_regret_letter ? 'Email Sent' : 'Processing' }}</span>
-                        </span>
-                      </span>
-                      <span class="text-xs text-gray-500">
-                        Updated: {{ formatDate(application.roq_regret_letter_send_date) }}
-                      </span>
-                    </div>
+                  <td v-if="userRole === 'dealing_officer'" class="px-6 py-5 whitespace-nowrap">
+                     <div class="flex flex-col items-center space-y-2 min-h-[60px]">
+                        <template v-if="shouldShowRegretSendButton(application)">
+                          <button @click="handleRegretLetterSend(application)"
+                            :disabled="isSendingRegret[application.id]"
+                            :class="[
+                              'px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2 w-full justify-center',
+                              'bg-red-600 text-white hover:bg-red-700',
+                              (isSendingRegret[application.id]) && 'opacity-50 cursor-wait'
+                            ]">
+                             <template v-if="isSendingRegret[application.id]">
+                              <Loader2 class="h-4 w-4 animate-spin" /> Sending...
+                            </template>
+                             <template v-else>
+                              <Mail class="h-4 w-4" /> Send Regret Email
+                            </template>
+                          </button>
+                        </template>
+                         <template v-else-if="application.roq_regret_letter">
+                             <div :class="[
+                                 'px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 w-full justify-center',
+                                 'bg-green-100 text-green-800 cursor-not-allowed'
+                                 ]">
+                                 <CheckCircle class="h-4 w-4" /> Email Sent
+                             </div>
+                            <span v-if="application.roq_regret_letter_sent_date"
+                                  class="text-xs text-gray-500 flex items-center gap-1.5">
+                              <Clock class="h-3.5 w-3.5 text-gray-400" />
+                              {{ formatDate(application.roq_regret_letter_sent_date) }}
+                            </span>
+                         </template>
+                         <template v-else>
+
+                         </template>
+                     </div>
                   </td>
 
-                  <!-- Actions -->
-                  <td class="px-6 py-4 whitespace-nowrap text-right w-32">
+                  <td class="px-6 py-5 whitespace-nowrap text-right">
                     <ActionButtons :application="application" @action="handleAction" :user-role="userRole" />
                   </td>
                 </tr>
               </template>
               <template v-else>
                 <tr>
-                  <td colspan="6" class="py-12 text-center text-gray-500 border-r border-gray-200">
-                    No applications found
+                  <td :colspan="headers.length" class="py-20 text-center">
+                    <div class="flex flex-col items-center">
+                      <div class="bg-gray-50 p-6 rounded-full mb-4">
+                        <FileSearch class="h-14 w-14 text-blue-400" />
+                      </div>
+                      <p class="text-gray-700 text-lg font-medium">No applications found</p>
+                      <p class="text-gray-500 text-sm mt-2">Try adjusting your search or filters</p>
+                    </div>
                   </td>
                 </tr>
               </template>
@@ -160,31 +207,37 @@
         </div>
       </div>
 
-      <!-- Pagination -->
-      <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+      <div class="px-6 py-5 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-white">
         <div class="flex items-center justify-between">
-          <div class="text-sm text-gray-700">
-            Showing {{ ((currentPage - 1) * perPage) + 1 }} to
-            {{ Math.min(currentPage * perPage, totalResults) }} of
-            {{ totalResults }} results
+          <div class="text-sm text-gray-700 font-medium">
+            Showing <span class="text-blue-600">{{ totalResults > 0 ? ((currentPage - 1) * perPage) + 1 : 0 }}</span> to
+            <span class="text-blue-600">{{ Math.min(currentPage * perPage, totalResults) }}</span> of
+            <span class="text-blue-600">{{ totalResults }}</span> results
           </div>
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-5">
             <div class="flex items-center space-x-2">
-              <select v-model="localPerPage" class="px-3 py-1 rounded-md text-sm border border-gray-300"
-                @change="$emit('per-page-change', localPerPage)">
-                <option :value="10">10 / page</option>
-                <option :value="25">25 / page</option>
-                <option :value="50">50 / page</option>
-              </select>
+              <div class="relative">
+                <select v-model="localPerPage"
+                  class="pl-3 pr-8 py-2 rounded-lg text-sm border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none shadow-sm transition-all duration-200"
+                  @change="$emit('per-page-change', localPerPage)">
+                  <option :value="10">10 / page</option>
+                  <option :value="25">25 / page</option>
+                  <option :value="50">50 / page</option>
+                </select>
+                <ChevronDown
+                  class="absolute right-2.5 top-1/2 transform -translate-y-1/2 text-blue-500 h-3.5 w-3.5 pointer-events-none" />
+              </div>
             </div>
             <div class="flex items-center space-x-2">
               <button @click="$emit('page-change', currentPage - 1)" :disabled="currentPage === 1"
-                class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shadow-sm transition-all duration-200">
+                <ChevronLeft class="h-4 w-4 text-blue-500" />
                 Previous
               </button>
               <button @click="$emit('page-change', currentPage + 1)" :disabled="currentPage * perPage >= totalResults"
-                class="px-3 py-1 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shadow-sm transition-all duration-200">
                 Next
+                <ChevronRight class="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -195,61 +248,46 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, reactive, watch } from 'vue';
+import { useToast } from "vue-toastification";
+import apiServices from '@/services/services';
 import {
-  ChevronUpIcon,
-  ChevronDownIcon,
-  UserIcon,
-  EnvelopeIcon,
-  PhoneIcon,
-  AcademicCapIcon,
-  MapPinIcon,
-  CalendarIcon,
-} from '@heroicons/vue/24/outline';
+  ChevronUp,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  User,
+  Mail,
+  Phone,
+  GraduationCap,
+  MapPin,
+  Calendar,
+  Clock,
+  Search,
+  FileSearch,
+  Loader2,
+  CheckCircle
+} from 'lucide-vue-next';
 import ActionButtons from './ROQAdminActionButtons.vue';
 
 const props = defineProps({
-  applications: {
-    type: Array,
-    required: true,
-  },
-  currentPage: {
-    type: Number,
-    required: true,
-  },
-  totalResults: {
-    type: Number,
-    required: true,
-  },
-  perPage: {
-    type: Number,
-    required: true,
-  },
-  searchQuery: {
-    type: String,
-    default: ''
-  },
-  selectedStatus: {
-    type: String,
-    default: ''
-  },
-  noResults: {
-    type: Boolean,
-    default: false
-  },
-  userRole: {
-    type: String,
-    required: false,
-    default: null
-  }
+  applications: { type: Array, required: true },
+  currentPage: { type: Number, required: true },
+  totalResults: { type: Number, required: true },
+  perPage: { type: Number, required: true },
+  searchQuery: { type: String, default: '' },
+  selectedStatus: { type: String, default: '' },
+  noResults: { type: Boolean, default: false },
+  userRole: { type: String, required: false, default: null }
 });
 
 const localPerPage = ref(props.perPage);
+const emit = defineEmits(['page-change', 'per-page-change', 'action', 'search-query-change', 'status-filter-change', 'refresh']);
+const toast = useToast();
+const sortOrder = ref({ field: 'updated_at', direction: 'desc' });
 
-const emit = defineEmits(['page-change', 'per-page-change', 'action', 'search-query-change', 'status-filter-change']);
-
-
-const sortOrder = ref({ field: 'id', direction: 'asc' });
+const isSendingStatus = reactive({});
+const isSendingRegret = reactive({});
 
 const statusOptions = [
   'draft',
@@ -263,29 +301,38 @@ const statusOptions = [
   'reupload',
 ];
 
-const headers = [
-  { key: 'applicant', label: 'Applicant Details' },
-  { key: 'course', label: 'Course Information' },
-  { key: 'status', label: 'Status' },
-  { key: 'roq_status', label: 'ROQ Status' },
-  { key: 'roq_regret', label: 'ROQ Regret Letter' },
-  { key: 'actions', label: 'Actions' },
-];
+const headers = computed(() => {
+  const baseHeaders = [
+    { key: 'applicant', label: 'Applicant Details' },
+    { key: 'course', label: 'Course Information' },
+    { key: 'status', label: 'Status' },
+  ];
+
+  if (props.userRole === 'dealing_officer') {
+    baseHeaders.push(
+      { key: 'roq_status', label: 'ROQ Status' },
+      { key: 'roq_regret', label: 'Regret Letter' }
+    );
+  }
+
+  baseHeaders.push({ key: 'actions', label: 'Actions' });
+  return baseHeaders;
+});
 
 const formatDate = (date) => {
-  if (!date) {
-    return 'N/A'; // Handle cases with no date
-  }
+  if (!date) return 'Not available';
   try {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
     });
   } catch {
-    return "Invalid Date"
+    return 'Invalid Date';
   }
-
 };
 
 const formatStatus = (status) => {
@@ -296,13 +343,12 @@ const formatStatus = (status) => {
 };
 
 const getStatusClass = (status) => {
-  const baseClasses =
-    'inline-flex items-center px-3 py-1 text-sm rounded-full font-medium';
+  const baseClasses = 'inline-flex items-center px-3.5 py-1.5 text-xs rounded-full font-medium shadow-sm';
   const statusClasses = {
     draft: 'bg-gray-100 text-gray-800',
     processing_payment: 'bg-gray-100 text-gray-800',
     applied: 'bg-blue-100 text-blue-800',
-    processing: 'bg-yellow-100 text-yellow-800',
+    processing: 'bg-amber-100 text-amber-800',
     under_review: 'bg-purple-100 text-purple-800',
     approved: 'bg-green-100 text-green-800',
     regretted: 'bg-red-100 text-red-800',
@@ -314,28 +360,101 @@ const getStatusClass = (status) => {
 
 const getStatusDotClass = (status) => {
   const statusClasses = {
-    draft: 'bg-gray-600',
-    processing_payment: 'bg-gray-600',
-    applied: 'bg-blue-600',
-    processing: 'bg-yellow-600',
-    under_review: 'bg-purple-600',
-    approved: 'bg-green-600',
-    regretted: 'bg-red-600',
-    reprocess: 'bg-orange-600',
-    reupload: 'bg-indigo-600',
+    draft: 'bg-gray-500',
+    processing_payment: 'bg-gray-500',
+    applied: 'bg-blue-500',
+    processing: 'bg-amber-500',
+    under_review: 'bg-purple-500',
+    approved: 'bg-green-500',
+    regretted: 'bg-red-500',
+    reprocess: 'bg-orange-500',
+    reupload: 'bg-indigo-500',
   };
   return statusClasses[status] || '';
 };
 
 const getSortIconClass = (field, direction) => {
   return {
-    'text-gray-400': sortOrder.value.field !== field,
-    'text-blue-600':
-      sortOrder.value.field === field && sortOrder.value.direction === direction,
+    'text-gray-400': sortOrder.value.field !== field || sortOrder.value.direction !== direction,
+    'text-blue-600': sortOrder.value.field === field && sortOrder.value.direction === direction,
+    'opacity-30': sortOrder.value.field !== field
   };
 };
 
+const calculateMonthsAgo = (dateString) => {
+    if (!dateString) return Infinity;
+    try {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffTime = now - date;
+        const diffMonths = diffTime / (1000 * 60 * 60 * 24 * 30.4375);
+        return diffMonths;
+    } catch {
+        return Infinity;
+    }
+};
+
+const shouldShowRoqSendButton = (application) => {
+    if (application.status !== 'processing' || application.roq_status_letter) {
+        return false;
+    }
+    const monthsAgo = calculateMonthsAgo(application.updated_at);
+    return monthsAgo >= 1 && monthsAgo < 2;
+};
+
+const shouldShowRegretSendButton = (application) => {
+     if (application.status !== 'processing' || application.roq_regret_letter) {
+        return false;
+    }
+    const monthsAgo = calculateMonthsAgo(application.updated_at);
+    return monthsAgo >= 2;
+};
+
+
+const handleRoqStatusUpdate = async (application) => {
+  if (isSendingStatus[application.id]) return;
+  isSendingStatus[application.id] = true;
+
+  try {
+    await apiServices.sendStatusUpdate(application.id, {
+      roq_status_letter: true,
+      roq_status_letter_sent_date: new Date().toISOString()
+    });
+    toast.success(`Status email update marked as sent for ${application.fullName}.`);
+    emit('refresh');
+  } catch (error) {
+    console.error('Failed to send ROQ status update:', error);
+    const errorMsg = error.response?.data?.detail || `Failed to mark status email as sent for ${application.fullName}.`;
+    toast.error(errorMsg);
+  } finally {
+     isSendingStatus[application.id] = false;
+  }
+};
+
+const handleRegretLetterSend = async (application) => {
+  if (isSendingRegret[application.id]) return;
+  isSendingRegret[application.id] = true;
+
+  try {
+    await apiServices.sendRegretLetter(application.id, {
+      roq_regret_letter: true,
+      roq_regret_letter_sent_date: new Date().toISOString(),
+      status: 'regretted'
+    });
+    toast.success(`Regret email update marked as sent for ${application.fullName}.`);
+    emit('refresh');
+  } catch (error) {
+    console.error('Failed to send regret letter:', error);
+     const errorMsg = error.response?.data?.detail || `Failed to mark regret email as sent for ${application.fullName}.`;
+    toast.error(errorMsg);
+  } finally {
+     isSendingRegret[application.id] = false;
+  }
+};
+
 const sortBy = (field) => {
+  if (field === 'actions' || field === 'roq_status' || field === 'roq_regret') return; // Non-sortable columns
+
   if (sortOrder.value.field === field) {
     sortOrder.value.direction = sortOrder.value.direction === 'asc' ? 'desc' : 'asc';
   } else {
@@ -344,12 +463,12 @@ const sortBy = (field) => {
 };
 
 const handleSearch = (event) => {
-  emit('search-query-change', event.target.value)
+  emit('search-query-change', event.target.value);
 };
 
 const handleFilter = (event) => {
-  emit('status-filter-change', event.target.value)
-}
+  emit('status-filter-change', event.target.value);
+};
 
 const handleAction = ({ action, application }) => {
   emit('action', { action, application });
@@ -358,6 +477,7 @@ const handleAction = ({ action, application }) => {
 const mappedApplications = computed(() => {
   return props.applications.map((app) => ({
     ...app,
+    id: app.id,
     fullName: app.applicants_name,
     emailAddress: app.email_address,
     contactNumber: app.contact_no,
@@ -365,21 +485,62 @@ const mappedApplications = computed(() => {
     nameOfInstitute: app.name_of_institute,
     country: app.country,
     courseDuration: app.duration_of_course,
+    status: app.status,
+    updated_at: app.updated_at,
+    created_at: app.created_at,
+    roq_status_letter: app.roq_status_letter,
+    roq_status_letter_sent_date: app.roq_status_letter_sent_date,
+    roq_regret_letter: app.roq_regret_letter,
+    roq_regret_letter_sent_date: app.roq_regret_letter_sent_date,
   }));
 });
 
 const sortedApplications = computed(() => {
   let filtered = [...mappedApplications.value];
-
-  // Apply sorting
   return filtered.sort((a, b) => {
-    const aValue = a[sortOrder.value.field];
-    const bValue = b[sortOrder.value.field];
+    let aValue, bValue;
+
+    switch (sortOrder.value.field) {
+      case 'applicant':
+        aValue = a.fullName?.toLowerCase() || '';
+        bValue = b.fullName?.toLowerCase() || '';
+        break;
+      case 'course':
+        aValue = a.courseTitle?.toLowerCase() || '';
+        bValue = b.courseTitle?.toLowerCase() || '';
+        break;
+      case 'updated_at':
+      case 'created_at':
+        aValue = a[sortOrder.value.field] ? new Date(a[sortOrder.value.field]).getTime() : 0;
+        bValue = b[sortOrder.value.field] ? new Date(b[sortOrder.value.field]).getTime() : 0;
+        break;
+      case 'status':
+        aValue = a.status?.toLowerCase() || '';
+        bValue = b.status?.toLowerCase() || '';
+         break;
+      default:
+        aValue = a[sortOrder.value.field];
+        bValue = b[sortOrder.value.field];
+        if (typeof aValue === 'string') aValue = aValue.toLowerCase();
+        if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+    }
+
     const modifier = sortOrder.value.direction === 'asc' ? 1 : -1;
 
     if (aValue < bValue) return -1 * modifier;
     if (aValue > bValue) return 1 * modifier;
+
+    // Secondary sort by updated_at descending if primary values are equal
+    const aDate = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+    const bDate = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+    if (aDate < bDate) return 1; // Secondary sort descending
+    if (aDate > bDate) return -1;
+
     return 0;
   });
+});
+
+watch(() => props.perPage, (newVal) => {
+  localPerPage.value = newVal;
 });
 </script>

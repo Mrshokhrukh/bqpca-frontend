@@ -3,22 +3,87 @@ import apiClient from './apiClient'
 export default {
   // Recognition of Qualifications endpoints (enhanced for file uploads)
   getRecognitionOfQualifications(params) {
-    return apiClient.get('/recognitions/recognition-of-qualifications/', { params })
+    // GET /api/recognitions/recognition-of-qualifications/
+    // Fetches a list of qualifications, potentially with query parameters
+    return apiClient.get('/recognitions/recognition-of-qualifications/', { params });
   },
   getRecognitionOfQualification(id) {
-    return apiClient.get(`/recognitions/recognition-of-qualifications/${id}/`)
+    // GET /api/recognitions/recognition-of-qualifications/{id}/
+    // Fetches a single qualification by its ID
+    return apiClient.get(`/recognitions/recognition-of-qualifications/${id}/`);
   },
   createRecognitionOfQualification(formData) {
-    return apiClient.post('/recognitions/recognition-of-qualifications/', formData)
+    // POST /api/recognitions/recognition-of-qualifications/
+    // Creates a new qualification record. formData likely includes files.
+    // Ensure apiClient is configured for multipart/form-data if sending files.
+    return apiClient.post('/recognitions/recognition-of-qualifications/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data' // Add if sending files
+        }
+      });
   },
   updateRecognitionOfQualification(id, formData) {
-    return apiClient.put(`/recognitions/recognition-of-qualifications/${id}/`, formData)
+    // PUT /api/recognitions/recognition-of-qualifications/{id}/
+    // Replaces an entire qualification record. formData likely includes files.
+     return apiClient.put(`/recognitions/recognition-of-qualifications/${id}/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data' // Add if sending files
+        }
+      });
   },
   patchRecognitionOfQualification(id, updates) {
-    return apiClient.patch(`/recognitions/recognition-of-qualifications/${id}/`, updates)
+    // PATCH /api/recognitions/recognition-of-qualifications/{id}/
+    // Partially updates a qualification record. 'updates' should be a plain object.
+    // If patching file fields, use PUT or handle multipart/form-data correctly.
+    return apiClient.patch(`/recognitions/recognition-of-qualifications/${id}/`, updates);
   },
+
   deleteRecognitionOfQualification(id) {
-    return apiClient.delete(`/recognitions/recognition-of-qualifications/${id}/`)
+    // DELETE /api/recognitions/recognition-of-qualifications/{id}/
+    // Deletes a qualification record by its ID
+    return apiClient.delete(`/recognitions/recognition-of-qualifications/${id}/`);
+  },
+
+  /**
+   * Sends the ROQ status update notification.
+   * @param {number|string} id - The ID of the RecognitionOfQualification record.
+   * @param {object} data - The payload containing the sent date.
+   * @param {string} data.roq_status_letter_sent_date - ISO string format date.
+   * @returns {Promise} Promise resolving with the API response.
+   */
+  sendStatusUpdate(id, data) {
+    // PATCH /api/recognitions/recognition-of-qualifications/{id}/send-status-update/
+    return apiClient.patch(`/recognitions/recognition-of-qualifications/${id}/send-status-update/`, data);
+  },
+
+  /**
+   * Sends the ROQ regret letter notification.
+   * @param {number|string} id - The ID of the RecognitionOfQualification record.
+   * @param {object} data - The payload containing the sent date and optionally the status.
+   * @param {string} data.roq_regret_letter_sent_date - ISO string format date.
+   * @param {string} [data.status] - Optional status to set (e.g., 'regretted').
+   * @returns {Promise} Promise resolving with the API response.
+   */
+  sendRegretLetter(id, data) {
+    // PATCH /api/recognitions/recognition-of-qualifications/{id}/send-regret-letter/
+    return apiClient.patch(`/recognitions/recognition-of-qualifications/${id}/send-regret-letter/`, data);
+  },
+
+  /**
+   * Verifies a certification number.
+   * @param {string} service_type - The type of service (e.g., 'roq').
+   * @param {string} cert_number - The certification number to verify.
+   * @returns {Promise} Promise resolving with the API response ({ valid: boolean, details?: object }).
+   */
+  verifyCertification(service_type, cert_number) {
+    // GET /api/recognitions/recognition-of-qualifications/verify-certification/
+    // Uses query parameters for filtering
+    return apiClient.get('/recognitions/recognition-of-qualifications/verify-certification/', {
+      params: {
+        service_type, // becomes ?service_type=...
+        cert_number   // becomes &cert_number=...
+      }
+    });
   },
 
   // Decision CRUD operations
