@@ -263,7 +263,6 @@ export default {
       application_lists: bmhcDashboard,
       additional_application: bmhcDashboard,
       renewal_lists: bmhcDashboard,
-      re_registration_lists: bmhcDashboard,
       cpd_application_review: bmhcDashboard,
       cpd_create_application: bmhcDashboard,
       cpd_award_credits: bmhcDashboard,

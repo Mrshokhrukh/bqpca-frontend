@@ -78,7 +78,6 @@ import CpdCreateApplication from '@/components/dashboard/bhmccomponents/dealingO
 import CpdProviderManagement from '@/components/dashboard/bhmccomponents/dealingOfficer/CPDManagement/CpdProviderManagement.vue';
 import CpdAwardCredits from '@/components/dashboard/bhmccomponents/dealingOfficer/CPDManagement/CpdAwardCredits.vue';
 import CpdReports from '@/components/dashboard/bhmccomponents/dealingOfficer/CPDManagement/CpdReports.vue';
-import ReRegistrationLists from '@/components/dashboard/bhmccomponents/dealingOfficer/userApplications/ReRegistrationLists.vue';
 import AdditionalApplication from '@/components/dashboard/bhmccomponents/dealingOfficer/userApplications/AdditionalApplication.vue';
 import TeachingHospitals from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/TeachingHospitals.vue';
 import EducationPrograms from '@/components/dashboard/bhmccomponents/dealingOfficer/instituteManagement/EducationPrograms.vue';
@@ -241,8 +240,6 @@ const bmhDealingOfficerComponent = computed(() => {
       return ApplicationLists;
     case path.endsWith('/health_certification/renewal_lists'):
       return RenewalLists;
-    case path.endsWith('/health_certification/re_registration_lists'):
-      return ReRegistrationLists;
     case path.endsWith('/health_certification/cpd_application_review'):
       return CpdApplicationReview;
     case path.endsWith('/health_certification/cpd_create_application'):

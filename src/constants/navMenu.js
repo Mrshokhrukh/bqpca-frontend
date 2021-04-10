@@ -887,10 +887,7 @@ const serviceSpecificMenuItems = {
             name: 'Renewal Application Lists',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_lists`,
           },
-          {
-            name: 'Re-registration Lists',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/re_registration_lists`,
-          },
+         
           {
             name: 'CoGS Management',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cogs`,
