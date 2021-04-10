@@ -129,8 +129,7 @@
           <!-- Qualification Dropdown -->
           <div>
             <label for="qualification" class="block text-sm font-medium text-gray-700 required">Qualification</label>
-            <select id="qualification" v-model="form.qualification" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2">
+            <select id="qualification" v-model="form.qualification" required>
               <option value="" disabled>Select Qualification</option>
               <option v-for="qual in qualificationOptions" :key="qual.value" :value="qual.value">
                 {{ qual.label }}
@@ -141,8 +140,7 @@
           <!-- Type of Course Dropdown -->
           <div>
             <label for="type_of_course" class="block text-sm font-medium text-gray-700 required">Type of Course</label>
-            <select id="type_of_course" v-model="form.type_of_course" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2">
+            <select id="type_of_course" v-model="form.type_of_course" required>
               <option value="" disabled>Select Course Type</option>
               <option v-for="type in courseTypeOptions" :key="type.value" :value="type.value">
                 {{ type.label }}
@@ -222,8 +220,7 @@
           <!-- Reason for Issue of Second Copy -->
           <div>
             <label for="reason_for_second_copy" class="block text-sm font-medium text-gray-700 required">Reason</label>
-            <select id="reason_for_second_copy" v-model="form.reason_for_issue_of_second_copy" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2">
+            <select id="reason_for_second_copy" v-model="form.reason_for_issue_of_second_copy" required>
               <option value="" disabled>Select a reason</option>
               <option v-for="reason in reasonsForSecondCopy" :key="reason.id" :value="reason.id">
                 {{ reason.name }}
@@ -335,7 +332,7 @@ const form = reactive({
   location: "",
   country: "",
   reason_for_issue_of_second_copy: "",
-  second_copy_other: "",
+  // second_copy_other: "",
   second_copy_supporting_document: null,
   is_payment_complete: false,
   payment_id: null,
@@ -434,8 +431,6 @@ const onOriginalApplicationSelect = (app) => {
     village: app.village,
     from_in_country: app.from_in_country,
     course_title: app.course_title,
-    qualification: app.qualification ? app.qualification.id : null,
-    type_of_course: app.type_of_course ? app.type_of_course.id : null,
     duration_of_course: app.duration_of_course,
     name_of_institute: app.name_of_institute,
     name_of_university: app.name_of_university,
@@ -444,17 +439,38 @@ const onOriginalApplicationSelect = (app) => {
     website: app.website,
     location: app.location,
     country: app.country,
+    // Only set these if they exist in the original app; otherwise, let user select
+    ...(app.qualification && { qualification: app.qualification.id }),
+    ...(app.type_of_course && { type_of_course: app.type_of_course.id }),
   });
   searchQuery.value = "";
   filteredApplications.value = [];
 };
 
 const handleSubmit = () => {
-  if (declaration.value) {
-    openPaymentModal();
-  } else {
-    toast.error("Please accept the declaration", "error");
+  // --- START VALIDATION ---
+  if (!selectedOriginalApplication.value) {
+    toast.error("Please select an original application first.");
+    return;
   }
+  if (!form.reason_for_issue_of_second_copy) { // Checks for "" or null or undefined
+    toast.error("Please select a reason for the second copy.");
+    return;
+  }
+  if (!form.qualification) { // Checks for "" or null or undefined
+    toast.error("Please select a qualification.");
+    return;
+  }
+  if (!form.type_of_course) { // Checks for "" or null or undefined
+    toast.error("Please select the type of course.");
+    return;
+  }
+  if (!declaration.value) {
+    toast.error("Please accept the declaration.");
+    return;
+  }
+  // --- END VALIDATION ---
+  openPaymentModal();
 };
 
 const formatDate = (dateString) => {
@@ -476,6 +492,7 @@ const formatDate = (dateString) => {
 
 const handleSubmitActual = async () => {
   isSubmitting.value = true;
+
   try {
     if (!selectedOriginalApplication.value) {
       toast.error("Please select an original application");
@@ -488,17 +505,16 @@ const handleSubmitActual = async () => {
     formData.append("original_application_id", selectedOriginalApplication.value.id);
     formData.append("is_second_copy", "true");
 
-
     // Payment Request
     const paymentData = {
       platform: 'web',
-      refNo: form.payment_id,  // Use the payment_id from the form
+      refNo: form.payment_id,
       taxPayerNo: form.cid_no,
-      taxPayerDocumentNo: 'BAOW', //AGENCYCODE replaced with literal
+      taxPayerDocumentNo: 'BAOW',
       payerEmail: form.email_address,
       mobileNo: form.contact_no,
       totalPayableAmount: 1000.00,
-      serviceCode: '100193',    //AGENCYCODE replaced with literal
+      serviceCode: '100193',
       description: 'Payment for Second Copy ROQ', // Updated Description
       payableAmount: 1000.00,
       taxPayerName: form.applicants_name,
@@ -521,11 +537,22 @@ const handleSubmitActual = async () => {
       return; // Stop if payment fails
     }
 
-
     // Append other form fields, including date formatting
     for (const key in form) {
       if (Object.prototype.hasOwnProperty.call(form, key)) {
         let value = form[key];
+
+        // Special handling for qualification and type_of_course
+        if (key === 'qualification' || key === 'type_of_course') {
+          console.log(`${key} value:`, value, typeof value);
+
+          // Make sure we're sending a number, not a string or null
+          const numericValue = parseInt(value);
+          if (!isNaN(numericValue)) {
+            formData.append(key, numericValue.toString());
+            continue; // Skip the normal append below for these fields
+          }
+        }
 
         if (value instanceof File) {
           formData.append(key, value);
