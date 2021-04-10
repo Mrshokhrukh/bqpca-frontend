@@ -56,7 +56,6 @@ import PractitionerRegistration from '@/components/dashboard/bhmccomponents/user
 import PractitionerRenewal from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationRenewal.vue';
 import ApplicationTracker from '@/components/dashboard/bhmccomponents/user/certificateApplication/ApplicationTracker.vue';
 import AdditionalQualification from '@/components/dashboard/bhmccomponents/user/certificateApplication/AdditionalQualification.vue';
-import ReRegistration from '@/components/dashboard/bhmccomponents/user/certificateApplication/ReRegistration.vue';
 import BMHCUserReports from '@/components/dashboard/bhmccomponents/user/ReportsComponent.vue';
 import CounselorApplicationFrom from '@/components/dashboard/bhmccomponents/user/counselorApplication/CounselorApplicationFrom.vue';
 import CounselorApplicationTracker from '@/components/dashboard/bhmccomponents/user/counselorApplication/CounselorApplicationTracker.vue';
@@ -206,8 +205,6 @@ const bmhUserComponent = computed(() => {
       return PractitionerRenewal;
     case path.endsWith('/health_certification/additional_qualification'):
       return AdditionalQualification;
-    case path.endsWith('/health_certification/re_registration'):
-      return ReRegistration;
     case path.endsWith('/health_certification/cpd'):
       return CPDcomponent;
     case path.endsWith('/health_certification/track_cpd_applications'):

@@ -173,7 +173,6 @@ export default {
       registration: bmhcDashboard,
       my_applications: bmhcDashboard,
       renewal: bmhcDashboard,
-      re_registration: bmhcDashboard,
       additional_qualification: bmhcDashboard,
       cpd: bmhcDashboard,
       cpd_application: bmhcDashboard,

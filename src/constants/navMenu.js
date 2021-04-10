@@ -659,11 +659,6 @@ const serviceSpecificMenuItems = {
           })
 
           items.push({
-            name: 'Re-Registration',
-            route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
-          })
-
-          items.push({
             name: 'Additional Qualification',
             route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
           })
