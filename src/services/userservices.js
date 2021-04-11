@@ -46,12 +46,12 @@ export default {
     return apiClient.patch(`/users/users/${id}/`, updateData, config); // Use PATCH
   },
 
-    // Citizen Details (Assuming this is public/semi-public)
+  // Citizen Details (Assuming this is public/semi-public)
   fetchCitizenDetails(cid, config) {
     return apiClient.get(`/users/fetch-citizen-details/${cid}/`, config);
   },
 
-  
+
   fetchRubDetails(cid, stUid) {
     return apiClient.get(`/masters/fetch-rub-details/${cid}/${stUid}/`);
   },
@@ -69,10 +69,27 @@ export default {
   updateWorkAddress(id, data) {
     return apiClient.put(`/users/work-addresses/${id}/`, data);
   },
-   patchWorkAddress(id, data) {
+  patchWorkAddress(id, data) {
     return apiClient.patch(`/users/work-addresses/${id}/`, data);
   },
   deleteWorkAddress(id) {
     return apiClient.delete(`/users/work-addresses/${id}/`);
+  },
+
+  // NDI Authentication
+  finalizeNdiLogin(data) {
+    return apiClient.post('/users/ndi/finalize-login/', data);
+  },
+  generateNdiQrCode(data) {
+    return apiClient.post('/users/ndi/generate-qr-code/', data);
+  },
+  ndiRegistrationCallback(data) {
+    return apiClient.post('/users/ndi/registration-callback/', data);
+  },
+  verifyNdiProof(data) {
+    return apiClient.post('/users/ndi/verify-proof/', data);
+  },
+  handleNdiWebhook(data) {
+    return apiClient.post('/users/ndi/webhook/', data);
   },
 };

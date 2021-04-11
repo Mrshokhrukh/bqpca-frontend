@@ -190,7 +190,7 @@ const closeRemarksModal = () => {
 const handleApplicationUpdate = async (updateData) => {
   const updateLoadingToast = toast.info('Updating application...', { timeout: false, closeButton: false });
   try {
-    await apiService.updateRecognitionOfQualification(selectedApplication.value.id, updateData);
+    await apiService.patchRecognitionOfQualification(selectedApplication.value.id, updateData);
     toast.dismiss(updateLoadingToast);
     toast.success('Application updated successfully.');
     await loadData();

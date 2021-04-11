@@ -3,45 +3,22 @@ import apiClient from './apiClient'
 export default {
   // Recognition of Qualifications endpoints (enhanced for file uploads)
   getRecognitionOfQualifications(params) {
-    // GET /api/recognitions/recognition-of-qualifications/
-    // Fetches a list of qualifications, potentially with query parameters
-    return apiClient.get('/recognitions/recognition-of-qualifications/', { params });
+    return apiClient.get('/recognitions/recognition-of-qualifications/', { params })
   },
   getRecognitionOfQualification(id) {
-    // GET /api/recognitions/recognition-of-qualifications/{id}/
-    // Fetches a single qualification by its ID
-    return apiClient.get(`/recognitions/recognition-of-qualifications/${id}/`);
+    return apiClient.get(`/recognitions/recognition-of-qualifications/${id}/`)
   },
   createRecognitionOfQualification(formData) {
-    // POST /api/recognitions/recognition-of-qualifications/
-    // Creates a new qualification record. formData likely includes files.
-    // Ensure apiClient is configured for multipart/form-data if sending files.
-    return apiClient.post('/recognitions/recognition-of-qualifications/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data' // Add if sending files
-        }
-      });
+    return apiClient.post('/recognitions/recognition-of-qualifications/', formData)
   },
   updateRecognitionOfQualification(id, formData) {
-    // PUT /api/recognitions/recognition-of-qualifications/{id}/
-    // Replaces an entire qualification record. formData likely includes files.
-     return apiClient.put(`/recognitions/recognition-of-qualifications/${id}/`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data' // Add if sending files
-        }
-      });
+    return apiClient.put(`/recognitions/recognition-of-qualifications/${id}/`, formData)
   },
   patchRecognitionOfQualification(id, updates) {
-    // PATCH /api/recognitions/recognition-of-qualifications/{id}/
-    // Partially updates a qualification record. 'updates' should be a plain object.
-    // If patching file fields, use PUT or handle multipart/form-data correctly.
-    return apiClient.patch(`/recognitions/recognition-of-qualifications/${id}/`, updates);
+    return apiClient.patch(`/recognitions/recognition-of-qualifications/${id}/`, updates)
   },
-
   deleteRecognitionOfQualification(id) {
-    // DELETE /api/recognitions/recognition-of-qualifications/{id}/
-    // Deletes a qualification record by its ID
-    return apiClient.delete(`/recognitions/recognition-of-qualifications/${id}/`);
+    return apiClient.delete(`/recognitions/recognition-of-qualifications/${id}/`)
   },
 
   /**
