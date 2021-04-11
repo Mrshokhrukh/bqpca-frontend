@@ -80,7 +80,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, watch, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import apiServices from '@/services/services'; // Import your API service
 
 const props = defineProps({

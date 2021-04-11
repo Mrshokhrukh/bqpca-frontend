@@ -256,7 +256,7 @@ import {
   Circle,
   X,
 } from 'lucide-vue-next';
-import { defineProps, defineEmits, computed, ref } from 'vue';
+import { computed, ref } from 'vue';
 import apiService from '@/services/services';
 import { useToast } from 'vue-toastification';
 

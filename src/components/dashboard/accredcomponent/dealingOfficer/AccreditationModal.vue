@@ -297,7 +297,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, watchEffect } from 'vue';
+import { ref, watchEffect } from 'vue';
 
 const props = defineProps({
   isOpen: Boolean,

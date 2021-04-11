@@ -63,7 +63,8 @@
   </div>
 </template>
 
-<script setup>defineProps({
+<script setup>
+defineProps({
   cpdProvider: Object,
   agencyOptions: Array,
   reasonOptions: Array,

@@ -15,7 +15,7 @@
             <h3 class="text-xl font-bold text-white" id="modal-title">
               ECPF Name Change Application
             </h3>
-            <button 
+            <button
               @click="closeModal"
               class="text-white hover:text-gray-200 focus:outline-none"
             >
@@ -25,11 +25,11 @@
             </button>
           </div>
         </div>
-        
+
         <div class="bg-white px-6 py-5 relative">
           <!-- Edit button on top right -->
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="absolute top-5 right-6 inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
             @click="handleEdit"
           >
@@ -38,7 +38,7 @@
             </svg>
             Edit
           </button>
-          
+
           <!-- Main content -->
           <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
             <!-- Left column: Application details -->
@@ -48,7 +48,7 @@
                   <h3 class="text-lg font-medium leading-6 text-gray-900">Application Details</h3>
                   <p class="mt-1 max-w-2xl text-sm text-gray-500">Review the ECPF name change request</p>
                 </div>
-                
+
                 <div class="divide-y divide-gray-200">
                   <div class="px-4 py-3 sm:px-6">
                     <div class="flex justify-between">
@@ -56,21 +56,21 @@
                       <p class="text-sm font-bold text-gray-900">{{ application?.applicantName }}</p>
                     </div>
                   </div>
-                  
+
                   <div class="px-4 py-3 sm:px-6">
                     <div class="flex justify-between">
                       <p class="text-sm font-medium text-gray-500">Current ECPF Name</p>
                       <p class="text-sm font-bold text-gray-900">{{ application?.currentEcpfName }}</p>
                     </div>
                   </div>
-                  
+
                   <div class="px-4 py-3 sm:px-6">
                     <div class="flex justify-between">
                       <p class="text-sm font-medium text-gray-500">Proposed ECPF Name</p>
                       <p class="text-sm font-bold text-gray-900">{{ application?.proposedEcpfName }}</p>
                     </div>
                   </div>
-                  
+
                   <div class="px-4 py-3 sm:px-6">
                     <div class="flex justify-between items-center">
                       <p class="text-sm font-medium text-gray-500">Status</p>
@@ -82,14 +82,14 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- Right column: Chief's review -->
             <div class="lg:col-span-2">
               <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div class="px-4 py-5 sm:px-6 bg-gray-50 border-b border-gray-200">
                   <h3 class="text-lg font-medium leading-6 text-gray-900">Chief's Review</h3>
                 </div>
-                
+
                 <div class="p-4 sm:p-6">
                   <label class="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
                   <textarea
@@ -97,7 +97,7 @@
                     rows="6"
                     class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 resize-none text-sm"
                     placeholder="Enter remarks for this application..."></textarea>
-                  
+
                   <!-- Status card -->
                   <div class="mt-4 p-4 bg-indigo-50 rounded-md border border-indigo-100">
                     <div class="flex items-start">
@@ -118,11 +118,11 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Action buttons -->
         <div class="bg-gray-50 px-6 py-4 flex flex-wrap justify-end gap-3 border-t border-gray-200">
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
             @click="closeModal"
           >
@@ -131,8 +131,8 @@
             </svg>
             Close
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="inline-flex items-center justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200"
             @click="showRegretDialog = true"
           >
@@ -141,8 +141,8 @@
             </svg>
             Regret
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
             @click="generateLetter"
             :disabled="application?.status !== 'Approved'"
@@ -153,8 +153,8 @@
             </svg>
             Generate Letter
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="inline-flex items-center justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
             @click="approveApplication"
           >
@@ -167,14 +167,14 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Regret Dialog -->
   <div v-if="showRegretDialog" class="fixed z-20 inset-0 overflow-y-auto" aria-labelledby="dialog-title" role="dialog" aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-      
+
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"> </span>
-      
+
       <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
           <div class="sm:flex sm:items-start">
@@ -203,7 +203,7 @@
                     placeholder="Please provide a reason for regretting this application..."
                   ></textarea>
                 </div>
-                
+
                 <!-- Alert card -->
                 <div class="mt-4 p-3 bg-red-50 rounded-md border border-red-100">
                   <div class="flex">
@@ -224,15 +224,15 @@
           </div>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-200">
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm transition-all duration-200"
             @click="confirmRegret"
           >
             Confirm
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="mt-3 inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm transition-all duration-200"
             @click="showRegretDialog = false"
           >
@@ -245,7 +245,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps({
   isOpen: Boolean,

@@ -51,17 +51,14 @@ const props = defineProps({
   }
 });
 
-// Changed: Moved defineEmits to top level
 const emit = defineEmits(['update:linkages']);
 // End Change
 
 const addLinkage = () => {
-  // Changed: Removed defineEmits from here
   emit('update:linkages', [...props.linkages, { name: '', location: '', country: '', recognition: '', approval: '' }]);
 };
 
 const removeLinkage = (index) => {
-  // Changed: Removed defineEmits from here
   emit('update:linkages', props.linkages.filter((_, i) => i !== index));
 };
 </script>

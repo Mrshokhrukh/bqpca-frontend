@@ -32,17 +32,19 @@
           <table class="min-w-full divide-y divide-gray-200 table-fixed border-collapse">
             <thead class="bg-gray-50 sticky top-0 z-10">
               <tr>
-                <th v-for="header in headers" :key="header.key"
-                  class="group px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider hover:bg-blue-50 cursor-pointer transition-colors duration-200 border-b border-gray-200"
-                  @click="sortBy(header.key)">
-                  <div class="flex items-center space-x-1">
-                    <span>{{ header.label }}</span>
-                    <div class="flex flex-col">
-                      <ChevronUp class="h-3 w-3" :class="getSortIconClass(header.key, 'asc')" />
-                      <ChevronDown class="h-3 w-3" :class="getSortIconClass(header.key, 'desc')" />
-                    </div>
-                  </div>
-                </th>
+                <template v-for="header in headers" :key="header.key">
+                   <th v-if="header.visible"
+                      class="group px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider hover:bg-blue-50 cursor-pointer transition-colors duration-200 border-b border-gray-200"
+                      @click="sortBy(header.key)">
+                      <div class="flex items-center space-x-1">
+                        <span>{{ header.label }}</span>
+                         <div v-if="header.sortable" class="flex flex-col">
+                           <ChevronUp class="h-3 w-3" :class="getSortIconClass(header.key, 'asc')" />
+                           <ChevronDown class="h-3 w-3" :class="getSortIconClass(header.key, 'desc')" />
+                         </div>
+                      </div>
+                   </th>
+                 </template>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-100">
@@ -110,7 +112,7 @@
                     </div>
                   </td>
 
-                  <td v-if="userRole === 'dealing_officer'" class="px-6 py-5 whitespace-nowrap">
+                  <td v-if="showRoqStatusColumn" class="px-6 py-5 whitespace-nowrap">
                     <div class="flex flex-col items-center space-y-2 min-h-[60px]">
                       <template v-if="shouldShowRoqSendButton(application)">
                         <button @click="handleRoqStatusUpdate(application)"
@@ -142,12 +144,12 @@
                           </span>
                       </template>
                       <template v-else>
-
+                         <div class="w-full h-[40px]"></div>
                       </template>
                     </div>
                   </td>
 
-                  <td v-if="userRole === 'dealing_officer'" class="px-6 py-5 whitespace-nowrap">
+                  <td v-if="showRegretColumn" class="px-6 py-5 whitespace-nowrap">
                      <div class="flex flex-col items-center space-y-2 min-h-[60px]">
                         <template v-if="shouldShowRegretSendButton(application)">
                           <button @click="handleRegretLetterSend(application)"
@@ -179,7 +181,7 @@
                             </span>
                          </template>
                          <template v-else>
-
+                            <div class="w-full h-[40px]"></div>
                          </template>
                      </div>
                   </td>
@@ -191,7 +193,7 @@
               </template>
               <template v-else>
                 <tr>
-                  <td :colspan="headers.length" class="py-20 text-center">
+                  <td :colspan="visibleHeadersCount" class="py-20 text-center">
                     <div class="flex flex-col items-center">
                       <div class="bg-gray-50 p-6 rounded-full mb-4">
                         <FileSearch class="h-14 w-14 text-blue-400" />
@@ -301,179 +303,6 @@ const statusOptions = [
   'reupload',
 ];
 
-const headers = computed(() => {
-  const baseHeaders = [
-    { key: 'applicant', label: 'Applicant Details' },
-    { key: 'course', label: 'Course Information' },
-    { key: 'status', label: 'Status' },
-  ];
-
-  if (props.userRole === 'dealing_officer') {
-    baseHeaders.push(
-      { key: 'roq_status', label: 'ROQ Status' },
-      { key: 'roq_regret', label: 'Regret Letter' }
-    );
-  }
-
-  baseHeaders.push({ key: 'actions', label: 'Actions' });
-  return baseHeaders;
-});
-
-const formatDate = (date) => {
-  if (!date) return 'Not available';
-  try {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
-  } catch {
-    return 'Invalid Date';
-  }
-};
-
-const formatStatus = (status) => {
-  return status
-    .split('_')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
-
-const getStatusClass = (status) => {
-  const baseClasses = 'inline-flex items-center px-3.5 py-1.5 text-xs rounded-full font-medium shadow-sm';
-  const statusClasses = {
-    draft: 'bg-gray-100 text-gray-800',
-    processing_payment: 'bg-gray-100 text-gray-800',
-    applied: 'bg-blue-100 text-blue-800',
-    processing: 'bg-amber-100 text-amber-800',
-    under_review: 'bg-purple-100 text-purple-800',
-    approved: 'bg-green-100 text-green-800',
-    regretted: 'bg-red-100 text-red-800',
-    reprocess: 'bg-orange-100 text-orange-800',
-    reupload: 'bg-indigo-100 text-indigo-800',
-  };
-  return `${baseClasses} ${statusClasses[status] || ''}`;
-};
-
-const getStatusDotClass = (status) => {
-  const statusClasses = {
-    draft: 'bg-gray-500',
-    processing_payment: 'bg-gray-500',
-    applied: 'bg-blue-500',
-    processing: 'bg-amber-500',
-    under_review: 'bg-purple-500',
-    approved: 'bg-green-500',
-    regretted: 'bg-red-500',
-    reprocess: 'bg-orange-500',
-    reupload: 'bg-indigo-500',
-  };
-  return statusClasses[status] || '';
-};
-
-const getSortIconClass = (field, direction) => {
-  return {
-    'text-gray-400': sortOrder.value.field !== field || sortOrder.value.direction !== direction,
-    'text-blue-600': sortOrder.value.field === field && sortOrder.value.direction === direction,
-    'opacity-30': sortOrder.value.field !== field
-  };
-};
-
-const calculateMonthsAgo = (dateString) => {
-    if (!dateString) return Infinity;
-    try {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffTime = now - date;
-        const diffMonths = diffTime / (1000 * 60 * 60 * 24 * 30.4375);
-        return diffMonths;
-    } catch {
-        return Infinity;
-    }
-};
-
-const shouldShowRoqSendButton = (application) => {
-    if (application.status !== 'processing' || application.roq_status_letter) {
-        return false;
-    }
-    const monthsAgo = calculateMonthsAgo(application.updated_at);
-    return monthsAgo >= 1 && monthsAgo < 2;
-};
-
-const shouldShowRegretSendButton = (application) => {
-     if (application.status !== 'processing' || application.roq_regret_letter) {
-        return false;
-    }
-    const monthsAgo = calculateMonthsAgo(application.updated_at);
-    return monthsAgo >= 2;
-};
-
-
-const handleRoqStatusUpdate = async (application) => {
-  if (isSendingStatus[application.id]) return;
-  isSendingStatus[application.id] = true;
-
-  try {
-    await apiServices.sendStatusUpdate(application.id, {
-      roq_status_letter: true,
-      roq_status_letter_sent_date: new Date().toISOString()
-    });
-    toast.success(`Status email update marked as sent for ${application.fullName}.`);
-    emit('refresh');
-  } catch (error) {
-    console.error('Failed to send ROQ status update:', error);
-    const errorMsg = error.response?.data?.detail || `Failed to mark status email as sent for ${application.fullName}.`;
-    toast.error(errorMsg);
-  } finally {
-     isSendingStatus[application.id] = false;
-  }
-};
-
-const handleRegretLetterSend = async (application) => {
-  if (isSendingRegret[application.id]) return;
-  isSendingRegret[application.id] = true;
-
-  try {
-    await apiServices.sendRegretLetter(application.id, {
-      roq_regret_letter: true,
-      roq_regret_letter_sent_date: new Date().toISOString(),
-      status: 'regretted'
-    });
-    toast.success(`Regret email update marked as sent for ${application.fullName}.`);
-    emit('refresh');
-  } catch (error) {
-    console.error('Failed to send regret letter:', error);
-     const errorMsg = error.response?.data?.detail || `Failed to mark regret email as sent for ${application.fullName}.`;
-    toast.error(errorMsg);
-  } finally {
-     isSendingRegret[application.id] = false;
-  }
-};
-
-const sortBy = (field) => {
-  if (field === 'actions' || field === 'roq_status' || field === 'roq_regret') return; // Non-sortable columns
-
-  if (sortOrder.value.field === field) {
-    sortOrder.value.direction = sortOrder.value.direction === 'asc' ? 'desc' : 'asc';
-  } else {
-    sortOrder.value = { field, direction: 'asc' };
-  }
-};
-
-const handleSearch = (event) => {
-  emit('search-query-change', event.target.value);
-};
-
-const handleFilter = (event) => {
-  emit('status-filter-change', event.target.value);
-};
-
-const handleAction = ({ action, application }) => {
-  emit('action', { action, application });
-};
-
 const mappedApplications = computed(() => {
   return props.applications.map((app) => ({
     ...app,
@@ -540,7 +369,196 @@ const sortedApplications = computed(() => {
   });
 });
 
+const calculateMonthsAgo = (dateString) => {
+    if (!dateString) return Infinity;
+    try {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffTime = now - date;
+        const diffMonths = diffTime / (1000 * 60 * 60 * 24 * 30.4375);
+        return diffMonths;
+    } catch {
+        return Infinity;
+    }
+};
+
+const shouldShowRoqSendButton = (application) => {
+    if (application.status !== 'processing' || application.roq_status_letter) {
+        return false;
+    }
+    const monthsAgo = calculateMonthsAgo(application.updated_at);
+    return monthsAgo >= 1 && monthsAgo < 2;
+};
+
+const shouldShowRegretSendButton = (application) => {
+     if (application.status !== 'processing' || application.roq_regret_letter) {
+        return false;
+    }
+    const monthsAgo = calculateMonthsAgo(application.updated_at);
+    return monthsAgo >= 2;
+};
+
+// Computed properties to control column visibility
+const showRoqStatusColumn = computed(() => {
+  return props.userRole === 'dealing_officer' &&
+         sortedApplications.value.some(app => shouldShowRoqSendButton(app) || app.roq_status_letter);
+});
+
+const showRegretColumn = computed(() => {
+  return props.userRole === 'dealing_officer' &&
+         sortedApplications.value.some(app => shouldShowRegretSendButton(app) || app.roq_regret_letter);
+});
+
+const headers = computed(() => {
+  const baseHeaders = [
+    { key: 'applicant', label: 'Applicant Details', visible: true, sortable: true },
+    { key: 'course', label: 'Course Information', visible: true, sortable: true },
+    { key: 'status', label: 'Status', visible: true, sortable: true },
+    { key: 'roq_status', label: 'ROQ Status', visible: showRoqStatusColumn.value, sortable: false },
+    { key: 'roq_regret', label: 'Regret Letter', visible: showRegretColumn.value, sortable: false },
+    { key: 'actions', label: 'Actions', visible: true, sortable: false }
+  ];
+  return baseHeaders;
+});
+
+const visibleHeadersCount = computed(() => {
+    return headers.value.filter(h => h.visible).length;
+});
+
+
+const formatDate = (date) => {
+  if (!date) return 'Not available';
+  try {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  } catch {
+    return 'Invalid Date';
+  }
+};
+
+const formatStatus = (status) => {
+  return status
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+const getStatusClass = (status) => {
+  const baseClasses = 'inline-flex items-center px-3.5 py-1.5 text-xs rounded-full font-medium shadow-sm';
+  const statusClasses = {
+    draft: 'bg-gray-100 text-gray-800',
+    processing_payment: 'bg-gray-100 text-gray-800',
+    applied: 'bg-blue-100 text-blue-800',
+    processing: 'bg-amber-100 text-amber-800',
+    under_review: 'bg-purple-100 text-purple-800',
+    approved: 'bg-green-100 text-green-800',
+    regretted: 'bg-red-100 text-red-800',
+    reprocess: 'bg-orange-100 text-orange-800',
+    reupload: 'bg-indigo-100 text-indigo-800',
+  };
+  return `${baseClasses} ${statusClasses[status] || ''}`;
+};
+
+const getStatusDotClass = (status) => {
+  const statusClasses = {
+    draft: 'bg-gray-500',
+    processing_payment: 'bg-gray-500',
+    applied: 'bg-blue-500',
+    processing: 'bg-amber-500',
+    under_review: 'bg-purple-500',
+    approved: 'bg-green-500',
+    regretted: 'bg-red-500',
+    reprocess: 'bg-orange-500',
+    reupload: 'bg-indigo-500',
+  };
+  return statusClasses[status] || '';
+};
+
+const getSortIconClass = (field, direction) => {
+  return {
+    'text-gray-400': sortOrder.value.field !== field || sortOrder.value.direction !== direction,
+    'text-blue-600': sortOrder.value.field === field && sortOrder.value.direction === direction,
+    'opacity-30': sortOrder.value.field !== field
+  };
+};
+
+const handleRoqStatusUpdate = async (application) => {
+  if (isSendingStatus[application.id]) return;
+  isSendingStatus[application.id] = true;
+
+  try {
+    await apiServices.sendStatusUpdate(application.id, {
+      roq_status_letter: true,
+      roq_status_letter_sent_date: new Date().toISOString()
+    });
+    toast.success(`Status email update marked as sent for ${application.fullName}.`);
+    emit('refresh');
+  } catch (error) {
+    console.error('Failed to send ROQ status update:', error);
+    const errorMsg = error.response?.data?.detail || `Failed to mark status email as sent for ${application.fullName}.`;
+    toast.error(errorMsg);
+  } finally {
+     isSendingStatus[application.id] = false;
+  }
+};
+
+const handleRegretLetterSend = async (application) => {
+  if (isSendingRegret[application.id]) return;
+  isSendingRegret[application.id] = true;
+
+  try {
+    await apiServices.sendRegretLetter(application.id, {
+      roq_regret_letter: true,
+      roq_regret_letter_sent_date: new Date().toISOString(),
+      status: 'regretted'
+    });
+    toast.success(`Regret email update marked as sent for ${application.fullName}.`);
+    emit('refresh');
+  } catch (error) {
+    console.error('Failed to send regret letter:', error);
+     const errorMsg = error.response?.data?.detail || `Failed to mark regret email as sent for ${application.fullName}.`;
+    toast.error(errorMsg);
+  } finally {
+     isSendingRegret[application.id] = false;
+  }
+};
+
+const sortBy = (field) => {
+   const headerConfig = headers.value.find(h => h.key === field);
+   if (!headerConfig || !headerConfig.sortable) return; // Only sort if header is sortable
+
+  if (sortOrder.value.field === field) {
+    sortOrder.value.direction = sortOrder.value.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortOrder.value = { field, direction: 'asc' };
+  }
+};
+
+const handleSearch = (event) => {
+  emit('search-query-change', event.target.value);
+};
+
+const handleFilter = (event) => {
+  emit('status-filter-change', event.target.value);
+};
+
+const handleAction = ({ action, application }) => {
+  emit('action', { action, application });
+};
+
 watch(() => props.perPage, (newVal) => {
   localPerPage.value = newVal;
 });
+
+watch(() => props.applications, () => {
+    // Reset sending status when applications list changes to avoid stale states
+    Object.keys(isSendingStatus).forEach(key => delete isSendingStatus[key]);
+    Object.keys(isSendingRegret).forEach(key => delete isSendingRegret[key]);
+}, { deep: true });
 </script>
