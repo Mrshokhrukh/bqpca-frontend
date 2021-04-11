@@ -64,7 +64,7 @@ import ApplicationTable from '@/components/common/ROQ/ROQUserApplicationsList.vu
 import apiService from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
 
-const { userId } = useAuthStore();
+const { user } = useAuthStore();
 const showModal = ref(false);
 const loading = ref(true);
 const currentPage = ref(1);
@@ -73,32 +73,32 @@ const applications = ref([]);
 const searchQuery = ref('');
 const selectedStatus = ref('');
 const selectedType = ref('');
-const sortOrder = ref({ field: 'created_at', direction: 'desc' }); // Default sorting by creation date, latest first
+const sortOrder = ref({ field: 'created_at', direction: 'desc' });
 
-// Computed Property for filtered Applications
 const filteredApplications = computed(() => {
-  return applications.value.filter(app => {
+  const apps = Array.isArray(applications.value) ? applications.value : [];
+  return apps.filter(app => {
     const matchesStatus = selectedStatus.value ? app.status === selectedStatus.value : true;
-    const matchesType = selectedType.value ? app.type_of_course === selectedType.value : true;
+    const matchesType = selectedType.value
+      ? app.type_of_course?.name === selectedType.value
+      : true;
     const matchesSearch = searchQuery.value
       ? Object.values(app).some(value =>
-        String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
-      )
+          String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
+        )
       : true;
-    const isNotSecondCopy = !app.is_second_copy; // Exclude if is_second_copy is true
+    const isNotSecondCopy = !app.is_second_copy;
 
     return matchesStatus && matchesType && matchesSearch && isNotSecondCopy;
   });
 });
 
-// Sort the filtered applications
 const sortedApplications = computed(() => {
   return [...filteredApplications.value].sort((a, b) => {
     const aValue = a[sortOrder.value.field];
     const bValue = b[sortOrder.value.field];
     const modifier = sortOrder.value.direction === 'asc' ? 1 : -1;
 
-    // Handle date fields
     if (sortOrder.value.field === 'created_at' || sortOrder.value.field === 'updated_at') {
       const aDate = new Date(aValue);
       const bDate = new Date(bValue);
@@ -107,58 +107,53 @@ const sortedApplications = computed(() => {
       return 0;
     }
 
-    // Handle other fields
     if (aValue < bValue) return -1 * modifier;
     if (aValue > bValue) return 1 * modifier;
     return 0;
   });
 });
 
-// Compute total for pagination
 const filteredTotal = computed(() => sortedApplications.value.length);
 
-// Get paginated data
 const paginatedApplications = computed(() => {
   const start = (currentPage.value - 1) * perPage.value;
   const end = start + perPage.value;
-
   return sortedApplications.value.slice(start, end);
 });
 
-// Reset pagination when filters change
 watch([selectedStatus, selectedType, searchQuery], () => {
   currentPage.value = 1;
 });
 
-// Method for closing the modal and refreshing data
 const handleApplicationSubmitted = async () => {
   showModal.value = false;
-  loading.value = true; // Indicate loading again
-  try {
-    await loadData();
-    await nextTick(); // Still keep nextTick for DOM updates
-    console.log('Applications updated:', applications.value); // Verification
-  } finally {
-    loading.value = false; // Ensure loading is turned off
-  }
-};
-
-// Load Data Function
-const loadData = async () => {
   loading.value = true;
   try {
-    const response = await apiService.getRecognitionOfQualifications({
-      user_id: userId.value,
-    });
-    applications.value = response.data.results;
+    await loadData();
+    await nextTick();
+    console.log('Applications updated:', applications.value);
   } catch (error) {
-    console.error('Error loading data:', error);
+    console.error('Error refreshing data:', error);
   } finally {
     loading.value = false;
   }
 };
 
-// Page Change Handler
+const loadData = async () => {
+  loading.value = true;
+  try {
+    console.log(user.cid);
+    const response = await apiService.getRecognitionOfQualification(user.cid);
+    console.log('API response:', response.data);
+    applications.value = response.data; // Assign the array directly
+  } catch (error) {
+    console.error('Error loading data:', error);
+    applications.value = []; // Fallback to empty array
+  } finally {
+    loading.value = false;
+  }
+};
+
 const handlePageChange = (newPage) => {
   currentPage.value = newPage;
 };
