@@ -204,7 +204,7 @@ const closeRemarksModal = () => {
 const handleApplicationUpdate = async (updateData) => {
   loading.value = true;
   try {
-    await apiService.updateRecognitionOfQualification(selectedApplication.value.id, updateData);
+    await apiService.patchRecognitionOfQualification(selectedApplication.value.id, updateData);
     await loadData();
   } catch (e) {
     console.error('Error updating application:', e);
