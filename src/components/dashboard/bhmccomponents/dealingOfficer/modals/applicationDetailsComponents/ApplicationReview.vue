@@ -1,4 +1,11 @@
 <template>
+  <div>
+    <!-- Payment statut just to see data (dnt make editable) -->
+    <h1>payment statu</h1>
+    <!-- data nanme payment_status  -->
+    <!-- data.payment_status == pending show yellow color -->
+    <!-- data.payment_status == approved show green colr -->
+  </div>
   <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
     <div class="p-6">
       <div class="flex items-center justify-between">
@@ -16,6 +23,21 @@
           <button @click="cancelEditing" class="text-gray-600 hover:text-gray-800">
             <X class="h-4 w-4" />
           </button>
+        </div>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-lg mb-6">
+        <h5 class="text-lg font-medium text-gray-900 mb-3">Payment Status</h5>
+        <div class="flex items-center space-x-3">
+          <span :class="[
+            'w-3 h-3 rounded-full',
+            paymentStatus === 'pending' ? 'bg-yellow-400' : paymentStatus === 'approved' ? 'bg-green-400' : 'bg-gray-300'
+          ]">
+          </span>
+          <span class="text-sm font-medium" :class="[
+            paymentStatus === 'pending' ? 'text-yellow-600' : paymentStatus === 'approved' ? 'text-green-600' : 'text-gray-600'
+          ]">
+            {{ paymentStatus === 'pending' ? 'Pending' : paymentStatus === 'approved' ? 'Approved' : 'Unknown' }}
+          </span>
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6" v-if="!isEditing">
@@ -136,7 +158,7 @@ const isEditing = ref(false)
 const editableData = ref({})
 const originalData = ref({})
 const errorMessage = ref('')
-
+const paymentStatus = ref('pending'); // Replace with actual data source
 
 onMounted(() => {
   originalData.value = JSON.parse(JSON.stringify(props.qualification));
