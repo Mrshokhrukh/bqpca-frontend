@@ -32,68 +32,68 @@
               <div class="flex items-center justify-between w-full">
                 <div class="flex flex-col items-center">
                   <div :class="[
-                  'w-10 h-10 rounded-full flex items-center justify-center',
-                  application.review_status === 'Approved' ? 'bg-green-100 text-green-700' :
-                    application.review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
-                      'bg-blue-100 text-blue-700'
-                ]">
+                    'w-10 h-10 rounded-full flex items-center justify-center',
+                    application.review_status === 'Approved' ? 'bg-green-100 text-green-700' :
+                      application.review_status === 'Rejected' ? 'bg-red-100 text-red-700' :
+                        'bg-blue-100 text-blue-700'
+                  ]">
                     <CheckCircleIcon v-if="application.review_status === 'Approved'" class="w-6 h-6" />
                     <XCircleIcon v-else-if="application.review_status === 'Rejected'" class="w-6 h-6" />
                     <span v-else>1</span>
                   </div>
                   <span class="text-sm font-medium mt-2">Review</span>
                   <span :class="[
-                  'text-xs mt-1 px-2 py-1 rounded-full',
-                  getStatusClass(application.review_status)
-                ]">{{ application.review_status }}</span>
+                    'text-xs mt-1 px-2 py-1 rounded-full',
+                    getStatusClass(application.review_status)
+                  ]">{{ application.review_status }}</span>
                 </div>
                 <div class="w-1/4 h-1 bg-gray-200 relative">
                   <div :class="[
-                  'absolute top-0 left-0 h-full',
-                  application.review_status === 'Approved' ? 'bg-green-500 w-full' :
-                    application.review_status === 'Rejected' ? 'bg-red-500 w-full' :
-                      'bg-blue-500 w-1/2'
-                ]"></div>
+                    'absolute top-0 left-0 h-full',
+                    application.review_status === 'Approved' ? 'bg-green-500 w-full' :
+                      application.review_status === 'Rejected' ? 'bg-red-500 w-full' :
+                        'bg-blue-500 w-1/2'
+                  ]"></div>
                 </div>
                 <div class="flex flex-col items-center">
                   <div :class="[
-                  'w-10 h-10 rounded-full flex items-center justify-center',
-                  application.endorsement_decision === 'Approved' ? 'bg-green-100 text-green-700' :
-                    application.endorsement_decision === 'Rejected' ? 'bg-red-100 text-red-700' :
-                      'bg-gray-100 text-gray-700'
-                ]">
+                    'w-10 h-10 rounded-full flex items-center justify-center',
+                    application.endorsement_decision === 'Approved' ? 'bg-green-100 text-green-700' :
+                      application.endorsement_decision === 'Rejected' ? 'bg-red-100 text-red-700' :
+                        'bg-gray-100 text-gray-700'
+                  ]">
                     <CheckCircleIcon v-if="application.endorsement_decision === 'Approved'" class="w-6 h-6" />
                     <XCircleIcon v-else-if="application.endorsement_decision === 'Rejected'" class="w-6 h-6" />
                     <span v-else>2</span>
                   </div>
                   <span class="text-sm font-medium mt-2">Endorsement</span>
                   <span :class="[
-                  'text-xs mt-1 px-2 py-1 rounded-full',
-                  getStatusClass(application.endorsement_decision)
-                ]">{{ application.endorsement_decision }}</span>
+                    'text-xs mt-1 px-2 py-1 rounded-full',
+                    getStatusClass(application.endorsement_decision)
+                  ]">{{ application.endorsement_decision }}</span>
                 </div>
                 <div class="w-1/4 h-1 bg-gray-200 relative">
                   <div :class="[
-                  'absolute top-0 left-0 h-full',
-                  application.endorsement_decision === 'Approved' && application.is_payment_complete ? 'bg-green-500 w-full' :
-                    application.endorsement_decision === 'Approved' ? 'bg-green-500 w-1/2' :
-                      application.endorsement_decision === 'Rejected' ? 'bg-red-500 w-full' :
-                        'bg-gray-200'
-                ]"></div>
+                    'absolute top-0 left-0 h-full',
+                    application.endorsement_decision === 'Approved' && application.is_payment_complete ? 'bg-green-500 w-full' :
+                      application.endorsement_decision === 'Approved' ? 'bg-green-500 w-1/2' :
+                        application.endorsement_decision === 'Rejected' ? 'bg-red-500 w-full' :
+                          'bg-gray-200'
+                  ]"></div>
                 </div>
                 <div class="flex flex-col items-center">
                   <div :class="[
-                  'w-10 h-10 rounded-full flex items-center justify-center',
-                  application.is_payment_complete ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                ]">
+                    'w-10 h-10 rounded-full flex items-center justify-center',
+                    application.is_payment_complete ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                  ]">
                     <CheckCircleIcon v-if="application.is_payment_complete" class="w-6 h-6" />
                     <span v-else>3</span>
                   </div>
                   <span class="text-sm font-medium mt-2">Payment</span>
                   <span :class="[
-                  'text-xs mt-1 px-2 py-1 rounded-full',
-                  application.is_payment_complete ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                ]">{{ application.is_payment_complete ? 'Paid' : 'Pending' }}</span>
+                    'text-xs mt-1 px-2 py-1 rounded-full',
+                    application.is_payment_complete ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                  ]">{{ application.is_payment_complete ? 'Paid' : 'Pending' }}</span>
                 </div>
               </div>
             </div>
@@ -195,9 +195,9 @@
                     <div class="flex justify-between items-center">
                       <span class="text-sm font-medium text-gray-700">Review Status</span>
                       <span :class="[
-                  'px-3 py-1 rounded-full text-xs font-medium',
-                  getStatusClass(application.review_status)
-                ]">
+                        'px-3 py-1 rounded-full text-xs font-medium',
+                        getStatusClass(application.review_status)
+                      ]">
                         {{ application.review_status }}
                       </span>
                     </div>
@@ -213,9 +213,9 @@
                     <div class="flex justify-between items-center">
                       <span class="text-sm font-medium text-gray-700">Endorsement</span>
                       <span :class="[
-                  'px-3 py-1 rounded-full text-xs font-medium',
-                  getStatusClass(application.endorsement_decision)
-                ]">
+                        'px-3 py-1 rounded-full text-xs font-medium',
+                        getStatusClass(application.endorsement_decision)
+                      ]">
                         {{ application.endorsement_decision }}
                       </span>
                     </div>
@@ -231,9 +231,9 @@
                     <div class="flex justify-between items-center">
                       <span class="text-sm font-medium text-gray-700">Payment Status</span>
                       <span :class="[
-                  'px-3 py-1 rounded-full text-xs font-medium',
-                  application.is_payment_complete ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                ]">
+                        'px-3 py-1 rounded-full text-xs font-medium',
+                        application.is_payment_complete ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      ]">
                         {{ application.is_payment_complete ? 'Paid' : 'Pending' }}
                       </span>
                     </div>
