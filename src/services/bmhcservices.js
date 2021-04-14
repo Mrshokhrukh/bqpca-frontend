@@ -1,359 +1,359 @@
 import apiClient from './apiClient'
 
 export default {
-  getMastersCmeActivities() {
+  getMhpcMastersCmeActivities() {
     return apiClient.get('/mhpc/masters-cme-activities/')
   },
-  createMastersCmeActivity(data) {
+  createMhpcMastersCmeActivity(data) {
     return apiClient.post('/mhpc/masters-cme-activities/', data)
   },
-  getMastersCmeActivity(id) {
+  getMhpcMastersCmeActivity(id) {
     return apiClient.get(`/mhpc/masters-cme-activities/${id}/`)
   },
-  updateMastersCmeActivity(id, data) {
+  updateMhpcMastersCmeActivity(id, data) {
     return apiClient.put(`/mhpc/masters-cme-activities/${id}/`, data)
   },
-  patchMastersCmeActivity(id, data) {
+  patchMhpcMastersCmeActivity(id, data) {
     return apiClient.patch(`/mhpc/masters-cme-activities/${id}/`, data)
   },
-  deleteMastersCmeActivity(id) {
+  deleteMhpcMastersCmeActivity(id) {
     return apiClient.delete(`/mhpc/masters-cme-activities/${id}/`)
   },
 
   // Masters CME Credits
-  getMastersCmeCredits() {
+  getMhpcMastersCmeCredits() {
     return apiClient.get('/mhpc/masters-cme-credits/')
   },
-  createMastersCmeCredit(data) {
+  createMhpcMastersCmeCredit(data) {
     return apiClient.post('/mhpc/masters-cme-credits/', data)
   },
 
-  getMastersCmeCredit(id) {
+  getMhpcMastersCmeCredit(id) {
     return apiClient.get(`/mhpc/masters-cme-credits/${id}/`)
   },
-  updateMastersCmeCredit(id, data) {
+  updateMhpcMastersCmeCredit(id, data) {
     return apiClient.put(`/mhpc/masters-cme-credits/${id}/`, data)
   },
-  patchMastersCmeCredit(id, data) {
+  patchMhpcMastersCmeCredit(id, data) {
     return apiClient.patch(`/mhpc/masters-cme-credits/${id}/`, data)
   },
-  deleteMastersCmeCredit(id) {
+  deleteMhpcMastersCmeCredit(id) {
     return apiClient.delete(`/mhpc/masters-cme-credits/${id}/`)
   },
 
   // Masters CME Methodologies
-  getMastersCmeMethodologies() {
+  getMhpcMastersCmeMethodologies() {
     return apiClient.get('/mhpc/masters-cme-methodologies/')
   },
-  createMastersCmeMethodology(data) {
+  createMhpcMastersCmeMethodology(data) {
     return apiClient.post('/mhpc/masters-cme-methodologies/', data)
   },
-  getMastersCmeMethodology(id) {
+  getMhpcMastersCmeMethodology(id) {
     return apiClient.get(`/mhpc/masters-cme-methodologies/${id}/`)
   },
-  updateMastersCmeMethodology(id, data) {
+  updateMhpcMastersCmeMethodology(id, data) {
     return apiClient.put(`/mhpc/masters-cme-methodologies/${id}/`, data)
   },
-  patchMastersCmeMethodology(id, data) {
+  patchMhpcMastersCmeMethodology(id, data) {
     return apiClient.patch(`/mhpc/masters-cme-methodologies/${id}/`, data)
   },
-  deleteMastersCmeMethodology(id) {
+  deleteMhpcMastersCmeMethodology(id) {
     return apiClient.delete(`/mhpc/masters-cme-methodologies/${id}/`)
   },
 
   // Masters CPD Activity
-  getMastersCpdActivities() {
+  getMhpcMastersCpdActivities() {
     return apiClient.get('/mhpc/masters-cpd-activity/')
   },
-  createMastersCpdActivity(data) {
+  createMhpcMastersCpdActivity(data) {
     return apiClient.post('/mhpc/masters-cpd-activity/', data)
   },
-  getMastersCpdActivity(id) {
+  getMhpcMastersCpdActivity(id) {
     return apiClient.get(`/mhpc/masters-cpd-activity/${id}/`)
   },
-  updateMastersCpdActivity(id, data) {
+  updateMhpcMastersCpdActivity(id, data) {
     return apiClient.put(`/mhpc/masters-cpd-activity/${id}/`, data)
   },
-  patchMastersCpdActivity(id, data) {
+  patchMhpcMastersCpdActivity(id, data) {
     return apiClient.patch(`/mhpc/masters-cpd-activity/${id}/`, data)
   },
-  deleteMastersCpdActivity(id) {
+  deleteMhpcMastersCpdActivity(id) {
     return apiClient.delete(`/mhpc/masters-cpd-activity/${id}/`)
   },
 
   // Masters Document Types
-  getMastersDocumentTypes() {
+  getMhpcMastersDocumentTypes() {
     return apiClient.get('/mhpc/masters-document-types/')
   },
-  createMastersDocumentType(data) {
+  createMhpcMastersDocumentType(data) {
     return apiClient.post('/mhpc/masters-document-types/', data)
   },
-  getMastersDocumentType(id) {
+  getMhpcMastersDocumentType(id) {
     return apiClient.get(`/mhpc/masters-document-types/${id}/`)
   },
-  updateMastersDocumentType(id, data) {
+  updateMhpcMastersDocumentType(id, data) {
     return apiClient.put(`/mhpc/masters-document-types/${id}/`, data)
   },
-  patchMastersDocumentType(id, data) {
+  patchMhpcMastersDocumentType(id, data) {
     return apiClient.patch(`/mhpc/masters-document-types/${id}/`, data)
   },
-  deleteMastersDocumentType(id) {
+  deleteMhpcMastersDocumentType(id) {
     return apiClient.delete(`/mhpc/masters-document-types/${id}/`)
   },
 
   // Masters E-Signatures
-  getBmhCMastersESignatures() {
+  getMhpcMastersESignatures() {
     return apiClient.get('/mhpc/masters-e-signatures/')
   },
-  createBmhCMastersESignature(data) {
+  createMhpcMastersESignature(data) {
     return apiClient.post('/mhpc/masters-e-signatures/', data)
   },
-  getBmhCMastersESignature(id) {
+  getMhpcMastersESignature(id) {
     return apiClient.get(`/mhpc/masters-e-signatures/${id}/`)
   },
-  updateBmhCMastersESignature(id, data) {
+  updateMhpcMastersESignature(id, data) {
     return apiClient.put(`/mhpc/masters-e-signatures/${id}/`, data)
   },
-  patchBmhCMastersESignature(id, data) {
+  patchMhpcMastersESignature(id, data) {
     return apiClient.patch(`/mhpc/masters-e-signatures/${id}/`, data)
   },
-  deleteBmhCMastersESignature(id) {
+  deleteMhpcMastersESignature(id) {
     return apiClient.delete(`/mhpc/masters-e-signatures/${id}/`)
   },
 
   // Masters Fee Structures
-  getMastersFeeStructures() {
+  getMhpcMastersFeeStructures() {
     return apiClient.get('/mhpc/masters-fee-structures/')
   },
-  createMastersFeeStructure(data) {
+  createMhpcMastersFeeStructure(data) {
     return apiClient.post('/mhpc/masters-fee-structures/', data)
   },
-  getMastersFeeStructure(id) {
+  getMhpcMastersFeeStructure(id) {
     return apiClient.get(`/mhpc/masters-fee-structures/${id}/`)
   },
-  updateMastersFeeStructure(id, data) {
+  updateMhpcMastersFeeStructure(id, data) {
     return apiClient.put(`/mhpc/masters-fee-structures/${id}/`, data)
   },
-  patchMastersFeeStructure(id, data) {
+  patchMhpcMastersFeeStructure(id, data) {
     return apiClient.patch(`/mhpc/masters-fee-structures/${id}/`, data)
   },
-  deleteMastersFeeStructure(id) {
+  deleteMhpcMastersFeeStructure(id) {
     return apiClient.delete(`/mhpc/masters-fee-structures/${id}/`)
   },
 
   // Masters Fees Associated For
-  getMastersFeesAssociatedFor() {
+  getMhpcMastersFeesAssociatedFor() {
     return apiClient.get('/mhpc/masters-fees-associated-for/')
   },
-  createMastersFeesAssociatedFor(data) {
+  createMhpcMastersFeesAssociatedFor(data) {
     return apiClient.post('/mhpc/masters-fees-associated-for/', data)
   },
-  updateMastersFeesAssociatedFor(id, data) {
+  updateMhpcMastersFeesAssociatedFor(id, data) {
     return apiClient.put(`/mhpc/masters-fees-associated-for/${id}/`, data)
   },
-  patchMastersFeesAssociatedFor(id, data) {
+  patchMhpcMastersFeesAssociatedFor(id, data) {
     return apiClient.patch(`/mhpc/masters-fees-associated-for/${id}/`, data)
   },
-  deleteMastersFeesAssociatedFor(id) {
+  deleteMhpcMastersFeesAssociatedFor(id) {
     return apiClient.delete(`/mhpc/masters-fees-associated-for/${id}/`)
   },
 
   // Masters File Types
-  getMastersFileTypes() {
+  getMhpcMastersFileTypes() {
     return apiClient.get('/mhpc/masters-file-types/')
   },
-  createMastersFileType(data) {
+  createMhpcMastersFileType(data) {
     return apiClient.post('/mhpc/masters-file-types/', data)
   },
-  getMastersFileType(id) {
+  getMhpcMastersFileType(id) {
     return apiClient.get(`/mhpc/masters-file-types/${id}/`)
   },
-  updateMastersFileType(id, data) {
+  updateMhpcMastersFileType(id, data) {
     return apiClient.put(`/mhpc/masters-file-types/${id}/`, data)
   },
-  patchMastersFileType(id, data) {
+  patchMhpcMastersFileType(id, data) {
     return apiClient.patch(`/mhpc/masters-file-types/${id}/`, data)
   },
-  deleteMastersFileType(id) {
+  deleteMhpcMastersFileType(id) {
     return apiClient.delete(`/mhpc/masters-file-types/${id}/`)
   },
   // Masters Participation Category
-  getMastersMHPCParticipationCategories() {
+  getMhpcMastersMHPCParticipationCategories() {
     return apiClient.get('/mhpc/masters-participation-category/')
   },
-  createMastersParticipationCategory(data) {
+  createMhpcMastersParticipationCategory(data) {
     return apiClient.post('/mhpc/masters-participation-category/', data)
   },
-  getMastersParticipationCategory(id) {
+  getMhpcMastersParticipationCategory(id) {
     return apiClient.get(`/mhpc/masters-participation-category/${id}/`)
   },
-  updateMastersParticipationCategory(id, data) {
+  updateMhpcMastersParticipationCategory(id, data) {
     return apiClient.put(`/mhpc/masters-participation-category/${id}/`, data)
   },
-  patchMastersParticipationCategory(id, data) {
+  patchMhpcMastersParticipationCategory(id, data) {
     return apiClient.patch(`/mhpc/masters-participation-category/${id}/`, data)
   },
-  deleteMastersParticipationCategory(id) {
+  deleteMhpcMastersParticipationCategory(id) {
     return apiClient.delete(`/mhpc/masters-participation-category/${id}/`)
   },
 
   // Masters Participation Sub Category
-  getMastersMhpcParticipationSubCategories() {
+  getMhpcMastersMhpcParticipationSubCategories() {
     return apiClient.get('/mhpc/masters-participation-sub-category/')
   },
-  createMastersParticipationSubCategory(data) {
+  createMhpcMastersParticipationSubCategory(data) {
     return apiClient.post('/mhpc/masters-participation-sub-category/', data)
   },
-  getMastersParticipationSubCategory(id) {
+  getMhpcMastersParticipationSubCategory(id) {
     return apiClient.get(`/mhpc/masters-participation-sub-category/${id}/`)
   },
-  updateMastersParticipationSubCategory(id, data) {
+  updateMhpcMastersParticipationSubCategory(id, data) {
     return apiClient.put(`/mhpc/masters-participation-sub-category/${id}/`, data)
   },
-  patchMastersParticipationSubCategory(id, data) {
+  patchMhpcMastersParticipationSubCategory(id, data) {
     return apiClient.patch(`/mhpc/masters-participation-sub-category/${id}/`, data)
   },
-  deleteMastersParticipationSubCategory(id) {
+  deleteMhpcMastersParticipationSubCategory(id) {
     return apiClient.delete(`/mhpc/masters-participation-sub-category/${id}/`)
   },
 
   // Masters Personnel Categories
-  getMastersPersonnelCategories() {
+  getMhpcMastersPersonnelCategories() {
     return apiClient.get('/mhpc/masters-personnel-categories/')
   },
-  createMastersPersonnelCategory(data) {
+  createMhpcMastersPersonnelCategory(data) {
     return apiClient.post('/mhpc/masters-personnel-categories/', data)
   },
-  getMastersPersonnelCategory(id) {
+  getMhpcMastersPersonnelCategory(id) {
     return apiClient.get(`/mhpc/masters-personnel-categories/${id}/`)
   },
-  updateMastersPersonnelCategory(id, data) {
+  updateMhpcMastersPersonnelCategory(id, data) {
     return apiClient.put(`/mhpc/masters-personnel-categories/${id}/`, data)
   },
-  patchMastersPersonnelCategory(id, data) {
+  patchMhpcMastersPersonnelCategory(id, data) {
     return apiClient.patch(`/mhpc/masters-personnel-categories/${id}/`, data)
   },
-  deleteMastersPersonnelCategory(id) {
+  deleteMhpcMastersPersonnelCategory(id) {
     return apiClient.delete(`/mhpc/masters-personnel-categories/${id}/`)
   },
 
   // Masters Qualification Types
-  getMastersQualificationTypes() {
+  getMhpcMastersQualificationTypes() {
     return apiClient.get('/mhpc/masters-qualification-types/')
   },
-  createMastersQualificationType(data) {
+  createMhpcMastersQualificationType(data) {
     return apiClient.post('/mhpc/masters-qualification-types/', data)
   },
-  getMastersQualificationType(id) {
+  getMhpcMastersQualificationType(id) {
     return apiClient.get(`/mhpc/masters-qualification-types/${id}/`)
   },
-  updateMastersQualificationType(id, data) {
+  updateMhpcMastersQualificationType(id, data) {
     return apiClient.put(`/mhpc/masters-qualification-types/${id}/`, data)
   },
-  patchMastersQualificationType(id, data) {
+  patchMhpcMastersQualificationType(id, data) {
     return apiClient.patch(`/mhpc/masters-qualification-types/${id}/`, data)
   },
-  deleteMastersQualificationType(id) {
+  deleteMhpcMastersQualificationType(id) {
     return apiClient.delete(`/mhpc/masters-qualification-types/${id}/`)
   },
 
   // Masters Qualifications
-  getBmhCMastersQualifications() {
+  getMhpcMastersQualifications() {
     return apiClient.get('/mhpc/masters-qualifications/')
   },
-  createBmhCMastersQualification(data) {
+  createMhpcMastersQualification(data) {
     return apiClient.post('/mhpc/masters-qualifications/', data)
   },
-  getBmhCMastersQualification(id) {
+  getMhpcMastersQualification(id) {
     return apiClient.get(`/mhpc/masters-qualifications/${id}/`)
   },
-  updateBmhCMastersQualification(id, data) {
+  updateMhpcMastersQualification(id, data) {
     return apiClient.put(`/mhpc/masters-qualifications/${id}/`, data)
   },
-  patchBmhCMastersQualification(id, data) {
+  patchMhpcMastersQualification(id, data) {
     return apiClient.patch(`/mhpc/masters-qualifications/${id}/`, data)
   },
-  deleteBmhCMastersQualification(id) {
+  deleteMhpcMastersQualification(id) {
     return apiClient.delete(`/mhpc/masters-qualifications/${id}/`)
   },
 
   // Masters Registration Type
-  getMastersRegistrationTypes() {
+  getMhpcMastersRegistrationTypes() {
     return apiClient.get('/mhpc/masters-registration-type/')
   },
-  createMastersRegistrationType(data) {
+  createMhpcMastersRegistrationType(data) {
     return apiClient.post('/mhpc/masters-registration-type/', data)
   },
-  getMastersRegistrationType(id) {
+  getMhpcMastersRegistrationType(id) {
     return apiClient.get(`/mhpc/masters-registration-type/${id}/`)
   },
-  updateMastersRegistrationType(id, data) {
+  updateMhpcMastersRegistrationType(id, data) {
     return apiClient.put(`/mhpc/masters-registration-type/${id}/`, data)
   },
-  patchMastersRegistrationType(id, data) {
+  patchMhpcMastersRegistrationType(id, data) {
     return apiClient.patch(`/mhpc/masters-registration-type/${id}/`, data)
   },
-  deleteMastersRegistrationType(id) {
+  deleteMhpcMastersRegistrationType(id) {
     return apiClient.delete(`/mhpc/masters-registration-type/${id}/`)
   },
 
   // Masters Sector
-  getMastersSectors() {
+  getMhpcMastersSectors() {
     return apiClient.get('/mhpc/masters-sector/')
   },
-  createMastersSector(data) {
+  createMhpcMastersSector(data) {
     return apiClient.post('/mhpc/masters-sector/', data)
   },
-  getMastersSector(id) {
+  getMhpcMastersSector(id) {
     return apiClient.get(`/mhpc/masters-sector/${id}/`)
   },
-  updateMastersSector(id, data) {
+  updateMhpcMastersSector(id, data) {
     return apiClient.put(`/mhpc/masters-sector/${id}/`, data)
   },
-  patchMastersSector(id, data) {
+  patchMhpcMastersSector(id, data) {
     return apiClient.patch(`/mhpc/masters-sector/${id}/`, data)
   },
-  deleteMastersSector(id) {
+  deleteMhpcMastersSector(id) {
     return apiClient.delete(`/mhpc/masters-sector/${id}/`)
   },
 
   // Masters Sub Categories
-  getMastersSubCategories() {
+  getMhpcMastersSubCategories() {
     return apiClient.get('/mhpc/masters-sub-categories/')
   },
-  createMastersSubCategory(data) {
+  createMhpcMastersSubCategory(data) {
     return apiClient.post('/mhpc/masters-sub-categories/', data)
   },
-  getMastersSubCategory(id) {
+  getMhpcMastersSubCategory(id) {
     return apiClient.get(`/mhpc/masters-sub-categories/${id}/`)
   },
-  updateMastersSubCategory(id, data) {
+  updateMhpcMastersSubCategory(id, data) {
     return apiClient.put(`/mhpc/masters-sub-categories/${id}/`, data)
   },
-  patchMastersSubCategory(id, data) {
+  patchMhpcMastersSubCategory(id, data) {
     return apiClient.patch(`/mhpc/masters-sub-categories/${id}/`, data)
   },
-  deleteMastersSubCategory(id) {
+  deleteMhpcMastersSubCategory(id) {
     return apiClient.delete(`/mhpc/masters-sub-categories/${id}/`)
   },
 
   // Masters University
-  getMastersUniversities() {
+  getMhpcMastersUniversities() {
     return apiClient.get('/mhpc/masters-university/')
   },
-  createMastersUniversity(data) {
+  createMhpcMastersUniversity(data) {
     return apiClient.post('/mhpc/masters-university/', data)
   },
-  getMastersUniversity(id) {
+  getMhpcMastersUniversity(id) {
     return apiClient.get(`/mhpc/masters-university/${id}/`)
   },
-  updateMastersUniversity(id, data) {
+  updateMhpcMastersUniversity(id, data) {
     return apiClient.put(`/mhpc/masters-university/${id}/`, data)
   },
-  patchMastersUniversity(id, data) {
+  patchMhpcMastersUniversity(id, data) {
     return apiClient.patch(`/mhpc/masters-university/${id}/`, data)
   },
-  deleteMastersUniversity(id) {
+  deleteMhpcMastersUniversity(id) {
     return apiClient.delete(`/mhpc/masters-university/${id}/`)
   },
   // Generic function to fetch master data
@@ -471,7 +471,7 @@ export default {
     return apiClient.delete(`/mhpc/masters-cogs-workplaces/${id}/`)
   },
 
-  // BMHC Application Endpoints
+  // MHPC Application Endpoints
   getMhpcNewApplications() {
     return apiClient.get('/mhpc/mhpc-new-application/')
   },
@@ -501,7 +501,7 @@ export default {
     return apiClient.get(`/mhpc/mhpc-new-application/?cid=${cid}`)
   },
 
-  // BMHC Renewals Endpoints
+  // MHPC Renewals Endpoints
   getMhpcRenewals() {
     return apiClient.get('/mhpc/mhpc-renewals/')
   },
@@ -541,7 +541,7 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-new-qualification/${id}/`)
   },
 
-  // BMHC Capa
+  // MHPC Capa
   getMhpcCapas() {
     return apiClient.get('/mhpc/mhpc-capa/')
   },
@@ -569,7 +569,7 @@ export default {
     return apiClient.get('/mhpc/mhpc-cpd-reasons-for-conducting/')
   },
 
-  // BMHC Institute Departments
+  // MHPC Institute Departments
   getMhpcInstituteDepartments() {
     return apiClient.get('/mhpc/mhpc-institute-departments/')
   },
@@ -589,7 +589,7 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-institute-departments/${id}/`)
   },
 
-  // BMHC Institute Staff
+  // MHPC Institute Staff
   getMhpcInstituteStaff() {
     return apiClient.get('/mhpc/mhpc-institute-staff/')
   },
@@ -606,7 +606,7 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-institute-staff/${id}/`)
   },
 
-  // BMHC Institutes
+  // MHPC Institutes
   getMhpcInstitutes() {
     return apiClient.get('/mhpc/mhpc-institutes/')
   },
@@ -626,7 +626,7 @@ export default {
   deleteMhpcInstitute(id) {
     return apiClient.delete(`/mhpc/mhpc-institutes/${id}/`)
   },
-  //BMHC COUrses api
+  //MHPC COUrses api
   getMhpcCourseDetails() {
     return apiClient.get('/mhpc/mhpc-course-details/')
   },
@@ -645,7 +645,7 @@ export default {
   deleteMhpcCourseDetail(id) {
     return apiClient.delete(`/mhpc/mhpc-course-details/${id}/`)
   },
-  // BMHC Teaching Center
+  // MHPC Teaching Center
   getMhpcTeachingCenters() {
     return apiClient.get('/mhpc/mhpc-teaching-centers/')
   },
@@ -664,7 +664,7 @@ export default {
   deleteMhpcTeachingCenter(id) {
     return apiClient.delete(`/mhpc/mhpc-teaching-centers/${id}/`)
   },
-  // BMHC CPD Records
+  // MHPC CPD Records
   getMhpcCpdRecords() {
     return apiClient.get('/mhpc/mhpc-cpd-records/')
   },
@@ -689,11 +689,11 @@ export default {
     return apiClient.get(`/mhpc/mhpc-cpd-records/list-my-cpd/?cid=${cid}`)
   },
 
-  // BMHC CPD Records
+  // MHPC CPD Records
   getMhpcCpdTask() {
     return apiClient.get('/mhpc/mhpc-cpd-tasks/')
   },
-  // BMHC CPD Tasks endpoints
+  // MHPC CPD Tasks endpoints
   createMhpcCpdTask(data) {
     return apiClient.post('/mhpc/mhpc-cpd-tasks/', data)
   },
@@ -709,7 +709,7 @@ export default {
   deleteMhpcCpdTask(id) {
     return apiClient.delete(`/mhpc/mhpc-cpd-tasks/${id}/`)
   },
-  // BMHC Counselor endpoints
+  // MHPC Counselor endpoints
   getMhpcCounsellors() {
     return apiClient.get('/mhpc/mhpc-counsellors/')
   },
@@ -728,7 +728,7 @@ export default {
   deleteMhpcCounsellor(id) {
     return apiClient.delete(`/mhpc/mhpc-counsellors/${id}/`)
   },
-  // BMHC CPD Task Participants endpoints
+  // MHPC CPD Task Participants endpoints
   getMhpcCpdTaskParticipants() {
     return apiClient.get('/mhpc/mhpc-cpd-task-participants/')
   },

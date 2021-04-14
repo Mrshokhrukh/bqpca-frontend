@@ -171,7 +171,7 @@ const feesAssociationToDelete = ref(null);
 // Fetch fees associations on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMastersFeesAssociatedFor();
+    const response = await services.getMhpcMastersFeesAssociatedFor();
     feesAssociations.value = response.data.results;
   } catch (error) {
     console.error('Error fetching fees associations:', error);
@@ -201,13 +201,13 @@ const paginatedFeesAssociations = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMastersFeesAssociatedFor(formData.value.id, formData.value);
+      const response = await services.updateMhpcMastersFeesAssociatedFor(formData.value.id, formData.value);
       const index = feesAssociations.value.findIndex(fa => fa.id === formData.value.id);
       if (index !== -1) {
         feesAssociations.value[index] = response.data;
       }
     } else {
-      const response = await services.createMastersFeesAssociatedFor(formData.value);
+      const response = await services.createMhpcMastersFeesAssociatedFor(formData.value);
       feesAssociations.value.push(response.data);
     }
     resetForm();
@@ -239,7 +239,7 @@ const confirmDelete = async () => {
   if (!feesAssociationToDelete.value) return;
 
   try {
-    await services.deleteMastersFeesAssociatedFor(feesAssociationToDelete.value.id);
+    await services.deleteMhpcMastersFeesAssociatedFor(feesAssociationToDelete.value.id);
     const index = feesAssociations.value.findIndex(fa => fa.id === feesAssociationToDelete.value.id);
     if (index !== -1) {
       feesAssociations.value.splice(index, 1);

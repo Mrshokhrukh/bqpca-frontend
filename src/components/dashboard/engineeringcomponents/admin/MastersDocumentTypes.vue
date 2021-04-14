@@ -180,7 +180,7 @@ const documentTypeToDelete = ref(null);
 // Fetch document types on component mount
 onMounted(async () => {
   try {
-    const response = await apiServices.getMastersDocumentTypes();
+    const response = await apiServices.getEpcMastersDocumentTypes();
     documentTypes.value = response.data.results;
   } catch (error) {
     console.error('Error fetching document types:', error);
@@ -210,13 +210,13 @@ const paginatedDocumentTypes = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersDocumentType(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersDocumentType(formData.value.id, formData.value);
       const index = documentTypes.value.findIndex(dt => dt.id === formData.value.id);
       if (index !== -1) {
         documentTypes.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersDocumentType(formData.value);
+      const response = await apiServices.createEpcMastersDocumentType(formData.value);
       documentTypes.value.push(response.data);
     }
     resetForm();
@@ -248,7 +248,7 @@ const confirmDelete = async () => {
   if (!documentTypeToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersDocumentType(documentTypeToDelete.value.id);
+    await apiServices.deleteEpcMastersDocumentType(documentTypeToDelete.value.id);
     const index = documentTypes.value.findIndex(dt => dt.id === documentTypeToDelete.value.id);
     if (index !== -1) {
       documentTypes.value.splice(index, 1);

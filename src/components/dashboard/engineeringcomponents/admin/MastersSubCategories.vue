@@ -259,7 +259,7 @@ onMounted(async () => {
 
 const fetchSubCategories = async () => {
   try {
-    const response = await apiServices.getMastersSubCategories();
+    const response = await apiServices.getEpcMastersSubCategories();
     subCategories.value = response.data.results;
   } catch (error) {
     console.error('Error fetching sub categories:', error);
@@ -268,7 +268,7 @@ const fetchSubCategories = async () => {
 
 const fetchCategories = async () => {
   try {
-    const response = await apiServices.getMastersPersonnelCategories();
+    const response = await apiServices.getEpcMastersPersonnelCategories();
     categories.value = response.data.results;
   } catch (error) {
     console.error('Error fetching categories:', error);
@@ -299,13 +299,13 @@ const paginatedSubCategories = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersSubCategory(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersSubCategory(formData.value.id, formData.value);
       const index = subCategories.value.findIndex(sc => sc.id === formData.value.id);
       if (index !== -1) {
         subCategories.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersSubCategory(formData.value);
+      const response = await apiServices.createEpcMastersSubCategory(formData.value);
       subCategories.value.push(response.data);
     }
     resetForm();
@@ -338,7 +338,7 @@ const confirmDelete = async () => {
   if (!subCategoryToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersSubCategory(subCategoryToDelete.value.id);
+    await apiServices.deleteEpcMastersSubCategory(subCategoryToDelete.value.id);
     const index = subCategories.value.findIndex(sc => sc.id === subCategoryToDelete.value.id);
     if (index !== -1) {
       subCategories.value.splice(index, 1);

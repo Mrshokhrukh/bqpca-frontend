@@ -182,7 +182,7 @@ const eSignatureToDelete = ref(null);
 // Fetch e-signatures on component mount
 onMounted(async () => {
   try {
-    const response = await apiServices.getMastersESignatures();
+    const response = await apiServices.getEpcMastersESignatures();
     eSignatures.value = response.data.results;
   } catch (error) {
     console.error('Error fetching e-signatures:', error);
@@ -218,13 +218,13 @@ const handleSubmit = async () => {
     formDataToSend.append('status', formData.value.status);
 
     if (isEditing.value) {
-      const response = await apiServices.updateMastersESignature(formData.value.id, formDataToSend);
+      const response = await apiServices.updateEpcMastersESignature(formData.value.id, formDataToSend);
       const index = eSignatures.value.findIndex(es => es.id === formData.value.id);
       if (index !== -1) {
         eSignatures.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersESignature(formDataToSend);
+      const response = await apiServices.createEpcMastersESignature(formDataToSend);
       eSignatures.value.push(response.data);
     }
     resetForm();
@@ -261,7 +261,7 @@ const confirmDelete = async () => {
   if (!eSignatureToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersESignature(eSignatureToDelete.value.id);
+    await apiServices.deleteEpcMastersESignature(eSignatureToDelete.value.id);
     const index = eSignatures.value.findIndex(es => es.id === eSignatureToDelete.value.id);
     if (index !== -1) {
       eSignatures.value.splice(index, 1);

@@ -169,7 +169,7 @@ const sectorToDelete = ref(null);
 // Fetch sectors on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMastersSectors();
+    const response = await services.getMhpcMastersSectors();
     sectors.value = response.data.results;
   } catch (error) {
     console.error('Error fetching sectors:', error);
@@ -199,13 +199,13 @@ const paginatedSectors = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMastersSector(formData.value.id, formData.value);
+      const response = await services.updateMhpcMastersSector(formData.value.id, formData.value);
       const index = sectors.value.findIndex(se => se.id === formData.value.id);
       if (index !== -1) {
         sectors.value[index] = response.data;
       }
     } else {
-      const response = await services.createMastersSector(formData.value);
+      const response = await services.createMhpcMastersSector(formData.value);
       sectors.value.push(response.data);
     }
     resetForm();
@@ -237,7 +237,7 @@ const confirmDelete = async () => {
   if (!sectorToDelete.value) return;
 
   try {
-    await services.deleteMastersSector(sectorToDelete.value.id);
+    await services.deleteMhpcMastersSector(sectorToDelete.value.id);
     const index = sectors.value.findIndex(se => se.id === sectorToDelete.value.id);
     if (index !== -1) {
       sectors.value.splice(index, 1);

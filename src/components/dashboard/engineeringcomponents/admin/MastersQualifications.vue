@@ -177,8 +177,8 @@ const qualificationToDelete = ref(null);
 onMounted(async () => {
   try {
     const [qualificationsResponse, qualificationTypesResponse] = await Promise.all([
-      apiServices.getMastersQualifications(),
-      apiServices.getMastersQualificationTypes()
+      apiServices.getEpcMastersQualifications(),
+      apiServices.getEpcMastersQualificationTypes()
     ]);
     qualifications.value = qualificationsResponse.data.results;
     qualificationTypes.value = qualificationTypesResponse.data.results;
@@ -209,13 +209,13 @@ const paginatedQualifications = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersQualification(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersQualification(formData.value.id, formData.value);
       const index = qualifications.value.findIndex(q => q.id === formData.value.id);
       if (index !== -1) {
         qualifications.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersQualification(formData.value);
+      const response = await apiServices.createEpcMastersQualification(formData.value);
       qualifications.value.push(response.data);
     }
     resetForm();
@@ -247,7 +247,7 @@ const confirmDelete = async () => {
   if (!qualificationToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersQualification(qualificationToDelete.value.id);
+    await apiServices.deleteEpcMastersQualification(qualificationToDelete.value.id);
     const index = qualifications.value.findIndex(q => q.id === qualificationToDelete.value.id);
     if (index !== -1) {
       qualifications.value.splice(index, 1);

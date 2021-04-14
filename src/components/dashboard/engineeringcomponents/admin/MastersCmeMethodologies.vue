@@ -170,7 +170,7 @@ const methodologyToDelete = ref(null);
 // Fetch methodologies on component mount
 onMounted(async () => {
   try {
-    const response = await apiServices.getMastersCmeMethodologies();
+    const response = await apiServices.getEpcMastersCmeMethodologies();
     methodologies.value = response.data.results;
   } catch (error) {
     console.error('Error fetching CME methodologies:', error);
@@ -200,13 +200,13 @@ const paginatedMethodologies = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersCmeMethodology(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersCmeMethodology(formData.value.id, formData.value);
       const index = methodologies.value.findIndex(dt => dt.id === formData.value.id);
       if (index !== -1) {
         methodologies.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersCmeMethodology(formData.value);
+      const response = await apiServices.createEpcMastersCmeMethodology(formData.value);
       methodologies.value.push(response.data);
     }
     resetForm();
@@ -238,7 +238,7 @@ const confirmDelete = async () => {
   if (!methodologyToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersCmeMethodology(methodologyToDelete.value.id);
+    await apiServices.deleteEpcMastersCmeMethodology(methodologyToDelete.value.id);
     const index = methodologies.value.findIndex(dt => dt.id === methodologyToDelete.value.id);
     if (index !== -1) {
       methodologies.value.splice(index, 1);

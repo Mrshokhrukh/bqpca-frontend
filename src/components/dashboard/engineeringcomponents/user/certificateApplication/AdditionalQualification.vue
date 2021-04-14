@@ -460,16 +460,16 @@ onMounted(async () => {
   fetchApplications();
   try {
     // Using EPC API endpoints to fetch master data
-    const qualificationTypesResponse = await apiService.getMastersQualificationTypes();
-    const qualificationsResponse = await apiService.getMastersQualifications(); // Updated from getBmhCMastersQualifications
-    const universitiesResponse = await apiService.getMastersUniversities();
+    const qualificationTypesResponse = await apiService.getEpcMastersQualificationTypes();
+    const qualificationsResponse = await apiService.getEpcMastersQualifications(); // Updated from getBmhCEpcMastersQualifications
+    const universitiesResponse = await apiService.getEpcMastersUniversities();
 
     qualificationTypes.value = qualificationTypesResponse.data.results;
     qualifications.value = qualificationsResponse.data.results;
     universities.value = universitiesResponse.data.results;
 
     // Fetch Document Types
-    const documentTypesResponse = await apiService.getMastersDocumentTypes();
+    const documentTypesResponse = await apiService.getEpcMastersDocumentTypes();
     fetchedDocumentTypes.value = documentTypesResponse.data.results;
 
   } catch (error) {

@@ -604,16 +604,16 @@ const loadDropdownOptions = async () => {
     const reasonResponse = await apiService.getReasonForCoducting();
     reasonOptions.value = reasonResponse.data?.results.map(reason => ({ text: reason.name, value: reason.id })) || [];
 
-    const cpdTypeResponse = await apiService.getMastersCmeActivities();
+    const cpdTypeResponse = await apiService.getMhpcMastersCmeActivities();
     cpdTypeOptions.value = cpdTypeResponse.data?.results.map(type => ({ text: type.cme_activity_name, value: type.id })) || [];
 
-    const methodologyResponse = await apiService.getMastersCmeMethodologies();
+    const methodologyResponse = await apiService.getMhpcMastersCmeMethodologies();
     methodologyOptions.value = methodologyResponse.data?.results.map(method => ({ text: method.methodology_name, value: method.id })) || [];
 
-    const categoriesResponse = await apiService.getMastersMHPCParticipationCategories();
+    const categoriesResponse = await apiService.getMhpcMastersMHPCParticipationCategories();
     participationCategoryOptions.value = categoriesResponse.data?.results.map(category => ({ text: category.participation_category_name, value: category.id })) || [];
 
-    const subcategoriesResponse = await apiService.getMastersMhpcParticipationSubCategories();
+    const subcategoriesResponse = await apiService.getMhpcMastersMhpcParticipationSubCategories();
     participantSubcategoryOptions.value = subcategoriesResponse.data?.results.map(subcategory => ({
       text: subcategory.participation_sub_category_name,
       value: subcategory.id,

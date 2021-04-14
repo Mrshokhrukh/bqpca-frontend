@@ -185,7 +185,7 @@ const universityToDelete = ref(null);
 // Fetch universities on component mount
 onMounted(async () => {
     try {
-        const response = await services.getMastersUniversities();
+        const response = await services.getMhpcMastersUniversities();
         universities.value = response.data.results;
     } catch (error) {
         console.error('Error fetching universities:', error);
@@ -216,13 +216,13 @@ const paginatedUniversities = computed(() => {
 const handleSubmit = async () => {
     try {
         if (isEditing.value) {
-            const response = await services.updateMastersUniversity(formData.value.id, formData.value);
+            const response = await services.updateMhpcMastersUniversity(formData.value.id, formData.value);
             const index = universities.value.findIndex(dt => dt.id === formData.value.id);
             if (index !== -1) {
                 universities.value[index] = response.data;
             }
         } else {
-            const response = await services.createMastersUniversity(formData.value);
+            const response = await services.createMhpcMastersUniversity(formData.value);
             universities.value.push(response.data);
         }
         resetForm();
@@ -254,7 +254,7 @@ const confirmDelete = async () => {
     if (!universityToDelete.value) return;
 
     try {
-        await services.deleteMastersUniversity(universityToDelete.value.id);
+        await services.deleteMhpcMastersUniversity(universityToDelete.value.id);
         const index = universities.value.findIndex(dt => dt.id === universityToDelete.value.id);
         if (index !== -1) {
             universities.value.splice(index, 1);

@@ -500,20 +500,20 @@ const universities = ref([]);
 onMounted(async () => {
   try {
     // Fetch registration types (new addition)
-    const registrationTypesResponse = await apiService.getMastersRegistrationTypes();
+    const registrationTypesResponse = await apiService.getEpcMastersRegistrationTypes();
     registrationTypes.value = registrationTypesResponse.data.results;
     console.log('Registration Types:', registrationTypes.value);
 
-    const qualificationTypesResponse = await apiService.getMastersQualificationTypes();
-    const qualificationsResponse = await apiService.getMastersQualifications();
-    const universitiesResponse = await apiService.getMastersUniversities();
+    const qualificationTypesResponse = await apiService.getEpcMastersQualificationTypes();
+    const qualificationsResponse = await apiService.getEpcMastersQualifications();
+    const universitiesResponse = await apiService.getEpcMastersUniversities();
 
     qualificationTypes.value = qualificationTypesResponse.data.results;
     qualifications.value = qualificationsResponse.data.results;
     universities.value = universitiesResponse.data.results;
 
     //Fetch Document Types
-    const documentTypesResponse = await apiService.getMastersDocumentTypes();
+    const documentTypesResponse = await apiService.getEpcMastersDocumentTypes();
     fetchedDocumentTypes.value = documentTypesResponse.data.results;
 
   } catch (error) {

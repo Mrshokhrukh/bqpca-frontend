@@ -171,7 +171,7 @@ const registrationTypeToDelete = ref(null);
 // Fetch registration types on component mount
 onMounted(async () => {
   try {
-    const response = await apiServices.getMastersRegistrationTypes();
+    const response = await apiServices.getEpcMastersRegistrationTypes();
     registrationTypes.value = response.data.results;
   } catch (error) {
     console.error('Error fetching registration types:', error);
@@ -201,13 +201,13 @@ const paginatedRegistrationTypes = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersRegistrationType(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersRegistrationType(formData.value.id, formData.value);
       const index = registrationTypes.value.findIndex(rt => rt.id === formData.value.id);
       if (index !== -1) {
         registrationTypes.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersRegistrationType(formData.value);
+      const response = await apiServices.createEpcMastersRegistrationType(formData.value);
       registrationTypes.value.push(response.data);
     }
     resetForm();
@@ -239,7 +239,7 @@ const confirmDelete = async () => {
   if (!registrationTypeToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersRegistrationType(registrationTypeToDelete.value.id);
+    await apiServices.deleteEpcMastersRegistrationType(registrationTypeToDelete.value.id);
     const index = registrationTypes.value.findIndex(rt => rt.id === registrationTypeToDelete.value.id);
     if (index !== -1) {
       registrationTypes.value.splice(index, 1);

@@ -193,8 +193,8 @@ const feeStructureToDelete = ref(null);
 onMounted(async () => {
   try {
     const [feeStructuresResponse, feeAssociatedForResponse] = await Promise.all([
-      apiServices.getMastersFeeStructures(),
-      apiServices.getMastersFeesAssociatedFor()
+      apiServices.getEpcMastersFeeStructures(),
+      apiServices.getEpcMastersFeesAssociatedFor()
     ]);
     feeStructures.value = feeStructuresResponse.data.results;
     feeAssociatedForOptions.value = feeAssociatedForResponse.data.results;
@@ -226,13 +226,13 @@ const paginatedFeeStructures = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersFeeStructure(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersFeeStructure(formData.value.id, formData.value);
       const index = feeStructures.value.findIndex(fs => fs.id === formData.value.id);
       if (index !== -1) {
         feeStructures.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersFeeStructure(formData.value);
+      const response = await apiServices.createEpcMastersFeeStructure(formData.value);
       feeStructures.value.push(response.data);
     }
     resetForm();
@@ -264,7 +264,7 @@ const confirmDelete = async () => {
   if (!feeStructureToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersFeeStructure(feeStructureToDelete.value.id);
+    await apiServices.deleteEpcMastersFeeStructure(feeStructureToDelete.value.id);
     const index = feeStructures.value.findIndex(fs => fs.id === feeStructureToDelete.value.id);
     if (index !== -1) {
       feeStructures.value.splice(index, 1);

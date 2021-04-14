@@ -373,9 +373,9 @@ const formatDate = (dateString) => {
 const fetchMasterData = async () => {
   try {
     const responses = await Promise.allSettled([
-      apiServices.getMastersPersonnelCategories(),
-      apiServices.getMastersSubCategories(),
-      apiServices.getMastersSectors(),
+      apiServices.getMhpcMastersPersonnelCategories(),
+      apiServices.getMhpcMastersSubCategories(),
+      apiServices.getMhpcMastersSectors(),
     ]);
     if (responses[0].status === 'fulfilled' && responses[0].value.data) { personnelCategories.value = responses[0].value.data.results || responses[0].value.data || []; } else { console.error('Failed fetch personnel categories:', responses[0].reason); }
     if (responses[1].status === 'fulfilled' && responses[1].value.data) { personnelSubcategories.value = responses[1].value.data.results || responses[1].value.data || []; } else { console.error('Failed fetch personnel subcategories:', responses[1].reason); }

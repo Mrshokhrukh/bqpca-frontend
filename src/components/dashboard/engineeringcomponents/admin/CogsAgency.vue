@@ -163,7 +163,7 @@ const agencyToDelete = ref(null);
 // Fetch agencies on component mount
 onMounted(async () => {
   try {
-    const response = await apiServices.getMastersCogsAgencies();
+    const response = await apiServices.getEpcMastersCogsAgencies();
     console.log('API Response:', response.data); // DEBUG: Inspect the data
 
     // Check if response.data.results exists and is an array
@@ -201,13 +201,13 @@ const paginatedAgencies = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersCogsAgency(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersCogsAgency(formData.value.id, formData.value);
       const index = agencies.value.findIndex(dt => dt.id === formData.value.id);
       if (index !== -1) {
         agencies.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersCogsAgency(formData.value);
+      const response = await apiServices.createEpcMastersCogsAgency(formData.value);
       agencies.value.push(response.data);
     }
     resetForm();
@@ -239,7 +239,7 @@ const confirmDelete = async () => {
   if (!agencyToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersCogsAgency(agencyToDelete.value.id);
+    await apiServices.deleteEpcMastersCogsAgency(agencyToDelete.value.id);
     const index = agencies.value.findIndex(dt => dt.id === agencyToDelete.value.id);
     if (index !== -1) {
       agencies.value.splice(index, 1);

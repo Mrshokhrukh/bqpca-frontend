@@ -172,7 +172,7 @@ const itemsPerPage = 5;
 // Methods
 const fetchActivities = async (page = 1) => {
   try {
-    const response = await apiServices.getMastersCmeActivities()
+    const response = await apiServices.getEpcMastersCmeActivities()
     cmeActivities.value = response.data.results
     currentPage.value = page
   } catch (error) {
@@ -183,9 +183,9 @@ const fetchActivities = async (page = 1) => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      await apiServices.updateMastersCmeActivity(editingId.value, formData.value)
+      await apiServices.updateEpcMastersCmeActivity(editingId.value, formData.value)
     } else {
-      await apiServices.createMastersCmeActivity(formData.value)
+      await apiServices.createEpcMastersCmeActivity(formData.value)
 
     }
     resetForm()
@@ -230,7 +230,7 @@ const cancelDelete = () => {
 const deleteActivity = async () => {
   if (!activityToDelete.value) return;
   try {
-    await apiServices.deleteMastersCmeActivity(activityToDelete.value.id)
+    await apiServices.deleteEpcMastersCmeActivity(activityToDelete.value.id)
     const index = cmeActivities.value.findIndex(act => act.id === activityToDelete.value.id);
     if (index !== -1) {
       cmeActivities.value.splice(index, 1);

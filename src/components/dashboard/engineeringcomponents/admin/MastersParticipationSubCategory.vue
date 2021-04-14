@@ -192,12 +192,12 @@ const itemsPerPage = 5;
 const isDeleteModalOpen = ref(false);
 const participationSubCategoryToDelete = ref(null);
 
-// Fetch data from the MastersParticipationCategories API
+// Fetch data from the EpcMastersParticipationCategories API
 const participationCategories = ref([])
 
 const getParticipationCategories = async () => {
   try {
-    const response = await apiServices.getMastersParticipationCategories()
+    const response = await apiServices.getEpcMastersParticipationCategories()
     participationCategories.value = response.data.results
   } catch (error) {
     console.error('Error fetching participation categories:', error)
@@ -208,7 +208,7 @@ const getParticipationCategories = async () => {
 onMounted(async () => {
   try {
     await getParticipationCategories()
-    const response = await apiServices.getMastersParticipationSubCategories();
+    const response = await apiServices.getEpcMastersParticipationSubCategories();
     participationSubCategories.value = response.data.results;
   } catch (error) {
     console.error('Error fetching participation sub-categories:', error);
@@ -238,13 +238,13 @@ const paginatedParticipationSubCategories = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersParticipationSubCategory(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersParticipationSubCategory(formData.value.id, formData.value);
       const index = participationSubCategories.value.findIndex(dt => dt.id === formData.value.id);
       if (index !== -1) {
         participationSubCategories.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersParticipationSubCategory(formData.value);
+      const response = await apiServices.createEpcMastersParticipationSubCategory(formData.value);
       participationSubCategories.value.push(response.data);
     }
     resetForm();
@@ -276,7 +276,7 @@ const confirmDelete = async () => {
   if (!participationSubCategoryToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersParticipationSubCategory(participationSubCategoryToDelete.value.id);
+    await apiServices.deleteEpcMastersParticipationSubCategory(participationSubCategoryToDelete.value.id);
     const index = participationSubCategories.value.findIndex(dt => dt.id === participationSubCategoryToDelete.value.id);
     if (index !== -1) {
       participationSubCategories.value.splice(index, 1);

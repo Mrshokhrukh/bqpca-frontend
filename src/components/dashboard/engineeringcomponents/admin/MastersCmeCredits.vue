@@ -192,7 +192,7 @@ const itemsPerPage = 5;
 // Methods
 const fetchCredits = async (page = 1) => {
   try {
-    const response = await apiServices.getMastersCmeCredits()
+    const response = await apiServices.getEpcMastersCmeCredits()
     cmeCredits.value = response.data.results
     currentPage.value = page
   } catch (error) {
@@ -201,7 +201,7 @@ const fetchCredits = async (page = 1) => {
 }
 const fetchCmeActivities = async () => {
   try {
-    const response = await apiServices.getMastersCmeActivities();
+    const response = await apiServices.getEpcMastersCmeActivities();
     cmeActivitiesList.value = response.data.results;
   } catch (error) {
     console.error('Error fetching cme activities:', error)
@@ -210,9 +210,9 @@ const fetchCmeActivities = async () => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      await apiServices.updateMastersCmeCredit(editingId.value, formData.value)
+      await apiServices.updateEpcMastersCmeCredit(editingId.value, formData.value)
     } else {
-      await apiServices.createMastersCmeCredit(formData.value)
+      await apiServices.createEpcMastersCmeCredit(formData.value)
 
     }
     resetForm()
@@ -260,7 +260,7 @@ const cancelDelete = () => {
 const deleteCredit = async () => {
   if (!creditToDelete.value) return;
   try {
-    await apiServices.deleteMastersCmeCredit(creditToDelete.value.id)
+    await apiServices.deleteEpcMastersCmeCredit(creditToDelete.value.id)
     cancelDelete();
     fetchCredits();
   } catch (error) {

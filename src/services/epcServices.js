@@ -391,62 +391,62 @@ export default {
   },
 
   // Masters CME Activities endpoints
-  getMastersCmeActivities() {
+  getEpcMastersCmeActivities() {
     return apiClient.get('/epc/masters-cme-activities/')
   },
-  createMastersCmeActivity(data) {
+  createEpcMastersCmeActivity(data) {
     return apiClient.post('/epc/masters-cme-activities/', data)
   },
-  getMastersCmeActivity(id) {
+  getEpcMastersCmeActivity(id) {
     return apiClient.get(`/epc/masters-cme-activities/${id}/`)
   },
-  updateMastersCmeActivity(id, data) {
+  updateEpcMastersCmeActivity(id, data) {
     return apiClient.put(`/epc/masters-cme-activities/${id}/`, data)
   },
-  patchMastersCmeActivity(id, data) {
+  patchEpcMastersCmeActivity(id, data) {
     return apiClient.patch(`/epc/masters-cme-activities/${id}/`, data)
   },
-  deleteMastersCmeActivity(id) {
+  deleteEpcMastersCmeActivity(id) {
     return apiClient.delete(`/epc/masters-cme-activities/${id}/`)
   },
 
   // Masters CME Credits endpoints
-  getMastersCmeCredits() {
+  getEpcMastersCmeCredits() {
     return apiClient.get('/epc/masters-cme-credits/')
   },
-  createMastersCmeCredit(data) {
+  createEpcMastersCmeCredit(data) {
     return apiClient.post('/epc/masters-cme-credits/', data)
   },
-  getMastersCmeCredit(id) {
+  getEpcMastersCmeCredit(id) {
     return apiClient.get(`/epc/masters-cme-credits/${id}/`)
   },
-  updateMastersCmeCredit(id, data) {
+  updateEpcMastersCmeCredit(id, data) {
     return apiClient.put(`/epc/masters-cme-credits/${id}/`, data)
   },
-  patchMastersCmeCredit(id, data) {
+  patchEpcMastersCmeCredit(id, data) {
     return apiClient.patch(`/epc/masters-cme-credits/${id}/`, data)
   },
-  deleteMastersCmeCredit(id) {
+  deleteEpcMastersCmeCredit(id) {
     return apiClient.delete(`/epc/masters-cme-credits/${id}/`)
   },
 
   // Masters CME Methodologies endpoints
-  getMastersCmeMethodologies() {
+  getEpcMastersCmeMethodologies() {
     return apiClient.get('/epc/masters-cme-methodologies/')
   },
-  createMastersCmeMethodology(data) {
+  createEpcMastersCmeMethodology(data) {
     return apiClient.post('/epc/masters-cme-methodologies/', data)
   },
-  getMastersCmeMethodology(id) {
+  getEpcMastersCmeMethodology(id) {
     return apiClient.get(`/epc/masters-cme-methodologies/${id}/`)
   },
-  updateMastersCmeMethodology(id, data) {
+  updateEpcMastersCmeMethodology(id, data) {
     return apiClient.put(`/epc/masters-cme-methodologies/${id}/`, data)
   },
-  patchMastersCmeMethodology(id, data) {
+  patchEpcMastersCmeMethodology(id, data) {
     return apiClient.patch(`/epc/masters-cme-methodologies/${id}/`, data)
   },
-  deleteMastersCmeMethodology(id) {
+  deleteEpcMastersCmeMethodology(id) {
     return apiClient.delete(`/epc/masters-cme-methodologies/${id}/`)
   },
 
@@ -511,302 +511,302 @@ export default {
   },
 
   // Masters CPD Activity endpoints
-  getMastersCpdActivity() {
+  getEpcMastersCpdActivity() {
     return apiClient.get('/epc/masters-cpd-activity/')
   },
-  createMastersCpdActivity(data) {
+  createEpcMastersCpdActivity(data) {
     return apiClient.post('/epc/masters-cpd-activity/', data)
   },
-  getMastersCpdActivityById(id) {
+  getEpcMastersCpdActivityById(id) {
     return apiClient.get(`/epc/masters-cpd-activity/${id}/`)
   },
-  updateMastersCpdActivity(id, data) {
+  updateEpcMastersCpdActivity(id, data) {
     return apiClient.put(`/epc/masters-cpd-activity/${id}/`, data)
   },
-  patchMastersCpdActivity(id, data) {
+  patchEpcMastersCpdActivity(id, data) {
     return apiClient.patch(`/epc/masters-cpd-activity/${id}/`, data)
   },
-  deleteMastersCpdActivity(id) {
+  deleteEpcMastersCpdActivity(id) {
     return apiClient.delete(`/epc/masters-cpd-activity/${id}/`)
   },
 
   // Masters Document Types endpoints
-  getMastersDocumentTypes() {
+  getEpcMastersDocumentTypes() {
     return apiClient.get('/epc/masters-document-types/')
   },
-  createMastersDocumentType(data) {
+  createEpcMastersDocumentType(data) {
     return apiClient.post('/epc/masters-document-types/', data)
   },
-  getMastersDocumentType(id) {
+  getEpcMastersDocumentType(id) {
     return apiClient.get(`/epc/masters-document-types/${id}/`)
   },
-  updateMastersDocumentType(id, data) {
+  updateEpcMastersDocumentType(id, data) {
     return apiClient.put(`/epc/masters-document-types/${id}/`, data)
   },
-  patchMastersDocumentType(id, data) {
+  patchEpcMastersDocumentType(id, data) {
     return apiClient.patch(`/epc/masters-document-types/${id}/`, data)
   },
-  deleteMastersDocumentType(id) {
+  deleteEpcMastersDocumentType(id) {
     return apiClient.delete(`/epc/masters-document-types/${id}/`)
   },
 
   // Masters E-Signatures endpoints
-  getMastersESignatures() {
+  getEpcMastersESignatures() {
     return apiClient.get('/epc/masters-e-signatures/')
   },
-  createMastersESignature(data) {
+  createEpcMastersESignature(data) {
     return apiClient.post('/epc/masters-e-signatures/', data)
   },
-  getMastersESignature(id) {
+  getEpcMastersESignature(id) {
     return apiClient.get(`/epc/masters-e-signatures/${id}/`)
   },
-  updateMastersESignature(id, data) {
+  updateEpcMastersESignature(id, data) {
     return apiClient.put(`/epc/masters-e-signatures/${id}/`, data)
   },
-  patchMastersESignature(id, data) {
+  patchEpcMastersESignature(id, data) {
     return apiClient.patch(`/epc/masters-e-signatures/${id}/`, data)
   },
-  deleteMastersESignature(id) {
+  deleteEpcMastersESignature(id) {
     return apiClient.delete(`/epc/masters-e-signatures/${id}/`)
   },
 
   // Masters Fee Structures endpoints
-  getMastersFeeStructures() {
+  getEpcMastersFeeStructures() {
     return apiClient.get('/epc/masters-fee-structures/')
   },
-  createMastersFeeStructure(data) {
+  createEpcMastersFeeStructure(data) {
     return apiClient.post('/epc/masters-fee-structures/', data)
   },
-  getMastersFeeStructure(id) {
+  getEpcMastersFeeStructure(id) {
     return apiClient.get(`/epc/masters-fee-structures/${id}/`)
   },
-  updateMastersFeeStructure(id, data) {
+  updateEpcMastersFeeStructure(id, data) {
     return apiClient.put(`/epc/masters-fee-structures/${id}/`, data)
   },
-  patchMastersFeeStructure(id, data) {
+  patchEpcMastersFeeStructure(id, data) {
     return apiClient.patch(`/epc/masters-fee-structures/${id}/`, data)
   },
-  deleteMastersFeeStructure(id) {
+  deleteEpcMastersFeeStructure(id) {
     return apiClient.delete(`/epc/masters-fee-structures/${id}/`)
   },
 
   // Masters Fees Associated For endpoints
-  getMastersFeesAssociatedFor() {
+  getEpcMastersFeesAssociatedFor() {
     return apiClient.get('/epc/masters-fees-associated-for/')
   },
-  createMastersFeesAssociatedFor(data) {
+  createEpcMastersFeesAssociatedFor(data) {
     return apiClient.post('/epc/masters-fees-associated-for/', data)
   },
-  getMastersFeesAssociatedForById(id) {
+  getEpcMastersFeesAssociatedForById(id) {
     return apiClient.get(`/epc/masters-fees-associated-for/${id}/`)
   },
-  updateMastersFeesAssociatedFor(id, data) {
+  updateEpcMastersFeesAssociatedFor(id, data) {
     return apiClient.put(`/epc/masters-fees-associated-for/${id}/`, data)
   },
-  patchMastersFeesAssociatedFor(id, data) {
+  patchEpcMastersFeesAssociatedFor(id, data) {
     return apiClient.patch(`/epc/masters-fees-associated-for/${id}/`, data)
   },
-  deleteMastersFeesAssociatedFor(id) {
+  deleteEpcMastersFeesAssociatedFor(id) {
     return apiClient.delete(`/epc/masters-fees-associated-for/${id}/`)
   },
 
   // Masters File Types endpoints
-  getMastersFileTypes() {
+  getEpcMastersFileTypes() {
     return apiClient.get('/epc/masters-file-types/')
   },
-  createMastersFileType(data) {
+  createEpcMastersFileType(data) {
     return apiClient.post('/epc/masters-file-types/', data)
   },
-  getMastersFileType(id) {
+  getEpcMastersFileType(id) {
     return apiClient.get(`/epc/masters-file-types/${id}/`)
   },
-  updateMastersFileType(id, data) {
+  updateEpcMastersFileType(id, data) {
     return apiClient.put(`/epc/masters-file-types/${id}/`, data)
   },
-  patchMastersFileType(id, data) {
+  patchEpcMastersFileType(id, data) {
     return apiClient.patch(`/epc/masters-file-types/${id}/`, data)
   },
-  deleteMastersFileType(id) {
+  deleteEpcMastersFileType(id) {
     return apiClient.delete(`/epc/masters-file-types/${id}/`)
   },
 
   // Masters Participation Category endpoints
-  getMastersParticipationCategories() {
+  getEpcMastersParticipationCategories() {
     return apiClient.get('/epc/masters-participation-category/')
   },
-  createMastersParticipationCategory(data) {
+  createEpcMastersParticipationCategory(data) {
     return apiClient.post('/epc/masters-participation-category/', data)
   },
-  getMastersParticipationCategory(id) {
+  getEpcMastersParticipationCategory(id) {
     return apiClient.get(`/epc/masters-participation-category/${id}/`)
   },
-  updateMastersParticipationCategory(id, data) {
+  updateEpcMastersParticipationCategory(id, data) {
     return apiClient.put(`/epc/masters-participation-category/${id}/`, data)
   },
-  patchMastersParticipationCategory(id, data) {
+  patchEpcMastersParticipationCategory(id, data) {
     return apiClient.patch(`/epc/masters-participation-category/${id}/`, data)
   },
-  deleteMastersParticipationCategory(id) {
+  deleteEpcMastersParticipationCategory(id) {
     return apiClient.delete(`/epc/masters-participation-category/${id}/`)
   },
 
   // Masters Participation Sub Category endpoints
-  getMastersParticipationSubCategories() {
+  getEpcMastersParticipationSubCategories() {
     return apiClient.get('/epc/masters-participation-sub-category/')
   },
-  createMastersParticipationSubCategory(data) {
+  createEpcMastersParticipationSubCategory(data) {
     return apiClient.post('/epc/masters-participation-sub-category/', data)
   },
-  getMastersParticipationSubCategory(id) {
+  getEpcMastersParticipationSubCategory(id) {
     return apiClient.get(`/epc/masters-participation-sub-category/${id}/`)
   },
-  updateMastersParticipationSubCategory(id, data) {
+  updateEpcMastersParticipationSubCategory(id, data) {
     return apiClient.put(`/epc/masters-participation-sub-category/${id}/`, data)
   },
-  patchMastersParticipationSubCategory(id, data) {
+  patchEpcMastersParticipationSubCategory(id, data) {
     return apiClient.patch(`/epc/masters-participation-sub-category/${id}/`, data)
   },
-  deleteMastersParticipationSubCategory(id) {
+  deleteEpcMastersParticipationSubCategory(id) {
     return apiClient.delete(`/epc/masters-participation-sub-category/${id}/`)
   },
 
   // Masters Personnel Categories endpoints
-  getMastersPersonnelCategories() {
+  getEpcMastersPersonnelCategories() {
     return apiClient.get('/epc/masters-personnel-categories/')
   },
-  createMastersPersonnelCategory(data) {
+  createEpcMastersPersonnelCategory(data) {
     return apiClient.post('/epc/masters-personnel-categories/', data)
   },
-  getMastersPersonnelCategory(id) {
+  getEpcMastersPersonnelCategory(id) {
     return apiClient.get(`/epc/masters-personnel-categories/${id}/`)
   },
-  updateMastersPersonnelCategory(id, data) {
+  updateEpcMastersPersonnelCategory(id, data) {
     return apiClient.put(`/epc/masters-personnel-categories/${id}/`, data)
   },
-  patchMastersPersonnelCategory(id, data) {
+  patchEpcMastersPersonnelCategory(id, data) {
     return apiClient.patch(`/epc/masters-personnel-categories/${id}/`, data)
   },
-  deleteMastersPersonnelCategory(id) {
+  deleteEpcMastersPersonnelCategory(id) {
     return apiClient.delete(`/epc/masters-personnel-categories/${id}/`)
   },
 
   // Masters Qualification Types endpoints
-  getMastersQualificationTypes() {
+  getEpcMastersQualificationTypes() {
     return apiClient.get('/epc/masters-qualification-types/')
   },
-  createMastersQualificationType(data) {
+  createEpcMastersQualificationType(data) {
     return apiClient.post('/epc/masters-qualification-types/', data)
   },
-  getMastersQualificationType(id) {
+  getEpcMastersQualificationType(id) {
     return apiClient.get(`/epc/masters-qualification-types/${id}/`)
   },
-  updateMastersQualificationType(id, data) {
+  updateEpcMastersQualificationType(id, data) {
     return apiClient.put(`/epc/masters-qualification-types/${id}/`, data)
   },
-  patchMastersQualificationType(id, data) {
+  patchEpcMastersQualificationType(id, data) {
     return apiClient.patch(`/epc/masters-qualification-types/${id}/`, data)
   },
-  deleteMastersQualificationType(id) {
+  deleteEpcMastersQualificationType(id) {
     return apiClient.delete(`/epc/masters-qualification-types/${id}/`)
   },
 
   // Masters Qualifications endpoints
-  getMastersQualifications() {
+  getEpcMastersQualifications() {
     return apiClient.get('/epc/masters-qualifications/')
   },
-  createMastersQualification(data) {
+  createEpcMastersQualification(data) {
     return apiClient.post('/epc/masters-qualifications/', data)
   },
-  getMastersQualification(id) {
+  getEpcMastersQualification(id) {
     return apiClient.get(`/epc/masters-qualifications/${id}/`)
   },
-  updateMastersQualification(id, data) {
+  updateEpcMastersQualification(id, data) {
     return apiClient.put(`/epc/masters-qualifications/${id}/`, data)
   },
-  patchMastersQualification(id, data) {
+  patchEpcMastersQualification(id, data) {
     return apiClient.patch(`/epc/masters-qualifications/${id}/`, data)
   },
-  deleteMastersQualification(id) {
+  deleteEpcMastersQualification(id) {
     return apiClient.delete(`/epc/masters-qualifications/${id}/`)
   },
 
   // Masters Registration Type endpoints
-  getMastersRegistrationTypes() {
+  getEpcMastersRegistrationTypes() {
     return apiClient.get('/epc/masters-registration-type/')
   },
-  createMastersRegistrationType(data) {
+  createEpcMastersRegistrationType(data) {
     return apiClient.post('/epc/masters-registration-type/', data)
   },
-  getMastersRegistrationType(id) {
+  getEpcMastersRegistrationType(id) {
     return apiClient.get(`/epc/masters-registration-type/${id}/`)
   },
-  updateMastersRegistrationType(id, data) {
+  updateEpcMastersRegistrationType(id, data) {
     return apiClient.put(`/epc/masters-registration-type/${id}/`, data)
   },
-  patchMastersRegistrationType(id, data) {
+  patchEpcMastersRegistrationType(id, data) {
     return apiClient.patch(`/epc/masters-registration-type/${id}/`, data)
   },
-  deleteMastersRegistrationType(id) {
+  deleteEpcMastersRegistrationType(id) {
     return apiClient.delete(`/epc/masters-registration-type/${id}/`)
   },
 
   // Masters Sector endpoints
-  getMastersSectors() {
+  getEpcMastersSectors() {
     return apiClient.get('/epc/masters-sector/')
   },
-  createMastersSector(data) {
+  createEpcMastersSector(data) {
     return apiClient.post('/epc/masters-sector/', data)
   },
-  getMastersSector(id) {
+  getEpcMastersSector(id) {
     return apiClient.get(`/epc/masters-sector/${id}/`)
   },
-  updateMastersSector(id, data) {
+  updateEpcMastersSector(id, data) {
     return apiClient.put(`/epc/masters-sector/${id}/`, data)
   },
-  patchMastersSector(id, data) {
+  patchEpcMastersSector(id, data) {
     return apiClient.patch(`/epc/masters-sector/${id}/`, data)
   },
-  deleteMastersSector(id) {
+  deleteEpcMastersSector(id) {
     return apiClient.delete(`/epc/masters-sector/${id}/`)
   },
 
   // Masters Sub Categories endpoints
-  getMastersSubCategories() {
+  getEpcMastersSubCategories() {
     return apiClient.get('/epc/masters-sub-categories/')
   },
-  createMastersSubCategory(data) {
+  createEpcMastersSubCategory(data) {
     return apiClient.post('/epc/masters-sub-categories/', data)
   },
-  getMastersSubCategory(id) {
+  getEpcMastersSubCategory(id) {
     return apiClient.get(`/epc/masters-sub-categories/${id}/`)
   },
-  updateMastersSubCategory(id, data) {
+  updateEpcMastersSubCategory(id, data) {
     return apiClient.put(`/epc/masters-sub-categories/${id}/`, data)
   },
-  patchMastersSubCategory(id, data) {
+  patchEpcMastersSubCategory(id, data) {
     return apiClient.patch(`/epc/masters-sub-categories/${id}/`, data)
   },
-  deleteMastersSubCategory(id) {
+  deleteEpcMastersSubCategory(id) {
     return apiClient.delete(`/epc/masters-sub-categories/${id}/`)
   },
 
   // Masters University endpoints
-  getMastersUniversities() {
+  getEpcMastersUniversities() {
     return apiClient.get('/epc/masters-university/')
   },
-  createMastersUniversity(data) {
+  createEpcMastersUniversity(data) {
     return apiClient.post('/epc/masters-university/', data)
   },
-  getMastersUniversity(id) {
+  getEpcMastersUniversity(id) {
     return apiClient.get(`/epc/masters-university/${id}/`)
   },
-  updateMastersUniversity(id, data) {
+  updateEpcMastersUniversity(id, data) {
     return apiClient.put(`/epc/masters-university/${id}/`, data)
   },
-  patchMastersUniversity(id, data) {
+  patchEpcMastersUniversity(id, data) {
     return apiClient.patch(`/epc/masters-university/${id}/`, data)
   },
-  deleteMastersUniversity(id) {
+  deleteEpcMastersUniversity(id) {
     return apiClient.delete(`/epc/masters-university/${id}/`)
   },
 

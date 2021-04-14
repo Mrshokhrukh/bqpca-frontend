@@ -169,7 +169,7 @@ const fileTypeToDelete = ref(null);
 // Fetch file types on component mount
 onMounted(async () => {
   try {
-    const response = await apiServices.getMastersFileTypes();
+    const response = await apiServices.getEpcMastersFileTypes();
     fileTypes.value = response.data.results;
   } catch (error) {
     console.error('Error fetching file types:', error);
@@ -199,13 +199,13 @@ const paginatedFileTypes = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersFileType(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersFileType(formData.value.id, formData.value);
       const index = fileTypes.value.findIndex(ft => ft.id === formData.value.id);
       if (index !== -1) {
         fileTypes.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersFileType(formData.value);
+      const response = await apiServices.createEpcMastersFileType(formData.value);
       fileTypes.value.push(response.data);
     }
     resetForm();
@@ -237,7 +237,7 @@ const confirmDelete = async () => {
   if (!fileTypeToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersFileType(fileTypeToDelete.value.id);
+    await apiServices.deleteEpcMastersFileType(fileTypeToDelete.value.id);
     const index = fileTypes.value.findIndex(ft => ft.id === fileTypeToDelete.value.id);
     if (index !== -1) {
       fileTypes.value.splice(index, 1);

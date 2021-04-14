@@ -175,7 +175,7 @@ const participationCategoryToDelete = ref(null);
 // Fetch participation categories on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMastersMHPCParticipationCategories();
+    const response = await services.getMhpcMastersMHPCParticipationCategories();
     participationCategories.value = response.data.results;
   } catch (error) {
     console.error('Error fetching participation categories:', error);
@@ -205,13 +205,13 @@ const paginatedParticipationCategories = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMastersParticipationCategory(formData.value.id, formData.value);
+      const response = await services.updateMhpcMastersParticipationCategory(formData.value.id, formData.value);
       const index = participationCategories.value.findIndex(dt => dt.id === formData.value.id);
       if (index !== -1) {
         participationCategories.value[index] = response.data;
       }
     } else {
-      const response = await services.createMastersParticipationCategory(formData.value);
+      const response = await services.createMhpcMastersParticipationCategory(formData.value);
       participationCategories.value.push(response.data);
     }
     resetForm();
@@ -243,7 +243,7 @@ const confirmDelete = async () => {
   if (!participationCategoryToDelete.value) return;
 
   try {
-    await services.deleteMastersParticipationCategory(participationCategoryToDelete.value.id);
+    await services.deleteMhpcMastersParticipationCategory(participationCategoryToDelete.value.id);
     const index = participationCategories.value.findIndex(dt => dt.id === participationCategoryToDelete.value.id);
     if (index !== -1) {
       participationCategories.value.splice(index, 1);

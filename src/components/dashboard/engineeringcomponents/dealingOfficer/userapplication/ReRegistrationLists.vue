@@ -280,9 +280,9 @@ const formatDate = (date) => {
 const fetchMasterData = async () => {
   try {
     const [categoriesRes, subcategoriesRes, sectorsRes] = await Promise.all([
-      apiServices.getMastersPersonnelCategories(),
-      apiServices.getMastersSubCategories(),
-      apiServices.getMastersSectors(),
+      apiServices.getEpcMastersPersonnelCategories(),
+      apiServices.getEpcMastersSubCategories(),
+      apiServices.getEpcMastersSectors(),
     ]);
 
     personnelCategories.value = categoriesRes.data.results || [];

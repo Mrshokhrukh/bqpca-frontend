@@ -342,7 +342,7 @@ const formatDateForAPI = (date) => {
 
 // Form Validation (remains largely the same)
 const validateForm = () => {
-  Object.keys(errors).forEach(key => delete errors[key]); 
+  Object.keys(errors).forEach(key => delete errors[key]);
   let isValid = true;
 
   if (!localFormData.application) {
@@ -464,16 +464,16 @@ const handleSubmitActual = async () => {
 onMounted(async () => {
   fetchApplications();
   try {
-    const qualificationTypesResponse = await apiService.getMastersQualificationTypes();
-    const qualificationsResponse = await apiService.getBmhCMastersQualifications();
-    const universitiesResponse = await apiService.getMastersUniversities();
+    const qualificationTypesResponse = await apiService.getMhpcMastersQualificationTypes();
+    const qualificationsResponse = await apiService.getMhpcMastersQualifications();
+    const universitiesResponse = await apiService.getMhpcMastersUniversities();
 
     qualificationTypes.value = qualificationTypesResponse.data.results;
     qualifications.value = qualificationsResponse.data.results;
     universities.value = universitiesResponse.data.results;
 
     //Fetch Document Types
-    const documentTypesResponse = await apiService.getMastersDocumentTypes();
+    const documentTypesResponse = await apiService.getMhpcMastersDocumentTypes();
     fetchedDocumentTypes.value = documentTypesResponse.data.results;
 
   } catch (error) {

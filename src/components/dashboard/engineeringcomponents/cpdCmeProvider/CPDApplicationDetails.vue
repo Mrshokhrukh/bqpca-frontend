@@ -558,10 +558,10 @@ const loadDropdownOptions = async () => {
         ] = await Promise.all([
             apiService.getEpcCpdProvidingAgencies(),
             apiService.getEpcCpdReasonsForConducting(),
-            apiService.getMastersCmeActivities(),
-            apiService.getMastersCmeMethodologies(),
-            apiService.getMastersParticipationCategories(),
-            apiService.getMastersParticipationSubCategories()
+            apiService.getEpcMastersCmeActivities(),
+            apiService.getEpcMastersCmeMethodologies(),
+            apiService.getEpcMastersParticipationCategories(),
+            apiService.getEpcMastersParticipationSubCategories()
         ]);
 
         const processOptions = (response, textField, valueField, categoryField = null) => {

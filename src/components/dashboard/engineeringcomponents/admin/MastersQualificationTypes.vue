@@ -172,7 +172,7 @@ const qualificationTypeToDelete = ref(null);
 // Fetch qualification types on component mount
 onMounted(async () => {
   try {
-    const response = await apiServices.getMastersQualificationTypes();
+    const response = await apiServices.getEpcMastersQualificationTypes();
     qualificationTypes.value = response.data.results;
   } catch (error) {
     console.error('Error fetching qualification types:', error);
@@ -202,13 +202,13 @@ const paginatedQualificationTypes = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersQualificationType(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersQualificationType(formData.value.id, formData.value);
       const index = qualificationTypes.value.findIndex(qt => qt.id === formData.value.id);
       if (index !== -1) {
         qualificationTypes.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersQualificationType(formData.value);
+      const response = await apiServices.createEpcMastersQualificationType(formData.value);
       qualificationTypes.value.push(response.data);
     }
     resetForm();
@@ -240,7 +240,7 @@ const confirmDelete = async () => {
   if (!qualificationTypeToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersQualificationType(qualificationTypeToDelete.value.id);
+    await apiServices.deleteEpcMastersQualificationType(qualificationTypeToDelete.value.id);
     const index = qualificationTypes.value.findIndex(qt => qt.id === qualificationTypeToDelete.value.id);
     if (index !== -1) {
       qualificationTypes.value.splice(index, 1);

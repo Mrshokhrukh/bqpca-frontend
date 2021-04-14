@@ -170,7 +170,7 @@ const cpdActivityToDelete = ref(null);
 // Fetch CPD activities on component mount
 onMounted(async () => {
   try {
-    const response = await apiServices.getMastersCpdActivity();
+    const response = await apiServices.getEpcMastersCpdActivity();
     cpdActivities.value = response.data.results;
   } catch (error) {
     console.error('Error fetching CPD activities:', error);
@@ -200,13 +200,13 @@ const paginatedCpdActivities = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersCpdActivity(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersCpdActivity(formData.value.id, formData.value);
       const index = cpdActivities.value.findIndex(dt => dt.id === formData.value.id);
       if (index !== -1) {
         cpdActivities.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersCpdActivity(formData.value);
+      const response = await apiServices.createEpcMastersCpdActivity(formData.value);
       cpdActivities.value.push(response.data);
     }
     resetForm();
@@ -238,7 +238,7 @@ const confirmDelete = async () => {
   if (!cpdActivityToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersCpdActivity(cpdActivityToDelete.value.id);
+    await apiServices.deleteEpcMastersCpdActivity(cpdActivityToDelete.value.id);
     const index = cpdActivities.value.findIndex(dt => dt.id === cpdActivityToDelete.value.id);
     if (index !== -1) {
       cpdActivities.value.splice(index, 1);

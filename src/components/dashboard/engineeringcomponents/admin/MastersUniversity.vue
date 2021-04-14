@@ -183,7 +183,7 @@ const universityToDelete = ref(null);
 // Fetch universities on component mount
 onMounted(async () => {
   try {
-    const response = await apiServices.getMastersUniversities();
+    const response = await apiServices.getEpcMastersUniversities();
     universities.value = response.data.results;
   } catch (error) {
     console.error('Error fetching universities:', error);
@@ -214,13 +214,13 @@ const paginatedUniversities = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersUniversity(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersUniversity(formData.value.id, formData.value);
       const index = universities.value.findIndex(dt => dt.id === formData.value.id);
       if (index !== -1) {
         universities.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersUniversity(formData.value);
+      const response = await apiServices.createEpcMastersUniversity(formData.value);
       universities.value.push(response.data);
     }
     resetForm();
@@ -252,7 +252,7 @@ const confirmDelete = async () => {
   if (!universityToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersUniversity(universityToDelete.value.id);
+    await apiServices.deleteEpcMastersUniversity(universityToDelete.value.id);
     const index = universities.value.findIndex(dt => dt.id === universityToDelete.value.id);
     if (index !== -1) {
       universities.value.splice(index, 1);

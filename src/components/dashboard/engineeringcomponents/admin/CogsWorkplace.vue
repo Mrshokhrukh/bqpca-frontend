@@ -164,7 +164,7 @@ const workplaceToDelete = ref(null);
 // Fetch workplaces on component mount
 onMounted(async () => {
   try {
-    const response = await apiServices.getMastersCogsWorkplaces();
+    const response = await apiServices.getEpcMastersCogsWorkplaces();
     console.log('API Response:', response.data);
 
     if (Array.isArray(response.data.results)) {
@@ -201,13 +201,13 @@ const paginatedWorkplaces = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersCogsWorkplace(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersCogsWorkplace(formData.value.id, formData.value);
       const index = workplaces.value.findIndex(dt => dt.id === formData.value.id);
       if (index !== -1) {
         workplaces.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersCogsWorkplace(formData.value);
+      const response = await apiServices.createEpcMastersCogsWorkplace(formData.value);
       workplaces.value.push(response.data);
     }
     resetForm();
@@ -239,7 +239,7 @@ const confirmDelete = async () => {
   if (!workplaceToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersCogsWorkplace(workplaceToDelete.value.id);
+    await apiServices.deleteEpcMastersCogsWorkplace(workplaceToDelete.value.id);
     const index = workplaces.value.findIndex(dt => dt.id === workplaceToDelete.value.id);
     if (index !== -1) {
       workplaces.value.splice(index, 1);

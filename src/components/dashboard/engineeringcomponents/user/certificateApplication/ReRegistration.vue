@@ -266,7 +266,7 @@ const fetchUserAndRegistrationDetails = async () => {
           // Fetch registration type name if we have its ID
           if (existingRenewal.registration_type) {
             try {
-              const regTypeResponse = await apiService.getMastersRegistrationType(existingRenewal.registration_type)
+              const regTypeResponse = await apiService.getEpcMastersRegistrationType(existingRenewal.registration_type)
               formData.value.registrationType = regTypeResponse.data.registration_type_name
             } catch (error) {
               console.error('Error fetching registration type:', error)

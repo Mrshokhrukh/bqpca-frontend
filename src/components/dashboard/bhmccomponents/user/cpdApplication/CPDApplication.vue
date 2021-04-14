@@ -301,9 +301,9 @@ const handleCategoryChange = () => {
 const fetchMasterData = async () => {
   try {
     const [activitiesResponse, categoriesResponse, subCategoriesResponse] = await Promise.all([
-      apiService.getMastersCpdActivities(),
-      apiService.getMastersMHPCParticipationCategories(),
-      apiService.getMastersMhpcParticipationSubCategories(),
+      apiService.getMhpcMastersCpdActivities(),
+      apiService.getMhpcMastersMHPCParticipationCategories(),
+      apiService.getMhpcMastersMhpcParticipationSubCategories(),
     ]);
 
     cpdActivities.value = activitiesResponse.data.results;  // Verify .results structure

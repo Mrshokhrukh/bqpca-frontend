@@ -175,14 +175,13 @@ const isEditing = ref(false)
 const editingId = ref(null)
 const isDeleteModalOpen = ref(false)
 const activityToDelete = ref(null)
-const deleteId = ref(null)
 const currentPage = ref(1);
 const itemsPerPage = 5;
 
 // Methods
 const fetchActivities = async (page = 1) => {
     try {
-        const response = await api.getMastersCmeActivities()
+        const response = await api.getMhpcMastersCmeActivities()
         cmeActivities.value = response.data.results
         currentPage.value = page
     } catch (error) {
@@ -193,9 +192,9 @@ const fetchActivities = async (page = 1) => {
 const handleSubmit = async () => {
     try {
         if (isEditing.value) {
-            await api.updateMastersCmeActivity(editingId.value, formData.value)
+            await api.updateMhpcMastersCmeActivity(editingId.value, formData.value)
         } else {
-            await api.createMastersCmeActivity(formData.value)
+            await api.createMhpcMastersCmeActivity(formData.value)
 
         }
         resetForm()
@@ -240,7 +239,7 @@ const cancelDelete = () => {
 const deleteActivity = async () => {
     if (!activityToDelete.value) return;
     try {
-        await api.deleteMastersCmeActivity(activityToDelete.value.id)
+        await api.deleteMhpcMastersCmeActivity(activityToDelete.value.id)
         const index = cmeActivities.value.findIndex(act => act.id === activityToDelete.value.id);
         if (index !== -1) {
             cmeActivities.value.splice(index, 1);

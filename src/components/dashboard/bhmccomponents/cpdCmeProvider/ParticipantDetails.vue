@@ -62,9 +62,9 @@
             <label for="attachment" class="block text-sm font-medium text-gray-700">
                 Attachment <span class="text-red-600">*</span>
             </label>
-            <input type="file" id="attachment" accept=".pdf,.doc,.docx" @change="handleFileUpload" class="mt-1 block w-full text-sm text-gray-500 
-                       file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 
-                       file:text-sm file:font-semibold file:bg-green-50 
+            <input type="file" id="attachment" accept=".pdf,.doc,.docx" @change="handleFileUpload" class="mt-1 block w-full text-sm text-gray-500
+                       file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0
+                       file:text-sm file:font-semibold file:bg-green-50
                        file:text-green-700 hover:file:bg-green-100" />
             <p class="text-xs text-gray-500 mt-1">Accepted file formats: PDF, DOC, DOCX (max 5MB)</p>
             <div v-if="attachmentFileName" class="mt-2 text-sm text-green-600">
@@ -165,7 +165,7 @@ const handleFileUpload = (event) => {
 const fetchCategories = async () => {
     try {
         loading.value = true;
-        const response = await apiservice.getMastersMHPCParticipationCategories();
+        const response = await apiservice.getMhpcMastersMHPCParticipationCategories();
 
         if (response.data && response.data.results) {
             categories.value = response.data.results.map(category => ({
@@ -184,7 +184,7 @@ const fetchCategories = async () => {
 const fetchSubcategories = async () => {
     try {
         loading.value = true;
-        const response = await apiservice.getMastersMhpcParticipationSubCategories();
+        const response = await apiservice.getMhpcMastersMhpcParticipationSubCategories();
 
         if (response.data && response.data.results) {
             subcategories.value = response.data.results.map(subcategory => ({

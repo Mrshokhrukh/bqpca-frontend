@@ -210,7 +210,7 @@
   // Fetch CPD activities on component mount
   onMounted(async () => {
     try {
-      const response = await services.getMastersCpdActivities();
+      const response = await services.getMhpcMastersCpdActivities();
       cpdActivities.value = response.data.results;
     } catch (error) {
       console.error('Error fetching CPD activities:', error);
@@ -240,13 +240,13 @@
   const handleSubmit = async () => {
     try {
       if (isEditing.value) {
-        const response = await services.updateMastersCpdActivity(formData.value.id, formData.value);
+        const response = await services.updateMhpcMastersCpdActivity(formData.value.id, formData.value);
         const index = cpdActivities.value.findIndex(dt => dt.id === formData.value.id);
         if (index !== -1) {
           cpdActivities.value[index] = response.data;
         }
       } else {
-        const response = await services.createMastersCpdActivity(formData.value);
+        const response = await services.createMhpcMastersCpdActivity(formData.value);
         cpdActivities.value.push(response.data);
       }
       resetForm();
@@ -278,7 +278,7 @@
     if (!cpdActivityToDelete.value) return;
 
     try {
-      await services.deleteMastersCpdActivity(cpdActivityToDelete.value.id);
+      await services.deleteMhpcMastersCpdActivity(cpdActivityToDelete.value.id);
       const index = cpdActivities.value.findIndex(dt => dt.id === cpdActivityToDelete.value.id);
       if (index !== -1) {
         cpdActivities.value.splice(index, 1);

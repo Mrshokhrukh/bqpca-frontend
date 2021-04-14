@@ -193,7 +193,6 @@ const isEditing = ref(false)
 const editingId = ref(null)
 const isDeleteModalOpen = ref(false)
 const creditToDelete = ref(null)
-const deleteId = ref(null)
 const currentPage = ref(1);
 const itemsPerPage = 5;
 
@@ -201,7 +200,7 @@ const itemsPerPage = 5;
 // Methods
 const fetchCredits = async (page = 1) => {
     try {
-        const response = await api.getMastersCmeCredits()
+        const response = await api.getMhpcMastersCmeCredits()
         cmeCredits.value = response.data.results
         currentPage.value = page
     } catch (error) {
@@ -210,7 +209,7 @@ const fetchCredits = async (page = 1) => {
 }
 const fetchCmeActivities = async () => {
     try {
-        const response = await api.getMastersCmeActivities();
+        const response = await api.getMhpcMastersCmeActivities();
         cmeActivitiesList.value = response.data.results;
     } catch (error) {
         console.error('Error fetching cme activities:', error)
@@ -219,9 +218,9 @@ const fetchCmeActivities = async () => {
 const handleSubmit = async () => {
     try {
         if (isEditing.value) {
-            await api.updateMastersCmeCredit(editingId.value, formData.value)
+            await api.updateMhpcMastersCmeCredit(editingId.value, formData.value)
         } else {
-            await api.createMastersCmeCredit(formData.value)
+            await api.createMhpcMastersCmeCredit(formData.value)
 
         }
         resetForm()
@@ -269,7 +268,7 @@ const cancelDelete = () => {
 const deleteCredit = async () => {
     if (!creditToDelete.value) return;
     try {
-        await api.deleteMastersCmeCredit(creditToDelete.value.id)
+        await api.deleteMhpcMastersCmeCredit(creditToDelete.value.id)
         cancelDelete();
         fetchCredits();
     } catch (error) {

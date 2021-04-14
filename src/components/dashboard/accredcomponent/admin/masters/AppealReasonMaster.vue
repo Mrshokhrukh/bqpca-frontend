@@ -242,7 +242,7 @@ const fetchAppealReasons = async (page = 1) => {
     isLoading.value = true
     error.value = null
     try {
-        const response = await api.getMastersAppealReasons()
+        const response = await api.getMhpcMastersAppealReasons()
         appealReasons.value = response.data.results
         pagination.value = {
             count: response.data.count,
@@ -263,7 +263,7 @@ const createAppealReason = async () => {
     isLoading.value = true
     error.value = null
     try {
-        await api.createMastersAppealReason(formData.value)
+        await api.createMhpcMastersAppealReason(formData.value)
         await fetchAppealReasons(pagination.value.currentPage)
         resetForm()
         // showForm.value = false // Removed showForm update
@@ -282,7 +282,7 @@ const updateAppealReason = async () => {
     isLoading.value = true
     error.value = null
     try {
-        await api.updateMastersAppealReason(editingReason.value.id, formData.value)
+        await api.updateMhpcMastersAppealReason(editingReason.value.id, formData.value)
         await fetchAppealReasons(pagination.value.currentPage)
         resetForm()
         // showForm.value = false; // Removed showForm update
@@ -305,7 +305,7 @@ const confirmDeleteReason = async () => {
     isLoading.value = true;
     error.value = null;
     try {
-        await api.deleteMastersAppealReason(reasonToDeleteId.value)
+        await api.deleteMhpcMastersAppealReason(reasonToDeleteId.value)
         await fetchAppealReasons(pagination.value.currentPage)
         closeDeleteModal();
     } catch (err) {

@@ -94,9 +94,9 @@
             </label>
             <input type="file" id="courseDocument" accept=".pdf,.doc,.docx"
                 @change="handleFileUpload"
-                class="mt-1 block w-full text-sm text-gray-500 
-                       file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 
-                       file:text-sm file:font-semibold file:bg-green-50 
+                class="mt-1 block w-full text-sm text-gray-500
+                       file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0
+                       file:text-sm file:font-semibold file:bg-green-50
                        file:text-green-700 hover:file:bg-green-100" />
             <p class="text-xs text-gray-500 mt-1">Accepted file formats: PDF, DOC, DOCX (max 5MB)</p>
             <div v-if="documentFileName" class="mt-2 text-sm text-green-600">
@@ -125,8 +125,8 @@ const toast = useToast();
 const cpdTypes = ref([]);
 const methodologies = ref([]);
 const selectedMethodologies = ref(props.modelValue.methodologies || []);
-const activities = ref(props.modelValue.activities && props.modelValue.activities.length ? 
-    [...props.modelValue.activities] : 
+const activities = ref(props.modelValue.activities && props.modelValue.activities.length ?
+    [...props.modelValue.activities] :
     [{ activity: '', durationHours: 0 }]);
 const documentFileName = ref('');
 const loading = ref(false);
@@ -158,7 +158,7 @@ const isMethodSelected = (methodId) => {
 
 const toggleMethodology = (methodId) => {
     const selected = [...selectedMethodologies.value];
-    
+
     if (selected.includes(methodId)) {
         // Remove if already selected
         const index = selected.indexOf(methodId);
@@ -167,7 +167,7 @@ const toggleMethodology = (methodId) => {
         // Add if not selected
         selected.push(methodId);
     }
-    
+
     selectedMethodologies.value = selected;
     updateField('methodologies', selected);
 };
@@ -186,7 +186,7 @@ const calculateCredit = () => {
     updateField('activities', activities.value);
     updateField('totalHours', totalHours.value);
     updateField('credit', calculatedCredits.value);
-    
+
     // Notify parent about the calculated credits
     emit('credits-calculated', calculatedCredits.value);
 };
@@ -194,22 +194,22 @@ const calculateCredit = () => {
 const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
-    
+
     // Validate file type and size
     const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    
+
     if (!validTypes.includes(file.type)) {
         toast.error('Please upload a PDF or Word document');
         event.target.value = '';
         return;
     }
-    
+
     if (file.size > 5 * 1024 * 1024) {
         toast.error('File size must be less than 5MB');
         event.target.value = '';
         return;
     }
-    
+
     documentFileName.value = file.name;
     updateField('courseDocument', file);
 };
@@ -218,8 +218,8 @@ const handleFileUpload = (event) => {
 const fetchCpdTypes = async () => {
     try {
         loading.value = true;
-        const response = await apiservice.getMastersCmeActivities();
-        
+        const response = await apiservice.getMhpcMastersCmeActivities();
+
         if (response.data && response.data.results) {
             cpdTypes.value = response.data.results.map(type => ({
                 value: type.id.toString(),
@@ -237,8 +237,8 @@ const fetchCpdTypes = async () => {
 const fetchMethodologies = async () => {
     try {
         loading.value = true;
-        const response = await apiservice.getMastersCmeMethodologies();
-        
+        const response = await apiservice.getMhpcMastersCmeMethodologies();
+
         if (response.data && response.data.results) {
             methodologies.value = response.data.results.map(method => ({
                 value: method.id.toString(),

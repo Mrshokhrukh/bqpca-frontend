@@ -196,12 +196,12 @@ const itemsPerPage = 5;
 const isDeleteModalOpen = ref(false);
 const participationSubCategoryToDelete = ref(null);
 
-// Fetch data from the MastersParticipationCategories API
+// Fetch data from the MhpcMastersParticipationCategories API
 const participationCategories = ref([])
 
 const getParticipationCategories = async () => {
     try {
-        const response = await services.getMastersMHPCParticipationCategories()
+        const response = await services.getMhpcMastersMHPCParticipationCategories()
         participationCategories.value = response.data.results
     } catch (error) {
         console.error('Error fetching participation categories:', error)
@@ -212,7 +212,7 @@ const getParticipationCategories = async () => {
 onMounted(async () => {
     try {
         await getParticipationCategories()
-        const response = await services.getMastersMhpcParticipationSubCategories();
+        const response = await services.getMhpcMastersMhpcParticipationSubCategories();
         participationSubCategories.value = response.data.results;
     } catch (error) {
         console.error('Error fetching participation sub-categories:', error);
@@ -242,13 +242,13 @@ const paginatedParticipationSubCategories = computed(() => {
 const handleSubmit = async () => {
     try {
         if (isEditing.value) {
-            const response = await services.updateMastersParticipationSubCategory(formData.value.id, formData.value);
+            const response = await services.updateMhpcMastersParticipationSubCategory(formData.value.id, formData.value);
             const index = participationSubCategories.value.findIndex(dt => dt.id === formData.value.id);
             if (index !== -1) {
                 participationSubCategories.value[index] = response.data;
             }
         } else {
-            const response = await services.createMastersParticipationSubCategory(formData.value);
+            const response = await services.createMhpcMastersParticipationSubCategory(formData.value);
             participationSubCategories.value.push(response.data);
         }
         resetForm();
@@ -280,7 +280,7 @@ const confirmDelete = async () => {
     if (!participationSubCategoryToDelete.value) return;
 
     try {
-        await services.deleteMastersParticipationSubCategory(participationSubCategoryToDelete.value.id);
+        await services.deleteMhpcMastersParticipationSubCategory(participationSubCategoryToDelete.value.id);
         const index = participationSubCategories.value.findIndex(dt => dt.id === participationSubCategoryToDelete.value.id);
         if (index !== -1) {
             participationSubCategories.value.splice(index, 1);

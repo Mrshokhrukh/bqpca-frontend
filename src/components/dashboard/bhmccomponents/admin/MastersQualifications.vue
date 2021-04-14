@@ -177,8 +177,8 @@ const qualificationToDelete = ref(null);
 onMounted(async () => {
   try {
     const [qualificationsResponse, qualificationTypesResponse] = await Promise.all([
-      services.getBmhCMastersQualifications(),
-      services.getMastersQualificationTypes()
+      services.getMhpcMastersQualifications(),
+      services.getMhpcMastersQualificationTypes()
     ]);
     qualifications.value = qualificationsResponse.data.results;
     qualificationTypes.value = qualificationTypesResponse.data.results;
@@ -209,13 +209,13 @@ const paginatedQualifications = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateBmhCMastersQualification(formData.value.id, formData.value);
+      const response = await services.updateMhpcMastersQualification(formData.value.id, formData.value);
       const index = qualifications.value.findIndex(q => q.id === formData.value.id);
       if (index !== -1) {
         qualifications.value[index] = response.data;
       }
     } else {
-      const response = await services.createBmhCMastersQualification(formData.value);
+      const response = await services.createMhpcMastersQualification(formData.value);
       qualifications.value.push(response.data);
     }
     resetForm();
@@ -247,7 +247,7 @@ const confirmDelete = async () => {
   if (!qualificationToDelete.value) return;
 
   try {
-    await services.deleteBmhCMastersQualification(qualificationToDelete.value.id);
+    await services.deleteMhpcMastersQualification(qualificationToDelete.value.id);
     const index = qualifications.value.findIndex(q => q.id === qualificationToDelete.value.id);
     if (index !== -1) {
       qualifications.value.splice(index, 1);

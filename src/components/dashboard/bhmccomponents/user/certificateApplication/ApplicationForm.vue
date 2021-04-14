@@ -488,16 +488,16 @@ const universities = ref([]);
 
 onMounted(async () => {
   try {
-    const qualificationTypesResponse = await apiService.getMastersQualificationTypes();
-    const qualificationsResponse = await apiService.getBmhCMastersQualifications();
-    const universitiesResponse = await apiService.getMastersUniversities();
+    const qualificationTypesResponse = await apiService.getMhpcMastersQualificationTypes();
+    const qualificationsResponse = await apiService.getMhpcMastersQualifications();
+    const universitiesResponse = await apiService.getMhpcMastersUniversities();
 
     qualificationTypes.value = qualificationTypesResponse.data.results;
     qualifications.value = qualificationsResponse.data.results;
     universities.value = universitiesResponse.data.results;
 
     //Fetch Document Types
-    const documentTypesResponse = await apiService.getMastersDocumentTypes();
+    const documentTypesResponse = await apiService.getMhpcMastersDocumentTypes();
     fetchedDocumentTypes.value = documentTypesResponse.data.results;
 
   } catch (error) {

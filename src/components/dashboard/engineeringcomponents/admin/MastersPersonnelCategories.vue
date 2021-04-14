@@ -179,7 +179,7 @@ const personnelCategoryToDelete = ref(null);
 // Fetch personnel categories on component mount
 onMounted(async () => {
   try {
-    const response = await apiServices.getMastersPersonnelCategories();
+    const response = await apiServices.getEpcMastersPersonnelCategories();
     personnelCategories.value = response.data.results;
   } catch (error) {
     console.error('Error fetching personnel categories:', error);
@@ -209,13 +209,13 @@ const paginatedPersonnelCategories = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMastersPersonnelCategory(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersPersonnelCategory(formData.value.id, formData.value);
       const index = personnelCategories.value.findIndex(pc => pc.id === formData.value.id);
       if (index !== -1) {
         personnelCategories.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createMastersPersonnelCategory(formData.value);
+      const response = await apiServices.createEpcMastersPersonnelCategory(formData.value);
       personnelCategories.value.push(response.data);
     }
     resetForm();
@@ -247,7 +247,7 @@ const confirmDelete = async () => {
   if (!personnelCategoryToDelete.value) return;
 
   try {
-    await apiServices.deleteMastersPersonnelCategory(personnelCategoryToDelete.value.id);
+    await apiServices.deleteEpcMastersPersonnelCategory(personnelCategoryToDelete.value.id);
     const index = personnelCategories.value.findIndex(pc => pc.id === personnelCategoryToDelete.value.id);
     if (index !== -1) {
       personnelCategories.value.splice(index, 1);
