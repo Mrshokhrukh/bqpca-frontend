@@ -28,8 +28,9 @@
                 <select id="applicationType" v-model="formData.application_type"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required>
-                  <option value="CME">CME</option>
-                  <option value="CPD">CPD</option>
+                  <option value="cpd">CPD</option>
+                  <option value="registration">Registration</option>
+                  <option value="cogs">CoGS</option>
                 </select>
               </div>
               <div class="flex gap-3">
@@ -167,7 +168,7 @@ const formData = ref({
   id: null,
   document_name: '',
   description: '',
-  application_type: 'CME'
+  application_type: 'registration'
 });
 const isEditing = ref(false);
 const searchQuery = ref('');
@@ -264,7 +265,7 @@ const resetForm = () => {
     id: null,
     document_name: '',
     description: '',
-    application_type: 'CME'
+    application_type: 'registration'
   };
   isEditing.value = false;
 };
