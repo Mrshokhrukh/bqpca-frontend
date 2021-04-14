@@ -104,7 +104,6 @@ export default {
       qualifications: bmhcDashboard,
       registration_type: bmhcDashboard,
       sector: bmhcDashboard,
-      sub_categories: bmhcDashboard,
       university: bmhcDashboard,
       cogs_agency: bmhcDashboard,
       cogs_dept: bmhcDashboard,

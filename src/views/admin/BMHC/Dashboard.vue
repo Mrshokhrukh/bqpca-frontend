@@ -101,7 +101,6 @@ import MastersQualificationTypes from '@/components/dashboard/bhmccomponents/adm
 import MastersQualifications from '@/components/dashboard/bhmccomponents/admin/MastersQualifications.vue';
 import MastersRegistrationType from '@/components/dashboard/bhmccomponents/admin/MastersRegistrationType.vue';
 import MastersSector from '@/components/dashboard/bhmccomponents/admin/MastersSector.vue';
-import MastersSubCategories from '@/components/dashboard/bhmccomponents/admin/MastersSubCategories.vue';
 import MastersUniversity from '@/components/dashboard/bhmccomponents/admin/MastersUniversity.vue';
 import CogsAgency from '@/components/dashboard/bhmccomponents/admin/CogsAgency.vue';
 import CogsDepartment from '@/components/dashboard/bhmccomponents/admin/CogsDepartment.vue';
@@ -176,8 +175,6 @@ const bmhAdminComponent = computed(() => {
       return MastersRegistrationType
     case path.endsWith('/health_certification/sector'):
       return MastersSector;
-    case path.endsWith('/health_certification/sub_categories'):
-      return MastersSubCategories
     case path.endsWith('/health_certification/university'):
       return MastersUniversity
     case path.endsWith('/health_certification/cogs_agency'):
