@@ -206,7 +206,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
-import apiservice from '@/services/mhpcservices'
+import apiServices from '@/services/mhpcservices'
 
 const props = defineProps({
   cpdId: {
@@ -239,7 +239,7 @@ const fetchParticipantDetails = async (participant) => {
     loading.value = true
 
     // Try to fetch participant details from API
-    const response = await apiservice.getMhpcApplicationsByCid('')
+    const response = await apiServicess.getMhpcApplicationsByCid('')
 
     if (response.data && Array.isArray(response.data)) {
       // Try to find a matching registration
@@ -456,7 +456,7 @@ const handleSaveDraft = async () => {
     const formData = prepareFormData(true)
 
     // Call API to save participants as draft
-    await apiservice.patchMhpcCpdTask(props.cpdId, formData)
+    await apiServicess.patchMhpcCpdTask(props.cpdId, formData)
 
     toast.success('Participants saved as draft!')
     successMessage.value = 'Participants saved as draft successfully!'
@@ -489,7 +489,7 @@ const handleSubmit = async () => {
     const formData = prepareFormData(false)
 
     // Call API to submit participants
-    await apiservice.patchMhpcCpdTask(props.cpdId, formData)
+    await apiServicess.patchMhpcCpdTask(props.cpdId, formData)
 
     toast.success('Participants submitted successfully!')
     successMessage.value = 'Participants submitted successfully! Redirecting to tracker...'
@@ -566,7 +566,7 @@ onMounted(async () => {
   if (props.cpdId) {
     try {
       loading.value = true
-      const response = await apiservice.getMhpcCpdTaskById(props.cpdId)
+      const response = await apiServicess.getMhpcCpdTaskById(props.cpdId)
 
       if (response.data) {
         cpdApplication.value = response.data

@@ -196,7 +196,7 @@ import {
 } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import apiservice from '@/services/mhpcservices'
+import apiServices from '@/services/mhpcservices'
 import { format } from 'date-fns'
 
 const router = useRouter()
@@ -235,7 +235,7 @@ const viewAllSessions = () => {
 onMounted(async () => {
   loading.value = true
   try {
-    const cpdRecordsResponse = await apiservice.getMhpcCpdTask()
+    const cpdRecordsResponse = await apiServices.getMhpcCpdTask()
     const cpdData = cpdRecordsResponse.data.results || []
 
     // Filter data based on user's CID
@@ -300,7 +300,7 @@ onMounted(async () => {
       }))
 
     // --- Recent Feedback --- (Assuming you have a separate endpoint for feedback)
-    //  const feedbackResponse = await apiservice.getFeedback(userCid); // Replace with your actual API call
+    //  const feedbackResponse = await apiServices.getFeedback(userCid); // Replace with your actual API call
     // recentFeedback.value = feedbackResponse.data.results || [];
     //For now, keep the mock data.
     recentFeedback.value = [

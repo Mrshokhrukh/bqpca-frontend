@@ -78,7 +78,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import apiservice from '@/services/mhpcservices'
+import apiServices from '@/services/mhpcservices'
 import { useToast } from 'vue-toastification'
 
 const props = defineProps({
@@ -124,7 +124,7 @@ const fetchPersonDetails = async (person) => {
     loading.value = true
 
     // Try to fetch person details from API
-    const response = await apiservice.getMhpcApplicationsByCid('')
+    const response = await apiServicess.getMhpcApplicationsByCid('')
 
     if (response.data && Array.isArray(response.data)) {
       // Try to find a matching registration

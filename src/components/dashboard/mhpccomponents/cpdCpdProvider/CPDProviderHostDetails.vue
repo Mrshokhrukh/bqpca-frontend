@@ -74,7 +74,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import apiservice from '@/services/mhpcservices'
+import apiServices from '@/services/mhpcservices'
 
 const props = defineProps({
   modelValue: {
@@ -111,7 +111,7 @@ const updateAgency = (value) => {
 const fetchAgencies = async () => {
   try {
     loading.value = true
-    const response = await apiservice.getProvidingAgency()
+    const response = await apiServices.getProvidingAgency()
 
     if (response.data && response.data.results) {
       agencies.value = response.data.results.map((agency) => ({
@@ -129,7 +129,7 @@ const fetchAgencies = async () => {
 const fetchReasons = async () => {
   try {
     loading.value = true
-    const response = await apiservice.getReasonForCoducting()
+    const response = await apiServices.getReasonForCoducting()
 
     if (response.data && response.data.results) {
       reasons.value = response.data.results.map((reason) => ({

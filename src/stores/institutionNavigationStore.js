@@ -1,7 +1,7 @@
 // src/stores/institutionNavigationStore.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import mhpcServices from '@/services/mhpcservices'
+import mhpcServices from '@/services/services'
 import { useAuthStore } from '@/stores/authStore'
 
 export const useInstitutionStore = defineStore('institution', () => {

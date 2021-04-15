@@ -29,7 +29,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
-import apiservice from '@/services/mhpcservices'
+import apiServices from '@/services/mhpcservices'
 import CPDApplicationDetails from '../../engineeringcomponents/cpdCpdProvider/CPDApplicationDetails.vue'
 import AfterApprovalParticipants from './AfterApprovalParticipants.vue'
 
@@ -64,7 +64,7 @@ onMounted(async () => {
     if (route.query.add_participants === 'true') {
       try {
         // Fetch the application to verify it's approved
-        const response = await apiservice.getMhpcCpdTaskById(id)
+        const response = await apiServicess.getMhpcCpdTaskById(id)
 
         if (response.data && response.data.review_status === 'Approved') {
           approvedCpdId.value = parseInt(id)

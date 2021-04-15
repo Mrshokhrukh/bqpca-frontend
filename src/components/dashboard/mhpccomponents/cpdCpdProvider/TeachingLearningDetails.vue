@@ -128,7 +128,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import apiservice from '@/services/mhpcservices'
+import apiServices from '@/services/services'
 import { useToast } from 'vue-toastification'
 
 const props = defineProps({
@@ -244,7 +244,7 @@ const handleFileUpload = (event) => {
 const fetchCpdTypes = async () => {
   try {
     loading.value = true
-    const response = await apiservice.getMhpcMastersCpdActivities()
+    const response = await apiServices.getMhpcMastersCpdActivities()
 
     if (response.data && response.data.results) {
       cpdTypes.value = response.data.results.map((type) => ({
@@ -263,7 +263,7 @@ const fetchCpdTypes = async () => {
 const fetchMethodologies = async () => {
   try {
     loading.value = true
-    const response = await apiservice.getMhpcMastersCpdMethodologies()
+    const response = await apiServices.getMhpcMastersCpdMethodologies()
 
     if (response.data && response.data.results) {
       methodologies.value = response.data.results.map((method) => ({

@@ -93,7 +93,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import apiservice from '@/services/services'
+import apiServices from '@/services/services'
 import { useToast } from 'vue-toastification'
 
 const props = defineProps({
@@ -186,7 +186,7 @@ const handleFileUpload = (event) => {
 const fetchCategories = async () => {
   try {
     loading.value = true
-    const response = await apiservice.getMhpcMastersMHPCParticipationCategories()
+    const response = await apiServicess.getMhpcMastersMHPCParticipationCategories()
 
     if (response.data && response.data.results) {
       categories.value = response.data.results.map((category) => ({
@@ -205,7 +205,7 @@ const fetchCategories = async () => {
 const fetchSubcategories = async () => {
   try {
     loading.value = true
-    const response = await apiservice.getMhpcMastersMhpcParticipationSubCategories()
+    const response = await apiServicess.getMhpcMastersMhpcParticipationSubCategories()
 
     if (response.data && response.data.results) {
       subcategories.value = response.data.results.map((subcategory) => ({
