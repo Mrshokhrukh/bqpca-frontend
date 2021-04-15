@@ -158,7 +158,7 @@ import debounce from 'lodash/debounce'
 import * as XLSX from 'xlsx'
 import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
-import bmhcServices from '@/services/mhpccservices'
+import bmhcServices from '@/services/services'
 
 const toast = useToast()
 

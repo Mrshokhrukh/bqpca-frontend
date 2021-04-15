@@ -481,7 +481,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import bmhcService from '@/services/bmhcservices'
+import apiServices from '@/services/services'
 import { useToast } from 'vue-toastification'
 
 const router = useRouter()
@@ -658,7 +658,7 @@ const submitPartial = async () => {
     }
 
     //Use your API service to send the data.
-    const response = await bmhcService.createMhpcInstitute(submitData)
+    const response = await apiServices.createMhpcInstitute(submitData)
 
     if (response.data) {
       toast.success('Application saved as draft successfully!')
@@ -718,7 +718,7 @@ const handleSubmit = async () => {
       }
     })
 
-    const response = await bmhcService.createMhpcInstitute(submitData)
+    const response = await apiServices.createMhpcInstitute(submitData)
 
     if (response.data) {
       toast.success('Application submitted successfully!')

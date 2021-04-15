@@ -429,7 +429,7 @@ const services = [
     name: 'Medical & Health Professionals Council (MHPC)',
     description: 'Official registration and certification for healthcare professionals.',
     icon: Users,
-    route: '/bmhc',
+    route: '/mhpc',
   },
 ]
 

@@ -5,7 +5,7 @@
       <div class="header">
         <div class="logo">
           <img
-            src="../../../../assets/rgob.png"
+            src=".@/assets/rgob.png"
             alt="BQPCA Logo"
             onerror="this.style.display='none'; this.parentNode.classList.add('logo-placeholder'); this.parentNode.textContent='BQPCA';"
           />
@@ -18,7 +18,7 @@
         </div>
         <div class="logo">
           <img
-            src="../../../../assets/epc-logo.png"
+            src=".@/assets/epc-logo.png"
             alt="EPC Logo"
             onerror="this.style.display='none'; this.parentNode.classList.add('logo-placeholder'); this.parentNode.textContent='EPC';"
           />

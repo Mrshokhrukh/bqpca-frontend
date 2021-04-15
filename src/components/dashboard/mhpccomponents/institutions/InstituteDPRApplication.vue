@@ -600,7 +600,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import apiService from '@/services/bmhcservices'
+import apiService from '@/services/services'
 import { useRouter } from 'vue-router' // Import useRouter
 import { useToast } from 'vue-toastification' // Import useToast
 import 'vue-toastification/dist/index.css' // Import the CSS for toast

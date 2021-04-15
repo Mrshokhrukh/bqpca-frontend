@@ -270,7 +270,7 @@
 <script setup>
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
 import { ref, onMounted } from 'vue' // Import onMounted
-import apiservice from '@/services/bmhcservices'
+import apiServices from '@/services/services'
 import { useToast } from 'vue-toastification'
 
 const props = defineProps({
@@ -301,7 +301,7 @@ const submitCapa = async () => {
       user_remarks: internalCapa.value.user_remarks,
     }
 
-    const response = await apiservice.patchMhpcCapa(internalCapa.value.id, dataToSubmit)
+    const response = await apiServices.patchMhpcCapa(internalCapa.value.id, dataToSubmit)
 
     // Emit the updated data:
     emit('capa-updated', response.data)

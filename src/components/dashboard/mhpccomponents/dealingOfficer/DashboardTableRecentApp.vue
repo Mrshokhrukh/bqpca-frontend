@@ -66,7 +66,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import apiServices from '@/services/mhpccservices';
+import apiServices from '@/services/services';
 import { format } from 'date-fns';
 
 const recentApplications = ref([]);
@@ -104,7 +104,7 @@ onMounted(async () => {
       name: cogs.full_name,
       type: 'CoGS',
       status: cogs.endorsement_decision,
-      date: cogs.updated_at,apiServices
+      date: cogs.updated_at, apiServices
     }));
 
     // Corrected CAPA API call with parentheses
@@ -114,7 +114,7 @@ onMounted(async () => {
       id: capa.id,
       name: capa.teaching_center.institute_name,
       type: 'CAPA',
-      status: capa.status,apiServices
+      status: capa.status, apiServices,
       date: capa.updated_at,
     }));
 
@@ -124,7 +124,7 @@ onMounted(async () => {
 
   } catch (error) {
     console.error('Error fetching data:', error);
-  }apiServices
+  } apiServices
 });
 
 const toggleViewAll = () => {
@@ -135,7 +135,7 @@ const toggleViewAll = () => {
   }
 };
 
-const displayedApplications = computedapiServices
+const displayedApplications = computed(() => {
   if (viewAll.value) {
     const start = (currentPage.value - 1) * itemsPerPage;
     const end = start + itemsPerPage;

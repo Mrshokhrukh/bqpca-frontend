@@ -123,7 +123,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
-import bmhcService from '@/services/bmhcservices'
+import apiServices from '@/services/services'
 import { Loader } from 'lucide-vue-next'
 
 // State
@@ -161,7 +161,7 @@ const fetchApplications = async () => {
   errorMessage.value = ''
 
   try {
-    const response = await bmhcService.getMhpcInstitutes()
+    const response = await apiServices.getMhpcInstitutes()
 
     if (response && response.data && response.data.results) {
       // Filter applications based on user's CID from auth store

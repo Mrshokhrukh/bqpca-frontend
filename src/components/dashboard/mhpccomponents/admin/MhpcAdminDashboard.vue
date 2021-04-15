@@ -105,7 +105,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import bmhcService from '@/services/mhpccservices'
+import apiServices from '@/services/services'
 import {
   BookOpen, // CPD
   ClipboardList, // CPD
@@ -126,7 +126,6 @@ const counts = ref({
   cpdActivities: 0,
   cpdCredits: 0,
   cpdMethodologies: 0,
-  cpdActivities: 0,
   documentTypes: 0,
   eSignatures: 0,
   fileTypes: 0,
@@ -402,25 +401,24 @@ const configurationCards = [
 onMounted(async () => {
   try {
     const countPromises = [
-      bmhcService.getMhpcMastersCpdActivities(),
-      bmhcService.getMhpcMastersCpdCredits(),
-      bmhcService.getMhpcMastersCpdMethodologies(),
-      bmhcService.getMhpcMastersCpdActivities(),
-      bmhcService.getMhpcMastersDocumentTypes(),
-      bmhcService.getMhpcMastersESignatures(),
-      bmhcService.getMhpcMastersFileTypes(),
-      bmhcService.getMhpcMastersFeeStructures(),
-      bmhcService.getMhpcMastersMHPCParticipationCategories(),
-      bmhcService.getMhpcMastersMhpcParticipationSubCategories(),
-      bmhcService.getMhpcMastersPersonnelCategories(),
-      bmhcService.getMhpcMastersQualificationTypes(),
-      bmhcService.getMhpcMastersRegistrationTypes(),
-      bmhcService.getMhpcMastersSectors(),
-      bmhcService.getMhpcMastersSubCategories(),
-      bmhcService.getMhpcMastersUniversities(),
-      bmhcService.getMhpcCogsAgencies(),
-      bmhcService.getMhpcCogsDepartments(),
-      bmhcService.getMhpcCogsWorkplaces(),
+      apiServices.getMhpcMastersCpdActivities(),
+      apiServices.getMhpcMastersCpdCredits(),
+      apiServices.getMhpcMastersCpdMethodologies(),
+      apiServices.getMhpcMastersDocumentTypes(),
+      apiServices.getMhpcMastersESignatures(),
+      apiServices.getMhpcMastersFileTypes(),
+      apiServices.getMhpcMastersFeeStructures(),
+      apiServices.getMhpcMastersMHPCParticipationCategories(),
+      apiServices.getMhpcMastersMhpcParticipationSubCategories(),
+      apiServices.getMhpcMastersPersonnelCategories(),
+      apiServices.getMhpcMastersQualificationTypes(),
+      apiServices.getMhpcMastersRegistrationTypes(),
+      apiServices.getMhpcMastersSectors(),
+      apiServices.getMhpcMastersSubCategories(),
+      apiServices.getMhpcMastersUniversities(),
+      apiServices.getMhpcCogsAgencies(),
+      apiServices.getMhpcCogsDepartments(),
+      apiServices.getMhpcCogsWorkplaces(),
     ]
 
     const results = await Promise.all(countPromises)

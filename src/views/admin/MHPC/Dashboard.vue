@@ -140,7 +140,7 @@ const bmhAdminComponent = computed(() => {
   const path = route.path
   switch (true) {
     case path.endsWith('/health_certification/dashboard'):
-      return MhpcAdminDashboardd
+      return MhpcAdminDashboard
     case path.endsWith('/health_certification/user_management'):
       return MhpcUserManagement
     case path.endsWith('/health_certification/cpd_activities'):

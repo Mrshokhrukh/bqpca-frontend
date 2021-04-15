@@ -458,7 +458,7 @@
 import { ref, onMounted } from 'vue'
 
 import { useToast } from 'vue-toastification'
-import bmhcService from '@/services/bmhcservices'
+import apiServices from '@/services/services'
 import CertificateDialog from './CertificateDialog.vue'
 
 // State variables
@@ -559,7 +559,7 @@ const setDefaultDates = async (center) => {
     }
 
     // Send PATCH request to update teaching center
-    await bmhcService.patchMhpcTeachingCenter(center.id, updateData)
+    await apiServices.patchMhpcTeachingCenter(center.id, updateData)
 
     // Update local data
     const updatedCenters = teachingCenters.value.map((c) => {
@@ -669,7 +669,7 @@ const confirmRenewal = async () => {
     }
 
     // Send PATCH request to update teaching center
-    await bmhcService.patchMhpcTeachingCenter(selectedCenter.value.id, formData)
+    await apiServices.patchMhpcTeachingCenter(selectedCenter.value.id, formData)
 
     // Update local data
     const updatedCenters = teachingCenters.value.map((center) => {
@@ -710,7 +710,7 @@ const fetchData = async () => {
 
   try {
     // Fetch teaching centers
-    const response = await bmhcService.getMhpcTeachingCenters()
+    const response = await apiServices.getMhpcTeachingCenters()
 
     if (response && response.data && response.data.results) {
       teachingCenters.value = response.data.results

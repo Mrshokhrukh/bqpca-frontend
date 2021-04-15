@@ -42,13 +42,13 @@
           <tr v-for="capaItem in filteredCapas" :key="capaItem.id"
             class="transition-colors duration-200 hover:bg-gray-100">
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{
-        capaItem.teaching_center.institute.name_of_institution }}</td>
+              capaItem.teaching_center.institute.name_of_institution }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ capaItem.teaching_center.center_name }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ capaItem.inspection_from_date }} - {{
-        capaItem.inspection_to_date }}</td>
+              capaItem.inspection_to_date }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{
-        truncateText(capaItem.observation_description, 50) }}</td>
+              truncateText(capaItem.observation_description, 50) }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span :class="getStatusClass(capaItem.status)"
                 class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
@@ -71,10 +71,10 @@
       <div v-for="capaItem in filteredCapas" :key="capaItem.id"
         class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
         <h3 class="text-xl font-semibold text-gray-800 mb-3">{{ capaItem.teaching_center.institute.name_of_institution
-          }}</h3>
+        }}</h3>
         <p class="text-gray-600 mb-2">
           <span class="font-medium">Inspection Date:</span> {{ capaItem.inspection_from_date }} - {{
-        capaItem.inspection_to_date }}
+            capaItem.inspection_to_date }}
         </p>
         <p class="text-gray-600 mb-3">
           <span class="font-medium">Observation:</span> {{ truncateText(capaItem.observation_description, 80) }}
@@ -100,7 +100,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import CapaDetailModal from './CapaModal.vue';
-import apiServices from '@/services/mhpccservices';
+import apiServices from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from "vue-toastification";
 

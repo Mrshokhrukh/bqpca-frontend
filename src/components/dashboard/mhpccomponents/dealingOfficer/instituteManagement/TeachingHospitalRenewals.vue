@@ -532,7 +532,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useToast } from 'vue-toastification'
-import bmhcService from '@/services/bmhcservices'
+import apiServices from '@/services/services'
 import { Loader } from 'lucide-vue-next'
 
 // State variables
@@ -662,7 +662,7 @@ const confirmApprove = async () => {
     }
 
     // Send PATCH request to update center
-    await bmhcService.patchMhpcTeachingCenter(selectedCenter.value.id, approvalData)
+    await apiServices.patchMhpcTeachingCenter(selectedCenter.value.id, approvalData)
 
     // Update local data
     teachingCenters.value = teachingCenters.value.map((center) => {
@@ -709,7 +709,7 @@ const confirmReject = async () => {
     }
 
     // Send PATCH request to update center
-    await bmhcService.patchMhpcTeachingCenter(selectedCenter.value.id, rejectionData)
+    await apiServices.patchMhpcTeachingCenter(selectedCenter.value.id, rejectionData)
 
     // Update local data
     teachingCenters.value = teachingCenters.value.map((center) => {
@@ -768,7 +768,7 @@ const submitReview = async () => {
     }
 
     // Send PATCH request to update teaching center
-    await bmhcService.patchMhpcTeachingCenter(selectedCenter.value.id, formData)
+    await apiServices.patchMhpcTeachingCenter(selectedCenter.value.id, formData)
 
     // Update local data
     teachingCenters.value = teachingCenters.value.map((center) => {
@@ -803,7 +803,7 @@ const fetchTeachingCenters = async () => {
 
   try {
     // Fetch teaching centers
-    const response = await bmhcService.getMhpcTeachingCenters()
+    const response = await apiServices.getMhpcTeachingCenters()
 
     if (response && response.data && response.data.results) {
       teachingCenters.value = response.data.results

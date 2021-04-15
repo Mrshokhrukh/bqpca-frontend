@@ -583,7 +583,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import apiservices from '@/services/mhpccservices'
+import apiservices from '@/services/services'
 import { useAuthStore } from '@/stores/authStore'
 import FirstDashboardState from '@/components/dashboard/mhpccomponents/institutions/FirstDashboardStates.vue'
 import EmptyDashboardState from '@/components/dashboard/mhpccomponents/institutions/EmptyDashboardStates.vue'
