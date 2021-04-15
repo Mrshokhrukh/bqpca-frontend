@@ -2,7 +2,9 @@
   <section class="p-6 bg-white rounded-lg shadow">
     <h2 class="text-xl font-semibold mb-4 text-blue-700">Supporting Documents</h2>
     <div>
-      <label for="cvUpload" class="block text-sm font-medium text-gray-700">Applicant's CV Upload <span class="text-red-500">*</span></label>
+      <label for="cvUpload" class="block text-sm font-medium text-gray-700"
+        >Applicant's CV Upload <span class="text-red-500">*</span></label
+      >
       <input
         type="file"
         id="cvUpload"
@@ -14,8 +16,10 @@
       <span v-if="cvFileName" class="text-xs text-gray-600 mt-1 block">
         Selected: {{ cvFileName }}
       </span>
-       <span v-else class="text-xs text-gray-500 mt-1 block">No file selected.</span>
-      <p class="mt-1 text-xs text-gray-500">Please upload your latest Curriculum Vitae (PDF, DOC, DOCX format).</p>
+      <span v-else class="text-xs text-gray-500 mt-1 block">No file selected.</span>
+      <p class="mt-1 text-xs text-gray-500">
+        Please upload your latest Curriculum Vitae (PDF, DOC, DOCX format).
+      </p>
     </div>
 
     <!-- Add other required supporting documents here -->
@@ -32,19 +36,21 @@
 
 <script setup>
 defineProps({
-    cvFileName: {
-        type: String,
-        default: ''
-    },
-    // Add props for other file names if needed
-    // otherDocFileName: { type: String, default: '' },
-});
+  cvFileName: {
+    type: String,
+    default: '',
+  },
+  // Add props for other file names if needed
+  // otherDocFileName: { type: String, default: '' },
+})
 
-const emit = defineEmits(['update:file']);
+const emit = defineEmits(['update:file'])
 
 const handleFileUpload = (event, fieldIdentifier) => {
-  const file = event.target.files[0];
-  emit('update:file', { file: file || null, field: fieldIdentifier });
-  if (!file) { event.target.value = ''; }
-};
+  const file = event.target.files[0]
+  emit('update:file', { file: file || null, field: fieldIdentifier })
+  if (!file) {
+    event.target.value = ''
+  }
+}
 </script>

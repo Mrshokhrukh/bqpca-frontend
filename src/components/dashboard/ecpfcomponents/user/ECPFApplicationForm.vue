@@ -4,17 +4,29 @@
     <form @submit.prevent="submitForm">
       <div class="form-group">
         <label for="fullName">Full Name</label>
-        <input type="text" id="fullName" v-model="formData.fullName" class="form-control" required>
+        <input
+          type="text"
+          id="fullName"
+          v-model="formData.fullName"
+          class="form-control"
+          required
+        />
       </div>
 
       <div class="form-group">
         <label for="email">Email</label>
-        <input type="email" id="email" v-model="formData.email" class="form-control" required>
+        <input type="email" id="email" v-model="formData.email" class="form-control" required />
       </div>
 
       <div class="form-group">
         <label for="applicationDate">Application Date</label>
-        <input type="date" id="applicationDate" v-model="formData.applicationDate" class="form-control" required>
+        <input
+          type="date"
+          id="applicationDate"
+          v-model="formData.applicationDate"
+          class="form-control"
+          required
+        />
       </div>
 
       <button type="submit" class="btn btn-primary">Submit Application</button>
@@ -23,17 +35,17 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive } from 'vue'
 
 const formData = reactive({
   fullName: '',
   email: '',
   applicationDate: '',
-});
+})
 
 const submitForm = () => {
   // Handle form submission logic here
-  console.log('Form submitted:', formData);
+  console.log('Form submitted:', formData)
 }
 </script>
 
@@ -56,7 +68,7 @@ const submitForm = () => {
 
 .btn {
   padding: 0.5rem 1rem;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 4px;

@@ -6,25 +6,26 @@
   .btn-primary {
     @apply px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors;
   }
-  
+
   .btn-secondary {
     @apply px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary/90 transition-colors;
   }
-  
+
   .form-input {
     @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50;
   }
 }
 
 @layer base {
-  html, body {
+  html,
+  body {
     overflow-x: hidden;
     overflow-y: auto !important;
     scroll-behavior: smooth;
     height: auto;
     min-height: 100%;
   }
-  
+
   #app {
     min-height: 100vh;
     position: relative;

@@ -1,18 +1,47 @@
 <template>
-  <div v-if="isOpen" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+  <div
+    v-if="isOpen"
+    class="fixed z-10 inset-0 overflow-y-auto"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div
+      class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+    >
       <!-- Modal overlay -->
-      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="$emit('close')"></div>
+      <div
+        class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+        aria-hidden="true"
+        @click="$emit('close')"
+      ></div>
 
       <!-- This element is to trick the browser into centering the modal contents. -->
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"> </span>
 
-      <div class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div
+        class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+      >
         <div class="absolute top-0 right-0 pt-4 pr-4">
-          <button type="button" class="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="openEditMode">
+          <button
+            type="button"
+            class="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            @click="openEditMode"
+          >
             <span class="sr-only">Edit</span>
-            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            <svg
+              class="h-6 w-6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
             </svg>
           </button>
         </div>
@@ -53,21 +82,35 @@
                     <div>{{ application?.renewalDetails?.period || 'N/A' }}</div>
                     <div><span class="font-medium">Payment Status:</span></div>
                     <div>
-                      <span :class="application?.paymentStatus === 'Paid' ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'">
+                      <span
+                        :class="
+                          application?.paymentStatus === 'Paid'
+                            ? 'text-green-600 font-semibold'
+                            : 'text-red-600 font-semibold'
+                        "
+                      >
                         {{ application?.paymentStatus || 'Pending' }}
                       </span>
                     </div>
-                    <div v-if="application?.paymentStatus === 'Paid'"><span class="font-medium">Payment Date:</span></div>
-                    <div v-if="application?.paymentStatus === 'Paid'">{{ application?.paymentDate || 'N/A' }}</div>
+                    <div v-if="application?.paymentStatus === 'Paid'">
+                      <span class="font-medium">Payment Date:</span>
+                    </div>
+                    <div v-if="application?.paymentStatus === 'Paid'">
+                      {{ application?.paymentDate || 'N/A' }}
+                    </div>
                   </div>
                 </div>
 
                 <!-- External Party Contact Details -->
                 <div class="border-b pb-2">
-                  <h4 class="text-sm font-semibold text-gray-700 mb-2">External Party Contact Details</h4>
+                  <h4 class="text-sm font-semibold text-gray-700 mb-2">
+                    External Party Contact Details
+                  </h4>
                   <div class="grid grid-cols-2 gap-2 text-sm">
                     <div><span class="font-medium">Name of Proprietor:</span></div>
-                    <div>{{ application?.externalPartyContactDetails?.nameOfProprietor || 'N/A' }}</div>
+                    <div>
+                      {{ application?.externalPartyContactDetails?.nameOfProprietor || 'N/A' }}
+                    </div>
                     <div><span class="font-medium">Nationality:</span></div>
                     <div>{{ application?.externalPartyContactDetails?.nationality || 'N/A' }}</div>
                     <div><span class="font-medium">Designation:</span></div>
@@ -75,7 +118,9 @@
                     <div><span class="font-medium">Email Address:</span></div>
                     <div>{{ application?.externalPartyContactDetails?.emailAddress || 'N/A' }}</div>
                     <div><span class="font-medium">Contact Number:</span></div>
-                    <div>{{ application?.externalPartyContactDetails?.contactNumber || 'N/A' }}</div>
+                    <div>
+                      {{ application?.externalPartyContactDetails?.contactNumber || 'N/A' }}
+                    </div>
                     <div><span class="font-medium">Website:</span></div>
                     <div>{{ application?.externalPartyContactDetails?.website || 'N/A' }}</div>
                   </div>
@@ -83,7 +128,9 @@
 
                 <!-- Collaboration Description -->
                 <div class="border-b pb-2">
-                  <h4 class="text-sm font-semibold text-gray-700 mb-2">Collaboration Description</h4>
+                  <h4 class="text-sm font-semibold text-gray-700 mb-2">
+                    Collaboration Description
+                  </h4>
                   <div class="grid grid-cols-1 gap-2 text-sm">
                     <div>{{ application?.collaborationDescription || 'N/A' }}</div>
                   </div>
@@ -110,8 +157,14 @@
                   <h4 class="text-sm font-semibold text-gray-700 mb-2">Chief's Decision</h4>
                   <div class="grid grid-cols-1 gap-3">
                     <div>
-                      <label for="decision" class="block text-sm font-medium text-gray-700">Decision</label>
-                      <select id="decision" v-model="chiefDecision" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                      <label for="decision" class="block text-sm font-medium text-gray-700"
+                        >Decision</label
+                      >
+                      <select
+                        id="decision"
+                        v-model="chiefDecision"
+                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                      >
                         <option value="">Select a decision</option>
                         <option value="approved">Approve & Forward</option>
                         <option value="regretted">Regret</option>
@@ -119,8 +172,15 @@
                       </select>
                     </div>
                     <div v-if="chiefDecision === 'regretted' || chiefDecision === 'hold'">
-                      <label for="reason" class="block text-sm font-medium text-gray-700">Reason/Corrective Measures</label>
-                      <textarea id="reason" v-model="decisionReason" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                      <label for="reason" class="block text-sm font-medium text-gray-700"
+                        >Reason/Corrective Measures</label
+                      >
+                      <textarea
+                        id="reason"
+                        v-model="decisionReason"
+                        rows="3"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      ></textarea>
                     </div>
                   </div>
                 </div>
@@ -157,34 +217,34 @@
 </template>
 
 <script setup>
-import { ref} from 'vue';
+import { ref } from 'vue'
 
 const props = defineProps({
   isOpen: Boolean,
   application: {
     type: Object,
-    default: () => ({})
-  }
-});
+    default: () => ({}),
+  },
+})
 
-const emit = defineEmits(['close', 'submit-decision', 'download-letter', 'edit']);
+const emit = defineEmits(['close', 'submit-decision', 'download-letter', 'edit'])
 
-const chiefDecision = ref('');
-const decisionReason = ref('');
+const chiefDecision = ref('')
+const decisionReason = ref('')
 
 const submitDecision = () => {
   emit('submit-decision', {
     applicationId: props.application?.id,
     decision: chiefDecision.value,
-    reason: decisionReason.value
-  });
-};
+    reason: decisionReason.value,
+  })
+}
 
 const downloadRecommendationLetter = () => {
-  emit('download-letter', props.application?.id);
-};
+  emit('download-letter', props.application?.id)
+}
 
 const openEditMode = () => {
-  emit('edit', props.application?.id);
-};
+  emit('edit', props.application?.id)
+}
 </script>

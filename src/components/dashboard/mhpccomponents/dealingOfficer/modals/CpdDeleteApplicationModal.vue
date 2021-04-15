@@ -16,20 +16,20 @@ defineProps({
     type: Boolean,
     required: true,
   },
-});
+})
 
 // Define emits
-const emit = defineEmits(['delete', 'close']);
+const emit = defineEmits(['delete', 'close'])
 
 // Methods
 const confirmDelete = () => {
-  emit('delete');
-  closeModal();
-};
+  emit('delete')
+  closeModal()
+}
 
 const closeModal = () => {
-  emit('close');
-};
+  emit('close')
+}
 </script>
 
 <style scoped>

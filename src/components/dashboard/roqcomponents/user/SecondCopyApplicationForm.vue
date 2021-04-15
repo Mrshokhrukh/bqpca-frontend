@@ -1,23 +1,40 @@
 <template>
   <div>
-    <PaymentModal ref="paymentModal" :amount="1000" @payment-completed="onPaymentCompleted"
-      @close="onPaymentModalClose" />
+    <PaymentModal
+      ref="paymentModal"
+      :amount="1000"
+      @payment-completed="onPaymentCompleted"
+      @close="onPaymentModalClose"
+    />
     <form @submit.prevent="handleSubmit" class="space-y-6">
       <!-- Autocomplete Dropdown for Original Application -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">
-          Select Original Application
-        </h3>
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">Select Original Application</h3>
         <div>
-          <label for="original_application" class="block text-sm font-medium text-gray-700 required">
+          <label
+            for="original_application"
+            class="block text-sm font-medium text-gray-700 required"
+          >
             Search by Your Name or CID
           </label>
-          <input type="text" id="original_application" v-model="searchQuery" @input="onSearchInput"
+          <input
+            type="text"
+            id="original_application"
+            v-model="searchQuery"
+            @input="onSearchInput"
             placeholder="Start typing to begin search..."
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
-          <ul v-if="filteredApplications.length > 0" class="mt-2 bg-white border rounded-lg shadow-sm">
-            <li v-for="app in filteredApplications" :key="app.id" @click="onOriginalApplicationSelect(app)"
-              class="p-2 hover:bg-gray-50 cursor-pointer">
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+          />
+          <ul
+            v-if="filteredApplications.length > 0"
+            class="mt-2 bg-white border rounded-lg shadow-sm"
+          >
+            <li
+              v-for="app in filteredApplications"
+              :key="app.id"
+              @click="onOriginalApplicationSelect(app)"
+              class="p-2 hover:bg-gray-50 cursor-pointer"
+            >
               {{ app.applicants_name }} ({{ app.cid_no }}),
               {{ app.course_title }}
             </li>
@@ -27,93 +44,143 @@
 
       <!-- Personal Information Section -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">
-          Personal Information
-        </h3>
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">Personal Information</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- CID No. -->
           <div>
             <label for="cid" class="block text-sm font-medium text-gray-700">CID No.</label>
-            <input type="text" id="cid" v-model="form.cid_no"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <input
+              type="text"
+              id="cid"
+              v-model="form.cid_no"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Full Name -->
           <div>
             <label for="full_name" class="block text-sm font-medium text-gray-700">Full Name</label>
-            <input type="text" id="full_name" v-model="form.applicants_name"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <input
+              type="text"
+              id="full_name"
+              v-model="form.applicants_name"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Date of Birth -->
           <div>
-            <label for="date_of_birth" class="block text-sm font-medium text-gray-700">Date of Birth</label>
-            <input type="text" id="date_of_birth" v-model="form.date_of_birth"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <label for="date_of_birth" class="block text-sm font-medium text-gray-700"
+              >Date of Birth</label
+            >
+            <input
+              type="text"
+              id="date_of_birth"
+              v-model="form.date_of_birth"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Contact Number -->
           <div>
-            <label for="contact_number" class="block text-sm font-medium text-gray-700 required">Contact Number</label>
-            <input type="tel" id="contact_number" v-model="form.contact_no" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <label for="contact_number" class="block text-sm font-medium text-gray-700 required"
+              >Contact Number</label
+            >
+            <input
+              type="tel"
+              id="contact_number"
+              v-model="form.contact_no"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Email Address -->
           <div>
-            <label for="email_address" class="block text-sm font-medium text-gray-700">Email Address</label>
-            <input type="email" id="email_address" v-model="form.email_address" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <label for="email_address" class="block text-sm font-medium text-gray-700"
+              >Email Address</label
+            >
+            <input
+              type="email"
+              id="email_address"
+              v-model="form.email_address"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Gender -->
           <div>
             <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
-            <input type="text" id="gender" v-model="form.gender"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <input
+              type="text"
+              id="gender"
+              v-model="form.gender"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Dzongkhag -->
           <div>
             <label for="dzongkhag" class="block text-sm font-medium text-gray-700">Dzongkhag</label>
-            <input type="text" id="dzongkhag" v-model="form.dzongkhag"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <input
+              type="text"
+              id="dzongkhag"
+              v-model="form.dzongkhag"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Gewog -->
           <div>
             <label for="gewog" class="block text-sm font-medium text-gray-700">Gewog</label>
-            <input type="text" id="gewog" v-model="form.gewog"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <input
+              type="text"
+              id="gewog"
+              v-model="form.gewog"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Village -->
           <div>
             <label for="village" class="block text-sm font-medium text-gray-700">Village</label>
-            <input type="text" id="village" v-model="form.village"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <input
+              type="text"
+              id="village"
+              v-model="form.village"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
         </div>
       </div>
 
       <!-- Education Details Section -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">
-          Education Details
-        </h3>
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">Education Details</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- From in-country? -->
           <div>
             <label class="block text-sm font-medium text-gray-700 required">From in-country?</label>
             <div class="mt-2 space-x-4">
               <label class="inline-flex items-center">
-                <input type="radio" v-model="form.from_in_country" :value="true" required
-                  class="form-radio text-primary" />
+                <input
+                  type="radio"
+                  v-model="form.from_in_country"
+                  :value="true"
+                  required
+                  class="form-radio text-primary"
+                />
                 <span class="ml-2">Yes</span>
               </label>
               <label class="inline-flex items-center">
-                <input type="radio" v-model="form.from_in_country" :value="false" required
-                  class="form-radio text-primary" />
+                <input
+                  type="radio"
+                  v-model="form.from_in_country"
+                  :value="false"
+                  required
+                  class="form-radio text-primary"
+                />
                 <span class="ml-2">No</span>
               </label>
             </div>
@@ -121,14 +188,23 @@
 
           <!-- Course Title -->
           <div>
-            <label for="course_title" class="block text-sm font-medium text-gray-700 required">Course Title</label>
-            <input type="text" id="course_title" v-model="form.course_title" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <label for="course_title" class="block text-sm font-medium text-gray-700 required"
+              >Course Title</label
+            >
+            <input
+              type="text"
+              id="course_title"
+              v-model="form.course_title"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Qualification Dropdown -->
           <div>
-            <label for="qualification" class="block text-sm font-medium text-gray-700 required">Qualification</label>
+            <label for="qualification" class="block text-sm font-medium text-gray-700 required"
+              >Qualification</label
+            >
             <select id="qualification" v-model="form.qualification" required>
               <option value="" disabled>Select Qualification</option>
               <option v-for="qual in qualificationOptions" :key="qual.value" :value="qual.value">
@@ -139,7 +215,9 @@
 
           <!-- Type of Course Dropdown -->
           <div>
-            <label for="type_of_course" class="block text-sm font-medium text-gray-700 required">Type of Course</label>
+            <label for="type_of_course" class="block text-sm font-medium text-gray-700 required"
+              >Type of Course</label
+            >
             <select id="type_of_course" v-model="form.type_of_course" required>
               <option value="" disabled>Select Course Type</option>
               <option v-for="type in courseTypeOptions" :key="type.value" :value="type.value">
@@ -150,77 +228,137 @@
 
           <!-- Duration of Course -->
           <div>
-            <label for="duration_of_course" class="block text-sm font-medium text-gray-700 required">Duration of Course
-              (Years)</label>
-            <input type="number" id="duration_of_course" v-model="form.duration_of_course" min="1" max="10" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <label for="duration_of_course" class="block text-sm font-medium text-gray-700 required"
+              >Duration of Course (Years)</label
+            >
+            <input
+              type="number"
+              id="duration_of_course"
+              v-model="form.duration_of_course"
+              min="1"
+              max="10"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Name of Institute -->
           <div>
-            <label for="name_of_institute" class="block text-sm font-medium text-gray-700 required">Name of
-              Institute</label>
-            <input type="text" id="name_of_institute" v-model="form.name_of_institute" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <label for="name_of_institute" class="block text-sm font-medium text-gray-700 required"
+              >Name of Institute</label
+            >
+            <input
+              type="text"
+              id="name_of_institute"
+              v-model="form.name_of_institute"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Name of University -->
           <div>
-            <label for="name_of_university" class="block text-sm font-medium text-gray-700 required">Name of
-              University</label>
-            <input type="text" id="name_of_university" v-model="form.name_of_university" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <label for="name_of_university" class="block text-sm font-medium text-gray-700 required"
+              >Name of University</label
+            >
+            <input
+              type="text"
+              id="name_of_university"
+              v-model="form.name_of_university"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Student ID No. -->
           <div>
-            <label for="student_id_no" class="block text-sm font-medium text-gray-700 required">Student ID No.</label>
-            <input type="text" id="student_id_no" v-model="form.student_id_no" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <label for="student_id_no" class="block text-sm font-medium text-gray-700 required"
+              >Student ID No.</label
+            >
+            <input
+              type="text"
+              id="student_id_no"
+              v-model="form.student_id_no"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Year of Completion -->
           <div>
-            <label for="year_of_completion" class="block text-sm font-medium text-gray-700 required">Year of
-              Completion</label>
-            <input type="number" id="year_of_completion" v-model="form.year_of_completion" :min="minYear"
-              :max="currentYear" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <label for="year_of_completion" class="block text-sm font-medium text-gray-700 required"
+              >Year of Completion</label
+            >
+            <input
+              type="number"
+              id="year_of_completion"
+              v-model="form.year_of_completion"
+              :min="minYear"
+              :max="currentYear"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Website -->
           <div>
             <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
-            <input type="url" id="website" v-model="form.website" placeholder="https://" pattern="https?://.+"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <input
+              type="url"
+              id="website"
+              v-model="form.website"
+              placeholder="https://"
+              pattern="https?://.+"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Location -->
           <div>
-            <label for="location" class="block text-sm font-medium text-gray-700 required">Location</label>
-            <input type="text" id="location" v-model="form.location" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <label for="location" class="block text-sm font-medium text-gray-700 required"
+              >Location</label
+            >
+            <input
+              type="text"
+              id="location"
+              v-model="form.location"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
 
           <!-- Country -->
           <div>
-            <label for="country" class="block text-sm font-medium text-gray-700 required">Country</label>
-            <input type="text" id="country" v-model="form.country" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <label for="country" class="block text-sm font-medium text-gray-700 required"
+              >Country</label
+            >
+            <input
+              type="text"
+              id="country"
+              v-model="form.country"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
         </div>
       </div>
 
       <!-- Reason for Second Copy -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">
-          Reason for Second Copy
-        </h3>
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">Reason for Second Copy</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Reason for Issue of Second Copy -->
           <div>
-            <label for="reason_for_second_copy" class="block text-sm font-medium text-gray-700 required">Reason</label>
-            <select id="reason_for_second_copy" v-model="form.reason_for_issue_of_second_copy" required>
+            <label
+              for="reason_for_second_copy"
+              class="block text-sm font-medium text-gray-700 required"
+              >Reason</label
+            >
+            <select
+              id="reason_for_second_copy"
+              v-model="form.reason_for_issue_of_second_copy"
+              required
+            >
               <option value="" disabled>Select a reason</option>
               <option v-for="reason in reasonsForSecondCopy" :key="reason.id" :value="reason.id">
                 {{ reason.name }}
@@ -230,21 +368,33 @@
 
           <!-- Other Specify -->
           <div v-if="form.reason_for_issue_of_second_copy === othersReasonId">
-            <label for="other_specify" class="block text-sm font-medium text-gray-700 required">Other (Specify)</label>
-            <input type="text" id="other_specify" v-model="form.second_copy_other" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2" />
+            <label for="other_specify" class="block text-sm font-medium text-gray-700 required"
+              >Other (Specify)</label
+            >
+            <input
+              type="text"
+              id="other_specify"
+              v-model="form.second_copy_other"
+              required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+            />
           </div>
         </div>
       </div>
 
       <!-- Supporting Document for Second Copy -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">
-          Supporting Document
-        </h3>
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">Supporting Document</h3>
         <div>
-          <label class="block text-sm font-medium text-gray-700 required">Upload Supporting Document</label>
-          <FileUpload v-model="form.second_copy_supporting_document" accept=".pdf" :max-size="5" required />
+          <label class="block text-sm font-medium text-gray-700 required"
+            >Upload Supporting Document</label
+          >
+          <FileUpload
+            v-model="form.second_copy_supporting_document"
+            accept=".pdf"
+            :max-size="5"
+            required
+          />
           <p class="mt-1 text-sm text-gray-500">PDF only, max 5MB</p>
         </div>
       </div>
@@ -254,14 +404,19 @@
         <!-- Declaration -->
         <div class="flex items-start">
           <div class="flex items-center h-5">
-            <input type="checkbox" id="declaration" v-model="declaration" required
-              class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary" />
+            <input
+              type="checkbox"
+              id="declaration"
+              v-model="declaration"
+              required
+              class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+            />
           </div>
           <div class="ml-3 text-sm">
             <label for="declaration" class="font-medium text-gray-700">Declaration</label>
             <p class="text-gray-500">
-              I declare that all the information provided is true and accurate
-              to the best of my knowledge.
+              I declare that all the information provided is true and accurate to the best of my
+              knowledge.
             </p>
           </div>
         </div>
@@ -269,13 +424,20 @@
 
       <!-- Form Actions -->
       <div class="flex justify-end space-x-4">
-        <button type="button" @click="$emit('close-modal')"
-          class="px-6 py-3 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+        <button
+          type="button"
+          @click="$emit('close-modal')"
+          class="px-6 py-3 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+        >
           Cancel
         </button>
-        <button type="button" @click="openPaymentModal" :disabled="isSubmitting || !declaration"
-          class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
-          {{ isSubmitting ? "Submitting..." : "Submit" }}
+        <button
+          type="button"
+          @click="openPaymentModal"
+          :disabled="isSubmitting || !declaration"
+          class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {{ isSubmitting ? 'Submitting...' : 'Submit' }}
         </button>
       </div>
     </form>
@@ -283,142 +445,134 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
-import { useAuthStore } from "@/stores/authStore";
-import apiService from "@/services/services";
-import FileUpload from "@/components/common/FileUpload.vue";
-import { useToast } from "vue-toastification";
-import PaymentModal from "@/components/common/PaymentModal.vue";
+import { ref, reactive, onMounted } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+import apiService from '@/services/services'
+import FileUpload from '@/components/common/FileUpload.vue'
+import { useToast } from 'vue-toastification'
+import PaymentModal from '@/components/common/PaymentModal.vue'
 
-const authStore = useAuthStore(); // Use authStore
-const { user } = useAuthStore();
-const toast = useToast();
+const authStore = useAuthStore() // Use authStore
+const { user } = useAuthStore()
+const toast = useToast()
 
-const originalApplications = ref([]);
-const filteredApplications = ref([]);
-const searchQuery = ref("");
-const selectedOriginalApplication = ref(null);
-const reasonsForSecondCopy = ref([]);
-const othersReasonId = ref(null);
-const qualificationOptions = ref([]);
-const courseTypeOptions = ref([]);
-const isSubmitting = ref(false);
-const declaration = ref(false);
-const currentYear = new Date().getFullYear();
-const minYear = currentYear - 50;
+const originalApplications = ref([])
+const filteredApplications = ref([])
+const searchQuery = ref('')
+const selectedOriginalApplication = ref(null)
+const reasonsForSecondCopy = ref([])
+const othersReasonId = ref(null)
+const qualificationOptions = ref([])
+const courseTypeOptions = ref([])
+const isSubmitting = ref(false)
+const declaration = ref(false)
+const currentYear = new Date().getFullYear()
+const minYear = currentYear - 50
 
 const userCid = user.cid
 
 const form = reactive({
-  cid_no: "",
-  applicants_name: "",
-  date_of_birth: "",
-  contact_no: "",
-  email_address: "",
-  gender: "",
-  dzongkhag: "",
-  gewog: "",
-  village: "",
+  cid_no: '',
+  applicants_name: '',
+  date_of_birth: '',
+  contact_no: '',
+  email_address: '',
+  gender: '',
+  dzongkhag: '',
+  gewog: '',
+  village: '',
   from_in_country: null,
-  course_title: "",
-  qualification: "",
-  type_of_course: "",
-  duration_of_course: "",
-  name_of_institute: "",
-  name_of_university: "",
-  student_id_no: "",
-  year_of_completion: "",
-  website: "",
-  location: "",
-  country: "",
-  reason_for_issue_of_second_copy: "",
+  course_title: '',
+  qualification: '',
+  type_of_course: '',
+  duration_of_course: '',
+  name_of_institute: '',
+  name_of_university: '',
+  student_id_no: '',
+  year_of_completion: '',
+  website: '',
+  location: '',
+  country: '',
+  reason_for_issue_of_second_copy: '',
   // second_copy_other: "",
   second_copy_supporting_document: null,
   is_payment_complete: false,
   payment_id: null,
-  status: "applied", // Initialize status
-});
+  status: 'applied', // Initialize status
+})
 
-const paymentModal = ref(null);
+const paymentModal = ref(null)
 
 const openPaymentModal = () => {
-  paymentModal.value.openModal();
-};
+  paymentModal.value.openModal()
+}
 
 const onPaymentModalClose = () => {
-  console.log("Payment modal closed");
-};
+  console.log('Payment modal closed')
+}
 
 const onPaymentCompleted = (paymentData) => {
-  form.is_payment_complete = false;
-  form.payment_id = paymentData.paymentHash;
-  form.status = "processing_payment";
-  handleSubmitActual();
-};
+  form.is_payment_complete = false
+  form.payment_id = paymentData.paymentHash
+  form.status = 'processing_payment'
+  handleSubmitActual()
+}
 
 // Fetch original applications and reasons for second copy
 onMounted(async () => {
   try {
-    const [
-      applicationsResponse,
-      reasonsResponse,
-      qualificationsResponse,
-      courseTypesResponse,
-    ] = await Promise.all([
-      apiService.getRecognitionOfQualification(userCid), // Remove .value
-      apiService.getReasonsForIssueOfSecondCopy(),
-      apiService.getQualifications(),
-      apiService.getTypesOfCourse(),
-    ]);
+    const [applicationsResponse, reasonsResponse, qualificationsResponse, courseTypesResponse] =
+      await Promise.all([
+        apiService.getRecognitionOfQualification(userCid), // Remove .value
+        apiService.getReasonsForIssueOfSecondCopy(),
+        apiService.getQualifications(),
+        apiService.getTypesOfCourse(),
+      ])
 
     originalApplications.value = applicationsResponse.data.filter(
-      (app) => app.status === "approved" && !app.is_second_copy
-    );
+      (app) => app.status === 'approved' && !app.is_second_copy,
+    )
 
-    reasonsForSecondCopy.value = reasonsResponse.data.results;
+    reasonsForSecondCopy.value = reasonsResponse.data.results
 
     const othersReason = reasonsForSecondCopy.value.find(
-      (reason) => reason.name.toLowerCase() === "others"
-    );
+      (reason) => reason.name.toLowerCase() === 'others',
+    )
     if (othersReason) {
-      othersReasonId.value = othersReason.id;
+      othersReasonId.value = othersReason.id
     }
 
-    qualificationOptions.value = qualificationsResponse.data.results.map(
-      (qual) => ({
-        value: qual.id,
-        label: qual.name,
-      })
-    );
+    qualificationOptions.value = qualificationsResponse.data.results.map((qual) => ({
+      value: qual.id,
+      label: qual.name,
+    }))
 
     courseTypeOptions.value = courseTypesResponse.data.results.map((type) => ({
       value: type.id,
       label: type.name,
-    }));
+    }))
   } catch (error) {
-    toast.error("Failed to fetch data");
-    console.error("Error fetching data:", error);
+    toast.error('Failed to fetch data')
+    console.error('Error fetching data:', error)
   }
-});
+})
 
 const onSearchInput = () => {
   if (searchQuery.value) {
     filteredApplications.value = originalApplications.value.filter(
       (app) =>
-        (app.applicants_name
-          .toLowerCase()
-          .includes(searchQuery.value.toLowerCase()) ||
+        (app.applicants_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
           app.cid_no.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
-        app.status === "approved" &&
-        !app.is_second_copy
-    );
+        app.status === 'approved' &&
+        !app.is_second_copy,
+    )
   } else {
-    filteredApplications.value = [];
+    filteredApplications.value = []
   }
-};
+}
 
 const onOriginalApplicationSelect = (app) => {
-  selectedOriginalApplication.value = app;
+  selectedOriginalApplication.value = app
   Object.assign(form, {
     cid_no: app.cid_no,
     applicants_name: app.applicants_name,
@@ -442,68 +596,71 @@ const onOriginalApplicationSelect = (app) => {
     // Only set these if they exist in the original app; otherwise, let user select
     ...(app.qualification && { qualification: app.qualification.id }),
     ...(app.type_of_course && { type_of_course: app.type_of_course.id }),
-  });
-  searchQuery.value = "";
-  filteredApplications.value = [];
-};
+  })
+  searchQuery.value = ''
+  filteredApplications.value = []
+}
 
 const handleSubmit = () => {
   // --- START VALIDATION ---
   if (!selectedOriginalApplication.value) {
-    toast.error("Please select an original application first.");
-    return;
+    toast.error('Please select an original application first.')
+    return
   }
-  if (!form.reason_for_issue_of_second_copy) { // Checks for "" or null or undefined
-    toast.error("Please select a reason for the second copy.");
-    return;
+  if (!form.reason_for_issue_of_second_copy) {
+    // Checks for "" or null or undefined
+    toast.error('Please select a reason for the second copy.')
+    return
   }
-  if (!form.qualification) { // Checks for "" or null or undefined
-    toast.error("Please select a qualification.");
-    return;
+  if (!form.qualification) {
+    // Checks for "" or null or undefined
+    toast.error('Please select a qualification.')
+    return
   }
-  if (!form.type_of_course) { // Checks for "" or null or undefined
-    toast.error("Please select the type of course.");
-    return;
+  if (!form.type_of_course) {
+    // Checks for "" or null or undefined
+    toast.error('Please select the type of course.')
+    return
   }
   if (!declaration.value) {
-    toast.error("Please accept the declaration.");
-    return;
+    toast.error('Please accept the declaration.')
+    return
   }
   // --- END VALIDATION ---
-  openPaymentModal();
-};
+  openPaymentModal()
+}
 
 const formatDate = (dateString) => {
-  if (!dateString) return "";
+  if (!dateString) return ''
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-    return dateString;
+    return dateString
   }
-  const date = new Date(dateString);
+  const date = new Date(dateString)
   if (isNaN(date.getTime())) {
-    console.error("Invalid date:", dateString);
-    return "";
+    console.error('Invalid date:', dateString)
+    return ''
   }
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
 
-  return `${year}-${month}-${day}`;
-};
+  return `${year}-${month}-${day}`
+}
 
 const handleSubmitActual = async () => {
-  isSubmitting.value = true;
+  isSubmitting.value = true
 
   try {
     if (!selectedOriginalApplication.value) {
-      toast.error("Please select an original application");
-      isSubmitting.value = false; // Re-enable button
-      return; // Stop execution
+      toast.error('Please select an original application')
+      isSubmitting.value = false // Re-enable button
+      return // Stop execution
     }
 
-    const formData = new FormData();
+    const formData = new FormData()
 
-    formData.append("original_application_id", selectedOriginalApplication.value.id);
-    formData.append("is_second_copy", "true");
+    formData.append('original_application_id', selectedOriginalApplication.value.id)
+    formData.append('is_second_copy', 'true')
 
     // Payment Request
     const paymentData = {
@@ -513,75 +670,75 @@ const handleSubmitActual = async () => {
       taxPayerDocumentNo: 'BAOW',
       payerEmail: form.email_address,
       mobileNo: form.contact_no,
-      totalPayableAmount: 1000.00,
+      totalPayableAmount: 1000.0,
       serviceCode: '100193',
       description: 'Payment for Second Copy ROQ', // Updated Description
-      payableAmount: 1000.00,
+      payableAmount: 1000.0,
       taxPayerName: form.applicants_name,
       application_no: form.payment_id,
       app_type: 'ROQ', // This might need adjustment for second copy
       user_id: authStore.userId,
-    };
+    }
 
     try {
-      const paymentResponse = await apiService.makePayment(paymentData);
+      const paymentResponse = await apiService.makePayment(paymentData)
 
       if (paymentResponse.status !== 201 && paymentResponse.status !== 200) {
-        throw new Error("Payment request failed");
+        throw new Error('Payment request failed')
       }
-
     } catch (paymentError) {
-      console.error("Error making payment:", paymentError);
-      toast.error("Payment request failed: " + (paymentError.response?.data?.message || paymentError.message));
-      isSubmitting.value = false;
-      return; // Stop if payment fails
+      console.error('Error making payment:', paymentError)
+      toast.error(
+        'Payment request failed: ' + (paymentError.response?.data?.message || paymentError.message),
+      )
+      isSubmitting.value = false
+      return // Stop if payment fails
     }
 
     // Append other form fields, including date formatting
     for (const key in form) {
       if (Object.prototype.hasOwnProperty.call(form, key)) {
-        let value = form[key];
+        let value = form[key]
 
         // Special handling for qualification and type_of_course
         if (key === 'qualification' || key === 'type_of_course') {
-          console.log(`${key} value:`, value, typeof value);
+          console.log(`${key} value:`, value, typeof value)
 
           // Make sure we're sending a number, not a string or null
-          const numericValue = parseInt(value);
+          const numericValue = parseInt(value)
           if (!isNaN(numericValue)) {
-            formData.append(key, numericValue.toString());
-            continue; // Skip the normal append below for these fields
+            formData.append(key, numericValue.toString())
+            continue // Skip the normal append below for these fields
           }
         }
 
         if (value instanceof File) {
-          formData.append(key, value);
-        }
-        else if (key === 'date_of_birth') {
-          formData.append(key, formatDate(value));  // Format Date
+          formData.append(key, value)
+        } else if (key === 'date_of_birth') {
+          formData.append(key, formatDate(value)) // Format Date
         } else if (typeof value === 'boolean') {
-          formData.append(key, value.toString());
-        }
-        else if (value !== null && value !== undefined) {
-          formData.append(key, value.toString());
+          formData.append(key, value.toString())
+        } else if (value !== null && value !== undefined) {
+          formData.append(key, value.toString())
         }
       }
     }
 
     // Submit the form
-    const response = await apiService.createRecognitionOfQualification(formData); // Call the correct endpoint.
+    const response = await apiService.createRecognitionOfQualification(formData) // Call the correct endpoint.
     if (response.status === 201) {
-      toast.success("Second copy application submitted successfully. Please check your email to complete the payment.");
-      emit("application-submitted");
+      toast.success(
+        'Second copy application submitted successfully. Please check your email to complete the payment.',
+      )
+      emit('application-submitted')
     }
-
   } catch (error) {
-    toast.error("Failed to submit application: " + (error.response?.data?.message || error.message));
-    console.error("Error submitting application:", error);
+    toast.error('Failed to submit application: ' + (error.response?.data?.message || error.message))
+    console.error('Error submitting application:', error)
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
-};
+}
 
-const emit = defineEmits(["application-submitted", "close-modal"]);
+const emit = defineEmits(['application-submitted', 'close-modal'])
 </script>

@@ -12,33 +12,33 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useAuthStore } from '@/stores/authStore';
-import { useUserProfileStore } from '@/stores/userProfileStore';
-import UserProfile from '@/components/common/UserProfile.vue';
+import { ref, onMounted, computed } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+import { useUserProfileStore } from '@/stores/userProfileStore'
+import UserProfile from '@/components/common/UserProfile.vue'
 
 // Initialize stores
-const authStore = useAuthStore();
-const userProfileStore = useUserProfileStore();
+const authStore = useAuthStore()
+const userProfileStore = useUserProfileStore()
 
 // Reactive state
-const isLoading = ref(false);
-const error = ref(null);
-const userProfile = computed(() => userProfileStore.userProfile);
+const isLoading = ref(false)
+const error = ref(null)
+const userProfile = computed(() => userProfileStore.userProfile)
 
 // Fetch user profile on component mount
 onMounted(async () => {
-  const userId = authStore.userId;
+  const userId = authStore.userId
 
   if (userId) {
-    isLoading.value = true;
-    await userProfileStore.fetchUserProfile(userId);
-    isLoading.value = userProfileStore.isLoading;
-    error.value = userProfileStore.error;
+    isLoading.value = true
+    await userProfileStore.fetchUserProfile(userId)
+    isLoading.value = userProfileStore.isLoading
+    error.value = userProfileStore.error
   } else {
-    error.value = 'User ID not found. Please log in again.';
+    error.value = 'User ID not found. Please log in again.'
   }
-});
+})
 </script>
 
 <style scoped>

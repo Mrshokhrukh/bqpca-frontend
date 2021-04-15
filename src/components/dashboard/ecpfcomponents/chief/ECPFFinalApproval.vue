@@ -27,10 +27,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue'
 
-const message = ref('');
-const messageType = ref('info');
+const message = ref('')
+const messageType = ref('info')
 
 // Add your methods here
 // Example:
@@ -48,8 +48,7 @@ onMounted(() => {
   //  }
   // }
   // fetchData();
-});
-
+})
 </script>
 
 <style scoped>

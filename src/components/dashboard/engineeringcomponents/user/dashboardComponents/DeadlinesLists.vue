@@ -4,8 +4,11 @@
     <div class="space-y-4">
       <div v-for="(deadline, index) in deadlines" :key="index" class="flex items-start space-x-3">
         <div :class="['p-2 rounded-full', getDeadlineTypeClass(deadline.type)]">
-          <component :is="getDeadlineIcon(deadline.type)" class="w-4 h-4"
-            :class="getDeadlineIconClass(deadline.type)" />
+          <component
+            :is="getDeadlineIcon(deadline.type)"
+            class="w-4 h-4"
+            :class="getDeadlineIconClass(deadline.type)"
+          />
         </div>
         <div>
           <p class="text-sm font-medium">{{ deadline.title }}</p>
@@ -21,42 +24,42 @@
 </template>
 
 <script setup>
-import { CalendarIcon, AlertCircle } from 'lucide-vue-next'; // Changed import
-import dayjs from 'dayjs';
+import { CalendarIcon, AlertCircle } from 'lucide-vue-next' // Changed import
+import dayjs from 'dayjs'
 
 defineProps({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   deadlines: {
     type: Array,
-    default: () => []
-  }
-});
+    default: () => [],
+  },
+})
 
-const formatDate = (date) => dayjs(date).format('MMM DD, YYYY');
+const formatDate = (date) => dayjs(date).format('MMM DD, YYYY')
 
 const getDeadlineIcon = (type) => {
-  if (type === 'Renewal') return CalendarIcon;
-  return AlertCircle; // Changed to AlertCircle
-};
+  if (type === 'Renewal') return CalendarIcon
+  return AlertCircle // Changed to AlertCircle
+}
 
 const getDeadlineTypeClass = (type) => {
   const classes = {
-    'CPD': 'bg-blue-100',
-    'Renewal': 'bg-red-100',
-    'Application': 'bg-green-100'
-  };
-  return classes[type] || 'bg-red-100';
-};
+    CPD: 'bg-blue-100',
+    Renewal: 'bg-red-100',
+    Application: 'bg-green-100',
+  }
+  return classes[type] || 'bg-red-100'
+}
 
 const getDeadlineIconClass = (type) => {
   const classes = {
-    'CPD': 'text-blue-500',
-    'Renewal': 'text-red-500',
-    'Application': 'text-green-500'
-  };
-  return classes[type] || 'text-red-500';
-};
+    CPD: 'text-blue-500',
+    Renewal: 'text-red-500',
+    Application: 'text-green-500',
+  }
+  return classes[type] || 'text-red-500'
+}
 </script>

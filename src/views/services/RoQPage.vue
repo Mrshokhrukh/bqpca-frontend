@@ -12,7 +12,8 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
         <div class="text-center">
           <div
-            class="inline-flex items-center px-3 py-1 rounded-full border border-blue-400/30 bg-blue-400/10 text-blue-200 mb-6">
+            class="inline-flex items-center px-3 py-1 rounded-full border border-blue-400/30 bg-blue-400/10 text-blue-200 mb-6"
+          >
             <BookOpen class="w-4 h-4 mr-2" />
             <span class="text-sm">Official Verification Service</span>
           </div>
@@ -20,7 +21,8 @@
             Recognition of Qualifications
           </h1>
           <p class="mt-6 text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            Official verification and recognition of educational qualifications by the Royal Government of Bhutan
+            Official verification and recognition of educational qualifications by the Royal
+            Government of Bhutan
           </p>
         </div>
       </div>
@@ -28,7 +30,9 @@
       <!-- Decorative wave shape -->
       <div class="absolute bottom-0 left-0 right-0">
         <svg class="w-full h-8 fill-slate-50" viewBox="0 0 1440 48" preserveAspectRatio="none">
-          <path d="M0 48h1440V0c-283.146 39.154-566.281 48-849.405 48C307.47 48 153.735 32 0 0v48z" />
+          <path
+            d="M0 48h1440V0c-283.146 39.154-566.281 48-849.405 48C307.47 48 153.735 32 0 0v48z"
+          />
         </svg>
       </div>
     </div>
@@ -45,15 +49,12 @@
                 <CircleAlert class="w-6 h-6 text-blue-600" />
               </div>
               <div class="ml-4">
-                <h2 class="text-xl font-serif font-bold text-slate-900 mb-4">
-                  Official Notice
-                </h2>
+                <h2 class="text-xl font-serif font-bold text-slate-900 mb-4">Official Notice</h2>
                 <p class="text-slate-600 leading-relaxed">
-                  This is the official portal for qualification recognition services provided by the Bhutan
-                  Qualifications &
-                  Professional Certification Authority (BQPCA). All certification and verification processes are
-                  conducted
-                  in accordance with the Royal Government of Bhutan's regulations.
+                  This is the official portal for qualification recognition services provided by the
+                  Bhutan Qualifications & Professional Certification Authority (BQPCA). All
+                  certification and verification processes are conducted in accordance with the
+                  Royal Government of Bhutan's regulations.
                 </p>
               </div>
             </div>
@@ -66,24 +67,34 @@
                 <div class="p-3 rounded-lg bg-blue-50">
                   <ListChecks class="w-6 h-6 text-blue-600" />
                 </div>
-                <h2 class="text-xl font-serif font-bold text-slate-900 ml-4">Verification Process</h2>
+                <h2 class="text-xl font-serif font-bold text-slate-900 ml-4">
+                  Verification Process
+                </h2>
               </div>
             </div>
             <div class="p-8">
               <div class="space-y-8">
-                <div v-for="(step, index) in verificationSteps" :key="step.title" class="flex items-start group">
+                <div
+                  v-for="(step, index) in verificationSteps"
+                  :key="step.title"
+                  class="flex items-start group"
+                >
                   <div class="relative">
                     <div
-                      class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-600 group-hover:bg-blue-700 transition-colors text-white flex items-center justify-center font-medium">
+                      class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-600 group-hover:bg-blue-700 transition-colors text-white flex items-center justify-center font-medium"
+                    >
                       {{ index + 1 }}
                     </div>
                     <!-- Connection line -->
-                    <div v-if="index < verificationSteps.length - 1"
-                      class="absolute top-10 left-1/2 bottom-0 w-px bg-blue-200 transform -translate-x-1/2 h-full">
-                    </div>
+                    <div
+                      v-if="index < verificationSteps.length - 1"
+                      class="absolute top-10 left-1/2 bottom-0 w-px bg-blue-200 transform -translate-x-1/2 h-full"
+                    ></div>
                   </div>
                   <div class="ml-6">
-                    <h3 class="text-lg font-medium text-slate-900 group-hover:text-blue-600 transition-colors">
+                    <h3
+                      class="text-lg font-medium text-slate-900 group-hover:text-blue-600 transition-colors"
+                    >
                       {{ step.title }}
                     </h3>
                     <p class="mt-2 text-slate-600 leading-relaxed">{{ step.description }}</p>
@@ -100,16 +111,23 @@
                 <div class="p-3 rounded-lg bg-blue-50">
                   <InfoIcon class="w-6 h-6 text-blue-600" />
                 </div>
-                <h2 class="text-xl font-serif font-bold text-slate-900 ml-4">Important Information</h2>
+                <h2 class="text-xl font-serif font-bold text-slate-900 ml-4">
+                  Important Information
+                </h2>
               </div>
             </div>
             <div class="p-8">
               <div class="grid md:grid-cols-3 gap-8">
-                <div v-for="info in importantInfo" :key="info.title"
-                  class="group bg-slate-50 rounded-xl p-6 hover:bg-blue-50 transition-colors">
+                <div
+                  v-for="info in importantInfo"
+                  :key="info.title"
+                  class="group bg-slate-50 rounded-xl p-6 hover:bg-blue-50 transition-colors"
+                >
                   <div class="flex items-start">
-                    <component :is="info.icon"
-                      class="w-6 h-6 text-blue-600 mt-1 group-hover:scale-110 transition-transform" />
+                    <component
+                      :is="info.icon"
+                      class="w-6 h-6 text-blue-600 mt-1 group-hover:scale-110 transition-transform"
+                    />
                     <div class="ml-4">
                       <h3 class="font-medium text-slate-900">{{ info.title }}</h3>
                       <p class="mt-2 text-slate-600">{{ info.description }}</p>
@@ -123,7 +141,11 @@
 
         <!-- Authentication Section -->
         <div class="lg:sticky lg:top-8 self-start">
-          <AuthSection :serviceType="serviceType" @ndi-login="handleNDILogin" @form-login="handleFormLogin" />
+          <AuthSection
+            :serviceType="serviceType"
+            @ndi-login="handleNDILogin"
+            @form-login="handleFormLogin"
+          />
         </div>
       </div>
     </div>
@@ -139,7 +161,7 @@ import {
   BookOpen,
   CircleAlert,
   ListChecks,
-  Info as InfoIcon
+  Info as InfoIcon,
 } from 'lucide-vue-next'
 import AuthSection from '@/components/common/AuthSection.vue'
 
@@ -148,38 +170,40 @@ const serviceType = ref('roq')
 const verificationSteps = [
   {
     title: 'Identity Verification',
-    description: 'Authenticate using your National Digital Identity (NDI) or create an account with your citizenship details'
+    description:
+      'Authenticate using your National Digital Identity (NDI) or create an account with your citizenship details',
   },
   {
     title: 'Document Submission',
-    description: 'Submit digital copies of your educational certificates and supporting documentation'
+    description:
+      'Submit digital copies of your educational certificates and supporting documentation',
   },
   {
     title: 'Verification',
-    description: 'Your documents will be verified through our official channels'
+    description: 'Your documents will be verified through our official channels',
   },
   {
     title: 'Certification',
-    description: 'Receive your official verification certificate with digital signature'
-  }
+    description: 'Receive your official verification certificate with digital signature',
+  },
 ]
 
 const importantInfo = [
   {
     title: 'Processing Time',
     description: 'Standard processing time is 5-7 working days',
-    icon: Clock
+    icon: Clock,
   },
   {
     title: 'Required Documents',
     description: 'Original certificates, transcripts, and valid identification',
-    icon: FileText
+    icon: FileText,
   },
   {
     title: 'Security',
     description: 'All documents are processed through secure government channels',
-    icon: ShieldCheck
-  }
+    icon: ShieldCheck,
+  },
 ]
 
 const handleNDILogin = () => {

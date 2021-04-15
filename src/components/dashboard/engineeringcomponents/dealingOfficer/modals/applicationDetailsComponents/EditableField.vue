@@ -14,15 +14,15 @@
 defineProps({
   label: {
     type: String,
-    required: true
+    required: true,
   },
   value: {
     type: String,
-    default: ''
+    default: '',
   },
   isEditing: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 </script>

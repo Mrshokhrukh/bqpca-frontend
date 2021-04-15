@@ -10,22 +10,22 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from 'vue'
 
 const props = defineProps({
   messages: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   type: {
     type: String,
-    default: 'error' // or 'success'
-  }
-});
+    default: 'error', // or 'success'
+  },
+})
 
 const alertClass = computed(() => {
   return props.type === 'error'
     ? 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4'
-    : 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4';
-});
+    : 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4'
+})
 </script>

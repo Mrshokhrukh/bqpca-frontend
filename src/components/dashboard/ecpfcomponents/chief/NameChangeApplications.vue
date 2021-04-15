@@ -7,8 +7,19 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <div class="flex items-center">
             <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                />
               </svg>
             </div>
             <div>
@@ -21,8 +32,19 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <div class="flex items-center">
             <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div>
@@ -35,8 +57,19 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <div class="flex items-center">
             <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div>
@@ -49,8 +82,19 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <div class="flex items-center">
             <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div>
@@ -72,8 +116,18 @@
           <div class="flex-1">
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </div>
               <input
@@ -104,22 +158,55 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">APPLICANT NAME</th>
-                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">CURRENT ECPF NAME</th>
-                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">PROPOSED ECPF NAME</th>
-                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">STATUS</th>
-                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ACTIONS</th>
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
+                  APPLICANT NAME
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
+                  CURRENT ECPF NAME
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
+                  PROPOSED ECPF NAME
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
+                  STATUS
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
+                  ACTIONS
+                </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="application in filteredNameChangeApplications" :key="application.id" class="hover:bg-gray-50 transition-colors">
+              <tr
+                v-for="application in filteredNameChangeApplications"
+                :key="application.id"
+                class="hover:bg-gray-50 transition-colors"
+              >
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
-                    <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-semibold mr-3">
+                    <div
+                      class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-semibold mr-3"
+                    >
                       {{ getInitials(application.applicantName) }}
                     </div>
                     <div>
-                      <div class="text-sm font-medium text-gray-900">{{ application.applicantName }}</div>
+                      <div class="text-sm font-medium text-gray-900">
+                        {{ application.applicantName }}
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -142,12 +229,16 @@
                     >
                       View
                     </button>
-
                   </div>
                 </td>
               </tr>
               <tr v-if="filteredNameChangeApplications.length === 0">
-                <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No name change applications found.</td>
+                <td
+                  colspan="5"
+                  class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center"
+                >
+                  No name change applications found.
+                </td>
               </tr>
             </tbody>
           </table>
@@ -157,34 +248,69 @@
       <!-- Pagination (Basic Example - Adjust as needed) -->
       <div class="flex items-center justify-between py-4">
         <div class="flex-1 flex justify-between sm:hidden">
-          <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+          <button
+            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          >
             Previous
           </button>
-          <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+          <button
+            class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          >
             Next
           </button>
         </div>
         <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
           <div>
             <p class="text-sm text-gray-700">
-              Showing <span class="font-medium">1</span> to <span class="font-medium">{{ filteredNameChangeApplications.length }}</span> of <span class="font-medium">{{ nameChangeApplications.length }}</span> results
+              Showing <span class="font-medium">1</span> to
+              <span class="font-medium">{{ filteredNameChangeApplications.length }}</span> of
+              <span class="font-medium">{{ nameChangeApplications.length }}</span> results
             </p>
           </div>
           <div>
-            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-              <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+            <nav
+              class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+              aria-label="Pagination"
+            >
+              <button
+                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
                 <span class="sr-only">Previous</span>
-                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                <svg
+                  class="h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  />
                 </svg>
               </button>
-              <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+              <button
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
                 1
               </button>
-              <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+              <button
+                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
                 <span class="sr-only">Next</span>
-                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                <svg
+                  class="h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"
+                  />
                 </svg>
               </button>
             </nav>
@@ -203,106 +329,108 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import EcpfNameChangeModal from './modals/EcpfNameChangeModal.vue'; // Import the modal component
-import apiServices from '@/services/services'; // Import your API service
+import { ref, computed, onMounted } from 'vue'
+import EcpfNameChangeModal from './modals/EcpfNameChangeModal.vue' // Import the modal component
+import apiServices from '@/services/services' // Import your API service
 
-const searchQuery = ref('');
-const statusFilter = ref('');
-const isModalOpen = ref(false);
-const selectedApplication = ref(null);
-const nameChangeApplications = ref([]);
-const pendingCount = ref(0);
-const approvedCount = ref(0);
-const rejectedCount = ref(0);
+const searchQuery = ref('')
+const statusFilter = ref('')
+const isModalOpen = ref(false)
+const selectedApplication = ref(null)
+const nameChangeApplications = ref([])
+const pendingCount = ref(0)
+const approvedCount = ref(0)
+const rejectedCount = ref(0)
 
 onMounted(async () => {
-  fetchApplications();
-});
+  fetchApplications()
+})
 
 const fetchApplications = async () => {
   try {
-    const response = await apiServices.getEcpfNameChanges();
+    const response = await apiServices.getEcpfNameChanges()
     if (response.status === 200) {
-      nameChangeApplications.value = response.data.results;
-      updateCounts();
+      nameChangeApplications.value = response.data.results
+      updateCounts()
     } else {
-      console.error('Failed to fetch applications:', response.status, response.data.results);
-      alert('Failed to load applications. Please check console.');
+      console.error('Failed to fetch applications:', response.status, response.data.results)
+      alert('Failed to load applications. Please check console.')
     }
   } catch (error) {
-    console.error('Error fetching applications:', error);
-    alert('Error loading applications. Please check console.');
+    console.error('Error fetching applications:', error)
+    alert('Error loading applications. Please check console.')
   }
-};
+}
 
 const updateCounts = () => {
-  pendingCount.value = nameChangeApplications.value.filter(app => app.status === 'Pending Review').length;
-  approvedCount.value = nameChangeApplications.value.filter(app => app.status === 'Approved').length;
-  rejectedCount.value = nameChangeApplications.value.filter(app => app.status === 'Rejected').length;
-};
-
+  pendingCount.value = nameChangeApplications.value.filter(
+    (app) => app.status === 'Pending Review',
+  ).length
+  approvedCount.value = nameChangeApplications.value.filter(
+    (app) => app.status === 'Approved',
+  ).length
+  rejectedCount.value = nameChangeApplications.value.filter(
+    (app) => app.status === 'Rejected',
+  ).length
+}
 
 const filteredNameChangeApplications = computed(() => {
-  return nameChangeApplications.value.filter(application => {
-    const searchLower = searchQuery.value.toLowerCase();
-    const statusLower = statusFilter.value.toLowerCase();
+  return nameChangeApplications.value.filter((application) => {
+    const searchLower = searchQuery.value.toLowerCase()
+    const statusLower = statusFilter.value.toLowerCase()
 
     const matchesSearch =
       !searchQuery.value ||
       application.applicantName?.toLowerCase().includes(searchLower) || // Use optional chaining
       application.currentEcpfName?.toLowerCase().includes(searchLower) ||
-      application.proposedEcpfName?.toLowerCase().includes(searchLower);
+      application.proposedEcpfName?.toLowerCase().includes(searchLower)
 
-    const matchesStatus =
-      !statusFilter.value || application.status?.toLowerCase() === statusLower;
+    const matchesStatus = !statusFilter.value || application.status?.toLowerCase() === statusLower
 
-    return matchesSearch && matchesStatus;
-  });
-});
+    return matchesSearch && matchesStatus
+  })
+})
 
 const getStatusClasses = (status) => {
-  return  [
+  return [
     'px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap',
     {
       'bg-yellow-100 text-yellow-800': status === 'Pending Review',
       'bg-green-100 text-green-800': status === 'Approved',
       'bg-red-100 text-red-800': status === 'Rejected',
       'bg-gray-100 text-gray-800': status === 'Draft', // If you have 'Draft' status
-    }
-  ];
-};
+    },
+  ]
+}
 
 const viewApplication = async (application) => {
   try {
-    const response = await apiServices.getEcpfNameChange(application.id);
+    const response = await apiServices.getEcpfNameChange(application.id)
     if (response.status === 200) {
-      selectedApplication.value = response.data.results;
-      isModalOpen.value = true;
+      selectedApplication.value = response.data.results
+      isModalOpen.value = true
     } else {
-      console.error('Failed to fetch application details:', response.status, response.data.results);
-      alert('Failed to view application details.');
+      console.error('Failed to fetch application details:', response.status, response.data.results)
+      alert('Failed to view application details.')
     }
   } catch (error) {
-    console.error('Error fetching application details:', error);
-    alert('Error viewing application.');
+    console.error('Error fetching application details:', error)
+    alert('Error viewing application.')
   }
-};
-
+}
 
 const closeModal = () => {
-  isModalOpen.value = false;
-  selectedApplication.value = null;
-};
-
+  isModalOpen.value = false
+  selectedApplication.value = null
+}
 
 // Helper function to get initials from name
 const getInitials = (name) => {
-  if (!name) return '';
+  if (!name) return ''
   return name
     .split(' ')
-    .map(part => part.charAt(0))
+    .map((part) => part.charAt(0))
     .join('')
-    .toUpperCase();
-};
+    .toUpperCase()
+}
 </script>

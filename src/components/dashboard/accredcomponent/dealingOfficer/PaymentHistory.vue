@@ -4,7 +4,12 @@
 
     <!-- Search and Filter Section -->
     <div class="mb-4 flex gap-4">
-      <input v-model="searchQuery" type="text" placeholder="Search payments..." class="p-2 border rounded">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Search payments..."
+        class="p-2 border rounded"
+      />
       <select v-model="statusFilter" class="p-2 border rounded">
         <option value="">All Status</option>
         <option value="completed">Completed</option>
@@ -36,7 +41,10 @@
               </span>
             </td>
             <td class="py-2 px-4 border-b">
-              <button @click="viewDetails(payment.id)" class="bg-blue-500 text-white px-3 py-1 rounded">
+              <button
+                @click="viewDetails(payment.id)"
+                class="bg-blue-500 text-white px-3 py-1 rounded"
+              >
                 View
               </button>
             </td>
@@ -48,49 +56,52 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
 
-const searchQuery = ref('');
-const statusFilter = ref('');
+const searchQuery = ref('')
+const statusFilter = ref('')
 const payments = ref([
   {
     id: 1,
     date: '2023-11-01',
     referenceNo: 'REF001',
-    amount: 1500.00,
-    status: 'completed'
+    amount: 1500.0,
+    status: 'completed',
   },
   {
     id: 2,
     date: '2023-11-02',
     referenceNo: 'REF002',
-    amount: 2300.00,
-    status: 'pending'
+    amount: 2300.0,
+    status: 'pending',
   },
   // Add more sample data as needed
-]);
+])
 
 const filteredPayments = computed(() => {
-  return payments.value.filter(payment => {
-    const matchesSearch = payment.referenceNo.toLowerCase().includes(searchQuery.value.toLowerCase());
-    const matchesStatus = statusFilter.value === '' || payment.status === statusFilter.value;
-    return matchesSearch && matchesStatus;
-  });
-});
+  return payments.value.filter((payment) => {
+    const matchesSearch = payment.referenceNo
+      .toLowerCase()
+      .includes(searchQuery.value.toLowerCase())
+    const matchesStatus = statusFilter.value === '' || payment.status === statusFilter.value
+    return matchesSearch && matchesStatus
+  })
+})
 
 const getStatusClass = (status) => {
-  return {
-    completed: 'text-green-600',
-    pending: 'text-yellow-600',
-    failed: 'text-red-600'
-  }[status] || '';
-};
+  return (
+    {
+      completed: 'text-green-600',
+      pending: 'text-yellow-600',
+      failed: 'text-red-600',
+    }[status] || ''
+  )
+}
 
 const viewDetails = (paymentId) => {
   // Implement view details logic
-  console.log('Viewing details for payment:', paymentId);
-};
-
+  console.log('Viewing details for payment:', paymentId)
+}
 </script>
 
 <style scoped>

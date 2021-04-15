@@ -11,5 +11,5 @@
 </template>
 
 <script setup>
-import { InboxIcon } from 'lucide-vue-next';
+import { InboxIcon } from 'lucide-vue-next'
 </script>

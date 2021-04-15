@@ -5,14 +5,20 @@
       <!-- Cover Image with Gradient Overlay -->
       <div class="h-60 w-full rounded-xl overflow-hidden relative">
         <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-90"></div>
-        <div class="absolute inset-0 bg-[url('/img/profile-cover.jpg')] bg-cover bg-center mix-blend-overlay"></div>
+        <div
+          class="absolute inset-0 bg-[url('/img/profile-cover.jpg')] bg-cover bg-center mix-blend-overlay"
+        ></div>
 
         <!-- Profile Stats Overlay -->
-        <div class="absolute bottom-0 left-0 right-0 p-6 text-white flex items-center justify-between">
+        <div
+          class="absolute bottom-0 left-0 right-0 p-6 text-white flex items-center justify-between"
+        >
           <div class="flex items-center space-x-6">
             <!-- Avatar -->
             <div class="relative">
-              <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center text-blue-600 text-3xl font-bold shadow-lg border-4 border-white transform translate-y-8">
+              <div
+                class="w-24 h-24 bg-white rounded-full flex items-center justify-center text-blue-600 text-3xl font-bold shadow-lg border-4 border-white transform translate-y-8"
+              >
                 {{ profileData.first_name ? profileData.first_name.charAt(0).toUpperCase() : 'U' }}
               </div>
             </div>
@@ -33,7 +39,11 @@
           <button
             @click="toggleEditMode"
             class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center shadow-md"
-            :class="[isEditing ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-white text-blue-600 hover:bg-blue-50']"
+            :class="[
+              isEditing
+                ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                : 'bg-white text-blue-600 hover:bg-blue-50',
+            ]"
           >
             <Edit v-if="!isEditing" class="w-4 h-4 mr-2" />
             <X v-else class="w-4 h-4 mr-2" />
@@ -70,7 +80,9 @@
                   <span class="font-medium">Verified</span>
                 </div>
                 <div class="mt-2">
-                  <p class="text-3xl font-bold text-gray-800">{{ userCertificates.filter(c => c.status === 'Verified').length }}</p>
+                  <p class="text-3xl font-bold text-gray-800">
+                    {{ userCertificates.filter((c) => c.status === 'Verified').length }}
+                  </p>
                   <p class="text-xs text-gray-500 mt-1">Approved certifications</p>
                 </div>
               </div>
@@ -78,20 +90,26 @@
 
             <!-- Contact Details Mini Section -->
             <div class="border-t border-gray-100 pt-4">
-              <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">Contact Details</h3>
+              <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
+                Contact Details
+              </h3>
               <div class="space-y-3">
                 <div class="flex items-start">
                   <Phone class="w-4 h-4 text-gray-400 mt-0.5 mr-3" />
                   <div>
                     <p class="text-sm text-gray-500">Phone</p>
-                    <p class="text-sm font-medium text-gray-800">{{ profileData.contact_number || 'Not provided' }}</p>
+                    <p class="text-sm font-medium text-gray-800">
+                      {{ profileData.contact_number || 'Not provided' }}
+                    </p>
                   </div>
                 </div>
                 <div class="flex items-start">
                   <MapPin class="w-4 h-4 text-gray-400 mt-0.5 mr-3" />
                   <div>
                     <p class="text-sm text-gray-500">Location</p>
-                    <p class="text-sm font-medium text-gray-800">{{ profileData.dzongkhag }}, {{ profileData.gewog }}</p>
+                    <p class="text-sm font-medium text-gray-800">
+                      {{ profileData.dzongkhag }}, {{ profileData.gewog }}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -106,22 +124,29 @@
               <Award class="w-5 h-5 text-blue-500 mr-2" />
               <h3 class="text-lg font-semibold text-gray-800">My Certifications</h3>
             </div>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            <span
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+            >
               {{ userCertificates.length }} Total
             </span>
           </div>
 
           <div class="divide-y divide-gray-100 max-h-[500px] overflow-y-auto">
             <!-- Display Certificates -->
-            <div v-for="cert in userCertificates" :key="cert.id"
-              class="p-4 hover:bg-gray-50 transition-colors duration-150">
+            <div
+              v-for="cert in userCertificates"
+              :key="cert.id"
+              class="p-4 hover:bg-gray-50 transition-colors duration-150"
+            >
               <div class="flex items-center justify-between">
                 <div class="flex-1 min-w-0">
                   <div class="flex items-start">
                     <ScrollText class="w-5 h-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0" />
                     <div>
                       <h4 class="font-medium text-gray-800 text-sm truncate">{{ cert.title }}</h4>
-                      <p class="text-xs text-gray-500 mt-1">QEC: <span class="font-medium">{{ cert.qec_number }}</span></p>
+                      <p class="text-xs text-gray-500 mt-1">
+                        QEC: <span class="font-medium">{{ cert.qec_number }}</span>
+                      </p>
                       <div class="flex items-center mt-2">
                         <CalendarDays class="w-3.5 h-3.5 text-gray-400 mr-1.5" />
                         <span class="text-xs text-gray-500">{{ formatDate(cert.updated_at) }}</span>
@@ -129,14 +154,20 @@
                     </div>
                   </div>
                 </div>
-                <span :class="[
-                  'px-2.5 py-1 rounded-full text-xs font-medium flex items-center',
-                  cert.status === 'Verified' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                ]">
-                  <span :class="[
-                    'w-1.5 h-1.5 rounded-full mr-1',
-                    cert.status === 'Verified' ? 'bg-green-600' : 'bg-yellow-600'
-                  ]"></span>
+                <span
+                  :class="[
+                    'px-2.5 py-1 rounded-full text-xs font-medium flex items-center',
+                    cert.status === 'Verified'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-yellow-100 text-yellow-800',
+                  ]"
+                >
+                  <span
+                    :class="[
+                      'w-1.5 h-1.5 rounded-full mr-1',
+                      cert.status === 'Verified' ? 'bg-green-600' : 'bg-yellow-600',
+                    ]"
+                  ></span>
                   {{ cert.status }}
                 </span>
               </div>
@@ -144,7 +175,9 @@
 
             <!-- Empty State -->
             <div v-if="userCertificates.length === 0" class="p-8 text-center">
-              <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-500 mb-4">
+              <div
+                class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-500 mb-4"
+              >
                 <FileX class="w-6 h-6" />
               </div>
               <h3 class="text-sm font-medium text-gray-900 mb-1">No certificates found</h3>
@@ -170,8 +203,13 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- First Name -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">First Name <span class="text-red-500">*</span></label>
-                  <div v-if="!isEditing" class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >First Name <span class="text-red-500">*</span></label
+                  >
+                  <div
+                    v-if="!isEditing"
+                    class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200"
+                  >
                     {{ profileData.first_name }}
                   </div>
                   <div v-else class="relative">
@@ -187,7 +225,10 @@
                 <!-- Middle Name -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Middle Name</label>
-                  <div v-if="!isEditing" class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <div
+                    v-if="!isEditing"
+                    class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200"
+                  >
                     {{ profileData.middle_name || '-' }}
                   </div>
                   <div v-else class="relative">
@@ -201,8 +242,13 @@
 
                 <!-- Last Name -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Last Name <span class="text-red-500">*</span></label>
-                  <div v-if="!isEditing" class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Last Name <span class="text-red-500">*</span></label
+                  >
+                  <div
+                    v-if="!isEditing"
+                    class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200"
+                  >
                     {{ profileData.last_name }}
                   </div>
                   <div v-else class="relative">
@@ -218,7 +264,10 @@
                 <!-- Date of Birth -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-                  <div v-if="!isEditing" class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <div
+                    v-if="!isEditing"
+                    class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200"
+                  >
                     {{ formatDate(profileData.date_of_birth) }}
                   </div>
                   <div v-else class="relative">
@@ -233,7 +282,10 @@
                 <!-- Gender -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                  <div v-if="!isEditing" class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200 capitalize">
+                  <div
+                    v-if="!isEditing"
+                    class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200 capitalize"
+                  >
                     {{ profileData.gender || '-' }}
                   </div>
                   <div v-else class="relative">
@@ -246,7 +298,9 @@
                       <option value="female">Female</option>
                       <option value="other">Other</option>
                     </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                    <div
+                      class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
+                    >
                       <ChevronDown class="w-4 h-4" />
                     </div>
                   </div>
@@ -254,12 +308,19 @@
 
                 <!-- Contact Number -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Contact Number <span class="text-red-500">*</span></label>
-                  <div v-if="!isEditing" class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Contact Number <span class="text-red-500">*</span></label
+                  >
+                  <div
+                    v-if="!isEditing"
+                    class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200"
+                  >
                     {{ profileData.contact_number }}
                   </div>
                   <div v-else class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
                       <Phone class="h-5 w-5 text-gray-400" />
                     </div>
                     <input
@@ -287,8 +348,13 @@
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Dzongkhag -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Dzongkhag <span class="text-red-500">*</span></label>
-                  <div v-if="!isEditing" class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Dzongkhag <span class="text-red-500">*</span></label
+                  >
+                  <div
+                    v-if="!isEditing"
+                    class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200"
+                  >
                     {{ profileData.dzongkhag }}
                   </div>
                   <div v-else class="relative">
@@ -303,8 +369,13 @@
 
                 <!-- Gewog -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Gewog <span class="text-red-500">*</span></label>
-                  <div v-if="!isEditing" class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Gewog <span class="text-red-500">*</span></label
+                  >
+                  <div
+                    v-if="!isEditing"
+                    class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200"
+                  >
                     {{ profileData.gewog }}
                   </div>
                   <div v-else class="relative">
@@ -319,8 +390,13 @@
 
                 <!-- Village -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Village <span class="text-red-500">*</span></label>
-                  <div v-if="!isEditing" class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Village <span class="text-red-500">*</span></label
+                  >
+                  <div
+                    v-if="!isEditing"
+                    class="text-gray-800 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200"
+                  >
                     {{ profileData.village }}
                   </div>
                   <div v-else class="relative">
@@ -355,23 +431,35 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, inject } from 'vue';
-import { useAuthStore } from '@/stores/authStore';
-import apiService from '@/services/services';
-import { storeToRefs } from 'pinia';
+import { ref, onMounted, computed, inject } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+import apiService from '@/services/services'
+import { storeToRefs } from 'pinia'
 import {
-  Mail, User, MapPin, Award, ScrollText, Edit, X, CheckCircle,
-  Save, Loader2, Phone, ChevronDown, CalendarDays, FileX
-} from 'lucide-vue-next';
+  Mail,
+  User,
+  MapPin,
+  Award,
+  ScrollText,
+  Edit,
+  X,
+  CheckCircle,
+  Save,
+  Loader2,
+  Phone,
+  ChevronDown,
+  CalendarDays,
+  FileX,
+} from 'lucide-vue-next'
 
-const toast = inject('toast');
+const toast = inject('toast')
 
-const authStore = useAuthStore();
-const { userId } = storeToRefs(authStore);
-const loading = ref(false);
-const isEditing = ref(false);
+const authStore = useAuthStore()
+const { userId } = storeToRefs(authStore)
+const loading = ref(false)
+const isEditing = ref(false)
 
-const userCid = authStore.user.cid;
+const userCid = authStore.user.cid
 
 const profileData = ref({
   first_name: '',
@@ -384,62 +472,62 @@ const profileData = ref({
   dzongkhag: '',
   gewog: '',
   village: '',
-});
+})
 
-const allCertificates = ref([]);
+const allCertificates = ref([])
 
 // Filtered certificates for the logged-in user
 const userCertificates = computed(() => {
-  const certificates = allCertificates.value || [];
+  const certificates = allCertificates.value || []
 
   if (!authStore.user || !authStore.user.email) {
-    console.warn("User email is not available.");
-    return [];
+    console.warn('User email is not available.')
+    return []
   }
 
-  return certificates;
-});
+  return certificates
+})
 
 const formatDate = (date) => {
-  if (!date) return '-';
+  if (!date) return '-'
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
-  });
-};
+  })
+}
 
 const toggleEditMode = () => {
   if (isEditing.value) {
-    loadProfile(); // Reset to original values
+    loadProfile() // Reset to original values
   }
-  isEditing.value = !isEditing.value;
-};
+  isEditing.value = !isEditing.value
+}
 
 const loadProfile = async () => {
   if (authStore.user) {
-    profileData.value = { ...authStore.user, email: authStore.email };
+    profileData.value = { ...authStore.user, email: authStore.email }
 
     try {
       // Fetch certificates
-      const certs = await apiService.getRecognitionOfQualification(userCid);
-      allCertificates.value = certs.data;
+      const certs = await apiService.getRecognitionOfQualification(userCid)
+      allCertificates.value = certs.data
     } catch (error) {
-      toast.error('Failed to load certificates');
-      console.error('Error fetching certificates:', error);
+      toast.error('Failed to load certificates')
+      console.error('Error fetching certificates:', error)
     }
   } else {
-    toast.error('User not logged in');
+    toast.error('User not logged in')
   }
-};
+}
 
 const updateProfile = async () => {
-  loading.value = true;
+  loading.value = true
 
   try {
     if (!userId.value) {
-      toast.error('User ID is missing. Please log in again.');
-      return;
+      toast.error('User ID is missing. Please log in again.')
+      return
     }
 
     const updateData = {
@@ -453,24 +541,24 @@ const updateProfile = async () => {
       dzongkhag: profileData.value.dzongkhag,
       gewog: profileData.value.gewog,
       village: profileData.value.village,
-    };
+    }
 
-    await apiService.updateProfile(updateData);
-    await authStore.updateUserAfterFetch();
+    await apiService.updateProfile(updateData)
+    await authStore.updateUserAfterFetch()
 
-    toast.success('Profile updated successfully!');
-    isEditing.value = false;
-
+    toast.success('Profile updated successfully!')
+    isEditing.value = false
   } catch (error) {
-    console.error('Error updating profile:', error);
-    const errorMessage = error.response?.data?.message || 'Failed to update profile. Please try again.';
-    toast.error(errorMessage);
+    console.error('Error updating profile:', error)
+    const errorMessage =
+      error.response?.data?.message || 'Failed to update profile. Please try again.'
+    toast.error(errorMessage)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
-onMounted(loadProfile);
+onMounted(loadProfile)
 </script>
 
 <style scoped>

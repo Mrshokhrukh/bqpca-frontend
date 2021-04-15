@@ -5,5 +5,5 @@
 </template>
 
 <script setup>
-import { Loader2Icon } from 'lucide-vue-next';
+import { Loader2Icon } from 'lucide-vue-next'
 </script>

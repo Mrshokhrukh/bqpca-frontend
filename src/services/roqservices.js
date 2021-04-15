@@ -30,7 +30,10 @@ export default {
    */
   sendStatusUpdate(id, data) {
     // PATCH /api/recognitions/recognition-of-qualifications/{id}/send-status-update/
-    return apiClient.patch(`/recognitions/recognition-of-qualifications/${id}/send-status-update/`, data);
+    return apiClient.patch(
+      `/recognitions/recognition-of-qualifications/${id}/send-status-update/`,
+      data,
+    )
   },
 
   /**
@@ -43,7 +46,10 @@ export default {
    */
   sendRegretLetter(id, data) {
     // PATCH /api/recognitions/recognition-of-qualifications/{id}/send-regret-letter/
-    return apiClient.patch(`/recognitions/recognition-of-qualifications/${id}/send-regret-letter/`, data);
+    return apiClient.patch(
+      `/recognitions/recognition-of-qualifications/${id}/send-regret-letter/`,
+      data,
+    )
   },
 
   /**
@@ -58,9 +64,9 @@ export default {
     return apiClient.get('/recognitions/recognition-of-qualifications/verify-certification/', {
       params: {
         service_type, // becomes ?service_type=...
-        cert_number   // becomes &cert_number=...
-      }
-    });
+        cert_number, // becomes &cert_number=...
+      },
+    })
   },
 
   // Decision CRUD operations

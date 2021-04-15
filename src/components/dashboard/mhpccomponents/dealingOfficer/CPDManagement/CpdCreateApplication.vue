@@ -25,7 +25,9 @@
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">CID No./Identity/Work Permit No.</label>
+              <label class="block text-sm font-medium text-gray-700"
+                >CID No./Identity/Work Permit No.</label
+              >
               <input
                 v-model="cidNumber"
                 type="text"
@@ -99,7 +101,9 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700">Participant Sub-Category</label>
+              <label class="block text-sm font-medium text-gray-700"
+                >Participant Sub-Category</label
+              >
               <select
                 v-model="participantSubCategory"
                 required
@@ -148,7 +152,9 @@
 
             <div class="col-span-2">
               <label class="block text-sm font-medium text-gray-700">Attachment</label>
-              <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+              <div
+                class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"
+              >
                 <div class="space-y-1 text-center">
                   <svg
                     class="mx-auto h-12 w-12 text-gray-400"
@@ -168,12 +174,7 @@
                       class="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none"
                     >
                       <span>Upload a file</span>
-                      <input
-                        type="file"
-                        @change="handleFileUpload"
-                        required
-                        class="sr-only"
-                      />
+                      <input type="file" @change="handleFileUpload" required class="sr-only" />
                     </label>
                     <p class="pl-1">or drag and drop</p>
                   </div>
@@ -205,7 +206,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref } from 'vue'
 import { CheckCircle } from 'lucide-vue-next'
@@ -236,44 +236,41 @@ const handleFileUpload = (event) => {
 }
 </script>
 
+<style scoped>
+.create-application {
+  max-width: 600px;
+  margin: 0 auto;
+}
 
+.form-group {
+  margin-bottom: 15px;
+}
 
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
 
-  <style scoped>
-  .create-application {
-    max-width: 600px;
-    margin: 0 auto;
-  }
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
 
-  .form-group {
-    margin-bottom: 15px;
-  }
+button {
+  padding: 10px 20px;
+  margin-right: 10px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
 
-  label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-
-  input,
-  textarea,
-  select {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-  }
-
-  button {
-    padding: 10px 20px;
-    margin-right: 10px;
-    cursor: pointer;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-  }
-
-  button:hover {
-    background-color: #0056b3;
-  }
-  </style>
+button:hover {
+  background-color: #0056b3;
+}
+</style>

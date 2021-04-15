@@ -13,17 +13,37 @@
           <div class="flex-1">
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </div>
-              <input type="text" v-model.trim="searchQuery" class="block w-full rounded-lg border-gray-300 pl-10 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search by ECPF Name, Category, or Description...">
+              <input
+                type="text"
+                v-model.trim="searchQuery"
+                class="block w-full rounded-lg border-gray-300 pl-10 py-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Search by ECPF Name, Category, or Description..."
+              />
             </div>
           </div>
           <div class="w-full md:w-1/4">
-            <select v-model="categoryFilter" class="block w-full rounded-lg border-gray-300 py-2 focus:ring-blue-500 focus:border-blue-500">
+            <select
+              v-model="categoryFilter"
+              class="block w-full rounded-lg border-gray-300 py-2 focus:ring-blue-500 focus:border-blue-500"
+            >
               <option value="">All Categories</option>
-              <option v-for="category in issueCategories" :key="category" :value="category">{{ category }}</option>
+              <option v-for="category in issueCategories" :key="category" :value="category">
+                {{ category }}
+              </option>
             </select>
           </div>
         </div>
@@ -35,34 +55,59 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   ECPF Name
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Branch ECPF
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Date of Non-Compliance
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Category of Issue
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Brief Description of Non-Compliance
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Action Taken
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   View Details
-                </th> <!-- Added View Details column -->
+                </th>
+                <!-- Added View Details column -->
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr v-for="record in filteredRecords" :key="record.id" class="hover:bg-gray-50 transition-colors">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ record.ecpfName }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ record.branchEcpf || 'N/A' }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ record.dateOfNonCompliance }}</td>
+              <tr
+                v-for="record in filteredRecords"
+                :key="record.id"
+                class="hover:bg-gray-50 transition-colors"
+              >
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ record.ecpfName }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ record.branchEcpf || 'N/A' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ record.dateOfNonCompliance }}
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <span :class="getCategoryClasses(record.categoryOfIssue)">
                     {{ record.categoryOfIssue }}
@@ -71,11 +116,22 @@
                 <td class="px-6 py-4 text-sm text-gray-900">{{ record.nonComplianceDetails }}</td>
                 <td class="px-6 py-4 text-sm text-gray-900">{{ record.actionTaken }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button @click="viewRecord(record.id)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
-                </td> <!-- View Details Button -->
+                  <button
+                    @click="viewRecord(record.id)"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+                  >
+                    View
+                  </button>
+                </td>
+                <!-- View Details Button -->
               </tr>
               <tr v-if="filteredRecords.length === 0">
-                <td colspan="7" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No non-compliance records found.</td>
+                <td
+                  colspan="7"
+                  class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center"
+                >
+                  No non-compliance records found.
+                </td>
               </tr>
             </tbody>
           </table>
@@ -83,20 +139,33 @@
       </div>
 
       <!-- View Non-Compliance Record Modal/Section -->
-      <div v-if="viewingRecord" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
+      <div
+        v-if="viewingRecord"
+        class="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center"
+      >
         <div class="bg-white p-8 rounded shadow-md">
           <h2 class="text-xl font-bold mb-4">Non-Compliance Record Details</h2>
           <p><strong>ECPF Name:</strong> {{ viewingRecord.ecpfName }}</p>
-          <p v-if="viewingRecord.branchEcpf"><strong>Branch ECPF:</strong> {{ viewingRecord.branchEcpf }}</p>
+          <p v-if="viewingRecord.branchEcpf">
+            <strong>Branch ECPF:</strong> {{ viewingRecord.branchEcpf }}
+          </p>
           <p><strong>Date of Non-Compliance:</strong> {{ viewingRecord.dateOfNonCompliance }}</p>
           <p><strong>Non-Compliance Details:</strong> {{ viewingRecord.nonComplianceDetails }}</p>
           <p><strong>Category of Issue:</strong> {{ viewingRecord.categoryOfIssue }}</p>
           <p><strong>Action:</strong> {{ viewingRecord.action }}</p>
           <p><strong>Action Taken:</strong> {{ viewingRecord.actionTaken }}</p>
-          <p><strong>Corrective Measures Required:</strong> {{ viewingRecord.correctiveMeasuresRequired }}</p>
+          <p>
+            <strong>Corrective Measures Required:</strong>
+            {{ viewingRecord.correctiveMeasuresRequired }}
+          </p>
           <p><strong>Corrected Action Report:</strong> {{ viewingRecord.correctedActionReport }}</p>
           <div class="flex justify-end mt-4">
-            <button @click="closeViewRecord" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded">Close</button>
+            <button
+              @click="closeViewRecord"
+              class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded"
+            >
+              Close
+            </button>
           </div>
         </div>
       </div>
@@ -116,75 +185,73 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import apiServices from '@/services/services'; // Import your API service
+import { ref, computed, onMounted } from 'vue'
+import apiServices from '@/services/services' // Import your API service
 
 // State for Modal Visibility and Data - SIMPLIFIED, only keep viewingRecord
-const viewingRecord = ref(null);
+const viewingRecord = ref(null)
 
 // Search and Filter State
-const searchQuery = ref('');
-const categoryFilter = ref('');
-const issueCategories = ref(['Environmental', 'Social', 'Governance', 'HR', 'Operational']);
+const searchQuery = ref('')
+const categoryFilter = ref('')
+const issueCategories = ref(['Environmental', 'Social', 'Governance', 'HR', 'Operational'])
 
 // Records from API
-const nonComplianceRecords = ref([]); // Initialize as empty array
+const nonComplianceRecords = ref([]) // Initialize as empty array
 
 // Filtered Records Computed Property (remains the same)
 const filteredRecords = computed(() => {
-  const search = searchQuery.value.toLowerCase();
-  const category = categoryFilter.value;
+  const search = searchQuery.value.toLowerCase()
+  const category = categoryFilter.value
 
-  return nonComplianceRecords.value.filter(record => {
+  return nonComplianceRecords.value.filter((record) => {
     const matchesSearch =
       record.ecpfName.toLowerCase().includes(search) ||
       (record.branchEcpf && record.branchEcpf.toLowerCase().includes(search)) ||
       record.dateOfNonCompliance.includes(search) ||
       record.categoryOfIssue.toLowerCase().includes(search) ||
       record.nonComplianceDetails.toLowerCase().includes(search) ||
-      record.actionTaken.toLowerCase().includes(search);
+      record.actionTaken.toLowerCase().includes(search)
 
-    const matchesCategory = !category || record.categoryOfIssue === category;
+    const matchesCategory = !category || record.categoryOfIssue === category
 
-    return matchesSearch && matchesCategory;
-  });
-});
+    return matchesSearch && matchesCategory
+  })
+})
 
 // --- Functions - SIMPLIFIED, only keep viewRecord and closeViewRecord ---
 
 const fetchRecords = async () => {
   try {
-    const response = await apiServices.getEcpfNonCompliances();
-    nonComplianceRecords.value = response.data.results; // Assuming API returns data in 'data' property
+    const response = await apiServices.getEcpfNonCompliances()
+    nonComplianceRecords.value = response.data.results // Assuming API returns data in 'data' property
   } catch (error) {
-    console.error('Error fetching non-compliance records:', error);
+    console.error('Error fetching non-compliance records:', error)
     // Handle error appropriately
   }
-};
+}
 
 onMounted(() => {
-  fetchRecords(); // Fetch records when component is mounted
-});
-
+  fetchRecords() // Fetch records when component is mounted
+})
 
 const viewRecord = async (id) => {
   try {
-    const response = await apiServices.getEcpfNonCompliance(id);
-    viewingRecord.value = response.data.results;
+    const response = await apiServices.getEcpfNonCompliance(id)
+    viewingRecord.value = response.data.results
   } catch (error) {
-    console.error('Error fetching record for view:', error);
+    console.error('Error fetching record for view:', error)
     // Handle error appropriately
-    viewingRecord.value = null; // Ensure modal closes on error
+    viewingRecord.value = null // Ensure modal closes on error
   }
-};
+}
 
 const closeViewRecord = () => {
-  viewingRecord.value = null;
-};
-
+  viewingRecord.value = null
+}
 
 const getCategoryClasses = (category) => {
-  return  [
+  return [
     'px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap',
     {
       'bg-blue-100 text-blue-800': category === 'Environmental',
@@ -192,10 +259,9 @@ const getCategoryClasses = (category) => {
       'bg-green-100 text-green-800': category === 'Operational',
       'bg-red-100 text-red-800': category === 'Governance',
       'bg-purple-100 text-purple-800': category === 'Social',
-    }
-  ];
-};
-
+    },
+  ]
+}
 </script>
 
 <style scoped>
@@ -207,7 +273,7 @@ const getCategoryClasses = (category) => {
   align-items: center;
 }
 
-.filters input[type="search"],
+.filters input[type='search'],
 .filters select {
   padding: 8px;
   border: 1px solid #ccc;
@@ -231,7 +297,6 @@ th {
   font-weight: bold;
 }
 
-
 .status {
   display: inline-block;
   padding: 5px 10px;
@@ -241,10 +306,19 @@ th {
   color: black;
 }
 
-.bg-blue-100.text-blue-800 { /* Environmental */ }
-.bg-yellow-100.text-yellow-800 { /* HR */ }
-.bg-green-100.text-green-800 { /* Operational */ }
-.bg-red-100.text-red-800 { /* Governance */ }
-.bg-purple-100.text-purple-800 { /* Social */ }
-
+.bg-blue-100.text-blue-800 {
+  /* Environmental */
+}
+.bg-yellow-100.text-yellow-800 {
+  /* HR */
+}
+.bg-green-100.text-green-800 {
+  /* Operational */
+}
+.bg-red-100.text-red-800 {
+  /* Governance */
+}
+.bg-purple-100.text-purple-800 {
+  /* Social */
+}
 </style>

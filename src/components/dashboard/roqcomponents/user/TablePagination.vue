@@ -5,12 +5,18 @@
         Showing {{ startIndex }} to {{ visibleEndIndex }} of {{ totalResults }} results
       </p>
       <div class="flex space-x-2">
-        <button class="px-3 py-1 border rounded disabled:opacity-50" :disabled="currentPage === 1"
-          @click="$emit('page-change', currentPage - 1)">
+        <button
+          class="px-3 py-1 border rounded disabled:opacity-50"
+          :disabled="currentPage === 1"
+          @click="$emit('page-change', currentPage - 1)"
+        >
           Previous
         </button>
-        <button class="px-3 py-1 border rounded disabled:opacity-50" :disabled="currentPage >= totalPages"
-          @click="$emit('page-change', currentPage + 1)">
+        <button
+          class="px-3 py-1 border rounded disabled:opacity-50"
+          :disabled="currentPage >= totalPages"
+          @click="$emit('page-change', currentPage + 1)"
+        >
           Next
         </button>
       </div>
@@ -19,7 +25,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from 'vue'
 
 const props = defineProps({
   currentPage: {
@@ -34,19 +40,19 @@ const props = defineProps({
     type: Number,
     default: 10,
   },
-});
+})
 
-defineEmits(['page-change']);
+defineEmits(['page-change'])
 
 const startIndex = computed(() => {
-  return (props.currentPage - 1) * props.perPage + 1;
-});
+  return (props.currentPage - 1) * props.perPage + 1
+})
 
 const visibleEndIndex = computed(() => {
-  return Math.min(props.currentPage * props.perPage, props.totalResults);
-});
+  return Math.min(props.currentPage * props.perPage, props.totalResults)
+})
 
 const totalPages = computed(() => {
-  return Math.ceil(props.totalResults / props.perPage);
-});
+  return Math.ceil(props.totalResults / props.perPage)
+})
 </script>

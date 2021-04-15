@@ -9,23 +9,21 @@
 </template>
 
 <script setup>
-import {
-  FileCheck, Hash, Calendar, Clock, FileText
-} from 'lucide-vue-next'
+import { FileCheck, Hash, Calendar, Clock, FileText } from 'lucide-vue-next'
 
 defineProps({
   icon: {
     type: String,
-    required: true
+    required: true,
   },
   label: {
     type: String,
-    required: true
+    required: true,
   },
   value: {
     type: String,
-    default: 'N/A'
-  }
+    default: 'N/A',
+  },
 })
 
 const iconComponents = {
@@ -33,6 +31,6 @@ const iconComponents = {
   Hash,
   Calendar,
   Clock,
-  FileText
+  FileText,
 }
 </script>

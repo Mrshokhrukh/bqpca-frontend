@@ -62,24 +62,24 @@ export default {
   },
 
   // Masters CPD Activity
-  getMhpcMastersCpdActivities() {
-    return apiClient.get('/mhpc/masters-cpd-activity/')
-  },
-  createMhpcMastersCpdActivity(data) {
-    return apiClient.post('/mhpc/masters-cpd-activity/', data)
-  },
-  getMhpcMastersCpdActivity(id) {
-    return apiClient.get(`/mhpc/masters-cpd-activity/${id}/`)
-  },
-  updateMhpcMastersCpdActivity(id, data) {
-    return apiClient.put(`/mhpc/masters-cpd-activity/${id}/`, data)
-  },
-  patchMhpcMastersCpdActivity(id, data) {
-    return apiClient.patch(`/mhpc/masters-cpd-activity/${id}/`, data)
-  },
-  deleteMhpcMastersCpdActivity(id) {
-    return apiClient.delete(`/mhpc/masters-cpd-activity/${id}/`)
-  },
+  // getMhpcMastersCpdActivities() {
+  //   return apiClient.get('/mhpc/masters-cpd-activity/')
+  // },
+  // createMhpcMastersCpdActivity(data) {
+  //   return apiClient.post('/mhpc/masters-cpd-activity/', data)
+  // },
+  // getMhpcMastersCpdActivity(id) {
+  //   return apiClient.get(`/mhpc/masters-cpd-activity/${id}/`)
+  // },
+  // updateMhpcMastersCpdActivity(id, data) {
+  //   return apiClient.put(`/mhpc/masters-cpd-activity/${id}/`, data)
+  // },
+  // patchMhpcMastersCpdActivity(id, data) {
+  //   return apiClient.patch(`/mhpc/masters-cpd-activity/${id}/`, data)
+  // },
+  // deleteMhpcMastersCpdActivity(id) {
+  //   return apiClient.delete(`/mhpc/masters-cpd-activity/${id}/`)
+  // },
 
   // Masters Document Types
   getMhpcMastersDocumentTypes() {

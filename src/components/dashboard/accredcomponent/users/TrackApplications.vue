@@ -1,4 +1,3 @@
-
 <template>
   <div class="application-status-tracker">
     <h2>{{ title }}</h2>
@@ -34,7 +33,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from 'vue'
 
 const props = defineProps({
   applications: {
@@ -50,25 +49,25 @@ const props = defineProps({
     type: String,
     default: 'Application', // Default to "Application" if not specified, can be "Appeal"
   },
-});
+})
 
 const title = computed(() => {
-  return `${props.applicationType} Status Tracker`;
-});
+  return `${props.applicationType} Status Tracker`
+})
 
 const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return date.toLocaleDateString(); // You can customize the date format
-};
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toLocaleDateString() // You can customize the date format
+}
 
-const emit = defineEmits(['view-application-details']); // Example of emitting an event for viewing details
+const emit = defineEmits(['view-application-details']) // Example of emitting an event for viewing details
 
 const viewDetails = (application) => {
-  emit('view-application-details', application);
+  emit('view-application-details', application)
   // In a real application, you would likely navigate to a detailed view of the application
-  console.log('View Details clicked for:', application);
-};
+  console.log('View Details clicked for:', application)
+}
 </script>
 
 <style scoped>

@@ -1,27 +1,40 @@
 <template>
   <div class="relative">
     <!-- Notification Bell Button -->
-    <button @click="toggleNotifications"
-      class="relative p-2 rounded-lg hover:bg-slate-100 transition-all duration-200 group">
-      <Bell class="h-6 w-6 text-slate-600 transition-transform duration-200 group-hover:rotate-12"
-        :class="{ 'text-primary': hasUnread }" />
+    <button
+      @click="toggleNotifications"
+      class="relative p-2 rounded-lg hover:bg-slate-100 transition-all duration-200 group"
+    >
+      <Bell
+        class="h-6 w-6 text-slate-600 transition-transform duration-200 group-hover:rotate-12"
+        :class="{ 'text-primary': hasUnread }"
+      />
 
       <!-- Notification Badge -->
-      <span v-if="unreadCount > 0"
-        class="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs font-medium text-white bg-primary rounded-full">
+      <span
+        v-if="unreadCount > 0"
+        class="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs font-medium text-white bg-primary rounded-full"
+      >
         {{ unreadCount > 99 ? '99+' : unreadCount }}
       </span>
     </button>
 
     <!-- Notification Panel -->
-    <div v-if="showNotifications"
+    <div
+      v-if="showNotifications"
       class="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden"
-      v-click-outside="() => showNotifications = false">
+      v-click-outside="() => (showNotifications = false)"
+    >
       <!-- Header -->
-      <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+      <div
+        class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between"
+      >
         <h3 class="font-medium text-slate-800">Notifications</h3>
-        <button @click="markAllAsRead" class="text-xs text-primary hover:text-primary-dark transition-colors"
-          :disabled="!hasUnread">
+        <button
+          @click="markAllAsRead"
+          class="text-xs text-primary hover:text-primary-dark transition-colors"
+          :disabled="!hasUnread"
+        >
           Mark all as read
         </button>
       </div>
@@ -40,21 +53,33 @@
           </div>
 
           <template v-else>
-            <div v-for="notification in notifications" :key="notification.id"
+            <div
+              v-for="notification in notifications"
+              :key="notification.id"
               class="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer"
-              :class="{ 'bg-blue-50/50': !notification.read }" @click="handleNotificationClick(notification)">
+              :class="{ 'bg-blue-50/50': !notification.read }"
+              @click="handleNotificationClick(notification)"
+            >
               <div class="flex items-start space-x-3">
                 <div class="flex-shrink-0 mt-1">
-                  <component :is="getNotificationIcon(notification.type)" class="h-5 w-5"
-                    :class="getNotificationIconColor(notification.type)" />
+                  <component
+                    :is="getNotificationIcon(notification.type)"
+                    class="h-5 w-5"
+                    :class="getNotificationIconColor(notification.type)"
+                  />
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-medium text-slate-900">{{ notification.title }}</p>
                   <p class="text-sm text-slate-500 mt-0.5">{{ notification.message }}</p>
-                  <p class="text-xs text-slate-400 mt-1">{{ formatTimestamp(notification.timestamp) }}</p>
+                  <p class="text-xs text-slate-400 mt-1">
+                    {{ formatTimestamp(notification.timestamp) }}
+                  </p>
                 </div>
-                <button v-if="!notification.read" @click.stop="markAsRead(notification.id)"
-                  class="p-1 rounded-full hover:bg-slate-200 transition-colors">
+                <button
+                  v-if="!notification.read"
+                  @click.stop="markAsRead(notification.id)"
+                  class="p-1 rounded-full hover:bg-slate-200 transition-colors"
+                >
                   <Check class="h-4 w-4 text-slate-400" />
                 </button>
               </div>
@@ -65,7 +90,10 @@
 
       <!-- Footer -->
       <div class="px-4 py-3 bg-slate-50 border-t border-slate-200 text-center">
-        <button class="text-sm text-primary hover:text-primary-dark transition-colors" @click="viewAllNotifications">
+        <button
+          class="text-sm text-primary hover:text-primary-dark transition-colors"
+          @click="viewAllNotifications"
+        >
           View all notifications
         </button>
       </div>
@@ -74,8 +102,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 // import { useAuthStore } from '@/stores/authStore'; // Import your authStore
 import {
   Bell,
@@ -85,17 +113,17 @@ import {
   CircleAlert,
   CheckCircle2,
   Info,
-  AlertTriangle
-} from 'lucide-vue-next';
-import { formatDistanceToNow } from 'date-fns';
-import apiService from '@/services/services'; // If you have an apiService setup (recommended)
+  AlertTriangle,
+} from 'lucide-vue-next'
+import { formatDistanceToNow } from 'date-fns'
+import apiService from '@/services/services' // If you have an apiService setup (recommended)
 
 // State
-const notifications = ref([]);
-const showNotifications = ref(false);
-const loading = ref(false);
-const socket = ref(null);
-const router = useRouter();
+const notifications = ref([])
+const showNotifications = ref(false)
+const loading = ref(false)
+const socket = ref(null)
+const router = useRouter()
 // const authStore = useAuthStore(); // Use authStore
 
 // **Service Type Mapping**
@@ -110,10 +138,10 @@ const router = useRouter();
 
 // Computed
 const unreadCount = computed(() => {
-  return notifications.value.filter(n => !n.read).length;
-});
+  return notifications.value.filter((n) => !n.read).length
+})
 
-const hasUnread = computed(() => unreadCount.value > 0);
+const hasUnread = computed(() => unreadCount.value > 0)
 
 // WebSocket Setup
 // const setupWebSocket = () => {
@@ -149,66 +177,66 @@ const hasUnread = computed(() => unreadCount.value > 0);
 
 // Methods
 const toggleNotifications = () => {
-  showNotifications.value = !showNotifications.value;
+  showNotifications.value = !showNotifications.value
   if (showNotifications.value && !notifications.value.length) {
-    fetchNotifications();
+    fetchNotifications()
   }
-};
+}
 
 const fetchNotifications = async () => {
-  loading.value = true;
+  loading.value = true
   try {
     // **Fetch notifications using API - No email needed if backend uses token auth**
     const response = await apiService.getNotificationn()
-    notifications.value = response.data || []; // Assuming your API response has 'results' array
+    notifications.value = response.data || [] // Assuming your API response has 'results' array
   } catch (error) {
-    console.error('Failed to fetch notifications:', error);
+    console.error('Failed to fetch notifications:', error)
     // Handle error appropriately, maybe show a toast notification to the user
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 const markAsRead = async (id) => {
   try {
-    await apiService.markNotificationAsRead(id);
-    const notification = notifications.value.find(n => n.id === id);
+    await apiService.markNotificationAsRead(id)
+    const notification = notifications.value.find((n) => n.id === id)
     if (notification) {
-      notification.read = true;
+      notification.read = true
     }
   } catch (error) {
-    console.error('Failed to mark notification as read:', error);
+    console.error('Failed to mark notification as read:', error)
   }
-};
+}
 
 const markAllAsRead = async () => {
   try {
-    await apiService.markAllNotificationsAsRead();
-    notifications.value = notifications.value.map(n => ({ ...n, read: true }));
+    await apiService.markAllNotificationsAsRead()
+    notifications.value = notifications.value.map((n) => ({ ...n, read: true }))
   } catch (error) {
-    console.error('Failed to mark all notifications as read:', error);
+    console.error('Failed to mark all notifications as read:', error)
   }
-};
+}
 
 const handleNotificationClick = (notification) => {
   if (!notification.read) {
-    markAsRead(notification.id);
+    markAsRead(notification.id)
   }
   if (notification.link) {
-    router.push(notification.link);
+    router.push(notification.link)
   }
-  showNotifications.value = false;
-};
+  showNotifications.value = false
+}
 
 const viewAllNotifications = () => {
-  router.push('/notifications');
-  showNotifications.value = false;
-};
+  router.push('/notifications')
+  showNotifications.value = false
+}
 
 // Helper Functions (remain the same)
 const formatTimestamp = (timestamp) => {
-  return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
-};
+  return formatDistanceToNow(new Date(timestamp), { addSuffix: true })
+}
 
 const getNotificationIcon = (type) => {
   const icons = {
@@ -216,9 +244,9 @@ const getNotificationIcon = (type) => {
     error: CircleAlert,
     warning: AlertTriangle,
     info: Info,
-  };
-  return icons[type] || Info;
-};
+  }
+  return icons[type] || Info
+}
 
 const getNotificationIconColor = (type) => {
   const colors = {
@@ -226,9 +254,9 @@ const getNotificationIconColor = (type) => {
     error: 'text-red-500',
     warning: 'text-yellow-500',
     info: 'text-blue-500',
-  };
-  return colors[type] || colors.info;
-};
+  }
+  return colors[type] || colors.info
+}
 
 // Lifecycle Hooks
 onMounted(() => {
@@ -237,14 +265,14 @@ onMounted(() => {
   // if (authStore.serviceType) {
   //   setupWebSocket();
   // } else {
-  console.warn("Service type not yet available on mount. WebSocket setup deferred.");
-});
+  console.warn('Service type not yet available on mount. WebSocket setup deferred.')
+})
 
 onBeforeUnmount(() => {
   if (socket.value) {
-    socket.value.close();
+    socket.value.close()
   }
-});
+})
 </script>
 
 <style scoped>

@@ -7,7 +7,12 @@
         <form @submit.prevent="handleSubmit">
           <div class="form-group mb-3">
             <label for="applicationId">Application ID</label>
-            <input type="text" id="applicationId" v-model="formData.applicationId" class="form-control" />
+            <input
+              type="text"
+              id="applicationId"
+              v-model="formData.applicationId"
+              class="form-control"
+            />
           </div>
           <div class="form-group mb-3">
             <label for="status">Verification Status</label>
@@ -25,18 +30,17 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive } from 'vue'
 
 const formData = reactive({
   applicationId: '',
-  status: 'pending'
-});
+  status: 'pending',
+})
 
 const handleSubmit = () => {
   // Add your form submission logic here
-  console.log('Form submitted:', formData);
-};
-
+  console.log('Form submitted:', formData)
+}
 </script>
 
 <style scoped>

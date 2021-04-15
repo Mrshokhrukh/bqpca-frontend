@@ -20,25 +20,26 @@
           <div v-for="config in configurationCards" :key="config.id" class="group relative">
             <!-- Gradient Overlay (Hover Effect) -->
             <div
-              :class="`absolute inset-0 bg-gradient-to-r ${config.gradient} rounded-xl opacity-0 group-hover:opacity-20 transition duration-300`">
-            </div>
+              :class="`absolute inset-0 bg-gradient-to-r ${config.gradient} rounded-xl opacity-0 group-hover:opacity-20 transition duration-300`"
+            ></div>
 
             <!-- Card Content -->
-            <div :class="[
-            baseCardClasses,
-            'relative flex flex-col h-full overflow-hidden',
-          ]">
+            <div :class="[baseCardClasses, 'relative flex flex-col h-full overflow-hidden']">
               <div class="p-6 flex-grow">
                 <!-- Card Header -->
                 <div class="flex items-start justify-between mb-6">
                   <div>
                     <div class="flex items-center gap-3 mb-3">
-                      <div :class="[
-            iconBgClass(config.icon.split(/(?=[A-Z])/)[0].toLowerCase()),
-            'p-2 rounded-lg transition-colors duration-300 group-hover:bg-opacity-20',
-          ]">
-                        <component :is="iconMap[config.id]"
-                          :class="iconColorClass(config.icon.split(/(?=[A-Z])/)[0].toLowerCase())" />
+                      <div
+                        :class="[
+                          iconBgClass(config.icon.split(/(?=[A-Z])/)[0].toLowerCase()),
+                          'p-2 rounded-lg transition-colors duration-300 group-hover:bg-opacity-20',
+                        ]"
+                      >
+                        <component
+                          :is="iconMap[config.id]"
+                          :class="iconColorClass(config.icon.split(/(?=[A-Z])/)[0].toLowerCase())"
+                        />
                       </div>
                       <h3 class="font-semibold text-slate-900 text-lg">{{ config.title }}</h3>
                     </div>
@@ -70,16 +71,27 @@
               <!-- Card Footer (Sub-buttons) -->
               <div class="p-4 border-t border-slate-200">
                 <div class="space-y-2">
-                  <router-link v-for="child in config.children" :key="child.route" :to="child.route" :class="[
-            config.button,
-            'inline-flex items-center gap-2 text-sm px-4 py-2 rounded-lg transition-colors duration-300 font-medium group w-full justify-between',
-          ]">
+                  <router-link
+                    v-for="child in config.children"
+                    :key="child.route"
+                    :to="child.route"
+                    :class="[
+                      config.button,
+                      'inline-flex items-center gap-2 text-sm px-4 py-2 rounded-lg transition-colors duration-300 font-medium group w-full justify-between',
+                    ]"
+                  >
                     <span class="flex items-center gap-2">
                       <!-- Child Icon (Optional, shown if present) -->
-                      <component v-if="child.icon" :is="child.icon" :class="config.iconColorClass" />
+                      <component
+                        v-if="child.icon"
+                        :is="child.icon"
+                        :class="config.iconColorClass"
+                      />
                       {{ child.text }}
                     </span>
-                    <ChevronRight class="h-4 w-4 transform group-hover:translate-x-0.5 transition-transform" />
+                    <ChevronRight
+                      class="h-4 w-4 transform group-hover:translate-x-0.5 transition-transform"
+                    />
                   </router-link>
                 </div>
               </div>
@@ -91,11 +103,9 @@
   </div>
 </template>
 
-
-
 <script setup>
-import { ref, onMounted } from 'vue';
-import apiServices from '@/services/services';
+import { ref, onMounted } from 'vue'
+import apiServices from '@/services/services'
 import {
   BookOpen, // CPD
   ClipboardList, // CPD
@@ -109,8 +119,7 @@ import {
   Info,
   TrendingUp,
   ChevronRight,
-
-} from 'lucide-vue-next';
+} from 'lucide-vue-next'
 
 // --- State ---
 const counts = ref({
@@ -132,16 +141,15 @@ const counts = ref({
   cogsAgencies: 0,
   cogsDepts: 0,
   cogsWorkplaces: 0,
-});
+})
 
 // --- Utility Functions ---
 const baseCardClasses =
-  'bg-white rounded-lg shadow-sm border border-slate-200 transition-all duration-300';
-const gradientClasses = (from, to) => `from-${from}-600 to-${to}-400`;
-const iconBgClass = (color) => `bg-${color}-50`;
-const iconColorClass = (color) => `text-${color}-600`;
-const buttonClasses = (color) =>
-  `bg-${color}-50 text-${color}-600 hover:bg-${color}-100`;
+  'bg-white rounded-lg shadow-sm border border-slate-200 transition-all duration-300'
+const gradientClasses = (from, to) => `from-${from}-600 to-${to}-400`
+const iconBgClass = (color) => `bg-${color}-50`
+const iconColorClass = (color) => `text-${color}-600`
+const buttonClasses = (color) => `bg-${color}-50 text-${color}-600 hover:bg-${color}-100`
 
 // --- Icon Mapping ---
 const iconMap = {
@@ -154,10 +162,10 @@ const iconMap = {
   registration: CheckCircle,
   university: Building,
   cogsManagement: Briefcase,
-};
+}
 
 // Base path for admin engineering routes
-const basePath = '/admin/admin/engineering_certification';
+const basePath = '/admin/admin/engineering_certification'
 
 // --- Configuration Cards Data ---
 const configurationCards = [
@@ -205,7 +213,7 @@ const configurationCards = [
         text: 'Manage Technical Activities',
         route: `${basePath}/cpd_activity`,
         icon: null,
-      }
+      },
     ],
     gradient: gradientClasses('indigo', 'indigo'),
     iconBg: iconBgClass('indigo'),
@@ -262,7 +270,7 @@ const configurationCards = [
         text: 'Fees Associated For',
         route: `${basePath}/fees_associated_for`,
         icon: null,
-      }
+      },
     ],
     gradient: gradientClasses('amber', 'amber'),
     iconBg: iconBgClass('amber'),
@@ -371,7 +379,7 @@ const configurationCards = [
         text: 'Manage Universities',
         route: `${basePath}/university`,
         icon: null,
-      }
+      },
     ],
     gradient: gradientClasses('violet', 'violet'),
     iconBg: iconBgClass('violet'),
@@ -410,7 +418,7 @@ const configurationCards = [
     button: buttonClasses('teal'),
     icon: 'Briefcase',
   },
-];
+]
 
 // --- Data Fetching ---
 onMounted(async () => {
@@ -435,33 +443,33 @@ onMounted(async () => {
       apiServices.getEpcMastersCogsAgencies(),
       apiServices.getEpcMastersCogsDepartments(),
       apiServices.getEpcMastersCogsWorkplaces(),
-    ];
+    ]
 
-    const results = await Promise.all(countPromises);
+    const results = await Promise.all(countPromises)
 
     // Update counts state
-    counts.value.cpdActivities = results[0].data?.length || 0;
-    counts.value.cpdCredits = results[1].data?.length || 0;
-    counts.value.cpdMethodologies = results[2].data?.length || 0;
-    counts.value.cpdActivities = results[3].data?.length || 0;
-    counts.value.documentTypes = results[4].data?.length || 0;
-    counts.value.eSignatures = results[5].data?.length || 0;
-    counts.value.fileTypes = results[6].data?.length || 0;
-    counts.value.feeStructures = results[7].data?.length || 0;
-    counts.value.participationCategories = results[8].data?.length || 0;
-    counts.value.participationSubCategories = results[9].data?.length || 0;
-    counts.value.personnelCategories = results[10].data?.length || 0;
-    counts.value.qualificationTypes = results[11].data?.length || 0;
-    counts.value.registrationTypes = results[12].data?.length || 0;
-    counts.value.sectors = results[13].data?.length || 0;
-    counts.value.subCategories = results[14].data?.length || 0;
-    counts.value.universities = results[15].data?.length || 0;
-    counts.value.cogsAgencies = results[16].data?.length || 0;
-    counts.value.cogsDepts = results[17].data?.length || 0;
-    counts.value.cogsWorkplaces = results[18].data?.length || 0;
+    counts.value.cpdActivities = results[0].data?.length || 0
+    counts.value.cpdCredits = results[1].data?.length || 0
+    counts.value.cpdMethodologies = results[2].data?.length || 0
+    counts.value.cpdActivities = results[3].data?.length || 0
+    counts.value.documentTypes = results[4].data?.length || 0
+    counts.value.eSignatures = results[5].data?.length || 0
+    counts.value.fileTypes = results[6].data?.length || 0
+    counts.value.feeStructures = results[7].data?.length || 0
+    counts.value.participationCategories = results[8].data?.length || 0
+    counts.value.participationSubCategories = results[9].data?.length || 0
+    counts.value.personnelCategories = results[10].data?.length || 0
+    counts.value.qualificationTypes = results[11].data?.length || 0
+    counts.value.registrationTypes = results[12].data?.length || 0
+    counts.value.sectors = results[13].data?.length || 0
+    counts.value.subCategories = results[14].data?.length || 0
+    counts.value.universities = results[15].data?.length || 0
+    counts.value.cogsAgencies = results[16].data?.length || 0
+    counts.value.cogsDepts = results[17].data?.length || 0
+    counts.value.cogsWorkplaces = results[18].data?.length || 0
   } catch (error) {
-    console.error('Error fetching dashboard data:', error);
+    console.error('Error fetching dashboard data:', error)
     // Consider adding user-friendly error handling (e.g., a notification)
   }
-});
+})
 </script>

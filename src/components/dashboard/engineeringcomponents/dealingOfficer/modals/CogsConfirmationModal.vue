@@ -1,8 +1,12 @@
 <template>
   <Transition name="modal" appear>
-    <div class="fixed z-50 inset-0 overflow-y-auto backdrop-blur-sm bg-black/50 flex items-center justify-center p-4">
-      <div class="bg-white rounded-xl shadow-2xl w-full max-w-md transform transition-all"
-        :class="{ 'scale-100 opacity-100': showModal, 'scale-95 opacity-0': !showModal }">
+    <div
+      class="fixed z-50 inset-0 overflow-y-auto backdrop-blur-sm bg-black/50 flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-xl shadow-2xl w-full max-w-md transform transition-all"
+        :class="{ 'scale-100 opacity-100': showModal, 'scale-95 opacity-0': !showModal }"
+      >
         <!-- Modal Header with Accent Border -->
         <div class="border-t-4 border-blue-500 rounded-t-xl"></div>
 
@@ -24,12 +28,16 @@
 
           <!-- Action Buttons -->
           <div class="mt-6 flex justify-end gap-3">
-            <button @click="$emit('cancel')"
-              class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+            <button
+              @click="$emit('cancel')"
+              class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            >
               Cancel
             </button>
-            <button @click="confirm"
-              class="px-5 py-2 bg-blue-600 rounded-lg text-white font-medium hover:bg-blue-700 transition-colors duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <button
+              @click="confirm"
+              class="px-5 py-2 bg-blue-600 rounded-lg text-white font-medium hover:bg-blue-700 transition-colors duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
               Confirm
             </button>
           </div>
@@ -40,22 +48,22 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { AlertCircleIcon } from 'lucide-vue-next';
+import { computed } from 'vue'
+import { AlertCircleIcon } from 'lucide-vue-next'
 
 defineProps({
   message: {
     type: String,
-    required: true
-  }
-});
+    required: true,
+  },
+})
 
-const showModal = computed(() => true);
-const emit = defineEmits(['confirm', 'cancel']);
+const showModal = computed(() => true)
+const emit = defineEmits(['confirm', 'cancel'])
 
 const confirm = () => {
-  emit('confirm', true);
-};
+  emit('confirm', true)
+}
 </script>
 
 <style scoped>

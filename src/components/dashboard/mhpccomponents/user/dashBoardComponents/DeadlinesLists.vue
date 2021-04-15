@@ -1,4 +1,3 @@
-
 <template>
   <div class="bg-white p-6 rounded-lg shadow-md">
     <h3 class="font-semibold mb-4">{{ title }}</h3>
@@ -21,19 +20,19 @@
 </template>
 
 <script setup>
-import { CircleAlert } from 'lucide-vue-next';
-import dayjs from 'dayjs';
+import { CircleAlert } from 'lucide-vue-next'
+import dayjs from 'dayjs'
 
 defineProps({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   deadlines: {
     type: Array,
-    default: () => []
-  }
-});
+    default: () => [],
+  },
+})
 
-const formatDate = (date) => dayjs(date).format('MMM DD, YYYY');
+const formatDate = (date) => dayjs(date).format('MMM DD, YYYY')
 </script>

@@ -28,27 +28,26 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-const applications = ref([]); // Start with an empty array
-const router = useRouter();
+const applications = ref([]) // Start with an empty array
+const router = useRouter()
 
 const reviewApplication = (id) => {
-  router.push(`/engineering_certification/application/${id}`);
-};
+  router.push(`/engineering_certification/application/${id}`)
+}
 
 onMounted(async () => {
   try {
     // Replace with your actual API endpoint
-    const response = await fetch('/api/applications');
-    applications.value = await response.json();
+    const response = await fetch('/api/applications')
+    applications.value = await response.json()
   } catch (error) {
-    console.error('Error fetching applications:', error);
+    console.error('Error fetching applications:', error)
     // Handle errors appropriately (e.g., show an error message)
   }
-});
-
+})
 </script>
 
 <style scoped>

@@ -6,22 +6,34 @@
           <table class="min-w-full leading-normal">
             <thead>
               <tr>
-                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   User ID
                 </th>
-                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   User Name
                 </th>
-                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Status
                 </th>
-                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   COI Sent Date
                 </th>
-                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Site Visit Date
                 </th>
-                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Actions
                 </th>
               </tr>
@@ -39,8 +51,15 @@
                   </p>
                 </td>
                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  <span class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight" :class="getStatusClass(user.status)">
-                    <span aria-hidden class="absolute inset-0 bg-green-200 opacity-50 rounded-full" :class="getStatusBackgroundClass(user.status)"></span>
+                  <span
+                    class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight"
+                    :class="getStatusClass(user.status)"
+                  >
+                    <span
+                      aria-hidden
+                      class="absolute inset-0 bg-green-200 opacity-50 rounded-full"
+                      :class="getStatusBackgroundClass(user.status)"
+                    ></span>
                     <span class="relative">{{ user.status }}</span>
                   </span>
                 </td>
@@ -62,14 +81,17 @@
                     @click="scheduleSiteVisit(user)"
                     :disabled="!user.siteVisitDate"
                     class="inline-block text-center py-2 px-4 bg-indigo-500 hover:bg-indigo-700 text-white text-sm rounded-md transition duration-200"
-                    :class="{'opacity-50 cursor-not-allowed': !user.siteVisitDate}"
+                    :class="{ 'opacity-50 cursor-not-allowed': !user.siteVisitDate }"
                   >
                     Schedule Visit
                   </button>
                 </td>
               </tr>
               <tr v-if="coiAcceptedUsers.length === 0">
-                <td colspan="6" class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center">
+                <td
+                  colspan="6"
+                  class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center"
+                >
                   No users to schedule or view site visits.
                 </td>
               </tr>
@@ -82,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
 
 const verifiedUsers = ref([
   {
@@ -92,7 +114,7 @@ const verifiedUsers = ref([
     status: 'COI Sent',
     coiSent: true,
     coiSentDate: '2024-09-05',
-    siteVisitDate: null
+    siteVisitDate: null,
   },
   {
     userId: 'USER-002',
@@ -101,7 +123,7 @@ const verifiedUsers = ref([
     status: 'Site Visit Scheduled', // Now with Site Visit Scheduled status
     coiSent: true,
     coiSentDate: '2024-09-06',
-    siteVisitDate: '2024-10-15' // Example Site Visit Date
+    siteVisitDate: '2024-10-15', // Example Site Visit Date
   },
   {
     userId: 'USER-003',
@@ -110,42 +132,45 @@ const verifiedUsers = ref([
     status: 'COI Sent',
     coiSent: true,
     coiSentDate: '2024-09-07',
-    siteVisitDate: null
+    siteVisitDate: null,
   },
   // ... more users
-]);
+])
 
 // Computed property to filter users for Site Visit Scheduling table
 const coiAcceptedUsers = computed(() => {
-  return verifiedUsers.value.filter(user =>
-    user.status === 'COI Sent' || user.status === 'Site Visit Scheduled'
-  );
-});
-
+  return verifiedUsers.value.filter(
+    (user) => user.status === 'COI Sent' || user.status === 'Site Visit Scheduled',
+  )
+})
 
 const scheduleSiteVisit = (user) => {
   if (user.siteVisitDate) {
-    user.status = 'Site Visit Scheduled';
-    alert(`Site visit scheduled for ${user.userName} on ${user.siteVisitDate}`);
-    console.log(`Site visit scheduled for user ${user.userId} on ${user.siteVisitDate}`);
+    user.status = 'Site Visit Scheduled'
+    alert(`Site visit scheduled for ${user.userName} on ${user.siteVisitDate}`)
+    console.log(`Site visit scheduled for user ${user.userId} on ${user.siteVisitDate}`)
     // In a real application, you would send a notification to the user and update the backend
   }
-};
-
+}
 
 const getStatusClass = (status) => {
   switch (status) {
-    case 'COI Sent': return 'text-green-900';
-    case 'Site Visit Scheduled': return 'text-indigo-900';
-    default: return 'text-gray-900';
+    case 'COI Sent':
+      return 'text-green-900'
+    case 'Site Visit Scheduled':
+      return 'text-indigo-900'
+    default:
+      return 'text-gray-900'
   }
-};
+}
 const getStatusBackgroundClass = (status) => {
   switch (status) {
-    case 'COI Sent': return 'bg-green-200';
-    case 'Site Visit Scheduled': return 'bg-indigo-200';
-    default: return 'bg-gray-200';
+    case 'COI Sent':
+      return 'bg-green-200'
+    case 'Site Visit Scheduled':
+      return 'bg-indigo-200'
+    default:
+      return 'bg-gray-200'
   }
-};
-
+}
 </script>

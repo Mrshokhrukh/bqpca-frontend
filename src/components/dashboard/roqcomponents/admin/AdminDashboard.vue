@@ -8,10 +8,19 @@
             System Configuration
           </h1>
           <div class="flex items-center gap-2 justify-center lg:justify-start text-slate-600">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <p>Manage master data and form configurations</p>
           </div>
@@ -23,16 +32,18 @@
         <!-- Dynamic Configuration Cards -->
         <div v-for="config in configurationCards" :key="config.id" class="group relative">
           <div
-            :class="`absolute -inset-0.5 bg-gradient-to-r ${config.gradientClasses} rounded-xl blur opacity-0 group-hover:opacity-20 transition duration-300`">
-          </div>
+            :class="`absolute -inset-0.5 bg-gradient-to-r ${config.gradientClasses} rounded-xl blur opacity-0 group-hover:opacity-20 transition duration-300`"
+          ></div>
           <div
-            :class="`relative bg-white rounded-lg shadow-sm border border-slate-200 ${config.hoverBorderClass} transition-all duration-300`">
+            :class="`relative bg-white rounded-lg shadow-sm border border-slate-200 ${config.hoverBorderClass} transition-all duration-300`"
+          >
             <div class="p-6">
               <div class="flex items-start justify-between mb-6">
                 <div>
                   <div class="flex items-center gap-3 mb-3">
                     <div
-                      :class="`p-2 ${config.iconBgClass} rounded-lg ${config.iconHoverBgClass} transition-colors duration-300`">
+                      :class="`p-2 ${config.iconBgClass} rounded-lg ${config.iconHoverBgClass} transition-colors duration-300`"
+                    >
                       <component :is="config.icon" :class="`h-6 w-6 ${config.iconColorClass}`" />
                     </div>
                     <h3 class="font-semibold text-slate-900 text-lg">{{ config.title }}</h3>
@@ -45,27 +56,48 @@
                 <div class="flex items-center gap-2 bg-slate-50 rounded-lg p-3">
                   <div class="text-sm">
                     <span class="text-slate-600">{{ config.countLabel }}:</span>
-                    <span class="font-semibold text-slate-900 ml-1">{{ counts[config.countRef] }} {{ config.countSuffix
-                      }}</span>
+                    <span class="font-semibold text-slate-900 ml-1"
+                      >{{ counts[config.countRef] }} {{ config.countSuffix }}</span
+                    >
                   </div>
                 </div>
                 <div class="flex items-center gap-2 text-sm text-slate-500">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                    />
                   </svg>
                   Used in: {{ config.usedIn.join(', ') }}
                 </div>
               </div>
 
-              <router-link :to="config.route"
-                :class="`inline-flex items-center gap-2 text-sm px-4 py-2.5 ${config.buttonClasses} rounded-lg transition-colors duration-300 font-medium group w-full justify-center`">
+              <router-link
+                :to="config.route"
+                :class="`inline-flex items-center gap-2 text-sm px-4 py-2.5 ${config.buttonClasses} rounded-lg transition-colors duration-300 font-medium group w-full justify-center`"
+              >
                 {{ config.buttonText }}
-                <svg xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4 transform group-hover:translate-x-0.5 transition-transform" fill="none"
-                  viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4 transform group-hover:translate-x-0.5 transition-transform"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </router-link>
             </div>
@@ -77,8 +109,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import services from '@/services/services';
+import { ref, onMounted } from 'vue'
+import services from '@/services/services'
 
 // State for counts
 const counts = ref({
@@ -88,8 +120,8 @@ const counts = ref({
   reasons: 0,
   courseTypes: 0,
   genders: 0,
-  countries: 0
-});
+  countries: 0,
+})
 
 // Configuration cards data
 const configurationCards = [
@@ -112,8 +144,8 @@ const configurationCards = [
     icon: {
       template: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-      </svg>`
-    }
+      </svg>`,
+    },
   },
   {
     id: 'learningTypes',
@@ -134,8 +166,8 @@ const configurationCards = [
     icon: {
       template: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-      </svg>`
-    }
+      </svg>`,
+    },
   },
   {
     id: 'qualifications',
@@ -156,8 +188,8 @@ const configurationCards = [
     icon: {
       template: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z" />
-      </svg>`
-    }
+      </svg>`,
+    },
   },
   {
     id: 'reasons',
@@ -178,8 +210,8 @@ const configurationCards = [
     icon: {
       template: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>`
-    }
+      </svg>`,
+    },
   },
   {
     id: 'courseTypes',
@@ -201,8 +233,8 @@ const configurationCards = [
       template: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path d="M12 14l9-5-9-5-9 5 9 5z" />
         <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-      </svg>`
-    }
+      </svg>`,
+    },
   },
   {
     id: 'genders',
@@ -223,10 +255,10 @@ const configurationCards = [
     icon: {
       template: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>`
-    }
+      </svg>`,
+    },
   },
-];
+]
 
 // Fetch counts on component mount
 onMounted(async () => {
@@ -238,7 +270,7 @@ onMounted(async () => {
       reasonsResponse,
       courseTypesResponse,
       gendersResponse,
-      countriesResponse
+      countriesResponse,
     ] = await Promise.all([
       services.getDecisions(),
       services.getLearningTypes(),
@@ -246,8 +278,8 @@ onMounted(async () => {
       services.getReasonsForIssueOfSecondCopy(),
       services.getTypesOfCourse(),
       services.getGenders(),
-      services.getCountries()
-    ]);
+      services.getCountries(),
+    ])
 
     counts.value = {
       decisions: decisionsResponse.data.count,
@@ -256,10 +288,10 @@ onMounted(async () => {
       reasons: reasonsResponse.data.count,
       courseTypes: courseTypesResponse.data.count,
       genders: gendersResponse.data.count,
-      countries: countriesResponse.data.count
-    };
+      countries: countriesResponse.data.count,
+    }
   } catch (error) {
-    console.error('Error fetching counts:', error);
+    console.error('Error fetching counts:', error)
   }
-});
+})
 </script>

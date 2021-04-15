@@ -1,3 +1,3 @@
 <template>
-    <h1>BmhUserManagement </h1>
+  <h1>BmhUserManagement</h1>
 </template>

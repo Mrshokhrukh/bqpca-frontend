@@ -8,12 +8,12 @@
 </template>
 
 <script setup>
-import { CircleAlert } from 'lucide-vue-next';
+import { CircleAlert } from 'lucide-vue-next'
 
 defineProps({
   message: {
     type: String,
     required: true,
   },
-});
+})
 </script>

@@ -18,20 +18,20 @@
 </template>
 
 <script setup>
-import { UserIcon, UsersIcon, CameraIcon } from '@heroicons/vue/24/outline';
+import { UserIcon, UsersIcon, CameraIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
   activeTab: {
     type: String,
     required: true,
-    validator: (value) => ['single', 'bulk', 'photo'].includes(value)
-  }
-});
+    validator: (value) => ['single', 'bulk', 'photo'].includes(value),
+  },
+})
 
-const emit = defineEmits(['tab-change']);
+const emit = defineEmits(['tab-change'])
 
 function changeTab(tab) {
-  emit('tab-change', tab);
+  emit('tab-change', tab)
 }
 
 function getTabClasses(tab) {
@@ -39,7 +39,7 @@ function getTabClasses(tab) {
     'flex-1 py-3 font-medium text-center focus:outline-none transition-colors',
     props.activeTab === tab
       ? 'text-green-600 border-b-2 border-green-500 bg-green-50'
-      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-  ];
+      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50',
+  ]
 }
 </script>

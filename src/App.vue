@@ -33,7 +33,7 @@ watch(
       // Increment the counter to force a header refresh when returning to home
       navigationCounter.value++
     }
-  }
+  },
 )
 
 // Also listen for logout events to ensure header resets
@@ -46,7 +46,7 @@ watch(
         navigationCounter.value++
       }, 100) // Small delay to ensure all transitions complete
     }
-  }
+  },
 )
 </script>
 

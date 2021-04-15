@@ -28,18 +28,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue'
 
-const requests = ref([]);
+const requests = ref([])
 
 const formatDate = (date) => {
-  return new Date(date).toLocaleDateString();
-};
+  return new Date(date).toLocaleDateString()
+}
 
 const viewRequest = (id) => {
   // Handle viewing request details
-  console.log(`Viewing request ${id}`);
-};
+  console.log(`Viewing request ${id}`)
+}
 
 const fetchRequests = async () => {
   try {
@@ -47,14 +47,13 @@ const fetchRequests = async () => {
     // Example using fetch:
     // const response = await fetch('/api/requests');
     // requests.value = await response.json();
-    requests.value = []; // Replace with actual API call
+    requests.value = [] // Replace with actual API call
   } catch (error) {
-    console.error('Error fetching requests:', error);
+    console.error('Error fetching requests:', error)
   }
-};
+}
 
-onMounted(fetchRequests);
-
+onMounted(fetchRequests)
 </script>
 
 <style scoped>
@@ -80,7 +79,7 @@ td {
 
 button {
   padding: 6px 12px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 4px;

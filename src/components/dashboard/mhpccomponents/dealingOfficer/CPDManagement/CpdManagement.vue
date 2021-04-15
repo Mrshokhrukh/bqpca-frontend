@@ -2,7 +2,12 @@
   <div class="cpd-management">
     <!-- Navigation Tabs -->
     <nav class="tabs">
-      <button v-for="tab in tabs" :key="tab.id" :class="{ active: currentTab === tab.id }" @click="currentTab = tab.id">
+      <button
+        v-for="tab in tabs"
+        :key="tab.id"
+        :class="{ active: currentTab === tab.id }"
+        @click="currentTab = tab.id"
+      >
         {{ tab.label }}
       </button>
     </nav>
@@ -15,15 +20,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import CreateApplication from './CpdCreateApplication.vue';
-import ReviewApplication from './CpdApplicationReview.vue';
-import ManageProviders from './CpdProviderManagement.vue';
-import AwardCredits from './CpdAwardCredits.vue';
-import Reports from './CpdReports.vue';
+import { ref, computed } from 'vue'
+import CreateApplication from './CpdCreateApplication.vue'
+import ReviewApplication from './CpdApplicationReview.vue'
+import ManageProviders from './CpdProviderManagement.vue'
+import AwardCredits from './CpdAwardCredits.vue'
+import Reports from './CpdReports.vue'
 
 // Reactive state
-const currentTab = ref('reviewApplication'); // Default tab
+const currentTab = ref('reviewApplication') // Default tab
 
 // Tabs configuration
 const tabs = [
@@ -32,25 +37,25 @@ const tabs = [
   { id: 'manageProviders', label: 'Manage Providers' },
   { id: 'awardCredits', label: 'Award Credits' },
   { id: 'reports', label: 'Reports' },
-];
+]
 
 // Dynamic component based on the current tab
 const currentTabComponent = computed(() => {
   switch (currentTab.value) {
     case 'createApplication':
-      return CreateApplication;
+      return CreateApplication
     case 'reviewApplication':
-      return ReviewApplication;
+      return ReviewApplication
     case 'manageProviders':
-      return ManageProviders;
+      return ManageProviders
     case 'awardCredits':
-      return AwardCredits;
+      return AwardCredits
     case 'reports':
-      return Reports;
+      return Reports
     default:
-      return ReviewApplication; // Default to Review Application
+      return ReviewApplication // Default to Review Application
   }
-});
+})
 </script>
 
 <style scoped>

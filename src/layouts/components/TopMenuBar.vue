@@ -2,7 +2,10 @@
   <header class="bg-white shadow-sm border-b border-slate-200">
     <div class="flex items-center justify-between px-6 py-4">
       <div class="flex items-center space-x-4">
-        <button @click="toggleSidebar" class="p-2 rounded-lg hover:bg-slate-100 lg:hidden transition-colors">
+        <button
+          @click="toggleSidebar"
+          class="p-2 rounded-lg hover:bg-slate-100 lg:hidden transition-colors"
+        >
           <Menu class="h-6 w-6" />
         </button>
         <h1 class="text-lg font-semibold text-slate-800">{{ currentRouteName }}</h1>
@@ -22,18 +25,18 @@
 </template>
 
 <script setup>
-import { Menu } from 'lucide-vue-next';
-import NotificationBell from '@/components/NotificationBell.vue';
+import { Menu } from 'lucide-vue-next'
+import NotificationBell from '@/components/NotificationBell.vue'
 
 defineProps({
   currentRouteName: String,
   fullName: String,
   serviceTypeLabel: String,
-});
+})
 
-const emit = defineEmits(['toggle-sidebar']);
+const emit = defineEmits(['toggle-sidebar'])
 
 const toggleSidebar = () => {
-  emit('toggle-sidebar');
-};
+  emit('toggle-sidebar')
+}
 </script>

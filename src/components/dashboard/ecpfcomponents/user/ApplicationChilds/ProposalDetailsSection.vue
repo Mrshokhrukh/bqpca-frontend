@@ -6,43 +6,72 @@
       <div class="space-y-4">
         <!-- ... Proposed Name ... -->
         <div>
-          <label for="proposalName" class="block text-sm font-medium text-gray-700">Proposed Name <span
-              class="text-red-500">*</span></label>
-          <input type="text" id="proposalName" :value="proposalData.name"
-            @input="$emit('update:proposalData', { ...proposalData, name: $event.target.value })" required
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          <label for="proposalName" class="block text-sm font-medium text-gray-700"
+            >Proposed Name <span class="text-red-500">*</span></label
+          >
+          <input
+            type="text"
+            id="proposalName"
+            :value="proposalData.name"
+            @input="$emit('update:proposalData', { ...proposalData, name: $event.target.value })"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          />
         </div>
         <!-- ... Proposed Address ... -->
         <div>
-          <label for="proposalAddress" class="block text-sm font-medium text-gray-700">Proposed Address <span
-              class="text-red-500">*</span></label>
-          <input type="text" id="proposalAddress" :value="proposalData.address"
-            @input="$emit('update:proposalData', { ...proposalData, address: $event.target.value })" required
+          <label for="proposalAddress" class="block text-sm font-medium text-gray-700"
+            >Proposed Address <span class="text-red-500">*</span></label
+          >
+          <input
+            type="text"
+            id="proposalAddress"
+            :value="proposalData.address"
+            @input="$emit('update:proposalData', { ...proposalData, address: $event.target.value })"
+            required
             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            placeholder="Full address details">
+            placeholder="Full address details"
+          />
         </div>
       </div>
       <div class="space-y-4">
         <!-- ... Proposed Location select ... -->
         <div>
-          <label for="proposalLocation" class="block text-sm font-medium text-gray-700">Proposed Location
-            (Dzongkhag/Thromde) <span class="text-red-500">*</span></label>
-          <select id="proposalLocation" :value="proposalData.location"
-            @change="$emit('update:proposalData', { ...proposalData, location: $event.target.value })" required
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          <label for="proposalLocation" class="block text-sm font-medium text-gray-700"
+            >Proposed Location (Dzongkhag/Thromde) <span class="text-red-500">*</span></label
+          >
+          <select
+            id="proposalLocation"
+            :value="proposalData.location"
+            @change="
+              $emit('update:proposalData', { ...proposalData, location: $event.target.value })
+            "
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
             <option disabled value="">Select Location</option>
-            <option v-for="option in dzongkhagOptions" :key="option.id" :value="option.name">{{ option.name }}</option>
+            <option v-for="option in dzongkhagOptions" :key="option.id" :value="option.name">
+              {{ option.name }}
+            </option>
           </select>
         </div>
         <div>
-          <label for="proposalFirmType" class="block text-sm font-medium text-gray-700">Type of Firm <span
-              class="text-red-500">*</span></label>
-          <select id="proposalFirmType" :value="proposalData.firmType"
-            @change="$emit('update:proposalData', { ...proposalData, firmType: $event.target.value })" required
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          <label for="proposalFirmType" class="block text-sm font-medium text-gray-700"
+            >Type of Firm <span class="text-red-500">*</span></label
+          >
+          <select
+            id="proposalFirmType"
+            :value="proposalData.firmType"
+            @change="
+              $emit('update:proposalData', { ...proposalData, firmType: $event.target.value })
+            "
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
             <option disabled value="">Select Firm Type</option>
             <!-- Iterate directly over firmTypeOptions assuming it's the array -->
-            <option v-for="option in firmTypeOptions.results" :key="option.id" :value="option.id">{{ option.description }}
+            <option v-for="option in firmTypeOptions.results" :key="option.id" :value="option.id">
+              {{ option.description }}
             </option>
           </select>
         </div>
@@ -52,23 +81,21 @@
 </template>
 
 <script setup>
-
 defineProps({
   proposalData: {
     type: Object,
-    required: true
+    required: true,
   },
   dzongkhagOptions: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   firmTypeOptions: {
     // Type is correctly Array, assuming parent passes the array directly
     type: Array,
-    default: () => []
-  }
-});
+    default: () => [],
+  },
+})
 
-defineEmits(['update:proposalData']);
-
+defineEmits(['update:proposalData'])
 </script>

@@ -7,16 +7,21 @@
         <span>{{ errorMessage }}</span>
       </div>
       <div class="flex items-center space-x-4">
-        <button type="button"
+        <button
+          type="button"
           class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center space-x-2"
-          @click="$emit('close')">
+          @click="$emit('close')"
+        >
           <X class="h-4 w-4" />
           <span>Close</span>
         </button>
 
-        <button v-if="overallStatus === 'Approved'" type="button"
+        <button
+          v-if="overallStatus === 'Approved'"
+          type="button"
           class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 inline-flex items-center space-x-2"
-          @click="$emit('open-certificate-modal')">
+          @click="$emit('open-certificate-modal')"
+        >
           <FileText class="h-4 w-4" />
           <span>View Certificate</span>
         </button>
@@ -27,8 +32,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { FileText, CircleAlert, X } from 'lucide-vue-next';
+import { ref, computed } from 'vue'
+import { FileText, CircleAlert, X } from 'lucide-vue-next'
 
 const props = defineProps({
   application: {
@@ -37,13 +42,13 @@ const props = defineProps({
   },
   isLoading: {
     type: Boolean,
-    default: false
-  }
-});
+    default: false,
+  },
+})
 
-defineEmits(['close', 'open-certificate-modal', 'update'])  // Corrected emit
+defineEmits(['close', 'open-certificate-modal', 'update']) // Corrected emit
 
-const errorMessage = ref('');
+const errorMessage = ref('')
 
 const overallStatus = computed(() => {
   if (!props.application?.user_qualifications?.[0]) return 'Pending'

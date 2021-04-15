@@ -7,7 +7,6 @@
 <script setup>
 // Component imports can go here
 // Composition API refs, computed properties, and methods can go here
-
 </script>
 
 <style scoped>

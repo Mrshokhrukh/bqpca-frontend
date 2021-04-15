@@ -6,34 +6,47 @@
     </header>
 
     <!-- Step 1: Registration Type Selection -->
-    <RegistrationTypeSelector v-if="currentStep === 1" :options="registrationOptions" v-model="selectedType"
-      @next="showConfirmationModal = true" />
+    <RegistrationTypeSelector
+      v-if="currentStep === 1"
+      :options="registrationOptions"
+      v-model="selectedType"
+      @next="showConfirmationModal = true"
+    />
 
     <!-- Step 2: Dynamic Form -->
-    <DynamicRegistrationForm v-if="currentStep === 2" :selected-type="selectedType" v-model="formData"
-      @back="handleBack" @submit="handleSubmit" />
+    <DynamicRegistrationForm
+      v-if="currentStep === 2"
+      :selected-type="selectedType"
+      v-model="formData"
+      @back="handleBack"
+      @submit="handleSubmit"
+    />
 
     <!-- Confirmation Modal -->
-    <ConfirmationModal :show="showConfirmationModal" :selected-type="selectedTypeLabel"
-      @close="showConfirmationModal = false" @proceed="proceedToNextStep" />
+    <ConfirmationModal
+      :show="showConfirmationModal"
+      :selected-type="selectedTypeLabel"
+      @close="showConfirmationModal = false"
+      @proceed="proceedToNextStep"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import RegistrationTypeSelector from './RegistrationTypeSelector.vue';
-import DynamicRegistrationForm from './ApplicationForm.vue';
-import ConfirmationModal from './ConfirmationModal.vue';
-import { useToast } from 'vue-toastification';  // Import useToast
+import { ref, computed } from 'vue'
+import RegistrationTypeSelector from './RegistrationTypeSelector.vue'
+import DynamicRegistrationForm from './ApplicationForm.vue'
+import ConfirmationModal from './ConfirmationModal.vue'
+import { useToast } from 'vue-toastification' // Import useToast
 
 // Step management
-const currentStep = ref(1);
-const selectedType = ref(null);
-const showConfirmationModal = ref(false);
+const currentStep = ref(1)
+const selectedType = ref(null)
+const showConfirmationModal = ref(false)
 
 // Form data for CID and non-CID holders
 const formData = ref({
-  cid_no: '',  // Updated field names to match DynamicRegistrationForm
+  cid_no: '', // Updated field names to match DynamicRegistrationForm
   passport: '',
   full_name: '', // Updated
   date_of_birth: '', // Updated
@@ -45,64 +58,64 @@ const formData = ref({
   image: null,
   documents: [],
   declaration: false,
-  remarks: ''
-});
+  remarks: '',
+})
 
 // Registration options
 const registrationOptions = [
   { value: 'cid', label: 'CID Holder', description: 'Bhutanese citizens with valid CID' },
-  { value: 'non-cid', label: 'Non-CID Holder', description: 'Foreign medical professionals' }
-];
+  { value: 'non-cid', label: 'Non-CID Holder', description: 'Foreign medical professionals' },
+]
 
 // Computed property for selected type label
-const selectedTypeLabel = computed(() =>
-  registrationOptions.find(opt => opt.value === selectedType.value)?.label
-);
+const selectedTypeLabel = computed(
+  () => registrationOptions.find((opt) => opt.value === selectedType.value)?.label,
+)
 
 // Proceed to the next step
 function proceedToNextStep() {
-  showConfirmationModal.value = false;
-  currentStep.value++;
+  showConfirmationModal.value = false
+  currentStep.value++
 }
 
 // Handle going back to the previous step
 function handleBack() {
-  currentStep.value--;
-  resetForm();
+  currentStep.value--
+  resetForm()
 }
 
-const toast = useToast();  // Initialize Toast
+const toast = useToast() // Initialize Toast
 
 // Handle form submission
 function handleSubmit() {
-  let missingFields = [];
+  let missingFields = []
 
   if (selectedType.value === 'cid') {
     if (!formData.value.cid_no) {
-      missingFields.push('CID Number');
+      missingFields.push('CID Number')
     }
     if (!formData.value.full_name) {
-      missingFields.push('Full Name');
+      missingFields.push('Full Name')
     }
     if (!formData.value.date_of_birth) {
-      missingFields.push('Date of Birth');
+      missingFields.push('Date of Birth')
     }
     if (!formData.value.declaration) {
-      missingFields.push('Declaration');
+      missingFields.push('Declaration')
     }
   } else {
     if (!formData.value.nationality) {
-      missingFields.push('Nationality');
+      missingFields.push('Nationality')
     }
     if (!formData.value.declaration) {
-      missingFields.push('Declaration');
+      missingFields.push('Declaration')
     }
   }
 
   if (missingFields.length > 0) {
-    const missingFieldsString = missingFields.join(', ');
-    toast.error(`Please fill in the following required fields: ${missingFieldsString}`);  // Vue Toast
-    return; //  **Crucially, prevent submission**
+    const missingFieldsString = missingFields.join(', ')
+    toast.error(`Please fill in the following required fields: ${missingFieldsString}`) // Vue Toast
+    return //  **Crucially, prevent submission**
   }
 }
 
@@ -121,7 +134,7 @@ function resetForm() {
     image: null,
     documents: [],
     declaration: false,
-    remarks: ''
-  };
+    remarks: '',
+  }
 }
 </script>

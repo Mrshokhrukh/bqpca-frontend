@@ -71,11 +71,11 @@ const publicRoutes = [
   {
     path: '/mhpc',
     name: 'mhpc',
-    component: () => import('@/views/services/BMHCPage.vue'),
+    component: () => import('@/views/services/MHPCPage.vue'),
     meta: {
-      title: 'BMHC Services',
+      title: 'MHPC Services',
       description: 'Bhutan Medical and Health Council certification services',
-      keywords: 'BMHC, medical certification, health council, healthcare professionals',
+      keywords: 'MHPC, medical certification, health council, healthcare professionals',
     },
   },
   {
@@ -89,7 +89,7 @@ const publicRoutes = [
     },
   },
   {
-    path: '/certification-validity/search',  // The route for the search with parameters
+    path: '/certification-validity/search', // The route for the search with parameters
     name: 'CertificationValiditySearchPage',
     component: () => import('@/views/CertificationValidityPage.vue'), // Use the SAME component
     meta: {

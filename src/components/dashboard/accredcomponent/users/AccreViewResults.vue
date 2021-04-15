@@ -33,7 +33,7 @@
               'py-2 px-4 font-medium text-sm',
               activeTab === 'applications'
                 ? 'border-b-2 border-blue-500 text-blue-600'
-                : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'text-gray-500 hover:text-gray-700 hover:border-gray-300',
             ]"
           >
             Applications
@@ -44,7 +44,7 @@
               'py-2 px-4 font-medium text-sm',
               activeTab === 'accreditations'
                 ? 'border-b-2 border-blue-500 text-blue-600'
-                : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'text-gray-500 hover:text-gray-700 hover:border-gray-300',
             ]"
           >
             Accreditations
@@ -55,7 +55,7 @@
               'py-2 px-4 font-medium text-sm',
               activeTab === 'appeals'
                 ? 'border-b-2 border-blue-500 text-blue-600'
-                : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'text-gray-500 hover:text-gray-700 hover:border-gray-300',
             ]"
           >
             Appeals
@@ -79,12 +79,20 @@
           </thead>
           <tbody>
             <tr v-if="filteredApplications.length === 0">
-              <td colspan="5" class="py-4 px-4 text-center border border-gray-200">No applications found.</td>
+              <td colspan="5" class="py-4 px-4 text-center border border-gray-200">
+                No applications found.
+              </td>
             </tr>
-            <tr v-for="application in filteredApplications" :key="application.id" class="hover:bg-gray-50">
+            <tr
+              v-for="application in filteredApplications"
+              :key="application.id"
+              class="hover:bg-gray-50"
+            >
               <td class="py-3 px-4 border border-gray-200">{{ application.id }}</td>
               <td class="py-3 px-4 border border-gray-200">{{ application.institution_name }}</td>
-              <td class="py-3 px-4 border border-gray-200">{{ formatDate(application.created_at) }}</td>
+              <td class="py-3 px-4 border border-gray-200">
+                {{ formatDate(application.created_at) }}
+              </td>
               <td class="py-3 px-4 border border-gray-200">
                 <span :class="getStatusClasses(application.status)">
                   {{ application.status }}
@@ -129,12 +137,20 @@
           </thead>
           <tbody>
             <tr v-if="accreditations.length === 0">
-              <td colspan="4" class="py-4 px-4 text-center border border-gray-200">No accreditations found.</td>
+              <td colspan="4" class="py-4 px-4 text-center border border-gray-200">
+                No accreditations found.
+              </td>
             </tr>
-            <tr v-for="accreditation in accreditations" :key="accreditation.id" class="hover:bg-gray-50">
+            <tr
+              v-for="accreditation in accreditations"
+              :key="accreditation.id"
+              class="hover:bg-gray-50"
+            >
               <td class="py-3 px-4 border border-gray-200">{{ accreditation.id }}</td>
               <td class="py-3 px-4 border border-gray-200">{{ accreditation.applicantName }}</td>
-              <td class="py-3 px-4 border border-gray-200">{{ accreditation.accreditationDate }}</td>
+              <td class="py-3 px-4 border border-gray-200">
+                {{ accreditation.accreditationDate }}
+              </td>
               <td class="py-3 px-4 border border-gray-200">
                 <span :class="getStatusClasses(accreditation.status)">
                   {{ accreditation.status }}
@@ -163,7 +179,9 @@
           </thead>
           <tbody>
             <tr v-if="appeals.length === 0">
-              <td colspan="7" class="py-4 px-4 text-center border border-gray-200">No appeals found.</td>
+              <td colspan="7" class="py-4 px-4 text-center border border-gray-200">
+                No appeals found.
+              </td>
             </tr>
             <tr v-for="appeal in appeals" :key="appeal.id" class="hover:bg-gray-50">
               <td class="py-3 px-4 border border-gray-200">{{ appeal.id }}</td>
@@ -190,117 +208,129 @@
         </table>
       </div>
     </div>
-      <ViewCertificateModal :show="showModal" :certificateData="currentCertificateData" @close="closeModal" />
+    <ViewCertificateModal
+      :show="showModal"
+      :certificateData="currentCertificateData"
+      @close="closeModal"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import apiService from '@/services/services'; // Import apiService
-import ViewCertificateModal from '@/components/common/Accreditation/AccreViewCertificateModal.vue';
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import apiService from '@/services/services' // Import apiService
+import ViewCertificateModal from '@/components/common/Accreditation/AccreViewCertificateModal.vue'
 
-const router = useRouter();
-const activeTab = ref('applications');
-const searchQuery = ref('');
-const selectedFilter = ref('all');
-const backendApplications = ref([]); // Ref to store backend data
-const accreditations = ref([]);
-const appeals = ref([]);
-const showModal = ref(false);
-const currentCertificateData = ref({});
+const router = useRouter()
+const activeTab = ref('applications')
+const searchQuery = ref('')
+const selectedFilter = ref('all')
+const backendApplications = ref([]) // Ref to store backend data
+const accreditations = ref([])
+const appeals = ref([])
+const showModal = ref(false)
+const currentCertificateData = ref({})
 
 const applications = computed(() => {
-  return backendApplications.value.map(app => ({
+  return backendApplications.value.map((app) => ({
     id: app.id,
     institution_name: app.name_of_institution,
-    created_at: app.year_of_establishment ? new Date(app.year_of_establishment, 0, 1).toISOString() : null,
+    created_at: app.year_of_establishment
+      ? new Date(app.year_of_establishment, 0, 1).toISOString()
+      : null,
     // Use accreditation_decision, default to 'pending' if null
     status: app.accreditation_decision?.decision_name || 'pending',
     accreditation_decision: app.accreditation_decision, // Keep for other checks
-    review_decision: app.review_decision,  //keep if we need later.
+    review_decision: app.review_decision, //keep if we need later.
     address: app.address,
     dzongkhag_thromde: app.dzongkhag_thromde,
     contact: app.contact_number,
     email: app.email_address,
-  }));
-});
+  }))
+})
 
 const filteredApplications = computed(() => {
-  let filtered = [...applications.value];
+  let filtered = [...applications.value]
 
   // Apply status filter
   if (selectedFilter.value !== 'all') {
-    filtered = filtered.filter(app => {
-      const normalizedSelectedFilter = selectedFilter.value.toLowerCase();
-      const normalizedAppStatus = app.status ? app.status.toLowerCase() : '';
+    filtered = filtered.filter((app) => {
+      const normalizedSelectedFilter = selectedFilter.value.toLowerCase()
+      const normalizedAppStatus = app.status ? app.status.toLowerCase() : ''
 
       if (normalizedSelectedFilter === 'pending') {
-        return normalizedAppStatus === 'pending' || normalizedAppStatus === 'applied' || normalizedAppStatus === 'processing_payment';
+        return (
+          normalizedAppStatus === 'pending' ||
+          normalizedAppStatus === 'applied' ||
+          normalizedAppStatus === 'processing_payment'
+        )
       } else if (normalizedSelectedFilter === 'accredited') {
-        return normalizedAppStatus === 'accredited';
+        return normalizedAppStatus === 'accredited'
       } else if (normalizedSelectedFilter === 'rejected') {
-        return normalizedAppStatus === 'rejected' || normalizedAppStatus === 'regretted';
+        return normalizedAppStatus === 'rejected' || normalizedAppStatus === 'regretted'
       } else if (normalizedSelectedFilter === 'appealed') {
-        return normalizedAppStatus === 'appealed';
+        return normalizedAppStatus === 'appealed'
       }
-      return false;
-    });
+      return false
+    })
   }
 
   // Apply search filter
   if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(app =>
-      app.institution_name.toLowerCase().includes(query) ||
-      app.id.toString().includes(query)
-    );
+    const query = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(
+      (app) =>
+        app.institution_name.toLowerCase().includes(query) || app.id.toString().includes(query),
+    )
   }
 
-  return filtered;
-});
+  return filtered
+})
 
 // Helper methods to check application status
 const isAccredited = (application) => {
-    return application.accreditation_decision && application.accreditation_decision.decision_name === 'Accrediated';
-};
+  return (
+    application.accreditation_decision &&
+    application.accreditation_decision.decision_name === 'Accrediated'
+  )
+}
 
 const isRejected = (status) => {
-  const normalizedStatus = status ? status.toLowerCase() : '';
-  return normalizedStatus === 'rejected' || normalizedStatus === 'regretted';
-};
+  const normalizedStatus = status ? status.toLowerCase() : ''
+  return normalizedStatus === 'rejected' || normalizedStatus === 'regretted'
+}
 
 // Load initial data
 onMounted(async () => {
   try {
-    const response = await apiService.getInstitutionProfiles();
-    console.log("Institution Profiles Response:", response);
-    backendApplications.value = response.data.results || [];
-    filterApplications();
-
+    const response = await apiService.getInstitutionProfiles()
+    console.log('Institution Profiles Response:', response)
+    backendApplications.value = response.data.results || []
+    filterApplications()
   } catch (error) {
-    console.error("Error fetching institution profiles:", error);
+    console.error('Error fetching institution profiles:', error)
   }
-});
+})
 
 const filterApplications = () => {
   // Now handled by the computed property.
-};
+}
 
 const showCertificate = (application) => {
-    currentCertificateData.value = {
-        institutionName: application.institution_name,
-        grade: application.review_decision?.grade || 'N/A', // Get grade, default to 'N/A'
-        validUntil: application.accreditation_decision?.validity_if_approved || '2024-12-31',  //from accreditation decision
-        date: new Date().toISOString()
-    };
-    showModal.value = true;
-};
+  currentCertificateData.value = {
+    institutionName: application.institution_name,
+    grade: application.review_decision?.grade || 'N/A', // Get grade, default to 'N/A'
+    validUntil: application.accreditation_decision?.validity_if_approved || '2024-12-31', //from accreditation decision
+    date: new Date().toISOString(),
+  }
+  showModal.value = true
+}
 
 const closeModal = () => {
-  showModal.value = false;
-  currentCertificateData.value = {}; // Clear data
-};
+  showModal.value = false
+  currentCertificateData.value = {} // Clear data
+}
 
 const goToAppealPage = (application) => {
   router.push({
@@ -312,58 +342,58 @@ const goToAppealPage = (application) => {
       dzongkhagThromde: application.dzongkhag_thromde,
       contact: application.contact,
       email: application.email,
-    }
-  });
-};
+    },
+  })
+}
 
 const approveAppeal = (appeal) => {
-    appeal.status = 'approved';
+  appeal.status = 'approved'
 
-    // Find the corresponding application and update its status
-    const application = backendApplications.value.find(app => app.id === appeal.applicationId);
-      if (application) {
-           if (!application.accreditation_decision) {
-               application.accreditation_decision = {};
-             }
-          application.accreditation_decision.decision_name = 'accredited';
-          application.status = 'accredited';
-
-        // Create a new accreditation entry.
-        const newAccreditation = {
-          id: accreditations.value.length + 1,
-          applicantName: application.name_of_institution,
-          accreditationDate: new Date().toISOString().split('T')[0],
-          status: 'active'
-        };
-        accreditations.value.push(newAccreditation);
+  // Find the corresponding application and update its status
+  const application = backendApplications.value.find((app) => app.id === appeal.applicationId)
+  if (application) {
+    if (!application.accreditation_decision) {
+      application.accreditation_decision = {}
     }
-    filterApplications();
-};
+    application.accreditation_decision.decision_name = 'accredited'
+    application.status = 'accredited'
+
+    // Create a new accreditation entry.
+    const newAccreditation = {
+      id: accreditations.value.length + 1,
+      applicantName: application.name_of_institution,
+      accreditationDate: new Date().toISOString().split('T')[0],
+      status: 'active',
+    }
+    accreditations.value.push(newAccreditation)
+  }
+  filterApplications()
+}
 
 const getStatusClasses = (status) => {
-  const normalizedStatus = status ? status.toLowerCase() : '';
+  const normalizedStatus = status ? status.toLowerCase() : ''
   switch (normalizedStatus) {
     case 'pending':
     case 'applied':
     case 'processing_payment':
-      return 'inline-block py-1 px-2 rounded text-xs font-medium bg-yellow-100 text-yellow-800';
+      return 'inline-block py-1 px-2 rounded text-xs font-medium bg-yellow-100 text-yellow-800'
     case 'accredited':
-      return 'inline-block py-1 px-2 rounded text-xs font-medium bg-green-100 text-green-800';
+      return 'inline-block py-1 px-2 rounded text-xs font-medium bg-green-100 text-green-800'
     case 'rejected':
     case 'regretted':
-      return 'inline-block py-1 px-2 rounded text-xs font-medium bg-red-100 text-red-800';
+      return 'inline-block py-1 px-2 rounded text-xs font-medium bg-red-100 text-red-800'
     case 'appealed':
-      return 'inline-block py-1 px-2 rounded text-xs font-medium bg-blue-100 text-blue-800';
+      return 'inline-block py-1 px-2 rounded text-xs font-medium bg-blue-100 text-blue-800'
     default:
-      return 'inline-block py-1 px-2 rounded text-xs font-medium bg-gray-100 text-gray-800';
+      return 'inline-block py-1 px-2 rounded text-xs font-medium bg-gray-100 text-gray-800'
   }
-};
+}
 
 const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return date.toLocaleDateString();
-};
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toLocaleDateString()
+}
 </script>
 
 <style scoped>

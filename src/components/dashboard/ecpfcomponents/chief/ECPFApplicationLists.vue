@@ -29,7 +29,6 @@
   </div>
 </template>
 
-
 <style scoped>
 .ecpf-application-lists {
   padding: 20px;
@@ -53,7 +52,7 @@
 
 .view-btn {
   padding: 6px 12px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 4px;

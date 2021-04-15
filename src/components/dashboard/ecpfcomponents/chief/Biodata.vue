@@ -20,14 +20,13 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive } from 'vue'
 
 const officerData = reactive({
   fullName: '',
   employeeId: '',
-  department: ''
-});
-
+  department: '',
+})
 </script>
 
 <style scoped>

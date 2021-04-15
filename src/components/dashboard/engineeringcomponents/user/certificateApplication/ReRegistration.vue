@@ -2,12 +2,10 @@
   <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Form Header -->
     <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
-      <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
-        Re-Registration Application
-      </h2>
+      <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">Re-Registration Application</h2>
       <p class="text-gray-600 text-center max-w-2xl mx-auto">
-        Please ensure all pre-filled information is correct. Update contact details if necessary. Fields marked with an
-        asterisk (<span class="text-red-600">*</span>) are mandatory.
+        Please ensure all pre-filled information is correct. Update contact details if necessary.
+        Fields marked with an asterisk (<span class="text-red-600">*</span>) are mandatory.
       </p>
     </div>
 
@@ -20,58 +18,96 @@
 
       <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="col-span-1">
-          <label class="block text-sm font-medium text-gray-700">CID/Identity/Work Permit No.*</label>
-          <input type="text" v-model="formData.cidNumber" :readonly="true"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+          <label class="block text-sm font-medium text-gray-700"
+            >CID/Identity/Work Permit No.*</label
+          >
+          <input
+            type="text"
+            v-model="formData.cidNumber"
+            :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+          />
         </div>
 
         <div class="col-span-1">
           <label class="block text-sm font-medium text-gray-700">Full Name*</label>
-          <input type="text" v-model="formData.fullName" :readonly="true"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+          <input
+            type="text"
+            v-model="formData.fullName"
+            :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+          />
         </div>
 
         <div class="col-span-1">
           <label class="block text-sm font-medium text-gray-700">Gender*</label>
-          <input type="text" v-model="formData.gender" :readonly="true"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+          <input
+            type="text"
+            v-model="formData.gender"
+            :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+          />
         </div>
 
         <div class="col-span-1">
           <label class="block text-sm font-medium text-gray-700">Date of Birth*</label>
-          <input type="date" v-model="formData.dateOfBirth" :readonly="true"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+          <input
+            type="date"
+            v-model="formData.dateOfBirth"
+            :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+          />
         </div>
 
         <div class="col-span-1">
           <label class="block text-sm font-medium text-gray-700">Village*</label>
-          <input type="text" v-model="formData.village" :readonly="true"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+          <input
+            type="text"
+            v-model="formData.village"
+            :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+          />
         </div>
 
         <div class="col-span-1">
           <label class="block text-sm font-medium text-gray-700">Gewog*</label>
-          <input type="text" v-model="formData.gewog" :readonly="true"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+          <input
+            type="text"
+            v-model="formData.gewog"
+            :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+          />
         </div>
 
         <div class="col-span-1">
           <label class="block text-sm font-medium text-gray-700">Dzongkhag*</label>
-          <input type="text" v-model="formData.dzongkhag" :readonly="true"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+          <input
+            type="text"
+            v-model="formData.dzongkhag"
+            :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+          />
         </div>
 
         <div class="col-span-1">
           <label class="block text-sm font-medium text-gray-700 required">Contact Number</label>
-          <input type="tel" v-model="formData.contactNumber"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
-          <span v-if="errors.contactNumber" class="text-sm text-red-500 mt-1">{{ errors.contactNumber }}</span>
+          <input
+            type="tel"
+            v-model="formData.contactNumber"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+          />
+          <span v-if="errors.contactNumber" class="text-sm text-red-500 mt-1">{{
+            errors.contactNumber
+          }}</span>
         </div>
 
         <div class="col-span-1">
           <label class="block text-sm font-medium text-gray-700 required">Email</label>
-          <input type="email" v-model="formData.email"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
+          <input
+            type="email"
+            v-model="formData.email"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+          />
           <span v-if="errors.email" class="text-sm text-red-500 mt-1">{{ errors.email }}</span>
         </div>
       </div>
@@ -85,26 +121,42 @@
       <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="col-span-1">
           <label class="block text-sm font-medium text-gray-700">Registration Number*</label>
-          <input type="text" v-model="formData.registrationNumber" :readonly="true"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+          <input
+            type="text"
+            v-model="formData.registrationNumber"
+            :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+          />
         </div>
 
         <div class="col-span-1">
           <label class="block text-sm font-medium text-gray-700">Registration Date*</label>
-          <input type="date" v-model="formData.registrationDate" :readonly="true"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+          <input
+            type="date"
+            v-model="formData.registrationDate"
+            :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+          />
         </div>
 
         <div class="col-span-1">
           <label class="block text-sm font-medium text-gray-700">Expiry Date*</label>
-          <input type="date" v-model="formData.expiryDate" :readonly="true"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+          <input
+            type="date"
+            v-model="formData.expiryDate"
+            :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+          />
         </div>
 
         <div class="col-span-1">
           <label class="block text-sm font-medium text-gray-700">Registration Type*</label>
-          <input type="text" v-model="formData.registrationType" :readonly="true"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
+          <input
+            type="text"
+            v-model="formData.registrationType"
+            :readonly="true"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+          />
         </div>
       </div>
 
@@ -116,29 +168,45 @@
       <div class="p-8">
         <div>
           <label class="block text-sm font-medium text-gray-700">Remarks (if any)</label>
-          <textarea v-model="formData.remarks" rows="3"
+          <textarea
+            v-model="formData.remarks"
+            rows="3"
             class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            placeholder="Add any additional information or special requests"></textarea>
+            placeholder="Add any additional information or special requests"
+          ></textarea>
         </div>
 
         <div class="mt-6 flex items-start space-x-3">
-          <input type="checkbox" v-model="formData.declaration"
-            class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500" id="declaration" />
+          <input
+            type="checkbox"
+            v-model="formData.declaration"
+            class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            id="declaration"
+          />
           <label for="declaration" class="text-sm text-gray-700 required">
-            I hereby declare that all the information provided is true and correct to the best of my knowledge.
-            I understand that providing false information may result in the rejection of my registration.
+            I hereby declare that all the information provided is true and correct to the best of my
+            knowledge. I understand that providing false information may result in the rejection of
+            my registration.
           </label>
         </div>
-        <span v-if="errors.declaration" class="text-sm text-red-500 mt-1 pl-6">{{ errors.declaration }}</span>
+        <span v-if="errors.declaration" class="text-sm text-red-500 mt-1 pl-6">{{
+          errors.declaration
+        }}</span>
       </div>
 
       <!-- Action Buttons -->
       <div class="mt-12 flex justify-end space-x-4 p-8">
-        <button type="button" @click="handleCancel"
-          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+        <button
+          type="button"
+          @click="handleCancel"
+          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+        >
           Cancel
         </button>
-        <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <button
+          type="submit"
+          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
           Confirm & Submit
         </button>
       </div>
@@ -147,36 +215,55 @@
     <!-- Confirmation Modal -->
     <TransitionRoot appear :show="isConfirmationOpen" as="template">
       <Dialog as="div" @close="closeConfirmationModal" class="relative z-10">
-        <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
-          leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
           <div class="fixed inset-0 bg-black bg-opacity-25" />
         </TransitionChild>
 
         <div class="fixed inset-0 overflow-y-auto">
           <div class="flex min-h-full items-center justify-center p-4 text-center">
-            <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
-              enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
-              leave-to="opacity-0 scale-95">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
               <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+              >
                 <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
                   Confirm Re-Registration
                 </DialogTitle>
                 <div class="mt-2">
                   <p class="text-sm text-gray-500">
-                    Are you sure you want to proceed with the re-registration? This action cannot be undone.
+                    Are you sure you want to proceed with the re-registration? This action cannot be
+                    undone.
                   </p>
                 </div>
 
                 <div class="mt-4 flex space-x-4">
-                  <button type="button"
+                  <button
+                    type="button"
                     class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
-                    @click="confirmSubmit">
+                    @click="confirmSubmit"
+                  >
                     Confirm
                   </button>
-                  <button type="button"
+                  <button
+                    type="button"
                     class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
-                    @click="closeConfirmationModal">
+                    @click="closeConfirmationModal"
+                  >
                     Cancel
                   </button>
                 </div>
@@ -219,7 +306,7 @@ const formData = ref({
   registrationType: '',
   remarks: '',
   declaration: false,
-  applicationId: null
+  applicationId: null,
 })
 
 const errors = reactive({})
@@ -231,7 +318,7 @@ const fetchUserAndRegistrationDetails = async () => {
     const cid = authStore.user?.cid
 
     if (!cid) {
-      toast.error("CID not found. Please ensure you are logged in.")
+      toast.error('CID not found. Please ensure you are logged in.')
       return
     }
 
@@ -255,7 +342,7 @@ const fetchUserAndRegistrationDetails = async () => {
       try {
         const renewalsResponse = await apiService.getEpcRenewals()
         const existingRenewal = renewalsResponse.data.results.find(
-          renewal => renewal.application === application.id
+          (renewal) => renewal.application === application.id,
         )
 
         if (existingRenewal) {
@@ -266,7 +353,9 @@ const fetchUserAndRegistrationDetails = async () => {
           // Fetch registration type name if we have its ID
           if (existingRenewal.registration_type) {
             try {
-              const regTypeResponse = await apiService.getEpcMastersRegistrationType(existingRenewal.registration_type)
+              const regTypeResponse = await apiService.getEpcMastersRegistrationType(
+                existingRenewal.registration_type,
+              )
               formData.value.registrationType = regTypeResponse.data.registration_type_name
             } catch (error) {
               console.error('Error fetching registration type:', error)
@@ -293,7 +382,7 @@ const fetchUserAndRegistrationDetails = async () => {
 }
 
 const validateForm = () => {
-  Object.keys(errors).forEach(key => delete errors[key]) // Clear previous errors
+  Object.keys(errors).forEach((key) => delete errors[key]) // Clear previous errors
   let isValid = true
 
   if (!formData.value.contactNumber) {
@@ -333,17 +422,19 @@ const confirmSubmit = async () => {
       application: formData.value.applicationId,
       registration_no: formData.value.registrationNumber,
       registration_date: new Date().toISOString().split('T')[0], // Today's date
-      expiry_date: new Date(new Date().setFullYear(new Date().getFullYear() + 5)).toISOString().split('T')[0], // 5 years from now
+      expiry_date: new Date(new Date().setFullYear(new Date().getFullYear() + 5))
+        .toISOString()
+        .split('T')[0], // 5 years from now
       remarks: formData.value.remarks,
       is_active: false, // Will be activated after review/payment
       payment_id: null, // To be updated after payment
-      status: 'Pending'
+      status: 'Pending',
     }
 
     // Update the application contact info first
     await apiService.patchEpcNewApplication(formData.value.applicationId, {
       contact_number: formData.value.contactNumber,
-      email: formData.value.email
+      email: formData.value.email,
     })
 
     // Create the renewal
@@ -357,7 +448,9 @@ const confirmSubmit = async () => {
     }
   } catch (error) {
     console.error('Error submitting form:', error)
-    toast.error(error.response?.data?.message || 'Failed to submit re-registration. Please try again.')
+    toast.error(
+      error.response?.data?.message || 'Failed to submit re-registration. Please try again.',
+    )
   } finally {
     isLoading.value = false
     closeConfirmationModal()
@@ -382,7 +475,7 @@ onMounted(() => {
 
 <style scoped>
 .required::after {
-  content: " *";
+  content: ' *';
   color: #ef4444;
 }
 </style>

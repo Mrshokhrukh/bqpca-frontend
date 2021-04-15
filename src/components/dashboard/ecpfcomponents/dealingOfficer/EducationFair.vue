@@ -1,13 +1,24 @@
 <template>
   <div class="p-8 min-h-screen">
-    <div class=" mx-auto">
+    <div class="mx-auto">
       <!-- Header with stats -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <div class="flex items-center">
             <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                />
               </svg>
             </div>
             <div>
@@ -20,8 +31,19 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <div class="flex items-center">
             <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div>
@@ -34,8 +56,19 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <div class="flex items-center">
             <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div>
@@ -48,8 +81,19 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <div class="flex items-center">
             <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div>
@@ -71,15 +115,33 @@
           <div class="flex-1">
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </div>
-              <input type="text" v-model="searchQuery" class="block w-full rounded-lg border-gray-300 pl-10 py-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search by ECPF name, Fair name, or CID...">
+              <input
+                type="text"
+                v-model="searchQuery"
+                class="block w-full rounded-lg border-gray-300 pl-10 py-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Search by ECPF name, Fair name, or CID..."
+              />
             </div>
           </div>
           <div class="w-full md:w-1/4">
-            <select v-model="filterStatus" class="block w-full rounded-lg border-gray-300 py-2 focus:ring-blue-500 focus:border-blue-500">
+            <select
+              v-model="filterStatus"
+              class="block w-full rounded-lg border-gray-300 py-2 focus:ring-blue-500 focus:border-blue-500"
+            >
               <option value="">All Statuses</option>
               <option value="Pending Verification">Pending Verification</option>
               <option value="Accepted">Accepted</option>
@@ -95,41 +157,73 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   ECPF Name
                 </th>
-                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Fair Name
                 </th>
-                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Fair Location
                 </th>
-                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Applicant CID
                 </th>
-                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Status
                 </th>
-                <th scope="col" class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="application in filteredApplications" :key="application.id" class="hover:bg-gray-50 transition-colors">
+              <tr
+                v-for="application in filteredApplications"
+                :key="application.id"
+                class="hover:bg-gray-50 transition-colors"
+              >
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
-                    <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-semibold mr-3">
+                    <div
+                      class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-semibold mr-3"
+                    >
                       {{ getInitials(application.ecpf_name) }}
                     </div>
                     <div>
-                      <div class="text-sm font-medium text-gray-900">{{ application.ecpf_name }}</div>
+                      <div class="text-sm font-medium text-gray-900">
+                        {{ application.ecpf_name }}
+                      </div>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.fair_name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.fair_location }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ application.cid }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ application.fair_name }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ application.fair_location }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ application.cid }}
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span :class="getStatusClasses(application.verification_status)">
                     {{ application.verification_status }}
@@ -137,12 +231,22 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex justify-end space-x-2">
-                    <button @click="openModal(application)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View</button>
+                    <button
+                      @click="openModal(application)"
+                      class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+                    >
+                      View
+                    </button>
                   </div>
                 </td>
               </tr>
               <tr v-if="filteredApplications.length === 0">
-                <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No applications found.</td>
+                <td
+                  colspan="6"
+                  class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center"
+                >
+                  No applications found.
+                </td>
               </tr>
             </tbody>
           </table>
@@ -151,109 +255,119 @@
 
       <!-- Pagination (Optional - you can implement if needed) -->
       <!-- ... pagination component here ... -->
-
     </div>
 
-    <EcpfEducationFairModal :is-open="isModalOpen" :application="selectedApplication" @close="closeModal" />
+    <EcpfEducationFairModal
+      :is-open="isModalOpen"
+      :application="selectedApplication"
+      @close="closeModal"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import EcpfEducationFairModal from './modals/EcpfEducationFairModal.vue'; // Ensure path is correct
-import apiService from '@/services/services';
-import { useToast } from 'vue-toastification';
+import { ref, onMounted, computed } from 'vue'
+import EcpfEducationFairModal from './modals/EcpfEducationFairModal.vue' // Ensure path is correct
+import apiService from '@/services/services'
+import { useToast } from 'vue-toastification'
 
-const applications = ref([]);
-const isModalOpen = ref(false);
-const selectedApplication = ref(null);
-const searchQuery = ref('');
-const filterStatus = ref('');
-const toast = useToast();
+const applications = ref([])
+const isModalOpen = ref(false)
+const selectedApplication = ref(null)
+const searchQuery = ref('')
+const filterStatus = ref('')
+const toast = useToast()
 
 const fetchApplications = async () => {
   try {
-    const response = await apiService.getEcpfEducationFairs();
-    console.log('EducationFair API Response Data:', response.data); // Debugging: Log API response
-    applications.value = response.data;
+    const response = await apiService.getEcpfEducationFairs()
+    console.log('EducationFair API Response Data:', response.data) // Debugging: Log API response
+    applications.value = response.data
   } catch (error) {
-    console.error('Error fetching applications:', error);
-    toast.error('Failed to load applications.');
+    console.error('Error fetching applications:', error)
+    toast.error('Failed to load applications.')
   }
-};
+}
 
 onMounted(() => {
-  fetchApplications();
-});
+  fetchApplications()
+})
 
 const openModal = (application) => {
-  selectedApplication.value = application;
-  isModalOpen.value = true;
-};
+  selectedApplication.value = application
+  isModalOpen.value = true
+}
 
 const closeModal = () => {
-  isModalOpen.value = false;
-  selectedApplication.value = null;
-};
+  isModalOpen.value = false
+  selectedApplication.value = null
+}
 
 const getStatusClasses = (status) => {
-  return  [
+  return [
     'px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap',
     {
       'bg-yellow-100 text-yellow-800': status === 'Pending Verification',
       'bg-green-100 text-green-800': status === 'Accepted',
       'bg-red-100 text-red-800': status === 'Regretted',
-    }
-  ];
-};
+    },
+  ]
+}
 
 // Helper functions for stats cards
 const getPendingVerificationCount = computed(() => {
-  console.log('EducationFair applications.value in getPendingVerificationCount:', applications.value); // Debugging
+  console.log(
+    'EducationFair applications.value in getPendingVerificationCount:',
+    applications.value,
+  ) // Debugging
   if (!Array.isArray(applications.value)) {
-    return 0;
+    return 0
   }
-  return applications.value.filter(app => app.verification_status === 'Pending Verification').length;
-});
+  return applications.value.filter((app) => app.verification_status === 'Pending Verification')
+    .length
+})
 
 const getAcceptedCount = computed(() => {
   if (!Array.isArray(applications.value)) {
-    return 0;
+    return 0
   }
-  return applications.value.filter(app => app.verification_status === 'Accepted').length;
-});
+  return applications.value.filter((app) => app.verification_status === 'Accepted').length
+})
 
 const getRegrettedCount = computed(() => {
   if (!Array.isArray(applications.value)) {
-    return 0;
+    return 0
   }
-  return applications.value.filter(app => app.verification_status === 'Regretted').length;
-});
+  return applications.value.filter((app) => app.verification_status === 'Regretted').length
+})
 
 // Helper function to get initials from name
 const getInitials = (name) => {
-  if (!name) return '';
+  if (!name) return ''
   return name
     .split(' ')
-    .map(part => part.charAt(0))
+    .map((part) => part.charAt(0))
     .join('')
-    .toUpperCase();
-};
+    .toUpperCase()
+}
 
 const filteredApplications = computed(() => {
-  if (!Array.isArray(applications.value)) { // **ADD THIS CHECK**
-    return []; // Return empty array if applications.value is not an array yet
+  if (!Array.isArray(applications.value)) {
+    // **ADD THIS CHECK**
+    return [] // Return empty array if applications.value is not an array yet
   }
-  return applications.value.filter(application => {
-    const searchLower = searchQuery.value.toLowerCase();
-    const matchesSearch = !searchQuery.value ||
+  return applications.value.filter((application) => {
+    const searchLower = searchQuery.value.toLowerCase()
+    const matchesSearch =
+      !searchQuery.value ||
       application.ecpf_name.toLowerCase().includes(searchLower) ||
       application.fair_name.toLowerCase().includes(searchLower) ||
-      application.cid.toLowerCase().includes(searchLower);
+      application.cid.toLowerCase().includes(searchLower)
 
-    const matchesStatus = !filterStatus.value || application.verification_status === filterStatus.value;
+    const matchesStatus =
+      !filterStatus.value || application.verification_status === filterStatus.value
 
-    return matchesSearch && matchesStatus;
-  });
-});
+    return matchesSearch && matchesStatus
+  })
+})
 </script>

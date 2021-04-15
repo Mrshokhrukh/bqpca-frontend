@@ -1,23 +1,23 @@
 <script setup>
-import Modal from './Modal.vue';
-import {ref } from 'vue';
+import Modal from './Modal.vue'
+import { ref } from 'vue'
 
 defineProps({
   isOpen: {
     type: Boolean,
     required: true,
   },
-});
+})
 
-const emit = defineEmits(['close', 'add']);
+const emit = defineEmits(['close', 'add'])
 
-const participantName = ref('');
-const participantEmail = ref('');
+const participantName = ref('')
+const participantEmail = ref('')
 
 const addParticipant = () => {
-  emit('add', { name: participantName.value, email: participantEmail.value });
-  emit('close');
-};
+  emit('add', { name: participantName.value, email: participantEmail.value })
+  emit('close')
+}
 </script>
 
 <template>

@@ -30,12 +30,9 @@
 </template>
 
 <script setup>
-
-
 // Add methods for handling applications (as needed)
 // Example:
 // const someMethod = () => { ... };
-
 </script>
 
 <style scoped>
@@ -61,7 +58,7 @@
 
 .view-btn {
   padding: 6px 12px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 4px;

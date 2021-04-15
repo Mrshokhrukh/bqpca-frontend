@@ -1,20 +1,37 @@
 <template>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModal" class="relative z-50">
-      <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
-        leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
         <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" aria-hidden="true" />
       </TransitionChild>
 
       <div class="fixed inset-0 overflow-y-auto">
         <div class="flex min-h-full items-start justify-center p-4 sm:pt-12">
-          <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
-            enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
-            leave-to="opacity-0 scale-95">
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
             <DialogPanel
-              class="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all">
+              class="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all"
+            >
               <!-- Application Header -->
-              <div v-if="application" class="px-8 py-6 bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
+              <div
+                v-if="application"
+                class="px-8 py-6 bg-gradient-to-r from-indigo-500 to-blue-600 text-white"
+              >
                 <div class="flex justify-between items-center">
                   <div>
                     <h2 class="text-2xl font-bold tracking-tight">In-House Event Application</h2>
@@ -43,7 +60,9 @@
               <div v-if="application" class="px-8 py-6 bg-white">
                 <div class="grid grid-cols-1 gap-8">
                   <!-- Promotional Event Type -->
-                  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                  <div
+                    class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all"
+                  >
                     <div class="p-6">
                       <div class="flex items-center mb-4">
                         <div class="bg-blue-100 p-2 rounded-md">
@@ -51,12 +70,16 @@
                         </div>
                         <h4 class="font-semibold text-gray-900 ml-2">Promotional Event Type</h4>
                       </div>
-                      <p><strong>Event Type:</strong> {{ application.promotionalEventType || 'N/A' }}</p>
+                      <p>
+                        <strong>Event Type:</strong> {{ application.promotionalEventType || 'N/A' }}
+                      </p>
                     </div>
                   </div>
 
                   <!-- Current Details of ECPF -->
-                  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                  <div
+                    class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all"
+                  >
                     <div class="p-6">
                       <div class="flex items-center mb-4">
                         <div class="bg-indigo-100 p-2 rounded-md">
@@ -66,7 +89,10 @@
                       </div>
                       <p><strong>ECPF Name:</strong> {{ application.ecpfName || 'N/A' }}</p>
                       <p><strong>Location:</strong> {{ application.ecpfLocation || 'N/A' }}</p>
-                      <p><strong>Name of Proprietor:</strong> {{ application.proprietorName || 'N/A' }}</p>
+                      <p>
+                        <strong>Name of Proprietor:</strong>
+                        {{ application.proprietorName || 'N/A' }}
+                      </p>
                       <p><strong>CID:</strong> {{ application.cid || 'N/A' }}</p>
                       <p><strong>Contact No.:</strong> {{ application.contactNo || 'N/A' }}</p>
                       <p><strong>Email Address:</strong> {{ application.emailAddress || 'N/A' }}</p>
@@ -75,23 +101,34 @@
                   </div>
 
                   <!-- Proposed In-House Event Details -->
-                  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                  <div
+                    class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all"
+                  >
                     <div class="p-6">
                       <div class="flex items-center mb-4">
                         <div class="bg-green-100 p-2 rounded-md">
                           <DocumentTextIcon class="h-5 w-5 text-green-600" />
                         </div>
-                        <h4 class="font-semibold text-gray-900 ml-2">Proposed In-House Event Details</h4>
+                        <h4 class="font-semibold text-gray-900 ml-2">
+                          Proposed In-House Event Details
+                        </h4>
                       </div>
                       <p><strong>Event Name:</strong> {{ application.eventName || 'N/A' }}</p>
-                      <p><strong>Event Description:</strong> {{ application.eventDescription || 'N/A' }}</p>
+                      <p>
+                        <strong>Event Description:</strong>
+                        {{ application.eventDescription || 'N/A' }}
+                      </p>
                       <p><strong>Event Purpose:</strong> {{ application.eventPurpose || 'N/A' }}</p>
-                      <p><strong>Event Location:</strong> {{ application.eventLocation || 'N/A' }}</p>
+                      <p>
+                        <strong>Event Location:</strong> {{ application.eventLocation || 'N/A' }}
+                      </p>
                     </div>
                   </div>
 
                   <!-- Representative Details -->
-                  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                  <div
+                    class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all"
+                  >
                     <div class="p-6">
                       <div class="flex items-center mb-4">
                         <div class="bg-purple-100 p-2 rounded-md">
@@ -99,22 +136,34 @@
                         </div>
                         <h4 class="font-semibold text-gray-900 ml-2">Representative Details</h4>
                       </div>
-                      <div v-if="application.representatives && application.representatives.length > 0">
-                        <div v-for="(rep, index) in application.representatives" :key="index" class="border-b pb-4 mb-4">
-                          <h5 class="font-medium text-gray-700 mb-2">Representative {{ index + 1 }}</h5>
+                      <div
+                        v-if="application.representatives && application.representatives.length > 0"
+                      >
+                        <div
+                          v-for="(rep, index) in application.representatives"
+                          :key="index"
+                          class="border-b pb-4 mb-4"
+                        >
+                          <h5 class="font-medium text-gray-700 mb-2">
+                            Representative {{ index + 1 }}
+                          </h5>
                           <p><strong>Name:</strong> {{ rep.name || 'N/A' }}</p>
                           <p><strong>Passport No:</strong> {{ rep.passportNo || 'N/A' }}</p>
                           <p><strong>Nationality:</strong> {{ rep.nationality || 'N/A' }}</p>
                         </div>
                       </div>
                       <div v-else>
-                        <p class="text-center py-6 text-gray-500 italic">No Representative Details Available.</p>
+                        <p class="text-center py-6 text-gray-500 italic">
+                          No Representative Details Available.
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   <!-- Remarks -->
-                  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                  <div
+                    class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all"
+                  >
                     <div class="p-6">
                       <div class="flex items-center mb-4">
                         <div class="bg-amber-100 p-2 rounded-md">
@@ -127,7 +176,9 @@
                   </div>
 
                   <!-- Chief Decision Form -->
-                  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                  <div
+                    class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all"
+                  >
                     <div class="p-6">
                       <div class="flex items-center mb-4">
                         <div class="bg-yellow-100 p-2 rounded-md">
@@ -137,9 +188,14 @@
                       </div>
                       <div class="mt-2 space-y-4">
                         <div>
-                          <label for="chiefDecision" class="block text-sm font-medium text-gray-700">Decision:</label>
-                          <select id="chiefDecision" v-model="verificationForm.verificationDecision"
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                          <label for="chiefDecision" class="block text-sm font-medium text-gray-700"
+                            >Decision:</label
+                          >
+                          <select
+                            id="chiefDecision"
+                            v-model="verificationForm.verificationDecision"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          >
                             <option value="">Select Decision</option>
                             <option value="approved">Approved</option>
                             <option value="regretted">Regretted</option>
@@ -147,24 +203,51 @@
                           </select>
                         </div>
                         <div v-if="verificationForm.verificationDecision === 'regretted'">
-                          <label for="regretReason" class="block text-sm font-medium text-gray-700">Reason (if regretted):</label>
-                          <textarea id="regretReason" v-model="verificationForm.regretReason" rows="2"
-                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+                          <label for="regretReason" class="block text-sm font-medium text-gray-700"
+                            >Reason (if regretted):</label
+                          >
+                          <textarea
+                            id="regretReason"
+                            v-model="verificationForm.regretReason"
+                            rows="2"
+                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
+                          ></textarea>
                         </div>
                         <div v-if="verificationForm.verificationDecision === 'approved'">
-                          <label for="conditionText" class="block text-sm font-medium text-gray-700">Condition (if approved):</label>
-                          <textarea id="conditionText" v-model="verificationForm.conditionText" rows="2"
-                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+                          <label for="conditionText" class="block text-sm font-medium text-gray-700"
+                            >Condition (if approved):</label
+                          >
+                          <textarea
+                            id="conditionText"
+                            v-model="verificationForm.conditionText"
+                            rows="2"
+                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
+                          ></textarea>
                         </div>
                         <div v-if="verificationForm.verificationDecision === 'reupload_documents'">
-                          <label for="reuploadRequestReason" class="block text-sm font-medium text-gray-700">Reason for Re-upload Request:</label>
-                          <textarea id="reuploadRequestReason" v-model="verificationForm.reuploadRequestReason" rows="2"
-                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Specify which documents need re-upload and why."></textarea>
+                          <label
+                            for="reuploadRequestReason"
+                            class="block text-sm font-medium text-gray-700"
+                            >Reason for Re-upload Request:</label
+                          >
+                          <textarea
+                            id="reuploadRequestReason"
+                            v-model="verificationForm.reuploadRequestReason"
+                            rows="2"
+                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
+                            placeholder="Specify which documents need re-upload and why."
+                          ></textarea>
                         </div>
                         <div>
-                          <label for="remarksText" class="block text-sm font-medium text-gray-700">Remarks:</label>
-                          <textarea id="remarksText" v-model="verificationForm.remarksText" rows="2"
-                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+                          <label for="remarksText" class="block text-sm font-medium text-gray-700"
+                            >Remarks:</label
+                          >
+                          <textarea
+                            id="remarksText"
+                            v-model="verificationForm.remarksText"
+                            rows="2"
+                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
+                          ></textarea>
                         </div>
                       </div>
                     </div>
@@ -174,15 +257,19 @@
 
               <!-- Footer buttons -->
               <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse justify-between">
-                <button type="button"
+                <button
+                  type="button"
                   class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-all"
-                  @click="closeModal">
+                  @click="closeModal"
+                >
                   <XMarkIcon class="h-4 w-4 inline-block mr-1" />
                   Close
                 </button>
-                <button type="button"
+                <button
+                  type="button"
                   class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-                  @click="submitDecision">
+                  @click="submitDecision"
+                >
                   Submit Decision
                 </button>
               </div>
@@ -195,15 +282,24 @@
 
   <!-- Edit Modal -->
   <Dialog :open="showEditModal" @close="showEditModal = false" class="relative z-50">
-    <DialogPanel class="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all overflow-y-scroll max-h-[90vh]">
+    <DialogPanel
+      class="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all overflow-y-scroll max-h-[90vh]"
+    >
       <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 mb-4">
         Edit In-House Event Application
       </DialogTitle>
       <div class="mt-2 space-y-6">
         <!-- Edit Promotional Event Type -->
         <div>
-          <label for="editPromotionalEventType" class="block text-sm font-medium text-gray-700 mb-1">Promotional Event Type:</label>
-          <input type="text" id="editPromotionalEventType" v-model="editForm.promotionalEventType" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+          <label for="editPromotionalEventType" class="block text-sm font-medium text-gray-700 mb-1"
+            >Promotional Event Type:</label
+          >
+          <input
+            type="text"
+            id="editPromotionalEventType"
+            v-model="editForm.promotionalEventType"
+            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          />
         </div>
 
         <!-- Edit Current Details of ECPF -->
@@ -211,32 +307,79 @@
           <h4 class="font-semibold text-gray-900 mb-2">ECPF Details</h4>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label for="editEcpfName" class="block text-sm font-medium text-gray-700 mb-1">ECPF Name:</label>
-              <input type="text" id="editEcpfName" v-model="editForm.ecpfName" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              <label for="editEcpfName" class="block text-sm font-medium text-gray-700 mb-1"
+                >ECPF Name:</label
+              >
+              <input
+                type="text"
+                id="editEcpfName"
+                v-model="editForm.ecpfName"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
             </div>
             <div>
-              <label for="editLocation" class="block text-sm font-medium text-gray-700 mb-1">Location:</label>
-              <input type="text" id="editLocation" v-model="editForm.ecpfLocation" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              <label for="editLocation" class="block text-sm font-medium text-gray-700 mb-1"
+                >Location:</label
+              >
+              <input
+                type="text"
+                id="editLocation"
+                v-model="editForm.ecpfLocation"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
             </div>
             <div>
-              <label for="editProprietorName" class="block text-sm font-medium text-gray-700 mb-1">Name of Proprietor:</label>
-              <input type="text" id="editProprietorName" v-model="editForm.proprietorName" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              <label for="editProprietorName" class="block text-sm font-medium text-gray-700 mb-1"
+                >Name of Proprietor:</label
+              >
+              <input
+                type="text"
+                id="editProprietorName"
+                v-model="editForm.proprietorName"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
             </div>
             <div>
               <label for="editCid" class="block text-sm font-medium text-gray-700 mb-1">CID:</label>
-              <input type="text" id="editCid" v-model="editForm.cid" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              <input
+                type="text"
+                id="editCid"
+                v-model="editForm.cid"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
             </div>
             <div>
-              <label for="editContactNo" class="block text-sm font-medium text-gray-700 mb-1">Contact No.:</label>
-              <input type="text" id="editContactNo" v-model="editForm.contactNo" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              <label for="editContactNo" class="block text-sm font-medium text-gray-700 mb-1"
+                >Contact No.:</label
+              >
+              <input
+                type="text"
+                id="editContactNo"
+                v-model="editForm.contactNo"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
             </div>
             <div>
-              <label for="editEmailAddress" class="block text-sm font-medium text-gray-700 mb-1">Email Address:</label>
-              <input type="email" id="editEmailAddress" v-model="editForm.emailAddress" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              <label for="editEmailAddress" class="block text-sm font-medium text-gray-700 mb-1"
+                >Email Address:</label
+              >
+              <input
+                type="email"
+                id="editEmailAddress"
+                v-model="editForm.emailAddress"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
             </div>
             <div>
-              <label for="editInstitute" class="block text-sm font-medium text-gray-700 mb-1">Institute:</label>
-              <input type="text" id="editInstitute" v-model="editForm.institute" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              <label for="editInstitute" class="block text-sm font-medium text-gray-700 mb-1"
+                >Institute:</label
+              >
+              <input
+                type="text"
+                id="editInstitute"
+                v-model="editForm.institute"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
             </div>
           </div>
         </div>
@@ -246,20 +389,48 @@
           <h4 class="font-semibold text-gray-900 mb-2">Proposed In-House Event Details</h4>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label for="editEventName" class="block text-sm font-medium text-gray-700 mb-1">Event Name:</label>
-              <input type="text" id="editEventName" v-model="editForm.eventName" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              <label for="editEventName" class="block text-sm font-medium text-gray-700 mb-1"
+                >Event Name:</label
+              >
+              <input
+                type="text"
+                id="editEventName"
+                v-model="editForm.eventName"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
             </div>
             <div>
-              <label for="editEventDescription" class="block text-sm font-medium text-gray-700 mb-1">Event Description:</label>
-              <textarea id="editEventDescription" v-model="editForm.eventDescription" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+              <label for="editEventDescription" class="block text-sm font-medium text-gray-700 mb-1"
+                >Event Description:</label
+              >
+              <textarea
+                id="editEventDescription"
+                v-model="editForm.eventDescription"
+                rows="2"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              ></textarea>
             </div>
             <div>
-              <label for="editEventPurpose" class="block text-sm font-medium text-gray-700 mb-1">Event Purpose:</label>
-              <input type="text" id="editEventPurpose" v-model="editForm.eventPurpose" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              <label for="editEventPurpose" class="block text-sm font-medium text-gray-700 mb-1"
+                >Event Purpose:</label
+              >
+              <input
+                type="text"
+                id="editEventPurpose"
+                v-model="editForm.eventPurpose"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
             </div>
             <div>
-              <label for="editEventLocation" class="block text-sm font-medium text-gray-700 mb-1">Event Location:</label>
-              <input type="text" id="editEventLocation" v-model="editForm.eventLocation" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              <label for="editEventLocation" class="block text-sm font-medium text-gray-700 mb-1"
+                >Event Location:</label
+              >
+              <input
+                type="text"
+                id="editEventLocation"
+                v-model="editForm.eventLocation"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
             </div>
           </div>
         </div>
@@ -269,18 +440,33 @@
           <h4 class="font-semibold text-gray-900 mb-2">Representative Details</h4>
           <template v-if="editForm.representatives && editForm.representatives.length > 0">
             <div v-for="(rep, index) in editForm.representatives" :key="index" class="mb-4">
-              <label :for="`editRepName-${index}`" class="block text-sm font-medium text-gray-700 mb-1">Representative {{ index + 1 }} Name:</label>
-              <input type="text" :id="`editRepName-${index}`" v-model="rep.name" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              <label
+                :for="`editRepName-${index}`"
+                class="block text-sm font-medium text-gray-700 mb-1"
+                >Representative {{ index + 1 }} Name:</label
+              >
+              <input
+                type="text"
+                :id="`editRepName-${index}`"
+                v-model="rep.name"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
             </div>
           </template>
         </div>
 
         <!-- Edit Remarks -->
         <div>
-          <label for="editRemarks" class="block text-sm font-medium text-gray-700 mb-1">Remarks:</label>
-          <textarea id="editRemarks" v-model="editForm.remarks" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+          <label for="editRemarks" class="block text-sm font-medium text-gray-700 mb-1"
+            >Remarks:</label
+          >
+          <textarea
+            id="editRemarks"
+            v-model="editForm.remarks"
+            rows="2"
+            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          ></textarea>
         </div>
-
 
         <div class="mt-6 flex justify-between">
           <button
@@ -291,10 +477,20 @@
             Delete Application
           </button>
           <div class="space-x-2">
-            <button type="button" @click="showEditModal = false"
-              class="rounded-md px-4 py-2 font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-all">Cancel</button>
-            <button type="button" @click="saveFullEdit"
-              class="rounded-md px-4 py-2 font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-all">Save Changes</button>
+            <button
+              type="button"
+              @click="showEditModal = false"
+              class="rounded-md px-4 py-2 font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              @click="saveFullEdit"
+              class="rounded-md px-4 py-2 font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-all"
+            >
+              Save Changes
+            </button>
           </div>
         </div>
       </div>
@@ -304,32 +500,36 @@
 
 <script setup>
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild, DialogTitle } from '@headlessui/vue'
-import { ref, watch, reactive } from 'vue';
+import { ref, watch, reactive } from 'vue'
 import {
   DocumentTextIcon,
   DocumentDuplicateIcon,
   CheckBadgeIcon,
-
   XMarkIcon,
   UserIcon,
   ChatBubbleLeftRightIcon,
-  PencilIcon
+  PencilIcon,
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
   isOpen: Boolean,
   application: {
     type: Object,
-    default: () => ({})
-  }
-});
+    default: () => ({}),
+  },
+})
 
-const emit = defineEmits(['close', 'update-decision', 'edit-application', 'delete-application', 'preview-approval-letter']);
-
+const emit = defineEmits([
+  'close',
+  'update-decision',
+  'edit-application',
+  'delete-application',
+  'preview-approval-letter',
+])
 
 const closeModal = () => {
-  emit('close');
-};
+  emit('close')
+}
 
 const verificationForm = ref({
   verificationDecision: '',
@@ -337,8 +537,8 @@ const verificationForm = ref({
   conditionText: '',
   remarksText: '',
   reuploadRequestReason: '',
-});
-const showEditModal = ref(false);
+})
+const showEditModal = ref(false)
 
 const editForm = reactive({
   promotionalEventType: '',
@@ -354,66 +554,69 @@ const editForm = reactive({
   eventPurpose: '',
   eventLocation: '',
   remarks: '',
-  representatives: [] // Assuming representatives is an array even for in-house
-});
+  representatives: [], // Assuming representatives is an array even for in-house
+})
 
 const submitDecision = () => {
   emit('update-decision', {
     applicationId: props.application.id,
-    decisionData: verificationForm.value
-  });
-  closeModal();
-};
+    decisionData: verificationForm.value,
+  })
+  closeModal()
+}
 
 const previewApprovalLetter = () => {
   emit('preview-approval-letter', {
-    applicationId: props.application.id
-  });
-};
+    applicationId: props.application.id,
+  })
+}
 
 const saveFullEdit = () => {
   emit('edit-application', {
     applicationId: props.application.id,
-    data: editForm
-  });
-  showEditModal.value = false;
-};
+    data: editForm,
+  })
+  showEditModal.value = false
+}
 const deleteApplication = () => {
   if (confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
     emit('delete-application', {
-      applicationId: props.application.id
-    });
-    showEditModal.value = false;
-    closeModal();
+      applicationId: props.application.id,
+    })
+    showEditModal.value = false
+    closeModal()
   }
-};
+}
 
+watch(
+  () => props.application,
+  (newApplication) => {
+    if (newApplication) {
+      verificationForm.value.verificationDecision = newApplication.chiefDecision || ''
+      verificationForm.value.regretReason = newApplication.regretReasonChief || ''
+      verificationForm.value.conditionText = newApplication.conditionChief || ''
+      verificationForm.value.remarksText = newApplication.chiefRemarks || ''
+      verificationForm.value.reuploadRequestReason = newApplication.reuploadRequestReasonChief || ''
 
-watch(() => props.application, (newApplication) => {
-  if (newApplication) {
-    verificationForm.value.verificationDecision = newApplication.chiefDecision || '';
-    verificationForm.value.regretReason = newApplication.regretReasonChief || '';
-    verificationForm.value.conditionText = newApplication.conditionChief || '';
-    verificationForm.value.remarksText = newApplication.chiefRemarks || '';
-    verificationForm.value.reuploadRequestReason = newApplication.reuploadRequestReasonChief || '';
-
-    // Initialize Edit Form
-    editForm.promotionalEventType = newApplication.promotionalEventType || '';
-    editForm.ecpfName = newApplication.ecpfName || '';
-    editForm.ecpfLocation = newApplication.ecpfLocation || '';
-    editForm.proprietorName = newApplication.proprietorName || '';
-    editForm.cid = newApplication.cid || '';
-    editForm.contactNo = newApplication.contactNo || '';
-    editForm.emailAddress = newApplication.emailAddress || '';
-    editForm.institute = newApplication.institute || '';
-    editForm.eventName = newApplication.eventName || '';
-    editForm.eventDescription = newApplication.eventDescription || '';
-    editForm.eventPurpose = newApplication.eventPurpose || '';
-    editForm.eventLocation = newApplication.eventLocation || '';
-    editForm.remarks = newApplication.remarks || '';
-    editForm.representatives = newApplication.representatives ? [...newApplication.representatives] : [];
-
-  }
-}, { immediate: true });
-
+      // Initialize Edit Form
+      editForm.promotionalEventType = newApplication.promotionalEventType || ''
+      editForm.ecpfName = newApplication.ecpfName || ''
+      editForm.ecpfLocation = newApplication.ecpfLocation || ''
+      editForm.proprietorName = newApplication.proprietorName || ''
+      editForm.cid = newApplication.cid || ''
+      editForm.contactNo = newApplication.contactNo || ''
+      editForm.emailAddress = newApplication.emailAddress || ''
+      editForm.institute = newApplication.institute || ''
+      editForm.eventName = newApplication.eventName || ''
+      editForm.eventDescription = newApplication.eventDescription || ''
+      editForm.eventPurpose = newApplication.eventPurpose || ''
+      editForm.eventLocation = newApplication.eventLocation || ''
+      editForm.remarks = newApplication.remarks || ''
+      editForm.representatives = newApplication.representatives
+        ? [...newApplication.representatives]
+        : []
+    }
+  },
+  { immediate: true },
+)
 </script>

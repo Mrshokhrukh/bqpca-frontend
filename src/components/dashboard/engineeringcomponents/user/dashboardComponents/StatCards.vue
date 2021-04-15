@@ -16,8 +16,10 @@
         <span>{{ progress }}/{{ total }} points</span>
       </div>
       <div class="w-full bg-gray-200 rounded-full h-2.5">
-        <div class="bg-blue-500 h-2.5 rounded-full transition-all duration-300"
-          :style="{ width: `${Math.min((progress / total) * 100, 100)}%` }"></div>
+        <div
+          class="bg-blue-500 h-2.5 rounded-full transition-all duration-300"
+          :style="{ width: `${Math.min((progress / total) * 100, 100)}%` }"
+        ></div>
       </div>
     </div>
 
@@ -28,43 +30,48 @@
 </template>
 
 <script setup>
-import { AcademicCapIcon, TrophyIcon, ChartBarIcon, DocumentTextIcon } from '@heroicons/vue/24/outline'; //  <--- IMPORTANT: Check correct name
+import {
+  AcademicCapIcon,
+  TrophyIcon,
+  ChartBarIcon,
+  DocumentTextIcon,
+} from '@heroicons/vue/24/outline' //  <--- IMPORTANT: Check correct name
 
 defineProps({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   icon: {
     type: String,
-    default: 'TrophyIcon' // Changed default here too
+    default: 'TrophyIcon', // Changed default here too
   },
   progress: {
     type: Number,
-    required: true
+    required: true,
   },
   total: {
     type: Number,
-    default: null
+    default: null,
   },
   type: {
     type: String,
-    default: 'number'
-  }
-});
+    default: 'number',
+  },
+})
 
 const resolveIcon = (iconName) => {
   const icons = {
-    'AcademicCapIcon': AcademicCapIcon,
-    'TrophyIcon': TrophyIcon,  // Make sure this is the correct imported name.
-    'ChartBarIcon': ChartBarIcon,
-    'DocumentTextIcon': DocumentTextIcon,
-    'Award': TrophyIcon, // For convenience - updated to TrophyIcon.
-    'Document': DocumentTextIcon,
-    'Chart': ChartBarIcon,
-    'Academic': AcademicCapIcon
-  };
+    AcademicCapIcon: AcademicCapIcon,
+    TrophyIcon: TrophyIcon, // Make sure this is the correct imported name.
+    ChartBarIcon: ChartBarIcon,
+    DocumentTextIcon: DocumentTextIcon,
+    Award: TrophyIcon, // For convenience - updated to TrophyIcon.
+    Document: DocumentTextIcon,
+    Chart: ChartBarIcon,
+    Academic: AcademicCapIcon,
+  }
 
-  return icons[iconName] || TrophyIcon;
-};
+  return icons[iconName] || TrophyIcon
+}
 </script>

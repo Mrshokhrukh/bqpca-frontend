@@ -61,7 +61,11 @@
           :count="stats.totalApproved"
           :icon="CheckCircle"
           color="green"
-          :percentage="filteredApplications.length ? (stats.totalApproved / filteredApplications.length) * 100 : 0"
+          :percentage="
+            filteredApplications.length
+              ? (stats.totalApproved / filteredApplications.length) * 100
+              : 0
+          "
           class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
         />
         <StatusCard
@@ -69,7 +73,11 @@
           :count="stats.totalProcessing"
           :icon="Clock"
           color="yellow"
-          :percentage="filteredApplications.length ? (stats.totalProcessing / filteredApplications.length) * 100 : 0"
+          :percentage="
+            filteredApplications.length
+              ? (stats.totalProcessing / filteredApplications.length) * 100
+              : 0
+          "
           class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
         />
         <StatusCard
@@ -77,7 +85,11 @@
           :count="stats.totalRegretted"
           :icon="XCircle"
           color="red"
-          :percentage="filteredApplications.length ? (stats.totalRegretted / filteredApplications.length) * 100 : 0"
+          :percentage="
+            filteredApplications.length
+              ? (stats.totalRegretted / filteredApplications.length) * 100
+              : 0
+          "
           class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
         />
       </div>
@@ -105,71 +117,71 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watchEffect } from 'vue';
-import { useAuthStore } from '@/stores/authStore';
-import StatsCard from '../../../common/ROQ/ROQStatsCard.vue';
-import StatusCard from '../../../common/ROQ/ROQStatusCard.vue';
-import { FileText, CheckCircle, XCircle, Clock, TrendingUp, Pencil } from 'lucide-vue-next';
-import VueApexCharts from 'vue3-apexcharts';
-import apiService from '@/services/services';
+import { ref, computed, onMounted, watchEffect } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+import StatsCard from '../../../common/ROQ/ROQStatsCard.vue'
+import StatusCard from '../../../common/ROQ/ROQStatusCard.vue'
+import { FileText, CheckCircle, XCircle, Clock, TrendingUp, Pencil } from 'lucide-vue-next'
+import VueApexCharts from 'vue3-apexcharts'
+import apiService from '@/services/services'
 
-const { user } = useAuthStore();
-const applications = ref([]);
-const isLoading = ref(false);
-const error = ref(null);
-const chartContainer = ref(null);
-const isChartReady = ref(false);
+const { user } = useAuthStore()
+const applications = ref([])
+const isLoading = ref(false)
+const error = ref(null)
+const chartContainer = ref(null)
+const isChartReady = ref(false)
 
 // Filtered applications (exclude is_second_copy: true)
 const filteredApplications = computed(() => {
-  return applications.value.filter(app => !app.is_second_copy);
-});
+  return applications.value.filter((app) => !app.is_second_copy)
+})
 
 // Compute statistics
 const stats = computed(() => {
   return {
     totalApplications: filteredApplications.value.length,
-    totalApproved: filteredApplications.value.filter(app => app.status === 'approved').length,
-    totalRegretted: filteredApplications.value.filter(app => app.status === 'regretted').length,
-    totalProcessing: filteredApplications.value.filter(app => app.status === 'processing').length
-  };
-});
+    totalApproved: filteredApplications.value.filter((app) => app.status === 'approved').length,
+    totalRegretted: filteredApplications.value.filter((app) => app.status === 'regretted').length,
+    totalProcessing: filteredApplications.value.filter((app) => app.status === 'processing').length,
+  }
+})
 
 // Calculate average processing time
 const avgProcessingTime = computed(() => {
-  const processedApplications = filteredApplications.value.filter(app =>
-    app.created_at && app.updated_at
-  );
+  const processedApplications = filteredApplications.value.filter(
+    (app) => app.created_at && app.updated_at,
+  )
 
   if (processedApplications.length === 0) {
-    return { days: 0, hours: 0 };
+    return { days: 0, hours: 0 }
   }
 
   const totalProcessingTime = processedApplications.reduce((acc, app) => {
-    const createdAt = new Date(app.created_at);
-    const updatedAt = new Date(app.updated_at);
-    return acc + (updatedAt - createdAt);
-  }, 0);
+    const createdAt = new Date(app.created_at)
+    const updatedAt = new Date(app.updated_at)
+    return acc + (updatedAt - createdAt)
+  }, 0)
 
-  const avgTimeMs = totalProcessingTime / processedApplications.length;
+  const avgTimeMs = totalProcessingTime / processedApplications.length
 
   return {
     days: Math.floor(avgTimeMs / (1000 * 60 * 60 * 24)),
-    hours: Math.floor((avgTimeMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-  };
-});
+    hours: Math.floor((avgTimeMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+  }
+})
 
 // Calculate success rate
 const successRate = computed(() => {
-  const totalProcessed = filteredApplications.value.filter(app =>
-    ['approved', 'regretted'].includes(app.status)
-  ).length;
+  const totalProcessed = filteredApplications.value.filter((app) =>
+    ['approved', 'regretted'].includes(app.status),
+  ).length
 
-  const approved = filteredApplications.value.filter(app => app.status === 'approved').length;
+  const approved = filteredApplications.value.filter((app) => app.status === 'approved').length
 
-  if (totalProcessed === 0) return 0;
-  return ((approved / totalProcessed) * 100).toFixed(1);
-});
+  if (totalProcessed === 0) return 0
+  return ((approved / totalProcessed) * 100).toFixed(1)
+})
 
 // Chart configuration
 const chartOptions = ref({
@@ -177,7 +189,7 @@ const chartOptions = ref({
     height: 350,
     type: 'line',
     toolbar: { show: false },
-    zoom: { enabled: false }
+    zoom: { enabled: false },
   },
   dataLabels: { enabled: false },
   stroke: { curve: 'smooth', width: 3, lineCap: 'round' },
@@ -186,115 +198,115 @@ const chartOptions = ref({
     colors: ['#3B82F6', '#10B981'],
     strokeColors: '#fff',
     strokeWidth: 2,
-    hover: { size: 7 }
+    hover: { size: 7 },
   },
   grid: {
     row: { colors: ['#f3f3f3', 'transparent'], opacity: 0.5 },
-    borderColor: '#f3f4f6'
+    borderColor: '#f3f4f6',
   },
   xaxis: {
     categories: [],
-    labels: { rotate: -45, trim: false }
+    labels: { rotate: -45, trim: false },
   },
   yaxis: {
-    labels: { formatter: val => val.toFixed(0) }
+    labels: { formatter: (val) => val.toFixed(0) },
   },
   colors: ['#3B82F6', '#10B981'],
   legend: { position: 'top' },
   tooltip: {
     theme: 'light',
     x: { show: true },
-    y: { formatter: value => `${value.toFixed(0)} applications` }
-  }
-});
+    y: { formatter: (value) => `${value.toFixed(0)} applications` },
+  },
+})
 
 const chartSeries = ref([
   { name: 'Total Applications', data: [] },
-  { name: 'Approved', data: [] }
-]);
+  { name: 'Approved', data: [] },
+])
 
 // Group applications by month
 const groupApplicationsByMonth = () => {
-  const grouped = {};
-  const now = new Date();
-  const monthsAgo = new Date(now.setMonth(now.getMonth() - 11));
+  const grouped = {}
+  const now = new Date()
+  const monthsAgo = new Date(now.setMonth(now.getMonth() - 11))
 
   // Initialize the last 12 months
   for (let d = new Date(monthsAgo); d <= new Date(); d.setMonth(d.getMonth() + 1)) {
-    const monthYear = d.toLocaleString('default', { month: 'short', year: 'numeric' });
-    grouped[monthYear] = { total: 0, approved: 0, regretted: 0, processing: 0 };
+    const monthYear = d.toLocaleString('default', { month: 'short', year: 'numeric' })
+    grouped[monthYear] = { total: 0, approved: 0, regretted: 0, processing: 0 }
   }
 
   // Fill in actual values
-  filteredApplications.value.forEach(app => {
-    const date = new Date(app.created_at);
-    const monthYear = date.toLocaleString('default', { month: 'short', year: 'numeric' });
+  filteredApplications.value.forEach((app) => {
+    const date = new Date(app.created_at)
+    const monthYear = date.toLocaleString('default', { month: 'short', year: 'numeric' })
 
     if (grouped[monthYear]) {
-      grouped[monthYear].total++;
+      grouped[monthYear].total++
       switch (app.status) {
         case 'approved':
-          grouped[monthYear].approved++;
-          break;
+          grouped[monthYear].approved++
+          break
         case 'regretted':
-          grouped[monthYear].regretted++;
-          break;
+          grouped[monthYear].regretted++
+          break
         case 'processing':
-          grouped[monthYear].processing++;
-          break;
+          grouped[monthYear].processing++
+          break
       }
     }
-  });
+  })
 
-  return grouped;
-};
+  return grouped
+}
 
 // Update chart data
 const updateChartData = () => {
-  if (!isChartReady.value) return;
+  if (!isChartReady.value) return
 
-  const groupedData = groupApplicationsByMonth();
-  const months = Object.keys(groupedData);
-  const totalCounts = months.map(month => groupedData[month].total);
-  const approvedCounts = months.map(month => groupedData[month].approved);
+  const groupedData = groupApplicationsByMonth()
+  const months = Object.keys(groupedData)
+  const totalCounts = months.map((month) => groupedData[month].total)
+  const approvedCounts = months.map((month) => groupedData[month].approved)
 
   chartOptions.value = {
     ...chartOptions.value,
-    xaxis: { ...chartOptions.value.xaxis, categories: months }
-  };
+    xaxis: { ...chartOptions.value.xaxis, categories: months },
+  }
 
   chartSeries.value = [
     { name: 'Total Applications', data: totalCounts },
-    { name: 'Approved', data: approvedCounts }
-  ];
-};
+    { name: 'Approved', data: approvedCounts },
+  ]
+}
 
 // Watch for data changes and update chart
 watchEffect(() => {
   if (filteredApplications.value.length > 0 && !isLoading.value) {
-    isChartReady.value = true;
-    updateChartData();
+    isChartReady.value = true
+    updateChartData()
   }
-});
+})
 
 // Load applications
 const loadApplications = async () => {
-  isLoading.value = true;
-  error.value = null;
+  isLoading.value = true
+  error.value = null
   try {
-    const response = await apiService.getRecognitionOfQualification(user.cid);
+    const response = await apiService.getRecognitionOfQualification(user.cid)
     applications.value = response.data.sort(
-      (a, b) => new Date(b.created_at) - new Date(a.created_at)
-    );
+      (a, b) => new Date(b.created_at) - new Date(a.created_at),
+    )
   } catch (err) {
-    console.error('Error loading applications:', err);
-    error.value = 'Failed to load application data. Please try again later.';
+    console.error('Error loading applications:', err)
+    error.value = 'Failed to load application data. Please try again later.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 onMounted(() => {
-  loadApplications();
-});
+  loadApplications()
+})
 </script>

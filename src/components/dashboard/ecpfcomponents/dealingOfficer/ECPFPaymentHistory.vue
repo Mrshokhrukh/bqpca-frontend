@@ -15,8 +15,19 @@
             class="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10"
           />
           <div class="absolute left-3 top-2.5 text-slate-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </div>
         </div>
@@ -73,35 +84,91 @@
 
       <!-- Filter Tags -->
       <div v-if="hasActiveFilters" class="flex flex-wrap gap-2 mb-4">
-        <div v-if="searchQuery" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+        <div
+          v-if="searchQuery"
+          class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center"
+        >
           Search: "{{ searchQuery }}"
           <button @click="searchQuery = ''" class="ml-2 focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
-        <div v-if="dateRange.from || dateRange.to" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+        <div
+          v-if="dateRange.from || dateRange.to"
+          class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center"
+        >
           Date: {{ formatDateFilter }}
           <button @click="clearDateFilter" class="ml-2 focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
-        <div v-if="statusFilter !== 'all'" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+        <div
+          v-if="statusFilter !== 'all'"
+          class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center"
+        >
           Status: {{ statusFilter }}
           <button @click="statusFilter = 'all'" class="ml-2 focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
-        <div v-if="amountRangeFilter !== 'all'" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+        <div
+          v-if="amountRangeFilter !== 'all'"
+          class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center"
+        >
           Amount: {{ amountRangeFilter }}
           <button @click="amountRangeFilter = 'all'" class="ml-2 focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -128,36 +195,56 @@
               <div class="flex items-center">
                 {{ column.label }}
                 <span v-if="sortColumn === column.key" class="ml-1">
-                  <svg v-if="sortOrder === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                  <svg
+                    v-if="sortOrder === 'asc'"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 15l7-7 7 7"
+                    />
                   </svg>
-                  <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  <svg
+                    v-else
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </span>
               </div>
             </th>
-            <th class="px-4 py-3 text-right text-xs font-medium text-slate-700 uppercase tracking-wider">
+            <th
+              class="px-4 py-3 text-right text-xs font-medium text-slate-700 uppercase tracking-wider"
+            >
               Actions
             </th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-200">
           <tr v-if="isLoading" class="animate-pulse">
-            <td colspan="7" class="px-4 py-3 text-center text-slate-500">
-              Loading payments...
-            </td>
+            <td colspan="7" class="px-4 py-3 text-center text-slate-500">Loading payments...</td>
           </tr>
           <tr v-else-if="filteredPayments.length === 0" class="hover:bg-slate-50">
             <td colspan="7" class="px-4 py-3 text-center text-slate-500">
               No payments found matching your filters.
             </td>
           </tr>
-          <tr
-            v-for="payment in paginatedPayments"
-            :key="payment.id"
-            class="hover:bg-slate-50"
-          >
+          <tr v-for="payment in paginatedPayments" :key="payment.id" class="hover:bg-slate-50">
             <td class="px-4 py-3 text-sm text-slate-900">{{ payment.id }}</td>
             <td class="px-4 py-3 text-sm text-slate-900">{{ formatDate(payment.date) }}</td>
             <td class="px-4 py-3 text-sm text-slate-900">{{ payment.jrnlNumber }}</td>
@@ -195,14 +282,19 @@
     <!-- Pagination -->
     <div v-if="totalPages > 1" class="flex items-center justify-between mt-6">
       <div class="text-sm text-slate-700">
-        Showing {{ paginationStart }} to {{ paginationEnd }} of {{ filteredPayments.length }} entries
+        Showing {{ paginationStart }} to {{ paginationEnd }} of
+        {{ filteredPayments.length }} entries
       </div>
       <div class="flex space-x-1">
         <button
           @click="currentPage = 1"
           :disabled="currentPage === 1"
           class="px-3 py-1 rounded border"
-          :class="currentPage === 1 ? 'text-slate-400 border-slate-200' : 'text-slate-700 border-slate-300 hover:bg-slate-100'"
+          :class="
+            currentPage === 1
+              ? 'text-slate-400 border-slate-200'
+              : 'text-slate-700 border-slate-300 hover:bg-slate-100'
+          "
         >
           First
         </button>
@@ -210,7 +302,11 @@
           @click="currentPage--"
           :disabled="currentPage === 1"
           class="px-3 py-1 rounded border"
-          :class="currentPage === 1 ? 'text-slate-400 border-slate-200' : 'text-slate-700 border-slate-300 hover:bg-slate-100'"
+          :class="
+            currentPage === 1
+              ? 'text-slate-400 border-slate-200'
+              : 'text-slate-700 border-slate-300 hover:bg-slate-100'
+          "
         >
           Prev
         </button>
@@ -219,7 +315,11 @@
           :key="page"
           @click="currentPage = page"
           class="px-3 py-1 rounded border"
-          :class="currentPage === page ? 'bg-blue-600 text-white border-blue-600' : 'text-slate-700 border-slate-300 hover:bg-slate-100'"
+          :class="
+            currentPage === page
+              ? 'bg-blue-600 text-white border-blue-600'
+              : 'text-slate-700 border-slate-300 hover:bg-slate-100'
+          "
         >
           {{ page }}
         </button>
@@ -227,7 +327,11 @@
           @click="currentPage++"
           :disabled="currentPage === totalPages"
           class="px-3 py-1 rounded border"
-          :class="currentPage === totalPages ? 'text-slate-400 border-slate-200' : 'text-slate-700 border-slate-300 hover:bg-slate-100'"
+          :class="
+            currentPage === totalPages
+              ? 'text-slate-400 border-slate-200'
+              : 'text-slate-700 border-slate-300 hover:bg-slate-100'
+          "
         >
           Next
         </button>
@@ -235,7 +339,11 @@
           @click="currentPage = totalPages"
           :disabled="currentPage === totalPages"
           class="px-3 py-1 rounded border"
-          :class="currentPage === totalPages ? 'text-slate-400 border-slate-200' : 'text-slate-700 border-slate-300 hover:bg-slate-100'"
+          :class="
+            currentPage === totalPages
+              ? 'text-slate-400 border-slate-200'
+              : 'text-slate-700 border-slate-300 hover:bg-slate-100'
+          "
         >
           Last
         </button>
@@ -260,9 +368,23 @@
         <div class="p-6">
           <div class="flex justify-between items-center mb-6">
             <h3 class="text-lg font-bold text-slate-800">Payment Details</h3>
-            <button @click="selectedPayment = null" class="text-slate-500 hover:text-slate-700 focus:outline-none">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <button
+              @click="selectedPayment = null"
+              class="text-slate-500 hover:text-slate-700 focus:outline-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -329,27 +451,27 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue'
 
 // Sample data (replace with API calls in production)
-const payments = ref([]);
-const isLoading = ref(true);
+const payments = ref([])
+const isLoading = ref(true)
 
 // Pagination
-const currentPage = ref(1);
-const pageSize = ref(10);
-const pageSizeOptions = [5, 10, 25, 50, 100];
+const currentPage = ref(1)
+const pageSize = ref(10)
+const pageSizeOptions = [5, 10, 25, 50, 100]
 
 // Sorting
-const sortColumn = ref('date');
-const sortOrder = ref('desc');
+const sortColumn = ref('date')
+const sortOrder = ref('desc')
 
 // Filters
-const searchQuery = ref('');
-const dateRange = ref({ from: '', to: '' });
-const statusFilter = ref('all');
-const amountRangeFilter = ref('all');
-const selectedPayment = ref(null);
+const searchQuery = ref('')
+const dateRange = ref({ from: '', to: '' })
+const statusFilter = ref('all')
+const amountRangeFilter = ref('all')
+const selectedPayment = ref(null)
 
 // Table columns
 const columns = [
@@ -359,224 +481,231 @@ const columns = [
   { key: 'description', label: 'Description' },
   { key: 'amount', label: 'Amount' },
   { key: 'status', label: 'Status' },
-];
+]
 
 // Sample data initialization - replace with your API call
 onMounted(async () => {
   try {
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000))
 
     // Mock data
     payments.value = Array.from({ length: 50 }, (_, i) => ({
       id: `PAY-${String(1000 + i).padStart(4, '0')}`,
       date: new Date(2023, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
       jrnlNumber: `JRNL-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`,
-      description: ['ECPF Application Fee', 'Renewal Fee', 'Processing Fee', 'Change Request Fee'][Math.floor(Math.random() * 4)],
+      description: ['ECPF Application Fee', 'Renewal Fee', 'Processing Fee', 'Change Request Fee'][
+        Math.floor(Math.random() * 4)
+      ],
       amount: parseFloat((Math.random() * 1500 + 50).toFixed(2)),
       status: ['approved', 'pending', 'rejected'][Math.floor(Math.random() * 3)],
-      paymentMethod: ['bob', 'rma gateway'][Math.floor(Math.random() * 2)]
-    }));
+      paymentMethod: ['bob', 'rma gateway'][Math.floor(Math.random() * 2)],
+    }))
 
-    isLoading.value = false;
+    isLoading.value = false
   } catch (error) {
-    console.error('Failed to load payments:', error);
-    isLoading.value = false;
+    console.error('Failed to load payments:', error)
+    isLoading.value = false
   }
-});
+})
 
 // Reset to first page when filters change
 watch([searchQuery, dateRange, statusFilter, amountRangeFilter], () => {
-  currentPage.value = 1;
-});
+  currentPage.value = 1
+})
 
 // Computed properties
 const hasActiveFilters = computed(() => {
-  return searchQuery.value !== '' ||
-         dateRange.value.from !== '' ||
-         dateRange.value.to !== '' ||
-         statusFilter.value !== 'all' ||
-         amountRangeFilter.value !== 'all';
-});
+  return (
+    searchQuery.value !== '' ||
+    dateRange.value.from !== '' ||
+    dateRange.value.to !== '' ||
+    statusFilter.value !== 'all' ||
+    amountRangeFilter.value !== 'all'
+  )
+})
 
 const formatDateFilter = computed(() => {
-  const from = dateRange.value.from ? new Date(dateRange.value.from).toLocaleDateString() : 'Any';
-  const to = dateRange.value.to ? new Date(dateRange.value.to).toLocaleDateString() : 'Any';
-  return `${from} to ${to}`;
-});
+  const from = dateRange.value.from ? new Date(dateRange.value.from).toLocaleDateString() : 'Any'
+  const to = dateRange.value.to ? new Date(dateRange.value.to).toLocaleDateString() : 'Any'
+  return `${from} to ${to}`
+})
 
 const filteredPayments = computed(() => {
-  let result = [...payments.value];
+  let result = [...payments.value]
 
   // Apply search filter
   if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    result = result.filter(payment =>
-      payment.id.toLowerCase().includes(query) ||
-      payment.jrnlNumber.toLowerCase().includes(query) ||
-      payment.description.toLowerCase().includes(query)
-    );
+    const query = searchQuery.value.toLowerCase()
+    result = result.filter(
+      (payment) =>
+        payment.id.toLowerCase().includes(query) ||
+        payment.jrnlNumber.toLowerCase().includes(query) ||
+        payment.description.toLowerCase().includes(query),
+    )
   }
 
   // Apply date range filter
   if (dateRange.value.from) {
-    const fromDate = new Date(dateRange.value.from);
-    result = result.filter(payment => new Date(payment.date) >= fromDate);
+    const fromDate = new Date(dateRange.value.from)
+    result = result.filter((payment) => new Date(payment.date) >= fromDate)
   }
 
   if (dateRange.value.to) {
-    const toDate = new Date(dateRange.value.to);
-    toDate.setHours(23, 59, 59, 999); // End of day
-    result = result.filter(payment => new Date(payment.date) <= toDate);
+    const toDate = new Date(dateRange.value.to)
+    toDate.setHours(23, 59, 59, 999) // End of day
+    result = result.filter((payment) => new Date(payment.date) <= toDate)
   }
 
   // Apply status filter
   if (statusFilter.value !== 'all') {
-    result = result.filter(payment => payment.status === statusFilter.value);
+    result = result.filter((payment) => payment.status === statusFilter.value)
   }
 
   // Apply amount range filter
   if (amountRangeFilter.value !== 'all') {
     switch (amountRangeFilter.value) {
       case '0-100':
-        result = result.filter(payment => payment.amount >= 0 && payment.amount <= 100);
-        break;
+        result = result.filter((payment) => payment.amount >= 0 && payment.amount <= 100)
+        break
       case '100-500':
-        result = result.filter(payment => payment.amount > 100 && payment.amount <= 500);
-        break;
+        result = result.filter((payment) => payment.amount > 100 && payment.amount <= 500)
+        break
       case '500-1000':
-        result = result.filter(payment => payment.amount > 500 && payment.amount <= 1000);
-        break;
+        result = result.filter((payment) => payment.amount > 500 && payment.amount <= 1000)
+        break
       case '1000+':
-        result = result.filter(payment => payment.amount > 1000);
-        break;
+        result = result.filter((payment) => payment.amount > 1000)
+        break
     }
   }
 
   // Apply sorting
   result.sort((a, b) => {
-    let valueA = a[sortColumn.value];
-    let valueB = b[sortColumn.value];
+    let valueA = a[sortColumn.value]
+    let valueB = b[sortColumn.value]
 
     // Handle dates
     if (sortColumn.value === 'date') {
-      valueA = new Date(valueA).getTime();
-      valueB = new Date(valueB).getTime();
+      valueA = new Date(valueA).getTime()
+      valueB = new Date(valueB).getTime()
     }
 
     // String comparison
     if (typeof valueA === 'string' && typeof valueB === 'string') {
-      return sortOrder.value === 'asc'
-        ? valueA.localeCompare(valueB)
-        : valueB.localeCompare(valueA);
+      return sortOrder.value === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA)
     }
 
     // Numeric comparison
-    return sortOrder.value === 'asc' ? valueA - valueB : valueB - valueA;
-  });
+    return sortOrder.value === 'asc' ? valueA - valueB : valueB - valueA
+  })
 
-  return result;
-});
+  return result
+})
 
-const totalPages = computed(() => Math.ceil(filteredPayments.value.length / pageSize.value));
+const totalPages = computed(() => Math.ceil(filteredPayments.value.length / pageSize.value))
 
 const paginatedPayments = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return filteredPayments.value.slice(start, end);
-});
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  return filteredPayments.value.slice(start, end)
+})
 
 const paginationStart = computed(() => {
-  if (filteredPayments.value.length === 0) return 0;
-  return (currentPage.value - 1) * pageSize.value + 1;
-});
+  if (filteredPayments.value.length === 0) return 0
+  return (currentPage.value - 1) * pageSize.value + 1
+})
 
 const paginationEnd = computed(() => {
-  const end = currentPage.value * pageSize.value;
-  return end > filteredPayments.value.length ? filteredPayments.value.length : end;
-});
+  const end = currentPage.value * pageSize.value
+  return end > filteredPayments.value.length ? filteredPayments.value.length : end
+})
 
 const displayedPages = computed(() => {
-const delta = 2;
-const range = [];
+  const delta = 2
+  const range = []
 
-  if (totalPages.value <= 1) return [1];
+  if (totalPages.value <= 1) return [1]
 
-  for (let i = Math.max(2, currentPage.value - delta); i <= Math.min(totalPages.value - 1, currentPage.value + delta); i++) {
-    range.push(i);
+  for (
+    let i = Math.max(2, currentPage.value - delta);
+    i <= Math.min(totalPages.value - 1, currentPage.value + delta);
+    i++
+  ) {
+    range.push(i)
   }
 
   if (currentPage.value - delta > 2) {
-    range.unshift("...");
+    range.unshift('...')
   }
 
   if (currentPage.value + delta < totalPages.value - 1) {
-    range.push("...");
+    range.push('...')
   }
 
-  range.unshift(1);
+  range.unshift(1)
   if (totalPages.value > 1) {
-    range.push(totalPages.value);
+    range.push(totalPages.value)
   }
 
-  return range;
-});
+  return range
+})
 
 // Functions
 const sortBy = (column) => {
   if (sortColumn.value === column) {
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
   } else {
-    sortColumn.value = column;
-    sortOrder.value = 'asc';
+    sortColumn.value = column
+    sortOrder.value = 'asc'
   }
-};
+}
 
 const clearDateFilter = () => {
-  dateRange.value = { from: '', to: '' };
-};
+  dateRange.value = { from: '', to: '' }
+}
 
 const clearAllFilters = () => {
-  searchQuery.value = '';
-  dateRange.value = { from: '', to: '' };
-  statusFilter.value = 'all';
-  amountRangeFilter.value = 'all';
-};
+  searchQuery.value = ''
+  dateRange.value = { from: '', to: '' }
+  statusFilter.value = 'all'
+  amountRangeFilter.value = 'all'
+}
 
 const formatDate = (date) => {
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
-    day: 'numeric'
-  });
-};
+    day: 'numeric',
+  })
+}
 
 const getStatusColorClass = (status) => {
   switch (status) {
     case 'approved':
-      return 'bg-green-100 text-green-800';
+      return 'bg-green-100 text-green-800'
     case 'pending':
-      return 'bg-yellow-100 text-yellow-800';
+      return 'bg-yellow-100 text-yellow-800'
     case 'rejected':
-      return 'bg-red-100 text-red-800';
+      return 'bg-red-100 text-red-800'
     default:
-      return 'bg-slate-100 text-slate-800';
+      return 'bg-slate-100 text-slate-800'
   }
-};
+}
 
 const getAmountColorClass = (amount) => {
-  if (amount >= 1000) return 'text-green-600';
-  if (amount >= 500) return 'text-blue-600';
-  return 'text-slate-700';
-};
+  if (amount >= 1000) return 'text-green-600'
+  if (amount >= 500) return 'text-blue-600'
+  return 'text-slate-700'
+}
 
 const viewPaymentDetails = (payment) => {
-  selectedPayment.value = payment;
-};
+  selectedPayment.value = payment
+}
 
 const downloadReceipt = (payment) => {
   // This is a placeholder. In a real application, you would implement
   // the receipt generation and download functionality here
-  alert(`Downloading receipt for payment ${payment.id}`);
-};
+  alert(`Downloading receipt for payment ${payment.id}`)
+}
 </script>

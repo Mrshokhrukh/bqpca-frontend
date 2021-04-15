@@ -1,6 +1,7 @@
 <template>
   <div class="bg-gray-50 min-h-screen">
-    <div class="mx-auto px-4 py-8"> <!-- Added padding and mx-auto -->
+    <div class="mx-auto px-4 py-8">
+      <!-- Added padding and mx-auto -->
       <!-- Header -->
       <div class="text-center mb-8">
         <h2 class="text-3xl font-extrabold text-gray-900 mb-4">CPD Activity Reports</h2>
@@ -13,19 +14,32 @@
         <form @submit.prevent="generateReport" class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
-              <label for="fromDate" class="block text-sm font-medium text-gray-700">From Date</label>
-              <input type="date" id="fromDate" v-model="filters.fromDate"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+              <label for="fromDate" class="block text-sm font-medium text-gray-700"
+                >From Date</label
+              >
+              <input
+                type="date"
+                id="fromDate"
+                v-model="filters.fromDate"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
             </div>
             <div>
               <label for="toDate" class="block text-sm font-medium text-gray-700">To Date</label>
-              <input type="date" id="toDate" v-model="filters.toDate"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+              <input
+                type="date"
+                id="toDate"
+                v-model="filters.toDate"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
             </div>
             <div>
               <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-              <select id="status" v-model="filters.status"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <select
+                id="status"
+                v-model="filters.status"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
                 <option value="">All Statuses</option>
                 <option value="Pending">Pending</option>
                 <option value="Approved">Approved</option>
@@ -34,12 +48,17 @@
             </div>
           </div>
           <div class="flex justify-end space-x-4">
-            <button type="submit"
-              class="bg-blue-600 text-white rounded-md py-3 px-6 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button
+              type="submit"
+              class="bg-blue-600 text-white rounded-md py-3 px-6 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
               Generate Report
             </button>
-            <button type="button" @click="resetFilters"
-              class="bg-gray-200 text-gray-700 rounded-md py-3 px-6 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500">
+            <button
+              type="button"
+              @click="resetFilters"
+              class="bg-gray-200 text-gray-700 rounded-md py-3 px-6 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            >
               Reset Filters
             </button>
           </div>
@@ -47,12 +66,18 @@
 
         <!-- Export Buttons -->
         <div class="flex justify-end space-x-4 mt-6">
-          <button type="button" @click="exportToExcel"
-            class="bg-green-100 text-green-700 rounded-md py-3 px-6 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+          <button
+            type="button"
+            @click="exportToExcel"
+            class="bg-green-100 text-green-700 rounded-md py-3 px-6 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
             Export to Excel
           </button>
-          <button type="button" @click="exportToPDF"
-            class="bg-red-100 text-red-700 rounded-md py-3 px-6 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500">
+          <button
+            type="button"
+            @click="exportToPDF"
+            class="bg-red-100 text-red-700 rounded-md py-3 px-6 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
             Export to PDF
           </button>
         </div>
@@ -64,42 +89,74 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  CPD ID</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Title</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Applicant
-                  Name</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date</th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  CPD ID
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Title
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Applicant Name
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Status
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Date
+                </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="report in filteredReports" :key="report.id" class="hover:bg-gray-100 transition-colors">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ report.id }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ report.title }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ report.applicantName }}</td>
+              <tr
+                v-for="report in filteredReports"
+                :key="report.id"
+                class="hover:bg-gray-100 transition-colors"
+              >
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  #{{ report.id }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ report.title }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ report.applicantName }}
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span :class="[
-          { 'bg-yellow-100 text-yellow-800': report.reviewStatus === 'Pending' },
-          { 'bg-green-100 text-green-800': report.reviewStatus === 'Approved' },
-          { 'bg-red-100 text-red-800': report.reviewStatus === 'Rejected' },
-          'px-2 py-1 text-xs font-medium rounded-full'
-        ]">
+                  <span
+                    :class="[
+                      { 'bg-yellow-100 text-yellow-800': report.reviewStatus === 'Pending' },
+                      { 'bg-green-100 text-green-800': report.reviewStatus === 'Approved' },
+                      { 'bg-red-100 text-red-800': report.reviewStatus === 'Rejected' },
+                      'px-2 py-1 text-xs font-medium rounded-full',
+                    ]"
+                  >
                     {{ report.reviewStatus }}
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(report.date) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ formatDate(report.date) }}
+                </td>
               </tr>
               <!-- Loading State -->
               <tr v-if="isLoading">
                 <td colspan="5" class="text-center py-4">Loading reports...</td>
               </tr>
             </tbody>
-
           </table>
         </div>
         <!-- No Results Message -->
@@ -112,44 +169,44 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import apiServices from '@/services/services';
-import * as XLSX from 'xlsx';
-import { jsPDF } from "jspdf";
-import autoTable from 'jspdf-autotable';
+import { ref, reactive, onMounted } from 'vue'
+import apiServices from '@/services/services'
+import * as XLSX from 'xlsx'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 const filters = reactive({
   fromDate: '',
   toDate: '',
-  status: ''
-});
+  status: '',
+})
 
-const reports = ref([]);  // Store the raw API data
-const filteredReports = ref([]); // Store the filtered data for display
-const isLoading = ref(false);
+const reports = ref([]) // Store the raw API data
+const filteredReports = ref([]) // Store the filtered data for display
+const isLoading = ref(false)
 
 // Format date for display
 const formatDate = (dateString) => {
-  if (!dateString) return ''; // Handle null/undefined dates.
+  if (!dateString) return '' // Handle null/undefined dates.
   return new Date(dateString).toLocaleDateString('en-GB', {
     day: '2-digit',
     month: 'short',
-    year: 'numeric'
-  });
-};
+    year: 'numeric',
+  })
+}
 
 // Fetch data on component mount
 onMounted(async () => {
-  isLoading.value = true;
+  isLoading.value = true
   try {
-    const response = await apiServices.getEpcCpdRecords();
+    const response = await apiServices.getEpcCpdRecords()
     if (response && response.data && response.data.results) {
-      reports.value = response.data.results.map(item => ({
+      reports.value = response.data.results.map((item) => ({
         id: item.id,
         title: item.title_of_cpd,
         applicantName: item.full_name,
         reviewStatus: item.review_status, // Use review_status
-        date: item.created_at,  // Keep the original date
+        date: item.created_at, // Keep the original date
         registrationNumber: item.registration_no,
         cidNumber: item.cid_no,
         fullName: item.full_name,
@@ -162,77 +219,73 @@ onMounted(async () => {
         attachment: item.attachment ? { url: item.attachment } : null,
         cpdCredits: item.cpd_credit,
         remarks: item.remark,
-      }));
-      generateReport(); // Apply filters on initial load
+      }))
+      generateReport() // Apply filters on initial load
     } else {
-      console.error('Unexpected API response format:', response);
-      reports.value = [];
-
+      console.error('Unexpected API response format:', response)
+      reports.value = []
     }
   } catch (error) {
-    console.error('Error fetching CPD records:', error);
-    reports.value = []; // Set to empty array on error
-
+    console.error('Error fetching CPD records:', error)
+    reports.value = [] // Set to empty array on error
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-});
-
-
+})
 
 const generateReport = () => {
-  filteredReports.value = reports.value.filter(report => {
-    const reportDate = report.date ? new Date(report.date) : null;
-    const fromDate = filters.fromDate ? new Date(filters.fromDate) : null;
-    const toDate = filters.toDate ? new Date(filters.toDate) : null;
+  filteredReports.value = reports.value.filter((report) => {
+    const reportDate = report.date ? new Date(report.date) : null
+    const fromDate = filters.fromDate ? new Date(filters.fromDate) : null
+    const toDate = filters.toDate ? new Date(filters.toDate) : null
     // Adjust toDate to include the full day
     if (toDate) {
-      toDate.setHours(23, 59, 59, 999);
+      toDate.setHours(23, 59, 59, 999)
     }
 
     const isWithinDateRange =
       (!fromDate || (reportDate && reportDate >= fromDate)) &&
-      (!toDate || (reportDate && reportDate <= toDate));
+      (!toDate || (reportDate && reportDate <= toDate))
 
-    const matchesStatus = !filters.status || report.reviewStatus === filters.status;
+    const matchesStatus = !filters.status || report.reviewStatus === filters.status
 
-    return isWithinDateRange && matchesStatus;
-  });
-};
+    return isWithinDateRange && matchesStatus
+  })
+}
 
 const resetFilters = () => {
-  filters.fromDate = '';
-  filters.toDate = '';
-  filters.status = '';
-  generateReport(); // Re-apply filters (which will now show all data)
-};
+  filters.fromDate = ''
+  filters.toDate = ''
+  filters.status = ''
+  generateReport() // Re-apply filters (which will now show all data)
+}
 
 const exportToExcel = () => {
   //Prepare data
-  const excelData = filteredReports.value.map(report => ({
+  const excelData = filteredReports.value.map((report) => ({
     'CPD ID': report.id,
-    'Title': report.title,
+    Title: report.title,
     'Applicant Name': report.applicantName,
-    'Status': report.reviewStatus,
-    'Date': formatDate(report.date) // Use the formatDate function
-  }));
+    Status: report.reviewStatus,
+    Date: formatDate(report.date), // Use the formatDate function
+  }))
   //Create worksheet
-  const ws = XLSX.utils.json_to_sheet(excelData);
+  const ws = XLSX.utils.json_to_sheet(excelData)
   //create workbook
-  const wb = XLSX.utils.book_new();
+  const wb = XLSX.utils.book_new()
   //append worksheet
-  XLSX.utils.book_append_sheet(wb, ws, "CPD_Reports");
+  XLSX.utils.book_append_sheet(wb, ws, 'CPD_Reports')
   //export
-  XLSX.writeFile(wb, "CPD_Reports.xlsx");
-};
+  XLSX.writeFile(wb, 'CPD_Reports.xlsx')
+}
 
 const exportToPDF = () => {
   if (filteredReports.value.length === 0) {
-    alert('No data to export.'); // Or use a more sophisticated notification
-    return;
+    alert('No data to export.') // Or use a more sophisticated notification
+    return
   }
 
-  const doc = new jsPDF();
+  const doc = new jsPDF()
 
   // Define columns for autoTable
   const columns = [
@@ -241,33 +294,33 @@ const exportToPDF = () => {
     { header: 'Applicant Name', dataKey: 'applicantName' },
     { header: 'Status', dataKey: 'reviewStatus' },
     { header: 'Date', dataKey: 'date' },
-  ];
+  ]
 
   // Prepare data for autoTable
-  const data = filteredReports.value.map(report => ({
+  const data = filteredReports.value.map((report) => ({
     id: report.id,
     title: report.title,
     applicantName: report.applicantName,
     reviewStatus: report.reviewStatus,
-    date: formatDate(report.date) // Use consistent date format
-  }));
-  doc.text("CPD Activity Report", 14, 15);
+    date: formatDate(report.date), // Use consistent date format
+  }))
+  doc.text('CPD Activity Report', 14, 15)
   // Use autoTable to generate the table in the PDF
   autoTable(doc, {
     columns: columns,
     body: data,
     startY: 20, // Adjust start position as needed
-    didDrawPage: (data) => { //header for each page
+    didDrawPage: (data) => {
+      //header for each page
       if (data.pageNumber !== 1) {
-        doc.text("CPD Activity Report", 14, 15); //header
+        doc.text('CPD Activity Report', 14, 15) //header
       }
-    }
-  });
+    },
+  })
 
   // Save the PDF
-  doc.save('CPD_Reports.pdf');
-};
-
+  doc.save('CPD_Reports.pdf')
+}
 </script>
 
 <style scoped>

@@ -7,7 +7,7 @@ import { useAuthStore } from '@/stores/authStore'
 export const useEngineeringCertificationStore = defineStore('engineeringCertification', () => {
   // State
   const applicationDetails = ref({
-    results: []
+    results: [],
   })
   const isLoading = ref(false)
   const error = ref(null)
@@ -20,7 +20,7 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
     }
 
     const userApplications = applicationDetails.value.results
-      .filter(app => app.cid_no === authStore.user.cid)
+      .filter((app) => app.cid_no === authStore.user.cid)
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 
     return userApplications[0] || null
@@ -45,9 +45,11 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
 
     // Check if ANY application for this user has qualifications
     const userCid = authStore.user.cid
-    const applicationsWithQualifications = applicationDetails.value.results
-      .filter(app => app.cid_no === userCid && app.user_qualifications && app.user_qualifications.length > 0)
-    
+    const applicationsWithQualifications = applicationDetails.value.results.filter(
+      (app) =>
+        app.cid_no === userCid && app.user_qualifications && app.user_qualifications.length > 0,
+    )
+
     return applicationsWithQualifications.length > 0
   })
 
@@ -59,13 +61,14 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
     }
 
     const userCid = authStore.user.cid
-    
+
     // Check if ANY application has an approved qualification
     return applicationDetails.value.results
-      .filter(app => app.cid_no === userCid)
-      .some(app => 
-        app.user_qualifications && 
-        app.user_qualifications.some(qual => qual.endorsement_decision === 'Approved')
+      .filter((app) => app.cid_no === userCid)
+      .some(
+        (app) =>
+          app.user_qualifications &&
+          app.user_qualifications.some((qual) => qual.endorsement_decision === 'Approved'),
       )
   })
 
@@ -110,7 +113,7 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
           reRegistration: false,
           additionalQualification: false,
         },
-      };
+      }
     }
 
     // If user has submitted an application (has qualifications on any application)
@@ -122,7 +125,7 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
         cpdManagement: false,
         cogsManagement: false,
         profile: true,
-      };
+      }
 
       // Certification sub-menus that are always shown after application submission
       let certificationSubMenus = {
@@ -132,28 +135,28 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
         renewal: false,
         reRegistration: false,
         additionalQualification: false,
-      };
+      }
 
       // If any qualification is approved, show additional menus
       if (hasApprovedQualification.value) {
-        baseMenus.cpdManagement = true;
-        baseMenus.cogsManagement = true;
-        certificationSubMenus.additionalQualification = true;
-        
+        baseMenus.cpdManagement = true
+        baseMenus.cogsManagement = true
+        certificationSubMenus.additionalQualification = true
+
         // Show renewal option if within renewal period
         if (isRenewalPeriod.value) {
-          certificationSubMenus.renewal = true;
+          certificationSubMenus.renewal = true
         }
-        
+
         // Show re-registration option if within re-registration period
         if (isInReregistrationPeriod.value) {
-          certificationSubMenus.reRegistration = true;
+          certificationSubMenus.reRegistration = true
         }
       }
 
-      return { baseMenus, certificationSubMenus };
+      return { baseMenus, certificationSubMenus }
     }
-    
+
     // Default state - before any application submission
     return {
       baseMenus: {
@@ -171,53 +174,53 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
         reRegistration: false,
         additionalQualification: false,
       },
-    };
+    }
   })
 
   // Actions
   const fetchApplicationDetails = async () => {
-    isLoading.value = true;
-    error.value = null;
+    isLoading.value = true
+    error.value = null
 
     try {
-      const authStore = useAuthStore();
-      
+      const authStore = useAuthStore()
+
       if (!authStore?.user?.cid) {
-        console.warn('User CID not available for fetching applications');
-        applicationDetails.value = { results: [] };
-        return;
+        console.warn('User CID not available for fetching applications')
+        applicationDetails.value = { results: [] }
+        return
       }
-      
+
       // Use the CID to get applications
-      const response = await apiServices.getEpcFullApplicationListByCid(authStore.user.cid);
-      
+      const response = await apiServices.getEpcFullApplicationListByCid(authStore.user.cid)
+
       if (response?.data) {
-        applicationDetails.value = response.data;
-        console.log('Fetched application details:', applicationDetails.value);
+        applicationDetails.value = response.data
+        console.log('Fetched application details:', applicationDetails.value)
       } else {
-        applicationDetails.value = { results: [] };
+        applicationDetails.value = { results: [] }
       }
     } catch (err) {
-      console.error('Error fetching application details:', err);
-      error.value = err.response?.data?.message || 'Failed to fetch application details';
-      applicationDetails.value = { results: [] };
+      console.error('Error fetching application details:', err)
+      error.value = err.response?.data?.message || 'Failed to fetch application details'
+      applicationDetails.value = { results: [] }
     } finally {
-      isLoading.value = false;
+      isLoading.value = false
     }
-  };
+  }
 
   const initialize = async () => {
-    const authStore = useAuthStore();
+    const authStore = useAuthStore()
     if (authStore?.isAuthenticated) {
-      await fetchApplicationDetails();
+      await fetchApplicationDetails()
     }
-  };
+  }
 
   const resetStore = () => {
-    applicationDetails.value = { results: [] };
-    isLoading.value = false;
-    error.value = null;
-  };
+    applicationDetails.value = { results: [] }
+    isLoading.value = false
+    error.value = null
+  }
 
   return {
     // State
@@ -237,6 +240,6 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
     // Actions
     fetchApplicationDetails,
     initialize,
-    resetStore
-  };
-});
+    resetStore,
+  }
+})

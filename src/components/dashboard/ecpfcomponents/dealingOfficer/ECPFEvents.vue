@@ -2,12 +2,8 @@
   <div class="ecpf-events">
     <h2 class="events-title">ECPF Events</h2>
     <div class="events-container">
-      <div v-if="loading" class="loading">
-        Loading events...
-      </div>
-      <div v-else-if="events.length === 0" class="no-events">
-        No events found
-      </div>
+      <div v-if="loading" class="loading">Loading events...</div>
+      <div v-else-if="events.length === 0" class="no-events">No events found</div>
       <div v-else class="event-list">
         <div v-for="event in events" :key="event.id" class="event-item">
           <div class="event-header">
@@ -25,19 +21,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue'
 
-const loading = ref(true);
-const events = ref([]);
+const loading = ref(true)
+const events = ref([])
 
 const formatDate = (date) => {
-  return new Date(date).toLocaleDateString();
-};
+  return new Date(date).toLocaleDateString()
+}
 
 const fetchEvents = async () => {
   try {
     // Replace with actual API call
-    loading.value = true;
+    loading.value = true
     // Simulated API response (Replace this with your actual API call)
     // Example:
     // const response = await fetch('/api/events');
@@ -48,24 +44,24 @@ const fetchEvents = async () => {
         title: 'Application Review',
         description: 'Initial review of ECPF application',
         date: '2024-01-15',
-        status: 'pending'
+        status: 'pending',
       },
       {
         id: 2,
         title: 'Document Verification',
         description: 'Verification of submitted documents',
         date: '2024-01-16',
-        status: 'completed'
-      }
-    ];
+        status: 'completed',
+      },
+    ]
   } catch (error) {
-    console.error('Error fetching events:', error);
+    console.error('Error fetching events:', error)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
-onMounted(fetchEvents);
+onMounted(fetchEvents)
 </script>
 
 <style scoped>

@@ -1,3 +1,1 @@
-<template>
-  admins sad
-</template>
+<template>admins sad</template>

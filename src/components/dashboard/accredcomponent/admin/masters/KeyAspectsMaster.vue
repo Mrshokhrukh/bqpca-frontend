@@ -12,34 +12,59 @@
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
-                <label for="keyAspectName" class="block text-sm font-medium text-slate-700">Key Aspect Name</label>
-                <input type="text" id="keyAspectName" v-model="formData.key_aspect_name"
+                <label for="keyAspectName" class="block text-sm font-medium text-slate-700"
+                  >Key Aspect Name</label
+                >
+                <input
+                  type="text"
+                  id="keyAspectName"
+                  v-model="formData.key_aspect_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter key aspect name" required />
+                  placeholder="Enter key aspect name"
+                  required
+                />
               </div>
               <div>
-                <label for="keyAspectDescription" class="block text-sm font-medium text-slate-700">Description</label>
-                <textarea id="keyAspectDescription" v-model="formData.description" rows="4"
+                <label for="keyAspectDescription" class="block text-sm font-medium text-slate-700"
+                  >Description</label
+                >
+                <textarea
+                  id="keyAspectDescription"
+                  v-model="formData.description"
+                  rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter key aspect description" required></textarea>
+                  placeholder="Enter key aspect description"
+                  required
+                ></textarea>
               </div>
               <div>
-                <label for="standardName" class="block text-sm font-medium text-slate-700">Standard Name</label>
-                <select id="standardName" v-model="formData.standard_name"
+                <label for="standardName" class="block text-sm font-medium text-slate-700"
+                  >Standard Name</label
+                >
+                <select
+                  id="standardName"
+                  v-model="formData.standard_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required>
+                  required
+                >
                   <option v-for="standard in standards" :key="standard.id" :value="standard.id">
                     {{ standard.standard_name }}
                   </option>
                 </select>
               </div>
               <div class="flex gap-3">
-                <button type="submit"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <button
+                  type="submit"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
                   {{ isEditing ? 'Update Key Aspect' : 'Add Key Aspect' }}
                 </button>
-                <button v-if="isEditing" type="button" @click="cancelEdit"
-                  class="py-2 px-4 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200">
+                <button
+                  v-if="isEditing"
+                  type="button"
+                  @click="cancelEdit"
+                  class="py-2 px-4 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200"
+                >
                   Cancel
                 </button>
               </div>
@@ -53,18 +78,32 @@
             <div class="flex justify-between items-center">
               <h2 class="text-xl font-semibold text-slate-900">Key Aspects List</h2>
               <span class="text-sm text-slate-500">
-                {{ filteredKeyAspects.length }} Key Aspect{{ filteredKeyAspects.length !== 1 ? 's' : '' }}
+                {{ filteredKeyAspects.length }} Key Aspect{{
+                  filteredKeyAspects.length !== 1 ? 's' : ''
+                }}
               </span>
             </div>
 
             <!-- Search Bar -->
             <div class="relative">
-              <input type="text" v-model="searchQuery" placeholder="Search Key Aspects..."
-                class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-              <svg class="absolute left-3 top-2.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <input
+                type="text"
+                v-model="searchQuery"
+                placeholder="Search Key Aspects..."
+                class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <svg
+                class="absolute left-3 top-2.5 h-5 w-5 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
           </div>
@@ -72,25 +111,44 @@
           <!-- Key Aspects Grid -->
           <div class="space-y-4 mb-6">
             <TransitionGroup name="list">
-              <div v-for="keyAspect in paginatedKeyAspects" :key="keyAspect.id"
-                class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200">
+              <div
+                v-for="keyAspect in paginatedKeyAspects"
+                :key="keyAspect.id"
+                class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200"
+              >
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">{{ keyAspect.key_aspect_name }}</h3>
                     <p class="text-sm text-slate-600 mt-1">{{ keyAspect.description }}</p>
-                    <p class="text-sm text-slate-600 mt-1">{{ getStandardName(keyAspect.standard_name) }}</p>
+                    <p class="text-sm text-slate-600 mt-1">
+                      {{ getStandardName(keyAspect.standard_name) }}
+                    </p>
                   </div>
                   <div class="flex gap-2">
-                    <button @click="startEdit(keyAspect)" class="p-2 text-blue-600 hover:bg-blue-50 rounded-md">
+                    <button
+                      @click="startEdit(keyAspect)"
+                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+                    >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
                       </svg>
                     </button>
-                    <button @click="openDeleteModal(keyAspect)" class="p-2 text-red-600 hover:bg-red-50 rounded-md">
+                    <button
+                      @click="openDeleteModal(keyAspect)"
+                      class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                    >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -106,15 +164,21 @@
 
           <!-- Pagination -->
           <div v-if="filteredKeyAspects.length > itemsPerPage" class="flex justify-center gap-2">
-            <button @click="currentPage--" :disabled="currentPage === 1"
-              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">
+            <button
+              @click="currentPage--"
+              :disabled="currentPage === 1"
+              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+            >
               Previous
             </button>
             <span class="px-3 py-1 text-sm text-slate-600">
               Page {{ currentPage }} of {{ totalPages }}
             </span>
-            <button @click="currentPage++" :disabled="currentPage === totalPages"
-              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">
+            <button
+              @click="currentPage++"
+              :disabled="currentPage === totalPages"
+              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+            >
               Next
             </button>
           </div>
@@ -124,21 +188,27 @@
       <!-- Confirmation modal -->
       <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
         <AlertDialogContent
-          class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50">
+          class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50"
+        >
           <AlertDialogTitle class="text-xl font-semibold text-slate-900 mb-2">
             Are you absolutely sure?
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
-            This action cannot be undone. This will permanently delete the key aspect
-            "{{ keyAspectToDelete?.key_aspect_name }}".
+            This action cannot be undone. This will permanently delete the key aspect "{{
+              keyAspectToDelete?.key_aspect_name
+            }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
-            <AlertDialogCancel class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
-              @click="closeDeleteModal">
+            <AlertDialogCancel
+              class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
+              @click="closeDeleteModal"
+            >
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
-              @click="confirmDelete">
+            <AlertDialogAction
+              class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+              @click="confirmDelete"
+            >
               Delete
             </AlertDialogAction>
           </div>
@@ -150,8 +220,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
-import services from '@/services/services';
+import { ref, computed, watch, onMounted } from 'vue'
+import services from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -160,131 +230,133 @@ import {
   AlertDialogOverlay,
   AlertDialogRoot,
   AlertDialogTitle,
-} from 'radix-vue';
+} from 'radix-vue'
 
 // State
-const keyAspects = ref([]);
-const standards = ref([]);
+const keyAspects = ref([])
+const standards = ref([])
 const formData = ref({
   id: null,
   key_aspect_name: '',
   description: '',
-  standard_name: ''
-});
-const isEditing = ref(false);
-const searchQuery = ref('');
-const currentPage = ref(1);
-const itemsPerPage = 5;
+  standard_name: '',
+})
+const isEditing = ref(false)
+const searchQuery = ref('')
+const currentPage = ref(1)
+const itemsPerPage = 5
 
-const isDeleteModalOpen = ref(false);
-const keyAspectToDelete = ref(null);
+const isDeleteModalOpen = ref(false)
+const keyAspectToDelete = ref(null)
 
 // Fetch key aspects and standards on component mount
 onMounted(async () => {
   try {
     const [keyAspectsResponse, standardsResponse] = await Promise.all([
       services.getMastersKeyAspects(),
-      services.getMastersStandards()
-    ]);
-    keyAspects.value = keyAspectsResponse.data.results;
-    standards.value = standardsResponse.data.results;
+      services.getMastersStandards(),
+    ])
+    keyAspects.value = keyAspectsResponse.data.results
+    standards.value = standardsResponse.data.results
     console.log(standards.value)
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error('Error fetching data:', error)
   }
-});
+})
 
 // Computed
 const filteredKeyAspects = computed(() => {
-  return keyAspects.value.filter(keyAspect => {
-    const query = searchQuery.value.toLowerCase();
-    return keyAspect.key_aspect_name.toLowerCase().includes(query) ||
-      keyAspect.description.toLowerCase().includes(query);
-  });
-});
+  return keyAspects.value.filter((keyAspect) => {
+    const query = searchQuery.value.toLowerCase()
+    return (
+      keyAspect.key_aspect_name.toLowerCase().includes(query) ||
+      keyAspect.description.toLowerCase().includes(query)
+    )
+  })
+})
 
 const totalPages = computed(() => {
-  return Math.ceil(filteredKeyAspects.value.length / itemsPerPage);
-});
+  return Math.ceil(filteredKeyAspects.value.length / itemsPerPage)
+})
 
 const paginatedKeyAspects = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return filteredKeyAspects.value.slice(start, end);
-});
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredKeyAspects.value.slice(start, end)
+})
 
 // Methods
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMastersKeyAspect(formData.value.id, formData.value);
-      const index = keyAspects.value.findIndex(ka => ka.id === formData.value.id);
+      const response = await services.updateMastersKeyAspect(formData.value.id, formData.value)
+      const index = keyAspects.value.findIndex((ka) => ka.id === formData.value.id)
       if (index !== -1) {
-        keyAspects.value[index] = response.data;
+        keyAspects.value[index] = response.data
       }
     } else {
-      const response = await services.createMastersKeyAspect(formData.value);
-      keyAspects.value.push(response.data);
+      const response = await services.createMastersKeyAspect(formData.value)
+      keyAspects.value.push(response.data)
     }
-    resetForm();
+    resetForm()
   } catch (error) {
-    console.error('Error saving key aspect:', error);
+    console.error('Error saving key aspect:', error)
   }
-};
+}
 
 const startEdit = (keyAspect) => {
-  formData.value = { ...keyAspect };
-  isEditing.value = true;
-};
+  formData.value = { ...keyAspect }
+  isEditing.value = true
+}
 
 const cancelEdit = () => {
-  resetForm();
-};
+  resetForm()
+}
 
 const openDeleteModal = (keyAspect) => {
-  keyAspectToDelete.value = keyAspect;
-  isDeleteModalOpen.value = true;
-};
+  keyAspectToDelete.value = keyAspect
+  isDeleteModalOpen.value = true
+}
 
 const closeDeleteModal = () => {
-  isDeleteModalOpen.value = false;
-  keyAspectToDelete.value = null;
-};
+  isDeleteModalOpen.value = false
+  keyAspectToDelete.value = null
+}
 
 const confirmDelete = async () => {
-  if (!keyAspectToDelete.value) return;
+  if (!keyAspectToDelete.value) return
 
   try {
-    await services.deleteMastersKeyAspect(keyAspectToDelete.value.id);
-    const index = keyAspects.value.findIndex(ka => ka.id === keyAspectToDelete.value.id);
+    await services.deleteMastersKeyAspect(keyAspectToDelete.value.id)
+    const index = keyAspects.value.findIndex((ka) => ka.id === keyAspectToDelete.value.id)
     if (index !== -1) {
-      keyAspects.value.splice(index, 1);
+      keyAspects.value.splice(index, 1)
     }
-    closeDeleteModal();
+    closeDeleteModal()
   } catch (error) {
-    console.error('Error deleting key aspect:', error);
+    console.error('Error deleting key aspect:', error)
   }
-};
+}
 
 const resetForm = () => {
   formData.value = {
     id: null,
     key_aspect_name: '',
     description: '',
-    standard_name: ''
-  };
-  isEditing.value = false;
-};
+    standard_name: '',
+  }
+  isEditing.value = false
+}
 
 const getStandardName = (standardId) => {
-  const standard = standards.value.find(s => s.id === standardId);
-  return standard ? standard.standard_name : 'Unknown';
-};
+  const standard = standards.value.find((s) => s.id === standardId)
+  return standard ? standard.standard_name : 'Unknown'
+}
 
 // Watch for search query changes to reset pagination
 watch(searchQuery, () => {
-  currentPage.value = 1;
-});
+  currentPage.value = 1
+})
 </script>
 
 <style scoped>

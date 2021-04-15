@@ -1,12 +1,11 @@
 // src/services/services.js
-import apiClient from './apiClient';
-import mhpcServices from './mhpcservices';
-import accreditationServices from './accreditationservices';
-import roqservices from './roqservices';
-import ecpfServices from './ecpfServices';
-import epcServices from './epcServices';
-import userservices from './userservices';
-
+import apiClient from './apiClient'
+import mhpcServices from './mhpcservices'
+import accreditationServices from './accreditationservices'
+import roqservices from './roqservices'
+import ecpfServices from './ecpfServices'
+import epcServices from './epcServices'
+import userservices from './userservices'
 
 export default {
   uploadFile(url, formData) {
@@ -22,9 +21,11 @@ export default {
   // certificate verification
   verifyCertificate(params) {
     if (params.service_type == 'roq') {
-      return apiClient.get(`/recognitions/recognition-of-qualifications/verify-certification/`, { params });
+      return apiClient.get(`/recognitions/recognition-of-qualifications/verify-certification/`, {
+        params,
+      })
     } else if (params.service_type == 'health_certification') {
-      return apiClient.get(`/mhpc/mhpc-new-application/verify-certification/`, { params });
+      return apiClient.get(`/mhpc/mhpc-new-application/verify-certification/`, { params })
     }
   },
 

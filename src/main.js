@@ -1,18 +1,18 @@
-import './assets/main.css';
-import './assets/toast.css';
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
-import App from './App.vue';
-import router from './router';
-import Toast, { POSITION, TYPE as ToastType } from 'vue-toastification';
-import 'vue-toastification/dist/index.css';
-import 'apexcharts/dist/apexcharts.css';
+import './assets/main.css'
+import './assets/toast.css'
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import App from './App.vue'
+import router from './router'
+import Toast, { POSITION, TYPE as ToastType } from 'vue-toastification'
+import 'vue-toastification/dist/index.css'
+import 'apexcharts/dist/apexcharts.css'
 
-const app = createApp(App);
+const app = createApp(App)
 
-app.use(createPinia());
+app.use(createPinia())
 
-app.use(router);
+app.use(router)
 
 const toastOptions = {
   position: POSITION.TOP_RIGHT,
@@ -31,7 +31,6 @@ const toastOptions = {
   icon: true,
   iconClassName: 'custom-toast-icon',
   toastDefaults: {
-
     [ToastType.SUCCESS]: {
       timeout: 3000,
       icon: '✅',
@@ -50,9 +49,8 @@ const toastOptions = {
       icon: '⚠️',
     },
   },
-};
+}
 
+app.use(Toast, toastOptions)
 
-app.use(Toast, toastOptions);
-
-app.mount('#app');
+app.mount('#app')

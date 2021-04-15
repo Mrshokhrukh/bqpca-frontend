@@ -156,26 +156,26 @@
 
 <script setup>
 // The 'name' label was unused and has been removed.
-  defineProps({
-    pending: {
-      type: Number,
-      required: true,
-    },
-    underReview: {
-      type: Number,
-      required: true,
-    },
-    qecIssued: {
-      type: Number,
-      required: true,
-    },
-    regretted: {
-      type: Number,
-      required: true,
-    },
-    suspend: {
-      type: Number,
-      required: true,
-    },
-  })
+defineProps({
+  pending: {
+    type: Number,
+    required: true,
+  },
+  underReview: {
+    type: Number,
+    required: true,
+  },
+  qecIssued: {
+    type: Number,
+    required: true,
+  },
+  regretted: {
+    type: Number,
+    required: true,
+  },
+  suspend: {
+    type: Number,
+    required: true,
+  },
+})
 </script>

@@ -5,7 +5,12 @@
     <!-- Search and Filter Section -->
     <div class="search-section mb-4">
       <div class="input-group">
-        <input type="text" class="form-control" v-model="searchQuery" placeholder="Search users..." />
+        <input
+          type="text"
+          class="form-control"
+          v-model="searchQuery"
+          placeholder="Search users..."
+        />
         <button class="btn btn-primary" @click="searchUsers">Search</button>
       </div>
     </div>
@@ -40,10 +45,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-const users = ref([]);
-const searchQuery = ref('');
+import { ref } from 'vue'
+const users = ref([])
+const searchQuery = ref('')
 
-const searchUsers = () => {
-}
+const searchUsers = () => {}
 </script>

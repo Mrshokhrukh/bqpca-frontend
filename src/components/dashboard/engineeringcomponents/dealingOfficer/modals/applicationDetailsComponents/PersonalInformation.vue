@@ -10,13 +10,19 @@
       <div class="flex flex-col items-center space-y-4">
         <!-- Profile Photo with Status Indicator -->
         <div class="relative group">
-          <img :src="application.passport_photo || '/placeholder-avatar.png'" @error="handleImageError"
-            class="h-32 w-32 rounded-full object-cover border-4 border-white shadow-lg transition-transform group-hover:scale-105" />
-          <span class="absolute bottom-0 right-0 h-5 w-5 rounded-full border-2 border-white shadow-sm" :class="{
-            'bg-yellow-400': overallStatus === 'Pending',
-            'bg-green-400': overallStatus === 'Approved',
-            'bg-red-400': overallStatus === 'Regretted',
-          }" />
+          <img
+            :src="application.passport_photo || '/placeholder-avatar.png'"
+            @error="handleImageError"
+            class="h-32 w-32 rounded-full object-cover border-4 border-white shadow-lg transition-transform group-hover:scale-105"
+          />
+          <span
+            class="absolute bottom-0 right-0 h-5 w-5 rounded-full border-2 border-white shadow-sm"
+            :class="{
+              'bg-yellow-400': overallStatus === 'Pending',
+              'bg-green-400': overallStatus === 'Approved',
+              'bg-red-400': overallStatus === 'Regretted',
+            }"
+          />
         </div>
 
         <!-- Full Name -->
@@ -28,9 +34,7 @@
 
         <!-- CID -->
         <div class="text-center">
-          <p class="text-sm text-gray-500 mt-1">
-            CID: {{ application.cid_no }}
-          </p>
+          <p class="text-sm text-gray-500 mt-1">CID: {{ application.cid_no }}</p>
         </div>
 
         <!-- Gender and DOB -->

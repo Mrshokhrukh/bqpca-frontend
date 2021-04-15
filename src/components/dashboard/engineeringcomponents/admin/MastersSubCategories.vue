@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Engineering Sub Categories Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
+        Engineering Sub Categories Management
+      </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -12,7 +14,9 @@
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
-                <label for="category_name" class="block text-sm font-medium text-slate-700">Category Name</label>
+                <label for="category_name" class="block text-sm font-medium text-slate-700"
+                  >Category Name</label
+                >
                 <select
                   id="category_name"
                   v-model="formData.category_name"
@@ -26,7 +30,9 @@
                 </select>
               </div>
               <div>
-                <label for="sub_category_name" class="block text-sm font-medium text-slate-700">Sub Category Name</label>
+                <label for="sub_category_name" class="block text-sm font-medium text-slate-700"
+                  >Sub Category Name</label
+                >
                 <input
                   type="text"
                   id="sub_category_name"
@@ -37,7 +43,11 @@
                 />
               </div>
               <div>
-                <label for="sub_category_description" class="block text-sm font-medium text-slate-700">Description</label>
+                <label
+                  for="sub_category_description"
+                  class="block text-sm font-medium text-slate-700"
+                  >Description</label
+                >
                 <textarea
                   id="sub_category_description"
                   v-model="formData.sub_category_description"
@@ -48,7 +58,9 @@
                 ></textarea>
               </div>
               <div>
-                <label for="registration_code" class="block text-sm font-medium text-slate-700">Registration Code</label>
+                <label for="registration_code" class="block text-sm font-medium text-slate-700"
+                  >Registration Code</label
+                >
                 <input
                   type="text"
                   id="registration_code"
@@ -59,7 +71,9 @@
                 />
               </div>
               <div>
-                <label for="renewal_fee" class="block text-sm font-medium text-slate-700">Renewal Fee</label>
+                <label for="renewal_fee" class="block text-sm font-medium text-slate-700"
+                  >Renewal Fee</label
+                >
                 <input
                   type="number"
                   id="renewal_fee"
@@ -96,7 +110,8 @@
             <div class="flex justify-between items-center">
               <h2 class="text-xl font-semibold text-slate-900">Sub Categories List</h2>
               <span class="text-sm text-slate-500">
-                {{ filteredSubCategories.length }} Sub {{ filteredSubCategories.length !== 1 ? 'Categories' : 'Category' }}
+                {{ filteredSubCategories.length }} Sub
+                {{ filteredSubCategories.length !== 1 ? 'Categories' : 'Category' }}
               </span>
             </div>
 
@@ -114,8 +129,12 @@
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
           </div>
@@ -131,19 +150,29 @@
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">{{ subCategory.sub_category_name }}</h3>
-                    <p class="text-sm text-slate-600 mt-1">{{ subCategory.sub_category_description }}</p>
-                    <p class="text-sm text-slate-600 mt-1">Category: {{ subCategory.personnel_category.category_name }}</p>
-                    <p class="text-sm text-slate-600 mt-1">Code: {{ subCategory.registration_code }}</p>
+                    <p class="text-sm text-slate-600 mt-1">
+                      {{ subCategory.sub_category_description }}
+                    </p>
+                    <p class="text-sm text-slate-600 mt-1">
+                      Category: {{ subCategory.personnel_category.category_name }}
+                    </p>
+                    <p class="text-sm text-slate-600 mt-1">
+                      Code: {{ subCategory.registration_code }}
+                    </p>
                     <p class="text-sm text-slate-600 mt-1">Fee: {{ subCategory.renewal_fee }}</p>
-                   </div>
+                  </div>
                   <div class="flex gap-2">
                     <button
                       @click="startEdit(subCategory)"
                       class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
                       </svg>
                     </button>
                     <button
@@ -151,8 +180,12 @@
                       class="p-2 text-red-600 hover:bg-red-50 rounded-md"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -167,8 +200,7 @@
           </div>
 
           <!-- Pagination -->
-          <div v-if="filteredSubCategories.length > itemsPerPage"
-               class="flex justify-center gap-2">
+          <div v-if="filteredSubCategories.length > itemsPerPage" class="flex justify-center gap-2">
             <button
               @click="currentPage--"
               :disabled="currentPage === 1"
@@ -193,21 +225,27 @@
       <!-- Confirmation modal -->
       <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
         <AlertDialogContent
-          class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50">
+          class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50"
+        >
           <AlertDialogTitle class="text-xl font-semibold text-slate-900 mb-2">
             Are you absolutely sure?
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
-            This action cannot be undone. This will permanently delete the sub category
-            "{{ subCategoryToDelete?.sub_category_name }}".
+            This action cannot be undone. This will permanently delete the sub category "{{
+              subCategoryToDelete?.sub_category_name
+            }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
-            <AlertDialogCancel class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
-              @click="closeDeleteModal">
+            <AlertDialogCancel
+              class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
+              @click="closeDeleteModal"
+            >
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
-              @click="confirmDelete">
+            <AlertDialogAction
+              class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+              @click="confirmDelete"
+            >
               Delete
             </AlertDialogAction>
           </div>
@@ -219,8 +257,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
-import apiServices from '@/services/services';
+import { ref, computed, watch, onMounted } from 'vue'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -229,11 +267,11 @@ import {
   AlertDialogOverlay,
   AlertDialogRoot,
   AlertDialogTitle,
-} from 'radix-vue';
+} from 'radix-vue'
 
 // State
-const subCategories = ref([]);
-const categories = ref([]); // For the categories dropdown
+const subCategories = ref([])
+const categories = ref([]) // For the categories dropdown
 const formData = ref({
   id: null,
   sub_category_name: '',
@@ -241,130 +279,134 @@ const formData = ref({
   registration_code: '',
   renewal_fee: '',
   category_name: 0,
-});
-const isEditing = ref(false);
-const searchQuery = ref('');
-const currentPage = ref(1);
-const itemsPerPage = 5;
+})
+const isEditing = ref(false)
+const searchQuery = ref('')
+const currentPage = ref(1)
+const itemsPerPage = 5
 
-const isDeleteModalOpen = ref(false);
-const subCategoryToDelete = ref(null);
+const isDeleteModalOpen = ref(false)
+const subCategoryToDelete = ref(null)
 
 // Fetch sub categories and categories on component mount
 onMounted(async () => {
-  fetchSubCategories();
-  fetchCategories();
-});
-
+  fetchSubCategories()
+  fetchCategories()
+})
 
 const fetchSubCategories = async () => {
   try {
-    const response = await apiServices.getEpcMastersSubCategories();
-    subCategories.value = response.data.results;
+    const response = await apiServices.getEpcMastersSubCategories()
+    subCategories.value = response.data.results
   } catch (error) {
-    console.error('Error fetching sub categories:', error);
+    console.error('Error fetching sub categories:', error)
   }
-};
+}
 
 const fetchCategories = async () => {
   try {
-    const response = await apiServices.getEpcMastersPersonnelCategories();
-    categories.value = response.data.results;
+    const response = await apiServices.getEpcMastersPersonnelCategories()
+    categories.value = response.data.results
   } catch (error) {
-    console.error('Error fetching categories:', error);
+    console.error('Error fetching categories:', error)
   }
-};
+}
 
 // Computed
 const filteredSubCategories = computed(() => {
-  return subCategories.value.filter(subCategory => {
-    const query = searchQuery.value.toLowerCase();
-    return subCategory.sub_category_name.toLowerCase().includes(query) ||
-           subCategory.sub_category_description.toLowerCase().includes(query) ||
-           (subCategory.category_name && subCategory.category_name.toLowerCase().includes(query)); // Check for null
-  });
-});
+  return subCategories.value.filter((subCategory) => {
+    const query = searchQuery.value.toLowerCase()
+    return (
+      subCategory.sub_category_name.toLowerCase().includes(query) ||
+      subCategory.sub_category_description.toLowerCase().includes(query) ||
+      (subCategory.category_name && subCategory.category_name.toLowerCase().includes(query))
+    ) // Check for null
+  })
+})
 
 const totalPages = computed(() => {
-  return Math.ceil(filteredSubCategories.value.length / itemsPerPage);
-});
+  return Math.ceil(filteredSubCategories.value.length / itemsPerPage)
+})
 
 const paginatedSubCategories = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return filteredSubCategories.value.slice(start, end);
-});
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredSubCategories.value.slice(start, end)
+})
 
 // Methods
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateEpcMastersSubCategory(formData.value.id, formData.value);
-      const index = subCategories.value.findIndex(sc => sc.id === formData.value.id);
+      const response = await apiServices.updateEpcMastersSubCategory(
+        formData.value.id,
+        formData.value,
+      )
+      const index = subCategories.value.findIndex((sc) => sc.id === formData.value.id)
       if (index !== -1) {
-        subCategories.value[index] = response.data;
+        subCategories.value[index] = response.data
       }
     } else {
-      const response = await apiServices.createEpcMastersSubCategory(formData.value);
-      subCategories.value.push(response.data);
+      const response = await apiServices.createEpcMastersSubCategory(formData.value)
+      subCategories.value.push(response.data)
     }
-    resetForm();
+    resetForm()
   } catch (error) {
-    console.error('Error saving sub category:', error);
+    console.error('Error saving sub category:', error)
     // Handle specific field errors, if your API returns them in a usable format.
   }
-};
+}
 
 const startEdit = (subCategory) => {
-  formData.value = { ...subCategory };
-  isEditing.value = true;
-};
+  formData.value = { ...subCategory }
+  isEditing.value = true
+}
 
 const cancelEdit = () => {
-  resetForm();
-};
+  resetForm()
+}
 
 const openDeleteModal = (subCategory) => {
-  subCategoryToDelete.value = subCategory;
-  isDeleteModalOpen.value = true;
-};
+  subCategoryToDelete.value = subCategory
+  isDeleteModalOpen.value = true
+}
 
 const closeDeleteModal = () => {
-  isDeleteModalOpen.value = false;
-  subCategoryToDelete.value = null;
-};
+  isDeleteModalOpen.value = false
+  subCategoryToDelete.value = null
+}
 
 const confirmDelete = async () => {
-  if (!subCategoryToDelete.value) return;
+  if (!subCategoryToDelete.value) return
 
   try {
-    await apiServices.deleteEpcMastersSubCategory(subCategoryToDelete.value.id);
-    const index = subCategories.value.findIndex(sc => sc.id === subCategoryToDelete.value.id);
+    await apiServices.deleteEpcMastersSubCategory(subCategoryToDelete.value.id)
+    const index = subCategories.value.findIndex((sc) => sc.id === subCategoryToDelete.value.id)
     if (index !== -1) {
-      subCategories.value.splice(index, 1);
+      subCategories.value.splice(index, 1)
     }
-    closeDeleteModal();
+    closeDeleteModal()
   } catch (error) {
-    console.error('Error deleting sub category:', error);
+    console.error('Error deleting sub category:', error)
   }
-};
+}
 
 const resetForm = () => {
   formData.value = {
-      id: null,
-      sub_category_name: '',
-      sub_category_description: '',
-      registration_code: '',
-      renewal_fee: '',
-      category_name: ''  // Reset category_name
-  };
-  isEditing.value = false;
-};
+    id: null,
+    sub_category_name: '',
+    sub_category_description: '',
+    registration_code: '',
+    renewal_fee: '',
+    category_name: '', // Reset category_name
+  }
+  isEditing.value = false
+}
 
 // Watch for search query changes to reset pagination
 watch(searchQuery, () => {
-  currentPage.value = 1;
-});
+  currentPage.value = 1
+})
 </script>
 
 <style scoped>

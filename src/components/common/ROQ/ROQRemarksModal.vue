@@ -1,13 +1,25 @@
 <template>
-  <Transition enter-active-class="ease-out duration-300" enter-from-class="opacity-0 scale-95"
-    enter-to-class="opacity-100 scale-100" leave-active-class="ease-in duration-200"
-    leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
-    <div v-if="showModal" @click="handleBackdropClick"
-      class="fixed z-50 inset-0 overflow-y-auto bg-gray-500/75 backdrop-blur-sm flex items-center justify-center sm:py-12">
-      <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl m-4 transform transition-all" @click.stop>
+  <Transition
+    enter-active-class="ease-out duration-300"
+    enter-from-class="opacity-0 scale-95"
+    enter-to-class="opacity-100 scale-100"
+    leave-active-class="ease-in duration-200"
+    leave-from-class="opacity-100 scale-100"
+    leave-to-class="opacity-0 scale-95"
+  >
+    <div
+      v-if="showModal"
+      @click="handleBackdropClick"
+      class="fixed z-50 inset-0 overflow-y-auto bg-gray-500/75 backdrop-blur-sm flex items-center justify-center sm:py-12"
+    >
+      <div
+        class="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl m-4 transform transition-all"
+        @click.stop
+      >
         <!-- Decorative top bar -->
-        <div class="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-blue-500/0 via-blue-500/40 to-blue-500/0">
-        </div>
+        <div
+          class="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-blue-500/0 via-blue-500/40 to-blue-500/0"
+        ></div>
 
         <!-- Header -->
         <div class="flex items-center justify-between p-6 border-b border-gray-200">
@@ -17,7 +29,10 @@
             </div>
             <h3 class="text-xl font-semibold text-gray-900">Remarks</h3>
           </div>
-          <button @click="closeModal" class="group p-2 rounded-full hover:bg-gray-100 transition-colors duration-200">
+          <button
+            @click="closeModal"
+            class="group p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+          >
             <XIcon class="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
           </button>
         </div>
@@ -48,8 +63,10 @@
             </div>
           </div>
 
-          <div v-if="!chiefRemarks && !dealingOfficerRemarks"
-            class="flex flex-col items-center justify-center py-8 text-center">
+          <div
+            v-if="!chiefRemarks && !dealingOfficerRemarks"
+            class="flex flex-col items-center justify-center py-8 text-center"
+          >
             <div class="p-3 bg-gray-100 rounded-full mb-4">
               <InboxIcon class="w-6 h-6 text-gray-400" />
             </div>
@@ -59,8 +76,10 @@
         </div>
 
         <!-- Footer (optional) -->
-        <div v-if="chiefRemarks || dealingOfficerRemarks"
-          class="flex items-center gap-2 px-6 py-4 bg-gray-50 border-t border-gray-100 rounded-b-xl">
+        <div
+          v-if="chiefRemarks || dealingOfficerRemarks"
+          class="flex items-center gap-2 px-6 py-4 bg-gray-50 border-t border-gray-100 rounded-b-xl"
+        >
           <ClockIcon class="w-4 h-4 text-gray-400" />
           <span class="text-sm text-gray-500">Last updated {{ formattedDate }}</span>
         </div>
@@ -70,7 +89,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from 'vue'
 import {
   MessageSquare as MessageSquareIcon,
   X as XIcon,
@@ -78,7 +97,7 @@ import {
   UserCog as UserCogIcon,
   Inbox as InboxIcon,
   Clock as ClockIcon,
-} from 'lucide-vue-next';
+} from 'lucide-vue-next'
 
 const props = defineProps({
   showModal: {
@@ -87,7 +106,7 @@ const props = defineProps({
   },
   dealingOfficerRemarks: {
     type: String,
-    default: null
+    default: null,
   },
   chiefRemarks: {
     type: String,
@@ -96,25 +115,25 @@ const props = defineProps({
   lastUpdated: {
     type: Date,
     default: () => new Date(),
-  }
-});
+  },
+})
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close'])
 
 const formattedDate = computed(() => {
   return new Intl.DateTimeFormat('en-US', {
     dateStyle: 'medium',
-    timeStyle: 'short'
-  }).format(props.lastUpdated);
-});
+    timeStyle: 'short',
+  }).format(props.lastUpdated)
+})
 
 const handleBackdropClick = (event) => {
   if (event.target === event.currentTarget) {
-    closeModal();
+    closeModal()
   }
-};
+}
 
 const closeModal = () => {
-  emit('close');
-};
+  emit('close')
+}
 </script>

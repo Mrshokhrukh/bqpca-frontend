@@ -15,10 +15,14 @@
         <div class="col-span-1 md:col-span-2">
           <router-link to="/" class="flex items-center group">
             <div class="relative h-16 w-16 mr-4">
-              <div class="absolute inset-0 bg-blue-500/20 rounded-full blur-sm group-hover:blur-md transition-all">
-              </div>
-              <img src="@/assets/rgob.png" alt="BQPCA Crest"
-                class="h-full w-full object-contain relative transition-transform duration-300 group-hover:scale-105" />
+              <div
+                class="absolute inset-0 bg-blue-500/20 rounded-full blur-sm group-hover:blur-md transition-all"
+              ></div>
+              <img
+                src="@/assets/rgob.png"
+                alt="BQPCA Crest"
+                class="h-full w-full object-contain relative transition-transform duration-300 group-hover:scale-105"
+              />
             </div>
             <div class="flex flex-col">
               <span class="text-lg font-dzongkha leading-tight text-gray-200">
@@ -30,34 +34,42 @@
             </div>
           </router-link>
           <p class="mt-6 text-gray-400 max-w-md leading-relaxed">
-            Ensuring quality and standards in education and professional certification through rigorous evaluation and
-            verification processes aligned with international standards.
+            Ensuring quality and standards in education and professional certification through
+            rigorous evaluation and verification processes aligned with international standards.
           </p>
 
           <!-- Mission statement -->
-          <div class="mt-8 p-4 bg-gradient-to-r from-gray-800 to-gray-800/50 rounded-lg border border-gray-700">
+          <div
+            class="mt-8 p-4 bg-gradient-to-r from-gray-800 to-gray-800/50 rounded-lg border border-gray-700"
+          >
             <div class="flex items-center mb-2">
               <Award class="h-5 w-5 text-blue-400 mr-2" />
               <span class="text-sm font-semibold text-gray-300">Our Mission</span>
             </div>
             <p class="text-sm text-gray-400">
-              To uphold and advance the quality of professional standards in Bhutan through comprehensive certification
-              and verification processes.
+              To uphold and advance the quality of professional standards in Bhutan through
+              comprehensive certification and verification processes.
             </p>
           </div>
         </div>
 
         <!-- Quick Links -->
         <div>
-          <h3 class="text-sm font-semibold text-gray-200 uppercase tracking-wider flex items-center">
+          <h3
+            class="text-sm font-semibold text-gray-200 uppercase tracking-wider flex items-center"
+          >
             <Navigation class="h-4 w-4 mr-2 text-blue-400" />
             Services
           </h3>
           <ul class="mt-4 space-y-3">
             <li v-for="service in services" :key="service.name">
-              <router-link :to="service.route"
-                class="group flex items-center text-gray-400 hover:text-white transition-colors duration-200">
-                <ChevronRight class="h-4 w-4 mr-2 text-gray-600 group-hover:text-blue-400 transition-colors" />
+              <router-link
+                :to="service.route"
+                class="group flex items-center text-gray-400 hover:text-white transition-colors duration-200"
+              >
+                <ChevronRight
+                  class="h-4 w-4 mr-2 text-gray-600 group-hover:text-blue-400 transition-colors"
+                />
                 <span>{{ service.name }}</span>
               </router-link>
             </li>
@@ -66,14 +78,19 @@
 
         <!-- Contact Info -->
         <div>
-          <h3 class="text-sm font-semibold text-gray-200 uppercase tracking-wider flex items-center">
+          <h3
+            class="text-sm font-semibold text-gray-200 uppercase tracking-wider flex items-center"
+          >
             <PhoneCall class="h-4 w-4 mr-2 text-blue-400" />
             Contact
           </h3>
           <ul class="mt-4 space-y-4">
             <li class="group">
-              <a href="https://maps.google.com" target="_blank"
-                class="flex items-center text-gray-400 hover:text-white transition-colors duration-200">
+              <a
+                href="https://maps.google.com"
+                target="_blank"
+                class="flex items-center text-gray-400 hover:text-white transition-colors duration-200"
+              >
                 <div class="p-2 bg-gray-800 rounded group-hover:bg-gray-700 transition-colors">
                   <MapPin class="h-4 w-4 text-blue-400" />
                 </div>
@@ -81,8 +98,10 @@
               </a>
             </li>
             <li class="group">
-              <a href="mailto:contact@bqpca.gov.bt"
-                class="flex items-center text-gray-400 hover:text-white transition-colors duration-200">
+              <a
+                href="mailto:contact@bqpca.gov.bt"
+                class="flex items-center text-gray-400 hover:text-white transition-colors duration-200"
+              >
                 <div class="p-2 bg-gray-800 rounded group-hover:bg-gray-700 transition-colors">
                   <Mail class="h-4 w-4 text-blue-400" />
                 </div>
@@ -90,8 +109,10 @@
               </a>
             </li>
             <li class="group">
-              <a href="tel:+975XXXXXXX"
-                class="flex items-center text-gray-400 hover:text-white transition-colors duration-200">
+              <a
+                href="tel:+975XXXXXXX"
+                class="flex items-center text-gray-400 hover:text-white transition-colors duration-200"
+              >
                 <div class="p-2 bg-gray-800 rounded group-hover:bg-gray-700 transition-colors">
                   <Phone class="h-4 w-4 text-blue-400" />
                 </div>
@@ -112,17 +133,23 @@
           <div class="flex items-center space-x-6 mt-4 md:mt-0">
             <a href="#" class="group">
               <div class="p-2 bg-gray-800 rounded-lg group-hover:bg-gray-700 transition-colors">
-                <Facebook class="h-5 w-5 text-gray-400 group-hover:text-blue-400 transition-colors" />
+                <Facebook
+                  class="h-5 w-5 text-gray-400 group-hover:text-blue-400 transition-colors"
+                />
               </div>
             </a>
             <a href="#" class="group">
               <div class="p-2 bg-gray-800 rounded-lg group-hover:bg-gray-700 transition-colors">
-                <Twitter class="h-5 w-5 text-gray-400 group-hover:text-blue-400 transition-colors" />
+                <Twitter
+                  class="h-5 w-5 text-gray-400 group-hover:text-blue-400 transition-colors"
+                />
               </div>
             </a>
             <a href="#" class="group">
               <div class="p-2 bg-gray-800 rounded-lg group-hover:bg-gray-700 transition-colors">
-                <Instagram class="h-5 w-5 text-gray-400 group-hover:text-blue-400 transition-colors" />
+                <Instagram
+                  class="h-5 w-5 text-gray-400 group-hover:text-blue-400 transition-colors"
+                />
               </div>
             </a>
           </div>
@@ -144,7 +171,7 @@ import {
   Navigation,
   PhoneCall,
   Shield,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-vue-next'
 import { ref } from 'vue'
 
@@ -155,7 +182,7 @@ const services = [
   { name: 'Professional Framework', route: '/ecpf' },
   { name: 'Accreditation', route: '/accreditation' },
   { name: 'Engineering Certification', route: '/engineering' },
-  { name: 'Medical & Health Council', route: '/mhpc' }
+  { name: 'Medical & Health Council', route: '/mhpc' },
 ]
 </script>
 

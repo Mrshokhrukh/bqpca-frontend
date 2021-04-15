@@ -1,6 +1,6 @@
 const roqDashboard = () => import('@/views/admin/ROQ/Dashboard.vue')
 const ecpfDashboard = () => import('@/views/admin/ECPF/Dashboard.vue')
-const mhpcDashboard = () => import('@/views/admin/BMHC/Dashboard.vue')
+const mhpcDashboard = () => import('@/views/admin/MHPC/Dashboard.vue')
 const accredDashboard = () => import('@/views/admin/ACCRED/Dashboard.vue')
 const engineeringDashboard = () => import('@/views/admin/Engineering/Dashboard.vue')
 export default {
@@ -369,9 +369,9 @@ export default {
     },
     health_certification: {
       dashboard: mhpcDashboard,
-      // for_approval_applications: () => import('@/views/admin/BMHC/ForApprovalApplications.vue'),
-      // approved_applications: () => import('@/views/admin/BMHC/ApprovedApplications.vue'),
-      // reports: () => import('@/views/admin/BMHC/Reports.vue'),
+      // for_approval_applications: () => import('@/views/admin/MHPC/ForApprovalApplications.vue'),
+      // approved_applications: () => import('@/views/admin/MHPC/ApprovedApplications.vue'),
+      // reports: () => import('@/views/admin/MHPC/Reports.vue'),
       // ... other Health Certification routes for director
     },
   },

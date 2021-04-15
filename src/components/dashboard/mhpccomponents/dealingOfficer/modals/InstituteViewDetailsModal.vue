@@ -26,7 +26,10 @@
 
       <!-- Close Button -->
       <div class="mt-6 flex justify-end">
-        <button @click="$emit('close')" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
+        <button
+          @click="$emit('close')"
+          class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+        >
           Close
         </button>
       </div>

@@ -7,15 +7,21 @@
       </h4>
 
       <div v-if="qualifications && qualifications.length > 0" class="space-y-8">
-        <div v-for="qualification in qualifications" :key="qualification.id"
-          class="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
+        <div
+          v-for="qualification in qualifications"
+          :key="qualification.id"
+          class="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden"
+        >
           <div class="border-b border-gray-200">
             <QualificationDetails :qualification="qualification" class="bg-white" />
           </div>
 
           <div class="p-6">
-            <ApplicationReview :qualification="qualification" :applicationId="applicationId"
-              @update="$emit('update')" />
+            <ApplicationReview
+              :qualification="qualification"
+              :applicationId="applicationId"
+              @update="$emit('update')"
+            />
           </div>
         </div>
       </div>
@@ -47,4 +53,5 @@ defineProps({
 })
 
 defineEmits(['update'])
-</script>../ApplicationReview.vue
+</script>
+../ApplicationReview.vue

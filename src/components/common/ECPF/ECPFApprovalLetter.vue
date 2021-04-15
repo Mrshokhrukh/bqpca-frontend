@@ -1,26 +1,28 @@
 <template>
   <div class="letter-container p-8 border rounded shadow-md bg-white">
     <div class="letterhead mb-8">
-      <p class="font-bold text-xl">[Bhutan Qualifications and Professionals Certification Authority (BQPCA) Letterhead]</p>
-      <hr class="border-t border-gray-400">
+      <p class="font-bold text-xl">
+        [Bhutan Qualifications and Professionals Certification Authority (BQPCA) Letterhead]
+      </p>
+      <hr class="border-t border-gray-400" />
     </div>
 
-    <div class="date mb-4 text-right">
-      Date: {{ dateOfIssuance }}
-    </div>
+    <div class="date mb-4 text-right">Date: {{ dateOfIssuance }}</div>
 
     <div class="addressee mb-4">
-      To:<br>
-      {{ ecpfName }}<br>
+      To:<br />
+      {{ ecpfName }}<br />
       {{ ecpfAddress }}
     </div>
 
-    <div class="subject mb-6 font-bold">
-      Subject: {{ subject }}
-    </div>
+    <div class="subject mb-6 font-bold">Subject: {{ subject }}</div>
 
     <div class="approval-body mb-6">
-      <p>This letter is to inform <strong>{{ ecpfName }}</strong> that your application for {{ activityDetails }} has been <strong>approved</strong> by the Bhutan Qualifications and Professionals Certification Authority (BQPCA).</p>
+      <p>
+        This letter is to inform <strong>{{ ecpfName }}</strong> that your application for
+        {{ activityDetails }} has been <strong>approved</strong> by the Bhutan Qualifications and
+        Professionals Certification Authority (BQPCA).
+      </p>
 
       <div v-if="conditions && conditions.length > 0" class="conditions mt-4">
         <p>This approval is granted subject to the following conditions:</p>
@@ -29,18 +31,27 @@
         </ul>
       </div>
 
-      <p v-if="enclosedDocument" class="mt-4">A {{ enclosedDocument }} is enclosed for your reference.</p>
+      <p v-if="enclosedDocument" class="mt-4">
+        A {{ enclosedDocument }} is enclosed for your reference.
+      </p>
 
-      <p class="mt-4">Please ensure that you comply with all relevant regulations and guidelines during the aforementioned activity.</p>
+      <p class="mt-4">
+        Please ensure that you comply with all relevant regulations and guidelines during the
+        aforementioned activity.
+      </p>
     </div>
 
     <div class="closing">
       <p>We wish you success in your endeavors.</p>
       <p class="mt-8">Sincerely,</p>
       <div class="signature mt-4">
-        <p><strong>{{ authorizingOfficerName }}</strong></p>
+        <p>
+          <strong>{{ authorizingOfficerName }}</strong>
+        </p>
         <p>{{ authorizingOfficerTitle }}</p>
-        <p>[Signature]</p> <hr class="w-32 border-t border-gray-400"> <!-- Placeholder for Signature -->
+        <p>[Signature]</p>
+        <hr class="w-32 border-t border-gray-400" />
+        <!-- Placeholder for Signature -->
       </div>
       <div class="contact-info mt-4">
         <p>[Contact Information of BQPCA]</p>
@@ -50,7 +61,6 @@
 </template>
 
 <script setup>
-
 defineProps({
   dateOfIssuance: String,
   ecpfName: String,
@@ -59,12 +69,12 @@ defineProps({
   activityDetails: String,
   conditions: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   enclosedDocument: String,
   authorizingOfficerName: String,
   authorizingOfficerTitle: String,
-});
+})
 </script>
 
 <style scoped>
@@ -78,7 +88,8 @@ defineProps({
   text-align: center;
 }
 
-.date, .addressee {
+.date,
+.addressee {
   text-align: left;
 }
 

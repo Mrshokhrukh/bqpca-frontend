@@ -6,12 +6,15 @@ Modernized Vue 3 ECPF Change Request Forms
 
     <!-- Tab Navigation -->
     <div class="flex space-x-4 mb-6">
-      <button v-for="form in forms" :key="form.id" @click="activeForm = form.id" :class="[
-        'px-4 py-2 rounded-md transition-colors',
-        activeForm === form.id
-          ? 'bg-blue-600 text-white'
-          : 'bg-gray-200 hover:bg-gray-300'
-      ]">
+      <button
+        v-for="form in forms"
+        :key="form.id"
+        @click="activeForm = form.id"
+        :class="[
+          'px-4 py-2 rounded-md transition-colors',
+          activeForm === form.id ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300',
+        ]"
+      >
         {{ form.label }}
       </button>
     </div>
@@ -34,29 +37,43 @@ Modernized Vue 3 ECPF Change Request Forms
           <label class="block text-sm font-medium text-gray-700 mb-1">
             Proposed Name of ECPF
           </label>
-          <input v-model="nameChange.formData.proposedName" type="text" required
-            class="w-full rounded-md border-gray-300 shadow-sm" />
+          <input
+            v-model="nameChange.formData.proposedName"
+            type="text"
+            required
+            class="w-full rounded-md border-gray-300 shadow-sm"
+          />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Remarks
-          </label>
-          <textarea v-model="nameChange.formData.remarks" class="w-full rounded-md border-gray-300 shadow-sm"
-            rows="3" />
+          <label class="block text-sm font-medium text-gray-700 mb-1"> Remarks </label>
+          <textarea
+            v-model="nameChange.formData.remarks"
+            class="w-full rounded-md border-gray-300 shadow-sm"
+            rows="3"
+          />
         </div>
 
         <div class="flex space-x-4">
-          <button type="submit" :disabled="nameChange.isSubmitting"
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50">
+          <button
+            type="submit"
+            :disabled="nameChange.isSubmitting"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+          >
             {{ nameChange.isSubmitting ? 'Submitting...' : 'Submit' }}
           </button>
-          <button type="button" @click="nameChange.handleEdit"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+          <button
+            type="button"
+            @click="nameChange.handleEdit"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+          >
             Edit
           </button>
-          <button type="button" @click="nameChange.handleView"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+          <button
+            type="button"
+            @click="nameChange.handleView"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+          >
             View
           </button>
         </div>
@@ -89,57 +106,80 @@ Modernized Vue 3 ECPF Change Request Forms
 
       <form @submit.prevent="locationChange.handleSubmit" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Location
-          </label>
-          <input v-model="locationChange.formData.location" type="text" required
-            class="w-full rounded-md border-gray-300 shadow-sm" />
+          <label class="block text-sm font-medium text-gray-700 mb-1"> Location </label>
+          <input
+            v-model="locationChange.formData.location"
+            type="text"
+            required
+            class="w-full rounded-md border-gray-300 shadow-sm"
+          />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Gewog/Throm
-          </label>
-          <select v-model="locationChange.formData.gewog" required class="w-full rounded-md border-gray-300 shadow-sm">
+          <label class="block text-sm font-medium text-gray-700 mb-1"> Gewog/Throm </label>
+          <select
+            v-model="locationChange.formData.gewog"
+            required
+            class="w-full rounded-md border-gray-300 shadow-sm"
+          >
             <option value="">Select Gewog/Throm</option>
-            <option v-for="option in locationChange.gewogOptions" :key="option.value" :value="option.value">
+            <option
+              v-for="option in locationChange.gewogOptions"
+              :key="option.value"
+              :value="option.value"
+            >
               {{ option.label }}
             </option>
           </select>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Dzongkhag/Thromde
-          </label>
-          <select v-model="locationChange.formData.dzongkhag" required
-            class="w-full rounded-md border-gray-300 shadow-sm">
+          <label class="block text-sm font-medium text-gray-700 mb-1"> Dzongkhag/Thromde </label>
+          <select
+            v-model="locationChange.formData.dzongkhag"
+            required
+            class="w-full rounded-md border-gray-300 shadow-sm"
+          >
             <option value="">Select Dzongkhag/Thromde</option>
-            <option v-for="option in locationChange.dzongkhagOptions" :key="option.value" :value="option.value">
+            <option
+              v-for="option in locationChange.dzongkhagOptions"
+              :key="option.value"
+              :value="option.value"
+            >
               {{ option.label }}
             </option>
           </select>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Remarks
-          </label>
-          <textarea v-model="locationChange.formData.remarks" class="w-full rounded-md border-gray-300 shadow-sm"
-            rows="3" />
+          <label class="block text-sm font-medium text-gray-700 mb-1"> Remarks </label>
+          <textarea
+            v-model="locationChange.formData.remarks"
+            class="w-full rounded-md border-gray-300 shadow-sm"
+            rows="3"
+          />
         </div>
 
         <div class="flex space-x-4">
-          <button type="submit" :disabled="locationChange.isSubmitting"
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50">
+          <button
+            type="submit"
+            :disabled="locationChange.isSubmitting"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+          >
             {{ locationChange.isSubmitting ? 'Submitting...' : 'Submit' }}
           </button>
-          <button type="button" @click="locationChange.handleEdit"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+          <button
+            type="button"
+            @click="locationChange.handleEdit"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+          >
             Edit
           </button>
-          <button type="button" @click="locationChange.handleView"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+          <button
+            type="button"
+            @click="locationChange.handleView"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+          >
             View
           </button>
         </div>
@@ -178,14 +218,20 @@ Modernized Vue 3 ECPF Change Request Forms
           <div class="space-y-4">
             <div class="flex space-x-4">
               <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  CID No.
-                </label>
-                <input v-model="ownershipChange.newApplicant.cidNo" type="text" required
-                  class="w-full rounded-md border-gray-300 shadow-sm" @blur="ownershipChange.searchCID" />
+                <label class="block text-sm font-medium text-gray-700 mb-1"> CID No. </label>
+                <input
+                  v-model="ownershipChange.newApplicant.cidNo"
+                  type="text"
+                  required
+                  class="w-full rounded-md border-gray-300 shadow-sm"
+                  @blur="ownershipChange.searchCID"
+                />
               </div>
-              <button type="button" @click="ownershipChange.searchCID"
-                class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 self-end">
+              <button
+                type="button"
+                @click="ownershipChange.searchCID"
+                class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 self-end"
+              >
                 Search
               </button>
             </div>
@@ -216,26 +262,50 @@ Modernized Vue 3 ECPF Change Request Forms
               <tbody class="divide-y divide-gray-200">
                 <tr v-for="(linkage, index) in ownershipChange.linkages" :key="index">
                   <td class="px-4 py-2">
-                    <input v-model="linkage.name" type="text" class="w-full rounded-md border-gray-300 shadow-sm" />
+                    <input
+                      v-model="linkage.name"
+                      type="text"
+                      class="w-full rounded-md border-gray-300 shadow-sm"
+                    />
                   </td>
                   <td class="px-4 py-2">
-                    <input v-model="linkage.location" type="text" class="w-full rounded-md border-gray-300 shadow-sm" />
+                    <input
+                      v-model="linkage.location"
+                      type="text"
+                      class="w-full rounded-md border-gray-300 shadow-sm"
+                    />
                   </td>
                   <td class="px-4 py-2">
-                    <input v-model="linkage.country" type="text" class="w-full rounded-md border-gray-300 shadow-sm" />
+                    <input
+                      v-model="linkage.country"
+                      type="text"
+                      class="w-full rounded-md border-gray-300 shadow-sm"
+                    />
                   </td>
                   <td class="px-4 py-2">
-                    <input type="file"
-                      @change="event => ownershipChange.handleFileChange(event, linkage, 'recognition')"
-                      class="w-full" />
+                    <input
+                      type="file"
+                      @change="
+                        (event) => ownershipChange.handleFileChange(event, linkage, 'recognition')
+                      "
+                      class="w-full"
+                    />
                   </td>
                   <td class="px-4 py-2">
-                    <input type="file" @change="event => ownershipChange.handleFileChange(event, linkage, 'approval')"
-                      class="w-full" />
+                    <input
+                      type="file"
+                      @change="
+                        (event) => ownershipChange.handleFileChange(event, linkage, 'approval')
+                      "
+                      class="w-full"
+                    />
                   </td>
                   <td class="px-4 py-2">
-                    <button type="button" @click="ownershipChange.deleteLinkage(index)"
-                      class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700">
+                    <button
+                      type="button"
+                      @click="ownershipChange.deleteLinkage(index)"
+                      class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700"
+                    >
                       Delete
                     </button>
                   </td>
@@ -243,27 +313,42 @@ Modernized Vue 3 ECPF Change Request Forms
               </tbody>
             </table>
           </div>
-          <button type="button" @click="ownershipChange.addLinkage"
-            class="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+          <button
+            type="button"
+            @click="ownershipChange.addLinkage"
+            class="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+          >
             Add Linkage
           </button>
         </section>
 
         <div class="flex space-x-4">
-          <button type="button" @click="ownershipChange.handleSubmit"
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+          <button
+            type="button"
+            @click="ownershipChange.handleSubmit"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
             Submit
           </button>
-          <button type="button" @click="ownershipChange.viewApplication"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+          <button
+            type="button"
+            @click="ownershipChange.viewApplication"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+          >
             View
           </button>
-          <button type="button" @click="ownershipChange.editApplication"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+          <button
+            type="button"
+            @click="ownershipChange.editApplication"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+          >
             Edit
           </button>
-          <button type="button" @click="ownershipChange.cancelChanges"
-            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+          <button
+            type="button"
+            @click="ownershipChange.cancelChanges"
+            class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+          >
             Cancel
           </button>
         </div>
@@ -280,29 +365,27 @@ Modernized Vue 3 ECPF Change Request Forms
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue'
 
 // Form navigation
 const forms = [
   { id: 'nameChange', label: 'Name Change' },
   { id: 'locationChange', label: 'Location Change' },
-  { id: 'ownershipChange', label: 'Ownership Change' }
-];
-const activeForm = ref('nameChange');
+  { id: 'ownershipChange', label: 'Ownership Change' },
+]
+const activeForm = ref('nameChange')
 
 // Utility function for formatting labels
 const formatLabel = (key) => {
-  return key
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, str => str.toUpperCase());
-};
+  return key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
+}
 
 // Name Change Form Logic
 const nameChange = reactive({
   currentECPFData: null,
   formData: {
     proposedName: '',
-    remarks: ''
+    remarks: '',
   },
   isSubmitting: false,
   successMessage: '',
@@ -312,7 +395,7 @@ const nameChange = reactive({
   async fetchCurrentECPFData() {
     try {
       // Simulated API call
-      const response = await new Promise(resolve => {
+      const response = await new Promise((resolve) => {
         setTimeout(() => {
           resolve({
             name: 'Existing ECPF Name',
@@ -321,47 +404,47 @@ const nameChange = reactive({
             proprietor: 'Existing Proprietor',
             cid: '12345678901',
             contactNo: '9876543210',
-            email: 'existing@example.com'
-          });
-        }, 500);
-      });
-      nameChange.currentECPFData = response; // Use nameChange.currentECPFData
+            email: 'existing@example.com',
+          })
+        }, 500)
+      })
+      nameChange.currentECPFData = response // Use nameChange.currentECPFData
     } catch (error) {
-      console.error('Error fetching ECPF data:', error);
-      nameChange.errorMessage = 'Failed to load ECPF details.'; // Use nameChange.errorMessage
+      console.error('Error fetching ECPF data:', error)
+      nameChange.errorMessage = 'Failed to load ECPF details.' // Use nameChange.errorMessage
     }
   },
 
   async handleSubmit() {
-    nameChange.isSubmitting = true; // Use nameChange.isSubmitting
-    nameChange.successMessage = ''; // Use nameChange.successMessage
-    nameChange.errorMessage = '';   // Use nameChange.errorMessage
+    nameChange.isSubmitting = true // Use nameChange.isSubmitting
+    nameChange.successMessage = '' // Use nameChange.successMessage
+    nameChange.errorMessage = '' // Use nameChange.errorMessage
 
     try {
       // Simulated API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      nameChange.successMessage = 'Name change request submitted successfully!'; // Use nameChange.successMessage
-      nameChange.applicationStatus = 'Submitted for review.';                 // Use nameChange.applicationStatus
-      nameChange.formData.proposedName = ''; // Access form data correctly.
-      nameChange.formData.remarks = '';     // Access form data correctly.
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      nameChange.successMessage = 'Name change request submitted successfully!' // Use nameChange.successMessage
+      nameChange.applicationStatus = 'Submitted for review.' // Use nameChange.applicationStatus
+      nameChange.formData.proposedName = '' // Access form data correctly.
+      nameChange.formData.remarks = '' // Access form data correctly.
     } catch (error) {
-      console.error('Submission error:', error);
-      nameChange.errorMessage = 'Failed to submit request. Please try again.'; // Use nameChange.errorMessage
+      console.error('Submission error:', error)
+      nameChange.errorMessage = 'Failed to submit request. Please try again.' // Use nameChange.errorMessage
     } finally {
-      nameChange.isSubmitting = false; // Use nameChange.isSubmitting
+      nameChange.isSubmitting = false // Use nameChange.isSubmitting
     }
   },
 
   handleEdit() {
     // Implement edit functionality
-    console.log('Edit functionality to be implemented');
+    console.log('Edit functionality to be implemented')
   },
 
   handleView() {
     // Implement view functionality
-    console.log('View functionality to be implemented');
-  }
-});
+    console.log('View functionality to be implemented')
+  },
+})
 
 // Location Change Form Logic
 const locationChange = reactive({
@@ -370,7 +453,7 @@ const locationChange = reactive({
     location: '',
     gewog: '',
     dzongkhag: '',
-    remarks: ''
+    remarks: '',
   },
   isSubmitting: false,
   successMessage: '',
@@ -378,17 +461,17 @@ const locationChange = reactive({
   applicationStatus: '',
   gewogOptions: [
     { label: 'Gewog A', value: 'gewogA' },
-    { label: 'Gewog B', value: 'gewogB' }
+    { label: 'Gewog B', value: 'gewogB' },
   ],
   dzongkhagOptions: [
     { label: 'Dzongkhag X', value: 'dzongkhagX' },
-    { label: 'Dzongkhag Y', value: 'dzongkhagY' }
+    { label: 'Dzongkhag Y', value: 'dzongkhagY' },
   ],
 
   async fetchCurrentECPFData() {
     try {
       // Simulated API call
-      const response = await new Promise(resolve => {
+      const response = await new Promise((resolve) => {
         setTimeout(() => {
           resolve({
             name: 'Existing ECPF Name',
@@ -396,55 +479,59 @@ const locationChange = reactive({
             proprietor: 'Existing Proprietor',
             cid: '12345678901',
             contactNo: '9876543210',
-            email: 'existing@example.com'
-          });
-        }, 500);
-      });
-      locationChange.currentECPFData = response; // Use locationChange.currentECPFData
+            email: 'existing@example.com',
+          })
+        }, 500)
+      })
+      locationChange.currentECPFData = response // Use locationChange.currentECPFData
     } catch (error) {
-      console.error('Error fetching ECPF data:', error);
-      locationChange.errorMessage = 'Failed to load ECPF details.'; // Use locationChange.errorMessage
+      console.error('Error fetching ECPF data:', error)
+      locationChange.errorMessage = 'Failed to load ECPF details.' // Use locationChange.errorMessage
     }
   },
 
   async handleSubmit() {
-    locationChange.isSubmitting = true;  // Use locationChange.isSubmitting
-    locationChange.successMessage = '';  // Use locationChange.successMessage
-    locationChange.errorMessage = '';    // Use locationChange.errorMessage
+    locationChange.isSubmitting = true // Use locationChange.isSubmitting
+    locationChange.successMessage = '' // Use locationChange.successMessage
+    locationChange.errorMessage = '' // Use locationChange.errorMessage
 
-    if (!locationChange.formData.location || !locationChange.formData.gewog || !locationChange.formData.dzongkhag) {
-      locationChange.errorMessage = 'All fields are required.'; // Use locationChange.errorMessage
-      locationChange.isSubmitting = false;                     // Use locationChange.isSubmitting
-      return;
+    if (
+      !locationChange.formData.location ||
+      !locationChange.formData.gewog ||
+      !locationChange.formData.dzongkhag
+    ) {
+      locationChange.errorMessage = 'All fields are required.' // Use locationChange.errorMessage
+      locationChange.isSubmitting = false // Use locationChange.isSubmitting
+      return
     }
 
     try {
       // Simulated API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      locationChange.successMessage = 'Location change request submitted successfully!'; // Use locationChange.successMessage
-      locationChange.applicationStatus = 'Submitted for review.';                 // Use locationChange.applicationStatus
-      locationChange.formData.location = '';  // Use correct access to formData
-      locationChange.formData.gewog = '';    // Use correct access to formData
-      locationChange.formData.dzongkhag = '';// Use correct access to formData
-      locationChange.formData.remarks = '';  // Use correct access to formData
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      locationChange.successMessage = 'Location change request submitted successfully!' // Use locationChange.successMessage
+      locationChange.applicationStatus = 'Submitted for review.' // Use locationChange.applicationStatus
+      locationChange.formData.location = '' // Use correct access to formData
+      locationChange.formData.gewog = '' // Use correct access to formData
+      locationChange.formData.dzongkhag = '' // Use correct access to formData
+      locationChange.formData.remarks = '' // Use correct access to formData
     } catch (error) {
-      console.error('Submission error:', error);
-      locationChange.errorMessage = 'Failed to submit request. Please try again.'; // Use locationChange.errorMessage
+      console.error('Submission error:', error)
+      locationChange.errorMessage = 'Failed to submit request. Please try again.' // Use locationChange.errorMessage
     } finally {
-      locationChange.isSubmitting = false; // Use locationChange.isSubmitting
+      locationChange.isSubmitting = false // Use locationChange.isSubmitting
     }
   },
 
   handleEdit() {
     // Implement edit functionality
-    console.log('Edit functionality to be implemented');
+    console.log('Edit functionality to be implemented')
   },
 
   handleView() {
     // Implement view functionality
-    console.log('View functionality to be implemented');
-  }
-});
+    console.log('View functionality to be implemented')
+  },
+})
 
 // Ownership Change Form Logic
 const ownershipChange = reactive({
@@ -452,7 +539,7 @@ const ownershipChange = reactive({
     ecpfLicenseNo: 'Auto-generated',
     nameOfECPF: 'Auto-generated',
     proprietorOfECPF: 'Auto-generated',
-    locationOfECPF: 'Auto-generated'
+    locationOfECPF: 'Auto-generated',
   },
   newApplicant: {
     cidNo: '',
@@ -473,7 +560,7 @@ const ownershipChange = reactive({
     permanentDzongkhagThromde: '',
     courseQualification: '',
     nameOfInstitute: '',
-    nameOfUniversity: ''
+    nameOfUniversity: '',
   },
   linkages: [],
   successMessage: '',
@@ -481,35 +568,37 @@ const ownershipChange = reactive({
   applicationStatus: '',
 
   addLinkage() {
-    ownershipChange.linkages.push({ // Use ownershipChange.linkages
+    ownershipChange.linkages.push({
+      // Use ownershipChange.linkages
       name: '',
       location: '',
       country: '',
       recognition: null,
-      approval: null
-    });
+      approval: null,
+    })
   },
 
   deleteLinkage(index) {
-    ownershipChange.linkages.splice(index, 1); // Use ownershipChange.linkages
+    ownershipChange.linkages.splice(index, 1) // Use ownershipChange.linkages
   },
 
   handleFileChange(event, linkage, type) {
-    const file = event.target.files[0];
+    const file = event.target.files[0]
     if (file) {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onload = (e) => {
-        linkage[type] = e.target.result;
-      };
-      reader.readAsDataURL(file);
+        linkage[type] = e.target.result
+      }
+      reader.readAsDataURL(file)
     }
   },
 
   async searchCID() {
-    if (ownershipChange.newApplicant.cidNo) { // Use ownershipChange.newApplicant
+    if (ownershipChange.newApplicant.cidNo) {
+      // Use ownershipChange.newApplicant
       try {
         // Simulated API call
-        const response = await new Promise(resolve => {
+        const response = await new Promise((resolve) => {
           setTimeout(() => {
             resolve({
               applicantName: 'John Doe',
@@ -529,15 +618,15 @@ const ownershipChange = reactive({
               permanentDzongkhagThromde: 'Dzongkhag',
               courseQualification: 'Course',
               nameOfInstitute: 'Institute',
-              nameOfUniversity: 'University'
-            });
-          }, 500);
-        });
+              nameOfUniversity: 'University',
+            })
+          }, 500)
+        })
 
-        Object.assign(ownershipChange.newApplicant, response); // Use ownershipChange.newApplicant
+        Object.assign(ownershipChange.newApplicant, response) // Use ownershipChange.newApplicant
       } catch (error) {
-        console.error('Error searching CID:', error);
-        ownershipChange.errorMessage = 'Error retrieving applicant data.'; // Use ownershipChange.errorMessage
+        console.error('Error searching CID:', error)
+        ownershipChange.errorMessage = 'Error retrieving applicant data.' // Use ownershipChange.errorMessage
       }
     }
   },
@@ -545,38 +634,37 @@ const ownershipChange = reactive({
   async handleSubmit() {
     try {
       // Simulated API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      ownershipChange.successMessage = 'Ownership change request submitted successfully!'; // Use ownershipChange.successMessage
-      ownershipChange.applicationStatus = 'Submitted for review.';                 // Use ownershipChange.applicationStatus
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      ownershipChange.successMessage = 'Ownership change request submitted successfully!' // Use ownershipChange.successMessage
+      ownershipChange.applicationStatus = 'Submitted for review.' // Use ownershipChange.applicationStatus
     } catch (error) {
-      console.error('Submission error:', error);
-      ownershipChange.errorMessage = 'Failed to submit request. Please try again.'; // Use ownershipChange.errorMessage
+      console.error('Submission error:', error)
+      ownershipChange.errorMessage = 'Failed to submit request. Please try again.' // Use ownershipChange.errorMessage
     }
   },
 
   viewApplication() {
     // Implement view functionality
-    console.log('View functionality to be implemented');
+    console.log('View functionality to be implemented')
   },
 
   editApplication() {
     // Implement edit functionality
-    console.log('Edit functionality to be implemented');
+    console.log('Edit functionality to be implemented')
   },
 
   cancelChanges() {
     // Implement cancel functionality
-    console.log('Cancel functionality to be implemented');
-  }
-});
+    console.log('Cancel functionality to be implemented')
+  },
+})
 
 // Initialize data on component mount
 onMounted(() => {
-  nameChange.fetchCurrentECPFData();
-  locationChange.fetchCurrentECPFData();
-  ownershipChange.addLinkage();
-});
-
+  nameChange.fetchCurrentECPFData()
+  locationChange.fetchCurrentECPFData()
+  ownershipChange.addLinkage()
+})
 </script>
 
 <style scoped>

@@ -4,41 +4,56 @@
       <!-- Masters Status Management -->
       <div class="bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
         <div class="max-w-[1600px] mx-auto">
-          <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
-            Masters Statuses
-          </h1>
+          <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Masters Statuses</h1>
 
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Form (Add/Edit) -->
-            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8">
+            <div
+              class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8"
+            >
               <h2 class="text-xl font-semibold text-slate-900 mb-4">
-                {{
-                  isEditing
-                    ? "Edit Status"
-                    : "Add New Status"
-                }}
+                {{ isEditing ? 'Edit Status' : 'Add New Status' }}
               </h2>
               <form @submit.prevent="handleSubmit">
                 <div class="space-y-4">
                   <div>
-                    <label for="status_name" class="block text-sm font-medium text-slate-700">Status Name</label>
-                    <input type="text" id="status_name" v-model="formData.status_name"
+                    <label for="status_name" class="block text-sm font-medium text-slate-700"
+                      >Status Name</label
+                    >
+                    <input
+                      type="text"
+                      id="status_name"
+                      v-model="formData.status_name"
                       class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter status name" required />
+                      placeholder="Enter status name"
+                      required
+                    />
                   </div>
                   <div>
-                    <label for="description" class="block text-sm font-medium text-slate-700">Description</label>
-                    <textarea id="description" v-model="formData.description"
+                    <label for="description" class="block text-sm font-medium text-slate-700"
+                      >Description</label
+                    >
+                    <textarea
+                      id="description"
+                      v-model="formData.description"
                       class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter description" rows="3"></textarea>
+                      placeholder="Enter description"
+                      rows="3"
+                    ></textarea>
                   </div>
                   <div class="flex gap-3">
-                    <button type="submit"
-                      class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                      {{ isEditing ? "Update" : "Add" }}
+                    <button
+                      type="submit"
+                      class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      {{ isEditing ? 'Update' : 'Add' }}
                     </button>
-                    <button v-if="isEditing" type="button" @click="cancelEdit"
-                      class="py-2 px-4 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200">
+                    <button
+                      v-if="isEditing"
+                      type="button"
+                      @click="cancelEdit"
+                      class="py-2 px-4 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200"
+                    >
                       Cancel
                     </button>
                   </div>
@@ -50,31 +65,42 @@
             <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
               <div class="mb-6 space-y-4">
                 <div class="flex justify-between items-center">
-                  <h2 class="text-xl font-semibold text-slate-900">
-                    Statuses List
-                  </h2>
+                  <h2 class="text-xl font-semibold text-slate-900">Statuses List</h2>
                   <span class="text-sm text-slate-500">
-                    {{ filteredStatuses.length }} item{{
-                  filteredStatuses.length !== 1 ? "s" : ""
-                }}
+                    {{ filteredStatuses.length }} item{{ filteredStatuses.length !== 1 ? 's' : '' }}
                   </span>
                 </div>
 
                 <div class="relative">
-                  <input type="text" v-model="searchQuery" placeholder="Search..."
-                    class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                  <svg class="absolute left-3 top-2.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <input
+                    type="text"
+                    v-model="searchQuery"
+                    placeholder="Search..."
+                    class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <svg
+                    class="absolute left-3 top-2.5 h-5 w-5 text-slate-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
                   </svg>
                 </div>
               </div>
 
               <div class="space-y-4 mb-6">
                 <TransitionGroup name="list">
-                  <div v-for="status in paginatedStatuses" :key="status.id"
-                    class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200">
+                  <div
+                    v-for="status in paginatedStatuses"
+                    :key="status.id"
+                    class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200"
+                  >
                     <div class="flex justify-between items-start gap-4">
                       <div>
                         <h3 class="font-medium text-slate-900">
@@ -85,16 +111,40 @@
                         </p>
                       </div>
                       <div class="flex gap-2">
-                        <button @click="startEdit(status)" class="p-2 text-blue-600 hover:bg-blue-50 rounded-md">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        <button
+                          @click="startEdit(status)"
+                          class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+                        >
+                          <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            />
                           </svg>
                         </button>
-                        <button @click="openDeleteModal(status)" class="p-2 text-red-600 hover:bg-red-50 rounded-md">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <button
+                          @click="openDeleteModal(status)"
+                          class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                        >
+                          <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -109,15 +159,21 @@
 
               <!-- Pagination -->
               <div v-if="filteredStatuses.length > itemsPerPage" class="flex justify-center gap-2">
-                <button @click="currentPage--" :disabled="currentPage === 1"
-                  class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">
+                <button
+                  @click="currentPage--"
+                  :disabled="currentPage === 1"
+                  class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+                >
                   Previous
                 </button>
                 <span class="px-3 py-1 text-sm text-slate-600">
                   Page {{ currentPage }} of {{ totalPages }}
                 </span>
-                <button @click="currentPage++" :disabled="currentPage === totalPages"
-                  class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">
+                <button
+                  @click="currentPage++"
+                  :disabled="currentPage === totalPages"
+                  class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+                >
                   Next
                 </button>
               </div>
@@ -127,21 +183,27 @@
           <!-- Delete Confirmation Modal (Radix UI) -->
           <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
             <AlertDialogContent
-              class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50">
+              class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50"
+            >
               <AlertDialogTitle class="text-xl font-semibold text-slate-900 mb-2">
                 Are you absolutely sure?
               </AlertDialogTitle>
               <AlertDialogDescription class="text-slate-600 mb-6">
-                This action cannot be undone. This will permanently delete the
-                item "{{ statusToDelete?.status_name }}".
+                This action cannot be undone. This will permanently delete the item "{{
+                  statusToDelete?.status_name
+                }}".
               </AlertDialogDescription>
               <div class="flex justify-end gap-4">
-                <AlertDialogCancel class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  @click="closeDeleteModal">
+                <AlertDialogCancel
+                  class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  @click="closeDeleteModal"
+                >
                   Cancel
                 </AlertDialogCancel>
-                <AlertDialogAction class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
-                  @click="confirmDelete">
+                <AlertDialogAction
+                  class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+                  @click="confirmDelete"
+                >
                   Delete
                 </AlertDialogAction>
               </div>
@@ -155,9 +217,9 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
-import services from "@/services/services";
-import { useToast } from "vue-toastification";
+import { ref, computed, watch, onMounted } from 'vue'
+import services from '@/services/services'
+import { useToast } from 'vue-toastification'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -166,140 +228,145 @@ import {
   AlertDialogOverlay,
   AlertDialogRoot,
   AlertDialogTitle,
-} from "radix-vue";
+} from 'radix-vue'
 
-const toast = useToast();
+const toast = useToast()
 
 // Data
-const statuses = ref([]);
+const statuses = ref([])
 const formData = ref({
   id: null,
-  status_name: "",
-  description: "",
-});
-const isEditing = ref(false);
-const searchQuery = ref("");
-const currentPage = ref(1);
-const itemsPerPage = 5;
-const isDeleteModalOpen = ref(false);
-const statusToDelete = ref(null);
+  status_name: '',
+  description: '',
+})
+const isEditing = ref(false)
+const searchQuery = ref('')
+const currentPage = ref(1)
+const itemsPerPage = 5
+const isDeleteModalOpen = ref(false)
+const statusToDelete = ref(null)
 
 // Computed Properties
 const filteredStatuses = computed(() => {
-  const query = searchQuery.value.toLowerCase();
+  const query = searchQuery.value.toLowerCase()
   return statuses.value.filter(
     (status) =>
       status.status_name.toLowerCase().includes(query) ||
-      (status.description && status.description.toLowerCase().includes(query))
-  );
-});
+      (status.description && status.description.toLowerCase().includes(query)),
+  )
+})
 
 const totalPages = computed(() => {
-  return Math.ceil(filteredStatuses.value.length / itemsPerPage);
-});
+  return Math.ceil(filteredStatuses.value.length / itemsPerPage)
+})
 
 const paginatedStatuses = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return filteredStatuses.value.slice(start, end);
-});
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredStatuses.value.slice(start, end)
+})
 
 // Lifecycle Hook
 onMounted(async () => {
-  await fetchStatuses();
-});
+  await fetchStatuses()
+})
 
 // Methods
 const fetchStatuses = async () => {
   try {
-    const response = await services.getMastersStatuses();
-    statuses.value = response.data.results;
-    if (statuses.value.length > 0 && !statuses.value[0].hasOwnProperty.call('status_name') && !statuses.value[0].hasOwnProperty.call('description')) {
-      console.warn("The API response does not contain required fields('status_name', 'description'). Check your API.");
+    const response = await services.getMastersStatuses()
+    statuses.value = response.data.results
+    if (
+      statuses.value.length > 0 &&
+      !statuses.value[0].hasOwnProperty.call('status_name') &&
+      !statuses.value[0].hasOwnProperty.call('description')
+    ) {
+      console.warn(
+        "The API response does not contain required fields('status_name', 'description'). Check your API.",
+      )
     }
   } catch (error) {
-    toast.error("Failed to fetch statuses: " + error);
+    toast.error('Failed to fetch statuses: ' + error)
   }
-};
+}
 
 const handleSubmit = async () => {
   try {
-    let response;
+    let response
     if (isEditing.value) {
-      response = await services.updateMastersStatus(formData.value.id, formData.value);
-      const index = statuses.value.findIndex((s) => s.id === formData.value.id);
+      response = await services.updateMastersStatus(formData.value.id, formData.value)
+      const index = statuses.value.findIndex((s) => s.id === formData.value.id)
       if (index !== -1) {
-        statuses.value[index] = response.data;
+        statuses.value[index] = response.data
       }
-      toast.success("Status updated successfully!");
+      toast.success('Status updated successfully!')
     } else {
-      response = await services.createMastersStatus(formData.value);
-      statuses.value.push(response.data);
-      toast.success("Status added successfully!");
+      response = await services.createMastersStatus(formData.value)
+      statuses.value.push(response.data)
+      toast.success('Status added successfully!')
     }
-    resetForm();
+    resetForm()
   } catch (error) {
-    let errorMessage = "An error occurred.";
+    let errorMessage = 'An error occurred.'
     if (error.response && error.response.data) {
       if (typeof error.response.data === 'object') {
-        const errors = error.response.data;
-        errorMessage = "";
+        const errors = error.response.data
+        errorMessage = ''
         for (const field in errors) {
-          errorMessage += `${field}: ${errors[field].join(', ')}\n`;
+          errorMessage += `${field}: ${errors[field].join(', ')}\n`
         }
       } else {
-        errorMessage = error.response.data; // Use the response data as the error message
+        errorMessage = error.response.data // Use the response data as the error message
       }
     }
-    toast.error(errorMessage);
+    toast.error(errorMessage)
   }
-};
+}
 
 const startEdit = (status) => {
   formData.value = {
     id: status.id,
     status_name: status.status_name,
     description: status.description,
-  };
-  isEditing.value = true;
-};
+  }
+  isEditing.value = true
+}
 
 const cancelEdit = () => {
-  resetForm();
-};
+  resetForm()
+}
 
 const openDeleteModal = (status) => {
-  statusToDelete.value = status;
-  isDeleteModalOpen.value = true;
-};
+  statusToDelete.value = status
+  isDeleteModalOpen.value = true
+}
 
 const closeDeleteModal = () => {
-  isDeleteModalOpen.value = false;
-  statusToDelete.value = null;
-};
+  isDeleteModalOpen.value = false
+  statusToDelete.value = null
+}
 
 const confirmDelete = async () => {
-  if (!statusToDelete.value) return;
+  if (!statusToDelete.value) return
   try {
-    await services.deleteMastersStatus(statusToDelete.value.id);
-    statuses.value = statuses.value.filter((s) => s.id !== statusToDelete.value.id);
-    toast.success("Status deleted successfully!");
-    closeDeleteModal();
+    await services.deleteMastersStatus(statusToDelete.value.id)
+    statuses.value = statuses.value.filter((s) => s.id !== statusToDelete.value.id)
+    toast.success('Status deleted successfully!')
+    closeDeleteModal()
   } catch (error) {
-    toast.error("Failed to delete status: " + error);
+    toast.error('Failed to delete status: ' + error)
   }
-};
+}
 
 const resetForm = () => {
-  formData.value = { id: null, status_name: "", description: "" };
-  isEditing.value = false;
-};
+  formData.value = { id: null, status_name: '', description: '' }
+  isEditing.value = false
+}
 
 // Watcher
 watch(searchQuery, () => {
-  currentPage.value = 1;
-});
-
+  currentPage.value = 1
+})
 </script>
 
 <style scoped>

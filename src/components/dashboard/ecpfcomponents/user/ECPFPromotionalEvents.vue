@@ -30,7 +30,12 @@
       </div>
       <div>
         <label for="fairDescription">Fair Description:</label>
-        <textarea id="fairDescription" v-model="formData.fair.fairDescription" rows="3" required></textarea>
+        <textarea
+          id="fairDescription"
+          v-model="formData.fair.fairDescription"
+          rows="3"
+          required
+        ></textarea>
       </div>
       <div>
         <label for="fairLocation">Fair Location:</label>
@@ -135,17 +140,19 @@
           </div>
           <div>
             <label for="authorizationLetter">Authorization Letter:</label>
-            <input type="file" id="authorizationLetter"
-              @change="handleFairFileChange(index, 'authLetter', $event, cIndex)" />
-            <span v-if="course.authLetterFile && course.authLetterFile.name">Selected: {{ course.authLetterFile.name
-              }}</span>
+            <input
+              type="file"
+              id="authorizationLetter"
+              @change="handleFairFileChange(index, 'authLetter', $event, cIndex)"
+            />
+            <span v-if="course.authLetterFile && course.authLetterFile.name"
+              >Selected: {{ course.authLetterFile.name }}</span
+            >
           </div>
           <button @click.prevent="removeFairCourse(index, cIndex)">Remove Course</button>
-
         </div>
         <button @click.prevent="addFairCourse(index)">Add Course</button>
         <button @click.prevent="removeFairInstitute(index)">Remove Institute</button>
-
       </div>
       <button @click="addFairInstitute">Add Institute</button>
 
@@ -191,15 +198,30 @@
       </div>
       <div>
         <label for="eventDescriptionInHouse">Event Description:</label>
-        <textarea id="eventDescriptionInHouse" v-model="formData.inHouse.eventDescription" rows="3" required></textarea>
+        <textarea
+          id="eventDescriptionInHouse"
+          v-model="formData.inHouse.eventDescription"
+          rows="3"
+          required
+        ></textarea>
       </div>
       <div>
         <label for="eventPurposeInHouse">Event Purpose:</label>
-        <textarea id="eventPurposeInHouse" v-model="formData.inHouse.eventPurpose" rows="3" required></textarea>
+        <textarea
+          id="eventPurposeInHouse"
+          v-model="formData.inHouse.eventPurpose"
+          rows="3"
+          required
+        ></textarea>
       </div>
       <div>
         <label for="eventLocationInHouse">Event Location:</label>
-        <input type="text" id="eventLocationInHouse" v-model="formData.inHouse.eventLocation" required />
+        <input
+          type="text"
+          id="eventLocationInHouse"
+          v-model="formData.inHouse.eventLocation"
+          required
+        />
       </div>
 
       <h3>Representative Details (Maximum 2)</h3>
@@ -231,21 +253,34 @@
         </div>
         <div>
           <label for="repCVInHouse">CV of Representative:</label>
-          <input type="file" id="repCVInHouse" @change="handleInHouseFileChange(index, 'cv', $event)" />
+          <input
+            type="file"
+            id="repCVInHouse"
+            @change="handleInHouseFileChange(index, 'cv', $event)"
+          />
           <span v-if="rep.cvFile && rep.cvFile.name">Selected: {{ rep.cvFile.name }}</span>
         </div>
         <div>
           <label for="repAffiliationLetterInHouse">Affiliation Letter:</label>
-          <input type="file" id="repAffiliationLetterInHouse"
-            @change="handleInHouseFileChange(index, 'affiliation', $event)" />
-          <span v-if="rep.affiliationFile && rep.affiliationFile.name">Selected: {{ rep.affiliationFile.name }}</span>
+          <input
+            type="file"
+            id="repAffiliationLetterInHouse"
+            @change="handleInHouseFileChange(index, 'affiliation', $event)"
+          />
+          <span v-if="rep.affiliationFile && rep.affiliationFile.name"
+            >Selected: {{ rep.affiliationFile.name }}</span
+          >
         </div>
         <div>
           <label for="repAuthorizationLetterInHouse">Authorization Letter:</label>
-          <input type="file" id="repAuthorizationLetterInHouse"
-            @change="handleInHouseFileChange(index, 'authorization', $event)" />
-          <span v-if="rep.authorizationFile && rep.authorizationFile.name">Selected: {{ rep.authorizationFile.name
-            }}</span>
+          <input
+            type="file"
+            id="repAuthorizationLetterInHouse"
+            @change="handleInHouseFileChange(index, 'authorization', $event)"
+          />
+          <span v-if="rep.authorizationFile && rep.authorizationFile.name"
+            >Selected: {{ rep.authorizationFile.name }}</span
+          >
         </div>
         <button @click.prevent="removeInHouseRepresentative(index)">Remove Representative</button>
       </div>
@@ -292,26 +327,50 @@
       <h3>Proposed Promotion Event - Mass Media</h3>
       <div>
         <label for="promotionNameMassMedia">Mass Media Promotional Name:</label>
-        <input type="text" id="promotionNameMassMedia" v-model="formData.massMedia.massMediaPromotionalName" required />
+        <input
+          type="text"
+          id="promotionNameMassMedia"
+          v-model="formData.massMedia.massMediaPromotionalName"
+          required
+        />
       </div>
       <div>
         <label for="descriptionMassMedia">Description:</label>
-        <textarea id="descriptionMassMedia" v-model="formData.massMedia.description" rows="3" required></textarea>
+        <textarea
+          id="descriptionMassMedia"
+          v-model="formData.massMedia.description"
+          rows="3"
+          required
+        ></textarea>
       </div>
       <div>
         <label for="purposeMassMedia">Purpose:</label>
-        <textarea id="purposeMassMedia" v-model="formData.massMedia.purpose" rows="3" required></textarea>
+        <textarea
+          id="purposeMassMedia"
+          v-model="formData.massMedia.purpose"
+          rows="3"
+          required
+        ></textarea>
       </div>
       <div>
         <label for="promotionalChannelMassMedia">Promotional Channel:</label>
-        <input type="text" id="promotionalChannelMassMedia" v-model="formData.massMedia.promotionalChannel" required />
+        <input
+          type="text"
+          id="promotionalChannelMassMedia"
+          v-model="formData.massMedia.promotionalChannel"
+          required
+        />
       </div>
       <div>
         <label for="promotionalContentsMassMedia">Promotional Contents:</label>
         <input type="file" id="promotionalContentsMassMedia" @change="handleMassMediaFileChange" />
         <span
-          v-if="formData.massMedia.promotionalContentsFile && formData.massMedia.promotionalContentsFile.name">Selected:
-          {{ formData.massMedia.promotionalContentsFile.name }}</span>
+          v-if="
+            formData.massMedia.promotionalContentsFile &&
+            formData.massMedia.promotionalContentsFile.name
+          "
+          >Selected: {{ formData.massMedia.promotionalContentsFile.name }}</span
+        >
       </div>
       <div>
         <label for="othersMassMedia">Others (specify):</label>
@@ -355,15 +414,30 @@
       <h3>Proposed Promotion Event - HEI Visit</h3>
       <div>
         <label for="programmeDetailHeiVisit">Programme Detail (visit detail):</label>
-        <input type="text" id="programmeDetailHeiVisit" v-model="formData.heiVisit.programmeDetail" required />
+        <input
+          type="text"
+          id="programmeDetailHeiVisit"
+          v-model="formData.heiVisit.programmeDetail"
+          required
+        />
       </div>
       <div>
         <label for="descriptionHeiVisit">Description:</label>
-        <textarea id="descriptionHeiVisit" v-model="formData.heiVisit.description" rows="3" required></textarea>
+        <textarea
+          id="descriptionHeiVisit"
+          v-model="formData.heiVisit.description"
+          rows="3"
+          required
+        ></textarea>
       </div>
       <div>
         <label for="purposeHeiVisit">Purpose:</label>
-        <textarea id="purposeHeiVisit" v-model="formData.heiVisit.purpose" rows="3" required></textarea>
+        <textarea
+          id="purposeHeiVisit"
+          v-model="formData.heiVisit.purpose"
+          rows="3"
+          required
+        ></textarea>
       </div>
       <div>
         <label for="fromDateHeiVisit">From Date:</label>
@@ -386,8 +460,13 @@
       <div>
         <label for="supportingDocumentHeiVisit">Supporting Document:</label>
         <input type="file" id="supportingDocumentHeiVisit" @change="handleHeiVisitFileChange" />
-        <span v-if="formData.heiVisit.supportingDocumentFile && formData.heiVisit.supportingDocumentFile.name">Selected:
-          {{ formData.heiVisit.supportingDocumentFile.name }}</span>
+        <span
+          v-if="
+            formData.heiVisit.supportingDocumentFile &&
+            formData.heiVisit.supportingDocumentFile.name
+          "
+          >Selected: {{ formData.heiVisit.supportingDocumentFile.name }}</span
+        >
       </div>
     </div>
 
@@ -404,10 +483,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue'
 
-const eventType = ref('fair');
-const submittedData = ref(null);
+const eventType = ref('fair')
+const submittedData = ref(null)
 const ecpfDetails = {
   ecpfName: 'Example ECPF',
   location: 'Example Location',
@@ -415,7 +494,7 @@ const ecpfDetails = {
   cid: '12345678901',
   contactNo: '1234567890',
   emailAddress: 'example@example.com',
-};
+}
 
 const formData = ref({
   fair: {
@@ -443,7 +522,7 @@ const formData = ref({
         affiliatedTo: '',
         type: 'Public',
         recognitionCode: '',
-        courses: [{ name: "", accreditedBy: "", authLetterFile: null }],
+        courses: [{ name: '', accreditedBy: '', authLetterFile: null }],
       },
     ],
     remarks: '',
@@ -492,9 +571,9 @@ const formData = ref({
     remarks: '',
     supportingDocumentFile: null,
   },
-});
+})
 
-const availableInstitutes = ref(['Institute A', 'Institute B', 'Institute C']);
+const availableInstitutes = ref(['Institute A', 'Institute B', 'Institute C'])
 
 // Education Fair Form Functions
 const addFairRepresentative = () => {
@@ -506,12 +585,12 @@ const addFairRepresentative = () => {
       arrivalDate: '',
       departureDate: '',
       cvFile: null,
-    });
+    })
   }
-};
+}
 const removeFairRepresentative = (index) => {
-  formData.value.fair.representatives.splice(index, 1);
-};
+  formData.value.fair.representatives.splice(index, 1)
+}
 
 const addFairInstitute = () => {
   formData.value.fair.institutes.push({
@@ -524,29 +603,32 @@ const addFairInstitute = () => {
     affiliatedTo: '',
     type: 'Public',
     recognitionCode: '',
-    courses: [{ name: "", accreditedBy: "", authLetterFile: null }],
-  });
-};
+    courses: [{ name: '', accreditedBy: '', authLetterFile: null }],
+  })
+}
 const removeFairInstitute = (index) => {
-  formData.value.fair.institutes.splice(index, 1);
-};
+  formData.value.fair.institutes.splice(index, 1)
+}
 
 const addFairCourse = (instituteIndex) => {
-  formData.value.fair.institutes[instituteIndex].courses.push({ name: '', accreditedBy: '', authLetterFile: null });
-};
+  formData.value.fair.institutes[instituteIndex].courses.push({
+    name: '',
+    accreditedBy: '',
+    authLetterFile: null,
+  })
+}
 
 const removeFairCourse = (instituteIndex, courseIndex) => {
-  formData.value.fair.institutes[instituteIndex].courses.splice(courseIndex, 1);
-};
+  formData.value.fair.institutes[instituteIndex].courses.splice(courseIndex, 1)
+}
 const handleFairFileChange = (index, type, event, courseIndex = null) => {
-  const file = event.target.files[0];
+  const file = event.target.files[0]
   if (type === 'cv') {
-    formData.value.fair.representatives[index].cvFile = file;
+    formData.value.fair.representatives[index].cvFile = file
+  } else if (type === 'authLetter') {
+    formData.value.fair.institutes[index].courses[courseIndex].authLetterFile = file
   }
-  else if (type === 'authLetter') {
-    formData.value.fair.institutes[index].courses[courseIndex].authLetterFile = file;
-  }
-};
+}
 
 // In-House Event Form Functions
 const addInHouseRepresentative = () => {
@@ -560,47 +642,47 @@ const addInHouseRepresentative = () => {
       cvFile: null,
       affiliationFile: null,
       authorizationFile: null,
-    });
+    })
   }
-};
+}
 const removeInHouseRepresentative = (index) => {
-  formData.value.inHouse.representatives.splice(index, 1);
-};
+  formData.value.inHouse.representatives.splice(index, 1)
+}
 
 const handleInHouseFileChange = (index, type, event) => {
-  const file = event.target.files[0];
+  const file = event.target.files[0]
   if (type === 'cv') {
-    formData.value.inHouse.representatives[index].cvFile = file;
+    formData.value.inHouse.representatives[index].cvFile = file
   } else if (type === 'affiliation') {
-    formData.value.inHouse.representatives[index].affiliationFile = file;
+    formData.value.inHouse.representatives[index].affiliationFile = file
   } else if (type === 'authorization') {
-    formData.value.inHouse.representatives[index].authorizationFile = file;
+    formData.value.inHouse.representatives[index].authorizationFile = file
   }
-};
+}
 
 // Mass Media Event Form Functions
 const handleMassMediaFileChange = (event) => {
-  formData.value.massMedia.promotionalContentsFile = event.target.files[0];
-};
+  formData.value.massMedia.promotionalContentsFile = event.target.files[0]
+}
 
 // HEI Visit Form Functions
 const handleHeiVisitFileChange = (event) => {
-  formData.value.heiVisit.supportingDocumentFile = event.target.files[0];
-};
+  formData.value.heiVisit.supportingDocumentFile = event.target.files[0]
+}
 
 // Common Form Functions
 const submitForm = () => {
-  submittedData.value = { ...formData.value };
-  console.log('Form Data:', formData.value);
-};
+  submittedData.value = { ...formData.value }
+  console.log('Form Data:', formData.value)
+}
 
 const editForm = () => {
-  console.log('Edit form');
-};
+  console.log('Edit form')
+}
 
 const viewForm = () => {
-  console.log('View form');
-};
+  console.log('View form')
+}
 
 onMounted(() => {
   // Simulate fetching institute details based on the selected name
@@ -614,31 +696,29 @@ onMounted(() => {
   //  we don't actually need to loop here.  Just access the first one.
 
   //formData.value.fair.institutes.forEach((institute) => {  // No need to loop
-  const institute = formData.value.fair.institutes[0];
+  const institute = formData.value.fair.institutes[0]
   if (institute.name) {
     // Simulate fetching data
     switch (institute.name) {
       case 'Institute A':
-        institute.location = 'Location A';
-        institute.zoneState = 'State A';
-        institute.country = 'Country A';
-        break;
+        institute.location = 'Location A'
+        institute.zoneState = 'State A'
+        institute.country = 'Country A'
+        break
       case 'Institute B':
-        institute.location = 'Location B';
-        institute.zoneState = 'State B';
-        institute.country = 'Country B';
-        break;
+        institute.location = 'Location B'
+        institute.zoneState = 'State B'
+        institute.country = 'Country B'
+        break
       case 'Institute C':
-        institute.location = 'Location C';
-        institute.zoneState = 'State C';
-        institute.country = 'Country C';
-        break;
+        institute.location = 'Location C'
+        institute.zoneState = 'State C'
+        institute.country = 'Country C'
+        break
     }
   }
   //}); // No need to loop
-
-});
-
+})
 </script>
 
 <style scoped>
@@ -661,11 +741,11 @@ label {
   font-weight: bold;
 }
 
-input[type="text"],
+input[type='text'],
 select,
 textarea,
-input[type="date"],
-input[type="file"] {
+input[type='date'],
+input[type='file'] {
   width: 100%;
   padding: 8px;
   margin-bottom: 10px;
@@ -688,7 +768,6 @@ button {
 
 button:hover {
   background-color: #46a2da;
-  ;
 }
 
 /* Style for individual form sections within each event type */

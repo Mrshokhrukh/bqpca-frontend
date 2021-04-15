@@ -43,133 +43,138 @@
 
     <!-- Default Section (fallback) -->
     <template v-else>
-      <ApplicationTable :applications="paginatedApplications" :current-page="currentPage" :total-results="filteredTotal"
-        :per-page="perPage" @page-change="handlePageChange" />
+      <ApplicationTable
+        :applications="paginatedApplications"
+        :current-page="currentPage"
+        :total-results="filteredTotal"
+        :per-page="perPage"
+        @page-change="handlePageChange"
+      />
     </template>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useRoute } from 'vue-router';
-import { useAuthStore } from '@/stores/authStore';
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
 // import ApplicationTable from '@/components/common/ROQUserApplicationsList.vue';
 
 // Engineering Component Imports
-import EngineeringAdminDashboard from '@/components/dashboard/engineeringcomponents/admin/EngineeringAdminDashboard.vue';
-import EngineeringUserManagement from '@/components/dashboard/engineeringcomponents/admin/EngineeringUserManagement.vue';
-import EngineeringUserDashboard from '@/components/dashboard/engineeringcomponents/user/UserEpcDashboard.vue';
-import EngineeringDealingOfficerDashboard from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringDealingOfficerDashboard.vue';
-import EngineeringChiefDashboard from '@/components/dashboard/engineeringcomponents/chief/EngineeringChiefDashboard.vue';
-import EngineeringDirectorDashboard from '@/components/dashboard/engineeringcomponents/director/EngineeringDirectorDashboard.vue';
-import EngineeringInstitutionsDashboard from '@/components/dashboard/engineeringcomponents/institutions/EngineeringInstitutionsDashboard.vue';
-import EngineeringSuperAdminDashboard from '@/components/dashboard/engineeringcomponents/superAdmin/EngineeringSuperAdminDashboard.vue';
+import EngineeringAdminDashboard from '@/components/dashboard/engineeringcomponents/admin/EngineeringAdminDashboard.vue'
+import EngineeringUserManagement from '@/components/dashboard/engineeringcomponents/admin/EngineeringUserManagement.vue'
+import EngineeringUserDashboard from '@/components/dashboard/engineeringcomponents/user/UserEpcDashboard.vue'
+import EngineeringDealingOfficerDashboard from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringDealingOfficerDashboard.vue'
+import EngineeringChiefDashboard from '@/components/dashboard/engineeringcomponents/chief/EngineeringChiefDashboard.vue'
+import EngineeringDirectorDashboard from '@/components/dashboard/engineeringcomponents/director/EngineeringDirectorDashboard.vue'
+import EngineeringInstitutionsDashboard from '@/components/dashboard/engineeringcomponents/institutions/EngineeringInstitutionsDashboard.vue'
+import EngineeringSuperAdminDashboard from '@/components/dashboard/engineeringcomponents/superAdmin/EngineeringSuperAdminDashboard.vue'
 
 // Engineering user components
-import CPDApplication from '@/components/dashboard/engineeringcomponents/user/cpdApplication/CPDApplication.vue';
-import CoGSComponent from '@/components/dashboard/engineeringcomponents/user/CoGSApplication/CoGSComponent.vue';
-import EPCUserProfile from '@/components/dashboard/engineeringcomponents/user/EPCUserProfile.vue';
-import PaymentComponent from '@/components/dashboard/engineeringcomponents/user/certificateApplication/PaymentComponent.vue';
-import PaymentHistoryComponent from '@/components/dashboard/engineeringcomponents/user/certificateApplication/PaymentHistoryComponent.vue';
-import ReportsComponent from '@/components/dashboard/engineeringcomponents/user/ReportsComponent.vue';
-import AdditionalQualification from '@/components/dashboard/engineeringcomponents/user/certificateApplication/AdditionalQualification.vue';
-import ApplicationTracker from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ApplicationTracker.vue';
-import CPDTracker from '@/components/dashboard/engineeringcomponents/user/cpdApplication/CPDTracker.vue';
-import CoGSTracker from '@/components/dashboard/engineeringcomponents/user/CoGSApplication/CoGSTracker.vue';
+import CPDApplication from '@/components/dashboard/engineeringcomponents/user/cpdApplication/CPDApplication.vue'
+import CoGSComponent from '@/components/dashboard/engineeringcomponents/user/CoGSApplication/CoGSComponent.vue'
+import EPCUserProfile from '@/components/dashboard/engineeringcomponents/user/EPCUserProfile.vue'
+import PaymentComponent from '@/components/dashboard/engineeringcomponents/user/certificateApplication/PaymentComponent.vue'
+import PaymentHistoryComponent from '@/components/dashboard/engineeringcomponents/user/certificateApplication/PaymentHistoryComponent.vue'
+import ReportsComponent from '@/components/dashboard/engineeringcomponents/user/ReportsComponent.vue'
+import AdditionalQualification from '@/components/dashboard/engineeringcomponents/user/certificateApplication/AdditionalQualification.vue'
+import ApplicationTracker from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ApplicationTracker.vue'
+import CPDTracker from '@/components/dashboard/engineeringcomponents/user/cpdApplication/CPDTracker.vue'
+import CoGSTracker from '@/components/dashboard/engineeringcomponents/user/CoGSApplication/CoGSTracker.vue'
 // Practitioner Registration Components
-import ApplicationForm from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ApplicationForm.vue';
-import CertificateRegistrationComponent from '@/components/dashboard/engineeringcomponents/user/certificateApplication/CertificateRegistrationComponent.vue';
-import ApplicationRenewal from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ApplicationRenewal.vue';
+import ApplicationForm from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ApplicationForm.vue'
+import CertificateRegistrationComponent from '@/components/dashboard/engineeringcomponents/user/certificateApplication/CertificateRegistrationComponent.vue'
+import ApplicationRenewal from '@/components/dashboard/engineeringcomponents/user/certificateApplication/ApplicationRenewal.vue'
 
 // Dealing Officer Components
-import ApplicationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/ApplicationLists.vue';
-import Additional_Qualification from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/AdditionalApplication.vue';
-import RenewalLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/RenewalLists.vue';
-import ReRegistrationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/ReRegistrationLists.vue';
-import InstituteRenewals from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteRenewals.vue';
-import DPRApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/DprApplication.vue';
+import ApplicationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/ApplicationLists.vue'
+import Additional_Qualification from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/AdditionalApplication.vue'
+import RenewalLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/RenewalLists.vue'
+import ReRegistrationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/ReRegistrationLists.vue'
+import InstituteRenewals from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteRenewals.vue'
+import DPRApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/DprApplication.vue'
 // import RenewalLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/RenewalLists.vue';
-import CpdManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdManagement.vue';
-import CpdProviderManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdProviderManagement.vue';
-import Self_cpd_awards from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/SelfCpdAwards.vue';
+import CpdManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdManagement.vue'
+import CpdProviderManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdProviderManagement.vue'
+import Self_cpd_awards from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/SelfCpdAwards.vue'
 //Institute Management
-import InstituteManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteManagement.vue';
-import EoiApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/EoiApplication.vue';
+import InstituteManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteManagement.vue'
+import EoiApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/EoiApplication.vue'
 
-import InstituteReport from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteReport.vue';
-import CAPAManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/CapaManagement.vue';
-import All_institute_profile from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteProfiles.vue';
-import Teaching_Institute from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/TeachingInstitute.vue';
-import Education_Program from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/EducationPrograms.vue';
-import Teaching_Institute_Renewals from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/TeachingHospitalRenewals.vue';
+import InstituteReport from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteReport.vue'
+import CAPAManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/CapaManagement.vue'
+import All_institute_profile from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteProfiles.vue'
+import Teaching_Institute from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/TeachingInstitute.vue'
+import Education_Program from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/EducationPrograms.vue'
+import Teaching_Institute_Renewals from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/TeachingHospitalRenewals.vue'
 
-import ProfessionalProfiles from '@/components/dashboard/engineeringcomponents/dealingOfficer/ProfessionalProfiles.vue';
-import CogsManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/CogsManagement.vue';
+import ProfessionalProfiles from '@/components/dashboard/engineeringcomponents/dealingOfficer/ProfessionalProfiles.vue'
+import CogsManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/CogsManagement.vue'
 // import EngineeringCapa from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringCapa.vue';
-import EngineeringPayments from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringPayments.vue';
-import Reports from '@/components/dashboard/engineeringcomponents/dealingOfficer/Reports.vue';
+import EngineeringPayments from '@/components/dashboard/engineeringcomponents/dealingOfficer/EngineeringPayments.vue'
+import Reports from '@/components/dashboard/engineeringcomponents/dealingOfficer/Reports.vue'
 // import ReRegistrationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/ReRegistrationLists.vue';
 // import AdditionalApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/AdditionalApplication.vue';
 
 // CPD Provider Components
-import EngineeringProviderDashboard from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/EngineeringCpdCpdProviderDashboard.vue';
-import CPDApplicationDetails from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDApplicationDetails.vue';
-import CPDApplicationTracker from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDApplicationTracker.vue';
-import CPDapprovedAddParticipants from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDapprovedAddParticipants.vue';
+import EngineeringProviderDashboard from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/EngineeringCpdCpdProviderDashboard.vue'
+import CPDApplicationDetails from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDApplicationDetails.vue'
+import CPDApplicationTracker from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDApplicationTracker.vue'
+import CPDapprovedAddParticipants from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDapprovedAddParticipants.vue'
 
 // Institution Components
-import InstituteEoiApplication from '@/components/dashboard/engineeringcomponents/institutions/InstituteEoiApplication.vue';
-import InstituteDPRApplication from '@/components/dashboard/engineeringcomponents/institutions/InstituteDPRApplication.vue';
-import TrackEoiApplication from '@/components/dashboard/engineeringcomponents/institutions/TrackEoiApplication.vue';
-import TrackDPRApplication from '@/components/dashboard/engineeringcomponents/institutions/TrackDPRApplication.vue';
-import ViewCertificates from '@/components/dashboard/engineeringcomponents/institutions/ViewCertificates.vue';
-import InstituteProfile from '@/components/dashboard/engineeringcomponents/institutions/InstitutionProfile.vue';
-import MyApplications from '@/components/dashboard/engineeringcomponents/institutions/MyApplications.vue';
-import InstitutesRenewal from '@/components/dashboard/engineeringcomponents/institutions/InstitutesRenewal.vue';
-import MyCapa from '@/components/dashboard/engineeringcomponents/institutions/MyCapa.vue';
-import StaffManagement from '@/components/dashboard/engineeringcomponents/institutions/StaffManagement.vue';
-import CourseManagement from '@/components/dashboard/engineeringcomponents/institutions/CourseManagement.vue';
-import DepartmentManagement from '@/components/dashboard/engineeringcomponents/institutions/DepartmentManagement.vue';
-import TeachingCenterApplication from '@/components/dashboard/engineeringcomponents/institutions/TeachingCenterApplication.vue';
-import TeachingCenterTrackAndRenew from '@/components/dashboard/engineeringcomponents/institutions/TeachingCenterTrackAndRenew.vue';
-import NewEducationProgram from '@/components/dashboard/engineeringcomponents/institutions/NewEducationProgram.vue';
+import InstituteEoiApplication from '@/components/dashboard/engineeringcomponents/institutions/InstituteEoiApplication.vue'
+import InstituteDPRApplication from '@/components/dashboard/engineeringcomponents/institutions/InstituteDPRApplication.vue'
+import TrackEoiApplication from '@/components/dashboard/engineeringcomponents/institutions/TrackEoiApplication.vue'
+import TrackDPRApplication from '@/components/dashboard/engineeringcomponents/institutions/TrackDPRApplication.vue'
+import ViewCertificates from '@/components/dashboard/engineeringcomponents/institutions/ViewCertificates.vue'
+import InstituteProfile from '@/components/dashboard/engineeringcomponents/institutions/InstitutionProfile.vue'
+import MyApplications from '@/components/dashboard/engineeringcomponents/institutions/MyApplications.vue'
+import InstitutesRenewal from '@/components/dashboard/engineeringcomponents/institutions/InstitutesRenewal.vue'
+import MyCapa from '@/components/dashboard/engineeringcomponents/institutions/MyCapa.vue'
+import StaffManagement from '@/components/dashboard/engineeringcomponents/institutions/StaffManagement.vue'
+import CourseManagement from '@/components/dashboard/engineeringcomponents/institutions/CourseManagement.vue'
+import DepartmentManagement from '@/components/dashboard/engineeringcomponents/institutions/DepartmentManagement.vue'
+import TeachingCenterApplication from '@/components/dashboard/engineeringcomponents/institutions/TeachingCenterApplication.vue'
+import TeachingCenterTrackAndRenew from '@/components/dashboard/engineeringcomponents/institutions/TeachingCenterTrackAndRenew.vue'
+import NewEducationProgram from '@/components/dashboard/engineeringcomponents/institutions/NewEducationProgram.vue'
 //Engineering masters components
-import MastersCpdActivities from '@/components/dashboard/engineeringcomponents/admin/MastersCpdActivities.vue';
-import MastersCpdCredits from '@/components/dashboard/engineeringcomponents/admin/MastersCpdCredits.vue';
-import MastersCpdMethodologies from '@/components/dashboard/engineeringcomponents/admin/MastersCpdMethodologies.vue';
-import MastersCpdActivity from '@/components/dashboard/engineeringcomponents/admin/MastersCpdActivity.vue';
-import MastersDocumentTypes from '@/components/dashboard/engineeringcomponents/admin/MastersDocumentTypes.vue';
-import MastersESignatures from '@/components/dashboard/engineeringcomponents/admin/MastersESignatures.vue';
-import MastersFeeStructures from '@/components/dashboard/engineeringcomponents/admin/MastersFeeStructures.vue';
-import MastersFeesAssociatedFor from '@/components/dashboard/engineeringcomponents/admin/MastersFeesAssociatedFor.vue';
-import MastersFileTypes from '@/components/dashboard/engineeringcomponents/admin/MastersFileTypes.vue';
-import MastersParticipationCategory from '@/components/dashboard/engineeringcomponents/admin/MastersParticipationCategory.vue';
-import MastersParticipationSubCategory from '@/components/dashboard/engineeringcomponents/admin/MastersParticipationSubCategory.vue';
-import MastersPersonnelCategories from '@/components/dashboard/engineeringcomponents/admin/MastersPersonnelCategories.vue';
-import MastersQualificationTypes from '@/components/dashboard/engineeringcomponents/admin/MastersQualificationTypes.vue';
-import MastersQualifications from '@/components/dashboard/engineeringcomponents/admin/MastersQualifications.vue';
-import MastersRegistrationType from '@/components/dashboard/engineeringcomponents/admin/MastersRegistrationType.vue';
-import MastersSector from '@/components/dashboard/engineeringcomponents/admin/MastersSector.vue';
-import MastersSubCategories from '@/components/dashboard/engineeringcomponents/admin/MastersSubCategories.vue';
-import MastersUniversity from '@/components/dashboard/engineeringcomponents/admin/MastersUniversity.vue';
-import CogsAgency from '@/components/dashboard/engineeringcomponents/admin/CogsAgency.vue';
-import CogsDepartment from '@/components/dashboard/engineeringcomponents/admin/CogsDepartment.vue';
-import CogsWorkplace from '@/components/dashboard/engineeringcomponents/admin/CogsWorkplace.vue';
+import MastersCpdActivities from '@/components/dashboard/engineeringcomponents/admin/MastersCpdActivities.vue'
+import MastersCpdCredits from '@/components/dashboard/engineeringcomponents/admin/MastersCpdCredits.vue'
+import MastersCpdMethodologies from '@/components/dashboard/engineeringcomponents/admin/MastersCpdMethodologies.vue'
+import MastersCpdActivity from '@/components/dashboard/engineeringcomponents/admin/MastersCpdActivity.vue'
+import MastersDocumentTypes from '@/components/dashboard/engineeringcomponents/admin/MastersDocumentTypes.vue'
+import MastersESignatures from '@/components/dashboard/engineeringcomponents/admin/MastersESignatures.vue'
+import MastersFeeStructures from '@/components/dashboard/engineeringcomponents/admin/MastersFeeStructures.vue'
+import MastersFeesAssociatedFor from '@/components/dashboard/engineeringcomponents/admin/MastersFeesAssociatedFor.vue'
+import MastersFileTypes from '@/components/dashboard/engineeringcomponents/admin/MastersFileTypes.vue'
+import MastersParticipationCategory from '@/components/dashboard/engineeringcomponents/admin/MastersParticipationCategory.vue'
+import MastersParticipationSubCategory from '@/components/dashboard/engineeringcomponents/admin/MastersParticipationSubCategory.vue'
+import MastersPersonnelCategories from '@/components/dashboard/engineeringcomponents/admin/MastersPersonnelCategories.vue'
+import MastersQualificationTypes from '@/components/dashboard/engineeringcomponents/admin/MastersQualificationTypes.vue'
+import MastersQualifications from '@/components/dashboard/engineeringcomponents/admin/MastersQualifications.vue'
+import MastersRegistrationType from '@/components/dashboard/engineeringcomponents/admin/MastersRegistrationType.vue'
+import MastersSector from '@/components/dashboard/engineeringcomponents/admin/MastersSector.vue'
+import MastersSubCategories from '@/components/dashboard/engineeringcomponents/admin/MastersSubCategories.vue'
+import MastersUniversity from '@/components/dashboard/engineeringcomponents/admin/MastersUniversity.vue'
+import CogsAgency from '@/components/dashboard/engineeringcomponents/admin/CogsAgency.vue'
+import CogsDepartment from '@/components/dashboard/engineeringcomponents/admin/CogsDepartment.vue'
+import CogsWorkplace from '@/components/dashboard/engineeringcomponents/admin/CogsWorkplace.vue'
 
-const { role, user } = useAuthStore();
-const route = useRoute();
-const applications = ref([]);
-const currentPage = ref(1);
-const perPage = ref(10);
+const { role, user } = useAuthStore()
+const route = useRoute()
+const applications = ref([])
+const currentPage = ref(1)
+const perPage = ref(10)
 
 // Engineering Admin Route-Based Components
 const engineeringAdminComponent = computed(() => {
-  const path = route.path;
+  const path = route.path
   switch (true) {
     case path.endsWith('/engineering_certification/dashboard'):
-      return EngineeringAdminDashboard;
+      return EngineeringAdminDashboard
     case path.endsWith('/engineering_certification/user_management'):
-      return EngineeringUserManagement;
+      return EngineeringUserManagement
     case path.endsWith('/engineering_certification/cpd_activities'):
       return MastersCpdActivities
     case path.endsWith('/engineering_certification/cpd_credits'):
@@ -179,17 +184,17 @@ const engineeringAdminComponent = computed(() => {
     case path.endsWith('/engineering_certification/cpd_activity'):
       return MastersCpdActivity
     case path.endsWith('/engineering_certification/document_types'):
-      return MastersDocumentTypes;
+      return MastersDocumentTypes
     case path.endsWith('/engineering_certification/e_signatures'):
-      return MastersESignatures;
+      return MastersESignatures
     case path.endsWith('/engineering_certification/fee_structures'):
       return MastersFeeStructures
     case path.endsWith('/engineering_certification/fees_associated_for'):
       return MastersFeesAssociatedFor
     case path.endsWith('/engineering_certification/file_types'):
-      return MastersFileTypes;
+      return MastersFileTypes
     case path.endsWith('/engineering_certification/participation_category'):
-      return MastersParticipationCategory;
+      return MastersParticipationCategory
     case path.endsWith('/engineering_certification/participation_sub_category'):
       return MastersParticipationSubCategory
     case path.endsWith('/engineering_certification/personnel_categories'):
@@ -201,265 +206,261 @@ const engineeringAdminComponent = computed(() => {
     case path.endsWith('/engineering_certification/registration_type'):
       return MastersRegistrationType
     case path.endsWith('/engineering_certification/sector'):
-      return MastersSector;
+      return MastersSector
     case path.endsWith('/engineering_certification/sub_categories'):
       return MastersSubCategories
     case path.endsWith('/engineering_certification/university'):
       return MastersUniversity
     case path.endsWith('/engineering_certification/cogs_agency'):
-      return CogsAgency;
+      return CogsAgency
     case path.endsWith('/engineering_certification/cogs_dept'):
-      return CogsDepartment;
+      return CogsDepartment
     case path.endsWith('/engineering_certification/cogs_workplace'):
-      return CogsWorkplace;
+      return CogsWorkplace
     default:
-      return null;
+      return null
   }
-});
+})
 
 // Engineering User Route-Based Components
 const engineeringUserComponent = computed(() => {
-  const path = route.path;
+  const path = route.path
   switch (true) {
     case path.endsWith('/engineering_certification/dashboard'):
-      return EngineeringUserDashboard;
+      return EngineeringUserDashboard
     case path.endsWith('/engineering_certification/profile'):
-      return EPCUserProfile;
+      return EPCUserProfile
     case path.endsWith('/engineering_certification/registration'):
-      return CertificateRegistrationComponent;
+      return CertificateRegistrationComponent
     case path.endsWith('/engineering_certification/renewal'):
-      return ApplicationRenewal;
+      return ApplicationRenewal
     case path.endsWith('/engineering_certification/additional_qualification'):
-      return AdditionalQualification;
+      return AdditionalQualification
     case path.endsWith('/engineering_certification/CoGS'):
-      return CoGSComponent;
+      return CoGSComponent
     case path.endsWith('/engineering_certification/cpd'):
-      return CPDApplication;
+      return CPDApplication
     case path.endsWith('/engineering_certification/track_cpd_applications'):
-      return CPDTracker;
+      return CPDTracker
     case path.endsWith('/engineering_certification/track_cogs_applications'):
-      return CoGSTracker;
+      return CoGSTracker
     case path.endsWith('/engineering_certification/payment'):
-      return PaymentComponent;
+      return PaymentComponent
     case path.endsWith('/engineering_certification/payment_history'):
-      return PaymentHistoryComponent;
+      return PaymentHistoryComponent
     case path.endsWith('/engineering_certification/reports'):
-      return ReportsComponent;
+      return ReportsComponent
     case path.endsWith('/engineering_certification/my_applications'):
-      return ApplicationTracker;
+      return ApplicationTracker
 
     // Backward compatible routes
     case path.endsWith('/engineering_certification/practitioner_reg_and_cert/registration'):
-      return ApplicationForm;
+      return ApplicationForm
     case path.endsWith('/engineering_certification/practitioner_reg_and_cert/certificate'):
-      return CertificateRegistrationComponent;
+      return CertificateRegistrationComponent
     case path.endsWith('/engineering_certification/practitioner_reg_and_cert/renewal'):
-      return ApplicationRenewal;
+      return ApplicationRenewal
     default:
-      return null;
+      return null
   }
-});
+})
 
 // Engineering Dealing Officer Route-Based Components
 const engineeringDealingOfficerComponent = computed(() => {
-  const path = route.path;
+  const path = route.path
   switch (true) {
     case path.endsWith('/engineering_certification/dashboard'):
-      return EngineeringDealingOfficerDashboard;
+      return EngineeringDealingOfficerDashboard
     case path.endsWith('/engineering_certification/application_lists'):
-      return ApplicationLists;
+      return ApplicationLists
     case path.endsWith('/engineering_certification/additional_application'):
-      return Additional_Qualification;
+      return Additional_Qualification
     case path.endsWith('/engineering_certification/renewal_lists'):
-      return RenewalLists;
+      return RenewalLists
     case path.endsWith('/engineering_certification/re_registration_lists'):
-      return ReRegistrationLists;
+      return ReRegistrationLists
     case path.endsWith('/engineering_certification/cpd_application_review'):
-      return CpdManagement;
+      return CpdManagement
     case path.endsWith('/engineering_certification/cpd_provider_management'):
-      return CpdProviderManagement;
+      return CpdProviderManagement
     case path.endsWith('/engineering_certification/self_cpd_awards'):
-      return Self_cpd_awards;
+      return Self_cpd_awards
     case path.endsWith('/engineering_certification/institutes'):
-      return InstituteManagement;
+      return InstituteManagement
     case path.endsWith('/engineering_certification/eoi_application'):
-      return EoiApplication;
+      return EoiApplication
     case path.endsWith('/engineering_certification/dpr_application'):
-      return DPRApplication;
+      return DPRApplication
     case path.endsWith('/engineering_certification/capa_management'):
-      return CAPAManagement;
+      return CAPAManagement
     case path.endsWith('/engineering_certification/all_institute_profile'):
-      return All_institute_profile;
+      return All_institute_profile
     case path.endsWith('/engineering_certification/teaching_institute'):
-      return Teaching_Institute;
+      return Teaching_Institute
     case path.endsWith('/engineering_certification/education_program'):
-      return Education_Program;
+      return Education_Program
     case path.endsWith('/engineering_certification/teaching_institute_renewals'):
-      return Teaching_Institute_Renewals;
+      return Teaching_Institute_Renewals
     case path.endsWith('/engineering_certification/institute_report'):
-      return InstituteReport;
+      return InstituteReport
     case path.endsWith('/engineering_certification/profiles'):
-      return ProfessionalProfiles;
+      return ProfessionalProfiles
     case path.endsWith('/engineering_certification/cogs'):
-      return CogsManagement;
+      return CogsManagement
 
     case path.endsWith('/engineering_certification/payments'):
-      return EngineeringPayments;
+      return EngineeringPayments
     case path.endsWith('/engineering_certification/reports'):
-      return Reports;
+      return Reports
     case path.endsWith('/engineering_certification/institute_renewals'):
-      return InstituteRenewals;
-
+      return InstituteRenewals
 
     default:
-      return null;
+      return null
   }
-});
+})
 
 // Engineering Chief Route-Based Components
 const engineeringChiefComponent = computed(() => {
-  const path = route.path;
+  const path = route.path
   switch (true) {
     case path.endsWith('/engineering_certification/dashboard'):
-      return EngineeringChiefDashboard;
+      return EngineeringChiefDashboard
     default:
-      return null;
+      return null
   }
-});
+})
 
 // Engineering Director Route-Based Components
 const engineeringDirectorComponent = computed(() => {
-  const path = route.path;
+  const path = route.path
   switch (true) {
     case path.endsWith('/engineering_certification/dashboard'):
-      return EngineeringDirectorDashboard;
+      return EngineeringDirectorDashboard
     default:
-      return null;
+      return null
   }
-});
+})
 
 // Engineering CPD/CPD Provider Route-Based Components
 const engineeringCpdCpdProviderComponent = computed(() => {
-  const path = route.path;
+  const path = route.path
   switch (true) {
     case path.endsWith('/engineering_certification/dashboard'):
-      return EngineeringProviderDashboard;
+      return EngineeringProviderDashboard
     case path.endsWith('/engineering_certification/cpd_application_details'):
-      return CPDApplicationDetails;
+      return CPDApplicationDetails
     case path.endsWith('/engineering_certification/cpd_application_tracker'):
-      return CPDApplicationTracker;
+      return CPDApplicationTracker
     case path.endsWith('/engineering_certification/cpd_approved_add_participants'):
-      return CPDapprovedAddParticipants;
+      return CPDapprovedAddParticipants
     default:
-      return null;
+      return null
   }
-});
+})
 
 // Engineering Institutions Route-Based Components
 const engineeringInstitutionsComponent = computed(() => {
-  const path = route.path;
+  const path = route.path
   switch (true) {
     case path.endsWith('/engineering_certification/dashboard'):
-      return EngineeringInstitutionsDashboard;
+      return EngineeringInstitutionsDashboard
     case path.endsWith('/engineering_certification/apply_for_eoi'):
-      return InstituteEoiApplication;
+      return InstituteEoiApplication
     case path.endsWith('/engineering_certification/track_eoi'):
-      return TrackEoiApplication;
+      return TrackEoiApplication
     case path.endsWith('/engineering_certification/apply_for_dpr'):
-      return InstituteDPRApplication;
+      return InstituteDPRApplication
     case path.endsWith('/engineering_certification/track_dpr'):
-      return TrackDPRApplication;
+      return TrackDPRApplication
     case path.endsWith('/engineering_certification/view_certificates'):
-      return ViewCertificates;
+      return ViewCertificates
     case path.endsWith('/engineering_certification/institution_profile'):
-      return InstituteProfile;
+      return InstituteProfile
     case path.endsWith('/engineering_certification/teaching_center_application'):
-      return TeachingCenterApplication;
+      return TeachingCenterApplication
     case path.endsWith('/engineering_certification/teaching_center_track_and_renew'):
-      return TeachingCenterTrackAndRenew;
+      return TeachingCenterTrackAndRenew
     case path.endsWith('/engineering_certification/new_education_program'):
-      return NewEducationProgram;
+      return NewEducationProgram
     case path.endsWith('/engineering_certification/my_applications'):
-      return MyApplications;
+      return MyApplications
     case path.endsWith('/engineering_certification/institutes_renewal'):
-      return InstitutesRenewal;
+      return InstitutesRenewal
     case path.endsWith('/engineering_certification/my_capa'):
-      return MyCapa;
+      return MyCapa
     case path.endsWith('/engineering_certification/staff_management'):
-      return StaffManagement;
+      return StaffManagement
     case path.endsWith('/engineering_certification/course_management'):
-      return CourseManagement;
+      return CourseManagement
     case path.endsWith('/engineering_certification/department_management'):
-      return DepartmentManagement;
+      return DepartmentManagement
     default:
-      return null;
+      return null
   }
-});
+})
 
 // Engineering Super Admin Route-Based Components
 const engineeringSuperAdminComponent = computed(() => {
-  const path = route.path;
+  const path = route.path
   switch (true) {
     case path.endsWith('/engineering_certification/dashboard'):
-      return EngineeringSuperAdminDashboard;
+      return EngineeringSuperAdminDashboard
     default:
-      return null;
+      return null
   }
-});
+})
 
 // Filter applications based on role
 const filteredApplications = computed(() => {
   switch (role) {
     case 'user':
-      return applications.value.filter(app => app.email_address === user.email);
+      return applications.value.filter((app) => app.email_address === user.email)
 
     case 'dealing_officer':
-      return applications.value.filter(app =>
-        !app.dealing_officer_decision ||
-        (!app.chief_approved && !app.chief_regret)
-      );
+      return applications.value.filter(
+        (app) => !app.dealing_officer_decision || (!app.chief_approved && !app.chief_regret),
+      )
 
     case 'chief':
-      return applications.value.filter(app =>
-        app.forward &&
-        !app.chief_approved &&
-        !app.chief_regret
-      );
+      return applications.value.filter(
+        (app) => app.forward && !app.chief_approved && !app.chief_regret,
+      )
 
     case 'director':
-      return applications.value;
+      return applications.value
 
     default:
-      return [];
+      return []
   }
-});
+})
 
 // Compute total for pagination
-const filteredTotal = computed(() => filteredApplications.value.length);
+const filteredTotal = computed(() => filteredApplications.value.length)
 
 // Get paginated data
 const paginatedApplications = computed(() => {
-  const start = (currentPage.value - 1) * perPage.value;
-  const end = start + perPage.value;
+  const start = (currentPage.value - 1) * perPage.value
+  const end = start + perPage.value
 
   // Transform the data to match the table structure
-  return filteredApplications.value.slice(start, end).map(app => ({
+  return filteredApplications.value.slice(start, end).map((app) => ({
     id: app.id,
     date: app.date_of_birth,
     type: app.type_of_course,
     status: getApplicationStatus(app),
-  }));
-});
+  }))
+})
 
 // Helper function to determine application status
 const getApplicationStatus = (application) => {
-  if (application.chief_approved) return 'Approved';
-  if (application.chief_regret) return 'Regretted';
-  if (application.dealing_officer_regret) return 'Regretted';
-  return 'Pending';
-};
+  if (application.chief_approved) return 'Approved'
+  if (application.chief_regret) return 'Regretted'
+  if (application.dealing_officer_regret) return 'Regretted'
+  return 'Pending'
+}
 
 const handlePageChange = (newPage) => {
-  currentPage.value = newPage;
-};
+  currentPage.value = newPage
+}
 </script>

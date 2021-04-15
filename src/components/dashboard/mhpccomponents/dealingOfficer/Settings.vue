@@ -28,20 +28,19 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router'; // Import useRouter
+import { ref } from 'vue'
+import { useRouter } from 'vue-router' // Import useRouter
 
 const applications = ref([
-  { id: 1, name: "John Doe", type: "Registration", status: "Pending" },
-  { id: 2, name: "Jane Smith", type: "Renewal", status: "Pending" },
-]); // Fetch this from an API  (You'd typically use a fetch call in onMounted)
+  { id: 1, name: 'John Doe', type: 'Registration', status: 'Pending' },
+  { id: 2, name: 'Jane Smith', type: 'Renewal', status: 'Pending' },
+]) // Fetch this from an API  (You'd typically use a fetch call in onMounted)
 
-const router = useRouter(); // Get the router instance
+const router = useRouter() // Get the router instance
 
 const reviewApplication = (id) => {
-  router.push(`/health_certification/application/${id}`);
-};
-
+  router.push(`/health_certification/application/${id}`)
+}
 </script>
 
 <style scoped>

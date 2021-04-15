@@ -49,9 +49,7 @@
         </div>
 
         <div class="flex-grow">
-          <div class="text-sm font-medium text-gray-600 mb-1">
-            Progress Breakdown
-          </div>
+          <div class="text-sm font-medium text-gray-600 mb-1">Progress Breakdown</div>
           <div class="space-y-1">
             <div class="flex items-center justify-between">
               <span class="text-xs text-gray-500">Total</span>
@@ -72,26 +70,26 @@
 defineProps({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   count: {
     type: Number,
-    required: true
+    required: true,
   },
   icon: {
     type: Object,
-    required: true
+    required: true,
   },
   color: {
     type: String,
-    default: 'blue'
+    default: 'blue',
   },
   percentage: {
     type: Number,
     required: true,
-    validator: (value) => value >= 0 && value <= 100
-  }
-});
+    validator: (value) => value >= 0 && value <= 100,
+  },
+})
 </script>
 
 <style scoped>

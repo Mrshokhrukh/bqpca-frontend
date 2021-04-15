@@ -4,7 +4,6 @@
   </div>
 </template>
 
-
 <style scoped>
 .payment-history {
   padding: 20px;
