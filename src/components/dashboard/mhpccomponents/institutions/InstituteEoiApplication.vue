@@ -28,6 +28,7 @@
                   id="CID"
                   v-model="formData.CID"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                  disabled
                 />
                 <!-- Added px-3 py-2 -->
               </div>
@@ -45,6 +46,7 @@
                   id="full_name"
                   v-model="formData.full_name"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                  disabled
                 />
                 <!-- Added px-3 py-2 -->
               </div>
@@ -57,17 +59,12 @@
                   <!-- Added required-label class -->
                   Gender
                 </label>
-                <select
+                <input
                   id="gender"
                   v-model="formData.gender"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
-                >
-                  <!-- Added px-3 py-2 -->
-                  <option value="">Select Gender</option>
-                  <option v-for="option in genderOptions" :key="option.value" :value="option.value">
-                    {{ option.label }}
-                  </option>
-                </select>
+                  disabled
+                />
               </div>
 
               <div>
@@ -83,6 +80,7 @@
                   id="contact_no"
                   v-model="formData.contact_no"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                  disabled
                 />
                 <!-- Added px-3 py-2 -->
               </div>
@@ -100,6 +98,7 @@
                   id="email_address"
                   v-model="formData.email_address"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                  disabled
                 />
                 <!-- Added px-3 py-2 -->
               </div>
@@ -142,6 +141,7 @@
                   id="dzongkhag"
                   v-model="formData.dzongkhag"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                  
                 />
                 <!-- Added px-3 py-2 -->
               </div>
@@ -155,6 +155,7 @@
                   id="gewog"
                   v-model="formData.gewog"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+
                 />
                 <!-- Added px-3 py-2 -->
               </div>
@@ -168,6 +169,7 @@
                   id="village"
                   v-model="formData.village"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+
                 />
                 <!-- Added px-3 py-2 -->
               </div>
@@ -483,9 +485,11 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import apiServices from '@/services/services'
 import { useToast } from 'vue-toastification'
+import { useAuthStore } from '@/stores/authStore'
 
 const router = useRouter()
 const toast = useToast()
+const authStore = useAuthStore()
 
 const formData = ref({
   // Basic Information
@@ -560,6 +564,19 @@ const handleFileUpload = (event, fieldName) => {
   const file = event.target.files[0]
   if (file) {
     formData.value[fieldName] = file
+  }
+}
+
+// Auto-fill form fields from authStore or localStorage
+const autoFillForm = () => {
+  const user = authStore.user || JSON.parse(localStorage.getItem('user'))
+  if (user) {
+    formData.value.CID = user.cid || ''
+    formData.value.full_name = `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''}`.trim()
+    formData.value.gender = user.gender || ''
+    formData.value.contact_no = user.contact_number || ''
+    formData.value.email_address = user.email || ''
+    formData.value.village = user.village || ''
   }
 }
 
@@ -766,7 +783,7 @@ const clearDraft = () => {
   localStorage.removeItem('eoiFormDraft')
 }
 
-// Load draft on component mount
+// Load draft or auto-fill on component mount
 onMounted(() => {
   const savedDraft = localStorage.getItem('eoiFormDraft')
   if (savedDraft) {
@@ -785,6 +802,8 @@ onMounted(() => {
       console.error('Error loading draft:', error)
       clearDraft()
     }
+  } else {
+    autoFillForm()
   }
 })
 
