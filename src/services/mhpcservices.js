@@ -2,24 +2,29 @@ import apiClient from './apiClient'
 
 export default {
   getMhpcMastersCpdActivities() {
-    return apiClient.get('/mhpc/masters-cpd-activities/')
+    // Correct Path: REMOVED leading /api/ because apiClient's baseURL should handle it
+    return apiClient.get('/mhpc/masters-cpd-activity/')
   },
   createMhpcMastersCpdActivity(data) {
-    return apiClient.post('/mhpc/masters-cpd-activities/', data)
+    // Correct Path: REMOVED leading /api/
+    return apiClient.post('/mhpc/masters-cpd-activity/', data)
   },
   getMhpcMastersCpdActivity(id) {
-    return apiClient.get(`/mhpc/masters-cpd-activities/${id}/`)
+    // Correct Path: REMOVED leading /api/
+    return apiClient.get(`/mhpc/masters-cpd-activity/${id}/`)
   },
   updateMhpcMastersCpdActivity(id, data) {
-    return apiClient.put(`/mhpc/masters-cpd-activities/${id}/`, data)
+    // Correct Path: REMOVED leading /api/
+    return apiClient.put(`/mhpc/masters-cpd-activity/${id}/`, data)
   },
   patchMhpcMastersCpdActivity(id, data) {
-    return apiClient.patch(`/mhpc/masters-cpd-activities/${id}/`, data)
+    // Correct Path: REMOVED leading /api/
+    return apiClient.patch(`/mhpc/masters-cpd-activity/${id}/`, data)
   },
   deleteMhpcMastersCpdActivity(id) {
-    return apiClient.delete(`/mhpc/masters-cpd-activities/${id}/`)
+    // Correct Path: REMOVED leading /api/
+    return apiClient.delete(`/mhpc/masters-cpd-activity/${id}/`)
   },
-
   // Masters CPD Credits
   getMhpcMastersCpdCredits() {
     return apiClient.get('/mhpc/masters-cpd-credits/')
