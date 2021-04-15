@@ -111,13 +111,13 @@ export const useAuthStore = defineStore('auth', () => {
         }
       }
 
-      
+
       // Default redirection (if no role-based restrictions)
       toast.success('Login successful!');
       router.push(`/admin/${user.value.role}/${user.value.service_type}/dashboard`);
 
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Login failed. Please try again.');
+      console.error(error.response?.data?.message || 'Login failed. Please try again.');
       throw error;
     }
   };

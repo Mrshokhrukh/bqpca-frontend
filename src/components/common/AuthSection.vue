@@ -17,17 +17,31 @@
       <!-- Login Section -->
       <div v-if="activeTab === 'login'" class="space-y-6">
         <!-- NDI Login Options -->
-        <div class="space-y-5">
-          <button @click="handleNDILoginClick"
-            class="w-full bg-gradient-to-r from-ndi-green to-ndi-green text-white font-bold py-4 px-4 rounded-lg transition duration-300 flex items-center justify-center shadow-md hover:shadow-lg transform hover:-translate-y-1 hover:scale-102 focus:outline-none focus:ring-2 focus:ring-ndi-green focus:ring-opacity-50">
-            <img src="@/assets/ndi-logo.png" alt="NDI Logo" class="h-6 mr-3 rounded-full" />
-            Login with Bhutan NDI
+        <div class="space-y-4">
+          <button @click="showQRCode = !showQRCode"
+            class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 hover:bg-gray-50">
+            <img src="@/assets/ndi-logo.png" alt="NDI" class="h-5 w-5 mr-2" />
+            Login with NDI QR Code
           </button>
 
-          <div class="flex items-center my-4">
-            <div class="flex-grow h-px bg-gray-200"></div>
-            <span class="px-3 text-gray-500 text-sm">OR</span>
-            <div class="flex-grow h-px bg-gray-200"></div>
+          <!-- QR Code Display -->
+          <div v-if="showQRCode" class="flex flex-col items-center space-y-4 p-4 bg-gray-50 rounded-lg">
+            <div class="w-48 h-48 bg-white rounded-lg flex items-center justify-center shadow-inner">
+              <QrCodeIcon class="w-32 h-32 text-gray-400" />
+            </div>
+            <p class="text-sm text-gray-600 text-center">Scan this QR code with your NDI app to login</p>
+            <button @click="showQRCode = false" class="text-sm text-gray-500 hover:text-gray-700">
+              Cancel QR Login
+            </button>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white text-gray-500">Or continue with email</span>
           </div>
         </div>
 
@@ -60,6 +74,35 @@
 
       <!-- Registration Section -->
       <div v-else class="space-y-6">
+        <!-- NDI Registration Option -->
+        <div class="space-y-4">
+          <button @click="showRegisterQRCode = !showRegisterQRCode"
+            class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 hover:bg-gray-50">
+            <img src="@/assets/ndi-logo.png" alt="NDI" class="h-5 w-5 mr-2" />
+            Register with NDI QR Code
+          </button>
+
+          <!-- QR Code Display for Registration -->
+          <div v-if="showRegisterQRCode" class="flex flex-col items-center space-y-4 p-4 bg-gray-50 rounded-lg">
+            <div class="w-48 h-48 bg-white rounded-lg flex items-center justify-center shadow-inner">
+              <QrCodeIcon class="w-32 h-32 text-gray-400" />
+            </div>
+            <p class="text-sm text-gray-600 text-center">Scan this QR code with your NDI app to register</p>
+            <button @click="showRegisterQRCode = false" class="text-sm text-gray-500 hover:text-gray-700">
+              Cancel QR Registration
+            </button>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white text-gray-500">Or continue with email</span>
+          </div>
+        </div>
+
         <!-- Registration Notice -->
         <div class="bg-amber-50 border-l-4 border-amber-400 p-4">
           <div class="flex">
@@ -74,7 +117,7 @@
           </div>
         </div>
 
-        <!-- Registration Form -->
+        <!-- Updated Registration Form -->
         <form @submit.prevent="handleRegister" class="space-y-4">
           <!-- Name Fields -->
           <div class="grid grid-cols-3 gap-4">
@@ -220,19 +263,14 @@
       </div>
     </div>
   </div>
-
-  <!-- NDI Modal -->
-  <NdiModal v-if="showNdiModal" :username="ndiUsername" @close="handleModalClose"
-    @ndi-login-success="handleNdiLoginSuccess" :actionType="ndiActionType" />
 </template>
 
 <script setup>
 import { ref, reactive, computed } from 'vue';
 import { useToast } from 'vue-toastification';
-import { AlertTriangle as AlertTriangleIcon, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { QrCode as QrCodeIcon, AlertTriangle as AlertTriangleIcon, ChevronLeft, ChevronRight } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/authStore';
-import apiService from '@/services/services';
-import NdiModal from './NdiModal.vue';
+import apiService from '@/services/services'
 
 const props = defineProps({
   serviceType: {
@@ -242,13 +280,12 @@ const props = defineProps({
 });
 
 const toast = useToast();
-const authStore = useAuthStore();
+const authStore = useAuthStore(); // Use the auth store
 
 const activeTab = ref('login');
-const showNdiModal = ref(false);
+const showQRCode = ref(false);
+const showRegisterQRCode = ref(false);
 const showDatePicker = ref(false);
-const ndiUsername = ref('');
-const ndiActionType = ref('login');
 
 // Date picker state
 const datePickerMonth = ref(new Date().getMonth());
@@ -283,35 +320,6 @@ const registerForm = reactive({
   terms: false,
   service_type: props.serviceType,
 });
-
-// NDI related functions
-const handleNDILoginClick = () => {
-  ndiActionType.value = 'login';
-  showNdiModal.value = true;
-};
-
-const handleModalClose = () => {
-  showNdiModal.value = false;
-};
-
-const handleNdiLoginSuccess = async (receivedThreadId) => {
-  try {
-    const response = await apiService.finalizeNdiLogin({ thread_id: receivedThreadId });
-    if (response.status === 200 && response.data.token) {
-      // Update auth store with user data
-      authStore.setUser(response.data.user);
-      authStore.setToken(response.data.token);
-      toast.success('NDI Login successful!');
-      // Redirect based on user type if needed
-    } else {
-      console.warn('Unexpected response from finalize-login:', response);
-      toast.error('Unexpected response during finalization.');
-    }
-  } catch (error) {
-    console.error('Error finalizing NDI login:', error);
-    toast.error('Error during final login step');
-  }
-};
 
 // Date picker computed properties and methods
 const calendarDates = computed(() => {
@@ -382,15 +390,55 @@ const isToday = (dateObj) => {
   return dateObj.date.toDateString() === new Date().toDateString()
 }
 
+// Updated handleLogin function for better error handling
+// Refined handleLogin function for better error handling
 const handleLogin = async () => {
   try {
     await authStore.login({ ...loginForm, from: 'authSection' });
   } catch (error) {
-    console.error(error);
+    console.error('Login error:', error);
+
+    // Get error response if available
+    const response = error.response || {};
+    const data = response.data || {};
+    const status = response.status;
+
+    // Check for specific error messages in the non_field_errors array
+    if (data.non_field_errors && Array.isArray(data.non_field_errors) && data.non_field_errors.length > 0) {
+      const errorMsg = data.non_field_errors[0];
+
+      // For the generic "Unable to log in with provided credentials" message
+      if (errorMsg.includes('Unable to log in with provided credentials')) {
+        toast.error('Invalid email or password. Please check your credentials.');
+      } else {
+        toast.error(errorMsg);
+      }
+    }
+    // Specific status code handling
+    else if (status === 401) {
+      toast.error('Invalid email or password. Please check your credentials.');
+    } else if (status === 404) {
+      toast.error('Account not found. Please check your email or register.');
+    } else if (status === 400) {
+      // Check field-specific errors
+      if (data.email) {
+        toast.error(`Email error: ${data.email[0]}`);
+      } else if (data.password) {
+        toast.error(`Password error: ${data.password[0]}`);
+      } else {
+        toast.error('Invalid login information. Please check your details.');
+      }
+    } else if (error.message && error.message.includes('Network Error')) {
+      toast.error('Cannot connect to the server. Please check your internet connection.');
+    } else {
+      toast.error('Login failed. Please check your credentials and try again.');
+    }
   }
 };
 
+// Refined handleRegister function remains the same
 const handleRegister = async () => {
+  // Password matching validation
   if (registerForm.password !== registerForm.confirm_password) {
     toast.error('Passwords do not match');
     return;
@@ -415,29 +463,68 @@ const handleRegister = async () => {
     toast.success('Registration successful! Please login.');
     activeTab.value = 'login';
   } catch (error) {
-    toast.error(error.response?.data?.message || 'Registration failed. Please try again.');
+    console.error('Registration error:', error);
+
+    // Get error response if available
+    const response = error.response || {};
+    const data = response.data || {};
+    const status = response.status;
+
+    // Handle field-specific errors
+    if (data.email && Array.isArray(data.email) && data.email.length > 0) {
+      if (data.email[0].toLowerCase().includes('exist') ||
+          data.email[0].toLowerCase().includes('already') ||
+          data.email[0].toLowerCase().includes('unique')) {
+        toast.error('Email already registered. Please use a different email address.');
+      } else {
+        toast.error(`Email error: ${data.email[0]}`);
+      }
+    }
+    else if (data.cid && Array.isArray(data.cid) && data.cid.length > 0) {
+      if (data.cid[0].toLowerCase().includes('exist') ||
+          data.cid[0].toLowerCase().includes('already') ||
+          data.cid[0].toLowerCase().includes('unique')) {
+        toast.error('CID/Work Permit Number already registered. Please verify your information.');
+      } else {
+        toast.error(`CID error: ${data.cid[0]}`);
+      }
+    }
+    else if (data.contact_number && Array.isArray(data.contact_number) && data.contact_number.length > 0) {
+      if (data.contact_number[0].toLowerCase().includes('exist') ||
+          data.contact_number[0].toLowerCase().includes('already') ||
+          data.contact_number[0].toLowerCase().includes('unique')) {
+        toast.error('Contact number already registered. Please use a different number.');
+      } else {
+        toast.error(`Contact number error: ${data.contact_number[0]}`);
+      }
+    }
+    // Handle non_field_errors
+    else if (data.non_field_errors && Array.isArray(data.non_field_errors) && data.non_field_errors.length > 0) {
+      toast.error(data.non_field_errors[0]);
+    }
+    // Fallback error handling based on status
+    else if (status === 409) {
+      toast.error('Account with these details already exists. Please check your information.');
+    }
+    else if (status === 400) {
+      // Check if there are any field errors we haven't handled yet
+      const firstFieldError = Object.entries(data).find(([key, value]) =>
+        Array.isArray(value) && value.length > 0 && key !== 'non_field_errors'
+      );
+
+      if (firstFieldError) {
+        const [field, errors] = firstFieldError;
+        toast.error(`${field.replace('_', ' ')}: ${errors[0]}`);
+      } else {
+        toast.error('Please check your registration information and try again.');
+      }
+    }
+    else if (error.message && error.message.includes('Network Error')) {
+      toast.error('Cannot connect to the server. Please check your internet connection.');
+    }
+    else {
+      toast.error('Registration failed. Please try again later.');
+    }
   }
 };
 </script>
-
-<style scoped>
-/* Define NDI green color for the button */
-.from-ndi-green,
-.to-ndi-green,
-.bg-ndi-green {
-  background-color: #5AC994;
-}
-
-.text-ndi-green {
-  color: #5AC994;
-}
-
-.ring-ndi-green {
-  --tw-ring-color: #5AC994;
-}
-
-/* Add hover scale effect */
-.hover\:scale-102:hover {
-  transform: scale(1.02);
-}
-</style>
