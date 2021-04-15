@@ -488,7 +488,7 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentInitiationFormData.append('taxPayerNo', user.cid);
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);
     paymentInitiationFormData.append('totalPayableAmount', 1000);
-    paymentInitiationFormData.append('description', 'BHMC Qualification Registration Fee');
+    paymentInitiationFormData.append('description', 'MHPC Qualification Registration Fee');
     paymentInitiationFormData.append('mobileNo', user.contact_number);
     paymentInitiationFormData.append('payerEmail', user.email);
     paymentInitiationFormData.append('user', user.id);
@@ -499,7 +499,7 @@ const handlePaymentCompleted = async (paymentData) => {
     // Make the payment *before* updating the qualification
     await apiService.makePayment(paymentInitiationFormData);
 
-    // 2. Update BHMC Qualification (payment_id and status) - Using FormData
+    // 2. Update MHPC Qualification (payment_id and status) - Using FormData
     const updateFormData = new FormData();
     updateFormData.append('payment_id', paymentId);
     updateFormData.append('payment_status', "processing_payment");

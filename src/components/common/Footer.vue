@@ -155,7 +155,7 @@ const services = [
   { name: 'Professional Framework', route: '/ecpf' },
   { name: 'Accreditation', route: '/accreditation' },
   { name: 'Engineering Certification', route: '/engineering' },
-  { name: 'Medical & Health Council', route: '/bmhc' }
+  { name: 'Medical & Health Council', route: '/mhpc' }
 ]
 </script>
 

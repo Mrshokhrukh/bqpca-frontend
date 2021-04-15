@@ -304,7 +304,7 @@ export default {
   deleteEpcInstitute(id) {
     return apiClient.delete(`/epc/epc-institutes/${id}/`)
   },
-// EPC New Application endpoints
+  // EPC New Application endpoints
   getEpcNewApplications() {
     return apiClient.get('/epc/epc-new-application/')
   },
@@ -390,64 +390,64 @@ export default {
     return apiClient.delete(`/epc/epc-teaching-centers/${id}/`)
   },
 
-  // Masters CME Activities endpoints
-  getEpcMastersCmeActivities() {
-    return apiClient.get('/epc/masters-cme-activities/')
+  // Masters CPD Activities endpoints
+  getEpcMastersCpdActivities() {
+    return apiClient.get('/epc/masters-cpd-activities/')
   },
-  createEpcMastersCmeActivity(data) {
-    return apiClient.post('/epc/masters-cme-activities/', data)
+  createEpcMastersCpdActivity(data) {
+    return apiClient.post('/epc/masters-cpd-activities/', data)
   },
-  getEpcMastersCmeActivity(id) {
-    return apiClient.get(`/epc/masters-cme-activities/${id}/`)
+  getEpcMastersCpdActivity(id) {
+    return apiClient.get(`/epc/masters-cpd-activities/${id}/`)
   },
-  updateEpcMastersCmeActivity(id, data) {
-    return apiClient.put(`/epc/masters-cme-activities/${id}/`, data)
+  updateEpcMastersCpdActivity(id, data) {
+    return apiClient.put(`/epc/masters-cpd-activities/${id}/`, data)
   },
-  patchEpcMastersCmeActivity(id, data) {
-    return apiClient.patch(`/epc/masters-cme-activities/${id}/`, data)
+  patchEpcMastersCpdActivity(id, data) {
+    return apiClient.patch(`/epc/masters-cpd-activities/${id}/`, data)
   },
-  deleteEpcMastersCmeActivity(id) {
-    return apiClient.delete(`/epc/masters-cme-activities/${id}/`)
-  },
-
-  // Masters CME Credits endpoints
-  getEpcMastersCmeCredits() {
-    return apiClient.get('/epc/masters-cme-credits/')
-  },
-  createEpcMastersCmeCredit(data) {
-    return apiClient.post('/epc/masters-cme-credits/', data)
-  },
-  getEpcMastersCmeCredit(id) {
-    return apiClient.get(`/epc/masters-cme-credits/${id}/`)
-  },
-  updateEpcMastersCmeCredit(id, data) {
-    return apiClient.put(`/epc/masters-cme-credits/${id}/`, data)
-  },
-  patchEpcMastersCmeCredit(id, data) {
-    return apiClient.patch(`/epc/masters-cme-credits/${id}/`, data)
-  },
-  deleteEpcMastersCmeCredit(id) {
-    return apiClient.delete(`/epc/masters-cme-credits/${id}/`)
+  deleteEpcMastersCpdActivity(id) {
+    return apiClient.delete(`/epc/masters-cpd-activities/${id}/`)
   },
 
-  // Masters CME Methodologies endpoints
-  getEpcMastersCmeMethodologies() {
-    return apiClient.get('/epc/masters-cme-methodologies/')
+  // Masters CPD Credits endpoints
+  getEpcMastersCpdCredits() {
+    return apiClient.get('/epc/masters-cpd-credits/')
   },
-  createEpcMastersCmeMethodology(data) {
-    return apiClient.post('/epc/masters-cme-methodologies/', data)
+  createEpcMastersCpdCredit(data) {
+    return apiClient.post('/epc/masters-cpd-credits/', data)
   },
-  getEpcMastersCmeMethodology(id) {
-    return apiClient.get(`/epc/masters-cme-methodologies/${id}/`)
+  getEpcMastersCpdCredit(id) {
+    return apiClient.get(`/epc/masters-cpd-credits/${id}/`)
   },
-  updateEpcMastersCmeMethodology(id, data) {
-    return apiClient.put(`/epc/masters-cme-methodologies/${id}/`, data)
+  updateEpcMastersCpdCredit(id, data) {
+    return apiClient.put(`/epc/masters-cpd-credits/${id}/`, data)
   },
-  patchEpcMastersCmeMethodology(id, data) {
-    return apiClient.patch(`/epc/masters-cme-methodologies/${id}/`, data)
+  patchEpcMastersCpdCredit(id, data) {
+    return apiClient.patch(`/epc/masters-cpd-credits/${id}/`, data)
   },
-  deleteEpcMastersCmeMethodology(id) {
-    return apiClient.delete(`/epc/masters-cme-methodologies/${id}/`)
+  deleteEpcMastersCpdCredit(id) {
+    return apiClient.delete(`/epc/masters-cpd-credits/${id}/`)
+  },
+
+  // Masters CPD Methodologies endpoints
+  getEpcMastersCpdMethodologies() {
+    return apiClient.get('/epc/masters-cpd-methodologies/')
+  },
+  createEpcMastersCpdMethodology(data) {
+    return apiClient.post('/epc/masters-cpd-methodologies/', data)
+  },
+  getEpcMastersCpdMethodology(id) {
+    return apiClient.get(`/epc/masters-cpd-methodologies/${id}/`)
+  },
+  updateEpcMastersCpdMethodology(id, data) {
+    return apiClient.put(`/epc/masters-cpd-methodologies/${id}/`, data)
+  },
+  patchEpcMastersCpdMethodology(id, data) {
+    return apiClient.patch(`/epc/masters-cpd-methodologies/${id}/`, data)
+  },
+  deleteEpcMastersCpdMethodology(id) {
+    return apiClient.delete(`/epc/masters-cpd-methodologies/${id}/`)
   },
 
   // Masters COGS Agencies endpoints

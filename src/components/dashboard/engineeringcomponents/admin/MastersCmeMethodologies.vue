@@ -1,13 +1,13 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Engineering CME Methodology Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Engineering CPD Methodology Management</h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8">
           <h2 class="text-xl font-semibold text-slate-900 mb-4">
-            {{ isEditing ? 'Edit CME Methodology' : 'Add New CME Methodology' }}
+            {{ isEditing ? 'Edit CPD Methodology' : 'Add New CPD Methodology' }}
           </h2>
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
@@ -41,7 +41,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
           <div class="mb-6 space-y-4">
             <div class="flex justify-between items-center">
-              <h2 class="text-xl font-semibold text-slate-900">CME Methodologies List</h2>
+              <h2 class="text-xl font-semibold text-slate-900">CPD Methodologies List</h2>
               <span class="text-sm text-slate-500">
                 {{ filteredMethodologies.length }} Methodology{{ filteredMethodologies.length !== 1 ?
               's' : '' }}
@@ -90,7 +90,7 @@
 
             <!-- Empty State -->
             <div v-if="filteredMethodologies.length === 0" class="text-center py-8">
-              <p class="text-slate-500">No CME methodologies found</p>
+              <p class="text-slate-500">No CPD methodologies found</p>
             </div>
           </div>
 
@@ -170,10 +170,10 @@ const methodologyToDelete = ref(null);
 // Fetch methodologies on component mount
 onMounted(async () => {
   try {
-    const response = await apiServices.getEpcMastersCmeMethodologies();
+    const response = await apiServices.getEpcMastersCpdMethodologies();
     methodologies.value = response.data.results;
   } catch (error) {
-    console.error('Error fetching CME methodologies:', error);
+    console.error('Error fetching CPD methodologies:', error);
   }
 });
 
@@ -200,18 +200,18 @@ const paginatedMethodologies = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateEpcMastersCmeMethodology(formData.value.id, formData.value);
+      const response = await apiServices.updateEpcMastersCpdMethodology(formData.value.id, formData.value);
       const index = methodologies.value.findIndex(dt => dt.id === formData.value.id);
       if (index !== -1) {
         methodologies.value[index] = response.data;
       }
     } else {
-      const response = await apiServices.createEpcMastersCmeMethodology(formData.value);
+      const response = await apiServices.createEpcMastersCpdMethodology(formData.value);
       methodologies.value.push(response.data);
     }
     resetForm();
   } catch (error) {
-    console.error('Error saving CME methodology:', error);
+    console.error('Error saving CPD methodology:', error);
   }
 };
 
@@ -238,14 +238,14 @@ const confirmDelete = async () => {
   if (!methodologyToDelete.value) return;
 
   try {
-    await apiServices.deleteEpcMastersCmeMethodology(methodologyToDelete.value.id);
+    await apiServices.deleteEpcMastersCpdMethodology(methodologyToDelete.value.id);
     const index = methodologies.value.findIndex(dt => dt.id === methodologyToDelete.value.id);
     if (index !== -1) {
       methodologies.value.splice(index, 1);
     }
     closeDeleteModal();
   } catch (error) {
-    console.error('Error deleting CME methodology:', error);
+    console.error('Error deleting CPD methodology:', error);
   }
 };
 

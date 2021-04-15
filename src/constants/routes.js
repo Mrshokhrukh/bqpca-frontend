@@ -7,7 +7,7 @@ export const ROUTE_NAMES = {
   ECPF: 'ecpf',
   ACCREDITATION: 'accreditation',
   ENGINEERING: 'engineering',
-  BMHC: 'bmhc',
+  BMHC: 'mhpc',
   DASHBOARD: 'dashboard',
   ROQ_DASHBOARD: 'roq-dashboard',
 };
@@ -20,7 +20,7 @@ export const ROUTE_PATHS = {
   ECPF: '/ecpf',
   ACCREDITATION: '/accreditation',
   ENGINEERING: '/engineering',
-  BMHC: '/bmhc',
+  BMHC: '/mhpc',
   DASHBOARD: '/dashboard',
   ROQ_DASHBOARD: '/dashboard/roq',
 };

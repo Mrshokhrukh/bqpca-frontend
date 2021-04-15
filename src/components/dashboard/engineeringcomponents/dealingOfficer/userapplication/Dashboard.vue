@@ -31,9 +31,9 @@
       <component :is="engineeringSuperAdminComponent" />
     </template>
 
-    <!-- CPD/CME Provider Section -->
-    <template v-else-if="role === 'cpd_cme_provider'">
-      <component :is="engineeringCpdCmeProviderComponent" />
+    <!-- CPD/CPD Provider Section -->
+    <template v-else-if="role === 'cpd_cpd_provider'">
+      <component :is="engineeringCpdCpdProviderComponent" />
     </template>
 
     <!-- Institutions Section -->
@@ -110,10 +110,10 @@ import Reports from '@/components/dashboard/engineeringcomponents/dealingOfficer
 // import AdditionalApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/AdditionalApplication.vue';
 
 // CPD Provider Components
-import EngineeringProviderDashboard from '@/components/dashboard/engineeringcomponents/cpdCmeProvider/EngineeringCpdCmeProviderDashboard.vue';
-import CPDApplicationDetails from '@/components/dashboard/engineeringcomponents/cpdCmeProvider/CPDApplicationDetails.vue';
-import CPDApplicationTracker from '@/components/dashboard/engineeringcomponents/cpdCmeProvider/CPDApplicationTracker.vue';
-import CPDapprovedAddParticipants from '@/components/dashboard/engineeringcomponents/cpdCmeProvider/CPDapprovedAddParticipants.vue';
+import EngineeringProviderDashboard from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/EngineeringCpdCpdProviderDashboard.vue';
+import CPDApplicationDetails from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDApplicationDetails.vue';
+import CPDApplicationTracker from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDApplicationTracker.vue';
+import CPDapprovedAddParticipants from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDapprovedAddParticipants.vue';
 
 // Institution Components
 import InstituteEoiApplication from '@/components/dashboard/engineeringcomponents/institutions/InstituteEoiApplication.vue';
@@ -130,9 +130,9 @@ import CourseManagement from '@/components/dashboard/engineeringcomponents/insti
 import DepartmentManagement from '@/components/dashboard/engineeringcomponents/institutions/DepartmentManagement.vue';
 
 //Engineering masters components
-import MastersCmeActivities from '@/components/dashboard/engineeringcomponents/admin/MastersCmeActivities.vue';
-import MastersCmeCredits from '@/components/dashboard/engineeringcomponents/admin/MastersCmeCredits.vue';
-import MastersCmeMethodologies from '@/components/dashboard/engineeringcomponents/admin/MastersCmeMethodologies.vue';
+import MastersCpdActivities from '@/components/dashboard/engineeringcomponents/admin/MastersCpdActivities.vue';
+import MastersCpdCredits from '@/components/dashboard/engineeringcomponents/admin/MastersCpdCredits.vue';
+import MastersCpdMethodologies from '@/components/dashboard/engineeringcomponents/admin/MastersCpdMethodologies.vue';
 import MastersCpdActivity from '@/components/dashboard/engineeringcomponents/admin/MastersCpdActivity.vue';
 import MastersDocumentTypes from '@/components/dashboard/engineeringcomponents/admin/MastersDocumentTypes.vue';
 import MastersESignatures from '@/components/dashboard/engineeringcomponents/admin/MastersESignatures.vue';
@@ -166,12 +166,12 @@ const engineeringAdminComponent = computed(() => {
       return EngineeringAdminDashboard;
     case path.endsWith('/engineering_certification/user_management'):
       return EngineeringUserManagement;
-    case path.endsWith('/engineering_certification/cme_activities'):
-      return MastersCmeActivities
-    case path.endsWith('/engineering_certification/cme_credits'):
-      return MastersCmeCredits
-    case path.endsWith('/engineering_certification/cme_methodologies'):
-      return MastersCmeMethodologies
+    case path.endsWith('/engineering_certification/cpd_activities'):
+      return MastersCpdActivities
+    case path.endsWith('/engineering_certification/cpd_credits'):
+      return MastersCpdCredits
+    case path.endsWith('/engineering_certification/cpd_methodologies'):
+      return MastersCpdMethodologies
     case path.endsWith('/engineering_certification/cpd_activity'):
       return MastersCpdActivity
     case path.endsWith('/engineering_certification/document_types'):
@@ -331,8 +331,8 @@ const engineeringDirectorComponent = computed(() => {
   }
 });
 
-// Engineering CPD/CME Provider Route-Based Components
-const engineeringCpdCmeProviderComponent = computed(() => {
+// Engineering CPD/CPD Provider Route-Based Components
+const engineeringCpdCpdProviderComponent = computed(() => {
   const path = route.path;
   switch (true) {
     case path.endsWith('/engineering_certification/dashboard'):

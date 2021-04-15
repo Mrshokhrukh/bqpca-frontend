@@ -1,6 +1,6 @@
 // src/services/services.js
 import apiClient from './apiClient';
-import bmhcServices from './bmhcservices';
+import mhpcServices from './mhpcservices';
 import accreditationServices from './accreditationservices';
 import roqservices from './roqservices';
 import ecpfServices from './ecpfServices';
@@ -40,7 +40,7 @@ export default {
   },
 
   ...userservices,
-  ...bmhcServices,
+  ...mhpcServices,
   ...ecpfServices,
   ...accreditationServices,
   ...roqservices,

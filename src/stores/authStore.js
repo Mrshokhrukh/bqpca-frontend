@@ -80,7 +80,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       // *** ROLE-BASED REDIRECTION LOGIC ***
       if (credentials.from === 'authSection') {
-        if (user.value.role !== 'user' && user.value.role !== 'cpd_cme_provider' && user.value.role !== 'institutions') {
+        if (user.value.role !== 'user' && user.value.role !== 'cpd_cpd_provider' && user.value.role !== 'institutions') {
           toast.error("Admin/Internal role access is not permitted from the previous page. Please login from here");
           // Clear state
           accessToken.value = null;
@@ -95,7 +95,7 @@ export const useAuthStore = defineStore('auth', () => {
           return;
         }
       } else if (credentials.from === 'adminLogin') {
-        if (user.value.role === 'user' || user.value.role === 'cpd_cme_provider' || user.value.role === 'institutions') {
+        if (user.value.role === 'user' || user.value.role === 'cpd_cpd_provider' || user.value.role === 'institutions') {
           toast.error("User role access is not permitted from the previous page.");
           // Clear state
           accessToken.value = null;
@@ -135,8 +135,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     toast.success('Logged out successfully!');
 
-    router.push({ name: 'home' })
-
+    // Force a full page reload to reset all component states
+    window.location.href = '/';
   };
 
   const refreshAccessToken = async () => {

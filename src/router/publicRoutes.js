@@ -69,8 +69,8 @@ const publicRoutes = [
     },
   },
   {
-    path: '/bmhc',
-    name: 'bmhc',
+    path: '/mhpc',
+    name: 'mhpc',
     component: () => import('@/views/services/BMHCPage.vue'),
     meta: {
       title: 'BMHC Services',

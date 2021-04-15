@@ -330,7 +330,7 @@ const initialFormData = {
   email: '',
   password: '',
   confirm_password: '',
-  role: 'cpd_cme_provider',
+  role: 'cpd_cpd_provider',
   service_type: 'health_certification', // Ensure this is the correct default/required value
   // Provider specific fields (assuming they are part of initial registration)
   cpdActivityTitle: '',
@@ -390,7 +390,7 @@ const fetchProviders = async () => {
   try {
     console.log('Fetching providers...');
     // Pass filter parameter if your API supports it, otherwise filter below
-    const response = await apiService.getAllUsers({ role: 'cpd_cme_provider' });
+    const response = await apiService.getAllUsers({ role: 'cpd_cpd_provider' });
 
     // Adjust based on your actual API response structure
     let fetchedUsers = [];
@@ -403,7 +403,7 @@ const fetchProviders = async () => {
     }
 
     // Filter client-side if the API didn't filter by role
-    providers.value = fetchedUsers.filter(user => user.role === 'cpd_cme_provider');
+    providers.value = fetchedUsers.filter(user => user.role === 'cpd_cpd_provider');
 
     console.log('Fetched providers:', providers.value);
     if (providers.value.length > 0) {
@@ -454,7 +454,7 @@ const submitProvider = async () => {
       email: formData.email,
       password: formData.password,
       confirm_password: formData.confirm_password,
-      role: formData.role, // 'cpd_cme_provider'
+      role: formData.role, // 'cpd_cpd_provider'
       service_type: formData.service_type, // 'health_certification'
       // Only include these if your registration endpoint handles them:
       cpdActivityTitle: formData.cpdActivityTitle,

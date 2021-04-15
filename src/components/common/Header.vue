@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
+<!-- Header.vue -->
 <template>
-  <header class="fixed w-full top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100"
-    style="height: auto; max-height: 97px;">
+  <header class="fixed w-full top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
     <!-- Top accent line -->
     <div class="h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20"></div>
 
@@ -88,10 +88,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { Menu, X, UserCircle, User } from 'lucide-vue-next'
 
 const isMenuOpen = ref(false)
+const router = useRouter()
 
 const navItems = [
   { name: 'Home', route: '/' },
@@ -111,14 +113,21 @@ const navigateToServices = () => {
       servicesSection.scrollIntoView({ behavior: 'smooth' })
     }
   }
-  isMenuOpen.value = false // Close mobile menu if open
+  isMenuOpen.value = false
 }
 
-// Add a function for the missing scrollToServices method
 const scrollToServices = (event) => {
   event.preventDefault()
   navigateToServices()
 }
+
+// Reset mobile menu on route change
+watch(
+  () => router.currentRoute.value.path,
+  () => {
+    isMenuOpen.value = false
+  }
+)
 
 // Close menu when resizing to desktop
 const handleResize = () => {
@@ -127,7 +136,6 @@ const handleResize = () => {
   }
 }
 
-// Add event listeners for resize
 onMounted(() => {
   window.addEventListener('resize', handleResize)
 })
@@ -151,15 +159,18 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Fixed height ensure for the header */
+/* Fixed height for the header */
 header {
-  min-height: 97px !important;
-  height: auto !important;
-  max-height: unset !important;
+  min-height: 97px;
+  height: 97px; /* Explicit height instead of auto */
+  max-height: 97px;
+  box-sizing: border-box; /* Ensure padding/borders are included */
 }
 
-/* Ensure the mobile menu doesn't affect header height */
-header>div[v-show="isMenuOpen"] {
+/* Ensure mobile menu doesn't affect header height */
+div[v-show="isMenuOpen"] {
   top: 97px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 </style>

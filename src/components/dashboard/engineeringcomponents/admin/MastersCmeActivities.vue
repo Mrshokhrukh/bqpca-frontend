@@ -1,28 +1,28 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Engineering CME Activities Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Engineering CPD Activities Management</h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8">
           <h2 class="text-xl font-semibold text-slate-900 mb-4">
-            {{ isEditing ? 'Edit CME Activity' : 'Add New CME Activity' }}
+            {{ isEditing ? 'Edit CPD Activity' : 'Add New CPD Activity' }}
           </h2>
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
-                <label for="cmeActivityName" class="block text-sm font-medium text-slate-700">CME
+                <label for="cmeActivityName" class="block text-sm font-medium text-slate-700">CPD
                   Activity Name</label>
                 <input type="text" id="cmeActivityName" v-model="formData.cme_activity_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter CME activity name" required />
+                  placeholder="Enter CPD activity name" required />
               </div>
               <div>
                 <label for="cmeActivityDescription" class="block text-sm font-medium text-slate-700">Description</label>
                 <textarea id="cmeActivityDescription" v-model="formData.cme_activity_description" rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter CME activity description" required></textarea>
+                  placeholder="Enter CPD activity description" required></textarea>
               </div>
               <div class="flex gap-3">
                 <button type="submit"
@@ -42,20 +42,20 @@
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
           <div class="mb-6 space-y-4">
             <div class="flex justify-between items-center">
-              <h2 class="text-xl font-semibold text-slate-900">CME Activities List</h2>
+              <h2 class="text-xl font-semibold text-slate-900">CPD Activities List</h2>
               <span class="text-sm text-slate-500">
                 {{ cmeActivities.length }} Activity{{ cmeActivities.length !== 1 ? 's' : '' }}
               </span>
             </div>
           </div>
 
-          <!-- CME Activities List -->
+          <!-- CPD Activities List -->
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200">
               <thead class="bg-slate-50">
                 <tr>
                   <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
-                    CME Activity Name
+                    CPD Activity Name
                   </th>
                   <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">
                     Description
@@ -91,7 +91,7 @@
                 </tr>
                 <tr v-if="cmeActivities.length === 0">
                   <td colspan="4" class="px-6 py-4 text-center text-slate-500">
-                    No CME activities found
+                    No CPD activities found
                   </td>
                 </tr>
               </tbody>
@@ -123,7 +123,7 @@
             Are you absolutely sure?
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
-            This action cannot be undone. This will permanently delete the CME activity
+            This action cannot be undone. This will permanently delete the CPD activity
             "{{ activityToDelete?.cme_activity_name }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
@@ -172,7 +172,7 @@ const itemsPerPage = 5;
 // Methods
 const fetchActivities = async (page = 1) => {
   try {
-    const response = await apiServices.getEpcMastersCmeActivities()
+    const response = await apiServices.getEpcMastersCpdActivities()
     cmeActivities.value = response.data.results
     currentPage.value = page
   } catch (error) {
@@ -183,9 +183,9 @@ const fetchActivities = async (page = 1) => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      await apiServices.updateEpcMastersCmeActivity(editingId.value, formData.value)
+      await apiServices.updateEpcMastersCpdActivity(editingId.value, formData.value)
     } else {
-      await apiServices.createEpcMastersCmeActivity(formData.value)
+      await apiServices.createEpcMastersCpdActivity(formData.value)
 
     }
     resetForm()
@@ -230,7 +230,7 @@ const cancelDelete = () => {
 const deleteActivity = async () => {
   if (!activityToDelete.value) return;
   try {
-    await apiServices.deleteEpcMastersCmeActivity(activityToDelete.value.id)
+    await apiServices.deleteEpcMastersCpdActivity(activityToDelete.value.id)
     const index = cmeActivities.value.findIndex(act => act.id === activityToDelete.value.id);
     if (index !== -1) {
       cmeActivities.value.splice(index, 1);

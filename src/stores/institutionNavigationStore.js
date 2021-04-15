@@ -1,7 +1,7 @@
 // src/stores/institutionNavigationStore.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import bmhcServices from '@/services/bmhcservices'
+import mhpcServices from '@/services/mhpcservices'
 import { useAuthStore } from '@/stores/authStore'
 
 export const useInstitutionStore = defineStore('institution', () => {
@@ -70,7 +70,7 @@ export const useInstitutionStore = defineStore('institution', () => {
     error.value = null
 
     try {
-      const response = await bmhcServices.getMhpcInstitutes()
+      const response = await mhpcServices.getMhpcInstitutes()
       if (response?.data?.results) {
         institutionData.value = response.data.results
       } else {

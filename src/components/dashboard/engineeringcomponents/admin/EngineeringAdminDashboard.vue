@@ -114,10 +114,9 @@ import {
 
 // --- State ---
 const counts = ref({
-  cmeActivities: 0,
-  cmeCredits: 0,
-  cmeMethodologies: 0,
   cpdActivities: 0,
+  cpdCredits: 0,
+  cpdMethodologies: 0,
   documentTypes: 0,
   eSignatures: 0,
   fileTypes: 0,
@@ -146,7 +145,7 @@ const buttonClasses = (color) =>
 
 // --- Icon Mapping ---
 const iconMap = {
-  cmeManagement: BookOpen,
+  cpdManagement: BookOpen,
   cpdActivity: ClipboardList,
   documentManagement: FileText,
   feeManagement: DollarSign,
@@ -163,27 +162,27 @@ const basePath = '/admin/admin/engineering_certification';
 // --- Configuration Cards Data ---
 const configurationCards = [
   {
-    id: 'cmeManagement',
+    id: 'cpdManagement',
     title: 'CPD Management',
     description: 'Manage Continuing Professional Development activities',
     countLabel: 'Active Activities',
-    countRef: 'cmeActivities',
+    countRef: 'cpdActivities',
     countSuffix: 'items',
     usedIn: ['Professional Development', 'Certification'],
     children: [
       {
         text: 'CPD Activities',
-        route: `${basePath}/cme_activities`,
+        route: `${basePath}/cpd_activities`,
         icon: null,
       },
       {
         text: 'CPD Credits',
-        route: `${basePath}/cme_credits`,
+        route: `${basePath}/cpd_credits`,
         icon: null,
       },
       {
         text: 'CPD Methodologies',
-        route: `${basePath}/cme_methodologies`,
+        route: `${basePath}/cpd_methodologies`,
         icon: null,
       },
     ],
@@ -417,9 +416,9 @@ const configurationCards = [
 onMounted(async () => {
   try {
     const countPromises = [
-      apiServices.getEpcMastersCmeActivities(),
-      apiServices.getEpcMastersCmeCredits(),
-      apiServices.getEpcMastersCmeMethodologies(),
+      apiServices.getEpcMastersCpdActivities(),
+      apiServices.getEpcMastersCpdCredits(),
+      apiServices.getEpcMastersCpdMethodologies(),
       apiServices.getEpcMastersCpdActivity(),
       apiServices.getEpcMastersDocumentTypes(),
       apiServices.getEpcMastersESignatures(),
@@ -441,9 +440,9 @@ onMounted(async () => {
     const results = await Promise.all(countPromises);
 
     // Update counts state
-    counts.value.cmeActivities = results[0].data?.length || 0;
-    counts.value.cmeCredits = results[1].data?.length || 0;
-    counts.value.cmeMethodologies = results[2].data?.length || 0;
+    counts.value.cpdActivities = results[0].data?.length || 0;
+    counts.value.cpdCredits = results[1].data?.length || 0;
+    counts.value.cpdMethodologies = results[2].data?.length || 0;
     counts.value.cpdActivities = results[3].data?.length || 0;
     counts.value.documentTypes = results[4].data?.length || 0;
     counts.value.eSignatures = results[5].data?.length || 0;
