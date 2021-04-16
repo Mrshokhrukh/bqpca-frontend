@@ -15,8 +15,18 @@
       </div>
 
       <!-- User Notification Area -->
-      <div v-if="draftMessage" class="mb-4 p-4 rounded-md text-sm" :class="draftMessageClass">
-        {{ draftMessage }}
+      <div
+        v-if="draftMessage"
+        class="mb-4 p-4 rounded-md text-sm z-20 border border-gray-300"
+        :class="draftMessageClass"
+        data-testid="draft-notification"
+      >
+        {{ draftMessage || 'No message available' }}
+      </div>
+
+      <!-- Payment Status Feedback -->
+      <div v-if="form.payment_status" class="mb-4 p-4 rounded-md text-sm" :class="paymentStatusClass">
+        Payment Status: {{ paymentStatusText }}
       </div>
 
       <!-- Main Form -->
@@ -24,6 +34,8 @@
         <!-- Hidden Fields (Still used for submission payload) -->
         <input type="hidden" v-model="form.registration_no" />
         <input type="hidden" v-model="form.cid_no" />
+        <input type="hidden" v-model="form.payment_id" />
+        <input type="hidden" v-model="form.payment_status" />
 
         <!-- Personal Details Section (Read-only) -->
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -426,10 +438,19 @@
           </button>
           <button
             type="submit"
-            :disabled="!form.declaration"
+            :disabled="!form.declaration || form.payment_status === 'completed'"
             class="w-full sm:w-auto px-6 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Submit Application
+          </button>
+          <button
+            v-if="shouldShowPaymentButton"
+            type="button"
+            @click="initiatePayment"
+            class="w-full sm:w-auto px-6 py-3 rounded-xl bg-teal-500 text-white hover:bg-teal-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-400"
+            :class="{ 'animate-pulse': form.payment_status === 'processing_payment' }"
+          >
+            {{ getPaymentButtonText }}
           </button>
         </div>
       </form>
@@ -441,7 +462,7 @@
             <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
               <DialogOverlay class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
             </TransitionChild>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
             <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
               <div class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -463,12 +484,20 @@
           </div>
         </Dialog>
       </TransitionRoot>
+
+      <!-- Payment Modal -->
+      <PaymentModal
+        ref="paymentModal"
+        :amount="1000"
+        @payment-completed="handlePaymentCompleted"
+        @close="closePaymentModal"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch, computed } from 'vue';
+import { ref, reactive, onMounted, watch, computed, nextTick } from 'vue';
 import { useToast } from 'vue-toastification';
 import apiService from '@/services/services';
 import { useAuthStore } from '@/stores/authStore';
@@ -480,6 +509,7 @@ import {
   TransitionChild, TransitionRoot
 } from '@headlessui/vue';
 import { CheckIcon } from '@heroicons/vue/24/outline';
+import PaymentModal from '@/components/common/PaymentModal.vue';
 
 const ListItemContent = {
   props: ['active', 'selected', 'name'],
@@ -520,6 +550,9 @@ const form = reactive({
   po_box: '',
   zip_code: '',
   declaration: false,
+  application_id: null,
+  payment_id: '',
+  payment_status: '',
 });
 
 const errors = reactive({});
@@ -530,6 +563,8 @@ const departmentOptions = ref([]);
 const workplaceOptions = ref([]);
 const draftMessage = ref('');
 const draftMessageClass = ref('');
+const paymentModal = ref(null);
+const isLoading = ref(false);
 
 const displayFullName = computed(() => {
   if (form.full_name) {
@@ -562,6 +597,32 @@ const selectedWorkplaceName = computed(() => {
 });
 
 const localStorageKey = computed(() => `cogsDraftData_${authStore.user?.cid || 'guest'}`);
+
+const shouldShowPaymentButton = computed(() => {
+  return form.application_id && form.payment_status && form.payment_status !== 'completed';
+});
+
+const paymentStatusClass = computed(() => {
+  return {
+    'bg-green-100 text-green-700': form.payment_status === 'completed',
+    'bg-yellow-100 text-yellow-700': form.payment_status === 'processing_payment' || form.payment_status === 'pending',
+    'bg-red-100 text-red-700': form.payment_status === 'failed',
+  };
+});
+
+const paymentStatusText = computed(() => {
+  return form.payment_status === 'completed'
+    ? 'Paid'
+    : form.payment_status === 'processing_payment'
+      ? 'Processing'
+      : form.payment_status === 'failed'
+        ? 'Failed'
+        : 'Pending';
+});
+
+const getPaymentButtonText = computed(() => {
+  return form.payment_status === 'failed' ? 'Re-process Payment' : 'Proceed to Payment';
+});
 
 const fetchUserApplicationData = async (cid) => {
   if (!cid) return null;
@@ -608,7 +669,8 @@ const loadDraft = () => {
   if (savedDraft) {
     try {
       const draftData = JSON.parse(savedDraft);
-      Object.keys(draftData).forEach(key => {
+      console.log('Loading draft data:', draftData);
+      Object.keys(form).forEach(key => {
         if (
           key !== 'registration_no' &&
           key !== 'cid_no' &&
@@ -616,47 +678,149 @@ const loadDraft = () => {
           key !== 'user_contact_number' &&
           key !== 'user_email' &&
           (key !== 'full_name' || !form.full_name) &&
-          key in form
+          key !== 'application_id' &&
+          key !== 'payment_id' &&
+          key !== 'payment_status' &&
+          key in draftData
         ) {
           form[key] = draftData[key];
         }
       });
       if (typeof draftData.isRecipientSelf === 'boolean') {
         isRecipientSelf.value = draftData.isRecipientSelf;
-        updateRecipientDetails();
       }
+      updateRecipientDetails();
       showDraftMessage('Draft loaded successfully.', 'bg-green-100 text-green-700');
+      console.log('Form after loading draft:', { ...form });
     } catch (e) {
-      console.error("Error parsing draft data:", e);
+      console.error('Error parsing draft data:', e);
       localStorage.removeItem(localStorageKey.value);
       showDraftMessage('Could not load draft (invalid data).', 'bg-red-100 text-red-700');
     }
+  } else {
+    console.log('No draft found in localStorage for key:', localStorageKey.value);
   }
 };
 
 const saveDraft = () => {
   try {
-    const draftData = { ...form, isRecipientSelf: isRecipientSelf.value };
+    const draftData = {
+      ...form,
+      isRecipientSelf: isRecipientSelf.value
+    };
+    console.log('Saving draft data:', draftData);
     localStorage.setItem(localStorageKey.value, JSON.stringify(draftData));
-    showDraftMessage('Draft saved successfully.', 'bg-yellow-500 text-white');
+    showDraftMessage('Draft saved successfully.', 'bg-yellow-100 text-yellow-700');
+    console.log('Draft saved to localStorage with key:', localStorageKey.value);
   } catch (e) {
-    console.error("Error saving draft:", e);
-    toast.error('Could not save draft. Local storage might be full or disabled.');
+    console.error('Error saving draft:', e);
+    showDraftMessage('Could not save draft. Local storage might be full or disabled.', 'bg-red-100 text-red-700');
   }
 };
 
 const clearDraft = () => {
+  console.log('Clearing draft from localStorage with key:', localStorageKey.value);
   localStorage.removeItem(localStorageKey.value);
-  console.log("Draft cleared from local storage.");
+  showDraftMessage('Draft cleared.', 'bg-blue-100 text-blue-700');
 };
 
-const showDraftMessage = (msg, cssClass) => {
+const showDraftMessage = async (msg, cssClass) => {
+  console.log('Displaying draft message:', msg, 'with class:', cssClass);
   draftMessage.value = msg;
   draftMessageClass.value = cssClass;
+  console.log('draftMessage set to:', draftMessage.value);
+  await nextTick(); // Ensure DOM updates
+  console.log('Notification should be visible with:', draftMessage.value);
   setTimeout(() => {
     draftMessage.value = '';
     draftMessageClass.value = '';
-  }, 4000);
+    console.log('Cleared draft message');
+  }, 5000);
+};
+
+const initiatePayment = () => {
+  if (form.application_id) {
+    paymentModal.value.openModal();
+  } else {
+    toast.error('No application found for payment.');
+  }
+};
+
+const closePaymentModal = () => {
+  // No need to reset application_id; keep it for retries
+};
+
+const handlePaymentCompleted = async (paymentData) => {
+  if (!form.application_id) {
+    toast.error('No application selected for payment.');
+    return;
+  }
+
+  const applicationId = form.application_id;
+  const paymentId = paymentData.paymentHash;
+  const user = authStore.user;
+
+  if (!user || !user.contact_number || !user.email || !user.cid) {
+    toast.error('Missing user information. Please update your profile.');
+    return;
+  }
+
+  try {
+    isLoading.value = true;
+
+    // 1. Initiate Payment
+    const paymentInitiationFormData = new FormData();
+    paymentInitiationFormData.append('refNo', paymentId);
+    paymentInitiationFormData.append('serviceCode', 'cogs_application_fee');
+    paymentInitiationFormData.append('taxPayerName', user.cid);
+    paymentInitiationFormData.append('taxPayerNo', user.cid);
+    paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);
+    paymentInitiationFormData.append('totalPayableAmount', 1000);
+    paymentInitiationFormData.append('description', 'CoGS Application Fee');
+    paymentInitiationFormData.append('mobileNo', user.contact_number);
+    paymentInitiationFormData.append('payerEmail', user.email);
+    paymentInitiationFormData.append('user', user.id);
+    paymentInitiationFormData.append('payableAmount', 1000);
+    paymentInitiationFormData.append('application_no', applicationId);
+    paymentInitiationFormData.append('app_type', 'certificate_of_good_standing');
+
+    await apiService.makePayment(paymentInitiationFormData);
+
+    // 2. Update Application
+    const updateFormData = new FormData();
+    updateFormData.append('payment_id', paymentId);
+    updateFormData.append('payment_status', 'processing_payment');
+
+    await apiService.patchEpcCogs(applicationId, updateFormData);
+
+    // 3. Update Local State
+    form.payment_id = paymentId;
+    form.payment_status = 'processing_payment';
+
+    toast.success(`Payment initiated! ID: ${paymentId}. ${paymentData.message}`);
+  } catch (error) {
+    console.error('Payment update error:', error);
+    if (error.response) {
+      if (error.response.data) {
+        if (error.response.data.detail) {
+          toast.error('API Error: ' + error.response.data.detail);
+        } else {
+          toast.error('API Error: ' + JSON.stringify(error.response.data));
+        }
+      } else {
+        toast.error('API Error: ' + error.response.statusText);
+      }
+    } else if (error.request) {
+      toast.error('Network Error: No response from server');
+    } else {
+      toast.error(
+        'Payment request generated successfully, but there was an error confirming the payment. Contact us with the payment ID: ' +
+          paymentId
+      );
+    }
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 onMounted(async () => {
@@ -671,12 +835,17 @@ onMounted(async () => {
     if (applicationData) {
       form.registration_no = applicationData.registration_no || '';
       form.full_name = applicationData.full_name || '';
+      form.application_id = applicationData.id || null;
+      form.payment_id = applicationData.payment_id || '';
+      form.payment_status = applicationData.payment_status || '';
       console.log('Set form.full_name:', form.full_name);
+      console.log('Set form.application_id:', form.application_id);
+      console.log('Set form.payment_status:', form.payment_status);
     }
 
     await fetchMasterData();
     loadDraft();
-    console.log('After loadDraft, form.full_name:', form.full_name);
+    console.log('After loadDraft, form:', { ...form });
     updateRecipientDetails();
   } else {
     toast.error("User not authenticated or essential data missing. Cannot prefill data.");
@@ -752,6 +921,8 @@ const submitForm = async () => {
     review_status: 'Pending',
     endorsement_decision: 'Pending',
     is_active: true,
+    payment_id: form.payment_id || null,
+    payment_status: form.payment_status || 'pending',
   };
 
   console.log("Submitting data:", JSON.stringify(requestData, null, 2));
@@ -759,9 +930,16 @@ const submitForm = async () => {
   try {
     const response = await apiService.createEpcCogs(requestData);
     if (response.status === 201 || response.status === 200) {
+      form.application_id = response.data.id;
+      form.payment_status = response.data.payment_status || 'pending';
+      form.payment_id = response.data.payment_id || '';
+      clearDraft(); // Clear draft after successful submission
       toast.success('Application submitted successfully!');
-      clearDraft();
-      router.push({ name: 'user-engineering-dashboard' });
+      if (form.payment_status === 'pending') {
+        initiatePayment();
+      } else {
+        router.push({ name: 'user-engineering-dashboard' });
+      }
     } else {
       toast.warning(`Application submitted but received status: ${response.status}. Please verify.`);
       clearDraft();
@@ -812,6 +990,9 @@ const resetFormFields = () => {
     user_contact_number: form.user_contact_number,
     user_email: form.user_email,
     full_name: form.full_name,
+    application_id: form.application_id,
+    payment_id: form.payment_id,
+    payment_status: form.payment_status,
   };
 
   Object.assign(form, {
@@ -836,6 +1017,9 @@ const resetFormFields = () => {
     po_box: '',
     zip_code: '',
     declaration: false,
+    application_id: null,
+    payment_id: '',
+    payment_status: '',
   });
 
   Object.assign(form, preservedData);
@@ -898,15 +1082,31 @@ const closeTermsModal = () => { showTermsModal.value = false; };
 .text-green-700 { color: #15803d; }
 .bg-red-100 { background-color: #fee2e2; }
 .text-red-700 { color: #b91c1c; }
-.bg-yellow-500 { background-color: #f59e0b; }
-.text-white { color: #ffffff; }
+.bg-yellow-100 { background-color: #fef9c3; }
+.text-yellow-700 { color: #a16207; }
+.bg-blue-100 { background-color: #dbeafe; }
+.text-blue-700 { color: #1e40af; }
 
 .relative { position: relative; }
 .absolute { position: absolute; }
 .z-10 { z-index: 10; }
+.z-20 { z-index: 20; }
 .fixed.z-10 { z-index: 50; }
 
 .prose p { margin-bottom: 1em; }
 .prose-sm { font-size: 0.875rem; line-height: 1.5; }
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
 </style>
 ```
