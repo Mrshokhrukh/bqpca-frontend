@@ -1543,7 +1543,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/site_visit_confirmation`,
       },
       {
-        name: 'View Results',
+        name: 'Track Applications',
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/user/${serviceType}/results`,
       },

@@ -1,11 +1,5 @@
 <template>
-  <div>
-    <!-- Payment statut just to see data (dnt make editable) -->
-    <h1>payment statu</h1>
-    <!-- data nanme payment_status  -->
-    <!-- data.payment_status == pending show yellow color -->
-    <!-- data.payment_status == approved show green colr -->
-  </div>
+
   <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
     <div class="p-6">
       <div class="flex items-center justify-between">
