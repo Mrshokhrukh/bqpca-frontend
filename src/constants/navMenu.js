@@ -95,6 +95,8 @@ const iconMap = {
 // import { useAuthStore } from '@/stores/authStore'
 // import { useInstitutionStore } from '@/stores/institutionNavigationStore'
 
+
+
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
   return iconMap[iconName] || File
@@ -955,11 +957,7 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/profiles`,
       },
-      {
-        name: 'Payment Records',
-        icon: getIconComponent('CreditCard'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/payments`,
-      },
+
       {
         name: 'Counselor Application',
         icon: getIconComponent('ClipboardCheck'),
@@ -969,6 +967,11 @@ const serviceSpecificMenuItems = {
         name: 'Reports',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
+      },
+      {
+        name: 'Payment History',
+        icon: getIconComponent('CreditCard'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/payments`,
       },
     ],
     cpd_cpd_provider: [

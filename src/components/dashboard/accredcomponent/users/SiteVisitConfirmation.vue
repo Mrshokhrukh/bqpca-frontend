@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-3xl mx-auto p-6">
+    <div class="mx-auto p-6">
       <div class="bg-white rounded-xl shadow-md overflow-hidden">
         <!-- Header -->
         <div
