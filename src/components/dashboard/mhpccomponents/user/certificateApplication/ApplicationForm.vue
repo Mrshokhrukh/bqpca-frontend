@@ -1,6 +1,5 @@
 <template>
   <div class="max-w-8xl mx-auto px-4 py-8">
-    <!-- Confirmation Modal -->
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
       <Dialog
         as="div"
@@ -89,7 +88,6 @@
       </Dialog>
     </TransitionRoot>
 
-    <!-- Form Header -->
     <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         {{ selectedType === 'cid' ? 'CID Holder Registration' : 'Non-CID Holder Registration' }}
@@ -106,20 +104,15 @@
       class="bg-white border rounded-xl shadow-sm p-6"
       v-if="stage === 1"
     >
-      <!-- add header as step 2 -->
       <h3 class="text-lg font-semibold text-gray-900 my-4">Step 1: Registration</h3>
-      <!-- Form Sections -->
       <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
         <h3 class="text-lg font-semibold text-gray-900">Personal Information</h3>
         <p class="mt-1 text-sm text-gray-500">Basic details needed for registration</p>
       </div>
 
       <div class="p-8">
-        <!-- Personal Information Fields in 4-column grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-          <!-- Dynamic Fields based on type -->
           <template v-if="selectedType === 'cid'">
-            <!-- CID Fields -->
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">CID No.</label>
               <input
@@ -171,7 +164,6 @@
           </template>
 
           <template v-else>
-            <!-- Non-CID Fields -->
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Nationality</label>
               <select
@@ -268,7 +260,6 @@
             </div>
           </template>
 
-          <!-- Common Fields -->
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Full Name</label>
             <input
@@ -290,11 +281,8 @@
             >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
-              <!-- Use "M" -->
               <option value="female">Female</option>
-              <!-- Use "F" -->
               <option value="O">Other</option>
-              <!-- Use "O" (or whatever is appropriate) -->
             </select>
             <span v-if="errors.gender" class="text-sm text-red-500 mt-1">{{ errors.gender }}</span>
           </div>
@@ -325,7 +313,6 @@
           </div>
         </div>
 
-        <!-- Passport Photo Section -->
         <div class="mt-12">
           <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Passport Photo</h3>
@@ -348,7 +335,6 @@
           </div>
         </div>
 
-        <!-- Form Actions -->
         <div class="mt-12 flex justify-end space-x-4">
           <button
             type="button"
@@ -367,11 +353,9 @@
       </div>
     </form>
     <form class="bg-white border rounded-xl shadow-sm p-6" v-else-if="stage === 2">
-      <!-- add header as step 2 -->
       <h3 class="text-lg font-semibold text-gray-900 my-4">
         Step 2: Medical Institution Registration
       </h3>
-      <!-- Qualification Details Section -->
       <div class="mt-12">
         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Qualification Details</h3>
@@ -457,7 +441,6 @@
         </div>
       </div>
 
-      <!-- Documents Section with new design -->
       <div class="mt-12">
         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Supporting Documents</h3>
@@ -513,7 +496,6 @@
         </div>
       </div>
 
-      <!-- Declaration Section -->
       <div class="mt-12 bg-gray-50 p-6 rounded-xl border border-gray-200">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Declaration</h3>
         <div class="space-y-4">
@@ -542,7 +524,6 @@
         </div>
       </div>
 
-      <!-- Form Actions -->
       <div class="mt-12 flex justify-end space-x-4">
         <button
           type="button"
@@ -567,15 +548,14 @@
 import { ref, reactive, watch, computed, onMounted } from 'vue'
 import apiService from '@/services/services'
 import { useToast } from 'vue-toastification'
-// import PaymentModal from '@/components/common/PaymentModal.vue';  Removed PaymentModal
 import { useAuthStore } from '@/stores/authStore'
-import { useRouter } from 'vue-router' // Import useRouter
+import { useRouter } from 'vue-router'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
 const authStore = useAuthStore()
 const userId = authStore.userId
 const user = authStore.user
-const router = useRouter() // Use useRouter
+const router = useRouter()
 
 const props = defineProps({
   selectedType: {
@@ -627,7 +607,7 @@ const updateFormDocuments = () => {
   const documents = supportingDocuments.value.reduce((acc, doc) => {
     if (doc.files.length > 0) {
       acc.push({
-        type: doc.type, // include the document type
+        type: doc.type,
         files: doc.files,
         description: doc.description,
       })
@@ -637,7 +617,6 @@ const updateFormDocuments = () => {
   localFormData.documents = documents
 }
 
-// List of countries
 const countries = [
   'Afghanistan',
   'Albania',
@@ -836,7 +815,6 @@ const countries = [
   'Zimbabwe',
 ]
 
-// Qualification Details Data
 const qualificationTypes = ref([])
 const qualifications = ref([])
 const universities = ref([])
@@ -851,7 +829,6 @@ onMounted(async () => {
     qualifications.value = qualificationsResponse.data.results
     universities.value = universitiesResponse.data.results
 
-    //Fetch Document Types
     const documentTypesResponse = await apiService.getMhpcMastersDocumentTypes()
     fetchedDocumentTypes.value = documentTypesResponse.data.results
   } catch (error) {
@@ -891,8 +868,7 @@ const localFormData = reactive({
 })
 
 const errors = reactive({})
-// const paymentModal = ref(null); // Removed paymentModal reference
-const isConfirmationModalOpen = ref(false) // Added confirmation modal
+const isConfirmationModalOpen = ref(false)
 const isSubmitting = ref(false)
 const toast = useToast()
 const isLoadingDCRC = ref(false)
@@ -1088,29 +1064,26 @@ const formatDateForInput = (dateString) => {
   return `${year}-${month}-${day}`
 }
 
-// DCRC data fetching
 const fetchDCRCData = async () => {
   if (props.selectedType !== 'cid' || !isCIDValid.value) {
     return
   }
 
-  // Check if userId is available before making the request
   if (!userId) {
     toast.error('User ID is not available. Please ensure you are logged in.')
-    return // Stop execution if userId is missing
+    return
   }
 
   isLoadingDCRC.value = true
   try {
-    // Pass userId as a query parameter
     const response = await apiService.fetchCitizenDetails(localFormData.cid_no, {
       params: { user_id: userId },
     })
 
     const genderMap = {
-      F: 'female', // Map to itself
-      M: 'male', // Map to itself
-      O: 'O', // Add 'O' if you have an "Other" option in your API
+      F: 'female',
+      M: 'male',
+      O: 'O',
     }
 
     Object.assign(localFormData, {
@@ -1129,11 +1102,9 @@ const fetchDCRCData = async () => {
     if (error.response && error.response.data && error.response.data.error) {
       toast.error(error.response.data.error)
     } else {
-      // Generic error message
       toast.error('Failed to fetch DCRC data. Please enter details manually.')
     }
 
-    // Clear fetched data if the API call fails
     localFormData.full_name = ''
     localFormData.date_of_birth = ''
     localFormData.gender = ''
@@ -1146,7 +1117,6 @@ const fetchDCRCData = async () => {
   }
 }
 
-// Handle Passport Photo selection
 const handlePassportPhotoSelect = (event) => {
   const file = event.target.files[0]
   if (file && file.size <= 2 * 1024 * 1024) {
@@ -1167,23 +1137,20 @@ const formatDateForAPI = (date) => {
 
 const handleNext = async () => {
   if (validateFormStageOne()) {
-    // Prepare the data for the first stage submission
     const formDataStageOne = { ...localFormData }
 
-    // Transform data if it's a Non-CID application
     if (props.selectedType !== 'cid') {
       formDataStageOne.cid_no = formDataStageOne.workPermitNo
       formDataStageOne.village = formDataStageOne.city
       formDataStageOne.gewog = formDataStageOne.state
       formDataStageOne.dzongkhag = formDataStageOne.country
-      formDataStageOne.registration_type = '1'
 
       delete formDataStageOne.city
       delete formDataStageOne.state
       delete formDataStageOne.country
       delete formDataStageOne.workPermitNo
-      delete formDataStageOne.registration_type
     }
+
     delete formDataStageOne.documents
     delete formDataStageOne.remarks
     delete formDataStageOne.declaration
@@ -1195,8 +1162,8 @@ const handleNext = async () => {
     delete formDataStageOne.year_of_completion
     delete formDataStageOne.is_active
     delete formDataStageOne.application
+    // Keep registration_type for now, will use its value
 
-    // Calculate and format registration and expiry dates
     const today = new Date()
     const expiry = new Date(today)
     expiry.setFullYear(today.getFullYear() + 5)
@@ -1204,96 +1171,137 @@ const handleNext = async () => {
     formDataStageOne.registration_date = formatDateForAPI(today)
     formDataStageOne.expiry_date = formatDateForAPI(expiry)
 
-    // Create FormData for the API, including the passport photo
     const apiFormData = new FormData()
     for (const key in formDataStageOne) {
       if (Object.prototype.hasOwnProperty.call(formDataStageOne, key)) {
+        // Skip the original registration_type, we'll add registration_type_id later
+        if (key === 'registration_type') {
+            continue;
+        }
         if (key === 'passport_photo' && formDataStageOne[key] instanceof File) {
           apiFormData.append('passport_photo', formDataStageOne[key])
-        } else {
+        } else if (formDataStageOne[key] !== null && formDataStageOne[key] !== undefined) {
           apiFormData.append(key, formDataStageOne[key])
         }
       }
     }
 
+    // Add the required fields with correct names
+    apiFormData.append('applicant', user.id)
+    apiFormData.append('registration_type_id', localFormData.registration_type) // Use the value from local form
+
     try {
-      // Submit the first part of the form data
       const response = await apiService.createMhpcNewApplication(apiFormData)
 
-      // Capture the application ID from the response
       applicationId.value = response.data.id
       localFormData.application = response.data.id
 
-      // Show a success toast
       toast.success('Personal information saved!')
-
-      // Move to the next stage
       stage.value = 2
     } catch (error) {
       console.error('Error submitting personal information:', error)
-      toast.error(`Failed to save personal information: ${error.response.data.cid_no}`)
+      if (error.response && error.response.data) {
+           // Convert the error response data object to a string for display
+           const errorMessages = Object.entries(error.response.data)
+             .map(([key, value]) => `${key}: ${value.join(', ')}`)
+             .join('; ');
+           toast.error(`Failed to save personal information: ${errorMessages}`);
+         } else {
+           toast.error('Failed to save personal information. An unknown error occurred.');
+         }
     }
   }
 }
 
 const openConfirmationModal = () => {
-  // Added confirmation modal function
   if (validateForm()) {
     isConfirmationModalOpen.value = true
   }
 }
 
+// Inside handleSubmitActual function in your Vue component
+
 const handleSubmitActual = async () => {
-  // Modified to submit and redirect
-  isConfirmationModalOpen.value = false // Close modal on submit
+  isConfirmationModalOpen.value = false
   isSubmitting.value = true
 
   try {
-    // Create the FormData object
-    const formData = new FormData()
+    const formData = new FormData();
 
-    // Add all the regular fields to FormData
-    formData.append('completion_year', new Date(localFormData.year_of_completion).getFullYear())
-    formData.append('declaration', 'True')
-    formData.append('remarks', localFormData.remarks)
-    formData.append('registration_date', formatDateForAPI(new Date()))
-    formData.append(
-      'expiry_date',
-      formatDateForAPI(new Date(new Date().setFullYear(new Date().getFullYear() + 5))),
-    )
-    formData.append('payment_status', 'pending')
-    formData.append('payment_id', '')
-    formData.append('is_active', 'False')
-    formData.append('application', localFormData.application)
-    formData.append('qualification_name', localFormData.qualification_name)
-    formData.append('qualification_type', localFormData.qualification_type)
-    formData.append('institute_university', localFormData.institute)
-    formData.append('is_primary_qualification', 'True')
-    formData.append('registration_type', 1)
+    // --- Fields for UserQualification model ---
+    formData.append('application', localFormData.application); // Correct: ID of the related Application
+    formData.append('qualification', localFormData.qualification_name); // FIX: Use 'qualification' as key, send ID
+    formData.append('qualification_type', localFormData.qualification_type); // Correct: Use 'qualification_type', send ID
+    formData.append('institution', localFormData.institute); // FIX: Use 'institution' as key, send ID
+    // Ensure year_of_completion sends only the year number if model expects PositiveIntegerField
+    // If model expects full date, adjust accordingly. Assuming PositiveIntegerField:
+    if (localFormData.year_of_completion) {
+      // Assuming year_of_completion is like "YYYY-MM", extract year
+       try {
+           const completionDate = new Date(localFormData.year_of_completion);
+           if (!isNaN(completionDate.getFullYear())) {
+              formData.append('completion_year', completionDate.getFullYear());
+           } else {
+               // Handle case where date is invalid or not in expected format
+               console.warn("Invalid year_of_completion format:", localFormData.year_of_completion);
+               // Optionally set a default or raise an error
+           }
+       } catch(e) {
+            console.error("Error parsing year_of_completion:", e);
+       }
+    }
+    formData.append('declaration', localFormData.declaration ? 'True' : 'False'); // Ensure boolean is sent correctly if needed, string 'True'/'False' often works for Django Forms/Serializers
+    formData.append('remarks', localFormData.remarks || ''); // Send empty string if null/undefined
+    formData.append('is_primary_qualification', localFormData.is_primary_qualification ? 'True' : 'False'); // Assuming you have this field, send boolean as string
 
-    // Handle file attachments
+    // --- REMOVE Fields belonging to Application ---
+    // formData.append('registration_date', ...); // REMOVE
+    // formData.append('expiry_date', ...); // REMOVE
+    // formData.append('payment_status', 'pending'); // REMOVE
+    // formData.append('payment_id', ''); // REMOVE
+    // formData.append('is_active', 'False'); // REMOVE
+    // formData.append('registration_type', 1); // REMOVE (This belongs to Application)
+
+
+    // --- Handle Attachments ---
+    // Ensure 'documents' structure matches expectations
     localFormData.documents.forEach((doc, index) => {
-      if (doc.files && doc.files.length > 0) {
+      if (doc.files && doc.files.length > 0 && doc.type) { // Ensure type is selected
         doc.files.forEach((file) => {
-          formData.append(`attachments-${index}-file`, file)
-          formData.append(`attachments-${index}-file_type`, doc.type)
-        })
+          formData.append(`attachments-${index}-file`, file);
+          // FIX: Use 'document_type' as expected by the backend view's loop
+          formData.append(`attachments-${index}-document_type`, doc.type);
+        });
+      } else {
+          console.warn(`Skipping document at index ${index} due to missing file or type.`);
       }
-    })
+    });
 
-    // Send everything in a single request
-    await apiService.createMhpcNewQualification(formData)
+    // Log FormData just before sending for debugging
+    console.log('Submitting Qualification FormData:');
+    for (let pair of formData.entries()) {
+       console.log(pair[0]+ ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+    }
 
-    toast.success('Application submitted successfully!')
-    // Redirect to the dashboard after successful submission
-    router.push('/admin/user/health_certification/dashboard')
+    await apiService.createMhpcNewQualification(formData); // Send to the correct endpoint
+
+    toast.success('Qualification submitted successfully!');
+    router.push('/admin/user/health_certification/dashboard'); // Or wherever appropriate
+
   } catch (error) {
-    console.error('Error submitting application:', error)
-    toast.error(`Application submission failed: ${error.message}`)
+    console.error('Error submitting qualification:', error);
+     if (error.response && error.response.data) {
+         const errorMessages = Object.entries(error.response.data)
+           .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`) // Handle both list and single string errors
+           .join('; ');
+         toast.error(`Qualification submission failed: ${errorMessages}`);
+       } else {
+         toast.error(`Qualification submission failed: ${error.message || 'Unknown error'}`);
+       }
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
-}
+};
 </script>
 
 <style scoped>
@@ -1305,28 +1313,22 @@ const handleSubmitActual = async () => {
 html,
 body {
   overflow: hidden;
-  /* Prevent body scrollbar */
   height: 100%;
   width: 100%;
 }
 
-/* Target specific scrollable containers */
-.max-w-6xl {
+.max-w-8xl {
   overflow-y: auto;
   height: calc(100vh - 4rem);
-  /* Adjust based on your header/footer height */
   -webkit-overflow-scrolling: touch;
-  /* For smooth scrolling on iOS */
 }
 
-/* Fix for macOS double scrollbars */
 @supports (-webkit-appearance: none) {
   .overflow-y-auto::-webkit-scrollbar {
     width: 8px !important;
     background: transparent !important;
   }
 
-  /* Hide default scrollbar on wrapper elements */
   .fixed.inset-0.z-10.w-screen {
     overflow: hidden !important;
   }
@@ -1336,12 +1338,11 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Ensure only one container handles scrolling */
-.max-w-6xl {
+.max-w-8xl {
   overflow-y: auto;
 }
 
-.max-w-6xl > * {
+.max-w-8xl > * {
   overflow: visible;
 }
 </style>
