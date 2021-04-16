@@ -3,27 +3,27 @@ import apiClient from './apiClient'
 export default {
   getMhpcMastersCpdActivities() {
     // Correct Path: REMOVED leading /api/ because apiClient's baseURL should handle it
-    return apiClient.get('/mhpc/masters-cpd-activity/')
+    return apiClient.get('/mhpc/masters-cpd-activities/')
   },
   createMhpcMastersCpdActivity(data) {
     // Correct Path: REMOVED leading /api/
-    return apiClient.post('/mhpc/masters-cpd-activity/', data)
+    return apiClient.post('/mhpc/masters-cpd-activities/', data)
   },
   getMhpcMastersCpdActivity(id) {
     // Correct Path: REMOVED leading /api/
-    return apiClient.get(`/mhpc/masters-cpd-activity/${id}/`)
+    return apiClient.get(`/mhpc/masters-cpd-activities/${id}/`)
   },
   updateMhpcMastersCpdActivity(id, data) {
     // Correct Path: REMOVED leading /api/
-    return apiClient.put(`/mhpc/masters-cpd-activity/${id}/`, data)
+    return apiClient.put(`/mhpc/masters-cpd-activities/${id}/`, data)
   },
   patchMhpcMastersCpdActivity(id, data) {
     // Correct Path: REMOVED leading /api/
-    return apiClient.patch(`/mhpc/masters-cpd-activity/${id}/`, data)
+    return apiClient.patch(`/mhpc/masters-cpd-activities/${id}/`, data)
   },
   deleteMhpcMastersCpdActivity(id) {
     // Correct Path: REMOVED leading /api/
-    return apiClient.delete(`/mhpc/masters-cpd-activity/${id}/`)
+    return apiClient.delete(`/mhpc/masters-cpd-activities/${id}/`)
   },
   // Masters CPD Credits
   getMhpcMastersCpdCredits() {
@@ -68,22 +68,22 @@ export default {
 
   // Masters CPD Activity
   // getMhpcMastersCpdActivities() {
-  //   return apiClient.get('/mhpc/masters-cpd-activity/')
+  //   return apiClient.get('/mhpc/masters-cpd-activities/')
   // },
   // createMhpcMastersCpdActivity(data) {
-  //   return apiClient.post('/mhpc/masters-cpd-activity/', data)
+  //   return apiClient.post('/mhpc/masters-cpd-activities/', data)
   // },
   // getMhpcMastersCpdActivity(id) {
-  //   return apiClient.get(`/mhpc/masters-cpd-activity/${id}/`)
+  //   return apiClient.get(`/mhpc/masters-cpd-activities/${id}/`)
   // },
   // updateMhpcMastersCpdActivity(id, data) {
-  //   return apiClient.put(`/mhpc/masters-cpd-activity/${id}/`, data)
+  //   return apiClient.put(`/mhpc/masters-cpd-activities/${id}/`, data)
   // },
   // patchMhpcMastersCpdActivity(id, data) {
-  //   return apiClient.patch(`/mhpc/masters-cpd-activity/${id}/`, data)
+  //   return apiClient.patch(`/mhpc/masters-cpd-activities/${id}/`, data)
   // },
   // deleteMhpcMastersCpdActivity(id) {
-  //   return apiClient.delete(`/mhpc/masters-cpd-activity/${id}/`)
+  //   return apiClient.delete(`/mhpc/masters-cpd-activities/${id}/`)
   // },
 
   // Masters Document Types
