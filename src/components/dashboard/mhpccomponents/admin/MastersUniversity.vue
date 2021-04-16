@@ -4,7 +4,6 @@
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">University Management</h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Left Column - Add/Edit Form -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8">
           <h2 class="text-xl font-semibold text-slate-900 mb-4">
             {{ isEditing ? 'Edit University' : 'Add New University' }}
@@ -22,6 +21,8 @@
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter country code (e.g., US, CA, AF)"
                   required
+                  maxlength="2"
+                  @input="formData.country = formData.country.toUpperCase()"
                 />
               </div>
               <div>
@@ -46,15 +47,15 @@
                   id="instituteName"
                   v-model="formData.institute_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter institute name"
-                  required
+                  placeholder="Enter institute name (optional)"
                 />
               </div>
 
               <div class="flex gap-3">
                 <button
                   type="submit"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  :disabled="isLoading"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {{ isEditing ? `Update University` : `Add University` }}
                 </button>
@@ -71,7 +72,6 @@
           </form>
         </div>
 
-        <!-- Right Column - Universities List -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
           <div class="mb-6 space-y-4">
             <div class="flex justify-between items-center">
@@ -83,12 +83,11 @@
               </span>
             </div>
 
-            <!-- Search Bar -->
             <div class="relative">
               <input
                 type="text"
                 v-model="searchQuery"
-                placeholder="Search Universities..."
+                placeholder="Search by name, institute, or country..."
                 class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <svg
@@ -107,8 +106,7 @@
             </div>
           </div>
 
-          <!-- Universities Grid -->
-          <div class="space-y-4 mb-6">
+          <div class="space-y-4 mb-6 min-h-[200px]">
             <TransitionGroup name="list">
               <div
                 v-for="university in paginatedUniversities"
@@ -117,16 +115,17 @@
               >
                 <div class="flex justify-between items-start gap-4">
                   <div>
-                    <h3 class="font-medium text-slate-900">{{ university.university }}</h3>
+                    <h3 class="font-medium text-slate-900">{{ university.name }}</h3>
                     <p class="text-sm text-slate-600 mt-1">
-                      Institute: {{ university.institute_name }}
+                      Institute: {{ university.institute_name || 'N/A' }}
                     </p>
                     <p class="text-sm text-slate-600 mt-1">Country: {{ university.country }}</p>
                   </div>
-                  <div class="flex gap-2">
+                  <div class="flex gap-2 flex-shrink-0">
                     <button
                       @click="startEdit(university)"
                       class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+                      aria-label="Edit university"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -140,6 +139,7 @@
                     <button
                       @click="openDeleteModal(university)"
                       class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                      aria-label="Delete university"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -155,14 +155,18 @@
               </div>
             </TransitionGroup>
 
-            <!-- Empty State -->
-            <div v-if="filteredUniversities.length === 0" class="text-center py-8">
-              <p class="text-slate-500">No universities found</p>
+             <div v-if="isLoading" class="text-center py-8 text-slate-500">
+                Loading universities...
+             </div>
+
+            <div v-if="!isLoading && filteredUniversities.length === 0" class="text-center py-8">
+              <p class="text-slate-500">
+                 {{ searchQuery ? 'No universities match your search.' : 'No universities found.' }}
+              </p>
             </div>
           </div>
 
-          <!-- Pagination -->
-          <div v-if="filteredUniversities.length > itemsPerPage" class="flex justify-center gap-2">
+          <div v-if="!isLoading && filteredUniversities.length > itemsPerPage" class="flex justify-center gap-2 mt-6">
             <button
               @click="currentPage--"
               :disabled="currentPage === 1"
@@ -170,7 +174,7 @@
             >
               Previous
             </button>
-            <span class="px-3 py-1 text-sm text-slate-600">
+            <span class="px-3 py-1 text-sm text-slate-600 flex items-center">
               Page {{ currentPage }} of {{ totalPages }}
             </span>
             <button
@@ -184,8 +188,8 @@
         </div>
       </div>
 
-      <!-- Confirmation modal -->
       <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
+         <AlertDialogOverlay class="fixed inset-0 bg-black/50 z-40" />
         <AlertDialogContent
           class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50"
         >
@@ -193,26 +197,25 @@
             Are you absolutely sure?
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
-            This action cannot be undone. This will permanently delete the university "{{
-              universityToDelete?.university
-            }}".
+            This action cannot be undone. This will permanently delete the university "<strong>{{
+              universityToDelete?.name
+            }}</strong>".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
             <AlertDialogCancel
-              class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
+              class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 focus:ring-2 focus:ring-offset-2 focus:ring-slate-400"
               @click="closeDeleteModal"
             >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+              class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               @click="confirmDelete"
             >
               Delete
             </AlertDialogAction>
           </div>
         </AlertDialogContent>
-        <AlertDialogOverlay class="fixed inset-0 bg-black/50 z-40" />
       </AlertDialogRoot>
     </div>
   </div>
@@ -231,7 +234,6 @@ import {
   AlertDialogTitle,
 } from 'radix-vue'
 
-// State
 const universities = ref([])
 const formData = ref({
   id: null,
@@ -240,6 +242,7 @@ const formData = ref({
   institute_name: '',
 })
 const isEditing = ref(false)
+const isLoading = ref(true)
 const searchQuery = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 5
@@ -247,60 +250,97 @@ const itemsPerPage = 5
 const isDeleteModalOpen = ref(false)
 const universityToDelete = ref(null)
 
-// Fetch universities on component mount
 onMounted(async () => {
+  isLoading.value = true
   try {
     const response = await services.getMhpcMastersUniversities()
-    universities.value = response.data.results
+    universities.value = response.data.results || []
   } catch (error) {
     console.error('Error fetching universities:', error)
+  } finally {
+      isLoading.value = false
   }
 })
 
-// Computed
 const filteredUniversities = computed(() => {
+  if (!universities.value) return []
+  const query = searchQuery.value.toLowerCase().trim()
+  if (!query) {
+    return universities.value
+  }
   return universities.value.filter((university) => {
-    const query = searchQuery.value.toLowerCase()
     return (
-      university.university.toLowerCase().includes(query) ||
-      university.institute_name.toLowerCase().includes(query) ||
-      university.country.toLowerCase().includes(query)
+      university.name?.toLowerCase().includes(query) ||
+      university.institute_name?.toLowerCase().includes(query) ||
+      university.country?.toLowerCase().includes(query)
     )
   })
 })
 
 const totalPages = computed(() => {
+  if (itemsPerPage <= 0 || filteredUniversities.value.length === 0) {
+      return 1;
+  }
   return Math.ceil(filteredUniversities.value.length / itemsPerPage)
 })
 
 const paginatedUniversities = computed(() => {
+  if (currentPage.value > totalPages.value) {
+return filteredUniversities.value.slice(0, itemsPerPage);
+  }
   const start = (currentPage.value - 1) * itemsPerPage
   const end = start + itemsPerPage
   return filteredUniversities.value.slice(start, end)
 })
 
-// Methods
 const handleSubmit = async () => {
+    if (!formData.value.country || !formData.value.university) {
+        console.error('Country and University Name are required.');
+        return;
+    }
+    isLoading.value = true;
+
+    const payload = {
+        country: formData.value.country.toUpperCase(),
+        name: formData.value.university, // Map formData.university to payload.name
+        institute_name: formData.value.institute_name || '', // Send empty string if null/undefined
+    };
+
   try {
-    if (isEditing.value) {
-      const response = await services.updateMhpcMastersUniversity(formData.value.id, formData.value)
-      const index = universities.value.findIndex((dt) => dt.id === formData.value.id)
+    let response;
+    if (isEditing.value && formData.value.id) {
+      response = await services.updateMhpcMastersUniversity(formData.value.id, payload);
+      const index = universities.value.findIndex((u) => u.id === formData.value.id);
       if (index !== -1) {
-        universities.value[index] = response.data
+        universities.value.splice(index, 1, response.data);
       }
     } else {
-      const response = await services.createMhpcMastersUniversity(formData.value)
-      universities.value.push(response.data)
+        delete payload.id; // Ensure id is not sent on create
+      response = await services.createMhpcMastersUniversity(payload);
+      universities.value.unshift(response.data);
+      currentPage.value = 1;
     }
-    resetForm()
+    resetForm();
   } catch (error) {
-    console.error('Error saving university:', error)
+    console.error('Error saving university:', error);
+  } finally {
+      isLoading.value = false;
   }
 }
 
 const startEdit = (university) => {
-  formData.value = { ...university }
+  formData.value = {
+      id: university.id,
+      country: university.country || '',
+      university: university.name || '', // Map name from list item back to university in form
+      institute_name: university.institute_name || '',
+  }
   isEditing.value = true
+
+  const formElement = document.querySelector('.sticky.top-8');
+  if (formElement) {
+    formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 const cancelEdit = () => {
@@ -314,21 +354,30 @@ const openDeleteModal = (university) => {
 
 const closeDeleteModal = () => {
   isDeleteModalOpen.value = false
-  universityToDelete.value = null
+  setTimeout(() => {
+      universityToDelete.value = null;
+  }, 150);
 }
 
 const confirmDelete = async () => {
-  if (!universityToDelete.value) return
+  if (!universityToDelete.value?.id) return
 
+  isLoading.value = true;
   try {
     await services.deleteMhpcMastersUniversity(universityToDelete.value.id)
-    const index = universities.value.findIndex((dt) => dt.id === universityToDelete.value.id)
+    const index = universities.value.findIndex((u) => u.id === universityToDelete.value.id)
     if (index !== -1) {
       universities.value.splice(index, 1)
+       if (paginatedUniversities.value.length === 0 && currentPage.value > 1) {
+          currentPage.value--;
+       }
     }
     closeDeleteModal()
   } catch (error) {
     console.error('Error deleting university:', error)
+    closeDeleteModal()
+  } finally {
+      isLoading.value = false;
   }
 }
 
@@ -342,25 +391,47 @@ const resetForm = () => {
   isEditing.value = false
 }
 
-// Watch for search query changes to reset pagination
 watch(searchQuery, () => {
   currentPage.value = 1
 })
+
+watch(universities, () => {
+    if (currentPage.value > totalPages.value) {
+        currentPage.value = Math.max(1, totalPages.value);
+    }
+}, { deep: true });
+
 </script>
 
 <style scoped>
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.4s ease-out;
 }
-
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: translateX(30px);
+  transform: translateY(20px);
 }
-
 .list-move {
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+input:focus,
+textarea:focus,
+select:focus,
+button:focus-visible {
+  outline: 2px solid theme('colors.blue.500');
+  outline-offset: 1px;
+  border-color: transparent !important;
+}
+.radix-vue-alert-dialog-trigger:focus-visible,
+.radix-vue-alert-dialog-cancel:focus-visible,
+.radix-vue-alert-dialog-action:focus-visible {
+    outline: 2px solid theme('colors.blue.500');
+    outline-offset: 2px;
 }
 </style>

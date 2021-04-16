@@ -1,25 +1,18 @@
 <template>
-  <div class="mx-auto px-4 py-8">
+  <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Header Section -->
     <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">Track Your Application</h2>
-      <p class="text-gray-600 text-center max-w-2xl mx-auto">
-        Your Engineering Certification application status.
-      </p>
+      <p class="text-gray-600 text-center max-w-2xl mx-auto">Your CoGS application status.</p>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 py-8">
       <!-- Results Section -->
       <div v-if="filteredApplications.length > 0" class="space-y-6">
-        <div
-          v-for="application in filteredApplications"
-          :key="application.id"
-          class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
-        >
+        <div v-for="application in filteredApplications" :key="application.id"
+          class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <!-- Header with Registration Number and Status -->
-          <div
-            class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 p-6 flex items-center justify-between"
-          >
+          <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 p-6 flex items-center justify-between">
             <div>
               <h3 class="text-xl font-bold text-gray-900 flex items-center">
                 <span>Application #{{ application.registration_no }}</span>
@@ -33,11 +26,9 @@
             <!-- Action Buttons -->
             <div class="flex space-x-3">
               <!-- Payment Button -->
-              <button
-                v-if="application.review_status === 'Approved' && !application.is_payment_complete"
+              <button v-if="application.review_status === 'Approved' && !application.is_payment_complete"
                 @click="initiatePayment(application)"
-                class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center"
-              >
+                class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center">
                 <CreditCard class="w-4 h-4 mr-2" />
                 {{ getPaymentButtonText(application) }}
               </button>
@@ -53,7 +44,7 @@
               </h4>
               <div class="space-y-3">
                 <detail-row icon="User" label="Full Name" :value="application.full_name" />
-                <detail-row icon="IdCard" label="CID Number" :value="application.cid" />
+                <detail-row icon="IdCard" label="CID Number" :value="application.cid_no" />
                 <detail-row icon="Target" label="Gender" :value="application.gender" />
               </div>
             </div>
@@ -64,17 +55,9 @@
                 Contact Details
               </h4>
               <div class="space-y-3">
-                <detail-row
-                  icon="Phone"
-                  label="Contact Number"
-                  :value="application.contact_number"
-                />
-                <detail-row icon="Mail" label="Email" :value="application.email" />
-                <detail-row
-                  icon="BookOpen"
-                  label="Workplace"
-                  :value="application.workplace || 'Not Specified'"
-                />
+                <detail-row icon="Phone" label="Contact Number" :value="application.contact_number" />
+                <detail-row icon="Mail" label="Email" :value="application.email_address" />
+                <detail-row icon="BookOpen" label="Workplace" :value="application.workplace || 'Not Specified'" />
               </div>
             </div>
 
@@ -84,21 +67,10 @@
                 Application Status
               </h4>
               <div class="space-y-3">
-                <detail-row
-                  icon="FileText"
-                  label="Review Status"
-                  :value="application.review_status"
-                />
-                <detail-row
-                  icon="Target"
-                  label="Endorsement"
-                  :value="application.endorsement_decision"
-                />
-                <detail-row
-                  icon="CreditCard"
-                  label="Payment"
-                  :value="application.is_payment_complete ? 'Completed' : 'Pending'"
-                />
+                <detail-row icon="FileText" label="Review Status" :value="application.review_status" />
+                <detail-row icon="Target" label="Endorsement" :value="application.endorsement_decision" />
+                <detail-row icon="CreditCard" label="Payment"
+                  :value="application.is_payment_complete ? 'Completed' : 'Pending'" />
               </div>
             </div>
           </div>
@@ -112,39 +84,26 @@
       </div>
 
       <!-- No Results Message -->
-      <div
-        v-if="filteredApplications.length === 0 && !isLoading && !apiError"
-        class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200"
-      >
-        <p class="text-gray-600">No Engineering Certification records found for your account.</p>
+      <div v-if="filteredApplications.length === 0 && !isLoading && !apiError"
+        class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
+        <p class="text-gray-600">No CoGS records found for your account.</p>
       </div>
       <!-- API Error Message (Optional) -->
-      <div
-        v-else-if="apiError"
-        class="text-center py-12 bg-red-50 rounded-xl border border-red-200"
-      >
+      <div v-else-if="apiError" class="text-center py-12 bg-red-50 rounded-xl border border-red-200">
         <p class="text-red-600">An error occurred while fetching data. Please try again later.</p>
       </div>
       <!-- Loading Indicator -->
       <div v-if="isLoading" class="mt-4 flex justify-center">
         <div class="flex items-center space-x-2 text-sm text-gray-500">
           <span class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
-          <span
-            class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-100"
-          ></span>
-          <span
-            class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-200"
-          ></span>
+          <span class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-100"></span>
+          <span class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-200"></span>
         </div>
       </div>
     </div>
     <!-- Payment Modal -->
-    <PaymentModal
-      ref="paymentModal"
-      :amount="500"
-      @payment-completed="handlePaymentCompleted"
-      @close="closePaymentModal"
-    />
+    <PaymentModal ref="paymentModal" :amount="500" @payment-completed="handlePaymentCompleted"
+      @close="closePaymentModal" />
   </div>
 </template>
 
@@ -182,7 +141,7 @@ const filteredApplications = computed(() => {
     return [] // Return empty if user or cid is not available
   }
 
-  return applications.value.filter((app) => app.cid === authStore.user.cid)
+  return applications.value.filter((app) => app.cid_no === authStore.user.cid)
 })
 
 // Methods
@@ -191,11 +150,10 @@ const fetchApplications = async () => {
   apiError.value = false
 
   try {
-    const response = await apiService.getEpcNewApplications()
+    const response = await apiService.getEpcCogs()
     // Access the 'results' property of the response data.
     if (Array.isArray(response.data.results)) {
       applications.value = response.data.results
-      console
     } else {
       applications.value = []
       console.error('API did not return an array in results:', response.data)
@@ -312,18 +270,18 @@ const handlePaymentCompleted = async (paymentData) => {
     // 1. Initiate Payment (Actual payment processing) - Using FormData, as in your example
     const paymentInitiationFormData = new FormData()
     paymentInitiationFormData.append('refNo', paymentId) // Use paymentId from paymentData
-    paymentInitiationFormData.append('serviceCode', 'epc_application_fee') // EPC service code
+    paymentInitiationFormData.append('serviceCode', 'cogs_application_fee') // Correct service code
     paymentInitiationFormData.append('taxPayerName', user.cid) // Or user.full_name if appropriate
     paymentInitiationFormData.append('taxPayerNo', user.cid)
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
     paymentInitiationFormData.append('totalPayableAmount', 500) // Correct amount
-    paymentInitiationFormData.append('description', 'Engineering Certification Application Fee') // Updated description
+    paymentInitiationFormData.append('description', 'CoGS Application Fee') // Correct Description
     paymentInitiationFormData.append('mobileNo', user.contact_number)
     paymentInitiationFormData.append('payerEmail', user.email)
     paymentInitiationFormData.append('user', user.id)
     paymentInitiationFormData.append('payableAmount', 500) // Correct amount
     paymentInitiationFormData.append('application_no', selectedApplication.value.id)
-    paymentInitiationFormData.append('app_type', 'engineering_certification_fee') // Updated app_type
+    paymentInitiationFormData.append('app_type', 'certificate_of_good_standing_fee') // Correct app_type
 
     // Make the payment *before* updating the application
     await apiService.makePayment(paymentInitiationFormData)
@@ -333,8 +291,8 @@ const handlePaymentCompleted = async (paymentData) => {
     updateFormData.append('is_payment_complete', 'true') // Use string 'true'
     updateFormData.append('payment_id', paymentId)
 
-    // Update EPC application
-    await apiService.patchEpcNewApplication(applicationId, updateFormData)
+    //PATCH COGS application
+    await apiService.patchMhpcCogs(applicationId, updateFormData)
 
     // 3.  Update local state to reflect changes
     const updatedApplicationIndex = applications.value.findIndex((app) => app.id === applicationId)
@@ -361,8 +319,8 @@ const handlePaymentCompleted = async (paymentData) => {
       toast.error('Network Error: No response from server')
     } else {
       toast.error(
-        'Payment request generated successfully, but there was an error confirming the payment. Contact us with the payment id for the next course of action: ' +
-          paymentId,
+        'Payment request generated successfully, but there was an error confirming the payment.  Contact us with the payment id for the next course of action: ' +
+        paymentId,
       )
     }
   } finally {

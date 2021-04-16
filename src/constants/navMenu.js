@@ -751,11 +751,11 @@ const serviceSpecificMenuItems = {
           },
         ],
       },
-      {
-        name: 'CPD Activity',
-        icon: getIconComponent('FileText'),
-        route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
-      },
+      // {
+      //   name: 'CPD Activity',
+      //   icon: getIconComponent('FileText'),
+      //   route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
+      // },
       {
         name: 'Document Management',
         icon: getIconComponent('File'),
@@ -768,10 +768,10 @@ const serviceSpecificMenuItems = {
             name: 'E-Signatures',
             route: (serviceType) => `/admin/admin/${serviceType}/e_signatures`,
           },
-          {
-            name: 'File Types',
-            route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
-          },
+          // {
+          //   name: 'File Types',
+          //   route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
+          // },
         ],
       },
       {
@@ -1543,7 +1543,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/site_visit_confirmation`,
       },
       {
-        name: 'View Results',
+        name: 'Track Applications',
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/user/${serviceType}/results`,
       },

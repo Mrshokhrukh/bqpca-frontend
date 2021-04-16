@@ -81,7 +81,7 @@ export const useAuthStore = defineStore('auth', () => {
       if (credentials.from === 'authSection') {
         if (
           user.value.role !== 'user' &&
-          user.value.role !== 'cpd_cpd_provider' &&
+          user.value.role !== 'cme_cpd_provider' &&
           user.value.role !== 'institutions'
         ) {
           toast.error(
@@ -102,7 +102,7 @@ export const useAuthStore = defineStore('auth', () => {
       } else if (credentials.from === 'adminLogin') {
         if (
           user.value.role === 'user' ||
-          user.value.role === 'cpd_cpd_provider' ||
+          user.value.role === 'cme_cpd_provider' ||
           user.value.role === 'institutions'
         ) {
           toast.error('User role access is not permitted from the previous page.')

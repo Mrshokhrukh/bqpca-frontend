@@ -32,7 +32,7 @@
     </template>
 
     <!-- CPD/CPD Provider Section -->
-    <template v-else-if="role === 'cpd_cpd_provider'">
+    <template v-else-if="role === 'cme_cpd_provider'">
       <component :is="engineeringCpdCpdProviderComponent" />
     </template>
 

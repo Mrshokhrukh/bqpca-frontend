@@ -18,7 +18,7 @@
                 <input
                   type="text"
                   id="documentName"
-                  v-model="formData.document_name"
+                  v-model="formData.name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter document name"
                   required
@@ -118,7 +118,7 @@
               >
                 <div class="flex justify-between items-start gap-4">
                   <div>
-                    <h3 class="font-medium text-slate-900">{{ documentType.document_name }}</h3>
+                    <h3 class="font-medium text-slate-900">{{ documentType.name }}</h3>
                     <p class="text-sm text-slate-600 mt-1">{{ documentType.description }}</p>
                     <p class="text-sm text-slate-600 mt-1">{{ documentType.application_type }}</p>
                   </div>
@@ -193,7 +193,7 @@
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
             This action cannot be undone. This will permanently delete the document type "{{
-              documentTypeToDelete?.document_name
+              documentTypeToDelete?.name
             }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
@@ -234,7 +234,7 @@ import {
 const documentTypes = ref([])
 const formData = ref({
   id: null,
-  document_name: '',
+  name: '',
   description: '',
   application_type: 'registration',
 })
@@ -261,7 +261,7 @@ const filteredDocumentTypes = computed(() => {
   return documentTypes.value.filter((documentType) => {
     const query = searchQuery.value.toLowerCase()
     return (
-      documentType.document_name.toLowerCase().includes(query) ||
+      documentType.name.toLowerCase().includes(query) ||
       documentType.description.toLowerCase().includes(query)
     )
   })
@@ -336,7 +336,7 @@ const confirmDelete = async () => {
 const resetForm = () => {
   formData.value = {
     id: null,
-    document_name: '',
+    name: '',
     description: '',
     application_type: 'registration',
   }
