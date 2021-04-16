@@ -2,56 +2,26 @@
   <div class="mx-auto py-8">
     <!-- Confirmation Modal -->
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
-      <Dialog
-        as="div"
-        class="relative z-10 fixed.inset-0.z-10.w-screen"
-        @close="isConfirmationModalOpen = false"
-      >
-        <TransitionChild
-          as="template"
-          enter="ease-out duration-300"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="ease-in duration-200"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-        >
+      <Dialog as="div" class="relative z-10 fixed.inset-0.z-10.w-screen" @close="isConfirmationModalOpen = false">
+        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+          leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </TransitionChild>
 
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-          <div
-            class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
-          >
-            <TransitionChild
-              as="template"
-              enter="ease-out duration-300"
+          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <TransitionChild as="template" enter="ease-out duration-300"
               enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              enter-to="opacity-100 translate-y-0 sm:scale-100"
-              leave="ease-in duration-200"
+              enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
               leave-from="opacity-100 translate-y-0 sm:scale-100"
-              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            >
+              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
               <DialogPanel
-                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
-              >
+                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                 <div>
-                  <div
-                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100"
-                  >
-                    <svg
-                      class="h-6 w-6 text-green-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M4.5 12.75l6 6 9-13.5"
-                      />
+                  <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
                   </div>
                   <div class="mt-3 text-center sm:mt-5">
@@ -67,18 +37,14 @@
                   </div>
                 </div>
                 <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                  <button
-                    type="button"
+                  <button type="button"
                     class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                    @click="handleSubmitActual"
-                  >
+                    @click="handleSubmitActual">
                     Confirm
                   </button>
-                  <button
-                    type="button"
+                  <button type="button"
                     class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-                    @click="isConfirmationModalOpen = false"
-                  >
+                    @click="isConfirmationModalOpen = false">
                     Cancel
                   </button>
                 </div>
@@ -95,17 +61,12 @@
         {{ selectedType === 'cid' ? 'CID Holder Registration' : 'Non-CID Holder Registration' }}
       </h2>
       <p class="text-gray-600 text-center max-w-2xl mx-auto">
-        Please fill in all required fields marked with an asterisk (<span class="text-red-600"
-          >*</span
-        >). Ensure all information provided is accurate and up-to-date.
+        Please fill in all required fields marked with an asterisk (<span class="text-red-600">*</span>). Ensure all
+        information provided is accurate and up-to-date.
       </p>
     </div>
 
-    <form
-      @submit.prevent="handleNext"
-      class="bg-white border rounded-xl shadow-sm p-6"
-      v-if="stage === 1"
-    >
+    <form @submit.prevent="handleNext" class="bg-white border rounded-xl shadow-sm p-6" v-if="stage === 1">
       <!-- add header as step 2 -->
       <h3 class="text-lg font-semibold text-gray-900 my-4">Step 1: Registration</h3>
       <!-- Form Sections -->
@@ -122,14 +83,9 @@
             <!-- CID Fields -->
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">CID No.</label>
-              <input
-                v-model="localFormData.cid_no"
-                type="number"
-                maxlength="11"
+              <input v-model="localFormData.cid_no" type="number" maxlength="11"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                placeholder="Enter CID number"
-                @input="fetchDCRCData"
-              />
+                placeholder="Enter CID number" @input="fetchDCRCData" />
               <span v-if="errors.cid_no" class="text-sm text-red-500 mt-1">{{
                 errors.cid_no
               }}</span>
@@ -137,11 +93,8 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Dzongkhag</label>
-              <input
-                type="text"
-                v-model="localFormData.dzongkhag"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              />
+              <input type="text" v-model="localFormData.dzongkhag"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
               <span v-if="errors.dzongkhag" class="text-sm text-red-500 mt-1">{{
                 errors.dzongkhag
               }}</span>
@@ -149,21 +102,15 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Gewog</label>
-              <input
-                type="text"
-                v-model="localFormData.gewog"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              />
+              <input type="text" v-model="localFormData.gewog"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
               <span v-if="errors.gewog" class="text-sm text-red-500 mt-1">{{ errors.gewog }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Village</label>
-              <input
-                type="text"
-                v-model="localFormData.village"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              />
+              <input type="text" v-model="localFormData.village"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
               <span v-if="errors.village" class="text-sm text-red-500 mt-1">{{
                 errors.village
               }}</span>
@@ -174,10 +121,8 @@
             <!-- Non-CID Fields -->
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Nationality</label>
-              <select
-                v-model="localFormData.nationality"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              >
+              <select v-model="localFormData.nationality"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
                 <option value="">SELECT NATIONALITY</option>
                 <option v-for="country in countries" :key="country" :value="country">
                   {{ country }}
@@ -190,27 +135,19 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Email Address</label>
-              <input
-                v-model="localFormData.email_address"
-                type="email"
+              <input v-model="localFormData.email_address" type="email"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                placeholder="Email Address"
-              />
+                placeholder="Email Address" />
               <span v-if="errors.email_address" class="text-sm text-red-500 mt-1">{{
                 errors.email_address
               }}</span>
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Identity / Work Permit No</label
-              >
-              <input
-                v-model="localFormData.workPermitNo"
-                type="text"
+              <label class="block text-sm font-medium text-gray-700 required">Identity / Work Permit No</label>
+              <input v-model="localFormData.workPermitNo" type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                placeholder="Identity / Work Permit No"
-              />
+                placeholder="Identity / Work Permit No" />
               <span v-if="errors.workPermitNo" class="text-sm text-red-500 mt-1">{{
                 errors.workPermitNo
               }}</span>
@@ -218,10 +155,8 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Country</label>
-              <select
-                v-model="localFormData.country"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              >
+              <select v-model="localFormData.country"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
                 <option value="">SELECT COUNTRY</option>
                 <option v-for="country in countries" :key="country" :value="country">
                   {{ country }}
@@ -234,34 +169,25 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700">City</label>
-              <input
-                v-model="localFormData.city"
-                type="text"
+              <input v-model="localFormData.city" type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                placeholder="City"
-              />
+                placeholder="City" />
               <span v-if="errors.city" class="text-sm text-red-500 mt-1">{{ errors.city }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700">State</label>
-              <input
-                v-model="localFormData.state"
-                type="text"
+              <input v-model="localFormData.state" type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                placeholder="State"
-              />
+                placeholder="State" />
               <span v-if="errors.state" class="text-sm text-red-500 mt-1">{{ errors.state }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Mobile Number</label>
-              <input
-                v-model="localFormData.mobileNumber"
-                type="tel"
+              <input v-model="localFormData.mobileNumber" type="tel"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                placeholder="Mobile Number"
-              />
+                placeholder="Mobile Number" />
               <span v-if="errors.mobileNumber" class="text-sm text-red-500 mt-1">{{
                 errors.mobileNumber
               }}</span>
@@ -271,12 +197,9 @@
           <!-- Common Fields -->
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Full Name</label>
-            <input
-              v-model="localFormData.full_name"
-              type="text"
+            <input v-model="localFormData.full_name" type="text"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              placeholder="Enter full name"
-            />
+              placeholder="Enter full name" />
             <span v-if="errors.full_name" class="text-sm text-red-500 mt-1">{{
               errors.full_name
             }}</span>
@@ -284,25 +207,20 @@
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Gender</label>
-            <select
-              v-model="localFormData.gender"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            >
+            <select v-model="localFormData.gender"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
               <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
             </select>
             <span v-if="errors.gender" class="text-sm text-red-500 mt-1">{{ errors.gender }}</span>
           </div>
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Date of Birth</label>
-            <input
-              type="date"
-              v-model="localFormData.date_of_birth"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
+            <input type="date" v-model="localFormData.date_of_birth"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
             <span v-if="errors.date_of_birth" class="text-sm text-red-500 mt-1">{{
               errors.date_of_birth
             }}</span>
@@ -310,12 +228,9 @@
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Contact Number</label>
-            <input
-              v-model="localFormData.contact_no"
-              type="tel"
+            <input v-model="localFormData.contact_no" type="tel"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              placeholder="Enter phone number"
-            />
+              placeholder="Enter phone number" />
             <span v-if="errors.contact_no" class="text-sm text-red-500 mt-1">{{
               errors.contact_no
             }}</span>
@@ -323,13 +238,9 @@
 
           <!-- Registration Type Field (Updated to use 'name' field) -->
           <div class="col-span-1">
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Registration Type</label
-            >
-            <select
-              v-model="localFormData.registration_type"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            >
+            <label class="block text-sm font-medium text-gray-700 required">Registration Type</label>
+            <select v-model="localFormData.registration_type"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
               <option value="">Select Registration Type</option>
               <option v-for="regType in registrationTypes" :key="regType.id" :value="regType.id">
                 {{ regType.name }}
@@ -347,15 +258,10 @@
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Passport Photo</h3>
             <div class="flex items-start space-x-4">
               <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 required"
-                  >Upload Passport Photo</label
-                >
-                <input
-                  type="file"
-                  @change="handlePassportPhotoSelect"
+                <label class="block text-sm font-medium text-gray-700 required">Upload Passport Photo</label>
+                <input type="file" @change="handlePassportPhotoSelect"
                   class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  accept=".jpg,.jpeg,.png"
-                />
+                  accept=".jpg,.jpeg,.png" />
                 <span v-if="errors.passport_photo" class="text-sm text-red-500 mt-1">{{
                   errors.passport_photo
                 }}</span>
@@ -366,17 +272,11 @@
 
         <!-- Form Actions -->
         <div class="mt-12 flex justify-end space-x-4">
-          <button
-            type="button"
-            @click="$emit('back')"
-            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-          >
+          <button type="button" @click="$emit('back')"
+            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
             Back to Previous Step
           </button>
-          <button
-            type="submit"
-            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
+          <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
             Next
           </button>
         </div>
@@ -393,13 +293,9 @@
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Qualification Details</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Qualification Type</label
-              >
-              <select
-                v-model="localFormData.qualification_type"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              >
+              <label class="block text-sm font-medium text-gray-700 required">Qualification Type</label>
+              <select v-model="localFormData.qualification_type"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
                 <option value="">Select Qualification Type</option>
                 <option v-for="type in qualificationTypes" :key="type.id" :value="type.id">
                   {{ type.qualification_type_name }}
@@ -411,19 +307,11 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Qualification Name</label
-              >
-              <select
-                v-model="localFormData.qualification_name"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              >
+              <label class="block text-sm font-medium text-gray-700 required">Qualification Name</label>
+              <select v-model="localFormData.qualification_name"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
                 <option value="">Select Qualification Name</option>
-                <option
-                  v-for="qualification in qualifications"
-                  :key="qualification.id"
-                  :value="qualification.id"
-                >
+                <option v-for="qualification in qualifications" :key="qualification.id" :value="qualification.id">
                   {{ qualification.qualification }}
                 </option>
               </select>
@@ -433,19 +321,11 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Institute/University</label
-              >
-              <select
-                v-model="localFormData.institute"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              >
+              <label class="block text-sm font-medium text-gray-700 required">Institute/University</label>
+              <select v-model="localFormData.institute"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
                 <option value="">Select Institute/University</option>
-                <option
-                  v-for="university in universities"
-                  :key="university.id"
-                  :value="university.id"
-                >
+                <option v-for="university in universities" :key="university.id" :value="university.id">
                   {{ university.country }}, {{ university.university }},
                   {{ university.institute_name }}
                 </option>
@@ -456,15 +336,10 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Year of Completion</label
-              >
-              <input
-                type="month"
-                v-model="localFormData.year_of_completion"
+              <label class="block text-sm font-medium text-gray-700 required">Year of Completion</label>
+              <input type="month" v-model="localFormData.year_of_completion"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                placeholder="YYYY"
-              />
+                placeholder="YYYY" />
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
                 errors.year_of_completion
               }}</span>
@@ -478,16 +353,11 @@
         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Supporting Documents</h3>
           <div class="space-y-4">
-            <div
-              v-for="(doc, index) in supportingDocuments"
-              :key="index"
-              class="flex items-start space-x-4 bg-white p-4 rounded-lg border border-gray-100"
-            >
+            <div v-for="(doc, index) in supportingDocuments" :key="index"
+              class="flex items-start space-x-4 bg-white p-4 rounded-lg border border-gray-100">
               <div class="w-1/3">
-                <select
-                  v-model="doc.type"
-                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                >
+                <select v-model="doc.type"
+                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
                   <option value="">Select Document Type</option>
                   <option v-for="type in fetchedDocumentTypes" :key="type.id" :value="type.id">
                     {{ type.document_name }}
@@ -495,29 +365,19 @@
                 </select>
               </div>
               <div class="flex-1 flex items-center space-x-2">
-                <input
-                  type="file"
-                  @change="(e) => handleFileSelect(e, index)"
+                <input type="file" @change="(e) => handleFileSelect(e, index)"
                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                  multiple
-                />
-                <button
-                  @click="removeDocument(index)"
-                  type="button"
-                  class="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                >
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple />
+                <button @click="removeDocument(index)" type="button"
+                  class="p-2 text-gray-400 hover:text-red-500 transition-colors">
                   <span class="sr-only">Remove</span>
                   ✕
                 </button>
               </div>
             </div>
 
-            <button
-              type="button"
-              @click="addDocument"
-              class="mt-4 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center"
-            >
+            <button type="button" @click="addDocument"
+              class="mt-4 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center">
               <span class="mr-2">+</span>
               Add Another Document
             </button>
@@ -535,20 +395,14 @@
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700">Remarks</label>
-            <textarea
-              v-model="localFormData.remarks"
-              rows="3"
+            <textarea v-model="localFormData.remarks" rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              placeholder="Enter any additional remarks or comments"
-            ></textarea>
+              placeholder="Enter any additional remarks or comments"></textarea>
           </div>
 
           <div class="flex items-start space-x-3 bg-white p-4 rounded-lg">
-            <input
-              type="checkbox"
-              v-model="localFormData.declaration"
-              class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
+            <input type="checkbox" v-model="localFormData.declaration"
+              class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
             <label class="text-sm text-gray-700">
               I hereby declare that all the information provided above is true and correct to the
               best of my knowledge. I understand that any false statements may result in the
@@ -560,18 +414,12 @@
 
       <!-- Form Actions -->
       <div class="mt-12 flex justify-end space-x-4">
-        <button
-          type="button"
-          @click="stage = 1"
-          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-        >
+        <button type="button" @click="stage = 1"
+          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
           Back to Previous Step
         </button>
-        <button
-          type="button"
-          @click="openConfirmationModal"
-          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
+        <button type="button" @click="openConfirmationModal"
+          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           Submit Registration
         </button>
       </div>
@@ -1154,9 +1002,9 @@ const fetchDCRCData = async () => {
 
     // Updated gender mapping to match backend expectations
     const genderMap = {
-      F: 'Female', // Map 'F' to 'Female'
-      M: 'Male', // Map 'M' to 'Male'
-      O: 'Other', // Map 'O' to 'Other'
+      F: 'female', // Map 'F' to 'Female'
+      M: 'male', // Map 'M' to 'Male'
+      O: 'other', // Map 'O' to 'Other'
     }
 
     Object.assign(localFormData, {
@@ -1486,7 +1334,7 @@ body {
   overflow-y: auto;
 }
 
-.max-w-6xl > * {
+.max-w-6xl>* {
   overflow: visible;
 }
 </style>
