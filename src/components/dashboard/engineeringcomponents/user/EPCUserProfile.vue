@@ -215,129 +215,94 @@
         <h3 class="text-lg font-medium text-gray-900 mb-6">Update Your Information</h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- CID Field -->
           <div>
-            <label for="contactNumber" class="block text-sm font-medium text-gray-700"
-              >Contact No.</label
-            >
-            <div class="mt-1 relative rounded-md shadow-sm">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                  />
-                </svg>
-              </div>
-              <input
-                type="number"
-                name="contactNumber"
-                id="contactNumber"
-                v-model="profileForm.contactNumber"
-                class="pl-10 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-              />
-            </div>
+            <label for="cid" class="block text-sm font-medium text-gray-700">CID</label>
+            <input
+              type="text"
+              id="cid"
+              v-model="profileForm.cid"
+              class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            />
           </div>
 
+          <!-- First Name -->
           <div>
-            <label for="emailAddress" class="block text-sm font-medium text-gray-700"
-              >Email Address</label
-            >
-            <div class="mt-1 relative rounded-md shadow-sm">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
-                  />
-                </svg>
-              </div>
-              <input
-                type="email"
-                name="emailAddress"
-                id="emailAddress"
-                v-model="profileForm.emailAddress"
-                class="pl-10 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-              />
-            </div>
+            <label for="firstName" class="block text-sm font-medium text-gray-700">First Name</label>
+            <input
+              type="text"
+              id="firstName"
+              v-model="profileForm.firstName"
+              class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            />
           </div>
 
+          <!-- Middle Name -->
           <div>
-            <label for="passportPhoto" class="block text-sm font-medium text-gray-700"
-              >Passport Format Photo</label
-            >
-            <div class="mt-1 flex items-center">
-              <div class="flex-shrink-0 h-16 w-16 bg-gray-100 rounded-md overflow-hidden">
-                <img
-                  v-if="previewUrl"
-                  :src="previewUrl"
-                  alt="Preview"
-                  class="h-full w-full object-cover"
-                />
-                <div v-else class="h-full w-full flex items-center justify-center text-gray-400">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-8 w-8"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <label
-                for="file-upload"
-                class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
-              >
-                <span>Change</span>
-                <input
-                  id="file-upload"
-                  name="file-upload"
-                  type="file"
-                  class="sr-only"
-                  @change="handleFileUpload"
-                  accept="image/*"
-                />
-              </label>
-            </div>
+            <label for="middleName" class="block text-sm font-medium text-gray-700">Middle Name</label>
+            <input
+              type="text"
+              id="middleName"
+              v-model="profileForm.middleName"
+              class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            />
           </div>
 
+          <!-- Last Name -->
           <div>
-            <label for="workAddress" class="block text-sm font-medium text-gray-700"
-              >Work Address [Practice]</label
-            >
+            <label for="lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
+            <input
+              type="text"
+              id="lastName"
+              v-model="profileForm.lastName"
+              class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            />
+          </div>
+
+          <!-- Gender -->
+          <div>
+            <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
             <select
-              id="workAddress"
-              name="workAddress"
-              v-model="profileForm.workAddressId"
-              class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+              id="gender"
+              v-model="profileForm.gender"
+              class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
             >
-              <option value="">Select Work Address</option>
-              <option v-for="address in workAddresses" :key="address.id" :value="address.id">
-                {{ address.name }}
-              </option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
             </select>
+          </div>
+
+          <!-- Village -->
+          <div>
+            <label for="village" class="block text-sm font-medium text-gray-700">Village</label>
+            <input
+              type="text"
+              id="village"
+              v-model="profileForm.village"
+              class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            />
+          </div>
+
+          <!-- Gewog -->
+          <div>
+            <label for="gewog" class="block text-sm font-medium text-gray-700">Gewog</label>
+            <input
+              type="text"
+              id="gewog"
+              v-model="profileForm.gewog"
+              class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            />
+          </div>
+
+          <!-- Dzongkhag -->
+          <div>
+            <label for="dzongkhag" class="block text-sm font-medium text-gray-700">Dzongkhag</label>
+            <input
+              type="text"
+              id="dzongkhag"
+              v-model="profileForm.dzongkhag"
+              class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            />
           </div>
         </div>
 
@@ -374,6 +339,14 @@ const isEditing = ref(false)
 const previewUrl = ref(null)
 
 const profileForm = ref({
+  cid: authStore.user?.cid || '',
+  firstName: authStore.user?.first_name || '',
+  middleName: authStore.user?.middle_name || '',
+  lastName: authStore.user?.last_name || '',
+  gender: authStore.user?.gender || '',
+  village: authStore.user?.village || '',
+  gewog: authStore.user?.gewog || '',
+  dzongkhag: authStore.user?.dzongkhag || '',
   contactNumber: authStore.user?.contact_number || '',
   emailAddress: authStore.user?.email || '',
   passportPhoto: null,
@@ -416,52 +389,41 @@ const handleFileUpload = (event) => {
   }
 }
 
+const fetchUserDetails = async () => {
+  try {
+    const response = await apiService.getUserDetails(profileForm.value.cid)
+    if (response.data) {
+      Object.assign(profileForm.value, response.data)
+    }
+  } catch (error) {
+    console.error('Error fetching user details:', error)
+    toast.error('Failed to fetch user details.')
+  }
+}
+
 const saveProfile = async () => {
   try {
-    // Basic validation
-    if (!profileForm.value.contactNumber || !profileForm.value.emailAddress) {
-      toast.error('Contact Number and Email Address are required.')
-      return
-    }
-
-    if (!isValidEmail(profileForm.value.emailAddress)) {
-      toast.error('Please enter a valid email address.')
-      return
-    }
-
-    const formData = new FormData()
-    formData.append('contact_number', profileForm.value.contactNumber)
-    formData.append('email', profileForm.value.emailAddress)
-    if (profileForm.value.passportPhoto) {
-      formData.append('passport_photo', profileForm.value.passportPhoto)
-    }
-    formData.append('work_address', profileForm.value.workAddressId)
-
-    // Call the API to update the profile
-    await apiService.updateProfile(authStore.userId, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-
-    // Update the authStore
-    authStore.setUser({
-      ...authStore.user,
-      contact_number: profileForm.value.contactNumber,
-      email: profileForm.value.emailAddress,
-    })
-
-    toast.success('Profile updated successfully!')
-    isEditing.value = false
+    const updatedData = { ...profileForm.value };
+    await epcServices.updateUser(authStore.user.id, updatedData); // Ensure `authStore.user.id` is correct
+    toast.success('Profile updated successfully!');
+    isEditing.value = false;
   } catch (error) {
-    console.error('Error updating profile:', error)
-    toast.error(error.response?.data?.message || 'Failed to update profile.')
+    console.error('Error updating profile:', error);
+    toast.error('Failed to update profile.');
   }
 }
 
 const cancelEdit = () => {
   // Reset form data
   profileForm.value = {
+    cid: authStore.user?.cid || '',
+    firstName: authStore.user?.first_name || '',
+    middleName: authStore.user?.middle_name || '',
+    lastName: authStore.user?.last_name || '',
+    gender: authStore.user?.gender || '',
+    village: authStore.user?.village || '',
+    gewog: authStore.user?.gewog || '',
+    dzongkhag: authStore.user?.dzongkhag || '',
     contactNumber: authStore.user?.contact_number || '',
     emailAddress: authStore.user?.email || '',
     passportPhoto: null,
