@@ -12,18 +12,17 @@
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
-                <label for="cpdCreditDuration" class="block text-sm font-medium text-slate-700"
-                  >CPD Credit Duration</label
-                >
-                <input
-                  type="text"
-                  id="cpdCreditDuration"
-                  v-model="formData.cpd_credit_duration"
-                  class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter CPD credit duration"
-                  required
-                />
-              </div>
+  <label for="cpdCreditDuration" class="block text-sm font-medium text-slate-700">
+    CPD Credit Duration
+  </label>
+  <input
+    type="time"
+    id="cpdCreditDuration"
+    v-model="formData.cpd_credit_duration"
+    class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+    required
+  />
+</div>
               <div>
                 <label for="credits" class="block text-sm font-medium text-slate-700"
                   >Credits</label
@@ -258,35 +257,81 @@ const creditToDelete = ref(null)
 const currentPage = ref(1)
 const itemsPerPage = 5
 
+// Utility function to convert duration input to API format (HH:MM:ss)
+const formatDuration = (input) => {
+  input = input.trim().toLowerCase()
+  const timeRegex = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/
+  const hourRegex = /^(\d+)\s*h(?:our|ours)?$/
+  const minuteRegex = /^(\d+)\s*m(?:in|inute|inutes)?$/
+
+  if (timeRegex.test(input)) {
+    const [, hours, minutes, secs = '00'] = input.match(timeRegex)
+    return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:${secs.padStart(2, '0')}`
+  } else if (hourRegex.test(input)) {
+    const [, hours] = input.match(hourRegex)
+    return `${hours.padStart(2, '0')}:00:00`
+  } else if (minuteRegex.test(input)) {
+    const [, minutes] = input.match(minuteRegex)
+    const hours = Math.floor(minutes / 60)
+    const remainingMinutes = minutes % 60
+    return `${hours.toString().padStart(2, '0')}:${remainingMinutes.toString().padStart(2, '0')}:00`
+  }
+
+  return input // Fallback
+}
+
 // Methods
 const fetchCredits = async (page = 1) => {
   try {
     const response = await api.getMhpcMastersCpdCredits()
-    cpdCredits.value = response.data.results
+    // Map API response to match component's expected field names
+    cpdCredits.value = response.data.results.map(credit => ({
+      id: credit.id,
+      cpd_credit_duration: credit.duration,
+      credits: credit.credits,
+      cpd_activity_name: credit.activity_type.id, // Map activity_type.id to cpd_activity_name
+      created_at: credit.created_at,
+      updated_at: credit.updated_at,
+    }))
     currentPage.value = page
   } catch (error) {
-    console.error('Error fetching cpd credits:', error)
+    console.error('Error fetching CPD credits:', error)
   }
 }
+
 const fetchCpdActivities = async () => {
   try {
     const response = await api.getMhpcMastersCpdActivities()
-    cpdActivitiesList.value = response.data.results
+    // Map API response to match component's expected field names
+    cpdActivitiesList.value = response.data.results.map(activity => ({
+      id: activity.id,
+      cpd_activity_name: activity.name,
+      cpd_activity_description: activity.description,
+      created_at: activity.created_at,
+      updated_at: activity.updated_at,
+    }))
   } catch (error) {
-    console.error('Error fetching cpd activities:', error)
+    console.error('Error fetching CPD activities:', error)
   }
 }
+
 const handleSubmit = async () => {
   try {
+    // Transform form data to match API's expected field names and format
+    const payload = {
+      duration: formatDuration(formData.value.cpd_credit_duration),
+      credits: Number(formData.value.credits), // Ensure credits is a number
+      activity_type_id: formData.value.cpd_activity_name, // Matches API field for POST
+    }
     if (isEditing.value) {
-      await api.updateMhpcMastersCpdCredit(editingId.value, formData.value)
+      await api.updateMhpcMastersCpdCredit(editingId.value, payload)
     } else {
-      await api.createMhpcMastersCpdCredit(formData.value)
+      await api.createMhpcMastersCpdCredit(payload)
     }
     resetForm()
     fetchCredits()
   } catch (error) {
-    console.error('Error saving cpd credit:', error)
+    console.error('Error saving CPD credit:', error)
   }
 }
 
@@ -328,12 +373,17 @@ const deleteCredit = async () => {
   if (!creditToDelete.value) return
   try {
     await api.deleteMhpcMastersCpdCredit(creditToDelete.value.id)
+    // Remove the deleted credit from the list
+    cpdCredits.value = cpdCredits.value.filter(
+      (credit) => credit.id !== creditToDelete.value.id
+    )
     cancelDelete()
     fetchCredits()
   } catch (error) {
-    console.error('Error deleting cpd credit:', error)
+    console.error('Error deleting CPD credit:', error)
   }
 }
+
 const totalPages = computed(() => {
   return Math.ceil(cpdCredits.value.length / itemsPerPage)
 })
@@ -355,5 +405,3 @@ onMounted(() => {
   fetchCpdActivities()
 })
 </script>
-
-<style scoped></style>

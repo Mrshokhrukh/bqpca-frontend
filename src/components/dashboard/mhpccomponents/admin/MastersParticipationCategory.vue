@@ -22,7 +22,7 @@
                 <input
                   type="text"
                   id="participationCategoryName"
-                  v-model="formData.participation_category_name"
+                  v-model="formData.name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter participation category name"
                   required
@@ -111,7 +111,7 @@
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">
-                      {{ participationCategory.participation_category_name }}
+                      {{ participationCategory.name }}
                     </h3>
                     <p class="text-sm text-slate-600 mt-1">
                       {{ participationCategory.description }}
@@ -191,7 +191,7 @@
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
             This action cannot be undone. This will permanently delete the participation category
-            "{{ participationCategoryToDelete?.participation_category_name }}".
+            "{{ participationCategoryToDelete?.name }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
             <AlertDialogCancel
@@ -231,7 +231,7 @@ import {
 const participationCategories = ref([])
 const formData = ref({
   id: null,
-  participation_category_name: '',
+  name: '',
   description: '',
 })
 const isEditing = ref(false)
@@ -257,7 +257,7 @@ const filteredParticipationCategories = computed(() => {
   return participationCategories.value.filter((participationCategory) => {
     const query = searchQuery.value.toLowerCase()
     return (
-      participationCategory.participation_category_name.toLowerCase().includes(query) ||
+      participationCategory.name.toLowerCase().includes(query) ||
       participationCategory.description.toLowerCase().includes(query)
     )
   })
@@ -334,7 +334,7 @@ const confirmDelete = async () => {
 const resetForm = () => {
   formData.value = {
     id: null,
-    participation_category_name: '',
+    name: '',
     description: '',
   }
   isEditing.value = false

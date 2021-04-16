@@ -231,24 +231,36 @@ const itemsPerPage = 5
 const fetchActivities = async (page = 1) => {
   try {
     const response = await api.getMhpcMastersCpdActivities()
-    cpdActivities.value = response.data.results
+    // Map API response to match component's expected field names
+    cpdActivities.value = response.data.results.map(activity => ({
+      id: activity.id,
+      cpd_activity_name: activity.name,
+      cpd_activity_description: activity.description,
+      created_at: activity.created_at,
+      updated_at: activity.updated_at,
+    }))
     currentPage.value = page
   } catch (error) {
-    console.error('Error fetching cpd activities:', error)
+    console.error('Error fetching CPD activities:', error)
   }
 }
 
 const handleSubmit = async () => {
   try {
+    // Transform form data to match API's expected field names
+    const payload = {
+      name: formData.value.cpd_activity_name,
+      description: formData.value.cpd_activity_description,
+    }
     if (isEditing.value) {
-      await api.updateMhpcMastersCpdActivity(editingId.value, formData.value)
+      await api.updateMhpcMastersCpdActivity(editingId.value, payload)
     } else {
-      await api.createMhpcMastersCpdActivity(formData.value)
+      await api.createMhpcMastersCpdActivity(payload)
     }
     resetForm()
     fetchActivities()
   } catch (error) {
-    console.error('Error saving cpd activity:', error)
+    console.error('Error saving CPD activity:', error)
   }
 }
 
@@ -288,14 +300,14 @@ const deleteActivity = async () => {
   if (!activityToDelete.value) return
   try {
     await api.deleteMhpcMastersCpdActivity(activityToDelete.value.id)
-    const index = cpdActivities.value.findIndex((act) => act.id === activityToDelete.value.id)
-    if (index !== -1) {
-      cpdActivities.value.splice(index, 1)
-    }
+    // Remove the deleted activity from the list
+    cpdActivities.value = cpdActivities.value.filter(
+      (act) => act.id !== activityToDelete.value.id
+    )
     cancelDelete()
     fetchActivities()
   } catch (error) {
-    console.error('Error deleting cpd activity:', error)
+    console.error('Error deleting CPD activity:', error)
   }
 }
 
@@ -314,5 +326,3 @@ onMounted(() => {
   fetchActivities()
 })
 </script>
-
-<style scoped></style>

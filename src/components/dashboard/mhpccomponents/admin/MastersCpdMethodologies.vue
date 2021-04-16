@@ -18,7 +18,7 @@
                 <input
                   type="text"
                   id="methodologyName"
-                  v-model="formData.methodology_name"
+                  v-model="formData.name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter methodology name"
                   required
@@ -103,7 +103,7 @@
               >
                 <div class="flex justify-between items-start gap-4">
                   <div>
-                    <h3 class="font-medium text-slate-900">{{ methodology.methodology_name }}</h3>
+                    <h3 class="font-medium text-slate-900">{{ methodology.name }}</h3> <!-- Changed -->
                     <p class="text-sm text-slate-600 mt-1">{{ methodology.description }}</p>
                   </div>
                   <div class="flex gap-2">
@@ -177,7 +177,7 @@
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
             This action cannot be undone. This will permanently delete the methodology "{{
-              methodologyToDelete?.methodology_name
+              methodologyToDelete?.name
             }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
@@ -218,7 +218,7 @@ import {
 const methodologies = ref([])
 const formData = ref({
   id: null,
-  methodology_name: '',
+  name: '', // Changed from methodology_name
   description: '',
 })
 const isEditing = ref(false)
@@ -233,9 +233,11 @@ const methodologyToDelete = ref(null)
 onMounted(async () => {
   try {
     const response = await services.getMhpcMastersCpdMethodologies()
+    // Assuming response.data.results contains objects with 'name' and 'description'
     methodologies.value = response.data.results
   } catch (error) {
     console.error('Error fetching CPD methodologies:', error)
+    // TODO: Add user-facing error notification
   }
 })
 
@@ -243,10 +245,10 @@ onMounted(async () => {
 const filteredMethodologies = computed(() => {
   return methodologies.value.filter((methodology) => {
     const query = searchQuery.value.toLowerCase()
-    return (
-      methodology.methodology_name.toLowerCase().includes(query) ||
-      methodology.description.toLowerCase().includes(query)
-    )
+    // Ensure methodology.name and methodology.description are not null/undefined before calling toLowerCase()
+    const nameMatch = methodology.name?.toLowerCase().includes(query) ?? false // Changed
+    const descriptionMatch = methodology.description?.toLowerCase().includes(query) ?? false
+    return nameMatch || descriptionMatch
   })
 })
 
@@ -263,28 +265,38 @@ const paginatedMethodologies = computed(() => {
 // Methods
 const handleSubmit = async () => {
   try {
+    let savedData;
     if (isEditing.value) {
       const response = await services.updateMhpcMastersCpdMethodology(
         formData.value.id,
-        formData.value,
+        formData.value, // Sending { id, name, description }
       )
+      savedData = response.data; // Assuming response contains the updated object { id, name, description }
       const index = methodologies.value.findIndex((dt) => dt.id === formData.value.id)
       if (index !== -1) {
-        methodologies.value[index] = response.data
+        methodologies.value[index] = savedData
       }
     } else {
-      const response = await services.createMhpcMastersCpdMethodology(formData.value)
-      methodologies.value.push(response.data)
+      const response = await services.createMhpcMastersCpdMethodology(
+          formData.value // Sending { name, description } (id is null)
+        )
+      savedData = response.data; // Assuming response contains the created object { id, name, description }
+      methodologies.value.push(savedData)
     }
     resetForm()
+    // TODO: Add success notification
   } catch (error) {
     console.error('Error saving CPD methodology:', error)
+    // TODO: Add user-facing error notification (e.g., display error.response.data if available)
   }
 }
 
 const startEdit = (methodology) => {
+  // Assuming the 'methodology' object fetched from the API has 'id', 'name', 'description'
   formData.value = { ...methodology }
   isEditing.value = true
+  // Optionally scroll the form into view if needed
+  // document.querySelector('#methodologyName')?.focus();
 }
 
 const cancelEdit = () => {
@@ -292,7 +304,7 @@ const cancelEdit = () => {
 }
 
 const openDeleteModal = (methodology) => {
-  methodologyToDelete.value = methodology
+  methodologyToDelete.value = methodology // Stores the object with { id, name, description }
   isDeleteModalOpen.value = true
 }
 
@@ -311,15 +323,18 @@ const confirmDelete = async () => {
       methodologies.value.splice(index, 1)
     }
     closeDeleteModal()
+    // TODO: Add success notification
   } catch (error) {
     console.error('Error deleting CPD methodology:', error)
+    // TODO: Add user-facing error notification
+    closeDeleteModal() // Close modal even if delete failed to avoid getting stuck
   }
 }
 
 const resetForm = () => {
   formData.value = {
     id: null,
-    methodology_name: '',
+    name: '', // Changed
     description: '',
   }
   isEditing.value = false
@@ -329,6 +344,17 @@ const resetForm = () => {
 watch(searchQuery, () => {
   currentPage.value = 1
 })
+
+// Watch for changes in filtered methodologies to adjust current page if needed
+watch(filteredMethodologies, (newFiltered) => {
+  const newTotalPages = Math.ceil(newFiltered.length / itemsPerPage);
+  if (currentPage.value > newTotalPages && newTotalPages > 0) {
+    currentPage.value = newTotalPages;
+  } else if (newFiltered.length === 0) {
+    currentPage.value = 1; // Reset to page 1 if no results
+  }
+});
+
 </script>
 
 <style scoped>
@@ -343,7 +369,11 @@ watch(searchQuery, () => {
   transform: translateX(30px);
 }
 
+/* Optional: ensure moving items animate smoothly */
 .list-move {
   transition: transform 0.3s ease;
 }
+
+/* Ensure sticky form works well */
+/* The `sticky top-8` class should handle this, but ensure no parent overflow issues */
 </style>

@@ -19,35 +19,36 @@
                 <label
                   for="participationSubCategoryName"
                   class="block text-sm font-medium text-slate-700"
-                  >Participation Sub-Category Name</label
+                  >Sub-Category Name</label
                 >
                 <input
                   type="text"
                   id="participationSubCategoryName"
-                  v-model="formData.participation_sub_category_name"
+                  v-model="formData.name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter participation sub-category name"
+                  placeholder="Enter sub-category name"
                   required
                 />
               </div>
               <div>
                 <label
-                  for="participationCategoryName"
+                  for="participationCategory"
                   class="block text-sm font-medium text-slate-700"
                   >Participation Category</label
                 >
                 <select
-                  id="participationCategoryName"
-                  v-model="formData.participation_category_name"
+                  id="participationCategory"
+                  v-model="formData.category_id"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 >
+                  <option value="" disabled>Select a category</option>
                   <option
                     v-for="category in participationCategories"
                     :key="category.id"
                     :value="category.id"
                   >
-                    {{ category.participation_category_name }}
+                    {{ category.name }}
                   </option>
                 </select>
               </div>
@@ -62,7 +63,7 @@
                   v-model="formData.description"
                   rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter participation sub-category description"
+                  placeholder="Enter description"
                   required
                 ></textarea>
               </div>
@@ -70,14 +71,10 @@
               <div class="flex gap-3">
                 <button
                   type="submit"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  :disabled="isLoading"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {{
-                    isEditing
-                      ? `Update Participation Sub-Category`
-                      : `Add Participation
-                                    Sub-Category`
-                  }}
+                  {{ isEditing ? 'Update Sub-Category' : 'Add Sub-Category' }}
                 </button>
                 <button
                   v-if="isEditing"
@@ -100,8 +97,8 @@
                 Participation Sub-Categories List
               </h2>
               <span class="text-sm text-slate-500">
-                {{ filteredParticipationSubCategories.length }} Participation Sub-Category{{
-                  filteredParticipationSubCategories.length !== 1 ? 's' : ''
+                {{ filteredParticipationSubCategories.length }} Sub-Categor{{
+                  filteredParticipationSubCategories.length !== 1 ? 'ies' : 'y'
                 }}
               </span>
             </div>
@@ -111,7 +108,7 @@
               <input
                 type="text"
                 v-model="searchQuery"
-                placeholder="Search Participation Sub-Categories..."
+                placeholder="Search by name, description, or category..."
                 class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <svg
@@ -131,29 +128,30 @@
           </div>
 
           <!-- Participation Sub-Categories Grid -->
-          <div class="space-y-4 mb-6">
+          <div class="space-y-4 mb-6 min-h-[200px]">
             <TransitionGroup name="list">
               <div
-                v-for="participationSubCategory in paginatedParticipationSubCategories"
-                :key="participationSubCategory.id"
+                v-for="subCategory in paginatedParticipationSubCategories"
+                :key="subCategory.id"
                 class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200"
               >
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">
-                      {{ participationSubCategory.participation_sub_category_name }}
+                      {{ subCategory.name }}
                     </h3>
                     <p class="text-sm text-slate-600 mt-1">
-                      {{ participationSubCategory.description }}
+                      Desc: {{ subCategory.description }}
                     </p>
                     <p class="text-sm text-slate-600 mt-1">
-                      Category ID: {{ participationSubCategory.participation_category_name }}
+                      Category: {{ getCategoryNameById(subCategory.participation_category?.id) }}
                     </p>
                   </div>
-                  <div class="flex gap-2">
+                  <div class="flex gap-2 flex-shrink-0">
                     <button
-                      @click="startEdit(participationSubCategory)"
+                      @click="startEdit(subCategory)"
                       class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+                      aria-label="Edit sub-category"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -165,8 +163,9 @@
                       </svg>
                     </button>
                     <button
-                      @click="openDeleteModal(participationSubCategory)"
+                      @click="openDeleteModal(subCategory)"
                       class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                      aria-label="Delete sub-category"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -182,16 +181,23 @@
               </div>
             </TransitionGroup>
 
+            <!-- Loading State -->
+             <div v-if="isLoading" class="text-center py-8 text-slate-500">
+                Loading sub-categories...
+             </div>
+
             <!-- Empty State -->
-            <div v-if="filteredParticipationSubCategories.length === 0" class="text-center py-8">
-              <p class="text-slate-500">No participation sub-categories found</p>
+            <div v-if="!isLoading && filteredParticipationSubCategories.length === 0" class="text-center py-8">
+              <p class="text-slate-500">
+                 {{ searchQuery ? 'No sub-categories match your search.' : 'No sub-categories added yet.' }}
+              </p>
             </div>
           </div>
 
           <!-- Pagination -->
           <div
-            v-if="filteredParticipationSubCategories.length > itemsPerPage"
-            class="flex justify-center gap-2"
+            v-if="!isLoading && filteredParticipationSubCategories.length > itemsPerPage"
+            class="flex justify-center gap-2 mt-6"
           >
             <button
               @click="currentPage--"
@@ -200,7 +206,7 @@
             >
               Previous
             </button>
-            <span class="px-3 py-1 text-sm text-slate-600">
+            <span class="px-3 py-1 text-sm text-slate-600 flex items-center">
               Page {{ currentPage }} of {{ totalPages }}
             </span>
             <button
@@ -216,6 +222,7 @@
 
       <!-- Confirmation modal -->
       <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
+         <AlertDialogOverlay class="fixed inset-0 bg-black/50 z-40" />
         <AlertDialogContent
           class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50"
         >
@@ -223,25 +230,25 @@
             Are you absolutely sure?
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
-            This action cannot be undone. This will permanently delete the participation
-            sub-category "{{ participationSubCategoryToDelete?.participation_sub_category_name }}".
+            This action cannot be undone. This will permanently delete the sub-category "<strong>{{
+              participationSubCategoryToDelete?.name
+            }}</strong>".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
             <AlertDialogCancel
-              class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
+              class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 focus:ring-2 focus:ring-offset-2 focus:ring-slate-400"
               @click="closeDeleteModal"
             >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+              class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               @click="confirmDelete"
             >
               Delete
             </AlertDialogAction>
           </div>
         </AlertDialogContent>
-        <AlertDialogOverlay class="fixed inset-0 bg-black/50 z-40" />
       </AlertDialogRoot>
     </div>
   </div>
@@ -249,7 +256,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import services from '@/services/services' // Assuming services are correctly configured
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -262,13 +269,15 @@ import {
 
 // State
 const participationSubCategories = ref([])
+const participationCategories = ref([]) // For the dropdown
 const formData = ref({
   id: null,
-  participation_sub_category_name: '',
+  name: '',
   description: '',
-  participation_category_name: null,
+  category_id: '', // <-- FIXED: Use ID field, initialize as empty string for default option
 })
 const isEditing = ref(false)
+const isLoading = ref(true); // Add loading state
 const searchQuery = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 5
@@ -276,45 +285,60 @@ const itemsPerPage = 5
 const isDeleteModalOpen = ref(false)
 const participationSubCategoryToDelete = ref(null)
 
-// Fetch data from the MhpcMastersParticipationCategories API
-const participationCategories = ref([])
-
-const getParticipationCategories = async () => {
-  try {
-    const response = await services.getMhpcMastersMHPCParticipationCategories()
-    participationCategories.value = response.data.results
-  } catch (error) {
-    console.error('Error fetching participation categories:', error)
-  }
-}
-
-// Fetch participation sub-categories on component mount
+// Fetch data on component mount
 onMounted(async () => {
+  isLoading.value = true;
   try {
-    await getParticipationCategories()
-    const response = await services.getMhpcMastersMhpcParticipationSubCategories()
-    participationSubCategories.value = response.data.results
+    // Fetch categories first for the dropdown
+    const categoryResponse = await services.getMhpcMastersMHPCParticipationCategories();
+    participationCategories.value = categoryResponse.data.results || [];
+
+    // Then fetch sub-categories
+    const subCategoryResponse = await services.getMhpcMastersMhpcParticipationSubCategories();
+    participationSubCategories.value = subCategoryResponse.data.results || [];
+
   } catch (error) {
-    console.error('Error fetching participation sub-categories:', error)
+    console.error('Error fetching data:', error)
+    // Handle error state, e.g., show a notification
+  } finally {
+     isLoading.value = false;
   }
 })
 
-// Computed
+// Computed properties
 const filteredParticipationSubCategories = computed(() => {
-  return participationSubCategories.value.filter((participationSubCategory) => {
-    const query = searchQuery.value.toLowerCase()
+  if (!participationSubCategories.value) return [];
+  const query = searchQuery.value.toLowerCase().trim();
+  if (!query) {
+    return participationSubCategories.value;
+  }
+  return participationSubCategories.value.filter((subCategory) => {
+     const categoryName = getCategoryNameById(subCategory.participation_category?.id)?.toLowerCase() || '';
     return (
-      participationSubCategory.participation_sub_category_name.toLowerCase().includes(query) ||
-      participationSubCategory.description.toLowerCase().includes(query)
-    )
-  })
-})
+      subCategory.name?.toLowerCase().includes(query) ||
+      subCategory.description?.toLowerCase().includes(query) ||
+      categoryName.includes(query) // Search by category name
+    );
+  });
+});
+
 
 const totalPages = computed(() => {
+  // Prevent division by zero if itemsPerPage is 0 or filtered list is empty
+  if (itemsPerPage <= 0 || filteredParticipationSubCategories.value.length === 0) {
+    return 1; // Always at least one page
+  }
   return Math.ceil(filteredParticipationSubCategories.value.length / itemsPerPage)
 })
 
 const paginatedParticipationSubCategories = computed(() => {
+  // Reset to page 1 if current page becomes invalid
+  if (currentPage.value > totalPages.value) {
+return filteredParticipationSubCategories.value.slice(
+  (Math.min(currentPage.value, totalPages.value) - 1) * itemsPerPage,
+  Math.min(currentPage.value, totalPages.value) * itemsPerPage
+);
+  }
   const start = (currentPage.value - 1) * itemsPerPage
   const end = start + itemsPerPage
   return filteredParticipationSubCategories.value.slice(start, end)
@@ -322,48 +346,80 @@ const paginatedParticipationSubCategories = computed(() => {
 
 // Methods
 const handleSubmit = async () => {
+  if (!formData.value.name || !formData.value.description || !formData.value.category_id) {
+      console.error('Form is incomplete');
+      // Optionally show user notification
+      return;
+  }
+
+  isLoading.value = true; // Indicate processing
+  const payload = { ...formData.value }; // Use the formData directly as it now holds the ID
+
   try {
-    if (isEditing.value) {
+    if (isEditing.value && formData.value.id) {
       const response = await services.updateMhpcMastersParticipationSubCategory(
         formData.value.id,
-        formData.value,
+        payload,
       )
       const index = participationSubCategories.value.findIndex((dt) => dt.id === formData.value.id)
       if (index !== -1) {
-        participationSubCategories.value[index] = response.data
+        // Update reactively
+        participationSubCategories.value.splice(index, 1, response.data);
       }
     } else {
-      const response = await services.createMhpcMastersParticipationSubCategory(formData.value)
-      participationSubCategories.value.push(response.data)
+      // Ensure ID is not part of the payload for creation
+      delete payload.id;
+      const response = await services.createMhpcMastersParticipationSubCategory(payload)
+       // Add to the beginning
+      participationSubCategories.value.unshift(response.data);
+      currentPage.value = 1; // Go to first page
     }
     resetForm()
   } catch (error) {
     console.error('Error saving participation sub-category:', error)
+     // Handle error state, e.g., show a notification
+  } finally {
+      isLoading.value = false; // Stop loading indicator
   }
 }
 
-const startEdit = (participationSubCategory) => {
-  formData.value = { ...participationSubCategory }
-  isEditing.value = true
+const startEdit = (subCategory) => {
+  // Populate form data, safely accessing nested category ID
+  formData.value = {
+    id: subCategory.id,
+    name: subCategory.name || '',
+    description: subCategory.description || '',
+    // Use optional chaining and provide default null if category or id is missing
+    category_id: subCategory.participation_category?.id ?? '', // <-- FIXED: Get ID
+  };
+  isEditing.value = true;
+   // Scroll form into view smoothly (optional)
+  const formElement = document.querySelector('.sticky.top-8'); // Adjust selector if needed
+  if (formElement) {
+    formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 const cancelEdit = () => {
   resetForm()
 }
 
-const openDeleteModal = (participationSubCategory) => {
-  participationSubCategoryToDelete.value = participationSubCategory
+const openDeleteModal = (subCategory) => {
+  participationSubCategoryToDelete.value = subCategory
   isDeleteModalOpen.value = true
 }
 
 const closeDeleteModal = () => {
   isDeleteModalOpen.value = false
-  participationSubCategoryToDelete.value = null
+   setTimeout(() => {
+    participationSubCategoryToDelete.value = null;
+  }, 150);
 }
 
 const confirmDelete = async () => {
-  if (!participationSubCategoryToDelete.value) return
+  if (!participationSubCategoryToDelete.value?.id) return
 
+  isLoading.value = true;
   try {
     await services.deleteMhpcMastersParticipationSubCategory(
       participationSubCategoryToDelete.value.id,
@@ -373,42 +429,92 @@ const confirmDelete = async () => {
     )
     if (index !== -1) {
       participationSubCategories.value.splice(index, 1)
+      // Adjust pagination
+       if (paginatedParticipationSubCategories.value.length === 0 && currentPage.value > 1) {
+          currentPage.value--;
+       }
     }
     closeDeleteModal()
   } catch (error) {
     console.error('Error deleting participation sub-category:', error)
+     // Handle error state, e.g., show a notification
+     closeDeleteModal(); // Still close modal on error
+  } finally {
+      isLoading.value = false;
   }
 }
 
 const resetForm = () => {
   formData.value = {
     id: null,
-    participation_sub_category_name: '',
+    name: '',
     description: '',
-    participation_category_name: null,
+    category_id: '', // <-- FIXED: Reset to empty string for default option
   }
   isEditing.value = false
 }
 
-// Watch for search query changes to reset pagination
+// Helper function to get category name by ID for display list
+const getCategoryNameById = (categoryId) => {
+  if (categoryId == null || !participationCategories.value?.length) {
+      return 'N/A'; // Or 'Unknown' or ''
+  }
+  // Use loose equality (==) for flexibility (number vs string)
+  const category = participationCategories.value.find(cat => cat.id == categoryId);
+  return category ? category.name : 'Unknown';
+}
+
+
+// Watchers
 watch(searchQuery, () => {
   currentPage.value = 1
 })
+
+watch(participationSubCategories, () => {
+    // Adjust page if it becomes invalid after data changes
+    if (currentPage.value > totalPages.value) {
+        currentPage.value = Math.max(1, totalPages.value);
+    }
+}, { deep: true });
+
 </script>
 
 <style scoped>
+/* Using same styles as previous component */
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.4s ease-out;
 }
 
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: translateX(30px);
+  transform: translateY(20px);
 }
 
 .list-move {
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Focus styles */
+input:focus,
+textarea:focus,
+select:focus,
+button:focus-visible {
+  outline: 2px solid theme('colors.blue.500');
+  outline-offset: 1px;
+  border-color: transparent !important;
+}
+
+.radix-vue-alert-dialog-trigger:focus-visible,
+.radix-vue-alert-dialog-cancel:focus-visible,
+.radix-vue-alert-dialog-action:focus-visible {
+    outline: 2px solid theme('colors.blue.500');
+    outline-offset: 2px;
 }
 </style>

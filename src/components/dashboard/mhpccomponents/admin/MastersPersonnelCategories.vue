@@ -20,7 +20,7 @@
                 <input
                   type="text"
                   id="categoryName"
-                  v-model="formData.category_name"
+                  v-model="formData.name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter category name"
                   required
@@ -119,7 +119,7 @@
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">
-                      {{ personnelCategory.category_name }}
+                      {{ personnelCategory.name }}
                     </h3>
                     <p class="text-sm text-slate-600 mt-1">
                       {{ personnelCategory.late_fee_per_day }}
@@ -202,7 +202,7 @@
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
             This action cannot be undone. This will permanently delete the personnel category "{{
-              personnelCategoryToDelete?.category_name
+              personnelCategoryToDelete?.name
             }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
@@ -243,7 +243,7 @@ import {
 const personnelCategories = ref([])
 const formData = ref({
   id: null,
-  category_name: '',
+  name: '',
   late_fee_per_day: '',
   category_description: '',
 })
@@ -270,7 +270,7 @@ const filteredPersonnelCategories = computed(() => {
   return personnelCategories.value.filter((personnelCategory) => {
     const query = searchQuery.value.toLowerCase()
     return (
-      personnelCategory.category_name.toLowerCase().includes(query) ||
+      personnelCategory.name.toLowerCase().includes(query) ||
       personnelCategory.category_description.toLowerCase().includes(query)
     )
   })
@@ -347,7 +347,7 @@ const confirmDelete = async () => {
 const resetForm = () => {
   formData.value = {
     id: null,
-    category_name: '',
+    name: '',
     late_fee_per_day: '',
     category_description: '',
   }
