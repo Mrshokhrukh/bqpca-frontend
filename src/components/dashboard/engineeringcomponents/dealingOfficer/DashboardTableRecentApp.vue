@@ -100,7 +100,7 @@ onMounted(async () => {
     const applicantsData = applicantsResponse.data.results || []
     const mappedApplicants = applicantsData.map((app) => ({
       id: app.id,
-      name: app.full_name,
+      name: app.application.full_name,
       type: app.registration_type?.name || 'Registration',
       status: app.user_qualifications?.[0]?.endorsement_decision || 'Pending',
       date: app.user_qualifications?.[0]?.updated_at || app.created_at,
