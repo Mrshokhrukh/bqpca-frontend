@@ -77,9 +77,9 @@ import DeadlinesList from './dashboardComponents/DeadlinesLists.vue'
 import ApplicationModal from './dashboardComponents/ApplicationModal.vue'
 import CertificateModal from '../../../common/EPC/EPCCertificateModal.vue'
 import LoadingSpinner from '../../../common/EPC/EPCLoadingSpinner.vue'
-// Removed Empty State Components
-// import EmptyDashboardState from './dashboardComponents/EmptyDashboardStates.vue';
-// import FirstDashboardState from './dashboardComponents/FirstDashboardStates.vue';
+// Uncommented the Empty State Components
+import EmptyDashboardState from './dashboardComponents/EmptyDashboardStates.vue'
+import FirstDashboardState from './dashboardComponents/FirstDashboardStates.vue'
 
 // Store setup
 const authStore = useAuthStore()
