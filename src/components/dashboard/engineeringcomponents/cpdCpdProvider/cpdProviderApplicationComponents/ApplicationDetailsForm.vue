@@ -17,10 +17,8 @@
             <input
               type="radio"
               id="approvedYes"
-              :value="true"
-              :model-value="application.isApproved"
-              @update:model-value="$emit('update:modelValue', $event)"
-              @change="handleApprovalChange"
+              value="true"
+              v-model="application.isApproved"
               class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
             />
             <label for="approvedYes" class="ml-2 block text-sm text-gray-700">Yes</label>
@@ -30,8 +28,7 @@
               type="radio"
               id="approvedNo"
               value="false"
-              :model-value="application.isApproved"
-              @change="handleApprovalChange"
+              v-model="application.isApproved"
               class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
             />
             <label for="approvedNo" class="ml-2 block text-sm text-gray-700">No</label>
