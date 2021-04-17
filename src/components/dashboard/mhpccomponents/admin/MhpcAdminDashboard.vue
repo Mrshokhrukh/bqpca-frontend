@@ -1,7 +1,6 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[95rem] mx-auto">
-      <!-- Header -->
       <div class="mb-8">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div class="mb-4 text-center lg:text-left">
@@ -15,30 +14,27 @@
           </div>
         </div>
 
-        <!-- Card Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           <div v-for="config in configurationCards" :key="config.id" class="group relative">
-            <!-- Gradient Overlay (Hover Effect) -->
             <div
               :class="`absolute inset-0 bg-gradient-to-r ${config.gradient} rounded-xl opacity-0 group-hover:opacity-20 transition duration-300`"
             ></div>
 
-            <!-- Card Content -->
             <div :class="[baseCardClasses, 'relative flex flex-col h-full overflow-hidden']">
               <div class="p-6 flex-grow">
-                <!-- Card Header -->
                 <div class="flex items-start justify-between mb-6">
                   <div>
                     <div class="flex items-center gap-3 mb-3">
                       <div
                         :class="[
-                          iconBgClass(config.icon.split(/(?=[A-Z])/)[0].toLowerCase()),
+                          iconBgClass(config.iconName),
                           'p-2 rounded-lg transition-colors duration-300 group-hover:bg-opacity-20',
                         ]"
                       >
                         <component
                           :is="iconMap[config.id]"
-                          :class="iconColorClass(config.icon.split(/(?=[A-Z])/)[0].toLowerCase())"
+                          :class="iconColorClass(config.iconName)"
+                           class="w-6 h-6"
                         />
                       </div>
                       <h3 class="font-semibold text-slate-900 text-lg">{{ config.title }}</h3>
@@ -47,16 +43,15 @@
                   </div>
                 </div>
 
-                <!-- Card Stats -->
                 <div class="space-y-4 mb-6">
-                  <div class="flex items-center gap-2 bg-slate-50 rounded-lg p-3">
-                    <div class="text-sm">
-                      <span class="text-slate-600">{{ config.countLabel }}:</span>
-                      <span class="font-semibold text-slate-900 ml-1">
-                        {{ counts[config.countRef] }} {{ config.countSuffix }}
-                      </span>
-                    </div>
-                  </div>
+                   <div class="flex items-center gap-2 bg-slate-50 rounded-lg p-3">
+                     <div class="text-sm">
+                       <span class="text-slate-600">{{ config.countLabel }}:</span>
+                       <span class="font-semibold text-slate-900 ml-1">
+                         {{ counts[config.countRef] ?? 0 }} {{ config.countSuffix }}
+                       </span>
+                     </div>
+                   </div>
                   <div class="flex items-center gap-2 text-sm text-slate-500">
                     <TrendingUp class="h-4 w-4" />
                     <span>Used in:</span>
@@ -68,24 +63,23 @@
                 </div>
               </div>
 
-              <!-- Card Footer (Sub-buttons) -->
-              <div class="p-4 border-t border-slate-200">
+              <div class="p-4 border-t border-slate-200 bg-slate-50/50">
                 <div class="space-y-2">
                   <router-link
                     v-for="child in config.children"
                     :key="child.route"
                     :to="child.route"
                     :class="[
-                      config.button,
+                      buttonClasses(config.iconName),
                       'inline-flex items-center gap-2 text-sm px-4 py-2 rounded-lg transition-colors duration-300 font-medium group w-full justify-between',
                     ]"
                   >
                     <span class="flex items-center gap-2">
-                      <!-- Child Icon (Optional, shown if present) -->
                       <component
                         v-if="child.icon"
-                        :is="child.icon"
-                        :class="config.iconColorClass"
+                        :is="iconMap[child.iconId]"
+                        :class="iconColorClass(config.iconName)"
+                        class="h-4 w-4"
                       />
                       {{ child.text }}
                     </span>
@@ -104,147 +98,107 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { reactive, onMounted } from 'vue'
 import apiServices from '@/services/services'
 import {
-  BookOpen, // CPD
-  ClipboardList, // CPD
-  FileText, // Document
-  DollarSign, // Fee
-  Users, // Participation
-  User, // Personnel
-  CheckCircle, // Registration
-  Building, // University
-  Briefcase, // Cogs
+  BookOpen,
+  ClipboardList,
+  FileText,
+  DollarSign,
+  Users,
+  CheckCircle,
+  Building,
+  Briefcase,
   Info,
   TrendingUp,
   ChevronRight,
+  FileSignature, // For E-Signatures
+  GraduationCap, // For Qualifications
+  Tag, // For Categories/Types
+  University as UniversityIcon, // Renamed to avoid conflict
+  Landmark, // For CPD Credits/Methodologies, Fees
+  FolderKanban, // Participation Categories
+  UserCog, // Personnel Categories
+  Building2, // COGS
 } from 'lucide-vue-next'
 
-// --- State ---
-const counts = ref({
+const counts = reactive({
   cpdActivities: 0,
   cpdCredits: 0,
   cpdMethodologies: 0,
   documentTypes: 0,
   eSignatures: 0,
-  fileTypes: 0,
+  // fileTypes: 0, // Removed
   feeStructures: 0,
   participationCategories: 0,
   participationSubCategories: 0,
   personnelCategories: 0,
+  qualifications: 0, // Combined count for Qualifications
   qualificationTypes: 0,
   registrationTypes: 0,
   sectors: 0,
-  subCategories: 0,
+  subCategories: 0, // Registration Sub Categories
   universities: 0,
   cogsAgencies: 0,
   cogsDepts: 0,
   cogsWorkplaces: 0,
 })
 
-// --- Utility Functions ---
 const baseCardClasses =
-  'bg-white rounded-lg shadow-sm border border-slate-200 transition-all duration-300'
-const gradientClasses = (from, to) => `from-${from}-600 to-${to}-400`
-const iconBgClass = (color) => `bg-${color}-50`
+  'bg-white rounded-xl shadow-sm border border-slate-200 transition-all duration-300 hover:shadow-md'
+const gradientClasses = (from, to) => `from-${from}-100 to-${to}-100` // Adjusted gradient for subtlety
+const iconBgClass = (color) => `bg-${color}-100`
 const iconColorClass = (color) => `text-${color}-600`
-const buttonClasses = (color) => `bg-${color}-50 text-${color}-600 hover:bg-${color}-100`
+const buttonClasses = (color) => `bg-${color}-50 text-${color}-700 hover:bg-${color}-100 hover:text-${color}-800`
 
-// --- Icon Mapping ---
 const iconMap = {
   cpdManagement: BookOpen,
-  cpdActivity: ClipboardList,
+  cpdActivities: ClipboardList,
+  cpdCredits: Landmark,
+  cpdMethodologies: Landmark,
   documentManagement: FileText,
+  documentTypes: Tag,
+  eSignatures: FileSignature,
+  // fileTypes: File, // Removed
   feeManagement: DollarSign,
+  feeStructures: Landmark,
   participation: Users,
-  personnel: User,
+  participationCategories: FolderKanban,
+  participationSubCategories: Users,
+  personnel: UserCog,
+  personnelCategories: Tag,
+  qualifications: GraduationCap,
+  qualificationTypes: GraduationCap,
   registration: CheckCircle,
+  registrationTypes: Tag,
+  sectors: Tag,
+  subCategories: Tag,
   university: Building,
+  universities: UniversityIcon,
   cogsManagement: Briefcase,
+  cogsAgency: Building2,
+  cogsDept: Building2,
+  cogsWorkplace: Building2,
 }
 
-// --- Configuration Cards Data ---
-const configurationCards = [
+const configurationCards = reactive([
   {
     id: 'cpdManagement',
     title: 'CPD Management',
-    description: 'Manage Continuing Medical Education activities',
-    countLabel: 'Active Activities',
-    countRef: 'cpdActivities',
+    description: 'Manage CME activities, credits, and methodologies',
+    countLabel: 'Total CPD Items',
+    countRef: 'cpdActivities', // Displaying main activity count here, could sum others if needed
     countSuffix: 'items',
-    usedIn: ['Professional Development', 'Certification'],
+    usedIn: ['Prof. Development', 'Certification'],
     children: [
-      {
-        text: 'CPD Activities',
-        route: '/admin/admin/health_certification/cpd_activities',
-        icon: null,
-      },
-      {
-        text: 'CPD Credits',
-        route: '/admin/admin/health_certification/cpd_credits',
-        icon: null,
-      },
-      {
-        text: 'CPD Methodologies',
-        route: '/admin/admin/health_certification/cpd_methodologies',
-        icon: null,
-      },
+      { text: 'CPD Activities', route: '/admin/admin/health_certification/cpd_activities', iconId: 'cpdActivities' },
+      { text: 'CPD Credits', route: '/admin/admin/health_certification/cpd_credits', iconId: 'cpdCredits' },
+      { text: 'CPD Methodologies', route: '/admin/admin/health_certification/cpd_methodologies', iconId: 'cpdMethodologies' },
     ],
-    gradient: gradientClasses('blue', 'blue'),
-    iconBg: iconBgClass('blue'),
-    iconColor: iconColorClass('blue'),
-    button: buttonClasses('blue'),
-    icon: 'BookOpen',
+    iconName: 'blue', // Simplified color name
+    gradient: gradientClasses('blue', 'sky'),
   },
-  {
-    id: 'cpdActivity',
-    title: 'CPD Activity',
-    description: 'Manage Continuing Professional Development activities',
-    countLabel: 'Active Activities',
-    countRef: 'cpdActivities',
-    countSuffix: 'activities',
-    usedIn: ['Professional Development'],
-    route: '/admin/admin/health_certification/cpd_activity',
-    buttonText: 'Manage CPD Activities',
-    gradient: gradientClasses('indigo', 'indigo'),
-    iconBg: iconBgClass('indigo'),
-    iconColor: iconColorClass('indigo'),
-    button: buttonClasses('indigo'),
-    icon: 'ClipboardList',
-  },
-  {
-    id: 'documentManagement',
-    title: 'Document Management',
-    description: 'Manage document types and configurations',
-    countLabel: 'Total Types',
-    countRef: 'documentTypes',
-    countSuffix: 'types',
-    usedIn: ['Registration', 'Applications'],
-    children: [
-      {
-        text: 'Document Types',
-        route: '/admin/admin/health_certification/document_types',
-        icon: null,
-      },
-      {
-        text: 'E-Signatures',
-        route: '/admin/admin/health_certification/e_signatures',
-        icon: null,
-      },
-      {
-        text: 'File Types',
-        route: '/admin/admin/health_certification/file_types',
-        icon: null,
-      },
-    ],
-    gradient: gradientClasses('emerald', 'emerald'),
-    iconBg: iconBgClass('emerald'),
-    iconColor: iconColorClass('emerald'),
-    button: buttonClasses('emerald'),
-    icon: 'FileText',
-  },
-  {
+   {
     id: 'feeManagement',
     title: 'Fee Management',
     description: 'Configure fee structures and settings',
@@ -252,200 +206,170 @@ const configurationCards = [
     countRef: 'feeStructures',
     countSuffix: 'structures',
     usedIn: ['Registration', 'Payments'],
-    route: '/admin/admin/health_certification/fee_structures',
-    buttonText: 'Manage Fees',
-    gradient: gradientClasses('amber', 'amber'),
-    iconBg: iconBgClass('amber'),
-    iconColor: iconColorClass('amber'),
-    button: buttonClasses('amber'),
-    icon: 'DollarSign',
+     children: [
+      { text: 'Fee Structures', route: '/admin/admin/health_certification/fee_structures', iconId: 'feeStructures' },
+       { text: 'Fee Categories', route: '/admin/admin/health_certification/fee_category', iconId: 'feeStructures' }, // Assuming same icon
+    ],
+    iconName: 'amber',
+    gradient: gradientClasses('amber', 'orange'),
   },
-  {
+   {
     id: 'participation',
-    title: 'Participation',
+    title: 'Participation Config',
     description: 'Manage participation categories',
-    countLabel: 'Categories',
-    countRef: 'participationCategories',
+    countLabel: 'Total Categories',
+    countRef: 'participationCategories', // Displaying main category count
     countSuffix: 'categories',
     usedIn: ['Registration', 'Activities'],
     children: [
-      {
-        text: 'Categories',
-        route: '/admin/admin/health_certification/participation_category',
-        icon: null,
-      },
-      {
-        text: 'Sub Categories',
-        route: '/admin/admin/health_certification/participation_sub_category',
-        icon: null,
-      },
+      { text: 'Categories', route: '/admin/admin/health_certification/participation_category', iconId: 'participationCategories' },
+      { text: 'Sub Categories', route: '/admin/admin/health_certification/participation_sub_category', iconId: 'participationSubCategories' },
     ],
-    gradient: gradientClasses('purple', 'purple'),
-    iconBg: iconBgClass('purple'),
-    iconColor: iconColorClass('purple'),
-    button: buttonClasses('purple'),
-    icon: 'Users',
+    iconName: 'purple',
+    gradient: gradientClasses('purple', 'violet'),
   },
   {
     id: 'personnel',
-    title: 'Personnel',
-    description: 'Manage personnel categories and qualifications',
-    countLabel: 'Categories',
+    title: 'Personnel Config',
+    description: 'Manage personnel, qualifications & types',
+    countLabel: 'Personnel Categories',
     countRef: 'personnelCategories',
     countSuffix: 'categories',
     usedIn: ['Registration', 'Certification'],
     children: [
-      {
-        text: 'Categories',
-        route: '/admin/admin/health_certification/personnel_categories',
-        icon: null,
-      },
-      {
-        text: 'Qualifications',
-        route: '/admin/admin/health_certification/qualifications',
-        icon: null,
-      },
-      {
-        text: 'Qualification Types',
-        route: '/admin/admin/health_certification/qualification_types',
-        icon: null,
-      },
+      { text: 'Personnel Categories', route: '/admin/admin/health_certification/personnel_categories', iconId: 'personnelCategories' },
+      { text: 'Qualifications', route: '/admin/admin/health_certification/qualifications', iconId: 'qualifications' },
+      { text: 'Qualification Types', route: '/admin/admin/health_certification/qualification_types', iconId: 'qualificationTypes' },
     ],
-    gradient: gradientClasses('rose', 'rose'),
-    iconBg: iconBgClass('rose'),
-    iconColor: iconColorClass('rose'),
-    button: buttonClasses('rose'),
-    icon: 'User',
+    iconName: 'rose',
+    gradient: gradientClasses('rose', 'pink'),
   },
-  {
+   {
     id: 'registration',
-    title: 'Registration',
+    title: 'Registration Config',
     description: 'Manage registration types and settings',
-    countLabel: 'Types',
+    countLabel: 'Registration Types',
     countRef: 'registrationTypes',
     countSuffix: 'types',
     usedIn: ['Registration'],
     children: [
-      {
-        text: 'Types',
-        route: '/admin/admin/health_certification/registration_type',
-        icon: null,
-      },
-      {
-        text: 'Sectors',
-        route: '/admin/admin/health_certification/sector',
-        icon: null,
-      },
-      {
-        text: 'Sub Categories',
-        route: '/admin/admin/health_certification/sub_categories',
-        icon: null,
-      },
+      { text: 'Registration Types', route: '/admin/admin/health_certification/registration_type', iconId: 'registrationTypes' },
+      { text: 'Sectors', route: '/admin/admin/health_certification/sector', iconId: 'sectors' },
+      { text: 'Sub Categories', route: '/admin/admin/health_certification/sub_categories', iconId: 'subCategories' },
     ],
-    gradient: gradientClasses('cyan', 'cyan'),
-    iconBg: iconBgClass('cyan'),
-    iconColor: iconColorClass('cyan'),
-    button: buttonClasses('cyan'),
-    icon: 'CheckCircle',
+    iconName: 'cyan',
+    gradient: gradientClasses('cyan', 'sky'),
   },
-  {
+    {
     id: 'university',
-    title: 'University',
+    title: 'University Data',
     description: 'Manage university information',
-    countLabel: 'Universities',
+    countLabel: 'Universities Listed',
     countRef: 'universities',
     countSuffix: 'institutions',
     usedIn: ['Registration', 'Verification'],
-    route: '/admin/admin/health_certification/university',
-    buttonText: 'Manage Universities',
-    gradient: gradientClasses('violet', 'violet'),
-    iconBg: iconBgClass('violet'),
-    iconColor: iconColorClass('violet'),
-    button: buttonClasses('violet'),
-    icon: 'Building',
+     children: [
+      { text: 'Manage Universities', route: '/admin/admin/health_certification/university', iconId: 'universities' },
+    ],
+    iconName: 'indigo', // Changed color
+    gradient: gradientClasses('indigo', 'violet'),
+  },
+   {
+    id: 'documentManagement',
+    title: 'Document Config',
+    description: 'Manage document types and e-signatures',
+    countLabel: 'Document Types',
+    countRef: 'documentTypes',
+    countSuffix: 'types',
+    usedIn: ['Registration', 'Applications'],
+    children: [
+      { text: 'Document Types', route: '/admin/admin/health_certification/document_types', iconId: 'documentTypes' },
+      { text: 'E-Signatures', route: '/admin/admin/health_certification/e_signatures', iconId: 'eSignatures' },
+      // Removed File Types link
+    ],
+    iconName: 'emerald',
+    gradient: gradientClasses('emerald', 'green'),
   },
   {
     id: 'cogsManagement',
     title: 'COGS Management',
     description: 'Manage COGS agencies and workplaces',
-    countLabel: 'Agencies',
+    countLabel: 'Total Agencies',
     countRef: 'cogsAgencies',
     countSuffix: 'agencies',
     usedIn: ['COGS', 'Registration'],
     children: [
-      {
-        text: 'Agency',
-        route: '/admin/admin/health_certification/cogs_agency',
-        icon: null,
-      },
-      {
-        text: 'Department',
-        route: '/admin/admin/health_certification/cogs_dept',
-        icon: null,
-      },
-      {
-        text: 'Workplace',
-        route: '/admin/admin/health_certification/cogs_workplace',
-        icon: null,
-      },
+      { text: 'COGS Agency', route: '/admin/admin/health_certification/cogs_agency', iconId: 'cogsAgency' },
+      { text: 'COGS Department', route: '/admin/admin/health_certification/cogs_dept', iconId: 'cogsDept' },
+      { text: 'COGS Workplace', route: '/admin/admin/health_certification/cogs_workplace', iconId: 'cogsWorkplace' },
     ],
-    gradient: gradientClasses('teal', 'teal'),
-    iconBg: iconBgClass('teal'),
-    iconColor: iconColorClass('teal'),
-    button: buttonClasses('teal'),
-    icon: 'Briefcase',
+    iconName: 'teal',
+    gradient: gradientClasses('teal', 'cyan'),
   },
-]
+])
 
-// --- Data Fetching ---
 onMounted(async () => {
   try {
     const countPromises = [
-      apiServices.getMhpcMastersCpdActivities(),
-      apiServices.getMhpcMastersCpdCredits(),
-      apiServices.getMhpcMastersCpdMethodologies(),
-      apiServices.getMhpcMastersDocumentTypes(),
-      apiServices.getMhpcMastersESignatures(),
-      apiServices.getMhpcMastersFileTypes(),
-      apiServices.getMhpcMastersFeeStructures(),
-      apiServices.getMhpcMastersMHPCParticipationCategories(),
-      apiServices.getMhpcMastersMhpcParticipationSubCategories(),
-      apiServices.getMhpcMastersPersonnelCategories(),
-      apiServices.getMhpcMastersQualificationTypes(),
-      apiServices.getMhpcMastersRegistrationTypes(),
-      apiServices.getMhpcMastersSectors(),
-      apiServices.getMhpcMastersSubCategories(),
-      apiServices.getMhpcMastersUniversities(),
-      apiServices.getMhpcCogsAgencies(),
-      apiServices.getMhpcCogsDepartments(),
-      apiServices.getMhpcCogsWorkplaces(),
+      apiServices.getMhpcMastersCpdActivities(), // 0
+      apiServices.getMhpcMastersCpdCredits(), // 1
+      apiServices.getMhpcMastersCpdMethodologies(), // 2
+      apiServices.getMhpcMastersDocumentTypes(), // 3
+      apiServices.getMhpcMastersESignatures(), // 4
+      // apiServices.getMhpcMastersFileTypes(), // Removed - Was 5
+      apiServices.getMhpcMastersFeeStructures(), // 5 (was 6)
+      apiServices.getMhpcMastersMHPCParticipationCategories(), // 6 (was 7)
+      apiServices.getMhpcMastersMhpcParticipationSubCategories(), // 7 (was 8)
+      apiServices.getMhpcMastersPersonnelCategories(), // 8 (was 9)
+      apiServices.getMhpcMastersQualifications(), // 9 (was 10) - Count for Qualifications
+      apiServices.getMhpcMastersQualificationTypes(), // 10 (was 11)
+      apiServices.getMhpcMastersRegistrationTypes(), // 11 (was 12)
+      apiServices.getMhpcMastersSectors(), // 12 (was 13)
+      apiServices.getMhpcMastersSubCategories(), // 13 (was 14) - Registration SubCats
+      apiServices.getMhpcMastersUniversities(), // 14 (was 15)
+      apiServices.getMhpcCogsAgencies(), // 15 (was 16)
+      apiServices.getMhpcCogsDepartments(), // 16 (was 17)
+      apiServices.getMhpcCogsWorkplaces(), // 17 (was 18)
     ]
 
-    const results = await Promise.all(countPromises)
+    const results = await Promise.allSettled(countPromises.map(p => p.catch(e => e))) // Use allSettled for resilience
 
-    // Update counts state
-    counts.value.cpdActivities = results[0].data?.length || 0
-    counts.value.cpdCredits = results[1].data?.length || 0
-    counts.value.cpdMethodologies = results[2].data?.length || 0
-    counts.value.cpdActivities = results[3].data?.length || 0
-    counts.value.documentTypes = results[4].data?.length || 0
-    counts.value.eSignatures = results[5].data?.length || 0
-    counts.value.fileTypes = results[6].data?.length || 0
-    counts.value.feeStructures = results[7].data?.length || 0
-    counts.value.participationCategories = results[8].data?.length || 0
-    counts.value.participationSubCategories = results[9].data?.length || 0
-    counts.value.personnelCategories = results[10].data?.length || 0
-    counts.value.qualificationTypes = results[11].data?.length || 0
-    counts.value.registrationTypes = results[12].data?.length || 0
-    counts.value.sectors = results[13].data?.length || 0
-    counts.value.subCategories = results[14].data?.length || 0
-    counts.value.universities = results[15].data?.length || 0
-    counts.value.cogsAgencies = results[16].data?.length || 0
-    counts.value.cogsDepts = results[17].data?.length || 0
-    counts.value.cogsWorkplaces = results[18].data?.length || 0
+    const processResult = (result) => {
+        if (result.status === 'fulfilled' && result.value?.data) {
+            return result.value.data.count ?? (Array.isArray(result.value.data.results) ? result.value.data.results.length : 0);
+        }
+        console.error("API Error or Unexpected Format:", result.reason || result.value);
+        return 0; // Default to 0 on error or unexpected format
+    };
+
+    counts.cpdActivities = processResult(results[0]);
+    counts.cpdCredits = processResult(results[1]);
+    counts.cpdMethodologies = processResult(results[2]);
+    counts.documentTypes = processResult(results[3]);
+    counts.eSignatures = processResult(results[4]);
+    // counts.fileTypes = processResult(results[?]); // Removed
+    counts.feeStructures = processResult(results[5]);
+    counts.participationCategories = processResult(results[6]);
+    counts.participationSubCategories = processResult(results[7]);
+    counts.personnelCategories = processResult(results[8]);
+    counts.qualifications = processResult(results[9]); // Count for Qualifications card
+    counts.qualificationTypes = processResult(results[10]);
+    counts.registrationTypes = processResult(results[11]);
+    counts.sectors = processResult(results[12]);
+    counts.subCategories = processResult(results[13]); // Registration SubCategories count
+    counts.universities = processResult(results[14]);
+    counts.cogsAgencies = processResult(results[15]);
+    counts.cogsDepts = processResult(results[16]);
+    counts.cogsWorkplaces = processResult(results[17]);
+
   } catch (error) {
-    console.error('Error fetching dashboard data:', error)
-    // Consider adding user-friendly error handling (e.g., a notification)
+    // This catch block might be less likely to trigger with allSettled,
+    // unless there's an error *before* the promises run.
+    console.error('Error setting up dashboard data fetch:', error)
   }
 })
 </script>
+
+<style scoped>
+/* Minimal custom styles, relying on Tailwind */
+</style>
