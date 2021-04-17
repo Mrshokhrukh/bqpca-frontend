@@ -133,17 +133,6 @@ import ApprovedCpdForm from './cpdProviderApplicationComponents/ApprovedCpdForm.
 import FormActions from './cpdProviderApplicationComponents/FormActions.vue'
 import ConfirmationModal from './cpdProviderApplicationComponents/ConfirmationModal.vue'
 
-// Props (Not currently used for v-model on this parent)
-/*
-const props = defineProps({
-  modelValue: { type: Object, default: () => ({}) }
-});
-const emit = defineEmits(['update:modelValue']);
-const updateModelValue = () => { // Example function if needed
-   emit('update:modelValue', { ... });
-};
-*/
-
 const authStore = useAuthStore()
 const router = useRouter()
 const toast = useToast()
@@ -193,34 +182,29 @@ const methodologyOptions = ref([])
 const participationCategoryOptions = ref([])
 const participantSubcategoryOptions = ref([]) // Holds ALL subcategories with parent ID
 
-// --- Computed Property with FIX ---
+// --- Computed Property for Filtered Subcategories ---
 const filteredSubcategories = computed(() => {
-  // console.log("Filtering Subcategories...");
-  // console.log("Selected Parent Category ID (string):", participantDetails.category, typeof participantDetails.category);
-  // console.log("All Subcategory Options:", JSON.parse(JSON.stringify(participantSubcategoryOptions.value)));
-
   if (!participantDetails.category) {
-    // console.log("No parent category selected.");
+    console.log("No parent category selected, returning empty subcategories list")
     return []
   }
 
+  // Parse the category ID as an integer for consistent comparison
   const selectedParentCategoryId = parseInt(participantDetails.category, 10)
-  // console.log("Parsed Parent Category ID (number):", selectedParentCategoryId);
 
   if (isNaN(selectedParentCategoryId)) {
     console.error('Selected parent category ID is not a number:', participantDetails.category)
     return []
   }
 
+  // Filter subcategories where categoryId matches the selected category ID
   const filtered = participantSubcategoryOptions.value.filter((subcategory) => {
-    const subcategoryParentId = subcategory.categoryId // This holds the parent ID assigned during mapping
-    // console.log(`Comparing SubCat ParentID: ${subcategoryParentId} (type: ${typeof subcategoryParentId}) with Selected ParentID: ${selectedParentCategoryId} (type: ${typeof selectedParentCategoryId})`);
-
-    // Robust comparison: Ensure both are compared as numbers
-    return Number(subcategoryParentId) === selectedParentCategoryId
+    // Ensure consistent type comparison by parsing both as numbers
+    const subcategoryParentId = parseInt(subcategory.categoryId, 10)
+    return subcategoryParentId === selectedParentCategoryId
   })
 
-  // console.log("Filtered Subcategories:", JSON.parse(JSON.stringify(filtered)));
+  console.log(`Found ${filtered.length} subcategories for category ID ${selectedParentCategoryId}`)
   return filtered
 })
 
@@ -233,20 +217,16 @@ const toggleApprovedFields = () => {
 
   // Clear fields based on the *new* state
   if (approved) {
-    // console.log("Clearing non-approved fields");
     application.title = ''
     application.venue = ''
     application.fromDate = ''
     application.toDate = ''
-    // Keep approvalLetter, attachment, attendanceSheet as they become relevant
   } else {
-    // console.log("Clearing approved-specific fields");
     participants.value = []
     attendanceSheet.value = null
     approvalLetter.value = null
     attachment.value = null
   }
-  // updateModelValue(); // Call if this component uses v-model
 }
 
 const handleFileUpload = (event, targetRef, maxSizeMB = 5, allowedType = 'application/pdf') => {
@@ -257,7 +237,6 @@ const handleFileUpload = (event, targetRef, maxSizeMB = 5, allowedType = 'applic
     if (file.type === allowedType && file.size <= maxSize) {
       targetRef.value = file
       console.log(`File ${file.name} assigned to target ref.`)
-      // updateModelValue(); // Call if relevant for v-model
     } else {
       toast.error(
         `Invalid file. Please upload a ${allowedType === 'application/pdf' ? 'PDF' : 'file'} no larger than ${maxSizeMB}MB.`,
@@ -328,9 +307,14 @@ const calculateTotalHours = () => {
 }
 
 const loadSubcategories = () => {
-  // Primarily handled by computed property now.
-  // Could be used to trigger API fetch if subcategories were loaded dynamically.
-  // console.log("loadSubcategories called (handled by computed)");
+  // Reset subcategory when category changes
+  participantDetails.subcategory = ''
+
+  const categoryId = participantDetails.category
+  console.log(`Loading subcategories for category ID: ${categoryId}`)
+
+  // No need to do anything else here as filteredSubcategories computed
+  // property will automatically update based on participantDetails.category
 }
 
 const validateForm = () => {
@@ -415,7 +399,7 @@ const prepareFormData = (isDraft = false) => {
 
   // Append basic details
   formData.append('cid_no', applicant.cidNumber)
-  formData.append('registration_no', applicant.registrationNumber) // Make sure this is populated
+  formData.append('registration_no', applicant.registrationNumber)
   formData.append('full_name', applicant.fullName)
   formData.append('proposed_training_location', applicant.agencyTrainingLocation)
   formData.append('is_cpd_approved', isCpdApprovedFlag)
@@ -448,7 +432,7 @@ const prepareFormData = (isDraft = false) => {
   formData.append('resources', JSON.stringify(validResourcePersons))
 
   // Teaching Method
-  formData.append('type_of_cpd', teachingMethod.type || '') // Send ID
+  formData.append('type_of_cpd', teachingMethod.type || '')
   formData.append('expected_outcome', teachingMethod.expectedOutcome || '')
 
   // Methodologies (JSON array of objects with methodology_name: ID)
@@ -464,23 +448,22 @@ const prepareFormData = (isDraft = false) => {
   // Participant Summary
   formData.append('number_of_participants', participantDetails.number || 0)
   formData.append('relevance_to_topic', participantDetails.relevance || '')
-  formData.append('participation_category', participantDetails.category || '') // Send ID
-  formData.append('participant_sub_category', participantDetails.subcategory || '') // Send ID
+  formData.append('participation_category', participantDetails.category || '')
+  formData.append('participant_sub_category', participantDetails.subcategory || '')
 
-  // Participant List (JSON) - Send even if empty for consistency
+  // Participant List (JSON)
   const validParticipants = participants.value
     .filter((p) => p.regNo && p.name && p.name !== 'Reg# not found')
     .map((p) => ({
       participant_reg_no: p.regNo,
-      cpd_credits: calculatedCredits.value, // Use calculated credits
-      // review_status: 'Pending' // Backend might set default
+      cpd_credits: calculatedCredits.value,
     }))
   formData.append('participants', JSON.stringify(validParticipants))
 
   // Files
   if (isCpdApprovedFlag) {
     if (approvalLetter.value) formData.append('approval_letter_attachment', approvalLetter.value)
-    if (attachment.value) formData.append('approved_cpd_main_attachment', attachment.value) // Use specific key if needed
+    if (attachment.value) formData.append('approved_cpd_main_attachment', attachment.value)
     if (attendanceSheet.value) formData.append('attendance_sheet_attachment', attendanceSheet.value)
   } else {
     if (courseDocument.value) formData.append('course_document', courseDocument.value)
@@ -488,14 +471,6 @@ const prepareFormData = (isDraft = false) => {
   // Common File
   if (resourcePersonCertificate.value)
     formData.append('document_supporting_expertise', resourcePersonCertificate.value)
-
-  // Log final FormData before sending (optional)
-  // console.log("--- FormData Contents ---");
-  // for (let [key, value] of formData.entries()) {
-  //     if (value instanceof File) console.log(`${key}: File(name=${value.name})`);
-  //     else console.log(`${key}: ${value}`);
-  // }
-  // console.log("-------------------------");
 
   return formData
 }
@@ -569,7 +544,7 @@ const confirmSubmit = async () => {
     toast.success(successMessage.value)
     setTimeout(() => {
       // Navigate to tracking or dashboard page
-      router.push({ name: 'TrackCpdApplications' }) // ADJUST ROUTE NAME
+      router.push({ name: 'TrackCpdApplications' })
     }, 2500)
   } catch (error) {
     console.error('Error submitting form:', error)
@@ -584,17 +559,15 @@ const confirmSubmit = async () => {
 const cancelForm = () => {
   if (confirm('Are you sure you want to cancel and discard changes?')) {
     // Navigate away, e.g., to a dashboard
-    router.push({ name: 'CpdProviderDashboard' }) // ADJUST ROUTE NAME
+    router.push({ name: 'CpdProviderDashboard' })
   }
 }
 
-// Fetch list of registered users for lookups (simplified)
+// Fetch list of registered users for lookups
 const fetchUserRegistrations = async () => {
   console.log('Fetching user registrations...')
   try {
-    // Assuming a more direct endpoint or filtering capability if available
-    // For now, using getEpcNewApplications and filtering frontend
-    const response = await apiService.getEpcNewApplications({ params: { page_size: 1000 } }) // Fetch a large page
+    const response = await apiService.getEpcNewApplications({ params: { page_size: 1000 } })
 
     if (response.data?.results && Array.isArray(response.data.results)) {
       userRegistrations.value = response.data.results
@@ -626,55 +599,45 @@ const loadDropdownOptions = async () => {
         apiService.getEpcMastersParticipationSubCategories(),
       ])
 
-    const processOptions = (response, textField, valueField, categoryField = null) => {
-      const results = response.data?.results
-      if (results && Array.isArray(results)) {
-        return results
-          .map((item) => {
-            const option = {
-              text: item[textField] || `Unnamed (ID: ${item[valueField]})`, // Fallback text
-              value: item[valueField], // Keep original value type (string or number)
-            }
-            if (
-              categoryField &&
-              item[categoryField] !== undefined &&
-              item[categoryField] !== null
-            ) {
-              // Ensure the parent ID is stored consistently, maybe as number if needed for comparison later
-              option.categoryId = item[categoryField]
-              // console.log(`Mapping subcat '${option.text}', parent ID: ${option.categoryId} (type: ${typeof option.categoryId}) from field '${categoryField}'`);
-            } else if (categoryField) {
-              console.warn(`Missing category field '${categoryField}' for item:`, item)
-            }
-            return option
-          })
-          .filter((opt) => opt.value !== undefined && opt.value !== null) // Filter out items with missing value
-      }
-      console.warn(
-        `Could not process options, response invalid or empty. Target field: ${textField}`,
-      )
-      return []
-    }
+    // Process main categories and options
+    agencyOptions.value = agencyRes.data?.results?.map(item => ({
+      text: item.name || `Unnamed (ID: ${item.id})`,
+      value: item.id
+    })) || []
 
-    agencyOptions.value = processOptions(agencyRes, 'name', 'id')
-    reasonOptions.value = processOptions(reasonRes, 'name', 'id')
-    cpdTypeOptions.value = processOptions(cpdTypeRes, 'cpd_activity_name', 'id')
-    methodologyOptions.value = processOptions(methodologyRes, 'methodology_name', 'id')
-    participationCategoryOptions.value = processOptions(
-      categoriesRes,
-      'participation_category_name',
-      'id',
-    )
-    // **** IMPORTANT: Using 'participation_category_name' as the field containing the PARENT category ID ****
-    participantSubcategoryOptions.value = processOptions(
-      subcategoriesRes,
-      'participation_sub_category_name',
-      'id',
-      'participation_category_name',
-    )
+    reasonOptions.value = reasonRes.data?.results?.map(item => ({
+      text: item.name || `Unnamed (ID: ${item.id})`,
+      value: item.id
+    })) || []
 
+    cpdTypeOptions.value = cpdTypeRes.data?.results?.map(item => ({
+      text: item.cpd_activity_name || `Unnamed (ID: ${item.id})`,
+      value: item.id
+    })) || []
+
+    methodologyOptions.value = methodologyRes.data?.results?.map(item => ({
+      text: item.methodology_name || `Unnamed (ID: ${item.id})`,
+      value: item.id
+    })) || []
+
+    participationCategoryOptions.value = categoriesRes.data?.results?.map(item => ({
+      text: item.participation_category_name || `Unnamed (ID: ${item.id})`,
+      value: item.id
+    })) || []
+
+    // Process subcategories with special attention to the parent ID
+    participantSubcategoryOptions.value = subcategoriesRes.data?.results?.map(item => ({
+      text: item.participation_sub_category_name || `Unnamed (ID: ${item.id})`,
+      value: item.id,
+      // Store parent category ID for filtering
+      categoryId: item.participation_category_name // This field stores the parent category ID
+    })) || []
+
+    console.log('Processed subcategories:', participantSubcategoryOptions.value)
+
+    // Log the options count for debugging
     console.log(
-      `Loaded Options: Agencies(${agencyOptions.value.length}), Reasons(${reasonOptions.value.length}), Types(${cpdTypeOptions.value.length}), Methods(${methodologyOptions.value.length}), Cats(${participationCategoryOptions.value.length}), SubCats(${participantSubcategoryOptions.value.length})`,
+      `Loaded Options: Agencies(${agencyOptions.value.length}), Reasons(${reasonOptions.value.length}), Types(${cpdTypeOptions.value.length}), Methods(${methodologyOptions.value.length}), Cats(${participationCategoryOptions.value.length}), SubCats(${participantSubcategoryOptions.value.length})`
     )
 
     // Add warnings if critical options are missing
@@ -684,11 +647,10 @@ const loadDropdownOptions = async () => {
     if (methodologyOptions.value.length === 0) console.warn('Methodology options list is empty!')
     if (participationCategoryOptions.value.length === 0)
       console.warn('Participation Category options list is empty!')
-    // Subcategory list might be empty if none exist yet
   } catch (error) {
     console.error('Error loading one or more dropdown options:', error)
     validationErrors.value.push(
-      'Critical error loading form selection options. Please try refreshing the page.',
+      'Critical error loading form selection options. Please try refreshing the page.'
     )
     toast.error('Failed to load essential form data. Please refresh.')
   }
@@ -707,11 +669,9 @@ onMounted(async () => {
     [authStore.user?.first_name, authStore.user?.middle_name, authStore.user?.last_name]
       .filter(Boolean)
       .join(' ') || 'N/A'
-  // Make sure registration_number is correct field name in your authStore user object
   applicant.registrationNumber = authStore.user?.registration_number || ''
   if (!applicant.registrationNumber) {
     console.warn('Registration number missing from auth store. Fetching might be needed.')
-    // Potentially trigger another fetch or display warning
   }
 
   await Promise.all([fetchUserRegistrations(), loadDropdownOptions()])
@@ -731,29 +691,24 @@ watch(
   (newVal) => {
     console.log('Watcher: application.isApproved changed to', newVal)
     toggleApprovedFields()
-  },
+  }
 )
 
 watch(
   () => participantDetails.category,
   (newCategory, oldCategory) => {
     if (newCategory !== oldCategory) {
-      console.log('Watcher: participantDetails.category changed, resetting subcategory.')
+      console.log('Watcher: participantDetails.category changed to', newCategory)
       participantDetails.subcategory = '' // Reset subcategory selection
     }
-  },
+  }
 )
 
 watch(
   teachingMethods,
   () => {
-    // console.log("Watcher: teachingMethods changed, recalculating hours.");
     calculateTotalHours()
   },
-  { deep: true },
+  { deep: true }
 )
 </script>
-
-<style scoped>
-/* Consistent spacing using mb-8 on form sections */
-</style>

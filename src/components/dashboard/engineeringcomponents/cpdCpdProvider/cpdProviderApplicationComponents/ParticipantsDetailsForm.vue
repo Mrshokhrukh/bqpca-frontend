@@ -1,4 +1,3 @@
-// 9. ParticipantsDetailsForm.vue
 <template>
   <div>
     <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
@@ -14,8 +13,8 @@
         >
         <select
           id="participationCategory"
-          :value="participantDetails.category"
-          @change="loadSubcategories"
+          v-model="participantDetails.category"
+          @change="onCategoryChange"
           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
         >
           <option value="">Select Category</option>
@@ -36,7 +35,7 @@
         >
         <select
           id="participantSubcategory"
-          :value="participantDetails.subcategory"
+          v-model="participantDetails.subcategory"
           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
         >
           <option value="">Select Sub-Category</option>
@@ -58,7 +57,7 @@
         <input
           type="number"
           id="numberParticipants"
-          :value="participantDetails.number"
+          v-model="participantDetails.number"
           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
         />
       </div>
@@ -70,7 +69,7 @@
         </label>
         <textarea
           id="relevanceProfession"
-          :value="participantDetails.relevance"
+          v-model="participantDetails.relevance"
           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
           rows="4"
         ></textarea>
@@ -80,11 +79,22 @@
 </template>
 
 <script setup>
-defineProps({
+import { defineProps, defineEmits } from 'vue'
+
+const props = defineProps({
   participantDetails: Object,
   participationCategoryOptions: Array,
   participantSubcategoryOptions: Array,
   loadSubcategories: Function,
   filteredSubcategories: Array,
 })
+
+const emit = defineEmits(['update:category'])
+
+const onCategoryChange = () => {
+  // Reset subcategory when parent category changes
+  props.participantDetails.subcategory = ''
+  // Call the parent's loadSubcategories function
+  props.loadSubcategories()
+}
 </script>
