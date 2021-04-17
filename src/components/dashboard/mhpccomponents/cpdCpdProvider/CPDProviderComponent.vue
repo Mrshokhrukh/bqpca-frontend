@@ -72,12 +72,12 @@ onMounted(async () => {
           addingParticipants.value = true
         } else {
           toast.error('This application is not approved or cannot be found.')
-          router.push('/admin/cpd_cpd_provider/health_certification/cpd_application_tracker')
+          router.push('/admin/cme_cpd_provider/health_certification/cpd_application_tracker')
         }
       } catch (error) {
         console.error('Error loading application:', error)
         toast.error('Failed to load the application. Please try again.')
-        router.push('/admin/cpd_cpd_provider/health_certification/cpd_application_tracker')
+        router.push('/admin/cme_cpd_provider/health_certification/cpd_application_tracker')
       }
     }
   }

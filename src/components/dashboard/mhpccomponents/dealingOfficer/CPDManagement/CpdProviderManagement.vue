@@ -512,7 +512,7 @@ const formData = reactive({
   email: '',
   password: '',
   confirm_password: '',
-  role: 'cpd_cpd_provider',
+  role: 'cme_cpd_provider',
   service_type: 'health_certification',
 
   // Provider specific fields
@@ -552,7 +552,7 @@ const submitProvider = async () => {
       email: formData.email,
       password: formData.password,
       confirm_password: formData.confirm_password,
-      role: 'cpd_cpd_provider',
+      role: 'cme_cpd_provider',
       service_type: 'health_certification',
     }
 
@@ -648,7 +648,7 @@ const fetchProviders = async () => {
     // Access the users from the results array
     if (response && response.data && Array.isArray(response.data.results)) {
       // Filter for CPD providers only
-      providers.value = response.data.results.filter((user) => user.role === 'cpd_cpd_provider')
+      providers.value = response.data.results.filter((user) => user.role === 'cme_cpd_provider')
     } else {
       console.error('Unexpected API response structure:', response)
       providers.value = []

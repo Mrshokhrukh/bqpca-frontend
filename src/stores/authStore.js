@@ -77,7 +77,7 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('refreshToken', response.data.refresh)
       localStorage.setItem('user', JSON.stringify(user.value))
 
-      // *** ROLE-BASED REDIRECTION LOGIC ***
+      // Role-based redirection logic
       if (credentials.from === 'authSection') {
         if (
           user.value.role !== 'user' &&
@@ -87,12 +87,10 @@ export const useAuthStore = defineStore('auth', () => {
           toast.error(
             'Admin/Internal role access is not permitted from the previous page. Please login from here',
           )
-          // Clear state
+          // Clear state and storage
           accessToken.value = null
           refreshToken.value = null
           user.value = null
-
-          // Clear localStorage
           localStorage.removeItem('accessToken')
           localStorage.removeItem('refreshToken')
           localStorage.removeItem('user')
@@ -106,12 +104,10 @@ export const useAuthStore = defineStore('auth', () => {
           user.value.role === 'institutions'
         ) {
           toast.error('User role access is not permitted from the previous page.')
-          // Clear state
+          // Clear state and storage
           accessToken.value = null
           refreshToken.value = null
           user.value = null
-
-          // Clear localStorage
           localStorage.removeItem('accessToken')
           localStorage.removeItem('refreshToken')
           localStorage.removeItem('user')
@@ -120,9 +116,10 @@ export const useAuthStore = defineStore('auth', () => {
         }
       }
 
-      // Default redirection (if no role-based restrictions)
+      // Log the redirect route
+      const redirectRoute = `/admin/${user.value.role}/${user.value.service_type}/dashboard`
       toast.success('Login successful!')
-      router.push(`/admin/${user.value.role}/${user.value.service_type}/dashboard`)
+      router.push(redirectRoute)
     } catch (error) {
       console.error(error.response?.data?.message || 'Login failed. Please try again.')
       throw error

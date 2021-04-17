@@ -974,27 +974,27 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/payments`,
       },
     ],
-    cpd_cpd_provider: [
+    cme_cpd_provider: [
       {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
-        route: (serviceType) => `/admin/cpd_cpd_provider/${serviceType}/dashboard`,
+        route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/dashboard`,
       },
       {
         name: 'Apply New CPD',
         icon: getIconComponent('BookOpen'),
-        route: (serviceType) => `/admin/cpd_cpd_provider/${serviceType}/cpd_application_details`,
+        route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cpd_application_details`,
       },
       {
         name: 'Track Applications',
         icon: getIconComponent('FileText'),
-        route: (serviceType) => `/admin/cpd_cpd_provider/${serviceType}/cpd_application_tracker`,
+        route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cpd_application_tracker`,
       },
       {
         name: 'CPD approved Add Participants',
         icon: getIconComponent('FileText'),
         route: (serviceType) =>
-          `/admin/cpd_cpd_provider/${serviceType}/cpd_approved_add_participants`,
+          `/admin/cme_cpd_provider/${serviceType}/cpd_approved_add_participants`,
       },
     ],
     institutions: [
@@ -1402,27 +1402,27 @@ const serviceSpecificMenuItems = {
       },
     ],
 
-    cpd_cpd_provider: [
+    cme_cpd_provider: [
       {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
-        route: (serviceType) => `/admin/cpd_cpd_provider/${serviceType}/dashboard`,
+        route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/dashboard`,
       },
       {
         name: 'CPD Application',
         icon: getIconComponent('FileText'),
-        route: (serviceType) => `/admin/cpd_cpd_provider/${serviceType}/cpd_application_details`,
+        route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cpd_application_details`,
       },
       {
         name: 'Track Applications',
         icon: getIconComponent('Search'),
-        route: (serviceType) => `/admin/cpd_cpd_provider/${serviceType}/cpd_application_tracker`,
+        route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cpd_application_tracker`,
       },
       {
         name: 'Add Participants',
         icon: getIconComponent('UserPlus'),
         route: (serviceType) =>
-          `/admin/cpd_cpd_provider/${serviceType}/cpd_approved_add_participants`,
+          `/admin/cme_cpd_provider/${serviceType}/cpd_approved_add_participants`,
       },
     ],
 

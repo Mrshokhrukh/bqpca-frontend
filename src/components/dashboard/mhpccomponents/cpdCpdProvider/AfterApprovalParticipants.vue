@@ -496,7 +496,7 @@ const handleSubmit = async () => {
 
     // Navigate back to tracker after short delay
     setTimeout(() => {
-      router.push('/admin/cpd_cpd_provider/health_certification/cpd_application_tracker')
+      router.push('/admin/cme_cpd_provider/health_certification/cpd_application_tracker')
     }, 2000)
   } catch (error) {
     console.error('Error submitting participants:', error)
@@ -542,7 +542,7 @@ const handleApiErrors = (errorData) => {
 }
 
 const handleCancel = () => {
-  router.push('/admin/cpd_cpd_provider/health_certification/cpd_application_tracker')
+  router.push('/admin/cme_cpd_provider/health_certification/cpd_application_tracker')
 }
 
 const formatDate = (dateString) => {

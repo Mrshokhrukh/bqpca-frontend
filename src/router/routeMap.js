@@ -429,7 +429,7 @@ export default {
       // ... other Health Certification routes for director
     },
   },
-  cpd_cpd_provider: {
+  cme_cpd_provider: {
     ecpf: {
       dashboard: ecpfDashboard,
       // for_approval_applications: () => import('@/views/admin/ECPF/ForApprovalApplications.vue'),

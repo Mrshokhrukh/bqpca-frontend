@@ -22,8 +22,8 @@
     </template>
 
     <!-- CPD/CPD Provider Section -->
-    <template v-else-if="role === 'cpd_cpd_provider'">
-      <component :is="bmhCpdCpdProviderComponent" />
+    <template v-else-if="role === 'cme_cpd_provider'">
+      <component :is="bmhCmeCpdProviderComponent" />
     </template>
 
     <!-- Institutions Section -->
@@ -282,7 +282,7 @@ const bmhDealingOfficerComponent = computed(() => {
 })
 
 // MHPC CPD/CPD Provider Route-Based Components
-const bmhCpdCpdProviderComponent = computed(() => {
+const bmhCmeCpdProviderComponent = computed(() => {
   const path = route.path
   switch (true) {
     case path.endsWith('/health_certification/dashboard'):

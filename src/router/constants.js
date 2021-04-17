@@ -5,7 +5,7 @@ export const ROLE_CHOICES = [
   { key: 'director', label: 'Director' },
   { key: 'admin', label: 'Admin' },
   { key: 'super_admin', label: 'Super Admin' },
-  { key: 'cpd_cpd_provider', label: 'CMD/CPD Provider' },
+  { key: 'cme_cpd_provider', label: 'CMD/CPD Provider' },
   { key: 'institutions', label: 'Medical Institutions' },
 ]
 

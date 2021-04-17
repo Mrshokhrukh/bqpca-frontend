@@ -121,10 +121,16 @@ const publicRoutes = [
       description: 'The requested page could not be found',
       keywords: '404, not found, error page',
     },
+    props: (route) => ({ attempted: route.query.attempted }),
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/404',
+    redirect: (to) => {
+      return {
+        path: '/404',
+        query: { attempted: to.fullPath }
+      }
+    },
   },
 ]
 

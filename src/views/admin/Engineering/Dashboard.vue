@@ -32,7 +32,7 @@
     </template>
 
     <!-- CPD/CPD Provider Section -->
-    <template v-else-if="role === 'cpd_cpd_provider'">
+    <template v-else-if="role === 'cme_cpd_provider'">
       <component :is="engineeringCpdCpdProviderComponent" />
     </template>
 
@@ -92,7 +92,7 @@ import Additional_Qualification from '@/components/dashboard/engineeringcomponen
 import RenewalLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/RenewalLists.vue'
 import ReRegistrationLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/userapplication/ReRegistrationLists.vue'
 import InstituteRenewals from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/InstituteRenewals.vue'
-import DPRApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/DprApplication.vue'
+import EnggDPRApplication from '@/components/dashboard/engineeringcomponents/dealingOfficer/instituteManagement/EnggDprApplication.vue'
 // import RenewalLists from '@/components/dashboard/engineeringcomponents/dealingOfficer/RenewalLists.vue';
 import CpdManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdManagement.vue'
 import CpdProviderManagement from '@/components/dashboard/engineeringcomponents/dealingOfficer/CPDManagement/CpdProviderManagement.vue'
@@ -290,7 +290,7 @@ const engineeringDealingOfficerComponent = computed(() => {
     case path.endsWith('/engineering_certification/eoi_application'):
       return EoiApplication
     case path.endsWith('/engineering_certification/dpr_application'):
-      return DPRApplication
+      return EnggDPRApplication
     case path.endsWith('/engineering_certification/capa_management'):
       return CAPAManagement
     case path.endsWith('/engineering_certification/all_institute_profile'):

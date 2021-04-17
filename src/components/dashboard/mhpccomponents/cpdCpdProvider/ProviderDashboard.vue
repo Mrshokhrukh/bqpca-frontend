@@ -224,12 +224,12 @@ const loading = ref(false)
 
 // Redirect to CPD application form
 const proposeNewTraining = () => {
-  router.push('/admin/cpd_cpd_provider/health_certification/cpd_application_details')
+  router.push('/admin/cme_cpd_provider/health_certification/cpd_application_details')
 }
 
 // Redirect to CPD application tracker
 const viewAllSessions = () => {
-  router.push('/admin/cpd_cpd_provider/health_certification/cpd_application_tracker')
+  router.push('/admin/cme_cpd_provider/health_certification/cpd_application_tracker')
 }
 
 onMounted(async () => {

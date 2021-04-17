@@ -634,7 +634,7 @@ const editApplication = (application) => {
 
   // Redirect to edit page with application ID
   router.push(
-    `/admin/cpd_cpd_provider/health_certification/cpd_application_details?id=${application.id}`,
+    `/admin/cme_cpd_provider/health_certification/cpd_application_details?id=${application.id}`,
   )
 }
 
@@ -655,13 +655,13 @@ const addParticipants = (application) => {
 
   // Navigate to the participants page with the application ID
   router.push(
-    `/admin/cpd_cpd_provider/health_certification/cpd_application_details?id=${application.id}&add_participants=true`,
+    `/admin/cme_cpd_provider/health_certification/cpd_application_details?id=${application.id}&add_participants=true`,
   )
 }
 
 // Create new application (navigate to CPD provider form)
 const createNewApplication = () => {
-  router.push('/admin/cpd_cpd_provider/health_certification/cpd_application_details')
+  router.push('/admin/cme_cpd_provider/health_certification/cpd_application_details')
 }
 
 // Fetch applications when component mounts

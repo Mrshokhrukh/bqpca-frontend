@@ -595,7 +595,7 @@ const handleSubmitActual = async () => {
           // Append file type for this document group
           formData.append(`attachments-${index}-file_type`, String(doc.type));
           // Append each file in this group
-          doc.files.forEach((file, fileIndex) => {
+          doc.files.forEach((file) => {
              // If API supports multiple files per type, key might need adjustment (e.g., fileIndex)
              // Assuming API handles multiple files with the same key `attachments-${index}-file`
              formData.append(`attachments-${index}-file`, file, file.name);
