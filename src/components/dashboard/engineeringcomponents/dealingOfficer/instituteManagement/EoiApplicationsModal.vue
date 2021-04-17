@@ -75,6 +75,15 @@
                         />
                         <span>{{ overallStatus }}</span>
                       </span>
+                      <!-- Edit Button in Top Right -->
+                      <button
+                        type="button"
+                        class="p-2 text-blue-600 hover:text-blue-700 transition-colors rounded-full hover:bg-blue-50"
+                        @click="editApplication"
+                        title="Edit Application"
+                      >
+                        <Pencil class="h-5 w-5" />
+                      </button>
                       <button
                         type="button"
                         class="p-2 text-gray-400 hover:text-gray-500 transition-colors rounded-full hover:bg-white"
@@ -235,7 +244,7 @@
                   </div>
                 </div>
 
-                <!-- Enhanced Footer with Approve/Regret -->
+                <!-- Enhanced Footer with Approve/Regret and Edit buttons -->
                 <div class="px-8 py-4 bg-gray-50 border-t border-gray-200">
                   <div class="flex justify-between items-center">
                     <div
@@ -255,12 +264,15 @@
                         <span>Close</span>
                       </button>
 
+
+
                       <button
                         type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 inline-flex items-center space-x-2"
                         @click="rejectApplication"
                       >
-                        Regret Application
+                        <ThumbsDown class="h-4 w-4" />
+                        <span>Regret Application</span>
                       </button>
 
                       <button
@@ -268,11 +280,163 @@
                         class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 inline-flex items-center space-x-2"
                         @click="approveApplication"
                       >
-                        Approve Application
+                        <CheckCircle class="h-4 w-4" />
+                        <span>Approve Application</span>
                       </button>
                     </div>
                   </div>
                 </div>
+
+                <!-- Edit Modal (shows when editing) -->
+                <Dialog
+                  as="div"
+                  @close="closeEditModal"
+                  :open="isEditModalOpen"
+                  class="relative z-50"
+                >
+                  <div class="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
+
+                  <div class="fixed inset-0 overflow-y-auto">
+                    <div class="flex min-h-full items-center justify-center p-4">
+                      <DialogPanel class="w-full max-w-3xl transform overflow-hidden rounded-xl bg-white p-6 shadow-xl transition-all">
+                        <div class="flex items-center justify-between mb-4 pb-4 border-b">
+                          <DialogTitle as="h3" class="text-lg font-medium text-gray-900">
+                            Edit Application
+                          </DialogTitle>
+                          <button
+                            type="button"
+                            class="p-1 text-gray-400 hover:text-gray-500 rounded-full"
+                            @click="closeEditModal"
+                          >
+                            <X class="h-5 w-5" />
+                          </button>
+                        </div>
+
+                        <form @submit.prevent="saveApplicationChanges">
+                          <div class="space-y-4">
+                            <!-- Institute Name Field -->
+                            <div>
+                              <label for="name_of_institution" class="block text-sm font-medium text-gray-700">Institute Name</label>
+                              <input
+                                id="name_of_institution"
+                                type="text"
+                                v-model="editedApplication.name_of_institution"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
+                                required
+                              />
+                            </div>
+
+                            <!-- Address Field -->
+                            <div>
+                              <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+                              <input
+                                id="address"
+                                type="text"
+                                v-model="editedApplication.address"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
+                                required
+                              />
+                            </div>
+
+                            <!-- Email Field -->
+                            <div>
+                              <label for="email_address" class="block text-sm font-medium text-gray-700">Email Address</label>
+                              <input
+                                id="email_address"
+                                type="email"
+                                v-model="editedApplication.email_address"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
+                                required
+                              />
+                            </div>
+
+                            <!-- Contact Number Field -->
+                            <div>
+                              <label for="contact_no" class="block text-sm font-medium text-gray-700">Contact Number</label>
+                              <input
+                                id="contact_no"
+                                type="tel"
+                                v-model="editedApplication.contact_no"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
+                                required
+                              />
+                            </div>
+
+                            <!-- Course Title Field -->
+                            <div>
+                              <label for="title_of_course" class="block text-sm font-medium text-gray-700">Course Title</label>
+                              <input
+                                id="title_of_course"
+                                type="text"
+                                v-model="editedApplication.title_of_course"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
+                                required
+                              />
+                            </div>
+
+                            <!-- Program Type Field -->
+                            <div>
+                              <label for="type_of_programme" class="block text-sm font-medium text-gray-700">Program Type</label>
+                              <select
+                                id="type_of_programme"
+                                v-model="editedApplication.type_of_programme"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
+                                required
+                              >
+                                <option value="">Select a program type</option>
+                                <option value="certificate">Certificate</option>
+                                <option value="diploma">Diploma</option>
+                                <option value="degree">Degree</option>
+                                <option value="masters">Masters</option>
+                                <option value="phd">PhD</option>
+                              </select>
+                            </div>
+
+                            <!-- Commencement Date Field -->
+                            <div>
+                              <label for="commencement_date" class="block text-sm font-medium text-gray-700">Commencement Date</label>
+                              <input
+                                id="commencement_date"
+                                type="date"
+                                v-model="editedApplication.commencement_date"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
+                                required
+                              />
+                            </div>
+
+                            <!-- Course Duration Field -->
+                            <div>
+                              <label for="course_duration" class="block text-sm font-medium text-gray-700">Course Duration</label>
+                              <input
+                                id="course_duration"
+                                type="text"
+                                v-model="editedApplication.course_duration"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          <div class="mt-6 flex justify-end space-x-3">
+                            <button
+                              type="button"
+                              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                              @click="closeEditModal"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="submit"
+                              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                            >
+                              Save Changes
+                            </button>
+                          </div>
+                        </form>
+                      </DialogPanel>
+                    </div>
+                  </div>
+                </Dialog>
               </div>
             </DialogPanel>
           </TransitionChild>
@@ -299,6 +463,9 @@ import {
   CircleAlert,
   Circle,
   X,
+  Pencil,
+  CheckCircle,
+  ThumbsDown,
 } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import apiService from '@/services/services'
@@ -317,6 +484,79 @@ const props = defineProps({
 const emit = defineEmits(['close', 'application-updated'])
 
 const errorMessage = ref('')
+const isEditModalOpen = ref(false)
+const editedApplication = ref({})
+
+// Function to open edit modal and populate with current application data
+const editApplication = () => {
+  // Create a deep copy of the application to avoid direct mutation
+  editedApplication.value = JSON.parse(JSON.stringify(props.application))
+  isEditModalOpen.value = true
+}
+
+// Function to close edit modal
+const closeEditModal = () => {
+  isEditModalOpen.value = false
+}
+
+// Function to save changes to application
+const saveApplicationChanges = async () => {
+  try {
+    // Create a modified payload without the file fields that are causing errors
+    const payloadToSend = { ...editedApplication.value };
+
+    // Remove the file-related fields that are causing errors
+    delete payloadToSend.supporting_documents;
+    delete payloadToSend.institute_eoi_supporting_documents;
+    delete payloadToSend.do_dpr_report;
+
+    // Ensure program type is lowercase as expected by API
+    if (payloadToSend.type_of_programme) {
+      payloadToSend.type_of_programme = payloadToSend.type_of_programme.toLowerCase();
+    }
+
+    // Log data being sent to API for debugging
+    console.log('Sending update for application ID:', props.application.id);
+    console.log('Update data:', payloadToSend);
+
+    // Make sure we're sending valid data
+    if (!payloadToSend || !props.application.id) {
+      errorMessage.value = 'Invalid application data';
+      toast.error('Cannot save: Invalid application data');
+      return;
+    }
+
+    const response = await apiService.patchEpcInstitute(props.application.id, payloadToSend);
+
+    if (response && response.status === 200 && response.data) {
+      // Emit the application-updated event with the updated data
+      emit('application-updated', response.data);
+      toast.success('Application updated successfully!');
+      closeEditModal();
+    } else {
+      errorMessage.value = 'Failed to update application.';
+      toast.error('Failed to update application');
+    }
+  } catch (error) {
+    console.error('Error updating application:', error);
+
+    // Try to extract and display the validation errors from the API response
+    if (error.response && error.response.data) {
+      const errorData = error.response.data;
+      let errorMessage = 'Validation errors:';
+
+      Object.entries(errorData).forEach(([field, errors]) => {
+        errorMessage += `\n- ${field}: ${errors.join(', ')}`;
+      });
+
+      console.error(errorMessage);
+      toast.error(errorMessage);
+    } else {
+      errorMessage.value = `Failed to update application: ${error.message || 'Unknown error'}`;
+      toast.error(`Failed to update: ${error.message || 'Unknown error'}`);
+    }
+  }
+}
 
 const closeModal = () => {
   emit('close')
@@ -432,6 +672,9 @@ const overallStatus = computed(() => {
   transition:
     transform 0.2s ease-in-out,
     box-shadow 0.2s ease-in-out;
+}
+
+.rounded-xl:hover {
   transform: translateY(-2px);
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),

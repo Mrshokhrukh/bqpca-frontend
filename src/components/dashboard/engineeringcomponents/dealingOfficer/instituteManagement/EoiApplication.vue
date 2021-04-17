@@ -99,10 +99,10 @@
               class="hover:bg-gray-50 transition-colors"
             >
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {{ institute.CID }}
+                {{ institute.id}}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {{ institute.full_name }}
+                {{ institute.name_of_institution }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 {{ institute.type_of_programme }}

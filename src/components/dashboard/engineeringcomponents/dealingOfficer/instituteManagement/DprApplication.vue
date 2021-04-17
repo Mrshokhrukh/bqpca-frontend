@@ -85,7 +85,7 @@
                 #{{ application.id }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {{ application.full_name }}
+                {{ application.name_of_institution}}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                 {{ formatDate(application.commencement_date) }}
