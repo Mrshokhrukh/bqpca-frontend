@@ -52,7 +52,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { computed } from 'vue'
 import { User, UserCircle, Calendar } from 'lucide-vue-next'
@@ -65,6 +64,7 @@ const props = defineProps({
 })
 
 const formatDate = (date) => {
+  // ... (keep your existing formatDate function)
   if (!date) return 'N/A'
   try {
     return new Date(date).toLocaleDateString('en-US', {
@@ -78,11 +78,30 @@ const formatDate = (date) => {
   }
 }
 
+// --- MODIFIED FUNCTION ---
 const handleImageError = (event) => {
-  event.target.src = '/placeholder-avatar.png'
+  const placeholderSrc = '/placeholder-avatar.png';
+  const imageElement = event.target;
+
+  // IMPORTANT CHECK: If the source that failed is ALREADY the placeholder,
+  // stop to prevent infinite loops. We use endsWith because the browser
+  // might resolve the 'src' to a full URL (e.g., http://localhost:5173/placeholder-avatar.png)
+  if (imageElement.src && imageElement.src.endsWith(placeholderSrc)) {
+    console.error("Placeholder image failed to load or caused recursive error:", imageElement.src);
+    // Optional: Remove the error handler now to be absolutely sure
+    // imageElement.onerror = null;
+    return; // Do nothing more
+  }
+
+  // Otherwise, the original image source failed, so set the placeholder
+  console.warn("Original image failed, setting placeholder:", imageElement.src);
+  imageElement.src = placeholderSrc;
 }
+// --- END MODIFIED FUNCTION ---
+
 
 const overallStatus = computed(() => {
+  // ... (keep your existing computed property)
   if (!props.application?.user_qualifications?.[0]) return 'Pending'
 
   const appReview = props.application.user_qualifications[0].application_review_status
