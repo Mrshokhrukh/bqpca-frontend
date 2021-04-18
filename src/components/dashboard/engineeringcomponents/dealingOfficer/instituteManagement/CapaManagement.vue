@@ -9,6 +9,27 @@
 
     <!-- Main Content Area -->
     <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <!-- View Toggle -->
+      <div class="mb-6 flex items-center justify-between">
+        <div class="flex items-center">
+          <label for="view-type" class="mr-3 text-gray-700 font-medium">View:</label>
+          <select
+            id="view-type"
+            v-model="viewType"
+            class="border border-gray-300 rounded-md px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          >
+            <option value="cards">Cards</option>
+            <option value="table">Table</option>
+          </select>
+        </div>
+        <button
+          @click="openAddCapaModal(null)"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+        >
+          Add CAPA
+        </button>
+      </div>
+
       <!-- Loading State -->
       <LoadingState v-if="isLoading" />
 
@@ -16,7 +37,84 @@
       <ErrorState v-else-if="error" :message="error" @retry="retryFetch" />
 
       <!-- Empty State -->
-      <EmptyState v-else-if="!displayedInstitutes.length && !isLoading && !error" />
+      <EmptyState v-else-if="!displayedCapas.length && !isLoading && !error" />
+
+      <!-- Table View -->
+      <div v-else-if="viewType === 'table'" class="overflow-x-auto rounded-lg shadow-md">
+        <table class="min-w-full divide-y divide-gray-300">
+          <thead class="bg-gray-50">
+            <tr>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider rounded-tl-lg"
+              >
+                Facility
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                Teaching Center
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                Inspection Date
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                Observation
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                Status
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider rounded-tr-lg"
+              >
+                CAPA Added
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr
+              v-for="capa in displayedCapas"
+              :key="capa.id"
+              class="transition-colors duration-200 hover:bg-gray-100"
+            >
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {{ getInstituteName(capa.institute) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ capa.teaching_center?.center_name || 'N/A' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ capa.inspection_from_date }} - {{ capa.inspection_to_date }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ truncateText(capa.observation_description, 50) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span
+                  :class="getStatusClass(capa.status)"
+                  class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                >
+                  {{ getStatusText(capa.status) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ formatDate(capa.created_at) || 'N/A' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- CAPA Cards Grid -->
       <CapaCards
@@ -79,27 +177,49 @@ const error = ref(null)
 const searchQuery = ref('')
 const statusFilter = ref('')
 const currentPage = ref(1)
-const itemsPerPage = ref(9) // Changed to 9 for better grid display with 3 columns
+const itemsPerPage = ref(9)
 const showCapaModal = ref(false)
 const selectedInstituteId = ref(null)
 const selectedInstituteName = ref('')
 const showViewDetailsModal = ref(false)
 const selectedCapaForDetails = ref(null)
+const viewType = ref('cards')
 
 // Computed Properties
-const filteredInstitutes = computed(() => {
-  let filtered = institutes.value
-
+const filteredCapas = computed(() => {
+  let filtered = capas.value
+  if (statusFilter.value) {
+    filtered = filtered.filter((capa) => capa.status === statusFilter.value)
+  }
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter((institute) =>
-      institute.name_of_institution.toLowerCase().includes(query),
+    filtered = filtered.filter((capa) =>
+      getInstituteName(capa.institute).toLowerCase().includes(query) ||
+      capa.teaching_center?.center_name?.toLowerCase().includes(query) ||
+      capa.observation_description?.toLowerCase().includes(query)
     )
   }
   return filtered
 })
 
-const totalPages = computed(() => Math.ceil(filteredInstitutes.value.length / itemsPerPage.value))
+const filteredInstitutes = computed(() => {
+  let filtered = institutes.value
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    filtered = filtered.filter((institute) =>
+      institute.name_of_institution.toLowerCase().includes(query)
+    )
+  }
+  return filtered
+})
+
+const totalPages = computed(() => Math.ceil(filteredCapas.value.length / itemsPerPage.value))
+
+const displayedCapas = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return filteredCapas.value.slice(start, end)
+})
 
 const displayedInstitutes = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value
@@ -109,9 +229,42 @@ const displayedInstitutes = computed(() => {
 
 // Helper Functions
 const getInstituteName = (instituteId) => {
-  if (!instituteId) return '' // Handle null/undefined case
+  if (!instituteId) return ''
   const institute = institutes.value.find((inst) => inst.id === instituteId)
   return institute ? institute.name_of_institution : 'Unknown Institute'
+}
+
+const truncateText = (text, maxLength) => {
+  if (text && text.length > maxLength) {
+    return text.substring(0, maxLength) + '...'
+  }
+  return text
+}
+
+const getStatusClass = (status) => {
+  return (
+    {
+      P: 'bg-yellow-100 text-yellow-800',
+      R: 'bg-green-100 text-green-800',
+      C: 'bg-blue-100 text-blue-800',
+    }[status] || 'bg-gray-100 text-gray-800'
+  )
+}
+
+const getStatusText = (status) => {
+  return (
+    {
+      P: 'Pending',
+      R: 'Resolved',
+      C: 'Cancelled',
+    }[status] || 'Unknown'
+  )
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+  const date = new Date(dateString)
+  return date.toLocaleDateString()
 }
 
 // API Functions
@@ -146,9 +299,8 @@ const fetchCapas = async () => {
 
 const processCapas = () => {
   instituteCapas.value = {}
-
   const filteredCapas = statusFilter.value
-    ? capas.value.filter((capa) => capa.status === statusFilter.value) // Fixed from previous code
+    ? capas.value.filter((capa) => capa.status === statusFilter.value)
     : capas.value
 
   filteredCapas.forEach((capa) => {
@@ -159,7 +311,6 @@ const processCapas = () => {
   })
 }
 
-// Fetch retry function
 const retryFetch = () => {
   fetchInstitutes()
   fetchCapas()
@@ -168,7 +319,7 @@ const retryFetch = () => {
 // Modal Functions
 const openAddCapaModal = (instituteId) => {
   selectedInstituteId.value = instituteId
-  selectedInstituteName.value = getInstituteName(instituteId)
+  selectedInstituteName.value = instituteId ? getInstituteName(instituteId) : ''
   showCapaModal.value = true
 }
 
@@ -178,7 +329,6 @@ const closeCapaModal = () => {
   selectedInstituteName.value = ''
 }
 
-// View Details Modal Functions
 const openViewDetailsModal = (capa) => {
   selectedCapaForDetails.value = capa
   showViewDetailsModal.value = true
@@ -254,7 +404,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Modal Transition Styles (kept, but you can remove if not using transitions) */
 .modal-enter-active,
 .modal-leave-active {
   transition: opacity 0.3s ease;
