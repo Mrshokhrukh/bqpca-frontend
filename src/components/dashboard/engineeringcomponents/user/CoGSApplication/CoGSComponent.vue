@@ -95,7 +95,7 @@
                 >
                 <textarea
                   v-model="form.reason_for_application"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   rows="3"
                   placeholder="Enter reason for application"
                 ></textarea>
@@ -112,7 +112,7 @@
                 <input
                   type="text"
                   v-model="form.supervisor_name"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter supervisor's name"
                 />
                 <span v-if="errors.supervisor_name" class="text-sm text-red-500 block">{{
@@ -128,7 +128,7 @@
                 <input
                   type="text"
                   v-model="form.supervisor_designation"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter supervisor's designation"
                 />
                 <span v-if="errors.supervisor_designation" class="text-sm text-red-500 block">{{
@@ -142,13 +142,13 @@
                 <Listbox v-model="form.agency">
                   <div class="relative">
                     <ListboxButton
-                      class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-left"
+                      class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-left"
                     >
                       <span class="block truncate">{{
                         selectedAgencyName || 'Select Agency'
                       }}</span>
                     </ListboxButton>
-                    <ListboxOptions class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                    <ListboxOptions class="absolute z-10 mt-1 max-w-7xl bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                       <ListboxOption v-for="agency in agencyOptions" :key="agency.id" :value="agency.id" v-slot="{ active, selected }">
                         <ListItemContent :active="active" :selected="selected" :name="agency.name" />
                       </ListboxOption>
@@ -163,10 +163,10 @@
                 <label class="block text-sm font-medium text-gray-700 required">Department</label>
                 <Listbox v-model="form.department">
                   <div class="relative">
-                    <ListboxButton class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-left">
+                    <ListboxButton class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-left">
                       <span class="block truncate">{{ selectedDepartmentName || 'Select Department' }}</span>
                     </ListboxButton>
-                    <ListboxOptions class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                    <ListboxOptions class="absolute z-10 mt-1 max-w-7xl bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                       <ListboxOption v-for="dept in departmentOptions" :key="dept.id" :value="dept.id" v-slot="{ active, selected }">
                         <ListItemContent :active="active" :selected="selected" :name="dept.name" />
                       </ListboxOption>
@@ -181,10 +181,10 @@
                 <label class="block text-sm font-medium text-gray-700 required">Workplace/Working Organisation</label>
                 <Listbox v-model="form.workplace">
                   <div class="relative">
-                    <ListboxButton class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-left">
+                    <ListboxButton class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-left">
                       <span class="block truncate">{{ selectedWorkplaceName || 'Select Workplace' }}</span>
                     </ListboxButton>
-                    <ListboxOptions class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                    <ListboxOptions class="absolute z-10 mt-1 max-w-7xl bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                       <ListboxOption v-for="place in workplaceOptions" :key="place.id" :value="place.id" v-slot="{ active, selected }">
                         <ListItemContent :active="active" :selected="selected" :name="place.name" />
                       </ListboxOption>
@@ -202,7 +202,7 @@
                 <input
                   type="tel"
                   v-model="form.contact_number"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter supervisor's contact number"
                 />
                 <span v-if="errors.contact_number" class="text-sm text-red-500 block">{{
@@ -218,7 +218,7 @@
                 <input
                   type="email"
                   v-model="form.email_address"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter supervisor's email address"
                 />
                 <span v-if="errors.email_address" class="text-sm text-red-500 block">{{
@@ -287,7 +287,7 @@
                   <input
                     type="text"
                     v-model="form.recipient_name"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's name"
                   />
                   <span v-if="errors.recipient_name" class="text-sm text-red-500 block">{{
@@ -303,7 +303,7 @@
                   <input
                     type="tel"
                     v-model="form.recipient_contact_number"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's contact number"
                   />
                   <span v-if="errors.recipient_contact_number" class="text-sm text-red-500 block">{{
@@ -319,7 +319,7 @@
                   <input
                     type="email"
                     v-model="form.recipient_email"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's email address"
                   />
                   <span v-if="errors.recipient_email" class="text-sm text-red-500 block">{{
@@ -335,7 +335,7 @@
                   <input
                     type="text"
                     v-model="form.address"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's full address"
                   />
                   <span v-if="errors.address" class="text-sm text-red-500 block">{{
@@ -349,7 +349,7 @@
                   <input
                     type="text"
                     v-model="form.po_box"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's PO Box (optional)"
                   />
                   <span v-if="errors.po_box" class="text-sm text-red-500 block">{{
@@ -365,7 +365,7 @@
                   <input
                     type="text"
                     v-model="form.zip_code"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    class="max-w-7xl px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's zip code (optional)"
                   />
                   <span v-if="errors.zip_code" class="text-sm text-red-500 block">{{
@@ -425,21 +425,21 @@
           <button
             type="button"
             @click="cancelForm"
-            class="w-full sm:w-auto px-6 py-3 rounded-xl text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            class="max-w-7xl sm:w-auto px-6 py-3 rounded-xl text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           >
             Cancel & Clear Form
           </button>
           <button
             type="button"
             @click="saveDraft"
-            class="w-full sm:w-auto px-6 py-3 rounded-xl bg-yellow-500 text-white hover:bg-yellow-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400"
+            class="max-w-7xl sm:w-auto px-6 py-3 rounded-xl bg-yellow-500 text-white hover:bg-yellow-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400"
           >
             Save as Draft
           </button>
           <button
             type="submit"
             :disabled="!form.declaration || form.payment_status === 'completed'"
-            class="w-full sm:w-auto px-6 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="max-w-7xl sm:w-auto px-6 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Submit Application
           </button>
@@ -447,7 +447,7 @@
             v-if="shouldShowPaymentButton"
             type="button"
             @click="initiatePayment"
-            class="w-full sm:w-auto px-6 py-3 rounded-xl bg-teal-500 text-white hover:bg-teal-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-400"
+            class="max-w-7xl sm:w-auto px-6 py-3 rounded-xl bg-teal-500 text-white hover:bg-teal-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-400"
             :class="{ 'animate-pulse': form.payment_status === 'processing_payment' }"
           >
             {{ getPaymentButtonText }}
@@ -464,10 +464,10 @@
             </TransitionChild>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
             <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-              <div class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
-                    <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                    <div class="mt-3 text-center sm:mt-0 sm:text-left max-w-7xl">
                       <DialogTitle as="h3" class="text-lg leading-6 font-medium text-gray-900"> Terms and Conditions </DialogTitle>
                       <div class="mt-4 prose prose-sm text-gray-500 max-h-80 overflow-y-auto">
                         <p> Placeholder terms: By submitting this application for a Certificate of Good Standing (CoGS), you affirm that all information provided is accurate and complete. You authorize the relevant authorities to verify this information. You understand that any false statements may lead to rejection of the application or revocation of the certificate. You agree to comply with all applicable regulations and standards related to your profession. </p>
@@ -477,7 +477,7 @@
                   </div>
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                  <button type="button" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm" @click="closeTermsModal"> I Understand </button>
+                  <button type="button" class="max-w-7xl inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm" @click="closeTermsModal"> I Understand </button>
                 </div>
               </div>
             </TransitionChild>

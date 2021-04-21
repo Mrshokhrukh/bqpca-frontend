@@ -1,6 +1,6 @@
 <!-- EducationTypeSelection.vue -->
 <template>
-  <div class="w-full max-w-4xl mx-auto">
+  <div class="max-w-7xl mx-auto">
     <div class="bg-white border rounded-lg shadow-sm p-8">
       <div class="text-center mb-8">
         <h2 class="text-2xl font-bold text-gray-900 mb-2">Education Details</h2>

@@ -27,7 +27,7 @@
 
       <!-- Decorative wave shape -->
       <div class="absolute bottom-0 left-0 right-0">
-        <svg class="w-full h-8 fill-slate-50" viewBox="0 0 1440 48" preserveAspectRatio="none">
+        <svg class="max-w-7xl h-8 fill-slate-50" viewBox="0 0 1440 48" preserveAspectRatio="none">
           <path
             d="M0 48h1440V0c-283.146 39.154-566.281 48-849.405 48C307.47 48 153.735 32 0 0v48z"
           />
@@ -222,7 +222,7 @@
               leave-to="opacity-0 scale-95"
             >
               <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
+                class="max-w-7xl transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
               >
                 <div class="flex items-center justify-between mb-6">
                   <DialogTitle class="text-xl font-semibold text-slate-900"
@@ -246,7 +246,7 @@
                       id="organization_name"
                       v-model="cmeProviderForm.organization_name"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
 
@@ -258,7 +258,7 @@
                       type="text"
                       id="license_number"
                       v-model="cmeProviderForm.license_number"
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
 
@@ -270,7 +270,7 @@
                       type="tel"
                       id="contact_number"
                       v-model="cmeProviderForm.contact_number"
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
 
@@ -283,7 +283,7 @@
                       id="email"
                       v-model="cmeProviderForm.email"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
 
@@ -296,7 +296,7 @@
                       id="password"
                       v-model="cmeProviderForm.password"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
 
@@ -309,7 +309,7 @@
                       id="confirm_password"
                       v-model="cmeProviderForm.confirm_password"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
 
@@ -363,7 +363,7 @@
               leave-to="opacity-0 scale-95"
             >
               <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
+                class="max-w-7xl transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
               >
                 <div class="flex items-center justify-between mb-6">
                   <DialogTitle class="text-xl font-semibold text-slate-900"
@@ -387,7 +387,7 @@
                       id="institution_name"
                       v-model="medicalInstitutionForm.institution_name"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
 
@@ -399,7 +399,7 @@
                       type="text"
                       id="license_number"
                       v-model="medicalInstitutionForm.license_number"
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
 
@@ -412,7 +412,7 @@
                       id="cme_email"
                       v-model="medicalInstitutionForm.email"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
 
@@ -425,7 +425,7 @@
                       id="cme_password"
                       v-model="medicalInstitutionForm.password"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
 
@@ -440,7 +440,7 @@
                       id="cme_confirm_password"
                       v-model="medicalInstitutionForm.confirm_password"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
                     />
                   </div>
 

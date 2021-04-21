@@ -25,7 +25,7 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="w-full max-w-3xl transform overflow-hidden rounded-xl bg-white shadow-xl transition-all max-h-[90vh] flex flex-col"
+              class="max-w-7xl max-w-3xl transform overflow-hidden rounded-xl bg-white shadow-xl transition-all max-h-[90vh] flex flex-col"
             >
               <!-- Modal Header -->
               <div
@@ -165,7 +165,7 @@
                         v-model="internalCapa.capa"
                         rows="4"
                         :disabled="true"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
+                        class="mt-1 block max-w-7xl rounded-md border-gray-300 shadow-sm bg-gray-50 py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
                       ></textarea>
                     </div>
                     <div>
@@ -180,7 +180,7 @@
                         id="implementation-timeline"
                         v-model="internalCapa.implementation_timeline"
                         :disabled="true"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
+                        class="mt-1 block max-w-7xl rounded-md border-gray-300 shadow-sm bg-gray-50 py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
                       />
                     </div>
                     <div>
@@ -195,7 +195,7 @@
                         v-model="internalCapa.management_comment"
                         rows="3"
                         :disabled="true"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
+                        class="mt-1 block max-w-7xl rounded-md border-gray-300 shadow-sm bg-gray-50 py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
                       ></textarea>
                     </div>
                     <!-- Conditionally render DO Remarks -->
@@ -208,7 +208,7 @@
                         v-model="internalCapa.DO_remarks"
                         rows="3"
                         :disabled="true"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
+                        class="mt-1 block max-w-7xl rounded-md border-gray-300 shadow-sm bg-gray-50 py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
                       ></textarea>
                     </div>
                     <div>
@@ -219,7 +219,7 @@
                         id="user-remarks"
                         v-model="internalCapa.user_remarks"
                         rows="3"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
+                        class="mt-1 block max-w-7xl rounded-md border-gray-300 shadow-sm py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
                       ></textarea>
                     </div>
                   </div>
@@ -232,14 +232,14 @@
               >
                 <button
                   type="button"
-                  class="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+                  class="max-w-7xl sm:w-auto px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
                   @click="$emit('close')"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
-                  class="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors flex items-center justify-center space-x-2"
+                  class="max-w-7xl sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors flex items-center justify-center space-x-2"
                   @click="submitCapa"
                 >
                   <svg

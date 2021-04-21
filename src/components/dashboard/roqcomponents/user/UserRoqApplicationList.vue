@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 w-full">
+  <div class="p-4 max-w-7xl">
     <!-- Header Section -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
       <h2 class="text-3xl font-serif font-bold text-slate-900">My Applications</h2>
@@ -38,7 +38,7 @@
               leave-from="opacity-100 scale-100"
               leave-to="opacity-0 scale-95"
             >
-              <DialogPanel class="bg-white rounded-lg p-8 shadow-xl w-full max-w-3xl relative">
+              <DialogPanel class="bg-white rounded-lg p-8 shadow-xl max-w-7xl relative">
                 <button
                   @click="showModal = false"
                   class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 focus:outline-none"
@@ -65,7 +65,7 @@
       <div v-else-if="filteredApplications.length === 0" class="py-12 text-center text-gray-500">
         No applications found
       </div>
-      <div v-else class="w-full overflow-x-auto">
+      <div v-else class="max-w-7xl overflow-x-auto">
         <ApplicationTable
           :applications="paginatedApplications"
           :current-page="currentPage"

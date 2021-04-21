@@ -30,7 +30,7 @@
 
       <!-- Decorative wave shape -->
       <div class="absolute bottom-0 left-0 right-0">
-        <svg class="w-full h-8 fill-slate-50" viewBox="0 0 1440 48" preserveAspectRatio="none">
+        <svg class="max-w-7xl h-8 fill-slate-50" viewBox="0 0 1440 48" preserveAspectRatio="none">
           <path
             d="M0 48h1440V0c-283.146 39.154-566.281 48-849.405 48C307.47 48 153.735 32 0 0v48z"
           />
@@ -229,7 +229,7 @@
               leave-to="opacity-0 scale-95"
             >
               <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
+                class="max-w-7xl transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
               >
                 <div class="flex items-center justify-between mb-6">
                   <DialogTitle class="text-xl font-semibold text-slate-900"
@@ -253,7 +253,7 @@
                       id="organization_name"
                       v-model="cpdProviderForm.organization_name"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
 
@@ -265,7 +265,7 @@
                       type="tel"
                       id="contact_number"
                       v-model="cpdProviderForm.contact_number"
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
 
@@ -278,7 +278,7 @@
                       id="email"
                       v-model="cpdProviderForm.email"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
 
@@ -291,7 +291,7 @@
                       id="password"
                       v-model="cpdProviderForm.password"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
 
@@ -304,7 +304,7 @@
                       id="confirm_password"
                       v-model="cpdProviderForm.confirm_password"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
 
@@ -358,7 +358,7 @@
               leave-to="opacity-0 scale-95"
             >
               <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
+                class="max-w-7xl transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
               >
                 <div class="flex items-center justify-between mb-6">
                   <DialogTitle class="text-xl font-semibold text-slate-900"
@@ -382,7 +382,7 @@
                       id="institution_name"
                       v-model="engineeringInstitutionForm.institution_name"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
 
@@ -394,7 +394,7 @@
                       type="text"
                       id="license_number"
                       v-model="engineeringInstitutionForm.license_number"
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
 
@@ -407,7 +407,7 @@
                       id="eng_email"
                       v-model="engineeringInstitutionForm.email"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
 
@@ -420,7 +420,7 @@
                       id="eng_password"
                       v-model="engineeringInstitutionForm.password"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
 
@@ -435,7 +435,7 @@
                       id="eng_confirm_password"
                       v-model="engineeringInstitutionForm.confirm_password"
                       required
-                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
 
