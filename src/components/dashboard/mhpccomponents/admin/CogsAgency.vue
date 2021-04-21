@@ -2,14 +2,22 @@
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
-        MHPC COGS Agencies Management
+        Mhpc COGS Agencies Management
       </h1>
+
+      <!-- Error/Success Messages -->
+      <div v-if="errorMessage" class="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+        {{ errorMessage }}
+      </div>
+      <div v-if="successMessage" class="mb-4 p-4 bg-green-100 text-green-700 rounded-md">
+        {{ successMessage }}
+      </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8">
           <h2 class="text-xl font-semibold text-slate-900 mb-4">
-            {{ isEditing ? 'Edit MHPC COGS Agency' : 'Add New MHPC COGS Agency' }}
+            {{ isEditing ? 'Edit Mhpc COGS Agency' : 'Add New Mhpc COGS Agency' }}
           </h2>
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
@@ -30,15 +38,17 @@
               <div class="flex gap-3">
                 <button
                   type="submit"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  :disabled="isLoading"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {{ isEditing ? `Update Agency` : `Add Agency` }}
+                  {{ isLoading ? 'Processing...' : isEditing ? 'Update Agency' : 'Add Agency' }}
                 </button>
                 <button
                   v-if="isEditing"
                   type="button"
                   @click="cancelEdit"
                   class="py-2 px-4 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200"
+                  :disabled="isLoading"
                 >
                   Cancel
                 </button>
@@ -51,7 +61,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
           <div class="mb-6 space-y-4">
             <div class="flex justify-between items-center">
-              <h2 class="text-xl font-semibold text-slate-900">MHPC COGS Agencies List</h2>
+              <h2 class="text-xl font-semibold text-slate-900">Mhpc COGS Agencies List</h2>
               <span class="text-sm text-slate-500">
                 {{ filteredAgencies.length }} Agency{{ filteredAgencies.length !== 1 ? 's' : '' }}
               </span>
@@ -81,8 +91,13 @@
             </div>
           </div>
 
+          <!-- Loading State -->
+          <div v-if="isLoading && !agencies.length" class="text-center py-8">
+            <p class="text-slate-500">Loading agencies...</p>
+          </div>
+
           <!-- Agencies Grid -->
-          <div class="space-y-4 mb-6">
+          <div v-else class="space-y-4 mb-6">
             <TransitionGroup name="list">
               <div
                 v-for="agency in paginatedAgencies"
@@ -97,6 +112,7 @@
                     <button
                       @click="startEdit(agency)"
                       class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+                      :disabled="isLoading"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -110,10 +126,11 @@
                     <button
                       @click="openDeleteModal(agency)"
                       class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                      :disabled="isLoading"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
-                          stroke-linecap="round"
+是是              stroke-linecap="round"
                           stroke-linejoin="round"
                           stroke-width="2"
                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
@@ -135,7 +152,7 @@
           <div v-if="filteredAgencies.length > itemsPerPage" class="flex justify-center gap-2">
             <button
               @click="currentPage--"
-              :disabled="currentPage === 1"
+              :disabled="currentPage === 1 || isLoading"
               class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
             >
               Previous
@@ -145,7 +162,7 @@
             </span>
             <button
               @click="currentPage++"
-              :disabled="currentPage === totalPages"
+              :disabled="currentPage === totalPages || isLoading"
               class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
             >
               Next
@@ -171,14 +188,16 @@
             <AlertDialogCancel
               class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
               @click="closeDeleteModal"
+              :disabled="isLoading"
             >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
               @click="confirmDelete"
+              :disabled="isLoading"
             >
-              Delete
+              {{ isLoading ? 'Deleting...' : 'Delete' }}
             </AlertDialogAction>
           </div>
         </AlertDialogContent>
@@ -190,7 +209,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -211,28 +230,42 @@ const isEditing = ref(false)
 const searchQuery = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 5
-
 const isDeleteModalOpen = ref(false)
 const agencyToDelete = ref(null)
+const isLoading = ref(false)
+const errorMessage = ref('')
+const successMessage = ref('')
 
 // Fetch agencies on component mount
 onMounted(async () => {
+  await fetchAgencies()
+})
+
+// Fetch agencies method
+const fetchAgencies = async () => {
+  isLoading.value = true
+  errorMessage.value = ''
   try {
-    const response = await services.getMhpcCogsAgencies()
+    const response = await apiServices.getMhpcMastersCogsAgencies()
     console.log('API Response:', response.data) // DEBUG: Inspect the data
 
-    // Check if response.data.results exists and is an array
-    if (Array.isArray(response.data.results)) {
-      agencies.value = response.data.results
+    // Handle different response structures
+    const data = response.data.results || response.data || []
+    if (Array.isArray(data)) {
+      agencies.value = data
     } else {
-      console.error('API did not return an array of results.')
-      agencies.value = [] // Initialize to an empty array to prevent further errors
+      console.error('API did not return an array.')
+      agencies.value = []
+      errorMessage.value = 'Failed to load agencies: Invalid data format.'
     }
   } catch (error) {
     console.error('Error fetching agencies:', error)
-    agencies.value = [] // Initialize to an empty array in case of error
+    agencies.value = []
+    errorMessage.value = 'Failed to load agencies. Please try again later.'
+  } finally {
+    isLoading.value = false
   }
-})
+}
 
 // Computed
 const filteredAgencies = computed(() => {
@@ -252,29 +285,46 @@ const paginatedAgencies = computed(() => {
   return filteredAgencies.value.slice(start, end)
 })
 
-// Methods (same as before)
-
+// Methods
 const handleSubmit = async () => {
+  if (!formData.value.name.trim()) {
+    errorMessage.value = 'Agency name is required.'
+    return
+  }
+
+  isLoading.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
   try {
     if (isEditing.value) {
-      const response = await services.updateMhpcCogsAgency(formData.value.id, formData.value)
+      const response = await apiServices.updateMhpcMastersCogsAgency(
+        formData.value.id,
+        formData.value,
+      )
       const index = agencies.value.findIndex((dt) => dt.id === formData.value.id)
       if (index !== -1) {
         agencies.value[index] = response.data
       }
+      successMessage.value = 'Agency updated successfully.'
     } else {
-      const response = await services.createMhpcCogsAgency(formData.value)
+      const response = await apiServices.createMhpcMastersCogsAgency(formData.value)
       agencies.value.push(response.data)
+      successMessage.value = 'Agency added successfully.'
     }
     resetForm()
   } catch (error) {
     console.error('Error saving agency:', error)
+    errorMessage.value = `Failed to ${isEditing.value ? 'update' : 'add'} agency. Please try again.`
+  } finally {
+    isLoading.value = false
   }
 }
 
 const startEdit = (agency) => {
   formData.value = { ...agency }
   isEditing.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
 }
 
 const cancelEdit = () => {
@@ -284,6 +334,8 @@ const cancelEdit = () => {
 const openDeleteModal = (agency) => {
   agencyToDelete.value = agency
   isDeleteModalOpen.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
 }
 
 const closeDeleteModal = () => {
@@ -294,15 +346,22 @@ const closeDeleteModal = () => {
 const confirmDelete = async () => {
   if (!agencyToDelete.value) return
 
+  isLoading.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
   try {
-    await services.deleteMhpcCogsAgency(agencyToDelete.value.id)
+    await apiServices.deleteMhpcMastersCogsAgency(agencyToDelete.value.id)
     const index = agencies.value.findIndex((dt) => dt.id === agencyToDelete.value.id)
     if (index !== -1) {
       agencies.value.splice(index, 1)
     }
+    successMessage.value = 'Agency deleted successfully.'
     closeDeleteModal()
   } catch (error) {
     console.error('Error deleting agency:', error)
+    errorMessage.value = 'Failed to delete agency. Please try again.'
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -312,6 +371,8 @@ const resetForm = () => {
     name: '',
   }
   isEditing.value = false
+  errorMessage.value = ''
+  successMessage.value = ''
 }
 
 // Watch for search query changes to reset pagination

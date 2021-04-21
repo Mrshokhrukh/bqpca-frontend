@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">CPD Activity Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
+        Mhpc Self Assessed CPD Activity Management
+      </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -18,7 +20,7 @@
                 <input
                   type="text"
                   id="cpdActivityName"
-                  v-model="formData.cpd_activity_name"
+                  v-model="formData.cme_activity_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter CPD activity name"
                   required
@@ -30,7 +32,7 @@
                 >
                 <textarea
                   id="cpdActivityDescription"
-                  v-model="formData.description"
+                  v-model="formData.cme_activity_description"
                   rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter CPD activity description"
@@ -104,8 +106,8 @@
               >
                 <div class="flex justify-between items-start gap-4">
                   <div>
-                    <h3 class="font-medium text-slate-900">{{ cpdActivity.cpd_activity_name }}</h3>
-                    <p class="text-sm text-slate-600 mt-1">{{ cpdActivity.description }}</p>
+                    <h3 class="font-medium text-slate-900">{{ cpdActivity.cme_activity_name }}</h3>
+                    <p class="text-sm text-slate-600 mt-1">{{ cpdActivity.cme_activity_description }}</p>
                   </div>
                   <div class="flex gap-2">
                     <button
@@ -178,7 +180,7 @@
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
             This action cannot be undone. This will permanently delete the CPD Activity "{{
-              cpdActivityToDelete?.cpd_activity_name
+              cpdActivityToDelete?.cme_activity_name
             }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
@@ -204,7 +206,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -219,8 +221,8 @@ import {
 const cpdActivities = ref([])
 const formData = ref({
   id: null,
-  cpd_activity_name: '',
-  description: '',
+  cme_activity_name: '',
+  cme_activity_description: '',
 })
 const isEditing = ref(false)
 const searchQuery = ref('')
@@ -233,7 +235,7 @@ const cpdActivityToDelete = ref(null)
 // Fetch CPD activities on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMhpcMastersCpdActivities()
+    const response = await apiServices.getMhpcMastersCpdActivity()
     cpdActivities.value = response.data.results
   } catch (error) {
     console.error('Error fetching CPD activities:', error)
@@ -245,8 +247,8 @@ const filteredCpdActivities = computed(() => {
   return cpdActivities.value.filter((cpdActivity) => {
     const query = searchQuery.value.toLowerCase()
     return (
-      cpdActivity.cpd_activity_name.toLowerCase().includes(query) ||
-      cpdActivity.description.toLowerCase().includes(query)
+      cpdActivity.cme_activity_name.toLowerCase().includes(query) ||
+      cpdActivity.cme_activity_description.toLowerCase().includes(query)
     )
   })
 })
@@ -265,7 +267,7 @@ const paginatedCpdActivities = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMhpcMastersCpdActivity(
+      const response = await apiServices.updateMhpcMastersCpdActivity(
         formData.value.id,
         formData.value,
       )
@@ -274,7 +276,7 @@ const handleSubmit = async () => {
         cpdActivities.value[index] = response.data
       }
     } else {
-      const response = await services.createMhpcMastersCpdActivity(formData.value)
+      const response = await apiServices.createMhpcMastersCpdActivity(formData.value)
       cpdActivities.value.push(response.data)
     }
     resetForm()
@@ -306,7 +308,7 @@ const confirmDelete = async () => {
   if (!cpdActivityToDelete.value) return
 
   try {
-    await services.deleteMhpcMastersCpdActivity(cpdActivityToDelete.value.id)
+    await apiServices.deleteMhpcMastersCpdActivity(cpdActivityToDelete.value.id)
     const index = cpdActivities.value.findIndex((dt) => dt.id === cpdActivityToDelete.value.id)
     if (index !== -1) {
       cpdActivities.value.splice(index, 1)
@@ -320,8 +322,8 @@ const confirmDelete = async () => {
 const resetForm = () => {
   formData.value = {
     id: null,
-    cpd_activity_name: '',
-    description: '',
+    cme_activity_name: '',
+    cme_activity_description: '',
   }
   isEditing.value = false
 }

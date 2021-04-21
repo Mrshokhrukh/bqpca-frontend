@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
-        Participation Category Management
+        Mhpc Participation Category Management
       </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -22,7 +22,7 @@
                 <input
                   type="text"
                   id="participationCategoryName"
-                  v-model="formData.name"
+                  v-model="formData.participation_category_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter participation category name"
                   required
@@ -111,7 +111,7 @@
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">
-                      {{ participationCategory.name }}
+                      {{ participationCategory.participation_category_name }}
                     </h3>
                     <p class="text-sm text-slate-600 mt-1">
                       {{ participationCategory.description }}
@@ -191,7 +191,7 @@
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
             This action cannot be undone. This will permanently delete the participation category
-            "{{ participationCategoryToDelete?.name }}".
+            "{{ participationCategoryToDelete?.participation_category_name }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
             <AlertDialogCancel
@@ -216,7 +216,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -231,7 +231,7 @@ import {
 const participationCategories = ref([])
 const formData = ref({
   id: null,
-  name: '',
+  participation_category_name: '',
   description: '',
 })
 const isEditing = ref(false)
@@ -245,7 +245,7 @@ const participationCategoryToDelete = ref(null)
 // Fetch participation categories on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMhpcMastersMHPCParticipationCategories()
+    const response = await apiServices.getMhpcMastersMHPCParticipationCategories()
     participationCategories.value = response.data.results
   } catch (error) {
     console.error('Error fetching participation categories:', error)
@@ -257,7 +257,7 @@ const filteredParticipationCategories = computed(() => {
   return participationCategories.value.filter((participationCategory) => {
     const query = searchQuery.value.toLowerCase()
     return (
-      participationCategory.name.toLowerCase().includes(query) ||
+      participationCategory.participation_category_name.toLowerCase().includes(query) ||
       participationCategory.description.toLowerCase().includes(query)
     )
   })
@@ -277,7 +277,7 @@ const paginatedParticipationCategories = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMhpcMastersParticipationCategory(
+      const response = await apiServices.updateMhpcMastersParticipationCategory(
         formData.value.id,
         formData.value,
       )
@@ -286,7 +286,7 @@ const handleSubmit = async () => {
         participationCategories.value[index] = response.data
       }
     } else {
-      const response = await services.createMhpcMastersParticipationCategory(formData.value)
+      const response = await apiServices.createMhpcMastersParticipationCategory(formData.value)
       participationCategories.value.push(response.data)
     }
     resetForm()
@@ -318,7 +318,7 @@ const confirmDelete = async () => {
   if (!participationCategoryToDelete.value) return
 
   try {
-    await services.deleteMhpcMastersParticipationCategory(participationCategoryToDelete.value.id)
+    await apiServices.deleteMhpcMastersParticipationCategory(participationCategoryToDelete.value.id)
     const index = participationCategories.value.findIndex(
       (dt) => dt.id === participationCategoryToDelete.value.id,
     )
@@ -334,7 +334,7 @@ const confirmDelete = async () => {
 const resetForm = () => {
   formData.value = {
     id: null,
-    name: '',
+    participation_category_name: '',
     description: '',
   }
   isEditing.value = false

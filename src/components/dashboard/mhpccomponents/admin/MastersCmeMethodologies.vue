@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">CPD Methodology Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
+        Mhpc CPD Methodology Management
+      </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -203,7 +205,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services' // Assuming you have a services.js file
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -232,7 +234,7 @@ const methodologyToDelete = ref(null)
 // Fetch methodologies on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMhpcMastersCpdMethodologies()
+    const response = await apiServices.getMhpcMastersCpdMethodologies()
     methodologies.value = response.data.results
   } catch (error) {
     console.error('Error fetching CPD methodologies:', error)
@@ -264,7 +266,7 @@ const paginatedMethodologies = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMhpcMastersCpdMethodology(
+      const response = await apiServices.updateMhpcMastersCpdMethodology(
         formData.value.id,
         formData.value,
       )
@@ -273,7 +275,7 @@ const handleSubmit = async () => {
         methodologies.value[index] = response.data
       }
     } else {
-      const response = await services.createMhpcMastersCpdMethodology(formData.value)
+      const response = await apiServices.createMhpcMastersCpdMethodology(formData.value)
       methodologies.value.push(response.data)
     }
     resetForm()
@@ -305,7 +307,7 @@ const confirmDelete = async () => {
   if (!methodologyToDelete.value) return
 
   try {
-    await services.deleteMhpcMastersCpdMethodology(methodologyToDelete.value.id)
+    await apiServices.deleteMhpcMastersCpdMethodology(methodologyToDelete.value.id)
     const index = methodologies.value.findIndex((dt) => dt.id === methodologyToDelete.value.id)
     if (index !== -1) {
       methodologies.value.splice(index, 1)

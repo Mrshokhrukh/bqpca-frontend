@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Fees Association Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
+        Mhpc Fees Association Management
+      </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -204,7 +206,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -233,7 +235,7 @@ const feesAssociationToDelete = ref(null)
 // Fetch fees associations on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMhpcMastersFeesAssociatedFor()
+    const response = await apiServices.getMhpcMastersFeesAssociatedFor()
     feesAssociations.value = response.data.results
   } catch (error) {
     console.error('Error fetching fees associations:', error)
@@ -265,7 +267,7 @@ const paginatedFeesAssociations = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMhpcMastersFeesAssociatedFor(
+      const response = await apiServices.updateMhpcMastersFeesAssociatedFor(
         formData.value.id,
         formData.value,
       )
@@ -274,7 +276,7 @@ const handleSubmit = async () => {
         feesAssociations.value[index] = response.data
       }
     } else {
-      const response = await services.createMhpcMastersFeesAssociatedFor(formData.value)
+      const response = await apiServices.createMhpcMastersFeesAssociatedFor(formData.value)
       feesAssociations.value.push(response.data)
     }
     resetForm()
@@ -306,7 +308,7 @@ const confirmDelete = async () => {
   if (!feesAssociationToDelete.value) return
 
   try {
-    await services.deleteMhpcMastersFeesAssociatedFor(feesAssociationToDelete.value.id)
+    await apiServices.deleteMhpcMastersFeesAssociatedFor(feesAssociationToDelete.value.id)
     const index = feesAssociations.value.findIndex(
       (fa) => fa.id === feesAssociationToDelete.value.id,
     )

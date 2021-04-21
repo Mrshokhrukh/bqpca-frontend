@@ -2,14 +2,16 @@
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
-        MHPC COGS Departments Management
+        Mhpc COGS Departments Management
       </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8">
           <h2 class="text-xl font-semibold text-slate-900 mb-4">
-            {{ isEditing ? 'Edit MHPC COGS Department' : 'Add New MHPC COGS Department' }}
+            {{
+              isEditing ? 'Edit Mhpc COGS Department' : 'Add New Mhpc COGS Department'
+            }}
           </h2>
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
@@ -51,7 +53,9 @@
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
           <div class="mb-6 space-y-4">
             <div class="flex justify-between items-center">
-              <h2 class="text-xl font-semibold text-slate-900">MHPC COGS Departments List</h2>
+              <h2 class="text-xl font-semibold text-slate-900">
+                Mhpc COGS Departments List
+              </h2>
               <span class="text-sm text-slate-500">
                 {{ filteredDepartments.length }} Department{{
                   filteredDepartments.length !== 1 ? 's' : ''
@@ -192,7 +196,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -220,7 +224,7 @@ const departmentToDelete = ref(null)
 // Fetch departments on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMhpcCogsDepartments()
+    const response = await apiServices.getMhpcMastersCogsDepartments()
     console.log('API Response:', response.data)
 
     if (Array.isArray(response.data.results)) {
@@ -257,13 +261,16 @@ const paginatedDepartments = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMhpcCogsDepartment(formData.value.id, formData.value)
+      const response = await apiServices.updateMhpcMastersCogsDepartment(
+        formData.value.id,
+        formData.value,
+      )
       const index = departments.value.findIndex((dt) => dt.id === formData.value.id)
       if (index !== -1) {
         departments.value[index] = response.data
       }
     } else {
-      const response = await services.createMhpcCogsDepartment(formData.value)
+      const response = await apiServices.createMhpcMastersCogsDepartment(formData.value)
       departments.value.push(response.data)
     }
     resetForm()
@@ -295,7 +302,7 @@ const confirmDelete = async () => {
   if (!departmentToDelete.value) return
 
   try {
-    await services.deleteMhpcCogsDepartment(departmentToDelete.value.id)
+    await apiServices.deleteMhpcMastersCogsDepartment(departmentToDelete.value.id)
     const index = departments.value.findIndex((dt) => dt.id === departmentToDelete.value.id)
     if (index !== -1) {
       departments.value.splice(index, 1)

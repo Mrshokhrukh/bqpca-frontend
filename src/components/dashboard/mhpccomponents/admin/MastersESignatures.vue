@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">E-Signature Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
+        Mhpc E-Signature Management
+      </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -35,22 +37,60 @@
                   required
                 />
               </div>
+
+              <!-- Signature File Upload with Thumbnail -->
               <div>
-                <label for="signature" class="block text-sm font-medium text-slate-700"
-                  >Signature</label
-                >
+                <label for="signature" class="block text-sm font-medium text-slate-700">
+                  {{ isEditing ? 'Signature (Upload to change)' : 'Signature' }}
+                </label>
+
+                <!-- Existing Signature Preview (when editing) -->
+                <div v-if="isEditing && formData.signatureUrl" class="mt-2 mb-3">
+                  <p class="text-sm text-slate-600 mb-2">Current Signature:</p>
+                  <div class="flex items-center space-x-4">
+                    <div class="w-24 h-24 border border-slate-200 rounded-lg overflow-hidden flex items-center justify-center bg-slate-50">
+                      <img
+                        :src="formData.signatureUrl"
+                        alt="Current signature"
+                        class="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+                    <div>
+                      <p class="text-xs text-slate-500">
+                        You can keep the existing signature or upload a new one
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- File Upload Input -->
                 <input
                   type="file"
                   id="signature"
                   @change="handleFileUpload"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
+                  :required="!isEditing"
                 />
+                <p v-if="isEditing" class="mt-1 text-xs text-slate-500">
+                  {{ newFileSelected ? 'New file selected: ' + fileDetails : 'Leave empty to keep current signature' }}
+                </p>
               </div>
+
               <div>
                 <label for="status" class="block text-sm font-medium text-slate-700">Status</label>
-                <input type="checkbox" id="status" v-model="formData.status" class="mt-1 block" />
+                <div class="flex items-center mt-1">
+                  <input
+                    type="checkbox"
+                    id="status"
+                    v-model="formData.status"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
+                  />
+                  <label for="status" class="ml-2 block text-sm text-slate-700">
+                    {{ formData.status ? 'Active' : 'Inactive' }}
+                  </label>
+                </div>
               </div>
+
               <div class="flex gap-3">
                 <button
                   type="submit"
@@ -116,12 +156,28 @@
                 class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200"
               >
                 <div class="flex justify-between items-start gap-4">
-                  <div>
-                    <h3 class="font-medium text-slate-900">{{ eSignature.name }}</h3>
-                    <p class="text-sm text-slate-600 mt-1">{{ eSignature.designation }}</p>
-                    <p class="text-sm text-slate-600 mt-1">
-                      {{ eSignature.status ? 'Active' : 'Inactive' }}
-                    </p>
+                  <div class="flex gap-4">
+                    <!-- Signature Thumbnail -->
+                    <div class="w-16 h-16 border border-slate-200 rounded-lg overflow-hidden flex items-center justify-center bg-slate-50">
+                      <img
+                        :src="eSignature.signature"
+                        alt="Signature"
+                        class="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+                    <!-- Info -->
+                    <div>
+                      <h3 class="font-medium text-slate-900">{{ eSignature.name }}</h3>
+                      <p class="text-sm text-slate-600 mt-1">{{ eSignature.designation }}</p>
+                      <p class="text-sm mt-1">
+                        <span
+                          :class="eSignature.status ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-800'"
+                          class="px-2 py-0.5 rounded-full text-xs font-medium"
+                        >
+                          {{ eSignature.status ? 'Active' : 'Inactive' }}
+                        </span>
+                      </p>
+                    </div>
                   </div>
                   <div class="flex gap-2">
                     <button
@@ -220,7 +276,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -238,12 +294,15 @@ const formData = ref({
   name: '',
   designation: '',
   signature: null,
+  signatureUrl: '', // Added to store the URL of existing signature
   status: false,
 })
 const isEditing = ref(false)
 const searchQuery = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 5
+const newFileSelected = ref(false)
+const fileDetails = ref('')
 
 const isDeleteModalOpen = ref(false)
 const eSignatureToDelete = ref(null)
@@ -251,7 +310,7 @@ const eSignatureToDelete = ref(null)
 // Fetch e-signatures on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMhpcMastersESignatures()
+    const response = await apiServices.getMhpcMastersESignatures()
     eSignatures.value = response.data.results
   } catch (error) {
     console.error('Error fetching e-signatures:', error)
@@ -285,17 +344,25 @@ const handleSubmit = async () => {
     const formDataToSend = new FormData()
     formDataToSend.append('name', formData.value.name)
     formDataToSend.append('designation', formData.value.designation)
-    formDataToSend.append('signature', formData.value.signature)
+
+    // Only append signature if it's a new record or if a new file was selected for an edit
+    if (formData.value.signature) {
+      formDataToSend.append('signature', formData.value.signature)
+    }
+
     formDataToSend.append('status', formData.value.status)
 
     if (isEditing.value) {
-      const response = await services.updateMhpcMastersESignature(formData.value.id, formDataToSend)
+      const response = await apiServices.updateMhpcMastersESignature(
+        formData.value.id,
+        formDataToSend,
+      )
       const index = eSignatures.value.findIndex((es) => es.id === formData.value.id)
       if (index !== -1) {
         eSignatures.value[index] = response.data
       }
     } else {
-      const response = await services.createMhpcMastersESignature(formDataToSend)
+      const response = await apiServices.createMhpcMastersESignature(formDataToSend)
       eSignatures.value.push(response.data)
     }
     resetForm()
@@ -306,12 +373,32 @@ const handleSubmit = async () => {
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0]
-  formData.value.signature = file
+  if (file) {
+    formData.value.signature = file
+    newFileSelected.value = true
+    fileDetails.value = `${file.name} (${formatFileSize(file.size)})`
+  } else {
+    formData.value.signature = null
+    newFileSelected.value = false
+    fileDetails.value = ''
+  }
+}
+
+const formatFileSize = (bytes) => {
+  if (bytes < 1024) return bytes + ' B'
+  else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB'
+  else return (bytes / 1048576).toFixed(1) + ' MB'
 }
 
 const startEdit = (eSignature) => {
-  formData.value = { ...eSignature, signature: null }
+  formData.value = {
+    ...eSignature,
+    signature: null,
+    signatureUrl: eSignature.signature // Store the URL of existing signature
+  }
   isEditing.value = true
+  newFileSelected.value = false
+  fileDetails.value = ''
 }
 
 const cancelEdit = () => {
@@ -332,7 +419,7 @@ const confirmDelete = async () => {
   if (!eSignatureToDelete.value) return
 
   try {
-    await services.deleteMhpcMastersESignature(eSignatureToDelete.value.id)
+    await apiServices.deleteMhpcMastersESignature(eSignatureToDelete.value.id)
     const index = eSignatures.value.findIndex((es) => es.id === eSignatureToDelete.value.id)
     if (index !== -1) {
       eSignatures.value.splice(index, 1)
@@ -349,9 +436,12 @@ const resetForm = () => {
     name: '',
     designation: '',
     signature: null,
+    signatureUrl: '',
     status: false,
   }
   isEditing.value = false
+  newFileSelected.value = false
+  fileDetails.value = ''
 }
 
 // Watch for search query changes to reset pagination

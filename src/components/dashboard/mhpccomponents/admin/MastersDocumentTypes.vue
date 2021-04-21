@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Document Type Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
+        Mhpc Document Type Management
+      </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -18,7 +20,7 @@
                 <input
                   type="text"
                   id="documentName"
-                  v-model="formData.name"
+                  v-model="formData.document_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter document name"
                   required
@@ -47,9 +49,11 @@
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 >
-                  <option value="cpd">CPD</option>
-                  <option value="registration">Registration</option>
-                  <option value="cogs">CoGS</option>
+                  <option value="Application">Application</option>
+                  <option value="CPD">CPD</option>
+                  <option value="CoGS">CoGS</option>
+                  <option value="CAPA">CAPA</option>
+                  <option value="Institution">Institution</option>
                 </select>
               </div>
               <div class="flex gap-3">
@@ -118,7 +122,7 @@
               >
                 <div class="flex justify-between items-start gap-4">
                   <div>
-                    <h3 class="font-medium text-slate-900">{{ documentType.name }}</h3>
+                    <h3 class="font-medium text-slate-900">{{ documentType.document_name }}</h3>
                     <p class="text-sm text-slate-600 mt-1">{{ documentType.description }}</p>
                     <p class="text-sm text-slate-600 mt-1">{{ documentType.application_type }}</p>
                   </div>
@@ -193,7 +197,7 @@
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
             This action cannot be undone. This will permanently delete the document type "{{
-              documentTypeToDelete?.name
+              documentTypeToDelete?.document_name
             }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
@@ -219,7 +223,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -234,9 +238,9 @@ import {
 const documentTypes = ref([])
 const formData = ref({
   id: null,
-  name: '',
+  document_name: '',
   description: '',
-  application_type: 'registration',
+  application_type: 'CME',
 })
 const isEditing = ref(false)
 const searchQuery = ref('')
@@ -249,7 +253,7 @@ const documentTypeToDelete = ref(null)
 // Fetch document types on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMhpcMastersDocumentTypes()
+    const response = await apiServices.getMhpcMastersDocumentTypes()
     documentTypes.value = response.data.results
   } catch (error) {
     console.error('Error fetching document types:', error)
@@ -261,7 +265,7 @@ const filteredDocumentTypes = computed(() => {
   return documentTypes.value.filter((documentType) => {
     const query = searchQuery.value.toLowerCase()
     return (
-      documentType.name.toLowerCase().includes(query) ||
+      documentType.document_name.toLowerCase().includes(query) ||
       documentType.description.toLowerCase().includes(query)
     )
   })
@@ -281,7 +285,7 @@ const paginatedDocumentTypes = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMhpcMastersDocumentType(
+      const response = await apiServices.updateMhpcMastersDocumentType(
         formData.value.id,
         formData.value,
       )
@@ -290,7 +294,7 @@ const handleSubmit = async () => {
         documentTypes.value[index] = response.data
       }
     } else {
-      const response = await services.createMhpcMastersDocumentType(formData.value)
+      const response = await apiServices.createMhpcMastersDocumentType(formData.value)
       documentTypes.value.push(response.data)
     }
     resetForm()
@@ -322,7 +326,7 @@ const confirmDelete = async () => {
   if (!documentTypeToDelete.value) return
 
   try {
-    await services.deleteMhpcMastersDocumentType(documentTypeToDelete.value.id)
+    await apiServices.deleteMhpcMastersDocumentType(documentTypeToDelete.value.id)
     const index = documentTypes.value.findIndex((dt) => dt.id === documentTypeToDelete.value.id)
     if (index !== -1) {
       documentTypes.value.splice(index, 1)
@@ -336,9 +340,9 @@ const confirmDelete = async () => {
 const resetForm = () => {
   formData.value = {
     id: null,
-    name: '',
+    document_name: '',
     description: '',
-    application_type: 'registration',
+    application_type: 'CME',
   }
   isEditing.value = false
 }

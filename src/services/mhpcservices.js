@@ -2,29 +2,24 @@ import apiClient from './apiClient'
 
 export default {
   getMhpcMastersCpdActivities() {
-    // Correct Path: REMOVED leading /api/ because apiClient's baseURL should handle it
     return apiClient.get('/mhpc/masters-cpd-activities/')
   },
   createMhpcMastersCpdActivity(data) {
-    // Correct Path: REMOVED leading /api/
     return apiClient.post('/mhpc/masters-cpd-activities/', data)
   },
   getMhpcMastersCpdActivity(id) {
-    // Correct Path: REMOVED leading /api/
     return apiClient.get(`/mhpc/masters-cpd-activities/${id}/`)
   },
   updateMhpcMastersCpdActivity(id, data) {
-    // Correct Path: REMOVED leading /api/
     return apiClient.put(`/mhpc/masters-cpd-activities/${id}/`, data)
   },
   patchMhpcMastersCpdActivity(id, data) {
-    // Correct Path: REMOVED leading /api/
     return apiClient.patch(`/mhpc/masters-cpd-activities/${id}/`, data)
   },
   deleteMhpcMastersCpdActivity(id) {
-    // Correct Path: REMOVED leading /api/
     return apiClient.delete(`/mhpc/masters-cpd-activities/${id}/`)
   },
+
   // Masters CPD Credits
   getMhpcMastersCpdCredits() {
     return apiClient.get('/mhpc/masters-cpd-credits/')
@@ -68,22 +63,22 @@ export default {
 
   // Masters CPD Activity
   // getMhpcMastersCpdActivities() {
-  //   return apiClient.get('/mhpc/masters-cpd-activities/')
+  //   return apiClient.get('/mhpc/masters-cpd-activity/')
   // },
   // createMhpcMastersCpdActivity(data) {
-  //   return apiClient.post('/mhpc/masters-cpd-activities/', data)
+  //   return apiClient.post('/mhpc/masters-cpd-activity/', data)
   // },
   // getMhpcMastersCpdActivity(id) {
-  //   return apiClient.get(`/mhpc/masters-cpd-activities/${id}/`)
+  //   return apiClient.get(`/mhpc/masters-cpd-activity/${id}/`)
   // },
   // updateMhpcMastersCpdActivity(id, data) {
-  //   return apiClient.put(`/mhpc/masters-cpd-activities/${id}/`, data)
+  //   return apiClient.put(`/mhpc/masters-cpd-activity/${id}/`, data)
   // },
   // patchMhpcMastersCpdActivity(id, data) {
-  //   return apiClient.patch(`/mhpc/masters-cpd-activities/${id}/`, data)
+  //   return apiClient.patch(`/mhpc/masters-cpd-activity/${id}/`, data)
   // },
   // deleteMhpcMastersCpdActivity(id) {
-  //   return apiClient.delete(`/mhpc/masters-cpd-activities/${id}/`)
+  //   return apiClient.delete(`/mhpc/masters-cpd-activity/${id}/`)
   // },
 
   // Masters Document Types
@@ -417,62 +412,62 @@ export default {
     return apiClient.get(url)
   },
 
-  getMhpcCogsAgencies() {
+  getMhpcMastersCogsAgencies() {
     return apiClient.get('/mhpc/masters-cogs-agencies/')
   },
-  createMhpcCogsAgency(data) {
+  createMhpcMastersCogsAgency(data) {
     return apiClient.post('/mhpc/masters-cogs-agencies/', data)
   },
-  getMhpcCogsAgency(id) {
+  getMhpcMastersCogsAgency(id) {
     return apiClient.get(`/mhpc/masters-cogs-agencies/${id}/`)
   },
-  updateMhpcCogsAgency(id, data) {
+  updateMhpcMastersCogsAgency(id, data) {
     return apiClient.put(`/mhpc/masters-cogs-agencies/${id}/`, data)
   },
-  patchMhpcCogsAgency(id, data) {
+  patchMhpcMastersCogsAgency(id, data) {
     return apiClient.patch(`/mhpc/masters-cogs-agencies/${id}/`, data)
   },
-  deleteMhpcCogsAgency(id) {
+  deleteMhpcMastersCogsAgency(id) {
     return apiClient.delete(`/mhpc/masters-cogs-agencies/${id}/`)
   },
 
   // COGS Departments
-  getMhpcCogsDepartments() {
+  getMhpcMastersCogsDepartments() {
     return apiClient.get('/mhpc/masters-cogs-departments/')
   },
-  createMhpcCogsDepartment(data) {
+  createMhpcMastersCogsDepartment(data) {
     return apiClient.post('/mhpc/masters-cogs-departments/', data)
   },
-  getMhpcCogsDepartment(id) {
+  getMhpcMastersCogsDepartment(id) {
     return apiClient.get(`/mhpc/masters-cogs-departments/${id}/`)
   },
-  updateMhpcCogsDepartment(id, data) {
+  updateMhpcMastersCogsDepartment(id, data) {
     return apiClient.put(`/mhpc/masters-cogs-departments/${id}/`, data)
   },
-  patchMhpcCogsDepartment(id, data) {
+  patchMhpcMastersCogsDepartment(id, data) {
     return apiClient.patch(`/mhpc/masters-cogs-departments/${id}/`, data)
   },
-  deleteMhpcCogsDepartment(id) {
+  deleteMhpcMastersCogsDepartment(id) {
     return apiClient.delete(`/mhpc/masters-cogs-departments/${id}/`)
   },
 
   // COGS Workplaces
-  getMhpcCogsWorkplaces() {
+  getMhpcMastersCogsWorkplaces() {
     return apiClient.get('/mhpc/masters-cogs-workplaces/')
   },
-  createMhpcCogsWorkplace(data) {
+  createMhpcMastersCogsWorkplace(data) {
     return apiClient.post('/mhpc/masters-cogs-workplaces/', data)
   },
-  getMhpcCogsWorkplace(id) {
+  getMhpcMastersCogsWorkplace(id) {
     return apiClient.get(`/mhpc/masters-cogs-workplaces/${id}/`)
   },
-  updateMhpcCogsWorkplace(id, data) {
+  updateMhpcMastersCogsWorkplace(id, data) {
     return apiClient.put(`/mhpc/masters-cogs-workplaces/${id}/`, data)
   },
-  patchMhpcCogsWorkplace(id, data) {
+  patchMhpcMastersCogsWorkplace(id, data) {
     return apiClient.patch(`/mhpc/masters-cogs-workplaces/${id}/`, data)
   },
-  deleteMhpcCogsWorkplace(id) {
+  deleteMhpcMastersCogsWorkplace(id) {
     return apiClient.delete(`/mhpc/masters-cogs-workplaces/${id}/`)
   },
 
@@ -526,7 +521,7 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-renewals/${id}/`)
   },
 
-  // MHPC user qualifications
+  // BHMC user qualifications
   getMhpcNewQualifications() {
     return apiClient.get('/mhpc/mhpc-new-qualification/')
   },

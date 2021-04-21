@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">CPD Activities Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
+        Mhpc CPD Activities Management
+      </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -12,25 +14,25 @@
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
-                <label for="cpdActivityName" class="block text-sm font-medium text-slate-700"
+                <label for="cmeActivityName" class="block text-sm font-medium text-slate-700"
                   >CPD Activity Name</label
                 >
                 <input
                   type="text"
-                  id="cpdActivityName"
-                  v-model="formData.cpd_activity_name"
+                  id="cmeActivityName"
+                  v-model="formData.cme_activity_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter CPD activity name"
                   required
                 />
               </div>
               <div>
-                <label for="cpdActivityDescription" class="block text-sm font-medium text-slate-700"
+                <label for="cmeActivityDescription" class="block text-sm font-medium text-slate-700"
                   >Description</label
                 >
                 <textarea
-                  id="cpdActivityDescription"
-                  v-model="formData.cpd_activity_description"
+                  id="cmeActivityDescription"
+                  v-model="formData.cme_activity_description"
                   rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter CPD activity description"
@@ -63,7 +65,7 @@
             <div class="flex justify-between items-center">
               <h2 class="text-xl font-semibold text-slate-900">CPD Activities List</h2>
               <span class="text-sm text-slate-500">
-                {{ cpdActivities.length }} Activity{{ cpdActivities.length !== 1 ? 's' : '' }}
+                {{ cmeActivities.length }} Activity{{ cmeActivities.length !== 1 ? 's' : '' }}
               </span>
             </div>
           </div>
@@ -97,10 +99,10 @@
                   class="hover:bg-blue-50/30 transition-colors duration-200"
                 >
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-900">
-                    {{ activity.cpd_activity_name }}
+                    {{ activity.cme_activity_name }}
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-700">
-                    {{ activity.cpd_activity_description }}
+                    {{ activity.cme_activity_description }}
                   </td>
                   <td
                     class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
@@ -135,7 +137,7 @@
                     </div>
                   </td>
                 </tr>
-                <tr v-if="cpdActivities.length === 0">
+                <tr v-if="cmeActivities.length === 0">
                   <td colspan="4" class="px-6 py-4 text-center text-slate-500">
                     No CPD activities found
                   </td>
@@ -177,7 +179,7 @@
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
             This action cannot be undone. This will permanently delete the CPD activity "{{
-              activityToDelete?.cpd_activity_name
+              activityToDelete?.cme_activity_name
             }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
@@ -203,7 +205,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import api from '@/services/services'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -215,10 +217,10 @@ import {
 } from 'radix-vue'
 
 // State
-const cpdActivities = ref([])
+const cmeActivities = ref([])
 const formData = ref({
-  cpd_activity_name: '',
-  cpd_activity_description: '',
+  cme_activity_name: '',
+  cme_activity_description: '',
 })
 const isEditing = ref(false)
 const editingId = ref(null)
@@ -230,44 +232,32 @@ const itemsPerPage = 5
 // Methods
 const fetchActivities = async (page = 1) => {
   try {
-    const response = await api.getMhpcMastersCpdActivities()
-    // Map API response to match component's expected field names
-    cpdActivities.value = response.data.results.map(activity => ({
-      id: activity.id,
-      cpd_activity_name: activity.name,
-      cpd_activity_description: activity.description,
-      created_at: activity.created_at,
-      updated_at: activity.updated_at,
-    }))
+    const response = await apiServices.getMhpcMastersCpdActivities()
+    cmeActivities.value = response.data.results
     currentPage.value = page
   } catch (error) {
-    console.error('Error fetching CPD activities:', error)
+    console.error('Error fetching cme activities:', error)
   }
 }
 
 const handleSubmit = async () => {
   try {
-    // Transform form data to match API's expected field names
-    const payload = {
-      name: formData.value.cpd_activity_name,
-      description: formData.value.cpd_activity_description,
-    }
     if (isEditing.value) {
-      await api.updateMhpcMastersCpdActivity(editingId.value, payload)
+      await apiServices.updateMhpcMastersCpdActivity(editingId.value, formData.value)
     } else {
-      await api.createMhpcMastersCpdActivity(payload)
+      await apiServices.createMhpcMastersCpdActivity(formData.value)
     }
     resetForm()
     fetchActivities()
   } catch (error) {
-    console.error('Error saving CPD activity:', error)
+    console.error('Error saving cme activity:', error)
   }
 }
 
 const editActivity = (activity) => {
   formData.value = {
-    cpd_activity_name: activity.cpd_activity_name,
-    cpd_activity_description: activity.cpd_activity_description,
+    cme_activity_name: activity.cme_activity_name,
+    cme_activity_description: activity.cme_activity_description,
   }
   isEditing.value = true
   editingId.value = activity.id
@@ -279,8 +269,8 @@ const cancelEdit = () => {
 
 const resetForm = () => {
   formData.value = {
-    cpd_activity_name: '',
-    cpd_activity_description: '',
+    cme_activity_name: '',
+    cme_activity_description: '',
   }
   isEditing.value = false
   editingId.value = null
@@ -299,26 +289,26 @@ const cancelDelete = () => {
 const deleteActivity = async () => {
   if (!activityToDelete.value) return
   try {
-    await api.deleteMhpcMastersCpdActivity(activityToDelete.value.id)
-    // Remove the deleted activity from the list
-    cpdActivities.value = cpdActivities.value.filter(
-      (act) => act.id !== activityToDelete.value.id
-    )
+    await apiServices.deleteMhpcMastersCpdActivity(activityToDelete.value.id)
+    const index = cmeActivities.value.findIndex((act) => act.id === activityToDelete.value.id)
+    if (index !== -1) {
+      cmeActivities.value.splice(index, 1)
+    }
     cancelDelete()
     fetchActivities()
   } catch (error) {
-    console.error('Error deleting CPD activity:', error)
+    console.error('Error deleting cme activity:', error)
   }
 }
 
 const totalPages = computed(() => {
-  return Math.ceil(cpdActivities.value.length / itemsPerPage)
+  return Math.ceil(cmeActivities.value.length / itemsPerPage)
 })
 
 const paginatedActivities = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage
   const end = start + itemsPerPage
-  return cpdActivities.value.slice(start, end)
+  return cmeActivities.value.slice(start, end)
 })
 
 // Lifecycle
@@ -326,3 +316,5 @@ onMounted(() => {
   fetchActivities()
 })
 </script>
+
+<style scoped></style>

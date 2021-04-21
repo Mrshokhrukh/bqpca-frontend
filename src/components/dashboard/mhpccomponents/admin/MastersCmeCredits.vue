@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">CPD Credits Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
+        Mhpc CPD Credits Management
+      </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -12,13 +14,13 @@
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
-                <label for="cpdCreditDuration" class="block text-sm font-medium text-slate-700"
+                <label for="cmeCreditDuration" class="block text-sm font-medium text-slate-700"
                   >CPD Credit Duration</label
                 >
                 <input
                   type="text"
-                  id="cpdCreditDuration"
-                  v-model="formData.cpd_credit_duration"
+                  id="cmeCreditDuration"
+                  v-model="formData.cme_credit_duration"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter CPD credit duration"
                   required
@@ -38,22 +40,22 @@
                 />
               </div>
               <div>
-                <label for="cpdActivityName" class="block text-sm font-medium text-slate-700"
+                <label for="cmeActivityName" class="block text-sm font-medium text-slate-700"
                   >CPD Activity Name</label
                 >
                 <select
-                  id="cpdActivityName"
-                  v-model="formData.cpd_activity_name"
+                  id="cmeActivityName"
+                  v-model="formData.cme_activity_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 >
                   <option value="" disabled>Select Activity</option>
                   <option
-                    v-for="activity in cpdActivitiesList"
+                    v-for="activity in cmeActivitiesList"
                     :key="activity.id"
                     :value="activity.id"
                   >
-                    {{ activity.cpd_activity_name }}
+                    {{ activity.cme_activity_name }}
                   </option>
                 </select>
               </div>
@@ -83,7 +85,7 @@
             <div class="flex justify-between items-center">
               <h2 class="text-xl font-semibold text-slate-900">CPD Credits List</h2>
               <span class="text-sm text-slate-500">
-                {{ cpdCredits.length }} Credit{{ cpdCredits.length !== 1 ? 's' : '' }}
+                {{ cmeCredits.length }} Credit{{ cmeCredits.length !== 1 ? 's' : '' }}
               </span>
             </div>
           </div>
@@ -123,13 +125,13 @@
                   class="hover:bg-blue-50/30 transition-colors duration-200"
                 >
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-900">
-                    {{ credit.cpd_credit_duration }}
+                    {{ credit.cme_credit_duration }}
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-700">
                     {{ credit.credits }}
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-700">
-                    {{ getActivityName(credit.cpd_activity_name) }}
+                    {{ getActivityName(credit.cme_activity_name) }}
                   </td>
                   <td
                     class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
@@ -164,7 +166,7 @@
                     </div>
                   </td>
                 </tr>
-                <tr v-if="cpdCredits.length === 0">
+                <tr v-if="cmeCredits.length === 0">
                   <td colspan="4" class="px-6 py-4 text-center text-slate-500">
                     No CPD credits found
                   </td>
@@ -206,7 +208,7 @@
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
             This action cannot be undone. This will permanently delete the CPD credit "{{
-              creditToDelete?.cpd_credit_duration
+              creditToDelete?.cme_credit_duration
             }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
@@ -232,7 +234,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import api from '@/services/services'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -244,12 +246,12 @@ import {
 } from 'radix-vue'
 
 // State
-const cpdCredits = ref([])
-const cpdActivitiesList = ref([])
+const cmeCredits = ref([])
+const cmeActivitiesList = ref([])
 const formData = ref({
-  cpd_credit_duration: '',
+  cme_credit_duration: '',
   credits: null,
-  cpd_activity_name: '',
+  cme_activity_name: '',
 })
 const isEditing = ref(false)
 const editingId = ref(null)
@@ -261,40 +263,40 @@ const itemsPerPage = 5
 // Methods
 const fetchCredits = async (page = 1) => {
   try {
-    const response = await api.getMhpcMastersCpdCredits()
-    cpdCredits.value = response.data.results
+    const response = await apiServices.getMhpcMastersCpdCredits()
+    cmeCredits.value = response.data.results
     currentPage.value = page
   } catch (error) {
-    console.error('Error fetching cpd credits:', error)
+    console.error('Error fetching cme credits:', error)
   }
 }
 const fetchCpdActivities = async () => {
   try {
-    const response = await api.getMhpcMastersCpdActivities()
-    cpdActivitiesList.value = response.data.results
+    const response = await apiServices.getMhpcMastersCpdActivities()
+    cmeActivitiesList.value = response.data.results
   } catch (error) {
-    console.error('Error fetching cpd activities:', error)
+    console.error('Error fetching cme activities:', error)
   }
 }
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      await api.updateMhpcMastersCpdCredit(editingId.value, formData.value)
+      await apiServices.updateMhpcMastersCpdCredit(editingId.value, formData.value)
     } else {
-      await api.createMhpcMastersCpdCredit(formData.value)
+      await apiServices.createMhpcMastersCpdCredit(formData.value)
     }
     resetForm()
     fetchCredits()
   } catch (error) {
-    console.error('Error saving cpd credit:', error)
+    console.error('Error saving cme credit:', error)
   }
 }
 
 const editCredit = (credit) => {
   formData.value = {
-    cpd_credit_duration: credit.cpd_credit_duration,
+    cme_credit_duration: credit.cme_credit_duration,
     credits: credit.credits,
-    cpd_activity_name: credit.cpd_activity_name,
+    cme_activity_name: credit.cme_activity_name,
   }
   isEditing.value = true
   editingId.value = credit.id
@@ -306,9 +308,9 @@ const cancelEdit = () => {
 
 const resetForm = () => {
   formData.value = {
-    cpd_credit_duration: '',
+    cme_credit_duration: '',
     credits: null,
-    cpd_activity_name: '',
+    cme_activity_name: '',
   }
   isEditing.value = false
   editingId.value = null
@@ -327,26 +329,26 @@ const cancelDelete = () => {
 const deleteCredit = async () => {
   if (!creditToDelete.value) return
   try {
-    await api.deleteMhpcMastersCpdCredit(creditToDelete.value.id)
+    await apiServices.deleteMhpcMastersCpdCredit(creditToDelete.value.id)
     cancelDelete()
     fetchCredits()
   } catch (error) {
-    console.error('Error deleting cpd credit:', error)
+    console.error('Error deleting cme credit:', error)
   }
 }
 const totalPages = computed(() => {
-  return Math.ceil(cpdCredits.value.length / itemsPerPage)
+  return Math.ceil(cmeCredits.value.length / itemsPerPage)
 })
 
 const paginatedCredits = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage
   const end = start + itemsPerPage
-  return cpdCredits.value.slice(start, end)
+  return cmeCredits.value.slice(start, end)
 })
 
 const getActivityName = (activityId) => {
-  const activity = cpdActivitiesList.value.find((act) => act.id === activityId)
-  return activity ? activity.cpd_activity_name : 'Unknown Activity'
+  const activity = cmeActivitiesList.value.find((act) => act.id === activityId)
+  return activity ? activity.cme_activity_name : 'Unknown Activity'
 }
 
 // Lifecycle

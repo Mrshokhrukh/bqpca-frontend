@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
-        Personnel Category Management
+        Mhpc Personnel Category Management
       </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -20,7 +20,7 @@
                 <input
                   type="text"
                   id="categoryName"
-                  v-model="formData.name"
+                  v-model="formData.category_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter category name"
                   required
@@ -119,7 +119,7 @@
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">
-                      {{ personnelCategory.name }}
+                      {{ personnelCategory.category_name }}
                     </h3>
                     <p class="text-sm text-slate-600 mt-1">
                       {{ personnelCategory.late_fee_per_day }}
@@ -202,7 +202,7 @@
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
             This action cannot be undone. This will permanently delete the personnel category "{{
-              personnelCategoryToDelete?.name
+              personnelCategoryToDelete?.category_name
             }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
@@ -228,7 +228,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -243,7 +243,7 @@ import {
 const personnelCategories = ref([])
 const formData = ref({
   id: null,
-  name: '',
+  category_name: '',
   late_fee_per_day: '',
   category_description: '',
 })
@@ -258,7 +258,7 @@ const personnelCategoryToDelete = ref(null)
 // Fetch personnel categories on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMhpcMastersPersonnelCategories()
+    const response = await apiServices.getMhpcMastersPersonnelCategories()
     personnelCategories.value = response.data.results
   } catch (error) {
     console.error('Error fetching personnel categories:', error)
@@ -270,7 +270,7 @@ const filteredPersonnelCategories = computed(() => {
   return personnelCategories.value.filter((personnelCategory) => {
     const query = searchQuery.value.toLowerCase()
     return (
-      personnelCategory.name.toLowerCase().includes(query) ||
+      personnelCategory.category_name.toLowerCase().includes(query) ||
       personnelCategory.category_description.toLowerCase().includes(query)
     )
   })
@@ -290,7 +290,7 @@ const paginatedPersonnelCategories = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMhpcMastersPersonnelCategory(
+      const response = await apiServices.updateMhpcMastersPersonnelCategory(
         formData.value.id,
         formData.value,
       )
@@ -299,7 +299,7 @@ const handleSubmit = async () => {
         personnelCategories.value[index] = response.data
       }
     } else {
-      const response = await services.createMhpcMastersPersonnelCategory(formData.value)
+      const response = await apiServices.createMhpcMastersPersonnelCategory(formData.value)
       personnelCategories.value.push(response.data)
     }
     resetForm()
@@ -331,7 +331,7 @@ const confirmDelete = async () => {
   if (!personnelCategoryToDelete.value) return
 
   try {
-    await services.deleteMhpcMastersPersonnelCategory(personnelCategoryToDelete.value.id)
+    await apiServices.deleteMhpcMastersPersonnelCategory(personnelCategoryToDelete.value.id)
     const index = personnelCategories.value.findIndex(
       (pc) => pc.id === personnelCategoryToDelete.value.id,
     )
@@ -347,7 +347,7 @@ const confirmDelete = async () => {
 const resetForm = () => {
   formData.value = {
     id: null,
-    name: '',
+    category_name: '',
     late_fee_per_day: '',
     category_description: '',
   }

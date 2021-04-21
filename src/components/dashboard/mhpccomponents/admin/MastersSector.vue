@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Sector Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
+        Mhpc Sector Management
+      </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -199,7 +201,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -228,7 +230,7 @@ const sectorToDelete = ref(null)
 // Fetch sectors on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMhpcMastersSectors()
+    const response = await apiServices.getMhpcMastersSectors()
     sectors.value = response.data.results
   } catch (error) {
     console.error('Error fetching sectors:', error)
@@ -259,13 +261,13 @@ const paginatedSectors = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMhpcMastersSector(formData.value.id, formData.value)
+      const response = await apiServices.updateMhpcMastersSector(formData.value.id, formData.value)
       const index = sectors.value.findIndex((se) => se.id === formData.value.id)
       if (index !== -1) {
         sectors.value[index] = response.data
       }
     } else {
-      const response = await services.createMhpcMastersSector(formData.value)
+      const response = await apiServices.createMhpcMastersSector(formData.value)
       sectors.value.push(response.data)
     }
     resetForm()
@@ -297,7 +299,7 @@ const confirmDelete = async () => {
   if (!sectorToDelete.value) return
 
   try {
-    await services.deleteMhpcMastersSector(sectorToDelete.value.id)
+    await apiServices.deleteMhpcMastersSector(sectorToDelete.value.id)
     const index = sectors.value.findIndex((se) => se.id === sectorToDelete.value.id)
     if (index !== -1) {
       sectors.value.splice(index, 1)

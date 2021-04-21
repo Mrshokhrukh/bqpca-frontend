@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Fee Structure Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
+        Mhpc Fee Structure Management
+      </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -18,7 +20,7 @@
                 <input
                   type="text"
                   id="feeName"
-                  v-model="formData.name"
+                  v-model="formData.fee_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter fee name"
                   required
@@ -56,11 +58,10 @@
                 >
                 <select
                   id="feeAssociatedFor"
-                  v-model="formData.fee_category_id"
+                  v-model="formData.fee_associated_for"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 >
-                  <option value="" disabled>Select a category</option>
                   <option
                     v-for="feeFor in feeAssociatedForOptions"
                     :key="feeFor.id"
@@ -136,18 +137,17 @@
               >
                 <div class="flex justify-between items-start gap-4">
                   <div>
-                    <h3 class="font-medium text-slate-900">{{ feeStructure.name }}</h3>
-                    <p class="text-sm text-slate-600 mt-1">Amount: {{ feeStructure.fee_amount }}</p>
-                    <p class="text-sm text-slate-600 mt-1">Desc: {{ feeStructure.description }}</p>
+                    <h3 class="font-medium text-slate-900">{{ feeStructure.fee_name }}</h3>
+                    <p class="text-sm text-slate-600 mt-1">{{ feeStructure.fee_amount }}</p>
+                    <p class="text-sm text-slate-600 mt-1">{{ feeStructure.description }}</p>
                     <p class="text-sm text-slate-600 mt-1">
-                      Category: {{ getFeeAssociatedForName(feeStructure.fee_category?.id) }} 
+                      {{ getFeeAssociatedForName(feeStructure.fee_associated_for) }}
                     </p>
                   </div>
-                  <div class="flex gap-2 flex-shrink-0">
+                  <div class="flex gap-2">
                     <button
                       @click="startEdit(feeStructure)"
                       class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
-                      aria-label="Edit fee structure"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -161,7 +161,6 @@
                     <button
                       @click="openDeleteModal(feeStructure)"
                       class="p-2 text-red-600 hover:bg-red-50 rounded-md"
-                      aria-label="Delete fee structure"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -178,20 +177,13 @@
             </TransitionGroup>
 
             <!-- Empty State -->
-            <div v-if="filteredFeeStructures.length === 0 && !isLoading" class="text-center py-8">
-                <p class="text-slate-500">
-                    {{ searchQuery ? 'No fee structures match your search.' : 'No fee structures added yet.' }}
-                </p>
+            <div v-if="filteredFeeStructures.length === 0" class="text-center py-8">
+              <p class="text-slate-500">No fee structures found</p>
             </div>
-             <!-- Loading State -->
-             <div v-if="isLoading" class="text-center py-8">
-                <p class="text-slate-500">Loading fee structures...</p>
-                <!-- Optional: Add a spinner -->
-             </div>
           </div>
 
           <!-- Pagination -->
-          <div v-if="!isLoading && filteredFeeStructures.length > itemsPerPage" class="flex justify-center gap-2 mt-6">
+          <div v-if="filteredFeeStructures.length > itemsPerPage" class="flex justify-center gap-2">
             <button
               @click="currentPage--"
               :disabled="currentPage === 1"
@@ -199,7 +191,7 @@
             >
               Previous
             </button>
-            <span class="px-3 py-1 text-sm text-slate-600 flex items-center">
+            <span class="px-3 py-1 text-sm text-slate-600">
               Page {{ currentPage }} of {{ totalPages }}
             </span>
             <button
@@ -215,7 +207,6 @@
 
       <!-- Confirmation modal -->
       <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
-        <AlertDialogOverlay class="fixed inset-0 bg-black/50 z-40" />
         <AlertDialogContent
           class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50"
         >
@@ -223,25 +214,26 @@
             Are you absolutely sure?
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
-            This action cannot be undone. This will permanently delete the fee structure "<strong>{{
-              feeStructureToDelete?.name
-            }}</strong>".
+            This action cannot be undone. This will permanently delete the fee structure "{{
+              feeStructureToDelete?.fee_name
+            }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
             <AlertDialogCancel
-              class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 focus:ring-2 focus:ring-offset-2 focus:ring-slate-400"
+              class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
               @click="closeDeleteModal"
             >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
               @click="confirmDelete"
             >
               Delete
             </AlertDialogAction>
           </div>
         </AlertDialogContent>
+        <AlertDialogOverlay class="fixed inset-0 bg-black/50 z-40" />
       </AlertDialogRoot>
     </div>
   </div>
@@ -249,7 +241,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services' // Assuming services are correctly configured
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -265,13 +257,12 @@ const feeStructures = ref([])
 const feeAssociatedForOptions = ref([])
 const formData = ref({
   id: null,
-  name: '',
+  fee_name: '',
   fee_amount: '',
   description: '',
-  fee_category_id: '',
+  fee_associated_for: '',
 })
 const isEditing = ref(false)
-const isLoading = ref(true); // Add loading state
 const searchQuery = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 5
@@ -279,52 +270,36 @@ const itemsPerPage = 5
 const isDeleteModalOpen = ref(false)
 const feeStructureToDelete = ref(null)
 
-// Fetch data on component mount
+// Fetch fee structures and fee associated for options on component mount
 onMounted(async () => {
-  isLoading.value = true;
   try {
     const [feeStructuresResponse, feeAssociatedForResponse] = await Promise.all([
-      services.getMhpcMastersFeeStructures(),
-      services.getMhpcMastersFeesAssociatedFor(),
+      apiServices.getMhpcMastersFeeStructures(),
+      apiServices.getMhpcMastersFeesAssociatedFor(),
     ])
-    feeStructures.value = feeStructuresResponse.data.results || [] // Ensure it's an array
-    feeAssociatedForOptions.value = feeAssociatedForResponse.data.results || [] // Ensure it's an array
+    feeStructures.value = feeStructuresResponse.data.results
+    feeAssociatedForOptions.value = feeAssociatedForResponse.data.results
   } catch (error) {
     console.error('Error fetching data:', error)
-    // Handle error state, e.g., show a notification to the user
-  } finally {
-     isLoading.value = false;
   }
 })
 
-// Computed properties
+// Computed
 const filteredFeeStructures = computed(() => {
-  if (!feeStructures.value) return []; // Guard against null/undefined
-  const query = searchQuery.value.toLowerCase().trim();
-  if (!query) {
-    return feeStructures.value;
-  }
   return feeStructures.value.filter((feeStructure) => {
-    const categoryName = getFeeAssociatedForName(feeStructure.fee_category?.id)?.toLowerCase() || '';
+    const query = searchQuery.value.toLowerCase()
     return (
-      feeStructure.name?.toLowerCase().includes(query) ||
-      feeStructure.description?.toLowerCase().includes(query) ||
-      feeStructure.fee_amount?.toString().includes(query) || // Allow search by amount
-      categoryName.includes(query) // Allow search by category name
-    );
-  });
-});
-
+      feeStructure.fee_name.toLowerCase().includes(query) ||
+      feeStructure.description.toLowerCase().includes(query)
+    )
+  })
+})
 
 const totalPages = computed(() => {
   return Math.ceil(filteredFeeStructures.value.length / itemsPerPage)
 })
 
 const paginatedFeeStructures = computed(() => {
-  // Reset to page 1 if current page becomes invalid after filtering
-  if (currentPage.value > totalPages.value) {
-return filteredFeeStructures.value.slice(start, end)
-  }
   const start = (currentPage.value - 1) * itemsPerPage
   const end = start + itemsPerPage
   return filteredFeeStructures.value.slice(start, end)
@@ -332,58 +307,29 @@ return filteredFeeStructures.value.slice(start, end)
 
 // Methods
 const handleSubmit = async () => {
-  // Basic validation (consider adding more robust validation)
-  if (!formData.value.name || !formData.value.fee_amount || !formData.value.description || !formData.value.fee_category_id) {
-      console.error('Form is incomplete');
-      // Optionally show a user notification
-      return;
-  }
-
-  // Prepare data, ensuring fee_amount is a number if required by backend
-  const payload = {
-    ...formData.value,
-    fee_amount: parseFloat(formData.value.fee_amount) || 0, // Ensure it's a number
-  };
-
   try {
-    if (isEditing.value && formData.value.id) {
-      const response = await services.updateMhpcMastersFeeStructure(
+    if (isEditing.value) {
+      const response = await apiServices.updateMhpcMastersFeeStructure(
         formData.value.id,
-        payload, // Use prepared payload
+        formData.value,
       )
       const index = feeStructures.value.findIndex((fs) => fs.id === formData.value.id)
       if (index !== -1) {
-        // Update the item in the array reactively
-        feeStructures.value.splice(index, 1, response.data);
+        feeStructures.value[index] = response.data
       }
     } else {
-      const response = await services.createMhpcMastersFeeStructure(payload) // Use prepared payload
-       // Add to the beginning of the list for better UX
-      feeStructures.value.unshift(response.data)
-      currentPage.value = 1; // Go to first page to see the new item
+      const response = await apiServices.createMhpcMastersFeeStructure(formData.value)
+      feeStructures.value.push(response.data)
     }
     resetForm()
   } catch (error) {
     console.error('Error saving fee structure:', error)
-    // Handle error state, e.g., show a notification
   }
 }
 
 const startEdit = (feeStructure) => {
-  // Ensure all fields exist on the feeStructure object before assigning
-  formData.value = {
-    id: feeStructure.id,
-    name: feeStructure.name || '',
-    fee_amount: feeStructure.fee_amount || '',
-    description: feeStructure.description || '',
-    fee_category_id: feeStructure.fee_category?.id || '', // Get ID from nested object
-  }
-  isEditing.value = true;
-  // Scroll form into view smoothly (optional)
-  const formElement = document.querySelector('.sticky.top-8'); // Adjust selector if needed
-  if (formElement) {
-    formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  formData.value = { ...feeStructure }
+  isEditing.value = true
 }
 
 const cancelEdit = () => {
@@ -397,108 +343,59 @@ const openDeleteModal = (feeStructure) => {
 
 const closeDeleteModal = () => {
   isDeleteModalOpen.value = false
-  // Delay resetting feeStructureToDelete slightly to avoid flicker in modal text
-  setTimeout(() => {
-    feeStructureToDelete.value = null;
-  }, 150); // Adjust timing as needed
+  feeStructureToDelete.value = null
 }
 
 const confirmDelete = async () => {
-  if (!feeStructureToDelete.value?.id) return
+  if (!feeStructureToDelete.value) return
 
   try {
-    await services.deleteMhpcMastersFeeStructure(feeStructureToDelete.value.id)
+    await apiServices.deleteMhpcMastersFeeStructure(feeStructureToDelete.value.id)
     const index = feeStructures.value.findIndex((fs) => fs.id === feeStructureToDelete.value.id)
     if (index !== -1) {
       feeStructures.value.splice(index, 1)
-      // Adjust pagination if the last item on a page was deleted
-       if (paginatedFeeStructures.value.length === 0 && currentPage.value > 1) {
-          currentPage.value--;
-       }
     }
     closeDeleteModal()
   } catch (error) {
     console.error('Error deleting fee structure:', error)
-     // Handle error state, e.g., show a notification
-    closeDeleteModal(); // Close modal even if delete failed
   }
 }
 
 const resetForm = () => {
   formData.value = {
     id: null,
-    name: '',
+    fee_name: '',
     fee_amount: '',
     description: '',
-    fee_category_id: '', // Reset to empty string for the default option
+    fee_associated_for: '',
   }
   isEditing.value = false
 }
 
 const getFeeAssociatedForName = (feeAssociatedForId) => {
-  // Guard against null/undefined ID and ensure options are loaded
-  if (feeAssociatedForId == null || !feeAssociatedForOptions.value?.length) {
-    return 'Unknown';
-  }
-  // Use loose equality (==) in case IDs are numbers in one place and strings in another
-  const feeFor = feeAssociatedForOptions.value.find((f) => f.id == feeAssociatedForId)
-  return feeFor ? feeFor.name : 'Unknown';
+  const feeFor = feeAssociatedForOptions.value.find((f) => f.id === feeAssociatedForId)
+  return feeFor ? feeFor.name : 'Unknown'
 }
 
 // Watch for search query changes to reset pagination
 watch(searchQuery, () => {
   currentPage.value = 1
 })
-
-// Watch for changes in feeStructures to potentially reset pagination if needed
-// (e.g., if external changes modify the list)
-watch(feeStructures, () => {
-    if (currentPage.value > totalPages.value) {
-        currentPage.value = Math.max(1, totalPages.value);
-    }
-}, { deep: true });
-
 </script>
 
 <style scoped>
-/* Add smooth transition for list items */
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.4s ease-out; /* Slightly longer duration */
+  transition: all 0.3s ease;
 }
 
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: translateY(20px); /* Animate vertically */
+  transform: translateX(30px);
 }
 
-/* Ensure moving items animate smoothly */
 .list-move {
-  transition: transform 0.4s ease;
+  transition: transform 0.3s ease;
 }
-
-/* Style for disabled pagination buttons */
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Improve focus states for accessibility */
-input:focus,
-textarea:focus,
-select:focus,
-button:focus-visible {
-  outline: 2px solid theme('colors.blue.500');
-  outline-offset: 1px;
-  border-color: transparent !important; /* Override default border on focus */
-}
-/* Specific focus for Radix buttons */
-.radix-vue-alert-dialog-trigger:focus-visible,
-.radix-vue-alert-dialog-cancel:focus-visible,
-.radix-vue-alert-dialog-action:focus-visible {
-    outline: 2px solid theme('colors.blue.500');
-    outline-offset: 2px;
-}
-
 </style>

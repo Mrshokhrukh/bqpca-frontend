@@ -95,7 +95,7 @@ import MastersFeeStructures from '@/components/dashboard/mhpccomponents/admin/Ma
 import MastersFeesAssociatedFor from '@/components/dashboard/mhpccomponents/admin/MastersFeesAssociatedFor.vue'
 import MastersFileTypes from '@/components/dashboard/mhpccomponents/admin/MastersFileTypes.vue'
 import MastersParticipationCategory from '@/components/dashboard/mhpccomponents/admin/MastersParticipationCategory.vue'
-import MastersParticipationSubCategory from '@/components/dashboard/mhpccomponents/admin/MastersParticipationSubCategory.vue'
+import MastersParticipationSubCategory from '@/components/dashboard/mhpccomponents/admin/MastersPersonnelSubCategory.vue'
 import MastersPersonnelCategories from '@/components/dashboard/mhpccomponents/admin/MastersPersonnelCategories.vue'
 import MastersQualificationTypes from '@/components/dashboard/mhpccomponents/admin/MastersQualificationTypes.vue'
 import MastersQualifications from '@/components/dashboard/mhpccomponents/admin/MastersQualifications.vue'

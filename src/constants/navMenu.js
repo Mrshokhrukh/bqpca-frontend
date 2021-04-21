@@ -752,7 +752,7 @@ const serviceSpecificMenuItems = {
         ],
       },
       // {
-      //   name: 'CPD Activity',
+      //   name: 'Self Assessed CPD Activity',
       //   icon: getIconComponent('FileText'),
       //   route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
       // },
@@ -796,10 +796,6 @@ const serviceSpecificMenuItems = {
             name: 'Categories',
             route: (serviceType) => `/admin/admin/${serviceType}/participation_category`,
           },
-          {
-            name: 'Sub Categories',
-            route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
-          },
         ],
       },
       {
@@ -809,6 +805,10 @@ const serviceSpecificMenuItems = {
           {
             name: 'Categories',
             route: (serviceType) => `/admin/admin/${serviceType}/personnel_categories`,
+          },
+          {
+            name: 'Sub Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
           },
           {
             name: 'Qualifications',

@@ -2,14 +2,16 @@
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
       <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
-        MHPC COGS Workplaces Management
+        Mhpc COGS Workplaces Management
       </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8">
           <h2 class="text-xl font-semibold text-slate-900 mb-4">
-            {{ isEditing ? 'Edit MHPC COGS Workplace' : 'Add New MHPC COGS Workplace' }}
+            {{
+              isEditing ? 'Edit Mhpc COGS Workplace' : 'Add New Mhpc COGS Workplace'
+            }}
           </h2>
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
@@ -51,7 +53,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
           <div class="mb-6 space-y-4">
             <div class="flex justify-between items-center">
-              <h2 class="text-xl font-semibold text-slate-900">MHPC COGS Workplaces List</h2>
+              <h2 class="text-xl font-semibold text-slate-900">Mhpc COGS Workplaces List</h2>
               <span class="text-sm text-slate-500">
                 {{ filteredWorkplaces.length }} Workplace{{
                   filteredWorkplaces.length !== 1 ? 's' : ''
@@ -192,7 +194,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -220,7 +222,7 @@ const workplaceToDelete = ref(null)
 // Fetch workplaces on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMhpcCogsWorkplaces()
+    const response = await apiServices.getMhpcMastersCogsWorkplaces()
     console.log('API Response:', response.data)
 
     if (Array.isArray(response.data.results)) {
@@ -257,13 +259,16 @@ const paginatedWorkplaces = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMhpcCogsWorkplace(formData.value.id, formData.value)
+      const response = await apiServices.updateMhpcMastersCogsWorkplace(
+        formData.value.id,
+        formData.value,
+      )
       const index = workplaces.value.findIndex((dt) => dt.id === formData.value.id)
       if (index !== -1) {
         workplaces.value[index] = response.data
       }
     } else {
-      const response = await services.createMhpcCogsWorkplace(formData.value)
+      const response = await apiServices.createMhpcMastersCogsWorkplace(formData.value)
       workplaces.value.push(response.data)
     }
     resetForm()
@@ -295,7 +300,7 @@ const confirmDelete = async () => {
   if (!workplaceToDelete.value) return
 
   try {
-    await services.deleteMhpcCogsWorkplace(workplaceToDelete.value.id)
+    await apiServices.deleteMhpcMastersCogsWorkplace(workplaceToDelete.value.id)
     const index = workplaces.value.findIndex((dt) => dt.id === workplaceToDelete.value.id)
     if (index !== -1) {
       workplaces.value.splice(index, 1)

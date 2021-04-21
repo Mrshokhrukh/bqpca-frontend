@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">CPD Methodology Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
+        Mhpc CPD Methodology Management
+      </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -18,7 +20,7 @@
                 <input
                   type="text"
                   id="methodologyName"
-                  v-model="formData.name"
+                  v-model="formData.methodology_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter methodology name"
                   required
@@ -103,7 +105,7 @@
               >
                 <div class="flex justify-between items-start gap-4">
                   <div>
-                    <h3 class="font-medium text-slate-900">{{ methodology.name }}</h3> <!-- Changed -->
+                    <h3 class="font-medium text-slate-900">{{ methodology.methodology_name }}</h3>
                     <p class="text-sm text-slate-600 mt-1">{{ methodology.description }}</p>
                   </div>
                   <div class="flex gap-2">
@@ -177,7 +179,7 @@
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
             This action cannot be undone. This will permanently delete the methodology "{{
-              methodologyToDelete?.name
+              methodologyToDelete?.methodology_name
             }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
@@ -203,7 +205,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services' // Assuming you have a services.js file
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -218,7 +220,7 @@ import {
 const methodologies = ref([])
 const formData = ref({
   id: null,
-  name: '', // Changed from methodology_name
+  methodology_name: '',
   description: '',
 })
 const isEditing = ref(false)
@@ -232,12 +234,10 @@ const methodologyToDelete = ref(null)
 // Fetch methodologies on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMhpcMastersCpdMethodologies()
-    // Assuming response.data.results contains objects with 'name' and 'description'
+    const response = await apiServices.getMhpcMastersCpdMethodologies()
     methodologies.value = response.data.results
   } catch (error) {
     console.error('Error fetching CPD methodologies:', error)
-    // TODO: Add user-facing error notification
   }
 })
 
@@ -245,10 +245,10 @@ onMounted(async () => {
 const filteredMethodologies = computed(() => {
   return methodologies.value.filter((methodology) => {
     const query = searchQuery.value.toLowerCase()
-    // Ensure methodology.name and methodology.description are not null/undefined before calling toLowerCase()
-    const nameMatch = methodology.name?.toLowerCase().includes(query) ?? false // Changed
-    const descriptionMatch = methodology.description?.toLowerCase().includes(query) ?? false
-    return nameMatch || descriptionMatch
+    return (
+      methodology.methodology_name.toLowerCase().includes(query) ||
+      methodology.description.toLowerCase().includes(query)
+    )
   })
 })
 
@@ -265,38 +265,28 @@ const paginatedMethodologies = computed(() => {
 // Methods
 const handleSubmit = async () => {
   try {
-    let savedData;
     if (isEditing.value) {
-      const response = await services.updateMhpcMastersCpdMethodology(
+      const response = await apiServices.updateMhpcMastersCpdMethodology(
         formData.value.id,
-        formData.value, // Sending { id, name, description }
+        formData.value,
       )
-      savedData = response.data; // Assuming response contains the updated object { id, name, description }
       const index = methodologies.value.findIndex((dt) => dt.id === formData.value.id)
       if (index !== -1) {
-        methodologies.value[index] = savedData
+        methodologies.value[index] = response.data
       }
     } else {
-      const response = await services.createMhpcMastersCpdMethodology(
-          formData.value // Sending { name, description } (id is null)
-        )
-      savedData = response.data; // Assuming response contains the created object { id, name, description }
-      methodologies.value.push(savedData)
+      const response = await apiServices.createMhpcMastersCpdMethodology(formData.value)
+      methodologies.value.push(response.data)
     }
     resetForm()
-    // TODO: Add success notification
   } catch (error) {
     console.error('Error saving CPD methodology:', error)
-    // TODO: Add user-facing error notification (e.g., display error.response.data if available)
   }
 }
 
 const startEdit = (methodology) => {
-  // Assuming the 'methodology' object fetched from the API has 'id', 'name', 'description'
   formData.value = { ...methodology }
   isEditing.value = true
-  // Optionally scroll the form into view if needed
-  // document.querySelector('#methodologyName')?.focus();
 }
 
 const cancelEdit = () => {
@@ -304,7 +294,7 @@ const cancelEdit = () => {
 }
 
 const openDeleteModal = (methodology) => {
-  methodologyToDelete.value = methodology // Stores the object with { id, name, description }
+  methodologyToDelete.value = methodology
   isDeleteModalOpen.value = true
 }
 
@@ -317,24 +307,21 @@ const confirmDelete = async () => {
   if (!methodologyToDelete.value) return
 
   try {
-    await services.deleteMhpcMastersCpdMethodology(methodologyToDelete.value.id)
+    await apiServices.deleteMhpcMastersCpdMethodology(methodologyToDelete.value.id)
     const index = methodologies.value.findIndex((dt) => dt.id === methodologyToDelete.value.id)
     if (index !== -1) {
       methodologies.value.splice(index, 1)
     }
     closeDeleteModal()
-    // TODO: Add success notification
   } catch (error) {
     console.error('Error deleting CPD methodology:', error)
-    // TODO: Add user-facing error notification
-    closeDeleteModal() // Close modal even if delete failed to avoid getting stuck
   }
 }
 
 const resetForm = () => {
   formData.value = {
     id: null,
-    name: '', // Changed
+    methodology_name: '',
     description: '',
   }
   isEditing.value = false
@@ -344,17 +331,6 @@ const resetForm = () => {
 watch(searchQuery, () => {
   currentPage.value = 1
 })
-
-// Watch for changes in filtered methodologies to adjust current page if needed
-watch(filteredMethodologies, (newFiltered) => {
-  const newTotalPages = Math.ceil(newFiltered.length / itemsPerPage);
-  if (currentPage.value > newTotalPages && newTotalPages > 0) {
-    currentPage.value = newTotalPages;
-  } else if (newFiltered.length === 0) {
-    currentPage.value = 1; // Reset to page 1 if no results
-  }
-});
-
 </script>
 
 <style scoped>
@@ -369,11 +345,7 @@ watch(filteredMethodologies, (newFiltered) => {
   transform: translateX(30px);
 }
 
-/* Optional: ensure moving items animate smoothly */
 .list-move {
   transition: transform 0.3s ease;
 }
-
-/* Ensure sticky form works well */
-/* The `sticky top-8` class should handle this, but ensure no parent overflow issues */
 </style>

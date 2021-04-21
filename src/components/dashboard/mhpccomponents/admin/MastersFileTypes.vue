@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">File Type Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
+        Mhpc File Type Management
+      </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -201,7 +203,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import apiServices from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -230,7 +232,7 @@ const fileTypeToDelete = ref(null)
 // Fetch file types on component mount
 onMounted(async () => {
   try {
-    const response = await services.getMhpcMastersFileTypes()
+    const response = await apiServices.getMhpcMastersFileTypes()
     fileTypes.value = response.data.results
   } catch (error) {
     console.error('Error fetching file types:', error)
@@ -262,13 +264,13 @@ const paginatedFileTypes = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await services.updateMhpcMastersFileType(formData.value.id, formData.value)
+      const response = await apiServices.updateMhpcMastersFileType(formData.value.id, formData.value)
       const index = fileTypes.value.findIndex((ft) => ft.id === formData.value.id)
       if (index !== -1) {
         fileTypes.value[index] = response.data
       }
     } else {
-      const response = await services.createMhpcMastersFileType(formData.value)
+      const response = await apiServices.createMhpcMastersFileType(formData.value)
       fileTypes.value.push(response.data)
     }
     resetForm()
@@ -300,7 +302,7 @@ const confirmDelete = async () => {
   if (!fileTypeToDelete.value) return
 
   try {
-    await services.deleteMhpcMastersFileType(fileTypeToDelete.value.id)
+    await apiServices.deleteMhpcMastersFileType(fileTypeToDelete.value.id)
     const index = fileTypes.value.findIndex((ft) => ft.id === fileTypeToDelete.value.id)
     if (index !== -1) {
       fileTypes.value.splice(index, 1)
