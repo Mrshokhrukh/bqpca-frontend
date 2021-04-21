@@ -15,25 +15,55 @@
                 scope="col"
                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
               >
-                CAPA ID
+                Teaching Center
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                Inspection From Date
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                Inspection To Date
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                Observation Description
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                Root Cause
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                CAPA
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                Implementation Timeline
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                DO Remarks
               </th>
               <th
                 scope="col"
                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
               >
                 Status
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Inspection Dates
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Description
               </th>
               <th
                 scope="col"
@@ -71,10 +101,9 @@
                     </svg>
                   </button>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+                <td colspan="9" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <!-- Empty cells for Teaching Center through Status -->
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
                     @click="$emit('add-capa', institute.id)"
@@ -91,9 +120,32 @@
                   :key="capa.id"
                   class="bg-gray-100"
                 >
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    CAPA #{{ capa.id }}
+                    {{ institute.name_of_institution }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ getTeachingCenterName(capa.teaching_center_id) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ formatDate(capa.inspection_from_date) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ formatDate(capa.inspection_to_date) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.observation_description">
+                    {{ truncateText(capa.observation_description || 'N/A', 50) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.root_cause">
+                    {{ truncateText(capa.root_cause || 'N/A', 50) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.capa">
+                    {{ truncateText(capa.capa || 'N/A', 50) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ capa.implementation_timeline || 'N/A' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.DO_remarks">
+                    {{ truncateText(capa.DO_remarks || 'N/A', 50) }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <span
@@ -104,17 +156,6 @@
                     >
                       {{ getStatusText(capa.status) }}
                     </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {{ getDateRangeText(capa.inspection_from_date, capa.inspection_to_date) }}
-                  </td>
-                  <td
-                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :title="capa.observation_description"
-                  >
-                    {{
-                      truncateText(capa.observation_description || 'No description available', 50)
-                    }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
@@ -131,8 +172,18 @@
                     </button>
                   </td>
                 </tr>
+                <tr v-if="(instituteCapas[institute.id] || []).length === 0" class="bg-gray-100">
+                  <td colspan="11" class="px-6 py-8 text-center text-sm text-gray-500">
+                    No CAPA records found for this institute.
+                  </td>
+                </tr>
               </template>
             </template>
+            <tr v-if="institutes.length === 0">
+              <td colspan="11" class="px-6 py-8 text-center text-sm text-gray-500">
+                No institutes found.
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -144,7 +195,7 @@
 import { PlusIcon, TrashIcon } from 'lucide-vue-next'
 import { ref } from 'vue'
 
-defineProps({
+const props = defineProps({
   institutes: {
     type: Array,
     required: true,
@@ -153,6 +204,10 @@ defineProps({
     type: Object,
     required: true,
   },
+  teachingCenters: {
+    type: Array,
+    default: () => []
+  }
 })
 
 defineEmits(['add-capa', 'view-details', 'delete-capa', 'open-view-details-modal'])
@@ -166,11 +221,20 @@ const toggleCapas = (instituteId) => {
   }
 }
 
-// Helper functions (same as before)
+// Helper function to get teaching center name
+const getTeachingCenterName = (teachingCenterId) => {
+  if (!teachingCenterId) {
+    return 'N/A (No Teaching Center Linked)'
+  }
+  const center = props.teachingCenters.find((center) => center.id === teachingCenterId)
+  return center ? center.center_name : `Unknown (ID: ${teachingCenterId})`
+}
+
 const getStatusClass = (status) => {
   const classes = {
     P: 'bg-yellow-100 text-yellow-800',
     R: 'bg-green-100 text-green-800',
+    C: 'bg-red-100 text-red-800',
     A: 'bg-blue-100 text-blue-800',
   }
   return classes[status] || 'bg-gray-100 text-gray-800'
@@ -180,6 +244,7 @@ const getStatusText = (status) => {
   const statusTexts = {
     P: 'Pending',
     R: 'Resolved',
+    C: 'Cancelled',
     A: 'Approved',
   }
   return statusTexts[status] || 'Unknown'
@@ -190,16 +255,17 @@ const truncateText = (text, maxLength) => {
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
 }
 
-const getDateRangeText = (fromDate, toDate) => {
-  if (!fromDate && !toDate) return 'No date range specified'
-  if (fromDate && toDate) return `${formatDate(fromDate)} - ${formatDate(toDate)}`
-  if (fromDate) return `From: ${formatDate(fromDate)}`
-  return `To: ${formatDate(toDate)}`
-}
-
 const formatDate = (dateString) => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+  if (!dateString) return 'N/A'
+  try {
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date'
+    }
+    return date.toLocaleDateString('en-CA')
+  } catch (e) {
+    console.error("Error formatting date:", dateString, e)
+    return 'Invalid Date'
+  }
 }
 </script>

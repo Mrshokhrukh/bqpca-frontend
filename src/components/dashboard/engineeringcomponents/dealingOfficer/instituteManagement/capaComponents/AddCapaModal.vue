@@ -103,12 +103,12 @@
                   </div>
                   <div class="space-y-2">
                     <label for="city" class="block text-sm font-medium text-gray-700">
-                      City/Gewog
+                      City/Gewoghhhhh
                     </label>
                     <input
                       type="text"
                       id="city"
-                      v-model="capaForm.city"
+                      v-model="capaForm.capa.city_gewog"
                       class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm bg-gray-100 sm:text-sm"
                       readonly
                     />
