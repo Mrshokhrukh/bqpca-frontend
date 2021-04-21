@@ -426,6 +426,12 @@
                 {{ creditError }}
               </div>
             </div>
+            <button
+              @click="$emit('award-credits')"
+              class="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm"
+            >
+              Award Credits
+            </button>
           </div>
           <div class="flex justify-end gap-4">
             <button
@@ -436,12 +442,68 @@
               Cancel
             </button>
             <button
-              @click="$emit('award-credits')"
+              @click="showConfirmationDialog('approve')"
               class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              Award Credits
+              Approve
+            </button>
+            <button
+              @click="showConfirmationDialog('reject')"
+              class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Reject
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+  </Transition>
+
+  <!-- Confirmation Dialog -->
+  <Transition name="dialog-fade">
+    <div v-if="showDialog" class="fixed inset-0 z-50 flex items-center justify-center">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="closeConfirmationDialog"></div>
+      <div
+        class="relative w-full max-w-md bg-white rounded-lg shadow-lg p-6 m-4"
+        role="dialog"
+        aria-labelledby="dialog-title"
+        @click.stop
+      >
+        <h3 id="dialog-title" class="text-lg font-medium text-gray-900 mb-4">
+          {{ dialogType === 'approve' ? 'Confirm Approval' : 'Confirm Rejection' }}
+        </h3>
+        <p class="text-sm text-gray-600 mb-4">
+          Are you sure you want to {{ dialogType }} this CPD application?
+        </p>
+        <div class="mb-4">
+          <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+            Message (optional)
+          </label>
+          <textarea
+            id="message"
+            v-model="confirmationMessage"
+            rows="4"
+            class="block w-full px-3 py-2 rounded-md border border-gray-300 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter your message here..."
+          ></textarea>
+        </div>
+        <div class="flex justify-end gap-3">
+          <button
+            @click="closeConfirmationDialog"
+            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Cancel
+          </button>
+          <button
+            @click="confirmAction"
+            class="px-4 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
+            :class="{
+              'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500': dialogType === 'approve',
+              'bg-red-600 hover:bg-red-700 focus:ring-red-500': dialogType === 'reject'
+            }"
+          >
+            {{ dialogType === 'approve' ? 'Approve' : 'Reject' }}
+          </button>
         </div>
       </div>
     </div>
@@ -449,6 +511,8 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
 defineProps({
   participant: {
     type: Object,
@@ -464,7 +528,32 @@ defineProps({
   },
 })
 
-defineEmits(['close-modal', 'award-credits', 'update:credit-score'])
+const showDialog = ref(false)
+const dialogType = ref('')
+const confirmationMessage = ref('')
+
+const emits = defineEmits(['close-modal', 'award-credits', 'update:credit-score', 'approve', 'reject'])
+
+const showConfirmationDialog = (type) => {
+  dialogType.value = type
+  showDialog.value = true
+  confirmationMessage.value = ''
+}
+
+const closeConfirmationDialog = () => {
+  showDialog.value = false
+  dialogType.value = ''
+  confirmationMessage.value = ''
+}
+
+const confirmAction = () => {
+  if (dialogType.value === 'approve') {
+    emits('approve', confirmationMessage.value)
+  } else {
+    emits('reject', confirmationMessage.value)
+  }
+  closeConfirmationDialog()
+}
 </script>
 
 <style scoped>
@@ -477,5 +566,16 @@ defineEmits(['close-modal', 'award-credits', 'update:credit-score'])
 .modal-fade-leave-to {
   opacity: 0;
   transform: scale(0.95);
+}
+
+.dialog-fade-enter-active,
+.dialog-fade-leave-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dialog-fade-enter-from,
+.dialog-fade-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
 }
 </style>

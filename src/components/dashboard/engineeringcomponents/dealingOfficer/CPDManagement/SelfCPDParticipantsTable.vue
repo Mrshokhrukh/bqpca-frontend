@@ -79,7 +79,7 @@
                 @click="$emit('open-award-modal', participant)"
                 class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                Award Credits
+                View
               </button>
             </td>
           </tr>
