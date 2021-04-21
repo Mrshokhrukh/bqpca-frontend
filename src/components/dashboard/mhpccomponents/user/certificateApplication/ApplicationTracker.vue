@@ -1,18 +1,18 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="w-full mx-auto px-2 sm:px-4 py-6">
     <!-- Header Section -->
-    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
-      <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">Track Your Application</h2>
-      <p class="text-gray-600 text-center max-w-2xl mx-auto">
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-4 sm:p-6 mb-6">
+      <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 text-center">Track Your Application</h2>
+      <p class="text-gray-600 text-center max-w-2xl mx-auto text-sm sm:text-base">
         Your application status is displayed below.
       </p>
     </div>
 
     <!-- Loading Indicator (Improved) -->
-    <div v-if="isLoading" class="my-12 flex justify-center">
-      <div class="flex flex-col items-center space-y-4">
+    <div v-if="isLoading" class="my-8 flex justify-center">
+      <div class="flex flex-col items-center space-y-3">
         <svg
-          class="animate-spin h-10 w-10 text-blue-600"
+          class="animate-spin h-8 w-8 text-blue-600"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -36,30 +36,30 @@
     </div>
 
     <!-- Results Section -->
-    <div v-if="applications?.length > 0" class="space-y-10">
+    <div v-if="applications?.length > 0" class="space-y-6">
       <div
         v-for="application in applications"
         :key="application.id"
-        class="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300"
+        class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300"
       >
         <!-- Main Info Header -->
         <div
           class="relative bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 border-b border-gray-200"
         >
           <!-- Action Buttons -->
-          <div class="absolute top-0 right-0 m-4 flex space-x-3 z-10">
+          <div class="absolute top-0 right-0 m-2 sm:m-4 flex space-x-2 z-10">
             <!-- View Certificate Button -->
             <button
               v-if="shouldShowViewCertificateButton(application)"
               @click="openCertificateModal(application)"
-              class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg hover:from-blue-700 hover:to-indigo-800 transition-all shadow-md"
+              class="inline-flex items-center px-2 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg hover:from-blue-700 hover:to-indigo-800 transition-all shadow-md"
             >
-              <FileText class="w-4 h-4 mr-2" />
+              <FileText class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               <span>View Certificate</span>
             </button>
           </div>
 
-          <div class="p-8 flex flex-col md:flex-row items-center md:items-start gap-6">
+          <div class="p-4 sm:p-6 flex flex-col sm:flex-row items-center sm:items-start gap-4">
             <div class="relative">
               <div
                 class="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-indigo-600/20 rounded-xl blur-md"
@@ -67,18 +67,18 @@
               <img
                 :src="application.passport_photo"
                 :alt="application.full_name"
-                class="h-28 w-28 relative rounded-xl object-cover ring-4 ring-white shadow-lg"
+                class="h-20 w-20 sm:h-24 sm:w-24 relative rounded-xl object-cover ring-4 ring-white shadow-lg"
               />
             </div>
 
-            <div class="flex-1 text-center md:text-left">
+            <div class="flex-1 text-center sm:text-left">
               <div
-                class="flex flex-col md:flex-row md:items-center gap-3 justify-center md:justify-start"
+                class="flex flex-col sm:flex-row sm:items-center gap-2 justify-center sm:justify-start"
               >
-                <h3 class="text-2xl font-bold text-gray-900">{{ application.full_name }}</h3>
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-900">{{ application.full_name }}</h3>
                 <!--  Header Status Badge  -->
                 <span
-                  class="px-4 py-1 rounded-full text-sm font-medium inline-flex items-center justify-center w-fit mx-auto md:mx-0"
+                  class="px-3 py-1 rounded-full text-xs font-medium inline-flex items-center justify-center w-fit mx-auto sm:mx-0"
                   :class="
                     isApplicationActive(application)
                       ? 'bg-green-100 text-green-800 border border-green-200'
@@ -94,21 +94,21 @@
               </div>
 
               <div
-                class="mt-4 flex flex-col md:flex-row items-center gap-4 text-gray-600 justify-center md:justify-start"
+                class="mt-3 flex flex-col sm:flex-row items-center gap-2 text-gray-600 justify-center sm:justify-start"
               >
                 <div
-                  class="flex items-center px-4 py-2 bg-gray-50 rounded-lg border border-gray-100"
+                  class="flex items-center px-3 py-1 text-xs bg-gray-50 rounded-lg border border-gray-100"
                 >
-                  <IdCard class="w-5 h-5 mr-2 text-blue-600" />
+                  <IdCard class="w-4 h-4 mr-1 text-blue-600" />
                   <span
                     >{{ application.cid_holder ? 'CID' : 'Work Permit' }}:
                     {{ application.cid_no }}</span
                   >
                 </div>
                 <div
-                  class="flex items-center px-4 py-2 bg-gray-50 rounded-lg border border-gray-100"
+                  class="flex items-center px-3 py-1 text-xs bg-gray-50 rounded-lg border border-gray-100"
                 >
-                  <BarChart class="w-5 h-5 mr-2 text-blue-600" />
+                  <BarChart class="w-4 h-4 mr-1 text-blue-600" />
                   <span>Reg No: {{ application.registration_no }}</span>
                 </div>
               </div>
@@ -118,44 +118,44 @@
 
         <!-- Contact & Registration Info -->
         <div
-          class="grid grid-cols-1 md:grid-cols-3 gap-6 px-8 py-6 bg-white border-b border-gray-100"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-white border-b border-gray-100"
         >
           <div
-            class="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 border border-gray-100 hover:border-blue-200 transition-all duration-300 hover:shadow-md"
+            class="flex items-start space-x-3 p-3 rounded-xl bg-gray-50 border border-gray-100 hover:border-blue-200 transition-all duration-300 hover:shadow-md"
           >
-            <div class="mt-1 p-2 bg-blue-100 rounded-lg">
-              <Phone class="w-5 h-5 text-blue-600" />
+            <div class="mt-1 p-1.5 bg-blue-100 rounded-lg">
+              <Phone class="w-4 h-4 text-blue-600" />
             </div>
             <div>
-              <p class="text-sm font-semibold text-gray-900">Contact Information</p>
-              <p class="text-sm text-gray-600 mt-1">{{ application.contact_no }}</p>
-              <p class="text-sm text-gray-600">{{ application.email_address }}</p>
+              <p class="text-xs font-semibold text-gray-900">Contact Information</p>
+              <p class="text-xs text-gray-600 mt-1">{{ application.contact_no }}</p>
+              <p class="text-xs text-gray-600">{{ application.email_address }}</p>
             </div>
           </div>
 
           <div
-            class="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 border border-gray-100 hover:border-blue-200 transition-all duration-300 hover:shadow-md"
+            class="flex items-start space-x-3 p-3 rounded-xl bg-gray-50 border border-gray-100 hover:border-blue-200 transition-all duration-300 hover:shadow-md"
           >
-            <div class="mt-1 p-2 bg-blue-100 rounded-lg">
-              <MapPin class="w-5 h-5 text-blue-600" />
+            <div class="mt-1 p-1.5 bg-blue-100 rounded-lg">
+              <MapPin class="w-4 h-4 text-blue-600" />
             </div>
             <div>
-              <p class="text-sm font-semibold text-gray-900">Location</p>
-              <p class="text-sm text-gray-600 mt-1">
+              <p class="text-xs font-semibold text-gray-900">Location</p>
+              <p class="text-xs text-gray-600 mt-1">
                 {{ application.village }}, {{ application.gewog }}, {{ application.dzongkhag }}
               </p>
             </div>
           </div>
 
           <div
-            class="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 border border-gray-100 hover:border-blue-200 transition-all duration-300 hover:shadow-md"
+            class="flex items-start space-x-3 p-3 rounded-xl bg-gray-50 border border-gray-100 hover:border-blue-200 transition-all duration-300 hover:shadow-md"
           >
-            <div class="mt-1 p-2 bg-blue-100 rounded-lg">
-              <Calendar class="w-5 h-5 text-blue-600" />
+            <div class="mt-1 p-1.5 bg-blue-100 rounded-lg">
+              <Calendar class="w-4 h-4 text-blue-600" />
             </div>
             <div>
-              <p class="text-sm font-semibold text-gray-900">Registration Period</p>
-              <p class="text-sm text-gray-600 mt-1">
+              <p class="text-xs font-semibold text-gray-900">Registration Period</p>
+              <p class="text-xs text-gray-600 mt-1">
                 {{ new Date(application.registration_date).toLocaleDateString() }} -
                 {{ new Date(application.expiry_date).toLocaleDateString() }}
               </p>
@@ -164,27 +164,27 @@
         </div>
 
         <!-- Qualifications Section -->
-        <div class="p-8">
-          <h4 class="text-xl font-semibold text-gray-900 mb-8 flex items-center">
-            <div class="p-2 bg-blue-100 rounded-lg mr-3">
-              <GraduationCap class="w-5 h-5 text-blue-600" />
+        <div class="p-4 sm:p-6">
+          <h4 class="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+            <div class="p-1.5 bg-blue-100 rounded-lg mr-2">
+              <GraduationCap class="w-4 h-4 text-blue-600" />
             </div>
             Qualifications & Certifications
           </h4>
 
-          <div class="grid grid-cols-1 gap-8">
+          <div class="grid grid-cols-1 gap-6">
             <div
               v-for="qualification in application.user_qualifications"
               :key="qualification.id"
-              class="relative bg-white rounded-xl border border-gray-100 p-6 shadow-md hover:shadow-xl transition-all duration-300"
+              class="relative bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-all duration-300"
             >
               <!-- Qualification Header -->
-              <div class="flex flex-col lg:flex-row lg:items-start justify-between mb-8 gap-6">
-                <div class="space-y-2">
-                  <h5 class="text-xl font-semibold text-gray-900">
+              <div class="flex flex-col lg:flex-row lg:items-start justify-between mb-4 sm:mb-6 gap-4">
+                <div class="space-y-1">
+                  <h5 class="text-lg font-semibold text-gray-900">
                     {{ qualification.qualification_name_display }}
                   </h5>
-                  <p class="text-gray-600 text-sm">
+                  <p class="text-gray-600 text-xs">
                     {{ qualification.institute_university_display }}
                   </p>
                 </div>
@@ -193,9 +193,9 @@
                 <div class="flex items-center justify-center lg:justify-end w-full lg:w-auto">
                   <div class="flex flex-col sm:flex-row items-center">
                     <!-- Application Review -->
-                    <div class="flex flex-col items-center mb-4 sm:mb-0">
+                    <div class="flex flex-col items-center mb-2 sm:mb-0">
                       <span
-                        class="w-10 h-10 rounded-full flex items-center justify-center shadow-md"
+                        class="w-8 h-8 rounded-full flex items-center justify-center shadow-md"
                         :class="[
                           qualification.application_review_status === 'Approved'
                             ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
@@ -206,25 +206,25 @@
                       >
                         <CheckCircle
                           v-if="qualification.application_review_status === 'Approved'"
-                          class="w-5 h-5"
+                          class="w-4 h-4"
                         />
                         <XCircle
                           v-else-if="qualification.application_review_status === 'Rejected'"
-                          class="w-5 h-5"
+                          class="w-4 h-4"
                         />
-                        <Clock v-else class="w-5 h-5" />
+                        <Clock v-else class="w-4 h-4" />
                       </span>
-                      <span class="text-xs font-medium mt-2 text-gray-700">Review</span>
+                      <span class="text-xs font-medium mt-1 text-gray-700">Review</span>
                     </div>
 
                     <!-- Connecting Line -->
-                    <div class="hidden sm:block w-8 h-0.5 bg-gray-200"></div>
-                    <div class="sm:hidden h-6 w-0.5 bg-gray-200 my-1"></div>
+                    <div class="hidden sm:block w-6 h-0.5 bg-gray-200"></div>
+                    <div class="sm:hidden h-4 w-0.5 bg-gray-200 my-1"></div>
 
                     <!-- Physical Verification -->
-                    <div class="flex flex-col items-center mb-4 sm:mb-0">
+                    <div class="flex flex-col items-center mb-2 sm:mb-0">
                       <span
-                        class="w-10 h-10 rounded-full flex items-center justify-center shadow-md"
+                        class="w-8 h-8 rounded-full flex items-center justify-center shadow-md"
                         :class="[
                           qualification.physical_review_status === 'Approved'
                             ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
@@ -235,25 +235,25 @@
                       >
                         <CheckCircle
                           v-if="qualification.physical_review_status === 'Approved'"
-                          class="w-5 h-5"
+                          class="w-4 h-4"
                         />
                         <XCircle
                           v-else-if="qualification.physical_review_status === 'Rejected'"
-                          class="w-5 h-5"
+                          class="w-4 h-4"
                         />
-                        <Clock v-else class="w-5 h-5" />
+                        <Clock v-else class="w-4 h-4" />
                       </span>
-                      <span class="text-xs font-medium mt-2 text-gray-700">Verify</span>
+                      <span class="text-xs font-medium mt-1 text-gray-700">Verify</span>
                     </div>
 
                     <!-- Connecting Line -->
-                    <div class="hidden sm:block w-8 h-0.5 bg-gray-200"></div>
-                    <div class="sm:hidden h-6 w-0.5 bg-gray-200 my-1"></div>
+                    <div class="hidden sm:block w-6 h-0.5 bg-gray-200"></div>
+                    <div class="sm:hidden h-4 w-0.5 bg-gray-200 my-1"></div>
 
                     <!-- Payment -->
-                    <div class="flex flex-col items-center mb-4 sm:mb-0">
+                    <div class="flex flex-col items-center mb-2 sm:mb-0">
                       <span
-                        class="w-10 h-10 rounded-full flex items-center justify-center shadow-md"
+                        class="w-8 h-8 rounded-full flex items-center justify-center shadow-md"
                         :class="{
                           'bg-green-100 text-green-700 ring-1 ring-green-200':
                             qualification.payment_status === 'completed',
@@ -267,25 +267,25 @@
                       >
                         <CheckCircle
                           v-if="qualification.payment_status === 'completed'"
-                          class="w-5 h-5"
+                          class="w-4 h-4"
                         />
                         <XCircle
                           v-else-if="qualification.payment_status === 'failed'"
-                          class="w-5 h-5"
+                          class="w-4 h-4"
                         />
-                        <Clock v-else class="w-5 h-5" />
+                        <Clock v-else class="w-4 h-4" />
                       </span>
-                      <span class="text-xs font-medium mt-2 text-gray-700">Payment</span>
+                      <span class="text-xs font-medium mt-1 text-gray-700">Payment</span>
                     </div>
 
                     <!-- Connecting Line -->
-                    <div class="hidden sm:block w-8 h-0.5 bg-gray-200"></div>
-                    <div class="sm:hidden h-6 w-0.5 bg-gray-200 my-1"></div>
+                    <div class="hidden sm:block w-6 h-0.5 bg-gray-200"></div>
+                    <div class="sm:hidden h-4 w-0.5 bg-gray-200 my-1"></div>
 
                     <!-- Endorsement -->
                     <div class="flex flex-col items-center">
                       <span
-                        class="w-10 h-10 rounded-full flex items-center justify-center shadow-md"
+                        class="w-8 h-8 rounded-full flex items-center justify-center shadow-md"
                         :class="[
                           qualification.endorsement_decision === 'Approved'
                             ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
@@ -296,32 +296,32 @@
                       >
                         <CheckCircle
                           v-if="qualification.endorsement_decision === 'Approved'"
-                          class="w-5 h-5"
+                          class="w-4 h-4"
                         />
                         <XCircle
                           v-else-if="qualification.endorsement_decision === 'Rejected'"
-                          class="w-5 h-5"
+                          class="w-4 h-4"
                         />
-                        <Clock v-else class="w-5 h-5" />
+                        <Clock v-else class="w-4 h-4" />
                       </span>
-                      <span class="text-xs font-medium mt-2 text-gray-700">Endorse</span>
+                      <span class="text-xs font-medium mt-1 text-gray-700">Endorse</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               <!-- Qualification Details Grid -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <div
-                  class="bg-blue-50 rounded-xl p-5 border border-blue-100 hover:border-blue-300 transition-all duration-300 hover:shadow-md"
+                  class="bg-blue-50 rounded-lg p-3 border border-blue-100 hover:border-blue-300 transition-all duration-300 hover:shadow-md"
                 >
-                  <div class="flex items-start space-x-3">
-                    <div class="p-2 bg-white rounded-lg shadow-sm">
-                      <Building2 class="w-5 h-5 text-blue-600" />
+                  <div class="flex items-start space-x-2">
+                    <div class="p-1.5 bg-white rounded-lg shadow-sm">
+                      <Building2 class="w-4 h-4 text-blue-600" />
                     </div>
                     <div>
-                      <p class="text-sm font-medium text-blue-700">Institute</p>
-                      <p class="text-sm font-semibold text-gray-900 mt-2">
+                      <p class="text-xs font-medium text-blue-700">Institute</p>
+                      <p class="text-xs font-semibold text-gray-900 mt-1 line-clamp-2">
                         {{ qualification.institute_university_display }}
                       </p>
                     </div>
@@ -329,15 +329,15 @@
                 </div>
 
                 <div
-                  class="bg-indigo-50 rounded-xl p-5 border border-indigo-100 hover:border-indigo-300 transition-all duration-300 hover:shadow-md"
+                  class="bg-indigo-50 rounded-lg p-3 border border-indigo-100 hover:border-indigo-300 transition-all duration-300 hover:shadow-md"
                 >
-                  <div class="flex items-start space-x-3">
-                    <div class="p-2 bg-white rounded-lg shadow-sm">
-                      <GraduationCap class="w-5 h-5 text-indigo-600" />
+                  <div class="flex items-start space-x-2">
+                    <div class="p-1.5 bg-white rounded-lg shadow-sm">
+                      <GraduationCap class="w-4 h-4 text-indigo-600" />
                     </div>
                     <div>
-                      <p class="text-sm font-medium text-indigo-700">Qualification Type</p>
-                      <p class="text-sm font-semibold text-gray-900 mt-2">
+                      <p class="text-xs font-medium text-indigo-700">Qualification</p>
+                      <p class="text-xs font-semibold text-gray-900 mt-1 line-clamp-2">
                         {{ qualification.qualification_type_display }}
                       </p>
                     </div>
@@ -345,15 +345,15 @@
                 </div>
 
                 <div
-                  class="bg-purple-50 rounded-xl p-5 border border-purple-100 hover:border-purple-300 transition-all duration-300 hover:shadow-md"
+                  class="bg-purple-50 rounded-lg p-3 border border-purple-100 hover:border-purple-300 transition-all duration-300 hover:shadow-md"
                 >
-                  <div class="flex items-start space-x-3">
-                    <div class="p-2 bg-white rounded-lg shadow-sm">
-                      <CalendarCheck class="w-5 h-5 text-purple-600" />
+                  <div class="flex items-start space-x-2">
+                    <div class="p-1.5 bg-white rounded-lg shadow-sm">
+                      <CalendarCheck class="w-4 h-4 text-purple-600" />
                     </div>
                     <div>
-                      <p class="text-sm font-medium text-purple-700">Completion Year</p>
-                      <p class="text-sm font-semibold text-gray-900 mt-2">
+                      <p class="text-xs font-medium text-purple-700">Completion</p>
+                      <p class="text-xs font-semibold text-gray-900 mt-1">
                         {{ qualification.completion_year }}
                       </p>
                     </div>
@@ -361,26 +361,26 @@
                 </div>
 
                 <div
-                  class="bg-teal-50 rounded-xl p-5 border border-teal-100 hover:border-teal-300 transition-all duration-300 hover:shadow-md"
+                  class="bg-teal-50 rounded-lg p-3 border border-teal-100 hover:border-teal-300 transition-all duration-300 hover:shadow-md"
                 >
-                  <div class="flex items-start space-x-3">
-                    <div class="p-2 bg-white rounded-lg shadow-sm">
-                      <CreditCard class="w-5 h-5 text-teal-600" />
+                  <div class="flex items-start space-x-2">
+                    <div class="p-1.5 bg-white rounded-lg shadow-sm">
+                      <CreditCard class="w-4 h-4 text-teal-600" />
                     </div>
                     <div>
-                      <p class="text-sm font-medium text-teal-700">Payment Status</p>
-                      <div class="flex items-center space-x-2 mt-2">
+                      <p class="text-xs font-medium text-teal-700">Payment</p>
+                      <div class="flex items-center space-x-1 mt-1">
                         <span
-                          class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium shadow-sm"
+                          class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium shadow-sm"
                           :class="{
                             'bg-green-100 text-green-800 border border-green-200':
                               qualification.payment_status === 'completed',
                             'bg-red-100 text-red-800 border border-red-200':
                               qualification.payment_status === 'failed',
                             'bg-yellow-100 text-yellow-800 border border-yellow-200':
-                              qualification.payment_status === 'processing_payment', // Correct Order
+                              qualification.payment_status === 'processing_payment',
                             'bg-yellow-100 text-yellow-800 border border-yellow-200':
-                              qualification.payment_status === 'pending', // Correct Order
+                              qualification.payment_status === 'pending',
                           }"
                         >
                           {{
@@ -393,8 +393,8 @@
                                   : 'Pending'
                           }}
                         </span>
-                        <span v-if="qualification.payment_id" class="text-xs text-gray-500">
-                          #{{ qualification.payment_id }}
+                        <span v-if="qualification.payment_id" class="text-xs text-gray-500 truncate">
+                          #{{ qualification.payment_id.substring(0, 8) }}
                         </span>
                       </div>
                     </div>
@@ -410,15 +410,15 @@
                   qualification.payment_status !== 'processing_payment'
                 "
                 @click="initiatePayment(application, qualification)"
-                class="relative mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-lg hover:from-teal-600 hover:to-cyan-700 transition-all shadow-lg overflow-hidden"
+                class="relative mt-3 inline-flex items-center px-3 py-1.5 text-xs bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-lg hover:from-teal-600 hover:to-cyan-700 transition-all shadow-md overflow-hidden"
                 :class="{ 'animate-pulse': qualification.payment_status !== 'failed' }"
               >
                 <!-- Animated Border Effect -->
                 <div
-                  class="absolute inset-0 border-4 border-transparent animate-border-pulse pointer-events-none"
+                  class="absolute inset-0 border-2 border-transparent animate-border-pulse pointer-events-none"
                 ></div>
 
-                <CreditCard class="w-4 h-4 mr-2" />
+                <CreditCard class="w-3 h-3 mr-1.5" />
                 <span>{{ getPaymentButtonText(application, qualification) }}</span>
               </button>
             </div>
@@ -430,14 +430,14 @@
     <!-- No Results Message -->
     <div
       v-else-if="hasSearched && !apiError"
-      class="text-center py-16 bg-gray-50 rounded-xl border border-gray-200 shadow-md"
+      class="text-center py-8 sm:py-12 bg-gray-50 rounded-xl border border-gray-200 shadow-md"
     >
       <div class="flex flex-col items-center justify-center">
-        <div class="p-4 bg-gray-100 rounded-full mb-4">
-          <SearchX class="w-8 h-8 text-gray-400" />
+        <div class="p-3 bg-gray-100 rounded-full mb-3">
+          <SearchX class="w-6 h-6 text-gray-400" />
         </div>
-        <h3 class="text-xl font-semibold text-gray-700 mb-2">No Applications Found</h3>
-        <p class="text-gray-600 max-w-md mx-auto">
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-2">No Applications Found</h3>
+        <p class="text-gray-600 max-w-md mx-auto text-sm px-4">
           We couldn't find any applications matching your search criteria. Please try again with
           different details.
         </p>
@@ -447,14 +447,14 @@
     <!-- API Error Message -->
     <div
       v-else-if="apiError"
-      class="text-center py-16 bg-red-50 rounded-xl border border-red-200 shadow-md"
+      class="text-center py-8 sm:py-12 bg-red-50 rounded-xl border border-red-200 shadow-md"
     >
       <div class="flex flex-col items-center justify-center">
-        <div class="p-4 bg-red-100 rounded-full mb-4">
-          <AlertTriangle class="w-8 h-8 text-red-500" />
+        <div class="p-3 bg-red-100 rounded-full mb-3">
+          <AlertTriangle class="w-6 h-6 text-red-500" />
         </div>
-        <h3 class="text-xl font-semibold text-red-700 mb-2">Error Loading Data</h3>
-        <p class="text-red-600 max-w-md mx-auto">
+        <h3 class="text-lg sm:text-xl font-semibold text-red-700 mb-2">Error Loading Data</h3>
+        <p class="text-red-600 max-w-md mx-auto text-sm px-4">
           An error occurred while fetching your application data. Please try again later or contact
           support if the problem persists.
         </p>
@@ -702,5 +702,13 @@ onMounted(() => {
   animation: border-pulse 2s ease-in-out infinite;
   border-radius: 0.5rem;
   /* Match the button's rounded-lg */
+}
+
+/* Hide horizontal scrollbar */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 </style>

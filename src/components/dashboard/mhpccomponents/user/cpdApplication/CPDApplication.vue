@@ -1,267 +1,179 @@
 ```vue
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-gray-100 to-gray-50 py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Header Section -->
-      <div
-        class="relative bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-2xl p-8 mb-12 overflow-hidden"
-      >
-        <div class="absolute inset-0 bg-indigo-200 opacity-10 animate-pulse-slow"></div>
-        <h2 class="relative text-3xl font-extrabold text-gray-900 mb-4 text-center tracking-tight">
-          Continuous Professional Development (CPD) Application
-        </h2>
-        <p class="relative text-gray-600 text-center max-w-2xl mx-auto text-sm sm:text-base">
-          Complete all required fields marked with an
-          <span class="text-red-600 font-semibold">*</span>. Ensure your information is accurate and
-          current. You can save your progress as a draft.
+  <div class="w-full mx-auto px-2 sm:px-4 py-6 pb-8">
+    <!-- Header Section -->
+    <div
+      class="relative bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-2xl p-8 mb-12 overflow-hidden">
+      <div class="absolute inset-0 bg-indigo-200 opacity-10 animate-pulse-slow"></div>
+      <h2 class="relative text-3xl font-extrabold text-gray-900 mb-4 text-center tracking-tight">
+        Continuous Professional Development (CPD) Application
+      </h2>
+      <p class="relative text-gray-600 text-center max-w-2xl mx-auto text-sm sm:text-base">
+        Complete all required fields marked with an
+        <span class="text-red-600 font-semibold">*</span>. Ensure your information is accurate and
+        current. You can save your progress as a draft.
+      </p>
+    </div>
+
+    <!-- Form Section -->
+    <form @submit.prevent="handleSubmit" class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+      <!-- Hidden fields populated from auth store / fetched -->
+      <input type="hidden" v-model="form.registration_no" />
+      <input type="hidden" v-model="form.cid_no" />
+      <input type="hidden" v-model="form.full_name" />
+      <input type="hidden" v-model="form.gender" />
+      <input type="hidden" v-model="form.cpd_credit" />
+
+      <!-- Form Header -->
+      <div class="bg-gradient-to-r from-gray-50 to-indigo-50 p-8">
+        <h3 class="text-xl font-semibold text-gray-900">CPD Details</h3>
+        <p class="mt-2 text-gray-600 text-sm">
+          Provide detailed information about your CPD activity.
         </p>
       </div>
 
-      <!-- Form Section -->
-      <form
-        @submit.prevent="handleSubmit"
-        class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100"
-      >
-        <!-- Hidden fields populated from auth store / fetched -->
-        <input type="hidden" v-model="form.registration_no" />
-        <input type="hidden" v-model="form.cid_no" />
-        <input type="hidden" v-model="form.full_name" />
-        <input type="hidden" v-model="form.gender" />
-        <input type="hidden" v-model="form.cpd_credit" />
+      <!-- Form Body -->
+      <div class="p-8 space-y-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+          <!-- Title of CPD -->
+          <div class="space-y-2">
+            <label for="title_of_cpd" class="text-sm font-medium text-gray-700 flex items-center">
+              Title of CPD <span class="text-red-500 ml-1">*</span>
+            </label>
+            <input id="title_of_cpd" v-model="form.title_of_cpd" type="text"
+              class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300"
+              required placeholder="Enter CPD title" />
+            <span v-if="errors.title_of_cpd" class="text-sm text-red-500 block">{{
+              errors.title_of_cpd
+            }}</span>
+          </div>
 
-        <!-- Form Header -->
-        <div class="bg-gradient-to-r from-gray-50 to-indigo-50 p-8">
-          <h3 class="text-xl font-semibold text-gray-900">CPD Details</h3>
-          <p class="mt-2 text-gray-600 text-sm">
-            Provide detailed information about your CPD activity.
-          </p>
-        </div>
+          <!-- Professional Relevance -->
+          <div class="space-y-2">
+            <label for="relevance_to_profession" class="text-sm font-medium text-gray-700 flex items-center">
+              Professional Relevance <span class="text-red-500 ml-1">*</span>
+            </label>
+            <input id="relevance_to_profession" v-model="form.relevance_to_profession" type="text"
+              class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300"
+              required placeholder="Describe relevance to your profession" />
+            <span v-if="errors.relevance_to_profession" class="text-sm text-red-500 block">{{
+              errors.relevance_to_profession
+            }}</span>
+          </div>
 
-        <!-- Form Body -->
-        <div class="p-8 space-y-10">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-            <!-- Title of CPD -->
-            <div class="space-y-2">
-              <label for="title_of_cpd" class="text-sm font-medium text-gray-700 flex items-center">
-                Title of CPD <span class="text-red-500 ml-1">*</span>
-              </label>
-              <input
-                id="title_of_cpd"
-                v-model="form.title_of_cpd"
-                type="text"
-                class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300"
-                required
-                placeholder="Enter CPD title"
-              />
-              <span v-if="errors.title_of_cpd" class="text-sm text-red-500 block">{{
-                errors.title_of_cpd
-              }}</span>
-            </div>
+          <!-- Participation Category -->
+          <div class="space-y-2">
+            <label for="participation_category" class="text-sm font-medium text-gray-700 flex items-center">
+              Participation Category <span class="text-red-500 ml-1">*</span>
+            </label>
+            <select id="participation_category" v-model="form.participation_category" @change="handleCategoryChange"
+              class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300 appearance-none"
+              required>
+              <option value="" disabled>Select category</option>
+              <option v-for="category in participationCategories" :key="category.id" :value="category.id">
+                {{ category.participation_category_name }}
+              </option>
+            </select>
+            <span v-if="errors.participation_category" class="text-sm text-red-500 block">{{
+              errors.participation_category
+            }}</span>
+          </div>
 
-            <!-- Professional Relevance -->
-            <div class="space-y-2">
-              <label
-                for="relevance_to_profession"
-                class="text-sm font-medium text-gray-700 flex items-center"
-              >
-                Professional Relevance <span class="text-red-500 ml-1">*</span>
-              </label>
-              <input
-                id="relevance_to_profession"
-                v-model="form.relevance_to_profession"
-                type="text"
-                class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300"
-                required
-                placeholder="Describe relevance to your profession"
-              />
-              <span v-if="errors.relevance_to_profession" class="text-sm text-red-500 block">{{
-                errors.relevance_to_profession
-              }}</span>
-            </div>
+          <!-- Participant Sub-category -->
+          <div class="space-y-2">
+            <label for="participant_sub_category" class="text-sm font-medium text-gray-700 flex items-center">
+              Participant Sub-category <span class="text-red-500 ml-1">*</span>
+            </label>
+            <select id="participant_sub_category" v-model="form.participant_sub_category"
+              :disabled="!form.participation_category || filteredSubCategories.length === 0"
+              class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300 appearance-none disabled:bg-gray-200 disabled:cursor-not-allowed"
+              required>
+              <option value="" disabled>Select sub-category</option>
+              <option v-if="form.participation_category && filteredSubCategories.length === 0" value="" disabled>
+                No sub-categories found for selected category
+              </option>
+              <option v-for="subCategory in filteredSubCategories" :key="subCategory.id" :value="subCategory.id">
+                {{ subCategory.participation_sub_category_name }}
+              </option>
+            </select>
+            <!-- Debug info (you can remove this in production) -->
+            <p v-if="form.participation_category && filteredSubCategories.length === 0" class="text-xs text-orange-500">
+              No matching subcategories found. Check API response format.
+            </p>
+            <span v-if="errors.participant_sub_category" class="text-sm text-red-500 block">{{
+              errors.participant_sub_category
+            }}</span>
+          </div>
 
-            <!-- Participation Category -->
-            <div class="space-y-2">
-              <label
-                for="participation_category"
-                class="text-sm font-medium text-gray-700 flex items-center"
-              >
-                Participation Category <span class="text-red-500 ml-1">*</span>
-              </label>
-              <select
-                id="participation_category"
-                v-model="form.participation_category"
-                @change="handleCategoryChange"
-                class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300 appearance-none"
-                required
-              >
-                <option value="" disabled>Select category</option>
-                <option
-                  v-for="category in participationCategories"
-                  :key="category.id"
-                  :value="category.id"
-                >
-                  {{ category.participation_category_name }}
-                </option>
-              </select>
-              <span v-if="errors.participation_category" class="text-sm text-red-500 block">{{
-                errors.participation_category
-              }}</span>
-            </div>
+          <!-- CPD Activity Type -->
+          <div class="space-y-2">
+            <label for="type_of_cpd_activity" class="text-sm font-medium text-gray-700 flex items-center">
+              CPD Activity Type <span class="text-red-500 ml-1">*</span>
+            </label>
+            <select id="type_of_cpd_activity" v-model="form.type_of_cpd_activity"
+              class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300 appearance-none"
+              required>
+              <option value="" disabled>Select activity type</option>
+              <option v-for="activity in cpdActivities" :key="activity.id" :value="activity.id">
+                {{ activity.cpd_activity_name }}
+              </option>
+            </select>
+            <span v-if="errors.type_of_cpd_activity" class="text-sm text-red-500 block">{{
+              errors.type_of_cpd_activity
+            }}</span>
+          </div>
 
-            <!-- Participant Sub-category -->
-            <div class="space-y-2">
-              <label
-                for="participant_sub_category"
-                class="text-sm font-medium text-gray-700 flex items-center"
-              >
-                Participant Sub-category <span class="text-red-500 ml-1">*</span>
-              </label>
-              <select
-                id="participant_sub_category"
-                v-model="form.participant_sub_category"
-                :disabled="!form.participation_category || filteredSubCategories.length === 0"
-                class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300 appearance-none disabled:bg-gray-200 disabled:cursor-not-allowed"
-                required
-              >
-                <option value="" disabled>Select sub-category</option>
-                <option
-                  v-if="form.participation_category && filteredSubCategories.length === 0"
-                  value=""
-                  disabled
-                >
-                  No sub-categories found for selected category
-                </option>
-                <option
-                  v-for="subCategory in filteredSubCategories"
-                  :key="subCategory.id"
-                  :value="subCategory.id"
-                >
-                  {{ subCategory.participation_sub_category_name }}
-                </option>
-              </select>
-              <!-- Debug info (you can remove this in production) -->
-              <p v-if="form.participation_category && filteredSubCategories.length === 0" class="text-xs text-orange-500">
-                No matching subcategories found. Check API response format.
+          <!-- Attachment -->
+          <div class="space-y-2">
+            <label for="attachment" class="text-sm font-medium text-gray-700">Supporting Documents</label>
+            <div class="relative">
+              <input id="attachment" type="file" ref="fileInputRef" @change="handleFileUpload"
+                class="w-full px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 hover:border-indigo-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-indigo-100 file:text-indigo-700 hover:file:bg-indigo-200" />
+              <p class="mt-2 text-xs text-gray-500 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                PDF, DOC, JPG, PNG (Max: 2MB)
               </p>
-              <span v-if="errors.participant_sub_category" class="text-sm text-red-500 block">{{
-                errors.participant_sub_category
-              }}</span>
+              <p v-if="attachmentFileName" class="mt-2 text-xs text-indigo-700">
+                Selected: {{ attachmentFileName }}
+              </p>
             </div>
-
-            <!-- CPD Activity Type -->
-            <div class="space-y-2">
-              <label
-                for="type_of_cpd_activity"
-                class="text-sm font-medium text-gray-700 flex items-center"
-              >
-                CPD Activity Type <span class="text-red-500 ml-1">*</span>
-              </label>
-              <select
-                id="type_of_cpd_activity"
-                v-model="form.type_of_cpd_activity"
-                class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 shadow-sm hover:border-indigo-300 appearance-none"
-                required
-              >
-                <option value="" disabled>Select activity type</option>
-                <option v-for="activity in cpdActivities" :key="activity.id" :value="activity.id">
-                  {{ activity.cpd_activity_name }}
-                </option>
-              </select>
-              <span v-if="errors.type_of_cpd_activity" class="text-sm text-red-500 block">{{
-                errors.type_of_cpd_activity
-              }}</span>
-            </div>
-
-            <!-- Attachment -->
-            <div class="space-y-2">
-              <label for="attachment" class="text-sm font-medium text-gray-700"
-                >Supporting Documents</label
-              >
-              <div class="relative">
-                <input
-                  id="attachment"
-                  type="file"
-                  ref="fileInputRef"
-                  @change="handleFileUpload"
-                  class="w-full px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 hover:border-indigo-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-indigo-100 file:text-indigo-700 hover:file:bg-indigo-200"
-                />
-                <p class="mt-2 text-xs text-gray-500 flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 mr-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  PDF, DOC, JPG, PNG (Max: 2MB)
-                </p>
-                <p v-if="attachmentFileName" class="mt-2 text-xs text-indigo-700">
-                  Selected: {{ attachmentFileName }}
-                </p>
-              </div>
-              <span v-if="errors.attachment" class="text-sm text-red-500 block">{{
-                errors.attachment
-              }}</span>
-            </div>
+            <span v-if="errors.attachment" class="text-sm text-red-500 block">{{
+              errors.attachment
+            }}</span>
           </div>
         </div>
+      </div>
 
-        <!-- Form Footer / Actions -->
-        <div class="bg-gray-50 px-8 py-6 flex justify-end space-x-4 border-t border-gray-100">
-          <button
-            type="button"
-            @click="handleCancel"
-            class="px-6 py-3 rounded-lg bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            @click="handleSaveDraft"
-            class="px-6 py-3 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400"
-          >
-            Save as Draft
-          </button>
-          <button
-            type="submit"
-            :disabled="isSubmitting"
-            class="px-6 py-3 rounded-lg bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <span v-if="isSubmitting" class="flex items-center justify-center">
-              <svg
-                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Submitting...
-            </span>
-            <span v-else>Submit Application</span>
-          </button>
-        </div>
-      </form>
-    </div>
+      <!-- Form Footer / Actions -->
+      <div class="bg-gray-50 px-8 py-6 flex justify-end space-x-4 border-t border-gray-100">
+        <button type="button" @click="handleCancel"
+          class="px-6 py-3 rounded-lg bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">
+          Cancel
+        </button>
+        <button type="button" @click="handleSaveDraft"
+          class="px-6 py-3 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400">
+          Save as Draft
+        </button>
+        <button type="submit" :disabled="isSubmitting"
+          class="px-6 py-3 rounded-lg bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span v-if="isSubmitting" class="flex items-center justify-center">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+            Submitting...
+          </span>
+          <span v-else>Submit Application</span>
+        </button>
+      </div>
+    </form>
   </div>
 </template>
 
@@ -485,11 +397,7 @@ const handleFileUpload = (event) => {
 // Reset subcategory when category changes and add debugging logs
 const handleCategoryChange = () => {
   form.participant_sub_category = '';
-  delete errors.participant_sub_category;
-
-  // Log for debugging
-  console.log('Category changed to:', form.participation_category);
-  console.log('Available subcategories:', filteredSubCategories.value);
+  delete errors.participant_sub_category; 
 }
 
 // Fetch master data (activities, categories, subcategories) from API
@@ -567,7 +475,8 @@ onMounted(async () => {
 <style scoped>
 /* Styles for select placeholder */
 select:required:invalid {
-  color: #9ca3af; /* gray-400 */
+  color: #9ca3af;
+  /* gray-400 */
 }
 
 option[value=''][disabled] {
@@ -575,27 +484,38 @@ option[value=''][disabled] {
 }
 
 option {
-  color: #111827; /* gray-900 */
+  color: #111827;
+  /* gray-900 */
 }
 
 /* Style for disabled select */
 select:disabled {
-  background-color: #e5e7eb; /* gray-200 */
+  background-color: #e5e7eb;
+  /* gray-200 */
   cursor: not-allowed;
   opacity: 0.7;
 }
 
 /* Slightly improved file input focus */
 input[type='file']:focus-within {
-  outline: 2px solid #6366f1; /* indigo-500 */
+  outline: 2px solid #6366f1;
+  /* indigo-500 */
   outline-offset: 2px;
 }
 
 /* Custom slow pulse animation */
 @keyframes pulse-slow {
-  0%, 100% { opacity: 0.1; }
-  50% { opacity: 0.2; }
+
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+
+  50% {
+    opacity: 0.2;
+  }
 }
+
 .animate-pulse-slow {
   animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

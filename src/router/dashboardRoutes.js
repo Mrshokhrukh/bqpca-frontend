@@ -104,11 +104,7 @@ function generateDynamicRoutes() {
               }
             }),
           })
-        } else {
-          console.warn(
-            `No routes defined for role: ${role.key} and service type: ${serviceType.key}`,
-          )
-        }
+        } 
       })
     }
   })

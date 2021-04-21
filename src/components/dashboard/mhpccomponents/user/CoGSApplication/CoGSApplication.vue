@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-12">
-    <div class="max-w-7xl mx-auto px-4">
-      <!-- Enhanced Header with Animation -->
-      <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
-        <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
-          Certificate of Goods Standing (CoGS) Application
+  <div class="bg-gray-50 py-6 sm:py-8">
+    <div class="max-w-6xl mx-auto px-3 sm:px-4">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-4 sm:p-6 mb-6">
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 text-center">
+          Certificate of Good Standing (CoGS) Application
         </h2>
-        <p class="text-gray-600 text-center max-w-2xl mx-auto">
+        <p class="text-sm sm:text-base text-gray-600 text-center max-w-2xl mx-auto">
           Please fill in all required fields marked with an asterisk (<span class="text-red-600"
             >*</span
           >). Ensure all information provided is accurate and up-to-date.
@@ -14,7 +14,7 @@
       </div>
 
       <!-- Main Form -->
-      <form @submit.prevent="submitForm" class="space-y-8">
+      <form @submit.prevent="submitForm" class="space-y-6">
         <!-- Hidden Fields (Prefilled from Auth Store) -->
         <input type="hidden" v-model="form.registration_no" />
         <input type="hidden" v-model="form.cid_no" />
@@ -22,62 +22,62 @@
         <input type="hidden" v-model="form.gender" />
 
         <!-- Supervisor Details Section -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b">
-            <div class="flex items-center space-x-3">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 border-b">
+            <div class="flex items-center space-x-2 sm:space-x-3">
               <div
-                class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold"
+                class="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base"
               >
                 1
               </div>
               <div>
-                <h3 class="text-xl font-bold text-gray-900">Supervisor Details</h3>
-                <p class="mt-1 text-gray-600">Information about your supervisor</p>
+                <h3 class="text-lg sm:text-xl font-bold text-gray-900">Supervisor Details</h3>
+                <p class="mt-1 text-xs sm:text-sm text-gray-600">Information about your supervisor</p>
               </div>
             </div>
           </div>
 
-          <div class="p-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="p-4 sm:p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <!-- Supervisor Name -->
-              <div class="space-y-2">
+              <div class="space-y-1">
                 <label class="block text-sm font-medium text-gray-700 required"
                   >Supervisor's Name</label
                 >
                 <input
                   type="text"
                   v-model="form.supervisor_name"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter supervisor's name"
                 />
-                <span v-if="errors.supervisor_name" class="text-sm text-red-500 block">{{
+                <span v-if="errors.supervisor_name" class="text-xs text-red-500 block">{{
                   errors.supervisor_name
                 }}</span>
               </div>
 
               <!-- Supervisor Designation -->
-              <div class="space-y-2">
+              <div class="space-y-1">
                 <label class="block text-sm font-medium text-gray-700 required"
                   >Supervisor's Designation</label
                 >
                 <input
                   type="text"
                   v-model="form.supervisor_designation"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter supervisor's designation"
                 />
-                <span v-if="errors.supervisor_designation" class="text-sm text-red-500 block">{{
+                <span v-if="errors.supervisor_designation" class="text-xs text-red-500 block">{{
                   errors.supervisor_designation
                 }}</span>
               </div>
 
               <!-- Agency -->
-              <div class="space-y-2">
+              <div class="space-y-1">
                 <label class="block text-sm font-medium text-gray-700 required">Agency</label>
                 <Listbox v-model="form.agency">
                   <div class="relative">
                     <ListboxButton
-                      class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-left"
+                      class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-left"
                     >
                       <span class="block truncate">{{
                         selectedAgencyName || 'Select Agency'
@@ -89,7 +89,7 @@
                       leave-to-class="opacity-0"
                     >
                       <ListboxOptions
-                        class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+                        class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-lg py-1 text-sm ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
                       >
                         <ListboxOption
                           v-for="agency in agencyOptions"
@@ -123,55 +123,55 @@
                     </transition>
                   </div>
                 </Listbox>
-                <span v-if="errors.agency" class="text-sm text-red-500 block">{{
+                <span v-if="errors.agency" class="text-xs text-red-500 block">{{
                   errors.agency
                 }}</span>
               </div>
 
               <!-- Supervisor Contact Number -->
-              <div class="space-y-2">
+              <div class="space-y-1">
                 <label class="block text-sm font-medium text-gray-700 required"
                   >Supervisor's Contact Number</label
                 >
                 <input
                   type="tel"
                   v-model="form.contact_number"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter supervisor's contact number"
                 />
-                <span v-if="errors.contact_number" class="text-sm text-red-500 block">{{
+                <span v-if="errors.contact_number" class="text-xs text-red-500 block">{{
                   errors.contact_number
                 }}</span>
               </div>
 
               <!-- Supervisor Email Address -->
-              <div class="space-y-2">
+              <div class="space-y-1">
                 <label class="block text-sm font-medium text-gray-700 required"
                   >Supervisor's Email Address</label
                 >
                 <input
                   type="email"
                   v-model="form.email_address"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter supervisor's email address"
                 />
-                <span v-if="errors.email_address" class="text-sm text-red-500 block">{{
+                <span v-if="errors.email_address" class="text-xs text-red-500 block">{{
                   errors.email_address
                 }}</span>
               </div>
 
               <!-- Reason for Application -->
-              <div class="space-y-2">
+              <div class="space-y-1 md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 required"
                   >Reason for Application</label
                 >
                 <textarea
                   v-model="form.reason_for_application"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   rows="3"
                   placeholder="Enter reason for application"
                 ></textarea>
-                <span v-if="errors.reason_for_application" class="text-sm text-red-500 block">{{
+                <span v-if="errors.reason_for_application" class="text-xs text-red-500 block">{{
                   errors.reason_for_application
                 }}</span>
               </div>
@@ -180,24 +180,24 @@
         </div>
 
         <!-- Recipient Details Section -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b">
-            <div class="flex items-center space-x-3">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 border-b">
+            <div class="flex items-center space-x-2 sm:space-x-3">
               <div
-                class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold"
+                class="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base"
               >
                 2
               </div>
               <div>
-                <h3 class="text-xl font-bold text-gray-900">Recipient Details</h3>
-                <p class="mt-1 text-gray-600">Information about the certificate recipient</p>
+                <h3 class="text-lg sm:text-xl font-bold text-gray-900">Recipient Details</h3>
+                <p class="mt-1 text-xs sm:text-sm text-gray-600">Information about the certificate recipient</p>
               </div>
             </div>
           </div>
 
-          <div class="p-8">
+          <div class="p-4 sm:p-6">
             <!-- Recipient Toggle -->
-            <div class="mb-8">
+            <div class="mb-4 sm:mb-6">
               <Switch v-model="isRecipientSelf" class="relative inline-flex items-center">
                 <span class="sr-only">Toggle recipient</span>
                 <div
@@ -221,97 +221,97 @@
 
             <!-- Other Recipient Form -->
             <TransitionRoot as="template" :show="!isRecipientSelf">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <!-- Recipient Name -->
-                <div class="space-y-2">
+                <div class="space-y-1">
                   <label class="block text-sm font-medium text-gray-700 required"
                     >Recipient's Name</label
                   >
                   <input
                     type="text"
                     v-model="form.recipient_name"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's name"
                   />
-                  <span v-if="errors.recipient_name" class="text-sm text-red-500 block">{{
+                  <span v-if="errors.recipient_name" class="text-xs text-red-500 block">{{
                     errors.recipient_name
                   }}</span>
                 </div>
 
                 <!-- Recipient Contact Number -->
-                <div class="space-y-2">
+                <div class="space-y-1">
                   <label class="block text-sm font-medium text-gray-700 required"
                     >Recipient's Contact Number</label
                   >
                   <input
                     type="tel"
                     v-model="form.recipient_contact_number"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's contact number"
                   />
-                  <span v-if="errors.recipient_contact_number" class="text-sm text-red-500 block">{{
+                  <span v-if="errors.recipient_contact_number" class="text-xs text-red-500 block">{{
                     errors.recipient_contact_number
                   }}</span>
                 </div>
 
                 <!-- Recipient Email -->
-                <div class="space-y-2">
+                <div class="space-y-1">
                   <label class="block text-sm font-medium text-gray-700 required"
                     >Recipient's Email</label
                   >
                   <input
                     type="email"
                     v-model="form.recipient_email"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's email address"
                   />
-                  <span v-if="errors.recipient_email" class="text-sm text-red-500 block">{{
+                  <span v-if="errors.recipient_email" class="text-xs text-red-500 block">{{
                     errors.recipient_email
                   }}</span>
                 </div>
 
                 <!-- Recipient Address -->
-                <div class="space-y-2">
+                <div class="space-y-1">
                   <label class="block text-sm font-medium text-gray-700 required"
                     >Recipient's Address</label
                   >
                   <input
                     type="text"
                     v-model="form.address"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's full address"
                   />
-                  <span v-if="errors.address" class="text-sm text-red-500 block">{{
+                  <span v-if="errors.address" class="text-xs text-red-500 block">{{
                     errors.address
                   }}</span>
                 </div>
 
                 <!-- Recipient PO Box -->
-                <div class="space-y-2">
+                <div class="space-y-1">
                   <label class="block text-sm font-medium text-gray-700">Recipient's PO. Box</label>
                   <input
                     type="text"
                     v-model="form.po_box"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's PO Box (optional)"
                   />
-                  <span v-if="errors.po_box" class="text-sm text-red-500 block">{{
+                  <span v-if="errors.po_box" class="text-xs text-red-500 block">{{
                     errors.po_box
                   }}</span>
                 </div>
 
                 <!-- Recipient Zip Code -->
-                <div class="space-y-2">
+                <div class="space-y-1">
                   <label class="block text-sm font-medium text-gray-700"
                     >Recipient's Zip code</label
                   >
                   <input
                     type="text"
                     v-model="form.zip_code"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter recipient's zip code (optional)"
                   />
-                  <span v-if="errors.zip_code" class="text-sm text-red-500 block">{{
+                  <span v-if="errors.zip_code" class="text-xs text-red-500 block">{{
                     errors.zip_code
                   }}</span>
                 </div>
@@ -321,22 +321,22 @@
         </div>
 
         <!-- Declaration Section -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b">
-            <div class="flex items-center space-x-3">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 border-b">
+            <div class="flex items-center space-x-2 sm:space-x-3">
               <div
-                class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold"
+                class="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base"
               >
                 3
               </div>
               <div>
-                <h3 class="text-xl font-bold text-gray-900">Declaration</h3>
-                <p class="mt-1 text-gray-600">Please read and agree to the terms</p>
+                <h3 class="text-lg sm:text-xl font-bold text-gray-900">Declaration</h3>
+                <p class="mt-1 text-xs sm:text-sm text-gray-600">Please read and agree to the terms</p>
               </div>
             </div>
           </div>
 
-          <div class="p-8">
+          <div class="p-4 sm:p-6">
             <div class="flex items-start space-x-3">
               <input
                 type="checkbox"
@@ -351,25 +351,25 @@
                 </button>
               </label>
             </div>
-            <span v-if="errors.declaration" class="text-sm text-red-500 block">
+            <span v-if="errors.declaration" class="text-xs text-red-500 block mt-1">
               {{ errors.declaration }}
             </span>
           </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex justify-end space-x-4 mt-8">
+        <div class="flex justify-end space-x-3 mt-6">
           <button
             type="button"
             @click="cancelForm"
-            class="px-6 py-3 rounded-xl text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            class="px-4 py-2 rounded-lg text-sm text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           >
             Cancel
           </button>
           <button
             type="submit"
             :disabled="!form.declaration"
-            class="px-6 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-4 py-2 rounded-lg text-sm bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Submit Application
           </button>
@@ -378,7 +378,7 @@
 
       <!-- Terms Modal -->
       <TransitionRoot as="template" :show="showTermsModal">
-        <Dialog as="div" class="fixed z-10 inset-0 overflow-y-auto" @close="closeTermsModal">
+        <Dialog as="div" class="fixed z-50 inset-0 overflow-y-auto" @close="closeTermsModal">
           <div
             class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
           >
@@ -409,7 +409,7 @@
               leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <div
-                class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+                class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full"
               >
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
@@ -431,7 +431,7 @@
                 <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                   <button
                     type="button"
-                    class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                    class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                     @click="closeTermsModal"
                   >
                     I Understand
@@ -451,7 +451,7 @@ import { ref, reactive, onMounted, watch, computed } from 'vue'
 import { useToast } from 'vue-toastification'
 import apiService from '@/services/services'
 import { useAuthStore } from '@/stores/authStore'
-import { useRouter } from 'vue-router' // Import useRouter
+import { useRouter } from 'vue-router'
 import {
   Dialog,
   DialogOverlay,
@@ -466,15 +466,11 @@ import {
 } from '@headlessui/vue'
 import {
   CheckIcon,
-  // Removed unused icons:
-  // CreditCardIcon,
-  // DocumentTextIcon,
-  // PrinterIcon,
 } from '@heroicons/vue/24/outline'
 
 const toast = useToast()
 const authStore = useAuthStore()
-const router = useRouter() // Initialize useRouter
+const router = useRouter()
 
 const form = reactive({
   registration_no: '',
@@ -484,13 +480,13 @@ const form = reactive({
   reason_for_application: '',
   supervisor_name: '',
   supervisor_designation: '',
-  agency: null, // Use 'agency' to match the model, store the ID
-  contact_number: '', // Use generic name, as it's used for both supervisor and recipient
-  email_address: '', //generic name as well
+  agency: null,
+  contact_number: '',
+  email_address: '',
   recipient_name: '',
   recipient_contact_number: '',
   recipient_email: '',
-  address: '', // Use generic names for recipient details
+  address: '',
   po_box: '',
   zip_code: '',
   declaration: false,
@@ -502,9 +498,6 @@ const showTermsModal = ref(false)
 const agencyOptions = ref([])
 const message = ref('')
 const messageClass = ref('')
-// const showPaymentSection = ref(false);       // Removed
-// const showCertificateSection = ref(false);   // Removed
-// const certificateGenerated = ref(false);     // Removed
 
 const fetchRegistrationNumber = async (cid) => {
   try {
@@ -613,11 +606,11 @@ const submitForm = async () => {
       reason_for_application: form.reason_for_application,
       supervisor_name: form.supervisor_name,
       supervisor_designation: form.supervisor_designation,
-      agency: form.agency, // Send agency ID
-      department: null, // You might want to add department selection
-      workplace: null, //same case as above two
-      contact_number: form.contact_number, // Supervisor's contact
-      email_address: form.email_address, // Supervisor's email
+      agency: form.agency,
+      department: null,
+      workplace: null,
+      contact_number: form.contact_number,
+      email_address: form.email_address,
       recipient_name: isRecipientSelf.value ? form.full_name : form.recipient_name,
       recipient_contact_number: isRecipientSelf.value
         ? form.user_contact_number
@@ -631,7 +624,7 @@ const submitForm = async () => {
       review_remark: '',
       endorsement_decision: 'Pending',
       endorsement_remark: '',
-      is_payment_complete: false, // Removed payment and certificate related fields
+      is_payment_complete: false,
       payment_id: '',
       is_active: true,
     }
@@ -641,7 +634,6 @@ const submitForm = async () => {
 
       if (response.status === 201) {
         toast.success('Application submitted successfully!')
-        // Redirect to dashboard after successful submission
         router.push('/admin/user/health_certification/dashboard')
       } else {
         toast.error('An unexpected error occurred. Please try again.')
@@ -699,17 +691,12 @@ const cancelForm = () => {
   }, 3000)
 }
 
-// Removed payment and certificate related methods:
-// const simulatePayment = () => { ... };
-// const generateCertificate = () => { ... };
-// const printCertificate = () => { ... };
-
 const updateRecipientDetails = () => {
   if (isRecipientSelf.value && authStore.user) {
     form.recipient_name = authStore.user.fullName
-    form.recipient_contact_number = authStore.user.contactNumber // Assuming you have contactNumber in authStore.user
-    form.recipient_email = authStore.user.email // Assuming you have email in authStore.user
-    form.address = '' // Reset other fields
+    form.recipient_contact_number = authStore.user.contactNumber
+    form.recipient_email = authStore.user.email
+    form.address = ''
     form.po_box = ''
     form.zip_code = ''
   } else {
@@ -746,24 +733,16 @@ const selectedAgencyName = computed(() => {
 /* Custom checkbox styling */
 input[type='checkbox'] {
   appearance: none;
-  /* Remove default appearance */
   -webkit-appearance: none;
-  /* For older Safari/Chrome */
   -moz-appearance: none;
-  /* For older Firefox */
   height: 1.25rem;
   width: 1.25rem;
   border: 2px solid #9ca3af;
-  /* border-gray-400 equivalent */
   border-radius: 0.25rem;
-  /* rounded equivalent */
   cursor: pointer;
   display: inline-block;
-  /* Important for proper alignment */
   position: relative;
-  /* Needed for the checkmark */
   vertical-align: middle;
-  /* Aligns with the label text */
 }
 
 /* Checkmark styles (hidden by default) */
@@ -773,16 +752,11 @@ input[type='checkbox']::before {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
-  /* Initially hidden */
   width: 0.75rem;
-  /* Smaller checkmark */
   height: 0.75rem;
   background-color: #3b82f6;
-  /* bg-blue-600 equivalent */
   border-radius: 0.125rem;
-  /* Slightly smaller border-radius */
   transition: transform 0.15s ease-in-out;
-  /* Smooth animation */
 }
 
 /* Show checkmark when checked */
@@ -793,16 +767,22 @@ input[type='checkbox']:checked::before {
 /* Focus styles */
 input[type='checkbox']:focus {
   outline: none;
-  /* Remove default outline */
   box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.5);
-  /* focus:ring-blue-500 equivalent */
   border-color: #60a5fa;
-  /* Slightly darker blue for focus */
 }
 
-/*  Hover Style (Optional - Subtle change) */
+/*  Hover Style */
 input[type='checkbox']:hover {
   border-color: #4b5563;
-  /* A slightly darker gray */
+}
+
+/* Responsive text sizes */
+@media (max-width: 640px) {
+  .text-sm {
+    font-size: 0.8125rem;
+  }
+  .text-xs {
+    font-size: 0.75rem;
+  }
 }
 </style>

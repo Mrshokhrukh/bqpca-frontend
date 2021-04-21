@@ -1,9 +1,10 @@
 <template>
-  <div class="max-w-8xl mx-auto px-4 py-8">
+  <div class="w-full mx-auto px-2 sm:px-4 py-4 sm:py-6">
+    <!-- Confirmation Modal -->
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
       <Dialog
         as="div"
-        class="relative z-10 fixed.inset-0.z-10.w-screen"
+        class="relative z-50"
         @close="isConfirmationModalOpen = false"
       >
         <TransitionChild
@@ -18,7 +19,7 @@
           <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </TransitionChild>
 
-        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="fixed inset-0 z-10 overflow-y-auto">
           <div
             class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
           >
@@ -88,30 +89,33 @@
       </Dialog>
     </TransitionRoot>
 
-    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
-      <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
+    <!-- Header Section -->
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-4 sm:p-6 mb-6">
+      <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 text-center">
         {{ selectedType === 'cid' ? 'CID Holder Registration' : 'Non-CID Holder Registration' }}
       </h2>
-      <p class="text-gray-600 text-center max-w-2xl mx-auto">
+      <p class="text-sm sm:text-base text-gray-600 text-center max-w-2xl mx-auto">
         Please fill in all required fields marked with an asterisk (<span class="text-red-600"
           >*</span
         >). Ensure all information provided is accurate and up-to-date.
       </p>
     </div>
 
+    <!-- Step 1: Personal Information Form -->
     <form
       @submit.prevent="handleNext"
-      class="bg-white border rounded-xl shadow-sm p-6"
+      class="bg-white border rounded-xl shadow-sm p-4 sm:p-6"
       v-if="stage === 1"
     >
-      <h3 class="text-lg font-semibold text-gray-900 my-4">Step 1: Registration</h3>
-      <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
+      <h3 class="text-lg font-semibold text-gray-900 my-3">Step 1: Registration</h3>
+      <div class="border-b border-gray-200 bg-gray-50 p-4 sm:p-6 rounded-t-xl">
         <h3 class="text-lg font-semibold text-gray-900">Personal Information</h3>
         <p class="mt-1 text-sm text-gray-500">Basic details needed for registration</p>
       </div>
 
-      <div class="p-8">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+      <div class="p-4 sm:p-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <!-- CID Holder Fields -->
           <template v-if="selectedType === 'cid'">
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">CID No.</label>
@@ -119,11 +123,11 @@
                 v-model="localFormData.cid_no"
                 type="number"
                 maxlength="11"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
                 placeholder="Enter CID number"
                 @input="fetchDCRCData"
               />
-              <span v-if="errors.cid_no" class="text-sm text-red-500 mt-1">{{
+              <span v-if="errors.cid_no" class="text-xs text-red-500 mt-1">{{
                 errors.cid_no
               }}</span>
             </div>
@@ -133,9 +137,9 @@
               <input
                 type="text"
                 v-model="localFormData.dzongkhag"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
               />
-              <span v-if="errors.dzongkhag" class="text-sm text-red-500 mt-1">{{
+              <span v-if="errors.dzongkhag" class="text-xs text-red-500 mt-1">{{
                 errors.dzongkhag
               }}</span>
             </div>
@@ -145,9 +149,9 @@
               <input
                 type="text"
                 v-model="localFormData.gewog"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
               />
-              <span v-if="errors.gewog" class="text-sm text-red-500 mt-1">{{ errors.gewog }}</span>
+              <span v-if="errors.gewog" class="text-xs text-red-500 mt-1">{{ errors.gewog }}</span>
             </div>
 
             <div class="col-span-1">
@@ -155,27 +159,28 @@
               <input
                 type="text"
                 v-model="localFormData.village"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
               />
-              <span v-if="errors.village" class="text-sm text-red-500 mt-1">{{
+              <span v-if="errors.village" class="text-xs text-red-500 mt-1">{{
                 errors.village
               }}</span>
             </div>
           </template>
 
+          <!-- Non-CID Holder Fields -->
           <template v-else>
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Nationality</label>
               <select
                 v-model="localFormData.nationality"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
               >
                 <option value="">SELECT NATIONALITY</option>
                 <option v-for="country in countries" :key="country" :value="country">
                   {{ country }}
                 </option>
               </select>
-              <span v-if="errors.nationality" class="text-sm text-red-500 mt-1">{{
+              <span v-if="errors.nationality" class="text-xs text-red-500 mt-1">{{
                 errors.nationality
               }}</span>
             </div>
@@ -185,10 +190,10 @@
               <input
                 v-model="localFormData.email_address"
                 type="email"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
                 placeholder="Email Address"
               />
-              <span v-if="errors.email_address" class="text-sm text-red-500 mt-1">{{
+              <span v-if="errors.email_address" class="text-xs text-red-500 mt-1">{{
                 errors.email_address
               }}</span>
             </div>
@@ -200,10 +205,10 @@
               <input
                 v-model="localFormData.workPermitNo"
                 type="text"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
                 placeholder="Identity / Work Permit No"
               />
-              <span v-if="errors.workPermitNo" class="text-sm text-red-500 mt-1">{{
+              <span v-if="errors.workPermitNo" class="text-xs text-red-500 mt-1">{{
                 errors.workPermitNo
               }}</span>
             </div>
@@ -212,14 +217,14 @@
               <label class="block text-sm font-medium text-gray-700 required">Country</label>
               <select
                 v-model="localFormData.country"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
               >
                 <option value="">SELECT COUNTRY</option>
                 <option v-for="country in countries" :key="country" :value="country">
                   {{ country }}
                 </option>
               </select>
-              <span v-if="errors.country" class="text-sm text-red-500 mt-1">{{
+              <span v-if="errors.country" class="text-xs text-red-500 mt-1">{{
                 errors.country
               }}</span>
             </div>
@@ -229,10 +234,10 @@
               <input
                 v-model="localFormData.city"
                 type="text"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
                 placeholder="City"
               />
-              <span v-if="errors.city" class="text-sm text-red-500 mt-1">{{ errors.city }}</span>
+              <span v-if="errors.city" class="text-xs text-red-500 mt-1">{{ errors.city }}</span>
             </div>
 
             <div class="col-span-1">
@@ -240,10 +245,10 @@
               <input
                 v-model="localFormData.state"
                 type="text"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
                 placeholder="State"
               />
-              <span v-if="errors.state" class="text-sm text-red-500 mt-1">{{ errors.state }}</span>
+              <span v-if="errors.state" class="text-xs text-red-500 mt-1">{{ errors.state }}</span>
             </div>
 
             <div class="col-span-1">
@@ -251,24 +256,25 @@
               <input
                 v-model="localFormData.mobileNumber"
                 type="tel"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
                 placeholder="Mobile Number"
               />
-              <span v-if="errors.mobileNumber" class="text-sm text-red-500 mt-1">{{
+              <span v-if="errors.mobileNumber" class="text-xs text-red-500 mt-1">{{
                 errors.mobileNumber
               }}</span>
             </div>
           </template>
 
+          <!-- Common Fields -->
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Full Name</label>
             <input
               v-model="localFormData.full_name"
               type="text"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
               placeholder="Enter full name"
             />
-            <span v-if="errors.full_name" class="text-sm text-red-500 mt-1">{{
+            <span v-if="errors.full_name" class="text-xs text-red-500 mt-1">{{
               errors.full_name
             }}</span>
           </div>
@@ -277,14 +283,14 @@
             <label class="block text-sm font-medium text-gray-700 required">Gender</label>
             <select
               v-model="localFormData.gender"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
             >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="O">Other</option>
             </select>
-            <span v-if="errors.gender" class="text-sm text-red-500 mt-1">{{ errors.gender }}</span>
+            <span v-if="errors.gender" class="text-xs text-red-500 mt-1">{{ errors.gender }}</span>
           </div>
 
           <div class="col-span-1">
@@ -292,9 +298,9 @@
             <input
               type="date"
               v-model="localFormData.date_of_birth"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
             />
-            <span v-if="errors.date_of_birth" class="text-sm text-red-500 mt-1">{{
+            <span v-if="errors.date_of_birth" class="text-xs text-red-500 mt-1">{{
               errors.date_of_birth
             }}</span>
           </div>
@@ -304,18 +310,19 @@
             <input
               v-model="localFormData.contact_no"
               type="tel"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
               placeholder="Enter phone number"
             />
-            <span v-if="errors.contact_no" class="text-sm text-red-500 mt-1">{{
+            <span v-if="errors.contact_no" class="text-xs text-red-500 mt-1">{{
               errors.contact_no
             }}</span>
           </div>
         </div>
 
-        <div class="mt-12">
-          <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Passport Photo</h3>
+        <!-- Passport Photo Section -->
+        <div class="mt-8">
+          <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3">Passport Photo</h3>
             <div class="flex items-start space-x-4">
               <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700 required"
@@ -324,10 +331,10 @@
                 <input
                   type="file"
                   @change="handlePassportPhotoSelect"
-                  class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   accept=".jpg,.jpeg,.png"
                 />
-                <span v-if="errors.passport_photo" class="text-sm text-red-500 mt-1">{{
+                <span v-if="errors.passport_photo" class="text-xs text-red-500 mt-1">{{
                   errors.passport_photo
                 }}</span>
               </div>
@@ -335,45 +342,50 @@
           </div>
         </div>
 
-        <div class="mt-12 flex justify-end space-x-4">
+        <!-- Navigation Buttons -->
+        <div class="mt-8 flex justify-end space-x-3">
           <button
             type="button"
             @click="$emit('back')"
-            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors"
           >
             Back to Previous Step
           </button>
           <button
             type="submit"
-            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            class="px-4 py-2 bg-blue-600 text-sm text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Next
           </button>
         </div>
       </div>
     </form>
-    <form class="bg-white border rounded-xl shadow-sm p-6" v-else-if="stage === 2">
-      <h3 class="text-lg font-semibold text-gray-900 my-4">
+
+    <!-- Step 2: Medical Institution Registration Form -->
+    <form class="bg-white border rounded-xl shadow-sm p-4 sm:p-6" v-else-if="stage === 2">
+      <h3 class="text-lg font-semibold text-gray-900 my-3">
         Step 2: Medical Institution Registration
       </h3>
-      <div class="mt-12">
-        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Qualification Details</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+      
+      <!-- Qualification Details Section -->
+      <div class="mt-6">
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3">Qualification Details</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required"
                 >Qualification Type</label
               >
               <select
                 v-model="localFormData.qualification_type"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
               >
                 <option value="">Select Qualification Type</option>
                 <option v-for="type in qualificationTypes" :key="type.id" :value="type.id">
                   {{ type.qualification_type_name }}
                 </option>
               </select>
-              <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
+              <span v-if="errors.qualification_type" class="text-xs text-red-500 mt-1">{{
                 errors.qualification_type
               }}</span>
             </div>
@@ -384,7 +396,7 @@
               >
               <select
                 v-model="localFormData.qualification_name"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
               >
                 <option value="">Select Qualification Name</option>
                 <option
@@ -395,7 +407,7 @@
                   {{ qualification.qualification }}
                 </option>
               </select>
-              <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
+              <span v-if="errors.qualification_name" class="text-xs text-red-500 mt-1">{{
                 errors.qualification_name
               }}</span>
             </div>
@@ -406,7 +418,7 @@
               >
               <select
                 v-model="localFormData.institute"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
               >
                 <option value="">Select Institute/University</option>
                 <option
@@ -418,7 +430,7 @@
                   {{ university.institute_name }}
                 </option>
               </select>
-              <span v-if="errors.institute" class="text-sm text-red-500 mt-1">{{
+              <span v-if="errors.institute" class="text-xs text-red-500 mt-1">{{
                 errors.institute
               }}</span>
             </div>
@@ -430,10 +442,10 @@
               <input
                 type="month"
                 v-model="localFormData.year_of_completion"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
                 placeholder="YYYY"
               />
-              <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
+              <span v-if="errors.year_of_completion" class="text-xs text-red-500 mt-1">{{
                 errors.year_of_completion
               }}</span>
             </div>
@@ -441,19 +453,20 @@
         </div>
       </div>
 
-      <div class="mt-12">
-        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Supporting Documents</h3>
-          <div class="space-y-4">
+      <!-- Supporting Documents Section -->
+      <div class="mt-6">
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3">Supporting Documents</h3>
+          <div class="space-y-3">
             <div
               v-for="(doc, index) in supportingDocuments"
               :key="index"
-              class="flex items-start space-x-4 bg-white p-4 rounded-lg border border-gray-100"
+              class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-white p-3 rounded-lg border border-gray-100"
             >
-              <div class="w-1/3">
+              <div class="w-full sm:w-1/3">
                 <select
                   v-model="doc.type"
-                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm"
                 >
                   <option value="">Select Document Type</option>
                   <option v-for="type in fetchedDocumentTypes" :key="type.id" :value="type.id">
@@ -465,14 +478,14 @@
                 <input
                   type="file"
                   @change="(e) => handleFileSelect(e, index)"
-                  class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  class="block w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                   multiple
                 />
                 <button
                   @click="removeDocument(index)"
                   type="button"
-                  class="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                  class="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
                 >
                   <span class="sr-only">Remove</span>
                   ✕
@@ -483,33 +496,34 @@
             <button
               type="button"
               @click="addDocument"
-              class="mt-4 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center"
+              class="mt-3 px-3 py-2 bg-blue-50 text-sm text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center"
             >
-              <span class="mr-2">+</span>
+              <span class="mr-1.5">+</span>
               Add Another Document
             </button>
           </div>
-          <p class="text-sm text-gray-500 mt-2">
+          <p class="text-xs text-gray-500 mt-2">
             Required documents are graduation certificate, cid copy, security clarance, roq
             certificate, class 10, 12 and graduation marksheets.
           </p>
         </div>
       </div>
 
-      <div class="mt-12 bg-gray-50 p-6 rounded-xl border border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Declaration</h3>
-        <div class="space-y-4">
+      <!-- Declaration Section -->
+      <div class="mt-6 bg-gray-50 p-4 rounded-xl border border-gray-200">
+        <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3">Declaration</h3>
+        <div class="space-y-3">
           <div>
             <label class="block text-sm font-medium text-gray-700">Remarks</label>
             <textarea
               v-model="localFormData.remarks"
               rows="3"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm"
               placeholder="Enter any additional remarks or comments"
             ></textarea>
           </div>
 
-          <div class="flex items-start space-x-3 bg-white p-4 rounded-lg">
+          <div class="flex items-start space-x-3 bg-white p-3 rounded-lg">
             <input
               type="checkbox"
               v-model="localFormData.declaration"
@@ -524,18 +538,19 @@
         </div>
       </div>
 
-      <div class="mt-12 flex justify-end space-x-4">
+      <!-- Navigation Buttons -->
+      <div class="mt-6 flex justify-end space-x-3">
         <button
           type="button"
-          @click="$emit('back')"
-          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+          @click="stage = 1"
+          class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors"
         >
-          Back to Previous Step
+          Back to Personal Information
         </button>
         <button
           type="button"
           @click="openConfirmationModal"
-          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          class="px-4 py-2 bg-blue-600 text-sm text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           Submit Registration
         </button>
@@ -744,7 +759,6 @@ const countries = [
   'Netherlands',
   'New Zealand',
   'Nicaragua',
-  'Nicaragua',
   'Niger',
   'Nigeria',
   'Norway',
@@ -780,7 +794,6 @@ const countries = [
   'South Africa',
   'South Sudan',
   'Spain',
-  'Sri Lanka',
   'Sri Lanka',
   'Sudan',
   'Suriname',
@@ -853,7 +866,7 @@ const localFormData = reactive({
   passport_photo: null,
   documents: [],
   remarks: '',
-  declaration: 'False',
+  declaration: false,
   payment_status: 'False',
   payment_id: null,
   registration_date: null,
@@ -945,16 +958,14 @@ const validateFormStageOne = () => {
       isValid = false
     }
     if (!localFormData.mobileNumber) {
-      if (!localFormData.mobileNumber) {
-        errors.mobileNumber = 'Mobile number is required'
-        isValid = false
-      } else if (localFormData.mobileNumber.length > 8) {
-        errors.mobileNumber = 'Mobile number must be no more than 8 digits.'
-        isValid = false
-      } else if (!/^[17]/.test(localFormData.mobileNumber)) {
-        errors.mobileNumber = 'Mobile number must start with 1 or 7.'
-        isValid = false
-      }
+      errors.mobileNumber = 'Mobile number is required'
+      isValid = false
+    } else if (localFormData.mobileNumber.length > 8) {
+      errors.mobileNumber = 'Mobile number must be no more than 8 digits.'
+      isValid = false
+    } else if (!/^[17]/.test(localFormData.mobileNumber)) {
+      errors.mobileNumber = 'Mobile number must start with 1 or 7.'
+      isValid = false
     }
   }
 
@@ -1021,16 +1032,14 @@ const validateForm = () => {
       isValid = false
     }
     if (!localFormData.mobileNumber) {
-      if (!localFormData.mobileNumber) {
-        errors.mobileNumber = 'Mobile number is required'
-        isValid = false
-      } else if (localFormData.mobileNumber.length > 8) {
-        errors.mobileNumber = 'Mobile number must be no more than 8 digits.'
-        isValid = false
-      } else if (!/^[17]/.test(localFormData.mobileNumber)) {
-        errors.mobileNumber = 'Mobile number must start with 1 or 7.'
-        isValid = false
-      }
+      errors.mobileNumber = 'Mobile number is required'
+      isValid = false
+    } else if (localFormData.mobileNumber.length > 8) {
+      errors.mobileNumber = 'Mobile number must be no more than 8 digits.'
+      isValid = false
+    } else if (!/^[17]/.test(localFormData.mobileNumber)) {
+      errors.mobileNumber = 'Mobile number must start with 1 or 7.'
+      isValid = false
     }
   }
   if (!localFormData.qualification_type) {
@@ -1188,7 +1197,7 @@ const handleNext = async () => {
 
     // Add the required fields with correct names
     apiFormData.append('applicant', user.id)
-    apiFormData.append('registration_type_id', localFormData.registration_type) // Use the value from local form
+    apiFormData.append('registration_type', localFormData.registration_type) // Use the value from local form
 
     try {
       const response = await apiService.createMhpcNewApplication(apiFormData)
@@ -1219,8 +1228,6 @@ const openConfirmationModal = () => {
   }
 }
 
-// Inside handleSubmitActual function in your Vue component
-
 const handleSubmitActual = async () => {
   isConfirmationModalOpen.value = false
   isSubmitting.value = true
@@ -1229,75 +1236,60 @@ const handleSubmitActual = async () => {
     const formData = new FormData();
 
     // --- Fields for UserQualification model ---
-    formData.append('application', localFormData.application); // Correct: ID of the related Application
-    formData.append('qualification', localFormData.qualification_name); // FIX: Use 'qualification' as key, send ID
-    formData.append('qualification_type', localFormData.qualification_type); // Correct: Use 'qualification_type', send ID
-    formData.append('institution', localFormData.institute); // FIX: Use 'institution' as key, send ID
-    // Ensure year_of_completion sends only the year number if model expects PositiveIntegerField
-    // If model expects full date, adjust accordingly. Assuming PositiveIntegerField:
+    formData.append('application', localFormData.application); 
+    formData.append('qualification_name', localFormData.qualification_name);
+    formData.append('qualification_type', localFormData.qualification_type);
+    formData.append('institute_university', localFormData.institute);
+    
     if (localFormData.year_of_completion) {
-      // Assuming year_of_completion is like "YYYY-MM", extract year
-       try {
-           const completionDate = new Date(localFormData.year_of_completion);
-           if (!isNaN(completionDate.getFullYear())) {
-              formData.append('completion_year', completionDate.getFullYear());
-           } else {
-               // Handle case where date is invalid or not in expected format
-               console.warn("Invalid year_of_completion format:", localFormData.year_of_completion);
-               // Optionally set a default or raise an error
-           }
-       } catch(e) {
-            console.error("Error parsing year_of_completion:", e);
-       }
+      try {
+        const completionDate = new Date(localFormData.year_of_completion);
+        if (!isNaN(completionDate.getFullYear())) {
+          formData.append('completion_year', completionDate.getFullYear());
+        } else {
+          console.warn("Invalid year_of_completion format:", localFormData.year_of_completion);
+        }
+      } catch(e) {
+        console.error("Error parsing year_of_completion:", e);
+      }
     }
-    formData.append('declaration', localFormData.declaration ? 'True' : 'False'); // Ensure boolean is sent correctly if needed, string 'True'/'False' often works for Django Forms/Serializers
-    formData.append('remarks', localFormData.remarks || ''); // Send empty string if null/undefined
-    formData.append('is_primary_qualification', localFormData.is_primary_qualification ? 'True' : 'False'); // Assuming you have this field, send boolean as string
-
-    // --- REMOVE Fields belonging to Application ---
-    // formData.append('registration_date', ...); // REMOVE
-    // formData.append('expiry_date', ...); // REMOVE
-    // formData.append('payment_status', 'pending'); // REMOVE
-    // formData.append('payment_id', ''); // REMOVE
-    // formData.append('is_active', 'False'); // REMOVE
-    // formData.append('registration_type', 1); // REMOVE (This belongs to Application)
-
+    
+    formData.append('declaration', localFormData.declaration ? 'True' : 'False');
+    formData.append('remarks', localFormData.remarks || '');
+    formData.append('is_primary_qualification', 'True');
 
     // --- Handle Attachments ---
-    // Ensure 'documents' structure matches expectations
     localFormData.documents.forEach((doc, index) => {
-      if (doc.files && doc.files.length > 0 && doc.type) { // Ensure type is selected
+      if (doc.files && doc.files.length > 0 && doc.type) {
         doc.files.forEach((file) => {
           formData.append(`attachments-${index}-file`, file);
-          // FIX: Use 'document_type' as expected by the backend view's loop
           formData.append(`attachments-${index}-document_type`, doc.type);
         });
       } else {
-          console.warn(`Skipping document at index ${index} due to missing file or type.`);
+        console.warn(`Skipping document at index ${index} due to missing file or type.`);
       }
     });
 
-    // Log FormData just before sending for debugging
     console.log('Submitting Qualification FormData:');
     for (let pair of formData.entries()) {
-       console.log(pair[0]+ ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+      console.log(pair[0]+ ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
     }
 
-    await apiService.createMhpcNewQualification(formData); // Send to the correct endpoint
+    await apiService.createMhpcNewQualification(formData);
 
     toast.success('Qualification submitted successfully!');
-    router.push('/admin/user/health_certification/dashboard'); // Or wherever appropriate
+    router.push('/admin/user/health_certification/dashboard');
 
   } catch (error) {
     console.error('Error submitting qualification:', error);
-     if (error.response && error.response.data) {
-         const errorMessages = Object.entries(error.response.data)
-           .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`) // Handle both list and single string errors
-           .join('; ');
-         toast.error(`Qualification submission failed: ${errorMessages}`);
-       } else {
-         toast.error(`Qualification submission failed: ${error.message || 'Unknown error'}`);
-       }
+    if (error.response && error.response.data) {
+      const errorMessages = Object.entries(error.response.data)
+        .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
+        .join('; ');
+      toast.error(`Qualification submission failed: ${errorMessages}`);
+    } else {
+      toast.error(`Qualification submission failed: ${error.message || 'Unknown error'}`);
+    }
   } finally {
     isSubmitting.value = false;
   }
@@ -1310,39 +1302,18 @@ const handleSubmitActual = async () => {
   color: #ef4444;
 }
 
-html,
+/* Responsive text styles */
+@media (max-width: 640px) {
+  .text-sm {
+    font-size: 0.8125rem;
+  }
+  .text-xs {
+    font-size: 0.75rem;
+  }
+}
+
+/* Remove body scrollbar styles that could conflict */
 body {
-  overflow: hidden;
-  height: 100%;
-  width: 100%;
-}
-
-.max-w-8xl {
-  overflow-y: auto;
-  height: calc(100vh - 4rem);
-  -webkit-overflow-scrolling: touch;
-}
-
-@supports (-webkit-appearance: none) {
-  .overflow-y-auto::-webkit-scrollbar {
-    width: 8px !important;
-    background: transparent !important;
-  }
-
-  .fixed.inset-0.z-10.w-screen {
-    overflow: hidden !important;
-  }
-}
-
-.fixed.inset-0.z-10.w-screen {
-  -webkit-overflow-scrolling: touch;
-}
-
-.max-w-8xl {
-  overflow-y: auto;
-}
-
-.max-w-8xl > * {
-  overflow: visible;
+  overflow-x: hidden;
 }
 </style>

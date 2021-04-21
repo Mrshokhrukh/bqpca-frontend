@@ -1,9 +1,9 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="w-full mx-auto px-3 sm:px-4 py-4 sm:py-6">
     <!-- Form Header -->
-    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
-      <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">Renewal Application</h2>
-      <p class="text-gray-600 text-center max-w-2xl mx-auto">
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-4 sm:p-6 mb-6">
+      <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 text-center">Renewal Application</h2>
+      <p class="text-sm sm:text-base text-gray-600 text-center max-w-2xl mx-auto">
         Please review your personal details to ensure your eligibility for renewal.
       </p>
     </div>
@@ -11,24 +11,24 @@
     <!-- Pending Renewal Application Message -->
     <div
       v-if="healthStore.visibleMenus.hasRenewalInProgress"
-      class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-6 mb-6 rounded-xl shadow-md"
+      class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 sm:p-6 mb-6 rounded-xl shadow-md"
     >
       <div class="flex items-start">
         <div class="flex-shrink-0">
-          <InformationCircleIcon class="h-6 w-6 text-blue-500" aria-hidden="true" />
+          <InformationCircleIcon class="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" aria-hidden="true" />
         </div>
         <div class="ml-3">
-          <h3 class="text-lg font-medium text-blue-800">Renewal Application In Progress</h3>
-          <div class="mt-2 text-base text-blue-700">
+          <h3 class="text-base sm:text-lg font-medium text-blue-800">Renewal Application In Progress</h3>
+          <div class="mt-2 text-sm sm:text-base text-blue-700">
             <p>
               You already have a renewal application under review by our staff. You can track the
               status of your application in the "My Applications" section.
             </p>
           </div>
-          <div class="mt-6">
+          <div class="mt-4 sm:mt-6">
             <router-link
               to="/admin/user/health_certification/my_applications"
-              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              class="inline-flex items-center px-3 py-1.5 sm:px-4 sm:py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               View My Applications
             </router-link>
@@ -40,15 +40,15 @@
     <!-- Regular Application Form (Only shown if no pending renewal) -->
     <div v-else>
       <!-- Loading Indicator -->
-      <div v-if="isLoading" class="text-center py-8">
+      <div v-if="isLoading" class="text-center py-6 sm:py-8">
         <div
-          class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
+          class="inline-block animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-blue-500"
         ></div>
-        <p class="mt-4 text-gray-600">Loading your application data...</p>
+        <p class="mt-3 sm:mt-4 text-gray-600">Loading your application data...</p>
       </div>
 
       <!-- Error Message -->
-      <div v-else-if="loadError" class="bg-red-50 border border-red-200 rounded-xl p-6 my-6">
+      <div v-else-if="loadError" class="bg-red-50 border border-red-200 rounded-xl p-4 sm:p-6 my-6">
         <div class="flex">
           <div class="flex-shrink-0">
             <svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,7 +69,7 @@
               <button
                 type="button"
                 @click="fetchApplicationData"
-                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs sm:text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               >
                 Try Again
               </button>
@@ -79,14 +79,14 @@
       </div>
 
       <!-- Main Form Card -->
-      <div v-else class="bg-white border rounded-xl shadow-sm p-6">
+      <div v-else class="bg-white border rounded-xl shadow-sm">
         <!-- Personal Details Section -->
-        <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-          <h3 class="text-lg font-semibold text-gray-900">Personal Details</h3>
-          <p class="mt-1 text-sm text-gray-500">Verify your personal information.</p>
+        <div class="border-b border-gray-200 bg-gray-50 p-4 sm:p-6 rounded-t-xl">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900">Personal Details</h3>
+          <p class="mt-1 text-xs sm:text-sm text-gray-500">Verify your personal information.</p>
         </div>
 
-        <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <!-- CID Number -->
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700"
@@ -96,7 +96,7 @@
               type="text"
               v-model="formData.cid_no"
               disabled
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 sm:p-2.5 bg-gray-50"
             />
           </div>
 
@@ -107,7 +107,7 @@
               type="text"
               v-model="formData.full_name"
               disabled
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 sm:p-2.5 bg-gray-50"
             />
           </div>
 
@@ -118,7 +118,7 @@
               type="text"
               v-model="formData.gender"
               disabled
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 sm:p-2.5 bg-gray-50"
             />
           </div>
 
@@ -129,7 +129,7 @@
               type="text"
               v-model="formData.date_of_birth"
               disabled
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 sm:p-2.5 bg-gray-50"
             />
           </div>
 
@@ -140,7 +140,7 @@
               type="text"
               v-model="formData.contact_no"
               disabled
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 sm:p-2.5 bg-gray-50"
             />
           </div>
 
@@ -151,7 +151,7 @@
               type="text"
               v-model="formData.email_address"
               disabled
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 sm:p-2.5 bg-gray-50"
             />
           </div>
 
@@ -162,7 +162,7 @@
               type="text"
               v-model="formData.village"
               disabled
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 sm:p-2.5 bg-gray-50"
             />
           </div>
 
@@ -173,7 +173,7 @@
               type="text"
               v-model="formData.gewog"
               disabled
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 sm:p-2.5 bg-gray-50"
             />
           </div>
 
@@ -184,7 +184,7 @@
               type="text"
               v-model="formData.dzongkhag"
               disabled
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 sm:p-2.5 bg-gray-50"
             />
           </div>
 
@@ -192,7 +192,7 @@
           <div class="col-span-1">
             <div
               :class="[
-                'rounded-xl p-4',
+                'rounded-lg p-3 sm:p-4',
                 hasExpired
                   ? 'bg-red-50 border border-red-200'
                   : 'bg-blue-50 border border-blue-200',
@@ -201,7 +201,7 @@
               <div class="flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  :class="['h-5 w-5 mr-2', hasExpired ? 'text-red-600' : 'text-blue-600']"
+                  :class="['h-4 w-4 sm:h-5 sm:w-5 mr-2', hasExpired ? 'text-red-600' : 'text-blue-600']"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -214,32 +214,32 @@
                   />
                 </svg>
                 <span
-                  :class="['text-sm font-medium', hasExpired ? 'text-red-900' : 'text-blue-900']"
+                  :class="['text-xs sm:text-sm font-medium', hasExpired ? 'text-red-900' : 'text-blue-900']"
                   >Registration Information</span
                 >
               </div>
               <div class="mt-2 grid grid-cols-2 gap-1">
                 <div>
-                  <div :class="['text-sm', hasExpired ? 'text-red-700' : 'text-blue-700']">
+                  <div :class="['text-xs sm:text-sm', hasExpired ? 'text-red-700' : 'text-blue-700']">
                     Registration Date
                   </div>
                   <div
-                    :class="['text-sm font-medium', hasExpired ? 'text-red-900' : 'text-blue-900']"
+                    :class="['text-xs sm:text-sm font-medium', hasExpired ? 'text-red-900' : 'text-blue-900']"
                   >
                     {{ formatDisplayDate(formData.registration_date) }}
                   </div>
                 </div>
                 <div>
-                  <div :class="['text-sm', hasExpired ? 'text-red-700' : 'text-blue-700']">
+                  <div :class="['text-xs sm:text-sm', hasExpired ? 'text-red-700' : 'text-blue-700']">
                     Expiry Date
                   </div>
                   <div
-                    :class="['text-sm font-medium', hasExpired ? 'text-red-900' : 'text-blue-900']"
+                    :class="['text-xs sm:text-sm font-medium', hasExpired ? 'text-red-900' : 'text-blue-900']"
                   >
                     {{ formatDisplayDate(formData.expiry_date) }}
                     <span
                       v-if="hasExpired"
-                      class="ml-1 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full"
+                      class="ml-1 text-xs bg-red-100 text-red-800 px-1.5 py-0.5 rounded-full"
                       >Expired</span
                     >
                   </div>
@@ -250,21 +250,21 @@
         </div>
 
         <!-- Renewal Details Section -->
-        <div v-if="!isSubmitting" class="border-t border-gray-200 bg-gray-50 p-6 mt-6">
-          <h3 class="text-lg font-semibold text-gray-900">Renewal Confirmation</h3>
-          <p class="mt-1 text-sm text-gray-500">
+        <div v-if="!isSubmitting" class="border-t border-gray-200 bg-gray-50 p-4 sm:p-6">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900">Renewal Confirmation</h3>
+          <p class="mt-1 text-xs sm:text-sm text-gray-500">
             Confirm your application details and submit for renewal.
           </p>
 
           <!-- Application Status -->
           <div
-            class="mt-6 p-4 rounded-lg"
+            class="mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg"
             :class="formData.is_active ? 'bg-green-50' : 'bg-yellow-50'"
           >
             <div class="flex items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
+                class="h-4 w-4 sm:h-5 sm:w-5 mr-2"
                 :class="formData.is_active ? 'text-green-600' : 'text-yellow-600'"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -278,14 +278,14 @@
                 />
               </svg>
               <span
-                class="text-sm font-medium"
+                class="text-xs sm:text-sm font-medium"
                 :class="formData.is_active ? 'text-green-900' : 'text-yellow-900'"
               >
                 Application Status: {{ formData.is_active ? 'Active' : 'Inactive' }}
               </span>
             </div>
             <p
-              class="mt-2 text-sm"
+              class="mt-2 text-xs sm:text-sm"
               :class="formData.is_active ? 'text-green-700' : 'text-yellow-700'"
             >
               {{
@@ -297,25 +297,25 @@
           </div>
 
           <!-- Remarks Field -->
-          <div class="mt-6">
+          <div class="mt-4 sm:mt-6">
             <label class="block text-sm font-medium text-gray-700">Remarks (Optional)</label>
             <textarea
               v-model="remarks"
               rows="3"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 sm:p-2.5"
               placeholder="Enter any additional information or remarks for your renewal application"
             ></textarea>
           </div>
 
           <!-- Declaration Checkbox -->
-          <div class="mt-6">
-            <div class="flex items-start space-x-3 bg-white p-4 rounded-lg">
+          <div class="mt-4 sm:mt-6">
+            <div class="flex items-start space-x-3 bg-white p-3 sm:p-4 rounded-lg">
               <input
                 type="checkbox"
                 v-model="declaration"
                 class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <label class="text-sm text-gray-700">
+              <label class="text-xs sm:text-sm text-gray-700">
                 I hereby declare that all the information provided is true and correct to the best
                 of my knowledge. I understand that any false statements may result in the rejection
                 of my renewal application.
@@ -325,28 +325,28 @@
         </div>
 
         <!-- Submission Status -->
-        <div v-if="isSubmitting" class="border-t border-gray-200 bg-gray-50 p-6 mt-6 text-center">
+        <div v-if="isSubmitting" class="border-t border-gray-200 bg-gray-50 p-4 sm:p-6 text-center">
           <div
-            class="inline-block animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500 mb-4"
+            class="inline-block animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 border-t-2 border-b-2 border-blue-500 mb-3 sm:mb-4"
           ></div>
           <p class="text-gray-700">Submitting your renewal application...</p>
         </div>
 
         <!-- Action Buttons -->
-        <div class="mt-12 flex justify-end space-x-4 p-8">
+        <div class="flex justify-end space-x-3 p-4 sm:p-6">
           <button
             @click="handleCancel"
             :disabled="isSubmitting"
-            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             @click="handleSubmit"
             :disabled="isSubmitting || !declaration"
-            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-sm text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Submit Renewal Application
+            Submit Renewal
           </button>
         </div>
       </div>
@@ -679,32 +679,30 @@ const handleCancel = () => {
 }
 </script>
 
-<style>
-html,
-body {
-  overflow: hidden;
-  height: 100%;
-}
-
-/* Make sure only one container handles scrolling */
-.max-w-7xl {
-  height: calc(100vh - 60px);
-  /* Adjust based on your header/footer height */
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  /* Smooth scrolling on iOS/macOS */
-}
-
-/* Safari-specific fixes */
-@media not all and (min-resolution: 0.001dpcm) {
-  @supports (-webkit-appearance: none) {
-    .max-w-7xl {
-      overflow-y: auto !important;
-    }
-
-    .fixed.inset-0 {
-      overflow: hidden !important;
-    }
+<style scoped>
+/* Responsive text styles */
+@media (max-width: 640px) {
+  .text-sm {
+    font-size: 0.8125rem;
   }
+  .text-xs {
+    font-size: 0.75rem;
+  }
+}
+
+/* Custom input styles for better accessibility */
+input[disabled] {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Remove problematic overflow properties */
+body {
+  overflow-x: hidden;
 }
 </style>
