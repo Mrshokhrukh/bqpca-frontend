@@ -1,3 +1,4 @@
+```vue
 <template>
   <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
     <!-- Notification System -->
@@ -9,8 +10,8 @@
           notification.type === 'success'
             ? 'bg-green-50 border-l-4 border-green-500'
             : notification.type === 'error'
-              ? 'bg-red-50 border-l-4 border-red-500'
-              : 'bg-blue-50 border-l-4 border-blue-500',
+            ? 'bg-red-50 border-l-4 border-red-500'
+            : 'bg-blue-50 border-l-4 border-blue-500',
         ]"
       >
         <div
@@ -129,7 +130,11 @@
       </div>
       <button
         @click="openAddStaffModal"
-        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        :disabled="departments.length === 0"
+        :class="[
+          departments.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700',
+          'inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500',
+        ]"
       >
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -175,7 +180,11 @@
       <div class="mt-6">
         <button
           @click="openAddStaffModal"
-          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          :disabled="departments.length === 0"
+          :class="[
+            departments.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700',
+            'inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500',
+          ]"
         >
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -293,7 +302,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-900">
-                  {{ staff.department?.department_name || 'N/A' }}
+                  {{ getDepartmentName(staff.department) }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -433,8 +442,8 @@
                   modalMode === 'add'
                     ? 'Add New Staff'
                     : modalMode === 'edit'
-                      ? 'Edit Staff'
-                      : 'Staff Details'
+                    ? 'Edit Staff'
+                    : 'Staff Details'
                 }}
               </h2>
               <p class="text-sm text-gray-500">
@@ -442,8 +451,8 @@
                   modalMode === 'add'
                     ? 'Create a new staff record'
                     : modalMode === 'edit'
-                      ? 'Update staff information'
-                      : 'View staff information'
+                    ? 'Update staff information'
+                    : 'View staff information'
                 }}
               </p>
             </div>
@@ -514,7 +523,7 @@
                 <select
                   id="department"
                   v-model="form.department_id"
-                  :disabled="modalMode === 'view'"
+                  :disabled="modalMode === 'view' || departments.length === 0"
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 >
                   <option disabled value="">Select a department</option>
@@ -522,6 +531,9 @@
                     {{ dept.name }}
                   </option>
                 </select>
+                <p v-if="departments.length === 0" class="mt-1 text-sm text-red-600">
+                  No departments available. Please contact support.
+                </p>
               </div>
             </div>
 
@@ -538,6 +550,7 @@
               <button
                 v-if="modalMode !== 'view'"
                 type="submit"
+                :disabled="departments.length === 0"
                 class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 {{ modalMode === 'add' ? 'Add Staff' : 'Update Staff' }}
@@ -586,78 +599,66 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
-import apiServices from '@/services/services'
+import { ref, computed, onMounted, watch } from 'vue';
+import apiServices from '@/services/services';
 
 // State
-const staffList = ref([])
-const isLoading = ref(false)
-const searchQuery = ref('')
-const sortColumn = ref('staff_name')
-const sortDirection = ref('asc')
-const currentPage = ref(1)
-const nextPageUrl = ref(null)
-const previousPageUrl = ref(null)
-const totalStaff = ref(0)
-const pageSize = ref(10) // Assuming default page size, adjust if API differs
+const staffList = ref([]);
+const isLoading = ref(false);
+const searchQuery = ref('');
+const sortColumn = ref('staff_name');
+const sortDirection = ref('asc');
+const currentPage = ref(1);
+const nextPageUrl = ref(null);
+const previousPageUrl = ref(null);
+const totalStaff = ref(0);
+const pageSize = ref(10);
 
 // Modal state
-const isModalVisible = ref(false)
-const modalMode = ref(null) // 'add', 'edit', 'view'
-
-// --- FIX 1: Update form ref ---
+const isModalVisible = ref(false);
+const modalMode = ref(null); // 'add', 'edit', 'view'
 const form = ref({
-  id: null, // Add id for edit mode
+  id: null,
   staff_name: '',
   designation: '',
   date_of_joining: '',
-  department_id: '', // Use department_id instead of department
-})
+  department_id: '',
+});
 
 // Delete modal state
-const showDeleteModal = ref(false)
-const staffToDelete = ref(null)
+const showDeleteModal = ref(false);
+const staffToDelete = ref(null);
 
-// Departments fetching
-const departments = ref([])
+// Departments
+const departments = ref([]);
 
 const fetchDepartments = async () => {
   try {
-    const response = await apiServices.getEpcInstituteDepartments()
-    if (response && response.data) {
-      // Adapt based on your actual API response structure for departments
-      if (response.data.results && Array.isArray(response.data.results)) {
-        departments.value = response.data.results.map((dept) => ({
-          id: dept.id,
-          name: dept.department_name, // Adjust if property name is different
-        }))
-      } else if (Array.isArray(response.data)) {
-        // Handle if API returns a flat array
-        departments.value = response.data.map((dept) => ({
-          id: dept.id,
-          name: dept.department_name, // Adjust if property name is different
-        }))
-      } else {
-        console.warn('Unexpected departments API response structure:', response)
-        showNotification('warning', 'Data Format', 'Received departments in unexpected format')
-        departments.value = []
-      }
-    } else {
-      console.warn('No data in departments API response')
-      departments.value = []
+    const response = await apiServices.getEpcInstituteDepartments();
+    console.log('fetchDepartments response:', response.data); // Debug
+    let departmentData = response.data;
+    if (response.data?.results) {
+      departmentData = response.data.results;
+    } else if (!Array.isArray(response.data)) {
+      console.warn('Unexpected departments API response:', response.data);
+      showNotification('warning', 'Data Format', 'Received departments in unexpected format', 0);
+      departments.value = [];
+      return;
+    }
+    departments.value = departmentData.map((dept) => ({
+      id: dept.id,
+      name: dept.department_name || 'Unknown',
+    }));
+    console.log('departments.value:', departments.value); // Debug
+    if (departments.value.length === 0) {
+      showNotification('error', 'No Departments', 'No departments available. Please contact support.', 0);
     }
   } catch (error) {
-    console.error('Error fetching departments:', error)
-    showNotification('error', 'Error Loading Departments', 'Failed to load department data')
-    departments.value = []
+    console.error('Error fetching departments:', error);
+    showNotification('error', 'Error Loading Departments', 'Failed to load department data', 0);
+    departments.value = [];
   }
-}
-
-// Call fetchDepartments when the component mounts
-onMounted(() => {
-  fetchStaff()
-  fetchDepartments()
-})
+};
 
 // Notification state
 const notification = ref({
@@ -666,458 +667,320 @@ const notification = ref({
   title: '',
   message: '',
   timeout: null,
-})
+});
 
 // Computed properties
 const filteredStaff = computed(() => {
-  // Keep existing search logic (assuming staff data from API has 'department' as ID)
-  if (!searchQuery.value) return staffList.value
-
-  const query = searchQuery.value.toLowerCase()
+  if (!searchQuery.value) return staffList.value;
+  const query = searchQuery.value.toLowerCase();
   return staffList.value.filter((staff) => {
-    // IMPORTANT: Assuming getDepartmentName correctly looks up by ID (staff.department)
-    const deptName = getDepartmentName(staff.department).toLowerCase()
+    const deptName = getDepartmentName(staff.department).toLowerCase();
     return (
-      staff.staff_name.toLowerCase().includes(query) ||
-      staff.designation.toLowerCase().includes(query) ||
+      staff.staff_name?.toLowerCase().includes(query) ||
+      staff.designation?.toLowerCase().includes(query) ||
       deptName.includes(query)
-    )
-  })
-})
+    );
+  });
+});
 
-const hasNextPage = computed(() => !!nextPageUrl.value)
-const hasPreviousPage = computed(() => !!previousPageUrl.value)
+const hasNextPage = computed(() => !!nextPageUrl.value);
+const hasPreviousPage = computed(() => !!previousPageUrl.value);
 
-const paginationStart = computed(() => {
-  if (totalStaff.value === 0) return 0
-  // Adjust pagination start calculation based on API response if it's not page-based
-  // This example assumes page-based pagination where page size is known/estimated
-  const calculatedStart = (currentPage.value - 1) * pageSize.value
-  // Ensure pageSize is updated if the API response indicates a different limit
-  if (staffList.value.length > 0 && pageSize.value !== staffList.value.length) {
-    // Potentially update pageSize based on results length if API limit changes?
-    // Or rely on API providing total count and current page info if available
-  }
-  return calculatedStart
-})
-
-const paginationEnd = computed(() => {
-  if (totalStaff.value === 0) return 0
-  // Use totalStaff.value which should come from the API's 'count'
-  return Math.min(paginationStart.value + pageSize.value, totalStaff.value)
-  // Alternative if page size varies or isn't fixed:
-  // return paginationStart.value + staffList.value.length;
-})
+const paginationStart = computed(() => (currentPage.value - 1) * pageSize.value);
+const paginationEnd = computed(() =>
+  Math.min(paginationStart.value + pageSize.value, totalStaff.value)
+);
 
 // Methods
 const fetchStaff = async (page = 1) => {
-  // Accept page parameter
-  isLoading.value = true
+  isLoading.value = true;
   try {
-    // Pass the page number to the API call
-    const response = await apiServices.getEpcInstituteStaff(page)
-
-    if (response && response.data) {
-      staffList.value = response.data.results || []
-      totalStaff.value = response.data.count || 0
-      nextPageUrl.value = response.data.next
-      previousPageUrl.value = response.data.previous
-
-      // Update current page based on response (if not explicitly passed or inferred)
-      // This part depends heavily on how your API structures pagination URLs or response data
-      if (page) {
-        currentPage.value = page
-      } else {
-        // Try to infer from previousPageUrl if page wasn't passed
-        if (previousPageUrl.value) {
-          try {
-            const url = new URL(previousPageUrl.value)
-            const prevPage = url.searchParams.get('page')
-            if (prevPage) {
-              currentPage.value = parseInt(prevPage) + 1
-            } else {
-              currentPage.value = 2 // Guess if no page param but prev exists
-            }
-          } catch (e) {
-            /* ignore URL parsing error */
-          }
-        } else {
-          currentPage.value = 1 // Assume page 1 if no previous link
-        }
-      }
-
-      // Infer page size if needed (e.g., if it's not fixed)
-      if (staffList.value.length > 0) {
-        pageSize.value = staffList.value.length // Update based on results returned
-      }
+    const response = await apiServices.getEpcInstituteStaff(page);
+    console.log('fetchStaff response:', response.data); // Debug
+    if (response?.data?.results) {
+      staffList.value = response.data.results;
+      totalStaff.value = response.data.count || 0;
+      nextPageUrl.value = response.data.next;
+      previousPageUrl.value = response.data.previous;
+      currentPage.value = page;
+      pageSize.value = response.data.results.length || 10;
+      console.log('staffList.value:', staffList.value); // Debug
     } else {
-      showNotification('error', 'Error Loading Data', 'Failed to load staff data')
-      staffList.value = []
-      totalStaff.value = 0 // Reset count on error
+      console.warn('No results in API response:', response);
+      showNotification('error', 'Error Loading Data', 'Failed to load staff data');
+      staffList.value = [];
+      totalStaff.value = 0;
     }
   } catch (error) {
-    console.error('Error fetching staff:', error)
-    showNotification('error', 'Error Loading Data', 'Failed to connect to the server')
-    staffList.value = []
-    totalStaff.value = 0 // Reset count on error
+    console.error('Error fetching staff:', error);
+    showNotification('error', 'Error Loading Data', 'Failed to connect to the server');
+    staffList.value = [];
+    totalStaff.value = 0;
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 const fetchNextPage = async () => {
-  if (!nextPageUrl.value) return
-
-  // Extract page number from the next URL
-  let nextPage = null
-  try {
-    const url = new URL(nextPageUrl.value)
-    const pageParam = url.searchParams.get('page')
-    if (pageParam) {
-      nextPage = parseInt(pageParam)
-    } else {
-      // Fallback if page param missing - might need adjustment
-      nextPage = currentPage.value + 1
-    }
-  } catch (e) {
-    console.error('Could not parse next page URL', e)
-    showNotification('error', 'Pagination Error', 'Invalid next page link')
-    return // Don't proceed if URL is invalid
-  }
-
-  if (nextPage) {
-    fetchStaff(nextPage) // Pass the extracted page number
-  } else {
-    console.warn('Could not determine next page number from URL:', nextPageUrl.value)
-    // Maybe try fetching page currentPage + 1 as a guess? Or disable button?
-    showNotification('warning', 'Pagination Info', 'Could not determine next page number.')
-  }
-}
+  if (!nextPageUrl.value) return;
+  const url = new URL(nextPageUrl.value);
+  const page = parseInt(url.searchParams.get('page')) || currentPage.value + 1;
+  await fetchStaff(page);
+};
 
 const fetchPreviousPage = async () => {
-  if (!previousPageUrl.value) return
-
-  // Extract page number from the previous URL
-  let prevPage = null
-  try {
-    const url = new URL(previousPageUrl.value)
-    const pageParam = url.searchParams.get('page')
-    if (pageParam) {
-      prevPage = parseInt(pageParam)
-    } else {
-      // If 'page' param is missing but it's the first page, API might return null or omit it.
-      // If previous URL exists but no 'page', it's often page 1.
-      if (previousPageUrl.value && !pageParam) {
-        prevPage = 1
-      } else {
-        // Fallback if page param missing - might need adjustment
-        prevPage = currentPage.value - 1
-      }
-    }
-  } catch (e) {
-    console.error('Could not parse previous page URL', e)
-    showNotification('error', 'Pagination Error', 'Invalid previous page link')
-    return // Don't proceed if URL is invalid
-  }
-
-  if (prevPage && prevPage > 0) {
-    fetchStaff(prevPage) // Pass the extracted page number
-  } else if (prevPage === 1) {
-    // Handle explicit page 1 case
-    fetchStaff(1)
-  } else {
-    console.warn('Could not determine previous page number from URL:', previousPageUrl.value)
-    showNotification('warning', 'Pagination Info', 'Could not determine previous page number.')
-  }
-}
+  if (!previousPageUrl.value) return;
+  const url = new URL(previousPageUrl.value);
+  const page = parseInt(url.searchParams.get('page')) || currentPage.value - 1;
+  if (page > 0) await fetchStaff(page);
+};
 
 const sortBy = (column) => {
   if (sortColumn.value === column) {
-    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
+    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
   } else {
-    sortColumn.value = column
-    sortDirection.value = 'asc'
+    sortColumn.value = column;
+    sortDirection.value = 'asc';
   }
-
   staffList.value.sort((a, b) => {
-    let valueA = a[column]
-    let valueB = b[column]
+    let valueA = column === 'department' ? getDepartmentName(a.department) : a[column];
+    let valueB = column === 'department' ? getDepartmentName(b.department) : b[column];
+    return sortDirection.value === 'asc'
+      ? valueA?.localeCompare(valueB)
+      : valueB?.localeCompare(valueA);
+  });
+};
 
-    // Handle sorting for department name (using the ID from staff data)
-    if (column === 'department') {
-      valueA = getDepartmentName(valueA) // Lookup name based on ID
-      valueB = getDepartmentName(valueB) // Lookup name based on ID
-    }
-
-    // Basic comparison (can be enhanced for dates, numbers)
-    if (valueA < valueB) return sortDirection.value === 'asc' ? -1 : 1
-    if (valueA > valueB) return sortDirection.value === 'asc' ? 1 : -1
-    return 0
-  })
-}
-
-const getDepartmentName = (departmentId) => {
-  const department = departments.value.find((d) => d.id === departmentId)
-  return department ? department.department_name : 'Unknown' // More concise fallback
-}
+const getDepartmentName = (department) => {
+  if (!department) return 'N/A';
+  // Handle department as object (API returns { id, department_name })
+  if (typeof department === 'object' && department.id) {
+    // Prefer department_name from API if available
+    if (department.department_name) return department.department_name;
+    // Fallback to departments.value lookup
+    const dept = departments.value.find((d) => d.id === department.id);
+    return dept ? dept.name : 'N/A';
+  }
+  // Handle department as ID (for compatibility)
+  const dept = departments.value.find((d) => d.id === department);
+  return dept ? dept.name : 'N/A';
+};
 
 const getDesignationColor = (designation) => {
-  if (!designation) return 'bg-gray-100 text-gray-800' // Handle null/undefined
-  const designationLower = designation.toLowerCase()
-  if (designationLower.includes('admin')) return 'bg-red-100 text-red-800'
-  if (designationLower.includes('professor')) return 'bg-green-100 text-green-800'
-  if (designationLower.includes('lecturer')) return 'bg-blue-100 text-blue-800'
-  if (designationLower.includes('assistant')) return 'bg-purple-100 text-purple-800'
-  if (designationLower.includes('associate')) return 'bg-yellow-100 text-yellow-800'
-  return 'bg-gray-100 text-gray-800' // Default fallback
-}
+  if (!designation) return 'bg-gray-100 text-gray-800';
+  const d = designation.toLowerCase();
+  if (d.includes('admin')) return 'bg-red-100 text-red-800';
+  if (d.includes('professor')) return 'bg-green-100 text-green-800';
+  if (d.includes('lecturer')) return 'bg-blue-100 text-blue-800';
+  if (d.includes('assistant')) return 'bg-purple-100 text-purple-800';
+  if (d.includes('associate')) return 'bg-yellow-100 text-yellow-800';
+  return 'bg-gray-100 text-gray-800';
+};
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
+  if (!dateString) return 'N/A';
   try {
-    // Attempt to create a date object. Handles YYYY-MM-DD directly.
-    const date = new Date(dateString)
-    // Check if the date is valid after parsing
-    if (isNaN(date.getTime())) {
-      return 'Invalid Date'
-    }
-    // Use toLocaleDateString for locale-aware formatting
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Invalid Date';
     return date.toLocaleDateString(undefined, {
-      // 'undefined' uses browser default locale
       year: 'numeric',
-      month: 'short', // e.g., Apr
+      month: 'short',
       day: 'numeric',
-    })
+    });
   } catch (e) {
-    console.error('Error formatting date:', dateString, e)
-    return 'Invalid Date' // Return error indication if parsing fails
+    console.error('Error formatting date:', dateString, e);
+    return 'Invalid Date';
   }
-}
+};
 
-// Modal Functions
-// --- FIX 3a: Update form reset in Add Modal ---
 const openAddStaffModal = () => {
+  if (departments.value.length === 0) {
+    showNotification('error', 'No Departments', 'Cannot add staff without departments.', 5000);
+    return;
+  }
   form.value = {
     id: null,
     staff_name: '',
     designation: '',
-    date_of_joining: new Date().toISOString().split('T')[0], // Default to today
-    department_id: '', // Reset department_id
-  }
-  modalMode.value = 'add'
-  isModalVisible.value = true
-}
+    date_of_joining: new Date().toISOString().split('T')[0],
+    department_id: '',
+  };
+  modalMode.value = 'add';
+  isModalVisible.value = true;
+};
 
-// --- FIX 3b: Update form population in Edit Modal ---
 const openEditStaffModal = (staff) => {
   form.value = {
     id: staff.id,
     staff_name: staff.staff_name,
     designation: staff.designation,
-    date_of_joining: staff.date_of_joining, // Assumes API returns 'YYYY-MM-DD'
-    department_id: staff.department, // Map staff.department (ID) to form.department_id
-  }
-  modalMode.value = 'edit'
-  isModalVisible.value = true
-}
+    date_of_joining: staff.date_of_joining,
+    department_id: staff.department?.id || '',
+  };
+  modalMode.value = 'edit';
+  isModalVisible.value = true;
+};
 
-// --- FIX 3c: Update form population in View Modal ---
 const openViewStaffModal = (staff) => {
   form.value = {
     id: staff.id,
     staff_name: staff.staff_name,
     designation: staff.designation,
     date_of_joining: staff.date_of_joining,
-    department_id: staff.department, // Map staff.department (ID) to form.department_id
-  }
-  modalMode.value = 'view'
-  isModalVisible.value = true
-}
+    department_id: staff.department?.id || '',
+  };
+  modalMode.value = 'view';
+  isModalVisible.value = true;
+};
 
-// --- FIX 3d: Update form reset in Close Modal ---
 const closeModal = () => {
-  isModalVisible.value = false
+  isModalVisible.value = false;
   setTimeout(() => {
     form.value = {
       id: null,
       staff_name: '',
       designation: '',
       date_of_joining: '',
-      department_id: '', // Reset department_id
-    }
-    modalMode.value = null
-  }, 300) // Wait for fade out
-}
+      department_id: '',
+    };
+    modalMode.value = null;
+  }, 300);
+};
 
 const saveStaff = async () => {
-  // --- FIX 4: Update form validation ---
   if (
     !form.value.staff_name ||
     !form.value.designation ||
     !form.value.date_of_joining ||
     !form.value.department_id
   ) {
-    showNotification(
-      'error',
-      'Validation Error',
-      'Please fill out all required fields, including Department.',
-    )
-    return
+    showNotification('error', 'Validation Error', 'Please fill out all required fields.');
+    return;
+  }
+  // Validate department_id
+  const deptExists = departments.value.some((d) => d.id === form.value.department_id);
+  if (!deptExists) {
+    showNotification('error', 'Invalid Department', 'Selected department is not valid.');
+    return;
   }
 
-  // Prepare payload - it already uses form.value which now has department_id
-  const payload = { ...form.value }
-  // Remove 'id' from payload if it's an add operation, backend might not expect it
-  if (modalMode.value === 'add') {
-    delete payload.id
-  }
+  const payload = { ...form.value };
+  if (modalMode.value === 'add') delete payload.id;
 
-  isLoading.value = true // Consider a separate loading state for modal actions
+  isLoading.value = true;
   try {
     if (modalMode.value === 'add') {
-      // Send the payload (which has department_id)
-      await apiServices.createEpcInstituteStaff(payload)
+      await apiServices.createEpcInstituteStaff(payload);
       showNotification(
         'success',
         'Staff Added',
-        `${payload.staff_name} has been added successfully.`,
-      )
+        `${payload.staff_name} has been added successfully.`
+      );
     } else if (modalMode.value === 'edit') {
-      // Send the payload (which has department_id) for update
-      await apiServices.updateEpcInstituteStaffMember(form.value.id, payload)
+      await apiServices.updateEpcInstituteStaffMember(form.value.id, payload);
       showNotification(
         'success',
         'Staff Updated',
-        `${payload.staff_name}'s information has been updated.`,
-      )
+        `${payload.staff_name}'s information has been updated.`
+      );
     }
-
-    fetchStaff(currentPage.value) // Refetch the *current* page after save
-    closeModal()
+    searchQuery.value = '';
+    await fetchStaff(1);
+    closeModal();
   } catch (error) {
-    console.error('Error saving staff:', error)
-    // Attempt to parse backend error messages
-    let errorMessage = 'There was an error processing your request.'
-    if (error.response && error.response.data) {
-      // Example: Combine field errors into a single message
-      const errors = error.response.data
+    console.error('Error saving staff:', error);
+    let errorMessage = 'There was an error processing your request.';
+    if (error.response?.data) {
+      const errors = error.response.data;
       const messages = Object.entries(errors).map(
-        ([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`,
-      )
-      if (messages.length > 0) {
-        errorMessage = messages.join('; ')
-      }
+        ([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`
+      );
+      errorMessage = messages.length > 0 ? messages.join('; ') : errorMessage;
     }
-    showNotification('error', 'Save Failed', errorMessage)
+    showNotification('error', 'Save Failed', errorMessage);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 const confirmDelete = (staff) => {
-  staffToDelete.value = staff
-  showDeleteModal.value = true
-}
+  staffToDelete.value = staff;
+  showDeleteModal.value = true;
+};
 
 const deleteStaff = async () => {
-  if (!staffToDelete.value) return
-
-  isLoading.value = true // Consider separate loading state
+  if (!staffToDelete.value) return;
+  isLoading.value = true;
   try {
-    await apiServices.deleteEpcInstituteStaffMember(staffToDelete.value.id)
+    await apiServices.deleteEpcInstituteStaffMember(staffToDelete.value.id);
     showNotification(
       'success',
       'Staff Deleted',
-      `${staffToDelete.value.staff_name} has been deleted.`,
-    )
-
-    // Refresh staff list - fetch page 1 if the deleted item was the last on the current page
-    const remainingOnPage = staffList.value.length - 1
+      `${staffToDelete.value.staff_name} has been deleted.`
+    );
+    const remainingOnPage = staffList.value.length - 1;
     if (remainingOnPage === 0 && currentPage.value > 1) {
-      fetchStaff(currentPage.value - 1)
+      await fetchStaff(currentPage.value - 1);
     } else {
-      fetchStaff(currentPage.value)
+      await fetchStaff(currentPage.value);
     }
-
-    showDeleteModal.value = false
-    staffToDelete.value = null
+    showDeleteModal.value = false;
+    staffToDelete.value = null;
   } catch (error) {
-    console.error('Error deleting staff:', error)
-    showNotification('error', 'Delete Failed', 'There was an error deleting the staff member.')
+    console.error('Error deleting staff:', error);
+    showNotification('error', 'Delete Failed', 'There was an error deleting the staff member.');
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
-// Notification functions
 const showNotification = (type, title, message, duration = 5000) => {
-  if (notification.value.timeout) {
-    clearTimeout(notification.value.timeout)
-  }
-  notification.value = { show: true, type, title, message, timeout: null }
+  if (notification.value.timeout) clearTimeout(notification.value.timeout);
+  notification.value = { show: true, type, title, message, timeout: null };
   if (duration > 0) {
-    notification.value.timeout = setTimeout(closeNotification, duration)
+    notification.value.timeout = setTimeout(closeNotification, duration);
   }
-}
+};
 
 const closeNotification = () => {
-  notification.value.show = false
+  notification.value.show = false;
   if (notification.value.timeout) {
-    clearTimeout(notification.value.timeout)
-    notification.value.timeout = null
+    clearTimeout(notification.value.timeout);
+    notification.value.timeout = null;
   }
-}
+};
 
-// Watch search query to refetch or filter locally
-watch(searchQuery, (newValue) => {
-  // Decide whether to fetch from backend on search or filter locally
-  // Fetching from backend is better for large datasets
-  // fetchStaff(1); // Reset to page 1 when search changes - uncomment if using backend search
+watch(searchQuery, () => {
+  currentPage.value = 1;
+});
 
-  // For local filtering, the computed property `filteredStaff` handles it.
-  // No explicit action needed here if filtering locally, unless you want pagination reset.
-  if (newValue.trim() !== '') {
-    // Optional: Reset to page 1 when starting a search if pagination is local
-    // currentPage.value = 1;
-  } else {
-    // Optional: Refetch page 1 when search is cleared if pagination was reset
-    // fetchStaff(1);
-  }
-})
-
-// Initial fetch
 onMounted(() => {
-  fetchStaff(1) // Fetch page 1 initially
-  fetchDepartments()
-})
+  fetchStaff(1);
+  fetchDepartments();
+});
 </script>
 
 <style scoped>
-/* Notification Animation */
 .notification-enter-active,
 .notification-leave-active {
   transition: all 0.3s ease;
 }
-
 .notification-enter-from {
   transform: translateX(100%);
   opacity: 0;
 }
-
 .notification-leave-to {
   transform: translateY(-30px);
   opacity: 0;
 }
-
-/* Modal Animation */
 .modal-fade-enter-active,
 .modal-fade-leave-active {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .modal-fade-enter-from,
 .modal-fade-leave-to {
   opacity: 0;
   transform: scale(0.95);
 }
 </style>
+```

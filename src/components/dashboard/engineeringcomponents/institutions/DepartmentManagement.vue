@@ -1,4 +1,3 @@
-<!-- src/components/DepartmentManagement.vue -->
 <template>
   <div class="container mx-auto p-4 sm:p-6 lg:p-8">
     <h1 class="text-2xl font-bold text-gray-800 mb-6">EPC Department Management</h1>
@@ -76,12 +75,40 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ department.institute?.name_of_institution }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex space-x-2">
                 <button
                   @click="viewDepartmentDetails(department)"
-                  class="text-blue-600 hover:text-blue-900 mr-2"
+                  class="text-blue-600 hover:text-blue-900"
+                  title="View Details"
                 >
-                  View
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                </button>
+                <button
+                  @click="confirmDelete(department)"
+                  class="text-red-600 hover:text-red-900"
+                  title="Delete Department"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 6h18M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2m-3 0v13m-4-13v13m8-13v13"
+                    />
+                  </svg>
                 </button>
               </td>
             </tr>
@@ -201,33 +228,108 @@
       >
         <div class="bg-white rounded-lg shadow-xl overflow-hidden w-full max-w-2xl mx-4">
           <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h5 class="text-lg font-semibold text-gray-800">Department Details</h5>
-            <button
-              type="button"
-              class="text-gray-400 hover:text-gray-600"
-              @click="closeDetailsModal"
-              aria-label="Close"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+            <h5 class="text-lg font-semibold text-gray-800">
+              {{ isEditing ? 'Edit Department' : 'Department Details' }}
+            </h5>
+            <div class="flex space-x-2">
+              <button
+                v-if="!isEditing"
+                type="button"
+                @click="startEditing"
+                class="text-yellow-600 hover:text-yellow-800"
+                title="Edit Department"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                ></path>
-              </svg>
-            </button>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="text-gray-400 hover:text-gray-600"
+                @click="closeDetailsModal"
+                aria-label="Close"
+              >
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
+                </svg>
+              </button>
+            </div>
           </div>
 
           <div class="p-6 space-y-4 max-h-96 overflow-y-auto">
             <div v-if="selectedDepartment">
-              <div class="mb-4">
+              <!-- Error within modal -->
+              <div
+                v-if="modalError"
+                class="p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm"
+              >
+                {{ modalError }}
+              </div>
+
+              <form v-if="isEditing" @submit.prevent="saveDepartment">
+                <div class="mb-4">
+                  <h3 class="text-lg font-semibold mb-2">Department Information</h3>
+                  <div class="grid grid-cols-1 gap-4">
+                    <div>
+                      <label
+                        for="editDepartmentName"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                        >Department Name</label
+                      >
+                      <input
+                        type="text"
+                        id="editDepartmentName"
+                        v-model="editDepartment.department_name"
+                        required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        for="editInstituteSelect"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                        >Name of Institution</label
+                      >
+                      <select
+                        id="editInstituteSelect"
+                        v-model="editDepartment.institute_id"
+                        required
+                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md appearance-none"
+                      >
+                        <option :value="null" disabled>-- Select Institute --</option>
+                        <option
+                          v-for="institute in institutes"
+                          :key="institute.id"
+                          :value="institute.id"
+                        >
+                          {{ institute.name_of_institution }}
+                        </option>
+                      </select>
+                      <div v-if="isLoadingInstitutes" class="text-xs text-gray-500 mt-1">
+                        Loading institutes...
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+
+              <div v-else class="mb-4">
                 <h3 class="text-lg font-semibold mb-2">Department Information</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div class="bg-gray-50 p-3 rounded">
@@ -241,7 +343,7 @@
                 </div>
               </div>
 
-              <div v-if="selectedDepartment.institute" class="mb-4">
+              <div v-if="selectedDepartment.institute && !isEditing" class="mb-4">
                 <h3 class="text-lg font-semibold mb-2">Institution Information</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div class="bg-gray-50 p-3 rounded">
@@ -281,8 +383,26 @@
             </div>
           </div>
 
-          <div class="px-6 py-4 border-t border-gray-200 flex justify-end bg-gray-50 rounded-b-lg">
+          <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3 bg-gray-50 rounded-b-lg">
             <button
+              v-if="isEditing"
+              type="button"
+              @click="cancelEditing"
+              class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 text-sm font-medium"
+            >
+              Cancel
+            </button>
+            <button
+              v-if="isEditing"
+              type="button"
+              @click="saveDepartment"
+              :disabled="isSaving"
+              class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {{ isSaving ? 'Saving...' : 'Update Department' }}
+            </button>
+            <button
+              v-if="!isEditing"
               type="button"
               @click="closeDetailsModal"
               class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 text-sm font-medium"
@@ -310,54 +430,37 @@ const newDepartment = ref({
   department_name: '',
   institute_id: null,
 })
+const editDepartment = ref({
+  department_name: '',
+  institute_id: null,
+})
 const isLoadingInstitutes = ref(false)
 const isLoadingDepartments = ref(false)
 const isSaving = ref(false)
 const error = ref(null)
 const modalError = ref(null)
 const successMessage = ref('')
+const isEditing = ref(false)
+const editingDepartmentId = ref(null)
 
 // --- Methods ---
 
 // Fetch institutes for the dropdown
 const fetchInstitutes = async () => {
   isLoadingInstitutes.value = true
-  // Reset error specific to institutes if needed, or keep general page error
-  // error.value = null;
   try {
     const response = await services.getEpcInstitutes()
-    console.log('Raw response from getEPCInstitutes:', response) // Verify this log output!
+    console.log('Raw response from getEPCInstitutes:', response)
 
-    let instituteList = [] // Initialize
-
-    // === Check for the specific paginated structure: response.data.results ===
-    // === !!! Adjust this based on the ACTUAL console log for getMhpcInstitutes !!! ===
+    let instituteList = []
     if (response && response.data && Array.isArray(response.data.results)) {
-      instituteList = response.data.results // <--- Assumed path
+      instituteList = response.data.results
       console.log('Interpreted: Institute array found in response.data.results.')
-    }
-    // === Example Fallback: If institutes API returns array directly in data ===
-    // else if (response && Array.isArray(response.data)) {
-    //    instituteList = response.data;
-    //    console.log("Interpreted: Institute array found directly in response.data.");
-    // }
-    // === Example Fallback: If institutes API returns array directly ===
-    // else if (Array.isArray(response)) {
-    //     instituteList = response;
-    //     console.log("Interpreted: Institute response is the array itself.");
-    // }
-    else {
-      // If the expected structure isn't found
+    } else {
       console.warn('Could not find institute array in the expected location:', response)
-      // Set error only if institutes are crucial and failed to load
-      if (!error.value) {
-        // Avoid overwriting a more severe error from departments fetch
-        error.value = 'Unexpected data format for institutes. Dropdown may be empty.'
-      }
-      // instituteList remains []
+      error.value = 'Unexpected data format for institutes. Dropdown may be empty.'
     }
 
-    // Assign the processed list (filtering nulls is safe practice)
     institutes.value = (instituteList || []).filter((inst) => inst != null)
 
     if (institutes.value.length === 0 && !error.value) {
@@ -371,9 +474,8 @@ const fetchInstitutes = async () => {
     }
   } catch (err) {
     console.error('Error fetching institutes:', err)
-    // Set a general error if institutes failed, as they are needed for adding departments
     error.value = 'Failed to load institute data. Cannot add new departments.'
-    institutes.value = [] // Ensure empty array on error
+    institutes.value = []
   } finally {
     isLoadingInstitutes.value = false
   }
@@ -385,42 +487,33 @@ const fetchDepartments = async () => {
   error.value = null
   try {
     const response = await services.getEpcInstituteDepartments()
-    // Log the raw response structure for verification during debugging
     console.log('Raw response from getepcInstituteDepartments:', response)
 
-    let departmentList = [] // Initialize with an empty array
-
-    // === Check for the specific paginated structure: response.data.results ===
+    let departmentList = []
     if (response && response.data && Array.isArray(response.data.results)) {
-      departmentList = response.data.results // <--- Correct path to the array
+      departmentList = response.data.results
       console.log('Interpreted: Department array found in response.data.results.')
     } else {
-      // If the expected structure isn't found
       console.warn(
         'Could not find department array in the expected location (response.data.results):',
         response,
       )
       error.value =
         "Unexpected data format received for departments. Expected an array within 'data.results'."
-      // departmentList remains []
     }
 
-    // Filter out any null/undefined entries *within* the array
-    // This handles cases like [ {dept1}, null, {dept3} ] if the API ever sends them
     departments.value = (departmentList || []).filter((dept) => dept != null)
 
-    // Log if empty, considering pagination info
     if (departments.value.length === 0 && !error.value) {
       if (response?.data?.count > 0 && departmentList.length === 0) {
         console.warn(
           "API reported items (count > 0), but the 'results' array was empty or contained only nulls.",
         )
       } else {
-        console.log('No departments found or loaded.') // Normal empty state if count is 0 or API structure was wrong
+        console.log('No departments found or loaded.')
       }
     }
 
-    // Optional: Warn if filtering removed items
     if (departmentList && departments.value.length < departmentList.length) {
       console.warn('Filtered out null/undefined entries from the departments list.')
     }
@@ -429,7 +522,6 @@ const fetchDepartments = async () => {
     let errorMessage = 'Failed to load departments.'
     if (err.response) {
       errorMessage += ` Server status: ${err.response.status}.`
-      // Attempt to extract a more specific error message from DRF/backend
       const detail =
         err.response.data?.detail ||
         err.response.data?.message ||
@@ -437,7 +529,6 @@ const fetchDepartments = async () => {
       if (detail) {
         errorMessage += ` Message: ${detail}`
       } else if (typeof err.response.data === 'object' && err.response.data !== null) {
-        // Handle potential validation errors (show first one)
         const firstErrorKey = Object.keys(err.response.data)[0]
         if (firstErrorKey && Array.isArray(err.response.data[firstErrorKey])) {
           errorMessage += ` Error: ${firstErrorKey} - ${err.response.data[firstErrorKey][0]}`
@@ -449,7 +540,7 @@ const fetchDepartments = async () => {
       errorMessage += ` Error: ${err.message}`
     }
     error.value = errorMessage
-    departments.value = [] // Ensure it's an empty array on error
+    departments.value = []
   } finally {
     isLoadingDepartments.value = false
   }
@@ -464,6 +555,17 @@ const resetNewDepartmentForm = () => {
   modalError.value = null
 }
 
+// Reset the edit department form
+const resetEditDepartmentForm = () => {
+  editDepartment.value = {
+    department_name: '',
+    institute_id: null,
+  }
+  modalError.value = null
+  isEditing.value = false
+  editingDepartmentId.value = null
+}
+
 // Open the modal to add a new department
 const openAddModal = () => {
   resetNewDepartmentForm()
@@ -471,24 +573,59 @@ const openAddModal = () => {
   showModal.value = true
 }
 
-// Close the modal
+// Start editing a department
+const startEditing = () => {
+  isEditing.value = true
+  editingDepartmentId.value = selectedDepartment.value.id
+  editDepartment.value = {
+    department_name: selectedDepartment.value.department_name,
+    institute_id: selectedDepartment.value.institute_id || selectedDepartment.value.institute?.id,
+  }
+}
+
+// Cancel editing
+const cancelEditing = () => {
+  resetEditDepartmentForm()
+}
+
+// Close the add modal
 const closeModal = () => {
   showModal.value = false
+  resetNewDepartmentForm()
 }
 
 // View department details
 const viewDepartmentDetails = (department) => {
   selectedDepartment.value = department
   showDetailsModal.value = true
+  resetEditDepartmentForm()
 }
 
 // Close details modal
 const closeDetailsModal = () => {
   showDetailsModal.value = false
   selectedDepartment.value = null
+  resetEditDepartmentForm()
 }
 
-// Add the new department
+// Confirm and delete department
+const confirmDelete = async (department) => {
+  if (confirm(`Are you sure you want to delete "${department.department_name}"?`)) {
+    try {
+      await services.deleteEpcInstituteDepartment(department.id)
+      successMessage.value = `Department "${department.department_name}" deleted successfully!`
+      await fetchDepartments()
+    } catch (err) {
+      console.error('Error deleting department:', err)
+      error.value =
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to delete department. Please try again.'
+    }
+  }
+}
+
+// Add a new department
 const addDepartment = async () => {
   isSaving.value = true
   modalError.value = null
@@ -499,7 +636,6 @@ const addDepartment = async () => {
     institute_id: newDepartment.value.institute_id,
   }
 
-  // Basic validation
   if (!payload.department_name || payload.institute_id === null) {
     modalError.value = 'Please fill in all fields.'
     isSaving.value = false
@@ -511,8 +647,6 @@ const addDepartment = async () => {
     console.log('Department added successfully:', response.data)
     successMessage.value = `Department "${payload.department_name}" added successfully!`
     closeModal()
-
-    // Refresh departments list after adding
     await fetchDepartments()
   } catch (err) {
     console.error('Error adding department:', err)
@@ -520,6 +654,46 @@ const addDepartment = async () => {
       err.response?.data?.message ||
       err.message ||
       'Failed to add department. Please check the details and try again.'
+  } finally {
+    isSaving.value = false
+  }
+}
+
+// Save department (for editing in Details modal)
+const saveDepartment = async () => {
+  isSaving.value = true
+  modalError.value = null
+  successMessage.value = ''
+
+  const payload = {
+    department_name: editDepartment.value.department_name?.trim(),
+    institute_id: editDepartment.value.institute_id,
+  }
+
+  if (!payload.department_name || payload.institute_id === null) {
+    modalError.value = 'Please fill in all fields.'
+    isSaving.value = false
+    return
+  }
+
+  try {
+    const response = await services.updateEpcInstituteDepartment(editingDepartmentId.value, payload)
+    console.log('Department updated successfully:', response.data)
+    successMessage.value = `Department "${payload.department_name}" updated successfully!`
+    selectedDepartment.value = {
+      ...selectedDepartment.value,
+      department_name: payload.department_name,
+      institute: institutes.value.find((inst) => inst.id === payload.institute_id),
+      institute_id: payload.institute_id,
+    }
+    resetEditDepartmentForm()
+    await fetchDepartments()
+  } catch (err) {
+    console.error('Error updating department:', err)
+    modalError.value =
+      err.response?.data?.message ||
+      err.message ||
+      'Failed to update department. Please check the details and try again.'
   } finally {
     isSaving.value = false
   }
