@@ -1,3 +1,4 @@
+```vue
 <template>
   <div class="course-management p-6">
     <h1 class="text-2xl font-bold mb-4">EPC Course Management</h1>
@@ -13,7 +14,7 @@
     <!-- Modal -->
     <div v-if="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
       @click.self="closeModal">
-      <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
+      <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md max-h-[80vh] overflow-y-auto relative">
         <span class="absolute top-2 right-3 text-2xl cursor-pointer text-gray-500 hover:text-gray-800"
           @click="closeModal">×</span>
         <h2 class="text-xl font-semibold mb-4">
@@ -26,21 +27,22 @@
         </div>
 
         <form @submit.prevent="submitCourse" class="space-y-4">
-          <div>
+          <!-- <div>
             <label for="courseName" class="block text-sm font-medium text-gray-700">Course Name:</label>
             <input type="text" id="courseName" v-model="formState.courseName" required
               class="mt-1 w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-300" />
-          </div>
+            <p v-if="fieldErrors.courseName" class="text-xs text-red-600 mt-1">
+              {{ fieldErrors.courseName }}
+            </p>
+          </div> -->
 
           <div>
             <label for="institute" class="block text-sm font-medium text-gray-700">Institute:</label>
-            <!-- Inside <template> -->
             <select id="institute" v-model="formState.selectedInstitute" required :disabled="isLoadingInstitutes"
               class="mt-1 w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-300 disabled:bg-gray-100">
               <option disabled value="">
                 {{ isLoadingInstitutes ? 'Loading institutes...' : 'Please select an institute' }}
               </option>
-              <!-- This part is now correct because institutes.value contains objects with { id, name } -->
               <option v-for="institute in institutes" :key="institute.id" :value="institute.id">
                 {{ institute.name }}
               </option>
@@ -48,33 +50,47 @@
                 No institutes available
               </option>
             </select>
+            <p v-if="fieldErrors.selectedInstitute" class="text-xs text-red-600 mt-1">
+              {{ fieldErrors.selectedInstitute }}
+            </p>
           </div>
 
           <div>
             <label for="courseTitle" class="block text-sm font-medium text-gray-700">Course Title:</label>
             <input type="text" id="courseTitle" v-model="formState.courseTitle" required
               class="mt-1 w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-300" />
+            <p v-if="fieldErrors.courseTitle" class="text-xs text-red-600 mt-1">
+              {{ fieldErrors.courseTitle }}
+            </p>
           </div>
 
           <div>
             <label for="duration" class="block text-sm font-medium text-gray-700">Duration (months):</label>
             <input type="number" id="duration" v-model.number="formState.duration" required min="1"
               class="mt-1 w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-300" />
+            <p v-if="fieldErrors.duration" class="text-xs text-red-600 mt-1">
+              {{ fieldErrors.duration }}
+            </p>
           </div>
 
           <div>
             <label for="commencementDate" class="block text-sm font-medium text-gray-700">Commencement Date:</label>
             <input type="date" id="commencementDate" v-model="formState.commencementDate" required
               class="mt-1 w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-300" />
+            <p v-if="fieldErrors.commencementDate" class="text-xs text-red-600 mt-1">
+              {{ fieldErrors.commencementDate }}
+            </p>
           </div>
 
           <div>
-            <label for="attachments" class="block text-sm font-medium text-gray-700">Institute Attachments
-              (Optional):</label>
+            <label for="attachments" class="block text-sm font-medium text-gray-700">Institute Attachments (Optional):</label>
             <input type="file" id="attachments" @change="handleFileUpload"
               class="mt-1 w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
             <p v-if="formState.attachmentFile" class="text-xs text-gray-600 mt-1">
               Selected: {{ formState.attachmentFile.name }}
+            </p>
+            <p v-if="fieldErrors.attachments" class="text-xs text-red-600 mt-1">
+              {{ fieldErrors.attachments }}
             </p>
           </div>
 
@@ -82,13 +98,20 @@
             <label for="remarks" class="block text-sm font-medium text-gray-700">Remarks:</label>
             <textarea id="remarks" v-model="formState.remarks" rows="3"
               class="mt-1 w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-300"></textarea>
+            <p v-if="fieldErrors.remarks" class="text-xs text-red-600 mt-1">
+              {{ fieldErrors.remarks }}
+            </p>
           </div>
 
           <div class="flex items-center pt-2">
             <input type="checkbox" id="declaration" v-model="formState.declaration" required
               class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
-            <label for="declaration" class="ml-2 block text-sm text-gray-900">I declare that the information provided is
-              true and accurate.</label>
+            <label for="declaration" class="ml-2 block text-sm text-gray-900">
+              I declare that the information provided is true and accurate.
+            </label>
+            <p v-if="fieldErrors.declaration" class="text-xs text-red-600 mt-1">
+              {{ fieldErrors.declaration }}
+            </p>
           </div>
 
           <div class="pt-4">
@@ -108,248 +131,282 @@
       </div>
     </div>
 
-    <CorsTableView />
+    <CourseTableView :courses="courses" />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import services from '@/services/services.js' // Ensure this path is correct
-import CorsTableView from './CourseTableView.vue' // Ensure this path is correct
+import { ref, reactive, onMounted } from 'vue';
+import { useToast } from 'vue-toastification';
+import services from '@/services/services.js';
+import CourseTableView from './CourseTableView.vue';
+
+// Initialize toast
+const toast = useToast();
 
 // --- State ---
-const showModal = ref(false)
-const isEditing = ref(false) // Added for potential edit functionality
-const isSubmitting = ref(false)
-const isLoadingInstitutes = ref(false)
-const institutes = ref([]) // Stores fetched institutes { id: ..., name: ... }
-const pageError = ref(null) // For errors outside the modal (e.g., fetching initial data)
-const modalError = ref(null) // For errors specific to the modal form submission
-const fieldErrors = reactive({}) // <--- Add this: For field-specific errors
+const showModal = ref(false);
+const isEditing = ref(false);
+const isSubmitting = ref(false);
+const isLoadingInstitutes = ref(false);
+const institutes = ref([]);
+const courses = ref([]);
+const pageError = ref(null);
+const modalError = ref(null);
+const fieldErrors = reactive({});
 
-// Use reactive for form fields for easier management
+// Form state
 const formState = reactive({
   courseName: '',
-  selectedInstitute: '', // Store institute ID
+  selectedInstitute: '',
   courseTitle: '',
   duration: null,
   commencementDate: '',
-  attachmentFile: null, // Store the File object
+  attachmentFile: null,
   remarks: '',
   declaration: false,
-  // Add courseId: null here if implementing editing
-})
+});
 
 // --- Methods ---
 
-// Reset form fields to initial state
+// Reset form
 const resetForm = () => {
-  // ... reset other formState fields ...
-  formState.attachmentFile = null
-  formState.declaration = false
-  isEditing.value = false
-  modalError.value = null
-  // Clear field-specific errors
-  Object.keys(fieldErrors).forEach((key) => delete fieldErrors[key]) // <-- Add this line
+  formState.courseName = '';
+  formState.selectedInstitute = '';
+  formState.courseTitle = '';
+  formState.duration = null;
+  formState.commencementDate = '';
+  formState.attachmentFile = null;
+  formState.remarks = '';
+  formState.declaration = false;
+  isEditing.value = false;
+  modalError.value = null;
+  Object.keys(fieldErrors).forEach((key) => delete fieldErrors[key]);
 
-  const fileInput = document.getElementById('attachments')
-  if (fileInput) {
-    fileInput.value = ''
-  }
-}
+  const fileInput = document.getElementById('attachments');
+  if (fileInput) fileInput.value = '';
+};
 
-// Open the modal for adding a new course
+// Open modal
 const openAddModal = () => {
-  resetForm() // Ensure form is clear when opening
-  isEditing.value = false
-  showModal.value = true
-}
+  resetForm();
+  isEditing.value = false;
+  showModal.value = true;
+};
 
-// Close the modal
+// Close modal
 const closeModal = () => {
-  showModal.value = false
-  resetForm() // Also reset form on manual close
-}
+  showModal.value = false;
+  resetForm();
+};
 
+// Fetch institutes
 const fetchInstitutes = async () => {
-  isLoadingInstitutes.value = true
-  pageError.value = null
-  institutes.value = []
+  isLoadingInstitutes.value = true;
+  pageError.value = null;
+  institutes.value = [];
   try {
-    const response = await services.getEpcInstitutes()
-    console.log('API response for institutes:', response)
+    const response = await services.getEpcInstitutes();
+    console.log('API response for institutes:', response);
 
-    let rawInstituteList = []
-    // Adjust based on your actual API response structure:
+    let rawInstituteList = [];
     if (response?.data?.results && Array.isArray(response.data.results)) {
-      rawInstituteList = response.data.results
+      rawInstituteList = response.data.results;
     } else if (response?.data && Array.isArray(response.data)) {
-      rawInstituteList = response.data
+      rawInstituteList = response.data;
     } else if (Array.isArray(response)) {
-      rawInstituteList = response
+      rawInstituteList = response;
     } else {
-      console.warn('Could not find institute array in the response:', response)
-      pageError.value = 'Failed to load institutes: Unexpected data format.'
-      // Keep institutes.value empty and exit
-      isLoadingInstitutes.value = false
-      return // Exit the function early
+      console.warn('Unexpected institute data format:', response);
+      pageError.value = 'Failed to load institutes: Unexpected data format.';
+      return;
     }
 
-    // Filter for valid entries AND Map to the expected structure { id, name }
     institutes.value = rawInstituteList
-      .filter((inst) => inst && inst.id && inst.name_of_institution) // Filter using API field name
+      .filter((inst) => inst && inst.id && inst.name_of_institution)
       .map((inst) => ({
         id: inst.id,
-        name: inst.name_of_institution, // Map API field to component's 'name' field
-        // You could add other fields here if needed later
-        // e.g., fullName: inst.full_name
-      }))
+        name: inst.name_of_institution,
+      }));
 
-    if (institutes.value.length === 0 && !pageError.value) {
-      console.log('No valid institutes found or loaded for the dropdown after filtering/mapping.')
-      // Optional: Set a non-blocking warning if needed
-      // pageError.value = "No institutes available to select.";
+    if (institutes.value.length === 0) {
+      console.log('No valid institutes found.');
     }
   } catch (err) {
-    console.error('Error fetching institutes:', err)
-    pageError.value = `Failed to load institutes: ${err.message || 'Network error'}`
-    institutes.value = [] // Ensure empty on error
+    console.error('Error fetching institutes:', err);
+    pageError.value = `Failed to load institutes: ${err.message || 'Network error'}`;
   } finally {
-    isLoadingInstitutes.value = false
+    isLoadingInstitutes.value = false;
   }
-}
+};
 
-// Handle file selection
+// Fetch courses
+const fetchCourses = async () => {
+  try {
+    const response = await services.getEpcCourseDetails();
+    console.log('API response for courses:', response);
+
+    let courseList = [];
+    if (response?.data?.results && Array.isArray(response.data.results)) {
+      courseList = response.data.results;
+    } else if (response?.data && Array.isArray(response.data)) {
+      courseList = response.data;
+    } else if (Array.isArray(response)) {
+      courseList = response;
+    } else {
+      console.warn('Unexpected course data format:', response);
+      pageError.value = 'Failed to load courses: Unexpected data format.';
+      return;
+    }
+
+    courses.value = courseList;
+  } catch (err) {
+    console.error('Error fetching courses:', err);
+    pageError.value = `Failed to load courses: ${err.message || 'Network error'}`;
+  }
+};
+
+// Handle file upload
 const handleFileUpload = (event) => {
-  const file = event.target.files[0]
+  const file = event.target.files[0];
   if (file) {
-    formState.attachmentFile = file
-    console.log('File selected:', file.name)
+    formState.attachmentFile = file;
+    console.log('File selected:', file.name);
   } else {
-    formState.attachmentFile = null
+    formState.attachmentFile = null;
   }
-}
+};
 
+// Submit course
 const submitCourse = async () => {
-  // ... (validation checks like declaration)
-
-  isSubmitting.value = true
-  modalError.value = null // Clear general modal error
-  Object.keys(fieldErrors).forEach((key) => delete fieldErrors[key]) // Clear previous field errors
-
-  const formData = new FormData()
-  // ... append form data ...
-  // IMPORTANT: Ensure the names used here match the API's expectations
-  formData.append('course_name', formState.courseName)
-  formData.append('institute', formState.selectedInstitute)
-  formData.append('course_title', formState.courseTitle)
-  // Check if API expects 'duration' or 'duration_in_months'
-  // Let's assume it expects 'duration_in_months' based on the error key
-  if (formState.duration !== null && formState.duration !== undefined) {
-    formData.append('duration_in_months', formState.duration) // Use API key name
-  } else {
-    // Handle case where duration might be optional or required - send empty if needed or let backend validate
-    // formData.append('duration_in_months', ''); // Or omit if null is acceptable/handled
+  if (!formState.declaration) {
+    modalError.value = 'You must agree to the declaration.';
+    return;
   }
-  formData.append('commencement_date', formState.commencementDate)
-  formData.append('remarks', formState.remarks)
 
+  isSubmitting.value = true;
+  modalError.value = null;
+  Object.keys(fieldErrors).forEach((key) => delete fieldErrors[key]);
+
+  const formData = new FormData();
+  formData.append('course_name', formState.courseName);
+  formData.append('institute', formState.selectedInstitute);
+  formData.append('course_title', formState.courseTitle);
+  if (formState.duration !== null && formState.duration !== undefined) {
+    formData.append('duration_in_months', formState.duration);
+  }
+  formData.append('commencement_date', formState.commencementDate);
+  formData.append('remarks', formState.remarks);
   if (formState.attachmentFile) {
-    // Check if API expects 'attachments' or 'institute_attachments'
-    formData.append(
-      'institute_attachments',
-      formState.attachmentFile,
-      formState.attachmentFile.name,
-    ) // Use API key name
-  } else {
-    // If the file is *required*, the backend validation will catch it.
-    // If it's optional, sending nothing when no file is selected is correct.
+    formData.append('institute_attachments', formState.attachmentFile, formState.attachmentFile.name);
   }
 
   try {
-    let response
-    // ... (API call logic for create/update)
-    response = await services.createEpcCourseDetail(formData) // Or update
+    const response = await services.createEpcCourseDetail(formData);
+    console.log('Course submission response:', response);
 
-    console.log('Course submitted successfully:', response.data)
-    alert('Course submitted successfully!') // Replace with better notification
-    closeModal()
-    // await fetchCourses(); // Refresh list if needed
+    if (response.status === 201) {
+      toast.success(`Course "${formState.courseName}" has been successfully added!`, {
+        timeout: 5000,
+      });
+      closeModal();
+      await fetchCourses();
+    } else {
+      modalError.value = 'Unexpected response from server. Please try again.';
+    }
   } catch (err) {
-    console.error('Error submitting course:', err)
+    console.error('Error submitting course:', err);
 
-    if (
-      err.response &&
-      err.response.data &&
-      typeof err.response.data === 'object' &&
-      err.response.status === 400
-    ) {
-      // Likely validation errors object (Status 400 is common for Bad Request/Validation)
-      const errors = err.response.data
-      console.log('Validation Errors:', errors)
+    if (err.response && err.response.data && typeof err.response.data === 'object' && err.response.status === 400) {
+      const errors = err.response.data;
+      console.log('Validation Errors:', errors);
 
-      // Map API error keys to our formState keys or input IDs for display
       const errorKeyMapping = {
         course_name: 'courseName',
         institute: 'selectedInstitute',
         course_title: 'courseTitle',
-        duration_in_months: 'duration', // API key -> form field ref name/id
+        duration_in_months: 'duration',
         commencement_date: 'commencementDate',
-        institute_attachments: 'attachments', // API key -> file input id
+        institute_attachments: 'attachments',
         remarks: 'remarks',
         declaration: 'declaration',
-        // Add other potential fields from your API validation
-      }
+      };
 
-      let hasFieldErrors = false
+      const errorMessages = {
+        attachments: 'Please upload an attachment for the institute.',
+        courseName: 'Please enter a valid course name.',
+        selectedInstitute: 'Please select an institute.',
+        courseTitle: 'Please enter a valid course title.',
+        duration: 'Please enter a valid duration (in months).',
+        commencementDate: 'Please select a valid commencement date.',
+        remarks: 'Please provide valid remarks.',
+        declaration: 'You must agree to the declaration.',
+      };
+
+      let hasFieldErrors = false;
       for (const apiKey in errors) {
-        // Ensure the error value is an array with at least one message
         if (errors[apiKey] && Array.isArray(errors[apiKey]) && errors[apiKey].length > 0) {
-          const formKey = errorKeyMapping[apiKey]
+          const formKey = errorKeyMapping[apiKey];
           if (formKey) {
-            fieldErrors[formKey] = errors[apiKey][0] // Assign first error message
-            hasFieldErrors = true
-            console.log(`Mapped error: ${apiKey} -> ${formKey}: ${fieldErrors[formKey]}`)
+            fieldErrors[formKey] = errorMessages[formKey] || errors[apiKey][0];
+            hasFieldErrors = true;
           } else {
-            console.warn(`Unhandled validation error key from API: ${apiKey}`)
-            // Optionally add unmapped errors to the general modalError
-            modalError.value = (modalError.value || '') + `${apiKey}: ${errors[apiKey][0]} `
+            modalError.value = (modalError.value || '') + `${apiKey}: ${errors[apiKey][0]} `;
           }
         }
       }
 
-      // If we only assigned field errors, maybe clear the general error
       if (hasFieldErrors && !modalError.value) {
-        modalError.value = 'Please correct the errors below.' // Or leave null
+        modalError.value = 'Please correct the errors below.';
       } else if (!hasFieldErrors && !modalError.value) {
-        // If loop didn't find mappable errors but it was a 400 obj response
-        modalError.value = 'An unknown validation error occurred.'
+        modalError.value = 'An unknown validation error occurred.';
       }
-      // else { keep any unmapped errors in modalError.value }
     } else {
-      // Fallback for non-validation errors (network, server 500, etc.)
-      modalError.value = `Failed to submit course: ${err.response?.data?.detail || err.message || 'Unknown error'}`
+      modalError.value = `Failed to submit course: ${err.response?.data?.detail || err.message || 'Unknown error'}`;
     }
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
-}
+};
 
-// --- Lifecycle Hooks ---
+// Lifecycle hooks
 onMounted(() => {
-  fetchInstitutes() // Load institutes when component mounts
-})
+  fetchInstitutes();
+  fetchCourses();
+});
 </script>
 
 <style scoped>
-/* Add any component-specific styles here if needed */
-/* Improve focus states slightly */
 input:focus,
 select:focus,
 textarea:focus {
   border-color: #93c5fd;
-  /* Tailwind's blue-300 */
   box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.5);
-  /* Mimic ring */
+}
+
+/* Scrollable modal styles */
+.overflow-y-auto {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #a0aec0 #edf2f7;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #edf2f7;
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #a0aec0;
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #718096;
 }
 </style>
+```

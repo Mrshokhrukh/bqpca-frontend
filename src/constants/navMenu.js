@@ -1424,6 +1424,12 @@ const serviceSpecificMenuItems = {
         route: (serviceType) =>
           `/admin/cme_cpd_provider/${serviceType}/cpd_approved_add_participants`,
       },
+      {
+        name: 'Profile',
+        icon: getIconComponent('UserPlus'),
+        route: (serviceType) =>
+          `/admin/cme_cpd_provider/${serviceType}/cme_cpd_provider_profile`,
+      },
     ],
 
     institutions: [

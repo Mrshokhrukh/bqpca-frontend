@@ -449,6 +449,7 @@ export default {
       cpd_application_details: engineeringDashboard,
       cpd_application_tracker: engineeringDashboard,
       cpd_approved_add_participants: engineeringDashboard,
+      cme_cpd_provider_profile: engineeringDashboard,
     },
     health_certification: {
       dashboard: mhpcDashboard,

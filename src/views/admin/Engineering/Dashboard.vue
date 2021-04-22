@@ -121,7 +121,7 @@ import EngineeringProviderDashboard from '@/components/dashboard/engineeringcomp
 import CPDApplicationDetails from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDApplicationDetails.vue'
 import CPDApplicationTracker from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDApplicationTracker.vue'
 import CPDapprovedAddParticipants from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDapprovedAddParticipants.vue'
-
+import CpdProviderProfile from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CpdProviderProfile.vue'
 // Institution Components
 import InstituteEoiApplication from '@/components/dashboard/engineeringcomponents/institutions/InstituteEoiApplication.vue'
 import InstituteDPRApplication from '@/components/dashboard/engineeringcomponents/institutions/InstituteDPRApplication.vue'
@@ -354,6 +354,8 @@ const engineeringCpdCpdProviderComponent = computed(() => {
       return CPDApplicationTracker
     case path.endsWith('/engineering_certification/cpd_approved_add_participants'):
       return CPDapprovedAddParticipants
+    case path.endsWith('/engineering_certification/cme_cpd_provider_profile'):
+      return CpdProviderProfile
     default:
       return null
   }
