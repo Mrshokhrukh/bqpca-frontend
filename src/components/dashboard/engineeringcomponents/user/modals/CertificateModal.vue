@@ -19,7 +19,7 @@
 
       <!-- Certificate Container -->
       <div
-        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
+        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl"
       >
         <!-- Certificate Content -->
         <div id="certificate-content" class="bg-white px-8 pt-8 pb-6 relative min-h-[842px]">

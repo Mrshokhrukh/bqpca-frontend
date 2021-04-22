@@ -1,7 +1,7 @@
 <!-- src/views/admin/SuperAdminLogin.vue -->
 <template>
   <div class="min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+    <div class="max-w-md space-y-8 bg-white p-8 rounded-xl shadow-lg">
       <div class="text-center">
         <h2 class="text-3xl font-serif font-bold text-slate-900">Super Admin Portal</h2>
         <p class="mt-2 text-sm text-slate-600">Access the main administrative dashboard</p>
@@ -14,7 +14,7 @@
             v-model="email"
             type="email"
             id="email"
-            class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            class="mt-1 block max-w-7xl px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             placeholder="super.admin@bqpca.gov.bt"
           />
         </div>
@@ -26,7 +26,7 @@
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
               id="password"
-              class="block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              class="block max-w-7xl px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
             <button
               @click="showPassword = !showPassword"
@@ -58,7 +58,7 @@
           <button
             @click="handleLogin"
             :disabled="!isFormValid"
-            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-slate-800 hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 disabled:bg-slate-400 disabled:cursor-not-allowed"
+            class="max-w-7xl flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-slate-800 hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 disabled:bg-slate-400 disabled:cursor-not-allowed"
           >
             Sign in
           </button>

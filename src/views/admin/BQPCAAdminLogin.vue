@@ -3,7 +3,7 @@
     class="min-h-screen bg-slate-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
   >
     <div
-      class="max-w-xl w-full space-y-8 bg-white p-10 rounded-xl shadow-lg border border-slate-200"
+      class="max-w-xl space-y-8 bg-white p-10 rounded-xl shadow-lg border border-slate-200"
     >
       <div class="text-center">
         <h2 class="text-3xl font-bold text-slate-900 flex items-center justify-center gap-3">
@@ -68,7 +68,7 @@
               v-model="email"
               type="email"
               id="email"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all duration-300 pl-10"
+              class="max-w-7xl px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all duration-300 pl-10"
               placeholder="admin@example.com"
             />
             <AtSignIcon class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -85,7 +85,7 @@
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
               id="password"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all duration-300 pl-10 pr-12"
+              class="max-w-7xl px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all duration-300 pl-10 pr-12"
             />
             <LockIcon class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
             <button
@@ -130,7 +130,7 @@
       <button
         @click="handleLogin"
         :disabled="!isFormValid"
-        class="w-full flex justify-center py-3 px-4 border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-slate-400 disabled:cursor-not-allowed transition-all duration-300"
+        class="max-w-7xl flex justify-center py-3 px-4 border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-slate-400 disabled:cursor-not-allowed transition-all duration-300"
       >
         Sign In
       </button>
