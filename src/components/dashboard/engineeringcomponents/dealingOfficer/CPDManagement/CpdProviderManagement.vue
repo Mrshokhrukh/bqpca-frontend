@@ -313,8 +313,15 @@
                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             />
                           </div>
-                          <div></div>
-                          <!-- Spacer -->
+                          <div class="sm:col-span-2">
+                            <button
+                              type="button"
+                              @click="generatePassword"
+                              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150 mb-4"
+                            >
+                              Generate Password
+                            </button>
+                          </div>
                           <div>
                             <label
                               for="add-password"
@@ -322,7 +329,7 @@
                               >Password <span class="text-red-500">*</span></label
                             >
                             <input
-                              type="password"
+                              type="text"
                               id="add-password"
                               v-model="formData.password"
                               required
@@ -337,7 +344,7 @@
                               >Confirm Password <span class="text-red-500">*</span></label
                             >
                             <input
-                              type="password"
+                              type="text"
                               id="add-confirm-password"
                               v-model="formData.confirm_password"
                               required
@@ -671,7 +678,7 @@ const initialFormData = {
   password: '',
   confirm_password: '',
   role: 'cme_cpd_provider',
-  service_type: 'health_certification', // Ensure this is the correct default/required value
+  service_type: 'engineering_certification', // Ensure this is the correct default/required value
   // Provider specific fields (assuming they are part of initial registration)
   cpdActivityTitle: '',
   venue: '',
@@ -724,6 +731,14 @@ const getErrorMessage = (error) => {
     message = error.message
   }
   return message
+}
+
+// --- Generate Password ---
+const generatePassword = () => {
+  const defaultPassword = 'P@ssw0rd123'
+  formData.password = defaultPassword
+  formData.confirm_password = defaultPassword
+  toast.info('Generated default password: P@ssw0rd123')
 }
 
 // --- Fetch Providers ---
@@ -795,7 +810,7 @@ const submitProvider = async () => {
       password: formData.password,
       confirm_password: formData.confirm_password,
       role: formData.role, // 'cme_cpd_provider'
-      service_type: formData.service_type, // 'health_certification'
+      service_type: formData.service_type, // 'engineering_certification'
       // Only include these if your registration endpoint handles them:
       cpdActivityTitle: formData.cpdActivityTitle,
       venue: formData.venue,
@@ -804,7 +819,7 @@ const submitProvider = async () => {
     console.log('Submitting new provider payload:', payload)
     await apiService.register(payload) // Use the specific registration service method
 
-    toast.success('Provider registration successful!')
+    toast.success('Provider registration successful! The default password has been sent to the user.')
     closeAddProviderModal()
     await fetchProviders() // Refresh the list after adding
   } catch (error) {
@@ -844,7 +859,7 @@ const openEditProviderModal = (index) => {
     : ''
   editFormData.contact_number = providerToEdit.contact_number || ''
   editFormData.email = providerToEdit.email || ''
-  // Populate provider-specific fields
+  // Populate divers-specific fields
   editFormData.cpdActivityTitle = providerToEdit.cpdActivityTitle || ''
   editFormData.venue = providerToEdit.venue || ''
 
