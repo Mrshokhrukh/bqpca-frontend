@@ -1,71 +1,47 @@
 <template>
-  <div class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 py-12">
-    <div class="flex flex-col items-center max-w-md">
-      <!-- Illustration/Icon -->
-      <div class="w-40 h-40 mb-6 flex items-center justify-center rounded-full bg-indigo-50">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="w-24 h-24 text-indigo-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="1.5"
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="1.5"
-            d="M15 13l-3 3m0 0l-3-3m3 3V8m0 13a9 9 0 110-18 9 9 0 010 18z"
-          />
-        </svg>
-      </div>
+  <div class="flex flex-col items-center justify-center text-center px-4 py-16">
+    <div class="max-w-md w-full backdrop-blur-sm bg-white/90 rounded-2xl shadow-lg border border-indigo-100 p-6 relative overflow-hidden">
+      <div class="absolute -top-20 -right-20 w-40 h-40 bg-indigo-100 rounded-full opacity-50"></div>
+      <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-indigo-100 rounded-full opacity-50"></div>
 
-      <!-- Title -->
-      <h2 class="text-2xl font-bold text-gray-900 mb-3">You Dont Have Any Applications Yet</h2>
+      <div class="relative z-10">
+        <div class="w-32 h-32 mx-auto mb-6 relative">
+          <div class="absolute inset-0 bg-gradient-to-r from-indigo-200 to-purple-200 rounded-full animate-pulse"></div>
 
-      <!-- Message -->
-      <p class="text-gray-600 mb-8">{{ message }}</p>
+          <div class="absolute inset-4 bg-white rounded-full flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16" viewBox="0 0 24 24" fill="none">
+              <path d="M9 12.75L11.25 15L15 9.75M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="url(#paint0_linear_alt)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <defs>
+                <linearGradient id="paint0_linear_alt" x1="3" y1="12" x2="21" y2="12" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#6366F1"/>
+                  <stop offset="1" stop-color="#8B5CF6"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
 
-      <!-- Status -->
-      <!-- <div class="bg-amber-50 border border-amber-200 rounded-md px-4 py-3 mb-6 flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-400 mr-2" fill="none" viewBox="0 0 24 24"
-          stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span class="text-amber-800 text-sm">Your application yet reviewed by our team</span>
-      </div> -->
+          <div class="absolute top-4 right-6 w-3 h-3 bg-indigo-300 rounded-full animate-float-slow"></div>
+          <div class="absolute bottom-6 left-6 w-2 h-2 bg-purple-300 rounded-full animate-float-medium"></div>
+          <div class="absolute top-8 left-8 w-1 h-1 bg-indigo-400 rounded-full animate-float-fast"></div>
+        </div>
 
-      <!-- Action buttons -->
-      <div class="flex flex-col sm:flex-row gap-4 w-full">
-        <button
-          class="w-full px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          @click="checkApplicationStatus"
-        >
-          Apply Now
-        </button>
+        <h2 class="text-2xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">No Applications Found</h2>
 
-        <!-- <button
-          class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          @click="contactSupport">
-          Contact Support
-        </button> -->
+        <p class="text-base text-gray-600 mb-6 leading-relaxed">{{ message }}</p>
+
+        <div class="flex flex-col sm:flex-row gap-3 w-full">
+          <button
+            class="w-full px-4 py-2 rounded-xl shadow-md text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 font-medium transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center text-sm"
+            @click="checkApplicationStatus"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Apply Now
+          </button>
+        </div>
       </div>
     </div>
-
-    <!-- Animated loading indicator for a pulse effect -->
-    <!-- <div class="mt-16 flex flex-col items-center">
-      <div class="relative">
-        <div class="h-3 w-3 bg-indigo-500 rounded-full absolute animate-ping opacity-75"></div>
-        <div class="h-3 w-3 bg-indigo-500 rounded-full relative"></div>
-      </div>
-      <p class="mt-4 text-sm text-gray-500">You'll be notified once your application is approved</p>
-    </div> -->
   </div>
 </template>
 
@@ -77,15 +53,44 @@ defineProps({
   message: {
     type: String,
     default:
-      "You don't have any applications yet. Please apply by clicking on the following button",
+      "You don't have any applications yet. Please apply by clicking the button below.",
   },
 })
 
 const checkApplicationStatus = () => {
   if (typeof router.push === 'function') {
-    router.push('/admin/user/health_certification/registration') // Ensure router.push is a function
+    router.push('/admin/user/health_certification/registration')
   } else {
     console.error('router.push is not a function')
   }
 }
 </script>
+
+<style scoped>
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes float-medium {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes float-fast {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float-medium 4s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: float-fast 3s ease-in-out infinite;
+}
+</style>

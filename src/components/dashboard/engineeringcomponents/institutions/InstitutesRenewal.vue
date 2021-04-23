@@ -11,26 +11,26 @@
       </p>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center my-8">
-      <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
-      <p class="ml-2 text-gray-600">Loading institute data...</p>
-    </div>
+        <!-- Loading State -->
+        <div v-if="isLoading" class="flex justify-center my-8">
+            <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
+            <p class="ml-2 text-gray-600">Loading institute data...</p>
+        </div>
 
-    <!-- Error State -->
-    <div
-      v-else-if="apiError"
-      class="bg-gray-50 border border-gray-200 text-gray-700 p-6 rounded-lg mb-6"
-    >
-      <h3 class="text-lg font-medium mb-2">Error Loading Institute Data</h3>
-      <p>{{ errorMessage }}</p>
-      <button
-        @click="fetchInstituteData"
-        class="mt-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-      >
-        Try Again
-      </button>
-    </div>
+        <!-- Error State -->
+        <div
+            v-else-if="apiError"
+            class="bg-gray-50 border border-gray-200 text-gray-700 p-6 rounded-lg mb-6"
+        >
+            <h3 class="text-lg font-medium mb-2">Error Loading Institute Data</h3>
+            <p>{{ errorMessage }}</p>
+            <button
+                @click="fetchInstituteData"
+                class="mt-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+                Try Again
+            </button>
+        </div>
 
     <!-- No Expired Institute Found -->
     <div
@@ -243,31 +243,31 @@ const toast = useToast()
 
 // Get user CID from auth store
 const userCid = computed(() => {
-  return authStore.user?.cid || ''
+    return authStore.user?.cid || ''
 })
 
 // Format dates
 const formattedActiveDate = computed(() => {
-  if (!instituteData.value?.valid_since) return 'N/A'
-  return new Date(instituteData.value.valid_since).toLocaleDateString()
+    if (!instituteData.value?.valid_since) return 'N/A'
+    return new Date(instituteData.value.valid_since).toLocaleDateString()
 })
 
 const formattedExpirationDate = computed(() => {
-  if (!instituteData.value?.valid_till) return 'N/A'
-  return new Date(instituteData.value.valid_till).toLocaleDateString()
+    if (!instituteData.value?.valid_till) return 'N/A'
+    return new Date(instituteData.value.valid_till).toLocaleDateString()
 })
 
 // Fetch institute data and filter for expired institutes
 const fetchInstituteData = async () => {
-  if (!userCid.value) {
-    errorMessage.value = 'User information not available. Please log in again.'
-    apiError.value = true
-    isLoading.value = false
-    return
-  }
+    if (!userCid.value) {
+        errorMessage.value = 'User information not available. Please log in again.'
+        apiError.value = true
+        isLoading.value = false
+        return
+    }
 
-  isLoading.value = true
-  apiError.value = false
+    isLoading.value = true
+    apiError.value = false
 
   try {
     const response = await apiServices.getEpcInstitutes()
@@ -301,12 +301,12 @@ const fetchInstituteData = async () => {
 
 // Open renewal dialog
 const openRenewalDialog = () => {
-  showRenewalDialog.value = true
+    showRenewalDialog.value = true
 }
 
 // Close renewal dialog
 const closeRenewalDialog = () => {
-  showRenewalDialog.value = false
+    showRenewalDialog.value = false
 }
 
 // Initiate payment

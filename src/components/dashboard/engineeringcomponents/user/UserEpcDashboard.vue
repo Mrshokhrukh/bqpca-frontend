@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-50 p-6 min-h-screen">
-    <div class="max-w-7xl mx-auto space-y-6">
+    <div class="w-full mx-auto space-y-6">
       <!-- Empty state when no applications at all -->
       <FirstDashboardState
         v-if="hasNoApplications && !isLoading"

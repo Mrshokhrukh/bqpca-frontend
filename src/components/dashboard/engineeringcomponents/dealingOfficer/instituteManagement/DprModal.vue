@@ -36,6 +36,30 @@
                       <Circle :class="['h-3 w-3 sm:h-3.5 sm:w-3.5', getStatusCircleClasses(overallStatus)]" />
                       <span>{{ overallStatus }}</span>
                     </span>
+                    <!-- New Edit Button -->
+                    <button
+                      v-if="!isEditing"
+                      type="button"
+                      class="px-4 py-2 text-sm font-medium text-blue-700 bg-white border border-blue-300 rounded-lg shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center space-x-2"
+                      @click="startEditing"
+                    >
+                      <Pencil class="h-4 w-4" />
+
+                    </button>
+                    <button
+                      type="button"
+                      class="p-2 text-gray-400 hover:text-gray-500 transition-colors rounded-full hover:bg-white"
+                      @click="closeModalHandler"
+                    >
+                      <span class="sr-only">Close</span>
+                      <X class="h-6 w-6" />
+                    </button>
+                  </div>
+                </div>
+                <!-- Decorative pattern -->
+                <div class="absolute right-0 top-0 -mt-6 -mr-6 opacity-10">
+                  <div class="transform rotate-45">
+                    <FileText class="h-32 w-32" />
                     <button v-if="!isEditing" type="button" class="p-2 text-blue-600 bg-white border border-blue-200 rounded-lg shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center" @click="startEditing" title="Edit Application"> <Pencil class="h-4 w-4" /> </button>
                     <button type="button" class="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-full hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-gray-400" @click="closeModalHandler" title="Close"> <span class="sr-only">Close</span> <X class="h-5 w-5 sm:h-6 sm:w-6" /> </button>
                   </div>

@@ -28,7 +28,7 @@
 
       <!-- Decorative wave shape -->
       <div class="absolute bottom-0 left-0 right-0">
-        <svg class="w-full h-8 fill-slate-50" viewBox="0 0 1440 48" preserveAspectRatio="none">
+        <svg class="max-w-7xl h-8 fill-slate-50" viewBox="0 0 1440 48" preserveAspectRatio="none">
           <path
             d="M0 48h1440V0c-283.146 39.154-566.281 48-849.405 48C307.47 48 153.735 32 0 0v48z"
           />

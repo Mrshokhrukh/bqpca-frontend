@@ -2,7 +2,7 @@
 <template>
   <div class="min-h-screen bg-slate-50 flex items-center justify-center">
     <!-- 404 Section with Animated Background -->
-    <div class="relative bg-gradient-to-r from-slate-900 to-slate-800 overflow-hidden w-full py-24">
+    <div class="relative bg-gradient-to-r from-slate-900 to-slate-800 overflow-hidden max-w-7xl py-24">
       <!-- Decorative circles -->
       <div class="absolute inset-0">
         <div

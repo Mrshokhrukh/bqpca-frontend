@@ -873,7 +873,7 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/application_lists`,
           },
           {
-            name: 'Additional Application Lists',
+            name: 'Additional Qualification Lists',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/additional_application`,
           },
           {

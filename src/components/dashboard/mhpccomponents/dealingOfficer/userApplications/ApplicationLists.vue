@@ -332,7 +332,7 @@ const formatDate = (date) => {
 const fetchMasterData = async () => {
   try {
     const [categoriesRes, subcategoriesRes, sectorsRes] = await Promise.all([
-      apiServices.getMhpcMastersMHPCParticipationCategories(),
+      apiServices.getMhpcMastersPersonnelCategories(),
       apiServices.getMhpcMastersSubCategories(),
       apiServices.getMhpcMastersSectors(),
     ])

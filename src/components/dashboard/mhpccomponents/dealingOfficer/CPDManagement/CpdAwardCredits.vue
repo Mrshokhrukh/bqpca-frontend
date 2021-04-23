@@ -46,7 +46,7 @@
     </Transition>
 
     <!-- Main Content Area -->
-     <div class="mx-auto max-w-7xl"> <!-- Added max-width for better large screen layout -->
+     <div class="mx-auto w-full"> <!-- Added max-width for better large screen layout -->
       <!-- Header Card -->
       <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
         <h1 class="text-2xl font-bold text-gray-900">Self CPD Applications</h1>

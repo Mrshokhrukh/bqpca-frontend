@@ -25,7 +25,7 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="w-full max-w-7xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all"
+              class="w-full w-full transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all"
               v-if="application"
             >
               <div class="relative">
