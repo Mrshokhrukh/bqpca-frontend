@@ -192,14 +192,15 @@
                               <p class="text-sm font-medium text-gray-500">Application ID</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <FileCheck class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.CID }}</span>
+                                <span>{{ application.id }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
                               <p class="text-sm font-medium text-gray-500">Program Type</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Hash class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.type_of_programme }}</span>
+                                <!-- *** UPDATED HERE *** -->
+                                <span>{{ displayProgramType }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
@@ -254,6 +255,9 @@
                       <CircleAlert class="h-4 w-4" />
                       <span>{{ errorMessage }}</span>
                     </div>
+                    <!-- Placeholder for error message alignment -->
+                    <div v-else></div>
+
                     <div class="flex items-center space-x-4">
                       <button
                         type="button"
@@ -263,8 +267,6 @@
                         <X class="h-4 w-4" />
                         <span>Close</span>
                       </button>
-
-
 
                       <button
                         type="button"
@@ -316,9 +318,9 @@
                           <div class="space-y-4">
                             <!-- Institute Name Field -->
                             <div>
-                              <label for="name_of_institution" class="block text-sm font-medium text-gray-700">Institute Name</label>
+                              <label for="edit_name_of_institution" class="block text-sm font-medium text-gray-700">Institute Name</label>
                               <input
-                                id="name_of_institution"
+                                id="edit_name_of_institution"
                                 type="text"
                                 v-model="editedApplication.name_of_institution"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
@@ -328,9 +330,9 @@
 
                             <!-- Address Field -->
                             <div>
-                              <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+                              <label for="edit_address" class="block text-sm font-medium text-gray-700">Address</label>
                               <input
-                                id="address"
+                                id="edit_address"
                                 type="text"
                                 v-model="editedApplication.address"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
@@ -340,9 +342,9 @@
 
                             <!-- Email Field -->
                             <div>
-                              <label for="email_address" class="block text-sm font-medium text-gray-700">Email Address</label>
+                              <label for="edit_email_address" class="block text-sm font-medium text-gray-700">Email Address</label>
                               <input
-                                id="email_address"
+                                id="edit_email_address"
                                 type="email"
                                 v-model="editedApplication.email_address"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
@@ -352,9 +354,9 @@
 
                             <!-- Contact Number Field -->
                             <div>
-                              <label for="contact_no" class="block text-sm font-medium text-gray-700">Contact Number</label>
+                              <label for="edit_contact_no" class="block text-sm font-medium text-gray-700">Contact Number</label>
                               <input
-                                id="contact_no"
+                                id="edit_contact_no"
                                 type="tel"
                                 v-model="editedApplication.contact_no"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
@@ -364,9 +366,9 @@
 
                             <!-- Course Title Field -->
                             <div>
-                              <label for="title_of_course" class="block text-sm font-medium text-gray-700">Course Title</label>
+                              <label for="edit_title_of_course" class="block text-sm font-medium text-gray-700">Course Title</label>
                               <input
-                                id="title_of_course"
+                                id="edit_title_of_course"
                                 type="text"
                                 v-model="editedApplication.title_of_course"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
@@ -376,27 +378,27 @@
 
                             <!-- Program Type Field -->
                             <div>
-                              <label for="type_of_programme" class="block text-sm font-medium text-gray-700">Program Type</label>
+                              <label for="edit_type_of_programme" class="block text-sm font-medium text-gray-700">Program Type</label>
                               <select
-                                id="type_of_programme"
+                                id="edit_type_of_programme"
                                 v-model="editedApplication.type_of_programme"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
                                 required
                               >
+                                <!-- Values remain single characters -->
                                 <option value="">Select a program type</option>
-                                <option value="certificate">Certificate</option>
-                                <option value="diploma">Diploma</option>
-                                <option value="degree">Degree</option>
-                                <option value="masters">Masters</option>
-                                <option value="phd">PhD</option>
+                                <option value="D">Diploma</option>
+                                <option value="B">Bachelor</option>
+                                <option value="M">Master</option>
+                                <option value="P">PhD</option>
                               </select>
                             </div>
 
                             <!-- Commencement Date Field -->
                             <div>
-                              <label for="commencement_date" class="block text-sm font-medium text-gray-700">Commencement Date</label>
+                              <label for="edit_commencement_date" class="block text-sm font-medium text-gray-700">Commencement Date</label>
                               <input
-                                id="commencement_date"
+                                id="edit_commencement_date"
                                 type="date"
                                 v-model="editedApplication.commencement_date"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
@@ -406,9 +408,9 @@
 
                             <!-- Course Duration Field -->
                             <div>
-                              <label for="course_duration" class="block text-sm font-medium text-gray-700">Course Duration</label>
+                              <label for="edit_course_duration" class="block text-sm font-medium text-gray-700">Course Duration</label>
                               <input
-                                id="course_duration"
+                                id="edit_course_duration"
                                 type="text"
                                 v-model="editedApplication.course_duration"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
@@ -447,7 +449,7 @@
 </template>
 
 <script setup>
-import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
+import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue';
 import {
   User,
   UserCircle,
@@ -466,182 +468,248 @@ import {
   Pencil,
   CheckCircle,
   ThumbsDown,
-} from 'lucide-vue-next'
-import { computed, ref } from 'vue'
-import apiService from '@/services/services'
-import { useToast } from 'vue-toastification'
+} from 'lucide-vue-next';
+import { computed, ref } from 'vue'; // *** Ensure computed is imported ***
+import apiService from '@/services/services';
+import { useToast } from 'vue-toastification';
 
-const toast = useToast()
+const toast = useToast();
 
 const props = defineProps({
   isOpen: Boolean,
   application: {
     type: Object,
     required: true,
+    default: () => ({}), // Add a default empty object to prevent errors if undefined
   },
-})
+});
 
-const emit = defineEmits(['close', 'application-updated'])
+const emit = defineEmits(['close', 'application-updated']);
 
-const errorMessage = ref('')
-const isEditModalOpen = ref(false)
-const editedApplication = ref({})
+const errorMessage = ref('');
+const isEditModalOpen = ref(false);
+// Initialize editedApplication as an empty object initially
+const editedApplication = ref({});
 
-// Function to open edit modal and populate with current application data
-const editApplication = () => {
-  // Create a deep copy of the application to avoid direct mutation
-  editedApplication.value = JSON.parse(JSON.stringify(props.application))
-  isEditModalOpen.value = true
-}
+console.log('Modal received application:', props.application); // Debug
 
-// Function to close edit modal
-const closeEditModal = () => {
-  isEditModalOpen.value = false
-}
+// *** ADDED: Mapping for program type codes to full names ***
+const programTypeMap = {
+  D: 'Diploma',
+  B: 'Bachelor',
+  M: 'Master',
+  P: 'PhD',
+  d: 'Diploma', // Handle potential lowercase codes from API
+  b: 'Bachelor',
+  m: 'Master',
+  p: 'PhD',
+};
 
-// Function to save changes to application
-const saveApplicationChanges = async () => {
+// *** ADDED: Computed property to get the full program type name for display ***
+const displayProgramType = computed(() => {
+  const code = props.application?.type_of_programme; // Use optional chaining
+  if (!code) return 'N/A';
+  return programTypeMap[code] || code; // Return mapped name or the code itself as fallback
+});
+
+// *** ADDED: Computed property for the overall status ***
+const overallStatus = computed(() => {
+  return props.application?.review_decision || 'Pending'; // Use optional chaining
+});
+
+// Function to format dates safely
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
   try {
-    // Create a modified payload without the file fields that are causing errors
+    // Check if the date needs formatting from YYYY-MM-DD (common from input type="date")
+    if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const [year, month, day] = dateString.split('-');
+        // JavaScript Date month is 0-indexed
+        return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    }
+    // Otherwise, assume it's a format Date constructor can handle (like ISO string)
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  } catch (error) {
+    console.error('Error formatting date:', dateString, error);
+    return 'Invalid Date';
+  }
+};
+
+const editApplication = () => {
+  if (!props.application) return; // Guard against null application
+  // Deep clone the application object to avoid modifying the prop directly
+  editedApplication.value = JSON.parse(JSON.stringify(props.application));
+
+  // Ensure the date is in YYYY-MM-DD format for the date input
+  if (editedApplication.value.commencement_date) {
+    try {
+        const date = new Date(editedApplication.value.commencement_date);
+        // Format date to YYYY-MM-DD
+        editedApplication.value.commencement_date = date.toISOString().split('T')[0];
+    } catch (error) {
+        console.error("Error parsing commencement_date for editing:", editedApplication.value.commencement_date, error);
+        editedApplication.value.commencement_date = ''; // Or set to a default/null value
+    }
+  }
+
+  // Ensure type_of_programme is uppercase for matching <option> values if needed
+  if (editedApplication.value.type_of_programme) {
+     editedApplication.value.type_of_programme = editedApplication.value.type_of_programme.toUpperCase();
+  }
+
+  isEditModalOpen.value = true;
+};
+
+
+const closeEditModal = () => {
+  isEditModalOpen.value = false;
+  editedApplication.value = {}; // Clear the edit object
+};
+
+const saveApplicationChanges = async () => {
+  if (!props.application?.id) { // Use optional chaining
+    errorMessage.value = 'Application ID is missing.';
+    toast.error('Cannot save: Application ID is missing.');
+    return;
+  }
+
+  try {
+    // Create payload from edited data
     const payloadToSend = { ...editedApplication.value };
 
-    // Remove the file-related fields that are causing errors
+    // Remove fields that shouldn't be sent (adjust as needed based on your API)
     delete payloadToSend.supporting_documents;
     delete payloadToSend.institute_eoi_supporting_documents;
     delete payloadToSend.do_dpr_report;
+    delete payloadToSend.created_at; // Often shouldn't be sent back
+    delete payloadToSend.updated_at; // Often shouldn't be sent back
+    // ID is used in the URL, usually not needed in the PATCH body itself
+    // delete payloadToSend.id; // Uncomment if your API doesn't expect ID in the body
 
-    // Ensure program type is lowercase as expected by API
+    // Ensure the program type code sent to API is lowercase if required by backend
+    // (as was in the original code) - adjust if API expects uppercase
     if (payloadToSend.type_of_programme) {
       payloadToSend.type_of_programme = payloadToSend.type_of_programme.toLowerCase();
     }
 
-    // Log data being sent to API for debugging
+    // Ensure date is sent in a format the API expects (e.g., ISO string or YYYY-MM-DD)
+    // The input type="date" provides YYYY-MM-DD, which might be fine. If API needs ISO:
+    // if (payloadToSend.commencement_date) {
+    //   payloadToSend.commencement_date = new Date(payloadToSend.commencement_date).toISOString();
+    // }
+
     console.log('Sending update for application ID:', props.application.id);
     console.log('Update data:', payloadToSend);
-
-    // Make sure we're sending valid data
-    if (!payloadToSend || !props.application.id) {
-      errorMessage.value = 'Invalid application data';
-      toast.error('Cannot save: Invalid application data');
-      return;
-    }
 
     const response = await apiService.patchEpcInstitute(props.application.id, payloadToSend);
 
     if (response && response.status === 200 && response.data) {
-      // Emit the application-updated event with the updated data
-      emit('application-updated', response.data);
+      emit('application-updated', response.data); // Emit the updated data from the API response
       toast.success('Application updated successfully!');
       closeEditModal();
+      closeModal(); // Close the main modal as well after successful save
     } else {
-      errorMessage.value = 'Failed to update application.';
-      toast.error('Failed to update application');
+      const errorMsg = response?.data?.message || 'Failed to update application.';
+      errorMessage.value = errorMsg;
+      toast.error(errorMsg);
     }
   } catch (error) {
     console.error('Error updating application:', error);
-
-    // Try to extract and display the validation errors from the API response
-    if (error.response && error.response.data) {
-      const errorData = error.response.data;
-      let errorMessage = 'Validation errors:';
-
-      Object.entries(errorData).forEach(([field, errors]) => {
-        errorMessage += `\n- ${field}: ${errors.join(', ')}`;
-      });
-
-      console.error(errorMessage);
-      toast.error(errorMessage);
-    } else {
-      errorMessage.value = `Failed to update application: ${error.message || 'Unknown error'}`;
-      toast.error(`Failed to update: ${error.message || 'Unknown error'}`);
-    }
+    const errorMsg = error.response?.data?.message || error.message || 'Unknown error';
+    errorMessage.value = `Failed to update application: ${errorMsg}`;
+    toast.error(`Failed to update: ${errorMsg}`);
   }
-}
+};
 
 const closeModal = () => {
-  emit('close')
-}
+  errorMessage.value = ''; // Clear any previous error message
+  emit('close');
+};
 
 const closeModalHandler = () => {
-  emit('close')
-}
+  // This handler is called when clicking outside the dialog or pressing Esc
+  closeModal(); // Reuse the main close logic
+};
+
+const updateApplicationStatus = async (decision, notesOrReason) => {
+  if (!props.application?.id) { // Use optional chaining
+      errorMessage.value = 'Application ID is missing.';
+      toast.error(`Cannot ${decision}: Application ID is missing.`);
+      return false; // Indicate failure
+  }
+
+  if (!notesOrReason) {
+      errorMessage.value = `${decision === 'Approved' ? 'Approval notes' : 'Rejection reason'} are required.`;
+      toast.warn(`${decision === 'Approved' ? 'Approval notes' : 'Rejection reason'} are required.`);
+      return false; // Indicate failure
+  }
+
+  errorMessage.value = ''; // Clear previous errors
+
+  const payload = {
+      review_decision: decision,
+  };
+  if (decision === 'Approved') {
+      payload.approvalNotes = notesOrReason; // Use the correct field name expected by API
+  } else if (decision === 'Regretted') {
+      payload.reason_if_rejected = notesOrReason; // Use the correct field name expected by API
+  }
+
+  try {
+      const response = await apiService.patchEpcInstitute(props.application.id, payload);
+
+      if (response && response.status === 200 && response.data) {
+          emit('application-updated', response.data);
+          toast.success(`Application ${decision}!`);
+          closeModal();
+          return true; // Indicate success
+      } else {
+          const errorMsg = response?.data?.message || `Failed to ${decision.toLowerCase()} application.`;
+          errorMessage.value = errorMsg;
+          toast.error(errorMsg);
+          return false; // Indicate failure
+      }
+  } catch (error) {
+      console.error(`Error ${decision.toLowerCase()}ing application:`, error);
+      const errorMsg = error.response?.data?.message || error.message || 'Unknown error';
+      errorMessage.value = `Failed to ${decision.toLowerCase()} application: ${errorMsg}.`;
+      toast.error(`Failed to ${decision.toLowerCase()}: ${errorMsg}`);
+      return false; // Indicate failure
+  }
+};
 
 const approveApplication = async () => {
-  const notes = prompt('Enter approval notes:')
-  if (!notes) {
-    errorMessage.value = 'Approval notes are required.'
-    return
+  const notes = prompt('Enter approval notes:');
+  if (notes !== null) { // Proceed only if user didn't cancel the prompt
+      await updateApplicationStatus('Approved', notes);
+  } else {
+    // Optional: Notify user that action was cancelled
+    // toast.info("Approval cancelled.");
   }
-
-  try {
-    const response = await apiService.patchEpcInstitute(props.application.id, {
-      review_decision: 'Approved', // CHANGED: Using review_decision instead of status
-      approvalNotes: notes,
-    })
-
-    if (response && response.status === 200 && response.data) {
-      // Emit the application-updated event with the updated data
-      emit('application-updated', response.data) // Send the whole updated application
-      toast.success('Application Approved!')
-      closeModal()
-    } else {
-      errorMessage.value = 'Failed to approve application.'
-    }
-  } catch (error) {
-    console.error('Error approving application:', error)
-    errorMessage.value = 'Failed to approve application due to an error.'
-  }
-}
+};
 
 const rejectApplication = async () => {
-  const reason = prompt('Enter rejection reason:')
-  if (!reason) {
-    errorMessage.value = 'Rejection reason is required.'
-    return
+  const reason = prompt('Enter rejection reason:');
+   if (reason !== null) { // Proceed only if user didn't cancel the prompt
+      await updateApplicationStatus('Regretted', reason);
+  } else {
+    // Optional: Notify user that action was cancelled
+    // toast.info("Rejection cancelled.");
   }
+};
 
-  try {
-    const response = await apiService.patchEpcInstitute(props.application.id, {
-      review_decision: 'Regretted', // CHANGED: Using review_decision instead of status
-      reason_if_rejected: reason,
-    })
-
-    if (response && response.status === 200 && response.data) {
-      // Emit the application-updated event with the updated data
-      emit('application-updated', response.data) // Send the whole updated application
-      toast.success('Application Rejected!')
-      closeModal()
-    } else {
-      errorMessage.value = 'Failed to reject application.'
-    }
-  } catch (error) {
-    console.error('Error rejecting application:', error)
-    errorMessage.value = 'Failed to reject application due to an error.'
-  }
-}
-
-const formatDate = (date) => {
-  if (!date) return 'N/A'
-  try {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
-  } catch (error) {
-    console.error('Error formatting date:', error)
-    return 'Invalid Date'
-  }
-}
-
-const overallStatus = computed(() => {
-  // Return the review_decision or 'Pending' if not available
-  return props.application.review_decision || 'Pending'
-})
 </script>
 
 <style scoped>
-/* Enhanced scrollbar styles */
+/* Add back the scoped styles from your original code if needed */
 .overflow-y-auto {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
@@ -660,14 +728,12 @@ const overallStatus = computed(() => {
   border-radius: 3px;
 }
 
-/* Enhanced transitions */
 .transition-all {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 200ms;
 }
 
-/* Enhanced card hover effects */
 .rounded-xl {
   transition:
     transform 0.2s ease-in-out,
@@ -681,7 +747,6 @@ const overallStatus = computed(() => {
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-/* Status indicator animations */
 @keyframes pulse {
   0%,
   100% {
