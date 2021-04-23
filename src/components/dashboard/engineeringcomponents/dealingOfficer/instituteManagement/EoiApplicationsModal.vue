@@ -199,7 +199,6 @@
                               <p class="text-sm font-medium text-gray-500">Program Type</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Hash class="h-4 w-4 text-gray-400" />
-                                <!-- *** UPDATED HERE *** -->
                                 <span>{{ displayProgramType }}</span>
                               </p>
                             </div>
@@ -271,7 +270,7 @@
                       <button
                         type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 inline-flex items-center space-x-2"
-                        @click="rejectApplication"
+                        @click="openRejectDialog"
                       >
                         <ThumbsDown class="h-4 w-4" />
                         <span>Regret Application</span>
@@ -280,7 +279,7 @@
                       <button
                         type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 inline-flex items-center space-x-2"
-                        @click="approveApplication"
+                        @click="openApproveDialog"
                       >
                         <CheckCircle class="h-4 w-4" />
                         <span>Approve Application</span>
@@ -288,6 +287,164 @@
                     </div>
                   </div>
                 </div>
+
+                <!-- Custom Approve Dialog -->
+                <TransitionRoot appear :show="isApproveDialogOpen" as="template">
+                  <Dialog as="div" @close="cancelApproval" class="relative z-50">
+                    <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
+
+                    <div class="fixed inset-0 overflow-y-auto">
+                      <div class="flex min-h-full items-center justify-center p-4">
+                        <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
+                          <div class="mb-5 text-center">
+                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                              <CheckCircle class="h-6 w-6 text-green-600" />
+                            </div>
+                            <DialogTitle as="h3" class="text-lg font-medium text-gray-900 mt-4">
+                              Approve Application
+                            </DialogTitle>
+                          </div>
+
+                          <div class="mt-3">
+                            <label for="approval-notes" class="block text-sm font-medium text-gray-700 mb-2">
+                              Approval Notes
+                            </label>
+                            <textarea
+                              id="approval-notes"
+                              v-model="approvalNotes"
+                              rows="4"
+                              class="w-full rounded-lg border border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm p-3"
+                              placeholder="Enter your approval notes here..."
+                            ></textarea>
+                          </div>
+
+                          <div class="mt-6 flex justify-end space-x-3">
+                            <button
+                              type="button"
+                              class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                              @click="cancelApproval"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              :disabled="!approvalNotes.trim()"
+                              :class="[
+                                'inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2',
+                                approvalNotes.trim() ? 'bg-green-600 hover:bg-green-700' : 'bg-green-300 cursor-not-allowed'
+                              ]"
+                              @click="confirmApproval"
+                            >
+                              Approve
+                            </button>
+                          </div>
+                        </DialogPanel>
+                      </div>
+                    </div>
+                  </Dialog>
+                </TransitionRoot>
+
+                <!-- Custom Reject Dialog -->
+                <TransitionRoot appear :show="isRejectDialogOpen" as="template">
+                  <Dialog as="div" @close="cancelRejection" class="relative z-50">
+                    <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
+
+                    <div class="fixed inset-0 overflow-y-auto">
+                      <div class="flex min-h-full items-center justify-center p-4">
+                        <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
+                          <div class="mb-5 text-center">
+                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                              <ThumbsDown class="h-6 w-6 text-red-600" />
+                            </div>
+                            <DialogTitle as="h3" class="text-lg font-medium text-gray-900 mt-4">
+                              Regret Application
+                            </DialogTitle>
+                          </div>
+
+                          <div class="mt-3">
+                            <label for="rejection-reason" class="block text-sm font-medium text-gray-700 mb-2">
+                              Reason for Rejection
+                            </label>
+                            <textarea
+                              id="rejection-reason"
+                              v-model="rejectionReason"
+                              rows="4"
+                              class="w-full rounded-lg border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 text-sm p-3"
+                              placeholder="Please provide a reason for rejecting this application..."
+                            ></textarea>
+                          </div>
+
+                          <div class="mt-6 flex justify-end space-x-3">
+                            <button
+                              type="button"
+                              class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                              @click="cancelRejection"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              :disabled="!rejectionReason.trim()"
+                              :class="[
+                                'inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2',
+                                rejectionReason.trim() ? 'bg-red-600 hover:bg-red-700' : 'bg-red-300 cursor-not-allowed'
+                              ]"
+                              @click="confirmRejection"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        </DialogPanel>
+                      </div>
+                    </div>
+                  </Dialog>
+                </TransitionRoot>
+
+                <!-- Success Notification -->
+                <Transition
+                  enter="transform transition ease-in-out duration-500"
+                  enter-from="translate-y-full opacity-0"
+                  enter-to="translate-y-0 opacity-100"
+                  leave="transform transition ease-in-out duration-500"
+                  leave-from="translate-y-0 opacity-100"
+                  leave-to="translate-y-full opacity-0"
+                >
+                  <div
+                    v-if="showSuccess"
+                    class="fixed bottom-6 right-6 flex items-center p-4 mb-4 shadow-lg rounded-lg"
+                    :class="[
+                      successType === 'approve' ? 'bg-green-100 text-green-800 border-l-4 border-green-500' :
+                      successType === 'reject' ? 'bg-red-100 text-red-800 border-l-4 border-red-500' :
+                      'bg-blue-100 text-blue-800 border-l-4 border-blue-500'
+                    ]"
+                  >
+                    <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg mr-3"
+                      :class="[
+                        successType === 'approve' ? 'bg-green-200 text-green-600' :
+                        successType === 'reject' ? 'bg-red-200 text-red-600' :
+                        'bg-blue-200 text-blue-600'
+                      ]"
+                    >
+                      <CheckCircle v-if="successType === 'approve'" class="w-5 h-5" />
+                      <ThumbsDown v-else-if="successType === 'reject'" class="w-5 h-5" />
+                      <Pencil v-else class="w-5 h-5" />
+                    </div>
+                    <div class="ml-3 text-sm font-medium mr-8">{{ successMessage }}</div>
+                    <button
+                      type="button"
+                      class="ml-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 p-1.5 inline-flex h-8 w-8 items-center justify-center"
+                      :class="[
+                        successType === 'approve' ? 'bg-green-200 text-green-600 hover:bg-green-300 focus:ring-green-400' :
+                        successType === 'reject' ? 'bg-red-200 text-red-600 hover:bg-red-300 focus:ring-red-400' :
+                        'bg-blue-200 text-blue-600 hover:bg-blue-300 focus:ring-blue-400'
+                      ]"
+                      @click="closeSuccessNotification"
+                    >
+                      <span class="sr-only">Close</span>
+                      <X class="w-4 h-4" />
+                    </button>
+                  </div>
+                </Transition>
 
                 <!-- Edit Modal (shows when editing) -->
                 <Dialog
@@ -449,7 +606,7 @@
 </template>
 
 <script setup>
-import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue';
+import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild,  } from '@headlessui/vue';
 import {
   User,
   UserCircle,
@@ -469,7 +626,7 @@ import {
   CheckCircle,
   ThumbsDown,
 } from 'lucide-vue-next';
-import { computed, ref } from 'vue'; // *** Ensure computed is imported ***
+import { computed, ref } from 'vue';
 import apiService from '@/services/services';
 import { useToast } from 'vue-toastification';
 
@@ -488,12 +645,23 @@ const emit = defineEmits(['close', 'application-updated']);
 
 const errorMessage = ref('');
 const isEditModalOpen = ref(false);
-// Initialize editedApplication as an empty object initially
 const editedApplication = ref({});
+
+// New dialog states
+const isApproveDialogOpen = ref(false);
+const isRejectDialogOpen = ref(false);
+const approvalNotes = ref('');
+const rejectionReason = ref('');
+
+// Success notification state
+const showSuccess = ref(false);
+const successMessage = ref('');
+const successType = ref('');
+const successTimeoutId = ref(null);
 
 console.log('Modal received application:', props.application); // Debug
 
-// *** ADDED: Mapping for program type codes to full names ***
+// Mapping for program type codes to full names
 const programTypeMap = {
   D: 'Diploma',
   B: 'Bachelor',
@@ -505,14 +673,14 @@ const programTypeMap = {
   p: 'PhD',
 };
 
-// *** ADDED: Computed property to get the full program type name for display ***
+// Computed property to get the full program type name for display
 const displayProgramType = computed(() => {
   const code = props.application?.type_of_programme; // Use optional chaining
   if (!code) return 'N/A';
   return programTypeMap[code] || code; // Return mapped name or the code itself as fallback
 });
 
-// *** ADDED: Computed property for the overall status ***
+// Computed property for the overall status
 const overallStatus = computed(() => {
   return props.application?.review_decision || 'Pending'; // Use optional chaining
 });
@@ -568,10 +736,32 @@ const editApplication = () => {
   isEditModalOpen.value = true;
 };
 
-
 const closeEditModal = () => {
   isEditModalOpen.value = false;
   editedApplication.value = {}; // Clear the edit object
+};
+
+// Helper function to show success notification
+const showSuccessNotification = (message, type) => {
+  successMessage.value = message;
+  successType.value = type;
+  showSuccess.value = true;
+
+  // Auto-hide the notification after 5 seconds
+  if (successTimeoutId.value) {
+    clearTimeout(successTimeoutId.value);
+  }
+  successTimeoutId.value = setTimeout(() => {
+    showSuccess.value = false;
+  }, 5000);
+};
+
+// Function to close success notification
+const closeSuccessNotification = () => {
+  showSuccess.value = false;
+  if (successTimeoutId.value) {
+    clearTimeout(successTimeoutId.value);
+  }
 };
 
 const saveApplicationChanges = async () => {
@@ -591,20 +781,11 @@ const saveApplicationChanges = async () => {
     delete payloadToSend.do_dpr_report;
     delete payloadToSend.created_at; // Often shouldn't be sent back
     delete payloadToSend.updated_at; // Often shouldn't be sent back
-    // ID is used in the URL, usually not needed in the PATCH body itself
-    // delete payloadToSend.id; // Uncomment if your API doesn't expect ID in the body
 
     // Ensure the program type code sent to API is lowercase if required by backend
-    // (as was in the original code) - adjust if API expects uppercase
     if (payloadToSend.type_of_programme) {
       payloadToSend.type_of_programme = payloadToSend.type_of_programme.toLowerCase();
     }
-
-    // Ensure date is sent in a format the API expects (e.g., ISO string or YYYY-MM-DD)
-    // The input type="date" provides YYYY-MM-DD, which might be fine. If API needs ISO:
-    // if (payloadToSend.commencement_date) {
-    //   payloadToSend.commencement_date = new Date(payloadToSend.commencement_date).toISOString();
-    // }
 
     console.log('Sending update for application ID:', props.application.id);
     console.log('Update data:', payloadToSend);
@@ -613,9 +794,10 @@ const saveApplicationChanges = async () => {
 
     if (response && response.status === 200 && response.data) {
       emit('application-updated', response.data); // Emit the updated data from the API response
-      toast.success('Application updated successfully!');
       closeEditModal();
-      closeModal(); // Close the main modal as well after successful save
+
+      // Show success notification instead of toast
+      showSuccessNotification('Application updated successfully!', 'edit');
     } else {
       const errorMsg = response?.data?.message || 'Failed to update application.';
       errorMessage.value = errorMsg;
@@ -639,77 +821,102 @@ const closeModalHandler = () => {
   closeModal(); // Reuse the main close logic
 };
 
+// New functions for custom approval/rejection dialogs
+const openApproveDialog = () => {
+  approvalNotes.value = '';
+  isApproveDialogOpen.value = true;
+};
+
+const openRejectDialog = () => {
+  rejectionReason.value = '';
+  isRejectDialogOpen.value = true;
+};
+
+const cancelApproval = () => {
+  isApproveDialogOpen.value = false;
+  approvalNotes.value = '';
+};
+
+const cancelRejection = () => {
+  isRejectDialogOpen.value = false;
+  rejectionReason.value = '';
+};
+
+const confirmApproval = async () => {
+  if (!approvalNotes.value.trim()) {
+    return; // Button should be disabled, but just in case
+  }
+
+  const success = await updateApplicationStatus('Approved', approvalNotes.value);
+  if (success) {
+    isApproveDialogOpen.value = false;
+    // Show custom success notification
+    showSuccessNotification(`Application successfully approved. Notification sent to ${props.application.name_of_institution}.`, 'approve');
+  }
+};
+
+const confirmRejection = async () => {
+  if (!rejectionReason.value.trim()) {
+    return; // Button should be disabled, but just in case
+  }
+
+  const success = await updateApplicationStatus('Regretted', rejectionReason.value);
+  if (success) {
+    isRejectDialogOpen.value = false;
+    // Show custom success notification
+    showSuccessNotification(`Application has been regretted. Notification sent to ${props.application.name_of_institution}.`, 'reject');
+  }
+};
+
+// Updated function that no longer uses simple browser alerts
 const updateApplicationStatus = async (decision, notesOrReason) => {
-  if (!props.application?.id) { // Use optional chaining
-      errorMessage.value = 'Application ID is missing.';
-      toast.error(`Cannot ${decision}: Application ID is missing.`);
-      return false; // Indicate failure
+  if (!props.application?.id) {
+    errorMessage.value = 'Application ID is missing.';
+    toast.error(`Cannot ${decision.toLowerCase()}: Application ID is missing.`);
+    return false;
   }
 
   if (!notesOrReason) {
-      errorMessage.value = `${decision === 'Approved' ? 'Approval notes' : 'Rejection reason'} are required.`;
-      toast.warn(`${decision === 'Approved' ? 'Approval notes' : 'Rejection reason'} are required.`);
-      return false; // Indicate failure
+    errorMessage.value = `${decision === 'Approved' ? 'Approval notes' : 'Rejection reason'} are required.`;
+    return false;
   }
 
   errorMessage.value = ''; // Clear previous errors
 
   const payload = {
-      review_decision: decision,
+    review_decision: decision,
   };
+
   if (decision === 'Approved') {
-      payload.approvalNotes = notesOrReason; // Use the correct field name expected by API
+    payload.approvalNotes = notesOrReason;
   } else if (decision === 'Regretted') {
-      payload.reason_if_rejected = notesOrReason; // Use the correct field name expected by API
+    payload.reason_if_rejected = notesOrReason;
   }
 
   try {
-      const response = await apiService.patchEpcInstitute(props.application.id, payload);
+    const response = await apiService.patchEpcInstitute(props.application.id, payload);
 
-      if (response && response.status === 200 && response.data) {
-          emit('application-updated', response.data);
-          toast.success(`Application ${decision}!`);
-          closeModal();
-          return true; // Indicate success
-      } else {
-          const errorMsg = response?.data?.message || `Failed to ${decision.toLowerCase()} application.`;
-          errorMessage.value = errorMsg;
-          toast.error(errorMsg);
-          return false; // Indicate failure
-      }
+    if (response && response.status === 200 && response.data) {
+      emit('application-updated', response.data);
+      return true; // Indicate success
+    } else {
+      const errorMsg = response?.data?.message || `Failed to ${decision.toLowerCase()} application.`;
+      errorMessage.value = errorMsg;
+      toast.error(errorMsg);
+      return false;
+    }
   } catch (error) {
-      console.error(`Error ${decision.toLowerCase()}ing application:`, error);
-      const errorMsg = error.response?.data?.message || error.message || 'Unknown error';
-      errorMessage.value = `Failed to ${decision.toLowerCase()} application: ${errorMsg}.`;
-      toast.error(`Failed to ${decision.toLowerCase()}: ${errorMsg}`);
-      return false; // Indicate failure
+    console.error(`Error ${decision.toLowerCase()}ing application:`, error);
+    const errorMsg = error.response?.data?.message || error.message || 'Unknown error';
+    errorMessage.value = `Failed to ${decision.toLowerCase()} application: ${errorMsg}.`;
+    toast.error(`Failed to ${decision.toLowerCase()}: ${errorMsg}`);
+    return false;
   }
 };
-
-const approveApplication = async () => {
-  const notes = prompt('Enter approval notes:');
-  if (notes !== null) { // Proceed only if user didn't cancel the prompt
-      await updateApplicationStatus('Approved', notes);
-  } else {
-    // Optional: Notify user that action was cancelled
-    // toast.info("Approval cancelled.");
-  }
-};
-
-const rejectApplication = async () => {
-  const reason = prompt('Enter rejection reason:');
-   if (reason !== null) { // Proceed only if user didn't cancel the prompt
-      await updateApplicationStatus('Regretted', reason);
-  } else {
-    // Optional: Notify user that action was cancelled
-    // toast.info("Rejection cancelled.");
-  }
-};
-
 </script>
 
 <style scoped>
-/* Add back the scoped styles from your original code if needed */
+/* Scoped styles */
 .overflow-y-auto {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
@@ -760,5 +967,28 @@ const rejectApplication = async () => {
 
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Animation for success notification */
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
 }
 </style>
