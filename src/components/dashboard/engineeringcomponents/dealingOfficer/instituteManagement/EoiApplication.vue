@@ -99,7 +99,7 @@
               class="hover:bg-gray-50 transition-colors"
             >
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {{ institute.id}}
+                {{ institute.id }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 {{ institute.name_of_institution }}
@@ -139,7 +139,7 @@
       </div>
     </div>
 
-    <!-- EOI Application Modal with approval and rejection handlers -->
+    <!-- EOI Application Modal -->
     <EoiApplicationsModal
       :isOpen="isModalOpen"
       :application="selectedInstitute"
@@ -151,75 +151,81 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { RefreshCw } from 'lucide-vue-next'
-import { useToast } from 'vue-toastification'
-import EoiApplicationsModal from './EoiApplicationsModal.vue'
-import { debounce } from 'lodash'
-import apiService from '@/services/services'
+import { ref, onMounted, computed } from 'vue';
+import { RefreshCw } from 'lucide-vue-next';
+import { useToast } from 'vue-toastification';
+import EoiApplicationsModal from './EoiApplicationsModal.vue';
+import { debounce } from 'lodash';
+import apiService from '@/services/services';
 
-const toast = useToast()
+const toast = useToast();
 
-const institutes = ref([])
-const isModalOpen = ref(false)
-const selectedInstitute = ref(null)
-const loading = ref(false)
-const searchQuery = ref('')
+const institutes = ref([]);
+const isModalOpen = ref(false);
+const selectedInstitute = ref(null);
+const loading = ref(false);
+const searchQuery = ref('');
 
 const fetchInstitutes = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    const response = await apiService.getEpcInstitutes()
+    const response = await apiService.getEpcInstitutes();
     if (response && response.data && response.data.results) {
-      institutes.value = response.data.results // Extract the "results" array
+      institutes.value = response.data.results;
     } else {
-      console.error('Invalid API response:', response)
-      toast.error('Failed to fetch institute applications: Invalid API response.')
+      console.error('Invalid API response:', response);
+      toast.error('Failed to fetch institute applications: Invalid API response.');
     }
   } catch (error) {
-    console.error('Error fetching institutes:', error)
-    toast.error('Failed to fetch institute applications.')
+    console.error('Error fetching institutes:', error);
+    toast.error('Failed to fetch institute applications.');
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
-onMounted(fetchInstitutes)
+onMounted(fetchInstitutes);
 
-const debouncedSearch = debounce(fetchInstitutes, 300)
+const debouncedSearch = debounce(fetchInstitutes, 300);
 
 const openModal = (institute) => {
-  selectedInstitute.value = { ...institute }
-  isModalOpen.value = true
-}
+  // Prefer the latest data from institutes
+  const updatedInstitute = institutes.value.find((inst) => inst.id === institute.id);
+  selectedInstitute.value = { ...(updatedInstitute || institute) };
+  isModalOpen.value = true;
+};
 
 const closeModal = () => {
-  isModalOpen.value = false
-  selectedInstitute.value = null
-}
+  isModalOpen.value = false;
+  selectedInstitute.value = null;
+};
 
 const handleApplicationUpdated = (updatedApplication) => {
-  // Update the institutes array with the new application data
+  console.log('Received Updated Application:', JSON.stringify(updatedApplication, null, 2));
+  // Update the institutes array
   institutes.value = institutes.value.map((institute) => {
     if (institute.id === updatedApplication.id) {
-      return updatedApplication // Replace with updated data
+      return { ...updatedApplication };
     }
-    return institute
-  })
+    return institute;
+  });
 
-  // Optionally, re-fetch the institutes to ensure data is up-to-date
-  // fetchInstitutes();
-}
+  // Update selectedInstitute to reflect the updated data
+  if (selectedInstitute.value && selectedInstitute.value.id === updatedApplication.id) {
+    selectedInstitute.value = { ...updatedApplication };
+    console.log('Updated selectedInstitute:', JSON.stringify(selectedInstitute.value, null, 2));
+  }
+};
 
 const filteredEois = computed(() => {
-  const query = searchQuery.value.toLowerCase()
+  const query = searchQuery.value.toLowerCase();
   return institutes.value.filter((institute) => {
     return (
       String(institute.CID).toLowerCase().includes(query) ||
       institute.full_name.toLowerCase().includes(query)
-    )
-  })
-})
+    );
+  });
+});
 
 const formatDate = (date) => {
   try {
@@ -227,12 +233,12 @@ const formatDate = (date) => {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-    })
+    });
   } catch (error) {
-    console.error('Error formatting date:', date, error)
-    return 'Invalid Date'
+    console.error('Error formatting date:', date, error);
+    return 'Invalid Date';
   }
-}
+};
 
 const getStatusClasses = (institute) => {
   return [
@@ -242,10 +248,10 @@ const getStatusClasses = (institute) => {
       'bg-green-100 text-green-800': institute.review_decision === 'Approved',
       'bg-red-100 text-red-800': institute.review_decision === 'Regretted',
     },
-  ]
-}
+  ];
+};
 </script>
 
 <style scoped>
-/* Tailwind styles - no need for custom styles here, Tailwind classes are used */
+/* Tailwind styles - no need for custom styles since Tailwind classes are used */
 </style>

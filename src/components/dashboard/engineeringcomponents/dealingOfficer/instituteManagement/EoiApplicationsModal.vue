@@ -765,38 +765,43 @@ const closeSuccessNotification = () => {
 };
 
 const saveApplicationChanges = async () => {
-  if (!props.application?.id) { // Use optional chaining
+  if (!props.application?.id) {
     errorMessage.value = 'Application ID is missing.';
     toast.error('Cannot save: Application ID is missing.');
     return;
   }
 
+  if (!editedApplication.value.type_of_programme) {
+    errorMessage.value = 'Program type is required.';
+    toast.error('Please select a program type.');
+    return;
+  }
+
+  const validProgramTypes = ['D', 'B', 'M', 'P'];
+  if (!validProgramTypes.includes(editedApplication.value.type_of_programme)) {
+    errorMessage.value = 'Invalid program type selected.';
+    toast.error('Please select a valid program type.');
+    return;
+  }
+
   try {
-    // Create payload from edited data
     const payloadToSend = { ...editedApplication.value };
 
-    // Remove fields that shouldn't be sent (adjust as needed based on your API)
+    // Remove fields that shouldn't be sent
     delete payloadToSend.supporting_documents;
     delete payloadToSend.institute_eoi_supporting_documents;
     delete payloadToSend.do_dpr_report;
-    delete payloadToSend.created_at; // Often shouldn't be sent back
-    delete payloadToSend.updated_at; // Often shouldn't be sent back
-
-    // Ensure the program type code sent to API is lowercase if required by backend
-    if (payloadToSend.type_of_programme) {
-      payloadToSend.type_of_programme = payloadToSend.type_of_programme.toLowerCase();
-    }
+    delete payloadToSend.created_at;
+    delete payloadToSend.updated_at;
 
     console.log('Sending update for application ID:', props.application.id);
-    console.log('Update data:', payloadToSend);
+    console.log('Update data:', JSON.stringify(payloadToSend, null, 2));
 
     const response = await apiService.patchEpcInstitute(props.application.id, payloadToSend);
 
     if (response && response.status === 200 && response.data) {
-      emit('application-updated', response.data); // Emit the updated data from the API response
+      emit('application-updated', response.data);
       closeEditModal();
-
-      // Show success notification instead of toast
       showSuccessNotification('Application updated successfully!', 'edit');
     } else {
       const errorMsg = response?.data?.message || 'Failed to update application.';

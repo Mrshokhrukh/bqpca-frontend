@@ -1,8 +1,9 @@
+```vue
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <!-- Page Header -->
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">EPC Institute Application List</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">DPR Application List</h1>
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
@@ -11,7 +12,17 @@
         <span class="mx-4">|</span>
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
-          Pending: {{ pendingCount }}
+          Pending: {{ pendingApplicationsCount }}
+        </span>
+        <span class="mx-4">|</span>
+        <span class="flex items-center">
+          <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
+          Approved: {{ approvedApplicationsCount }}
+        </span>
+        <span class="mx-4">|</span>
+        <span class="flex items-center">
+          <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
+          Regretted: {{ regrettedApplicationsCount }}
         </span>
       </div>
     </div>
@@ -22,7 +33,7 @@
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Search by App ID or Name..."
+          placeholder="Search by App ID or Institution Name..."
           class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
         <svg
@@ -42,73 +53,81 @@
       </div>
     </div>
 
+    <!-- Loading and Error States -->
+    <div v-if="loading" class="text-center py-10 text-gray-500">Loading applications...</div>
+    <div v-if="error" class="text-center py-10 text-red-600 bg-red-50 p-4 rounded-lg">
+      Error loading applications: {{ error.message || error }}
+    </div>
+
     <!-- Application Table -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div v-if="!loading && !error && applications.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Application ID
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                App ID
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Applicant Name
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Institution Name
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Date Submitted
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Commencement Date
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Status
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                DPR Status
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr
-              v-for="application in filteredApplications"
-              :key="application.id"
-              class="hover:bg-gray-50 transition-colors"
-            >
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                #{{ application.id }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {{ application.name_of_institution}}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ formatDate(application.commencement_date) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="getStatusClasses(application)">
-                  {{ application.do_dpr_review_decision }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div class="flex space-x-3">
-                  <button
-                    @click="openApplication(application)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                  >
-                    View
-                  </button>
-                </div>
-              </td>
-            </tr>
+            <template v-if="filteredApplications.length > 0">
+              <tr
+                v-for="application in filteredApplications"
+                :key="application.id"
+                class="hover:bg-gray-50 transition-colors"
+              >
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  #{{ application.id }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  {{ application.name_of_institution || 'N/A' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  {{ formatDate(application.commencement_date) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span :class="getStatusClasses(application)">
+                    {{ application.do_dpr_review_decision || 'Pending' }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div class="flex space-x-3">
+                    <button
+                      @click="openApplication(application)"
+                      class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </template>
+            <template v-else>
+              <tr v-if="!loading">
+                <td colspan="5" class="text-center py-10 text-gray-500">
+                  No applications found matching your search query.
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </div>
+    </div>
+    <div v-if="!loading && !error && applications.length === 0" class="text-center py-10 text-gray-500">
+      No applications found.
     </div>
 
     <!-- Modal -->
@@ -117,121 +136,142 @@
       :isOpen="isModalOpen"
       :application="selectedApplication"
       @close="closeApplication"
-      @save="saveApplication"
+      @save="handleSave"
       @approve="onApplicationApproved"
-      @reject="onApplicationRejected"
-      :key="selectedApplication ? selectedApplication.id : 'no-application'"
+      @Regretted="onApplicationRejected"
+      :key="selectedApplication ? `modal-${selectedApplication.id}` : 'modal-no-app'"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import DprModal from '../instituteManagement/DprModal.vue'
-import apiService from '@/services/services' // Import your API service
+import { ref, computed, onMounted } from 'vue';
+import DprModal from '../instituteManagement/DprModal.vue'; // Adjust path if necessary
+import apiService from '@/services/services';
 
-const applications = ref([]) // Initialize as an empty array
-const isModalOpen = ref(false)
-const selectedApplication = ref(null)
-const searchQuery = ref('')
-const loading = ref(false)
-const error = ref(null)
+const applications = ref([]);
+const isModalOpen = ref(false);
+const selectedApplication = ref(null);
+const searchQuery = ref('');
+const loading = ref(false);
+const error = ref(null);
 
 onMounted(async () => {
-  await fetchApplications()
-})
+  await fetchApplications();
+});
 
 const fetchApplications = async () => {
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
   try {
-    const response = await apiService.getEpcInstitutes()
-    applications.value = response.data.results
-    console.log(applications.value)
+    const response = await apiService.getEpcInstitutes();
+    applications.value = Array.isArray(response?.data?.results) ? response.data.results : [];
+    console.log('Fetched applications:', applications.value);
   } catch (err) {
-    error.value = err
-    console.error('Error fetching applications:', err)
+    console.error('Error fetching applications:', err);
+    error.value = err;
+    applications.value = [];
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const openApplication = (application) => {
-  console.log('Opening application:', application)
-  selectedApplication.value = application // Direct Assignment
-  isModalOpen.value = true
-  console.log('isModalOpen:', isModalOpen.value) // ADD THIS LOG
-}
+  if (!application || typeof application !== 'object' || !application.id) {
+    console.error('Attempted to open modal with invalid application data:', application);
+    error.value = 'Cannot open details for invalid application data.';
+    return;
+  }
+  console.log('Opening application:', application);
+  selectedApplication.value = application;
+  isModalOpen.value = true;
+};
 
 const closeApplication = () => {
-  isModalOpen.value = false
-  selectedApplication.value = null
-}
+  isModalOpen.value = false;
+  selectedApplication.value = null;
+  console.log('Modal closed');
+};
 
-const saveApplication = async (applicationId, updatedApplication) => {
-  console.log('Saving application', applicationId, 'with updates:', updatedApplication)
-  try {
-    await apiService.patchEpcInstitute(applicationId, updatedApplication)
-    // Optionally, refresh the application list after saving
-    await fetchApplications()
-    closeApplication()
-  } catch (error) {
-    console.error('Error updating application:', error)
-    // Handle the error appropriately (e.g., show an error message to the user)
-    error.value = error
-  }
-}
+const handleSave = async () => {
+  console.log('Save event received from modal. Refreshing list.');
+  closeApplication();
+  await fetchApplications();
+};
 
-const onApplicationApproved = (approvedApplication) => {
-  // Handle the approved application here (e.g., update the status in the list)
-  const index = applications.value.findIndex((app) => app.id === approvedApplication.id)
-  if (index !== -1) {
-    applications.value[index] = { ...approvedApplication }
-  }
-  fetchApplications()
-  closeApplication()
-}
+const onApplicationApproved = async (approvedApplication) => {
+  console.log('Approve event received for DPR:', approvedApplication.id);
+  closeApplication();
+  await fetchApplications();
+};
 
-const onApplicationRejected = (rejectedApplication) => {
-  // Handle the rejected application here (e.g., update the status in the list)
-  const index = applications.value.findIndex((app) => app.id === rejectedApplication.id)
-  if (index !== -1) {
-    applications.value[index] = { ...rejectedApplication }
-  }
-  fetchApplications()
-  closeApplication()
-}
+const onApplicationRejected = async (rejectedApplication) => {
+  console.log('Regretted event received for DPR:', rejectedApplication.id);
+  closeApplication();
+  await fetchApplications();
+};
 
 const formatDate = (dateString) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
-}
+  if (!dateString) return 'N/A';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  } catch (e) {
+    console.error('Error formatting date:', dateString, e);
+    return 'Invalid Date';
+  }
+};
 
 const filteredApplications = computed(() => {
-  const query = searchQuery.value.toLowerCase()
+  if (!Array.isArray(applications.value)) {
+    return [];
+  }
   return applications.value.filter((application) => {
-    return (
-      String(application.id).includes(query) || application.full_name.toLowerCase().includes(query)
-    ) // Use backend field names
-  })
-})
+    // Only include applications with Approved EOI
+    const isApprovedEoi = application.review_decision === 'Approved';
+    const query = searchQuery.value ? searchQuery.value.toLowerCase().trim() : '';
+    const idMatch = String(application?.id || '').includes(query);
+    const institutionName = (application?.name_of_institution || '').toLowerCase();
+    const institutionMatch = institutionName.includes(query);
+    return isApprovedEoi && (!query || idMatch || institutionMatch);
+  });
+});
+
+const pendingApplicationsCount = computed(() => {
+  return filteredApplications.value.filter(
+    (app) => !app.do_dpr_review_decision || app.do_dpr_review_decision === 'Pending'
+  ).length;
+});
+
+const approvedApplicationsCount = computed(() => {
+  return filteredApplications.value.filter(
+    (app) => app.do_dpr_review_decision === 'Approved'
+  ).length;
+});
+
+const regrettedApplicationsCount = computed(() => {
+  return filteredApplications.value.filter(
+    (app) => app.do_dpr_review_decision === 'Regretted'
+  ).length;
+});
 
 const getStatusClasses = (application) => {
+  const status = application?.do_dpr_review_decision || 'Pending';
   return [
-    'px-3 py-1 rounded-full text-xs font-medium',
+    'px-3 py-1 rounded-full text-xs font-medium inline-block',
     {
-      'bg-yellow-100 text-yellow-800': application.do_dpr_review_decision === 'Pending',
-      'bg-green-100 text-green-800': application.do_dpr_review_decision === 'Approved',
-      'bg-red-100 text-red-800': application.do_dpr_review_decision === 'Regretted',
+      'bg-yellow-100 text-yellow-800': status === 'Pending',
+      'bg-green-100 text-green-800': status === 'Approved',
+      'bg-red-100 text-red-800': status === 'Regretted',
     },
-  ]
-}
-
-const pendingCount = computed(() => {
-  return filteredApplications.value.filter((app) => app.do_dpr_review_decision === 'Pending').length
-})
+  ];
+};
 </script>
+```
