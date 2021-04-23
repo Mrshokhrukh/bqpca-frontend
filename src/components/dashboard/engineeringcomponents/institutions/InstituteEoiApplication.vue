@@ -1,7 +1,7 @@
 ```vue
 <template>
   <div class="min-h-screen bg-gray-50 py-8">
-    <div class="mx-auto max-w-4xl px-4">
+    <div class="mx-auto px-4">
       <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">
           Application for Expression of Interest
@@ -14,7 +14,7 @@
             <div class="grid gap-6 md:grid-cols-2">
               <div>
                 <label for="CID" class="block text-sm font-medium text-gray-700 mb-1 required-label">
-                  CID Number (Auto-filled)
+                  CID Number
                 </label>
                 <input type="text" id="CID" v-model="formData.CID"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 bg-gray-100"
