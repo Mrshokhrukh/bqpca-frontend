@@ -498,6 +498,26 @@ export default {
   deleteEpcTeachingCenter(id) {
     return apiClient.delete(`/epc/epc-teaching-centers/${id}/`)
   },
+  getApplicationStatus(applicationId) {
+    // IMPORTANT: Replace '/epc/application-status/${applicationId}/'
+    // with the ACTUAL backend endpoint URL that returns the status
+    // for a given application ID. It might be part of another model's detail view.
+    // Common possibilities:
+    // 1. A dedicated status endpoint:
+    //    return apiClient.get(`/epc/application-status/${applicationId}/`);
+    // 2. Part of the Teaching Center detail endpoint:
+    //    return apiClient.get(`/epc/epc-teaching-centers/${applicationId}/`); // If status is included here
+    // 3. Part of a general Application endpoint:
+    //    return apiClient.get(`/epc/epc-applications/${applicationId}/`); // If status is included here
+    // 4. Part of the New Education Program endpoint (if it's that type of application):
+    //    return apiClient.get(`/epc/epc-new-education-programs/${applicationId}/`);
+
+    // *** Choose the correct endpoint based on your backend API structure ***
+    // For example, let's assume it's part of the Teaching Center detail view:
+    return apiClient.get(`/epc/epc-teaching-centers/${applicationId}/`);
+    // You will need to adjust the Vue component to extract the 'status' field
+    // from the response object (e.g., response.data.status) if you use this approach.
+  },
 
   // Masters CPD Activities endpoints
   getEpcMastersCpdActivities() {
