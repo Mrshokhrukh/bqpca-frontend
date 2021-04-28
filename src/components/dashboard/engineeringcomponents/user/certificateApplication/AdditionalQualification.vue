@@ -11,51 +11,25 @@
     <!-- Confirmation Modal -->
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
       <Dialog as="div" class="relative z-50" @close="isConfirmationModalOpen = false">
-        <TransitionChild
-          as="template"
-          enter="ease-out duration-300"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="ease-in duration-200"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-        >
+        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+          leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </TransitionChild>
 
         <div class="fixed inset-0 z-50 w-screen overflow-y-auto">
-          <div
-            class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
-          >
-            <TransitionChild
-              as="template"
-              enter="ease-out duration-300"
+          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <TransitionChild as="template" enter="ease-out duration-300"
               enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              enter-to="opacity-100 translate-y-0 sm:scale-100"
-              leave="ease-in duration-200"
+              enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
               leave-from="opacity-100 translate-y-0 sm:scale-100"
-              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            >
+              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
               <DialogPanel
-                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
-              >
+                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                 <div>
-                  <div
-                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100"
-                  >
-                    <svg
-                      class="h-6 w-6 text-green-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M4.5 12.75l6 6 9-13.5"
-                      />
+                  <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
                   </div>
                   <div class="mt-3 text-center sm:mt-5">
@@ -71,20 +45,14 @@
                   </div>
                 </div>
                 <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                  <button
-                    type="button"
+                  <button type="button"
                     class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                    :disabled="isSubmitting"
-                    @click="handleSubmitActual"
-                  >
+                    :disabled="isSubmitting" @click="handleSubmitActual">
                     {{ isSubmitting ? 'Submitting...' : 'Confirm' }}
                   </button>
-                  <button
-                    type="button"
+                  <button type="button"
                     class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-                    :disabled="isSubmitting"
-                    @click="isConfirmationModalOpen = false"
-                  >
+                    :disabled="isSubmitting" @click="isConfirmationModalOpen = false">
                     Cancel
                   </button>
                 </div>
@@ -95,32 +63,21 @@
       </Dialog>
     </TransitionRoot>
 
-    <form
-      @submit.prevent="handleSubmit"
-      class="bg-white border rounded-xl shadow-sm p-6 flex-1 overflow-y-auto"
-    >
+    <form @submit.prevent="handleSubmit" class="bg-white border rounded-xl shadow-sm p-6 flex-1 overflow-y-auto">
       <!-- Step Header -->
       <h3 class="text-lg font-semibold text-gray-900 my-4">Addition Qualification Registration</h3>
 
       <!-- Application Selection -->
       <div class="mb-6">
-        <label for="application" class="block text-sm font-medium text-gray-700 required"
-          >Your Application:</label
-        >
+        <label for="application" class="block text-sm font-medium text-gray-700 required">Your Application:</label>
 
         <!-- Simplified Application Display -->
-        <input
-          type="text"
-          id="application"
+        <input type="text" id="application"
           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-100"
-          :value="
-            applications.length >= 1
-              ? `${applications[0].registration_no} - ${applications[0].full_name}`
-              : 'Loading or No Application Found...'
-          "
-          readonly
-          required
-        />
+          :value="applications.length >= 1
+            ? `${applications[0].registration_no} - ${applications[0].full_name}`
+            : 'Loading or No Application Found...'
+            " readonly required />
 
         <span v-if="errors.application" class="text-sm text-red-500 mt-1">{{
           errors.application
@@ -134,14 +91,10 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
             <!-- Qualification Type -->
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Qualification Type</label
-              >
-              <select
-                v-model="localFormData.qualification_type"
+              <label class="block text-sm font-medium text-gray-700 required">Qualification Type</label>
+              <select v-model="localFormData.qualification_type"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                required
-              >
+                required>
                 <option disabled value="">Select Qualification Type</option>
                 <option v-for="type in qualificationTypes" :key="type.id" :value="type.id">
                   {{ type.qualification_type_name }}
@@ -154,20 +107,12 @@
 
             <!-- Qualification Name -->
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Qualification Name</label
-              >
-              <select
-                v-model="localFormData.qualification_name"
+              <label class="block text-sm font-medium text-gray-700 required">Qualification Name</label>
+              <select v-model="localFormData.qualification_name"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                required
-              >
+                required>
                 <option disabled value="">Select Qualification Name</option>
-                <option
-                  v-for="qualification in qualifications"
-                  :key="qualification.id"
-                  :value="qualification.id"
-                >
+                <option v-for="qualification in qualifications" :key="qualification.id" :value="qualification.id">
                   {{ qualification.qualification }}
                 </option>
               </select>
@@ -178,20 +123,12 @@
 
             <!-- Institute/University -->
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Institute/University</label
-              >
-              <select
-                v-model="localFormData.institute"
+              <label class="block text-sm font-medium text-gray-700 required">Institute/University</label>
+              <select v-model="localFormData.institute"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                required
-              >
+                required>
                 <option disabled value="">Select Institute/University</option>
-                <option
-                  v-for="university in universities"
-                  :key="university.id"
-                  :value="university.id"
-                >
+                <option v-for="university in universities" :key="university.id" :value="university.id">
                   {{ university.country }}, {{ university.university }},
                   {{ university.institute_name }}
                 </option>
@@ -203,18 +140,10 @@
 
             <!-- Year of Completion -->
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Year of Completion</label
-              >
-              <input
-                type="number"
-                v-model="localFormData.year_of_completion"
+              <label class="block text-sm font-medium text-gray-700 required">Year of Completion</label>
+              <input type="number" v-model="localFormData.year_of_completion"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                placeholder="YYYY"
-                min="1950"
-                :max="new Date().getFullYear()"
-                required
-              />
+                placeholder="YYYY" min="1950" :max="new Date().getFullYear()" required />
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
                 errors.year_of_completion
               }}</span>
@@ -228,64 +157,51 @@
         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Supporting Documents</h3>
           <div class="space-y-4">
-            <div
-              v-for="(doc, index) in supportingDocuments"
-              :key="index"
-              class="flex items-start space-x-4 bg-white p-4 rounded-lg border border-gray-100"
-            >
+            <div v-for="(doc, index) in supportingDocuments" :key="index"
+              class="flex items-start space-x-4 bg-white p-4 rounded-lg border border-gray-100">
               <div class="w-1/3">
-                 <label :for="'doc-type-' + index" class="sr-only">Document Type</label>
-                 <select
-                   :id="'doc-type-' + index"
-                   v-model="doc.type"
-                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                   required
-                 >
-                   <option disabled value="">Select Document Type</option>
-                   <option v-for="type in fetchedDocumentTypes" :key="type.id" :value="type.id">
-                     {{ type.document_name }}
-                   </option>
-                 </select>
+                <label :for="'doc-type-' + index" class="sr-only">Document Type</label>
+                <select :id="'doc-type-' + index" v-model="doc.type"
+                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                  required>
+                  <option disabled value="">Select Document Type</option>
+                  <option v-for="type in fetchedDocumentTypes" :key="type.id" :value="type.id">
+                    {{ type.document_name }}
+                  </option>
+                </select>
               </div>
               <div class="flex-1 flex items-center space-x-2">
-                 <label :for="'doc-file-' + index" class="sr-only">Document File</label>
-                 <input
-                   :id="'doc-file-' + index"
-                   type="file"
-                   @change="(e) => handleFileSelect(e, index)"
-                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
-                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                   multiple
-                   required
-                 />
-                <button
-                  v-if="supportingDocuments.length > 1"
-                  @click="removeDocument(index)"
-                  type="button"
+                <label :for="'doc-file-' + index" class="sr-only">Document File</label>
+                <input :id="'doc-file-' + index" type="file" @change="(e) => handleFileSelect(e, index)"
+                  class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple required />
+                <button v-if="supportingDocuments.length > 1" @click="removeDocument(index)" type="button"
                   class="p-2 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
-                  aria-label="Remove Document"
-                >
-                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                   </svg>
+                  aria-label="Remove Document">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clip-rule="evenodd" />
+                  </svg>
                 </button>
               </div>
             </div>
 
-            <button
-              type="button"
-              @click="addDocument"
-              class="mt-4 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center"
-            >
-               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                 <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-               </svg>
+            <button type="button" @click="addDocument"
+              class="mt-4 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                  clip-rule="evenodd" />
+              </svg>
               Add Another Document
             </button>
           </div>
-           <p class="text-sm text-gray-500 mt-4">
-             Required documents include: Graduation Certificate, CID Copy, Security Clearance, Class 10 Marksheet, Class 12 Marksheet, Graduation Marksheet. (Ensure all required types are uploaded). File types accepted: PDF, DOC, DOCX, JPG, JPEG, PNG.
-           </p>
+          <p class="text-sm text-gray-500 mt-4">
+            Required documents include: Graduation Certificate, CID Copy, Security Clearance, Class 10 Marksheet, Class
+            12 Marksheet, Graduation Marksheet. (Ensure all required types are uploaded). File types accepted: PDF, DOC,
+            DOCX, JPG, JPEG, PNG.
+          </p>
         </div>
       </div>
 
@@ -295,48 +211,34 @@
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700">Remarks (Optional)</label>
-            <textarea
-              v-model="localFormData.remarks"
-              rows="3"
+            <textarea v-model="localFormData.remarks" rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              placeholder="Enter any additional remarks or comments"
-            ></textarea>
+              placeholder="Enter any additional remarks or comments"></textarea>
           </div>
 
           <div class="flex items-start space-x-3 bg-white p-4 rounded-lg border">
-            <input
-              id="declaration-checkbox"
-              type="checkbox"
-              v-model="localFormData.declaration"
-              required
-              class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
+            <input id="declaration-checkbox" type="checkbox" v-model="localFormData.declaration" required
+              class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
             <label for="declaration-checkbox" class="text-sm text-gray-700 required">
               I hereby declare that all the information provided above is true and correct to the
               best of my knowledge. I understand that any false statements may result in the
               rejection of my registration.
             </label>
           </div>
-            <span v-if="errors.declaration" class="text-sm text-red-500 mt-1">{{
-              errors.declaration
-            }}</span>
+          <span v-if="errors.declaration" class="text-sm text-red-500 mt-1">{{
+            errors.declaration
+          }}</span>
         </div>
       </div>
 
       <!-- Form Actions -->
       <div class="mt-12 flex justify-end space-x-4 pt-4 border-t border-gray-200">
-        <button
-          type="button"
-          @click="$emit('back')"
-          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-        >
+        <button type="button" @click="$emit('back')"
+          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
           Back
         </button>
-        <button
-          type="submit"
-          :disabled="isSubmitting"
-          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <button type="submit" :disabled="isSubmitting"
+          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
           {{ isSubmitting ? 'Submitting...' : 'Submit Registration' }}
         </button>
       </div>
@@ -417,14 +319,14 @@ const fetchApplications = async () => {
 
     // *** FIX: Assign the 'results' array from the response ***
     if (response.data && Array.isArray(response.data.results)) {
-        applications.value = response.data.results;
+      applications.value = response.data.results;
     } else {
-        // Handle unexpected response structure
-        console.error("Unexpected API response structure:", response.data);
-        applications.value = []; // Set to empty array
-        errors.application = 'Failed to parse application data.';
-        toast.error('Could not retrieve application information.');
-        return;
+      // Handle unexpected response structure
+      console.error("Unexpected API response structure:", response.data);
+      applications.value = []; // Set to empty array
+      errors.application = 'Failed to parse application data.';
+      toast.error('Could not retrieve application information.');
+      return;
     }
 
     console.log('Fetched applications (results array):', applications.value);
@@ -439,8 +341,8 @@ const fetchApplications = async () => {
       localFormData.application = applications.value[0].id;
       console.warn('Multiple applications found, using the first one:', applications.value[0]);
       toast.info('Multiple applications found. Using the primary one.');
-       // Or set an error/require user selection if multiple are not expected/handled
-       // errors.application = 'Multiple applications found. Please select one.';
+      // Or set an error/require user selection if multiple are not expected/handled
+      // errors.application = 'Multiple applications found. Please select one.';
     } else {
       // No applications found in the results array
       errors.application = 'No existing application found for this user.';
@@ -463,9 +365,9 @@ const addDocument = () => {
 // Remove a document row
 const removeDocument = (index) => {
   if (supportingDocuments.value.length > 1) { // Prevent removing the last row
-      supportingDocuments.value.splice(index, 1);
+    supportingDocuments.value.splice(index, 1);
   } else {
-      toast.info('At least one document row is required.');
+    toast.info('At least one document row is required.');
   }
 };
 
@@ -475,17 +377,17 @@ const handleFileSelect = (event, index) => {
   if (files && files.length > 0) {
     // Replace existing files with the new selection for this row
     supportingDocuments.value[index].files = Array.from(files); // Convert FileList to Array
-     console.log(`Files selected for doc ${index}:`, supportingDocuments.value[index].files);
+    console.log(`Files selected for doc ${index}:`, supportingDocuments.value[index].files);
   } else {
-     // Clear files if selection is cancelled
-     supportingDocuments.value[index].files = [];
+    // Clear files if selection is cancelled
+    supportingDocuments.value[index].files = [];
   }
 };
 
 // Helper to format date as YYYY-MM-DD
 const formatDateForAPI = (date) => {
   if (!(date instanceof Date) || isNaN(date)) {
-     return ''; // Return empty string for invalid dates
+    return ''; // Return empty string for invalid dates
   }
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -520,12 +422,12 @@ const validateForm = () => {
     errors.year_of_completion = 'Valid Year of Completion is required.';
     isValid = false;
   } else {
-      const currentYear = new Date().getFullYear();
-      const year = parseInt(localFormData.year_of_completion);
-      if (year < 1950 || year > currentYear) {
-          errors.year_of_completion = `Year must be between 1950 and ${currentYear}.`;
-          isValid = false;
-      }
+    const currentYear = new Date().getFullYear();
+    const year = parseInt(localFormData.year_of_completion);
+    if (year < 1950 || year > currentYear) {
+      errors.year_of_completion = `Year must be between 1950 and ${currentYear}.`;
+      isValid = false;
+    }
   }
 
 
@@ -559,7 +461,7 @@ const validateForm = () => {
 
 // Handle form submission attempt -> Show confirmation modal
 const handleSubmit = (event) => {
-   event.preventDefault(); // Prevent default form submission
+  event.preventDefault(); // Prevent default form submission
   if (validateForm()) {
     isConfirmationModalOpen.value = true;
   }
@@ -577,7 +479,7 @@ const handleSubmitActual = async () => {
 
   // Append standard fields
   formData.append('completion_year', String(localFormData.year_of_completion)); // Send as string
-  formData.append('declaration', String(localFormData.declaration)); // Send as 'true' or 'false' string? API might expect boolean. Adjust if needed. API Example uses 'True'
+  formData.append('declaration', localFormData.declaration ? 'True' : 'False'); // Send 'True' or 'False' strings
   formData.append('remarks', localFormData.remarks || ''); // Send empty string if null/undefined
   formData.append('registration_date', formatDateForAPI(new Date()));
   formData.append('expiry_date', formatDateForAPI(new Date(new Date().setFullYear(new Date().getFullYear() + 5)))); // 5 years expiry
@@ -591,23 +493,23 @@ const handleSubmitActual = async () => {
   // Append file attachments with structured keys
   // API expects keys like 'attachments-0-file', 'attachments-0-file_type', etc.
   supportingDocuments.value.forEach((doc, index) => {
-      if (doc.type && doc.files && doc.files.length > 0) {
-          // Append file type for this document group
-          formData.append(`attachments-${index}-file_type`, String(doc.type));
-          // Append each file in this group
-          doc.files.forEach((file) => {
-             // If API supports multiple files per type, key might need adjustment (e.g., fileIndex)
-             // Assuming API handles multiple files with the same key `attachments-${index}-file`
-             formData.append(`attachments-${index}-file`, file, file.name);
-          });
-      }
+    if (doc.type && doc.files && doc.files.length > 0) {
+      // Append file type for this document group
+      formData.append(`attachments-${index}-file_type`, String(doc.type));
+      // Append each file in this group
+      doc.files.forEach((file) => {
+        // If API supports multiple files per type, key might need adjustment (e.g., fileIndex)
+        // Assuming API handles multiple files with the same key `attachments-${index}-file`
+        formData.append(`attachments-${index}-file`, file, file.name);
+      });
+    }
   });
 
   // Log FormData contents for debugging (optional)
-   console.log("Submitting FormData:");
-   for (let [key, value] of formData.entries()) {
-       console.log(`${key}:`, value);
-   }
+  console.log("Submitting FormData:");
+  for (let [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
+  }
 
 
   // --- API Call ---
@@ -631,27 +533,27 @@ const handleSubmitActual = async () => {
     console.error('Error submitting application:', error);
     // Handle specific API errors (e.g., validation errors from backend)
     if (error.response && error.response.data) {
-        const responseData = error.response.data;
-        let errorMessage = 'Submission failed. ';
-        if (typeof responseData === 'object') {
-           // Try to extract specific field errors
-           Object.keys(responseData).forEach(field => {
-               if(Array.isArray(responseData[field])) {
-                  errors[field] = responseData[field].join(', '); // Store specific field errors
-                  errorMessage += `${field}: ${errors[field]} `;
-               } else {
-                  errorMessage += `${field}: ${responseData[field]} `;
-               }
-           });
-           if (Object.keys(errors).length > 0) {
-             toast.error('Please correct the errors highlighted by the server.');
-           } else {
-              toast.error(errorMessage || 'An unknown server error occurred.');
-           }
+      const responseData = error.response.data;
+      let errorMessage = 'Submission failed. ';
+      if (typeof responseData === 'object') {
+        // Try to extract specific field errors
+        Object.keys(responseData).forEach(field => {
+          if (Array.isArray(responseData[field])) {
+            errors[field] = responseData[field].join(', '); // Store specific field errors
+            errorMessage += `${field}: ${errors[field]} `;
+          } else {
+            errorMessage += `${field}: ${responseData[field]} `;
+          }
+        });
+        if (Object.keys(errors).length > 0) {
+          toast.error('Please correct the errors highlighted by the server.');
         } else {
-           // Generic error message from response
-           toast.error(`Submission failed: ${responseData.message || responseData.detail || 'Unknown server error'}`);
+          toast.error(errorMessage || 'An unknown server error occurred.');
         }
+      } else {
+        // Generic error message from response
+        toast.error(`Submission failed: ${responseData.message || responseData.detail || 'Unknown server error'}`);
+      }
     } else {
       // Network or other errors
       toast.error(`Submission failed: ${error.message || 'Network error'}`);
@@ -670,33 +572,33 @@ onMounted(async () => {
   // Fetch dropdown options only if primary application fetch was successful
   // or if you want to load them regardless
   // if (localFormData.application) { // Optional: only load if app exists
-      try {
-        // Use Promise.all for concurrent fetching
-        const [
-            qualificationTypesResponse,
-            qualificationsResponse,
-            universitiesResponse,
-            documentTypesResponse
-        ] = await Promise.all([
-            apiService.getEpcMastersQualificationTypes(),
-            apiService.getEpcMastersQualifications(),
-            apiService.getEpcMastersUniversities(),
-            apiService.getEpcMastersDocumentTypes()
-        ]);
+  try {
+    // Use Promise.all for concurrent fetching
+    const [
+      qualificationTypesResponse,
+      qualificationsResponse,
+      universitiesResponse,
+      documentTypesResponse
+    ] = await Promise.all([
+      apiService.getEpcMastersQualificationTypes(),
+      apiService.getEpcMastersQualifications(),
+      apiService.getEpcMastersUniversities(),
+      apiService.getEpcMastersDocumentTypes()
+    ]);
 
-        // Assign results, checking for the .results array
-        qualificationTypes.value = qualificationTypesResponse.data?.results || [];
-        qualifications.value = qualificationsResponse.data?.results || [];
-        universities.value = universitiesResponse.data?.results || [];
-        fetchedDocumentTypes.value = documentTypesResponse.data?.results || [];
+    // Assign results, checking for the .results array
+    qualificationTypes.value = qualificationTypesResponse.data?.results || [];
+    qualifications.value = qualificationsResponse.data?.results || [];
+    universities.value = universitiesResponse.data?.results || [];
+    fetchedDocumentTypes.value = documentTypesResponse.data?.results || [];
 
-        console.log('Master data fetched successfully.');
+    console.log('Master data fetched successfully.');
 
-      } catch (error) {
-        console.error('Error fetching master data:', error);
-        toast.error('Failed to load necessary selection options. Please refresh or try again later.');
-        // Optionally set flags to disable parts of the form if master data fails
-      }
+  } catch (error) {
+    console.error('Error fetching master data:', error);
+    toast.error('Failed to load necessary selection options. Please refresh or try again later.');
+    // Optionally set flags to disable parts of the form if master data fails
+  }
   // } // End optional block
 });
 
@@ -706,22 +608,28 @@ onMounted(async () => {
 /* Required field indicator */
 .required::after {
   content: ' *';
-  color: #ef4444; /* Tailwind red-500 */
+  color: #ef4444;
+  /* Tailwind red-500 */
   margin-left: 2px;
 }
 
 /* Basic scrollbar styling for the form container if needed */
 .overflow-y-auto {
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #a0aec0 #e2e8f0; /* Firefox: thumb track */
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: #a0aec0 #e2e8f0;
+  /* Firefox: thumb track */
 }
+
 .overflow-y-auto::-webkit-scrollbar {
   width: 8px;
 }
+
 .overflow-y-auto::-webkit-scrollbar-track {
   background: #e2e8f0;
   border-radius: 4px;
 }
+
 .overflow-y-auto::-webkit-scrollbar-thumb {
   background-color: #a0aec0;
   border-radius: 4px;
