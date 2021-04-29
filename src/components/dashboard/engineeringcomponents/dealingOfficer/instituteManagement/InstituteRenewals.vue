@@ -246,13 +246,10 @@ const fetchInstitutes = async () => {
   isLoading.value = true
   apiError.value = false
   errorMessage.value = ''
-  institutes.value = [] // Clear previous data
+  institutes.value = []
 
   try {
-    // Ensure this fetches all needed institute data, not just renewals if they are separate
     const response = await apiService.getEpcInstitutes()
-
-    // Flexible response handling
     let dataToProcess = []
     if (Array.isArray(response)) {
       dataToProcess = response
@@ -265,12 +262,23 @@ const fetchInstitutes = async () => {
       throw new Error('Received unexpected data format from the server.')
     }
 
-    // Optional Filter: Show only institutes needing action or recently decided
-    // institutes.value = dataToProcess.filter(inst => {
-    //   return inst.do_dpr_review_decision === 'Pending' || !inst.is_active;
-    // });
-    // OR just show all fetched institutes if no filter needed:
-    institutes.value = dataToProcess
+    // Filter for expired applications submitted for renewal
+    const today = new Date()
+    today.setHours(0, 0, 0, 0) // Normalize to start of day
+    institutes.value = dataToProcess.filter((inst) => {
+      let isExpired = false
+      if (inst.valid_till) {
+        try {
+          const validTillDate = new Date(inst.valid_till)
+          validTillDate.setHours(0, 0, 0, 0)
+          isExpired = validTillDate < today
+        } catch  {
+          console.warn(`Invalid valid_till date for institute ${inst.id}:`, inst.valid_till)
+          isExpired = false // Treat invalid dates as not expired to avoid false positives
+        }
+      }
+      return isExpired && inst.do_dpr_review_decision === 'Pending'
+    })
   } catch (error) {
     console.error('Error fetching institute data:', error)
     apiError.value = true
@@ -280,7 +288,7 @@ const fetchInstitutes = async () => {
       'Failed to load institute data. Please check the console for details.'
     errorMessage.value = msg
     toast.error(msg)
-    institutes.value = [] // Ensure it's an empty array on error
+    institutes.value = []
   } finally {
     isLoading.value = false
   }
