@@ -8,7 +8,7 @@
                     class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-90"
                 ></div>
                 <div
-                    class="absolute inset-0 bg-[url('/img/profile-cover.jpg')] bg-cover bg-center mix-blend-overlay"
+                    class="absolute inset-0 bg-cover bg-center mix-blend-overlay"
                 ></div>
 
                 <!-- Profile Stats Overlay -->

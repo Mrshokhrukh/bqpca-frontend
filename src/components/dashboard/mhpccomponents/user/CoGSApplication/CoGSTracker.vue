@@ -1,174 +1,201 @@
 <template>
-    <div class="w-full mx-auto px-4 py-8">
-        <!-- Header Section -->
-        <div
-            class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10"
+    <div class="w-full mx-auto px-4 sm:px-6 py-8 bg-gray-50 min-h-screen">
+        <PageHeader
+            title="Application Status"
+            subtitle="Review the status and details of your submitted Certificate of Good Standing (CoGS) applications."
         >
-            <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
-                Track Your Application
-            </h2>
-            <p class="text-gray-600 text-center max-w-2xl mx-auto">Your CoGS application status.</p>
-        </div>
+            <template #icon>
+                <ClipboardList class="w-6 h-6 text-blue-600" />
+            </template>
+        </PageHeader>
 
-        <div class="w-full mx-auto px-4 py-8">
-            <!-- Results Section -->
-            <div v-if="filteredApplications.length > 0" class="space-y-6">
+        <div class="mt-8">
+            <!-- Loading State -->
+            <div v-if="isLoading" class="flex justify-center items-center h-64">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <p class="ml-3 text-gray-600">Loading applications...</p>
+            </div>
+
+            <!-- Error State -->
+            <div
+                v-else-if="apiError"
+                class="bg-red-50 border border-red-200 rounded-xl p-8 text-center shadow-sm"
+            >
+                <AlertTriangle class="h-12 w-12 mx-auto text-red-500 mb-4" />
+                <h3 class="text-xl font-semibold text-red-700 mb-2">Data Retrieval Error</h3>
+                <p class="text-red-600">
+                    We couldn't fetch your application records. Please refresh the page or try again
+                    later.
+                </p>
+            </div>
+
+            <!-- Empty State -->
+            <div
+                v-else-if="filteredApplications.length === 0"
+                class="bg-white shadow-lg rounded-xl p-8 text-center border border-gray-100"
+            >
+                <FileX2 class="h-16 w-16 mx-auto text-blue-500 mb-4" />
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">No Applications Found</h3>
+                <p class="text-gray-600">You haven't submitted any CoGS applications yet.</p>
+            </div>
+
+            <!-- Application List -->
+            <transition-group v-else name="list" tag="div" class="space-y-6">
                 <div
                     v-for="application in filteredApplications"
                     :key="application.id"
-                    class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
+                    class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl"
                 >
-                    <!-- Header with Registration Number and Status -->
+                    <!-- Card Header -->
                     <div
-                        class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 p-6 flex items-center justify-between"
+                        class="p-5 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100"
                     >
-                        <div>
-                            <h3 class="text-xl font-bold text-gray-900 flex items-center">
-                                <span>Application #{{ application.registration_no }}</span>
-                                <status-badge :status="application.review_status" class="ml-3" />
-                            </h3>
-                            <p class="text-sm text-gray-600 mt-1">
-                                Submitted on {{ formatDate(application.created_at) }}
-                            </p>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="flex space-x-3">
-                            <!-- Payment Button -->
-                            <button
-                                v-if="
-                                    application.review_status === 'Approved' &&
-                                    !application.is_payment_complete
-                                "
-                                @click="initiatePayment(application)"
-                                class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center"
-                            >
-                                <CreditCard class="w-4 h-4 mr-2" />
-                                {{ getPaymentButtonText(application) }}
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Application Details Grid -->
-                    <div class="grid md:grid-cols-3 gap-6 p-6 bg-white">
-                        <!-- Personal Information Column -->
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
-                                Personal Information
-                            </h4>
-                            <div class="space-y-3">
-                                <detail-row
-                                    icon="User"
-                                    label="Full Name"
-                                    :value="application.full_name"
-                                />
-                                <detail-row
-                                    icon="IdCard"
-                                    label="CID Number"
-                                    :value="application.cid_no"
-                                />
-                                <detail-row
-                                    icon="Target"
-                                    label="Gender"
-                                    :value="application.gender"
-                                />
+                        <div
+                            class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                        >
+                            <div>
+                                <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-1">
+                                    Application #{{ application.registration_no || 'N/A' }}
+                                </h3>
+                                <p class="text-xs sm:text-sm text-gray-500">
+                                    Submitted on: {{ formatDate(application.created_at) }}
+                                </p>
                             </div>
-                        </div>
-
-                        <!-- Contact Information Column -->
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
-                                Contact Details
-                            </h4>
-                            <div class="space-y-3">
-                                <detail-row
-                                    icon="Phone"
-                                    label="Contact Number"
-                                    :value="application.contact_number"
-                                />
-                                <detail-row
-                                    icon="Mail"
-                                    label="Email"
-                                    :value="application.email_address"
-                                />
-                                <detail-row
-                                    icon="BookOpen"
-                                    label="Workplace"
-                                    :value="application.workplace || 'Not Specified'"
-                                />
-                            </div>
-                        </div>
-
-                        <!-- Application Status Column -->
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
-                                Application Status
-                            </h4>
-                            <div class="space-y-3">
-                                <detail-row
-                                    icon="FileText"
-                                    label="Review Status"
-                                    :value="application.review_status"
-                                />
-                                <detail-row
-                                    icon="Target"
-                                    label="Endorsement"
-                                    :value="application.endorsement_decision"
-                                />
-                                <detail-row
-                                    icon="CreditCard"
-                                    label="Payment"
-                                    :value="
-                                        application.is_payment_complete ? 'Completed' : 'Pending'
+                            <div class="flex items-center space-x-3 flex-shrink-0">
+                                <status-badge :status="application.review_status" />
+                                <!-- Payment Button -->
+                                <button
+                                    v-if="
+                                        application.review_status === 'Approved' &&
+                                        !application.is_payment_complete
                                     "
-                                />
+                                    @click="initiatePayment(application)"
+                                    :disabled="isLoadingPayment"
+                                    class="btn btn-success text-xs px-3 py-1.5 disabled:opacity-60 disabled:cursor-wait"
+                                >
+                                    <CreditCard class="w-4 h-4 mr-1.5" />
+                                    {{ isLoadingPayment ? 'Processing...' : 'Pay Fee' }}
+                                </button>
+                                <span
+                                    v-else-if="
+                                        application.review_status === 'Approved' &&
+                                        application.is_payment_complete
+                                    "
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                >
+                                    <CheckCircle class="w-4 h-4 mr-1.5" />
+                                    Payment Complete
+                                </span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Additional Details and Remarks -->
-                    <div v-if="application.review_remark" class="bg-gray-50 p-6 border-t">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-3">Review Remarks</h4>
-                        <p class="text-gray-600 italic">{{ application.review_remark }}</p>
+                    <!-- Card Body Grid -->
+                    <div class="p-6">
+                        <div class="grid md:grid-cols-3 gap-x-6 gap-y-8">
+                            <div>
+                                <h4 class="detail-heading">
+                                    <User class="w-5 h-5 mr-2 text-blue-600" /> Personal
+                                    Information
+                                </h4>
+                                <div class="space-y-4 mt-3 pl-1">
+                                    <detail-row label="Full Name" :value="application.full_name" />
+                                    <detail-row label="CID Number" :value="application.cid_no" />
+                                    <detail-row
+                                        label="Gender"
+                                        :value="application.gender || 'N/A'"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="detail-heading">
+                                    <Contact class="w-5 h-5 mr-2 text-blue-600" /> Contact & Work
+                                </h4>
+                                <div class="space-y-4 mt-3 pl-1">
+                                    <detail-row
+                                        label="Supervisor Email"
+                                        :value="application.email_address || 'N/A'"
+                                        icon="Mail"
+                                    />
+                                    <detail-row
+                                        label="Supervisor Contact"
+                                        :value="application.contact_number || 'N/A'"
+                                        icon="Phone"
+                                    />
+                                    <detail-row
+                                        label="Workplace"
+                                        :value="application.workplace || 'Not Specified'"
+                                        icon="Building"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="detail-heading">
+                                    <Activity class="w-5 h-5 mr-2 text-blue-600" /> Application
+                                    Status
+                                </h4>
+                                <div class="space-y-4 mt-3 pl-1">
+                                    <detail-row
+                                        label="Review Status"
+                                        :value="application.review_status || 'N/A'"
+                                        icon="FileText"
+                                    />
+                                    <detail-row
+                                        label="Endorsement"
+                                        :value="application.endorsement_decision || 'Pending'"
+                                        icon="Target"
+                                    />
+                                    <detail-row
+                                        label="Payment Status"
+                                        :value="
+                                            application.is_payment_complete
+                                                ? 'Completed'
+                                                : 'Pending'
+                                        "
+                                        icon="CreditCard"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Remarks Section -->
+                    <div
+                        v-if="application.review_remark || application.endorsement_remark"
+                        class="border-t border-gray-100 bg-gray-50 px-6 py-4"
+                    >
+                        <h4 class="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                            <MessageSquare class="w-4 h-4 mr-2 text-gray-500" /> Remarks
+                        </h4>
+                        <p
+                            v-if="application.review_remark"
+                            class="text-sm text-gray-600 italic mb-2"
+                        >
+                            <span class="font-medium text-gray-700">Review:</span>
+                            {{ application.review_remark }}
+                        </p>
+                        <p
+                            v-if="application.endorsement_remark"
+                            class="text-sm text-gray-600 italic"
+                        >
+                            <span class="font-medium text-gray-700">Endorsement:</span>
+                            {{ application.endorsement_remark }}
+                        </p>
                     </div>
                 </div>
-            </div>
-
-            <!-- No Results Message -->
-            <div
-                v-if="filteredApplications.length === 0 && !isLoading && !apiError"
-                class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200"
-            >
-                <p class="text-gray-600">No CoGS records found for your account.</p>
-            </div>
-            <!-- API Error Message (Optional) -->
-            <div
-                v-else-if="apiError"
-                class="text-center py-12 bg-red-50 rounded-xl border border-red-200"
-            >
-                <p class="text-red-600">
-                    An error occurred while fetching data. Please try again later.
-                </p>
-            </div>
-            <!-- Loading Indicator -->
-            <div v-if="isLoading" class="mt-4 flex justify-center">
-                <div class="flex items-center space-x-2 text-sm text-gray-500">
-                    <span
-                        class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse"
-                    ></span>
-                    <span
-                        class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-100"
-                    ></span>
-                    <span
-                        class="inline-block w-2 h-2 bg-blue-600 rounded-full animate-pulse delay-200"
-                    ></span>
-                </div>
-            </div>
+            </transition-group>
         </div>
+
         <!-- Payment Modal -->
         <PaymentModal
             ref="paymentModal"
             :amount="500"
+            serviceCode="cogs_application_fee"
+            description="CoGS Application Fee"
+            appType="certificate_of_good_standing_fee"
+            :applicationId="selectedApplication?.id"
             @payment-completed="handlePaymentCompleted"
             @close="closePaymentModal"
         />
@@ -178,6 +205,10 @@
 <script setup>
 import { ref, h, defineComponent, onMounted, computed } from 'vue'
 import apiService from '@/services/services'
+import PageHeader from '@/components/common/MHPC/PageHeader.vue'
+import PaymentModal from '@/components/common/PaymentModal.vue'
+import { useAuthStore } from '@/stores/authStore'
+import { useToast } from 'vue-toastification'
 import {
     User,
     IdCard,
@@ -188,44 +219,48 @@ import {
     BookOpen,
     CreditCard,
     Info,
+    ClipboardList,
+    AlertTriangle,
+    FileX2,
+    Contact,
+    Building,
+    Activity,
+    MessageSquare,
+    CheckCircle, // Added icons
 } from 'lucide-vue-next'
-import { useAuthStore } from '@/stores/authStore' // Import Auth Store
-import PaymentModal from '@/components/common/PaymentModal.vue' // Import PaymentModal
-import { useToast } from 'vue-toastification'
 
 const toast = useToast()
+const authStore = useAuthStore()
 
-// State
 const applications = ref([])
 const isLoading = ref(false)
 const apiError = ref(false)
-const authStore = useAuthStore() // Use the auth store
 const paymentModal = ref(null)
-const selectedApplication = ref(null) // Track the application for payment
+const selectedApplication = ref(null)
+const isLoadingPayment = ref(false) // Specific loading state for payment button
 
-// Computed Property for filtered applications
 const filteredApplications = computed(() => {
-    if (!authStore.user || !authStore.user.cid) {
-        return [] // Return empty if user or cid is not available
+    if (!authStore.user?.cid) {
+        return []
     }
-
-    return applications.value.filter((app) => app.cid_no === authStore.user.cid)
+    const userCid = authStore.user.cid
+    // Sort by creation date, newest first
+    return applications.value
+        .filter((app) => app.cid_no === userCid)
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 })
 
-// Methods
 const fetchApplications = async () => {
     isLoading.value = true
     apiError.value = false
-
     try {
-        const response = await apiService.getMhpcCogs()
-        // Access the 'results' property of the response data.
-        if (Array.isArray(response.data.results)) {
+        const response = await apiService.getMhpcCogs({ limit: 1000 }) // Fetch potentially more records
+        if (response.data && Array.isArray(response.data.results)) {
             applications.value = response.data.results
         } else {
-            applications.value = []
             console.error('API did not return an array in results:', response.data)
-            apiError.value = true // Set apiError if the results are not as expected
+            applications.value = []
+            apiError.value = true
         }
     } catch (error) {
         console.error('Error fetching applications:', error)
@@ -242,29 +277,31 @@ const StatusBadge = defineComponent({
     },
     render() {
         const statusClasses = {
-            Pending: 'bg-yellow-100 text-yellow-800',
-            Approved: 'bg-green-100 text-green-800',
-            Rejected: 'bg-red-100 text-red-800',
+            Pending: 'bg-yellow-100 text-yellow-800 border border-yellow-200',
+            Approved: 'bg-green-100 text-green-800 border border-green-200',
+            Rejected: 'bg-red-100 text-red-800 border border-red-200',
+            'Payment Pending': 'bg-blue-100 text-blue-800 border border-blue-200', // Example for more granular status
         }
+        const currentStatus = this.status || 'Pending' // Default to Pending if null/undefined
 
         return h(
             'span',
             {
-                class: `px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${
-                    statusClasses[this.status] || ''
+                class: `inline-flex items-center px-3 py-1 rounded-full text-xs font-medium capitalize shadow-sm ${
+                    statusClasses[currentStatus] ||
+                    'bg-gray-100 text-gray-800 border border-gray-200' // Fallback style
                 }`,
             },
-            this.status
+            currentStatus
         )
     },
 })
 
-// Detail Row Component
 const DetailRow = defineComponent({
     props: {
-        icon: String,
         label: String,
-        value: String,
+        value: [String, Number],
+        icon: { type: String, default: 'Info' }, // Default icon
     },
     render() {
         const icons = {
@@ -277,132 +314,91 @@ const DetailRow = defineComponent({
             BookOpen,
             CreditCard,
             Info,
+            Contact,
+            Building,
+            Activity,
         }
+        const IconComponent = icons[this.icon] || icons['Info'] // Fallback to Info icon
 
-        const IconComponent = icons[this.icon]
-
-        return h('div', { class: 'flex items-center space-x-3' }, [
-            h(IconComponent, { class: 'w-5 h-5 text-blue-500' }),
+        return h('div', { class: 'flex items-start space-x-2.5' }, [
+            h(IconComponent, { class: 'w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5' }),
             h('div', [
                 h('p', { class: 'text-xs text-gray-500' }, this.label),
-                h('p', { class: 'text-sm text-gray-800 font-medium' }, this.value),
+                h(
+                    'p',
+                    { class: 'text-sm text-gray-800 font-medium break-words' },
+                    this.value || 'N/A'
+                ), // Handle null/empty values
             ]),
         ])
     },
 })
 
-// Helper function to format date
 const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    })
-}
-
-const getPaymentButtonText = (application) => {
-    if (application.is_payment_complete) {
-        return 'Payment Completed'
-    } else if (application.review_status === 'Approved' && !application.is_payment_complete) {
-        return 'Proceed to Payment'
-    } else {
-        return 'Complete Payment'
+    if (!dateString) return 'N/A'
+    try {
+        return new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        }).format(new Date(dateString))
+    } catch (e) {
+        console.error('Error formatting date:', dateString, e)
+        return 'Invalid Date'
     }
 }
 
 const initiatePayment = (application) => {
+    if (!application) return
     selectedApplication.value = application
-    paymentModal.value.openModal()
+    if (paymentModal.value) {
+        paymentModal.value.openModal()
+    } else {
+        console.error('Payment modal reference is not available.')
+        toast.error('Could not open payment details. Please refresh.')
+    }
 }
 
 const closePaymentModal = () => {
-    selectedApplication.value = null // Reset on close
+    selectedApplication.value = null
 }
 
 const handlePaymentCompleted = async (paymentData) => {
-    if (!selectedApplication.value) {
-        toast.error('No application selected for payment.')
-        return
-    }
-
-    const applicationId = selectedApplication.value.id
-    const paymentId = paymentData.paymentHash
-    const user = authStore.user
-
-    if (!user || !user.contact_number || !user.email || !user.cid) {
-        toast.error('Missing user information. Please update your profile.')
-        return
-    }
-
-    try {
-        isLoading.value = true
-
-        // 1. Initiate Payment (Actual payment processing) - Using FormData, as in your example
-        const paymentInitiationFormData = new FormData()
-        paymentInitiationFormData.append('refNo', paymentId) // Use paymentId from paymentData
-        paymentInitiationFormData.append('serviceCode', 'cogs_application_fee') // Correct service code
-        paymentInitiationFormData.append('taxPayerName', user.cid) // Or user.full_name if appropriate
-        paymentInitiationFormData.append('taxPayerNo', user.cid)
-        paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
-        paymentInitiationFormData.append('totalPayableAmount', 500) // Correct amount
-        paymentInitiationFormData.append('description', 'CoGS Application Fee') // Correct Description
-        paymentInitiationFormData.append('mobileNo', user.contact_number)
-        paymentInitiationFormData.append('payerEmail', user.email)
-        paymentInitiationFormData.append('user', user.id)
-        paymentInitiationFormData.append('payableAmount', 500) // Correct amount
-        paymentInitiationFormData.append('application_no', selectedApplication.value.id)
-        paymentInitiationFormData.append('app_type', 'certificate_of_good_standing_fee') // Correct app_type
-
-        // Make the payment *before* updating the application
-        await apiService.makePayment(paymentInitiationFormData)
-
-        // 2. Update Application - PATCH request with FormData
-        const updateFormData = new FormData()
-        updateFormData.append('is_payment_complete', 'true') // Use string 'true'
-        updateFormData.append('payment_id', paymentId)
-
-        //PATCH COGS application
-        await apiService.patchMhpcCogs(applicationId, updateFormData)
-
-        // 3.  Update local state to reflect changes
-        const updatedApplicationIndex = applications.value.findIndex(
-            (app) => app.id === applicationId
-        )
-        if (updatedApplicationIndex !== -1) {
-            applications.value[updatedApplicationIndex].is_payment_complete = true
-            applications.value[updatedApplicationIndex].payment_id = paymentId
-        }
-
-        toast.success(`Payment initiated! ID: ${paymentId}. ${paymentData.message}`)
-    } catch (error) {
-        console.error('Payment update error:', error)
-        // Error handling (as in your provided code)
-        if (error.response) {
-            if (error.response.data) {
-                if (error.response.data.detail) {
-                    toast.error('API Error: ' + error.response.data.detail)
-                } else {
-                    toast.error('API Error: ' + JSON.stringify(error.response.data))
-                }
-            } else {
-                toast.error('API Error: ' + error.response.statusText)
-            }
-        } else if (error.request) {
-            toast.error('Network Error: No response from server')
-        } else {
-            toast.error(
-                'Payment request generated successfully, but there was an error confirming the payment.  Contact us with the payment id for the next course of action: ' +
-                    paymentId
-            )
-        }
-    } finally {
-        isLoading.value = false
-        selectedApplication.value = null // Reset after processing
-        fetchApplications()
-    }
+    // The PaymentModal should now handle the API calls.
+    // This function just needs to refresh the local data after the modal signals success.
+    toast.success(`Payment recorded successfully! ${paymentData.message}`)
+    isLoadingPayment.value = false
+    selectedApplication.value = null // Reset selected app
+    await fetchApplications() // Refresh the list to show updated status
 }
 
-onMounted(async () => {
-    await fetchApplications()
+onMounted(() => {
+    fetchApplications()
 })
 </script>
+
+<style scoped>
+/* Reusable button styles (similar to previous example) */
+.btn {
+    @apply inline-flex justify-center items-center rounded-md border border-transparent shadow-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-150 ease-in-out;
+}
+.btn-success {
+    @apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
+}
+
+/* Style for detail headings */
+.detail-heading {
+    @apply text-base font-semibold text-gray-800 pb-2 flex items-center border-b border-gray-100 mb-3;
+}
+
+/* List Transition Animations (same as first example) */
+.list-enter-active,
+.list-leave-active {
+    transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+    opacity: 0;
+    transform: translateY(20px);
+}
+</style>

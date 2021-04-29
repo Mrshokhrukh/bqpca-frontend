@@ -1,16 +1,14 @@
 <template>
-    <div class="w-full mx-auto px-2 sm:px-4 py-6">
-        <!-- Header Section -->
-        <div
-            class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-4 sm:p-6 mb-6"
+    <div class="w-full mx-auto px-2 sm:px-4 py-6 sm:py-8">
+        <!-- Use the common PageHeader component -->
+        <PageHeader
+            title="Track Your Application"
+            subtitle="Your application status is displayed below."
         >
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 text-center">
-                Track Your Application
-            </h2>
-            <p class="text-gray-600 text-center max-w-2xl mx-auto text-sm sm:text-base">
-                Your application status is displayed below.
-            </p>
-        </div>
+            <template #icon>
+                <ClipboardList class="w-6 h-6 text-indigo-600" />
+            </template>
+        </PageHeader>
 
         <!-- Loading Indicator (Improved) -->
         <div v-if="isLoading" class="my-8 flex justify-center">
@@ -565,6 +563,7 @@ import { ref, onMounted, computed } from 'vue' // Import onMounted and computed
 import apiService from '@/services/services'
 import CertificateModal from './CertificateModal.vue'
 import PaymentModal from '@/components/common/PaymentModal.vue'
+import PageHeader from '@/components/common/MHPC/PageHeader.vue' // Import the common header
 import {
     FileText,
     IdCard,
@@ -581,6 +580,7 @@ import {
     Clock,
     AlertTriangle,
     SearchX,
+    ClipboardList, // Icon for the header
 } from 'lucide-vue-next'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'

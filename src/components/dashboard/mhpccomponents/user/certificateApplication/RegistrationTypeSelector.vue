@@ -1,5 +1,6 @@
 <template>
   <div class="w-full mx-auto px-4 sm:px-6 py-8">
+    <!-- header -->
       <div
           class="relative overflow-hidden backdrop-blur-sm bg-white/80 rounded-2xl p-6 sm:p-8 mb-10 shadow-lg border border-indigo-100 transform transition-all duration-500"
       >

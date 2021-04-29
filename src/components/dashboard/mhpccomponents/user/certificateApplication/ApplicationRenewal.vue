@@ -1,16 +1,13 @@
 <template>
     <div class="w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        <div
-            class="bg-gradient-to-r from-indigo-200 via-blue-100 to-indigo-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm"
+        <PageHeader
+            title="Renewal Application"
+            subtitle="Please review your personal details and CPD scores to ensure your eligibility for renewal."
         >
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 text-center">
-                Renewal Application
-            </h2>
-            <p class="text-sm sm:text-base text-gray-700 text-center max-w-2xl mx-auto">
-                Please review your personal details and CPD scores to ensure your eligibility for
-                renewal.
-            </p>
-        </div>
+            <template #icon>
+                <RefreshCw class="w-6 h-6 text-indigo-600" />
+            </template>
+        </PageHeader>
 
         <div
             v-if="healthStore.visibleMenus.hasRenewalInProgress"
@@ -88,14 +85,24 @@
                         <AlertCircle class="h-6 w-6 text-yellow-500" />
                     </div>
                     <div class="ml-3">
-                        <h3 class="text-base font-medium text-yellow-800">Renewal Not Eligible</h3>
+                        <h3 class="text-base font-medium text-yellow-800">
+                            {{
+                                isTooEarlyForRenewal
+                                    ? 'Renewal Not Available Yet'
+                                    : 'Renewal Not Eligible'
+                            }}
+                        </h3>
                         <div class="mt-2 text-sm text-yellow-700">
-                            <p>{{ renewalEligibilityMessage }}</p>
-                            <p class="mt-2">You can generally renew if:</p>
+                            <p v-if="isTooEarlyForRenewal">
+                                {{ tooEarlyMessage }}
+                            </p>
+                            <p v-else>
+                                {{ renewalEligibilityMessage }}
+                            </p>
+                            <p class="mt-2">Renewal is allowed if:</p>
                             <ul class="list-disc ml-5 mt-2 space-y-1">
-                                <li>Your registration is within 3 months of expiry</li>
-                                <li>Your registration has expired and is inactive</li>
-                                <li>Your registration status is currently inactive</li>
+                                <li>Your registration expires within the next 3 months.</li>
+                                <li>Your registration has already expired.</li>
                             </ul>
                         </div>
                         <div class="mt-4">
@@ -865,9 +872,12 @@ import { Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import PageHeader from '@/components/common/MHPC/PageHeader.vue'
 
 dayjs.extend(isBetween)
 dayjs.extend(isSameOrBefore)
+dayjs.extend(relativeTime)
 
 import {
     User,
@@ -894,7 +904,6 @@ import {
     MessageSquare,
     ClipboardList,
     FileText,
-    BadgeCheck,
     CheckCircle,
     Info,
     TriangleAlert,
@@ -948,6 +957,44 @@ const isExpiringWithin3Months = computed(() => {
     return expiryDate.value.isBetween(today.value, threeMonthsFromNow.value, 'day', '[]')
 })
 
+const daysUntilExpiry = computed(() => {
+    if (!expiryDate.value || hasExpired.value) return 0
+    // Add 1 to include the expiry day itself if needed, or keep as is for full days remaining
+    return expiryDate.value.diff(today.value, 'day')
+})
+
+const isEligibleForRenewal = computed(() => {
+    if (!expiryDate.value) {
+        return false
+    }
+    if (isExpiringWithin3Months.value) {
+        return true
+    }
+    if (hasExpired.value) {
+        return true
+    }
+    return false
+})
+
+const isTooEarlyForRenewal = computed(() => {
+    return expiryDate.value && !hasExpired.value && !isExpiringWithin3Months.value
+})
+
+const tooEarlyMessage = computed(() => {
+    if (!isTooEarlyForRenewal.value) return ''
+    const days = daysUntilExpiry.value
+    const formattedExpiry = formatDisplayDate(formData.value.expiry_date)
+    const relativeExpiry = expiryDate.value.from(today.value) // e.g., "in 5 months"
+    return `Your registration is valid until ${formattedExpiry} (${days} days remaining, ${relativeExpiry}). Renewal is only available when the registration has expired or is within 3 months of expiry.`
+})
+
+const renewalEligibilityMessage = computed(() => {
+    if (!expiryDate.value) {
+        return 'Cannot determine eligibility without a valid expiry date for your current registration.'
+    }
+    return 'Your registration is currently not eligible for renewal based on the criteria (nearing expiry or expired). Please check your registration details.'
+})
+
 const getNewExpiryDate = computed(() => {
     if (!expiryDate.value) {
         return dayjs().add(5, 'year').toDate()
@@ -958,41 +1005,16 @@ const getNewExpiryDate = computed(() => {
     return expiryDate.value.add(5, 'year').toDate()
 })
 
-const isEligibleForRenewal = computed(() => {
-    if (isExpiringWithin3Months.value) return true
-    if (hasExpired.value && !formData.value.is_active) return true
-    if (!formData.value.is_active) return true
-    return false
-})
-
-const renewalEligibilityMessage = computed(() => {
-    if (!expiryDate.value) {
-        return 'Cannot determine eligibility without an expiry date.'
-    }
-
-    if (!isExpiringWithin3Months.value && !hasExpired.value && formData.value.is_active) {
-        const monthsAway = expiryDate.value.diff(today.value, 'month')
-        return `Your registration expires on ${formatDisplayDate(
-            formData.value.expiry_date
-        )}, which is more than 3 months away (${monthsAway} months). You can renew when it's within 3 months of expiry.`
-    }
-    return 'Your registration is currently not eligible for renewal based on the criteria (nearing expiry, expired & inactive, or currently inactive).'
-})
-
 const getTotalCpdPoints = computed(() => {
     if (!cpdRecords.value || cpdRecords.value.length === 0) return 0
-
     return cpdRecords.value
         .filter((record) => record.review_status === 'Approved')
-        .reduce((total, record) => {
-            return total + (Number(record.cpd_credit) || 0)
-        }, 0)
+        .reduce((total, record) => total + (Number(record.cpd_credit) || 0), 0)
 })
 
 const cpdStatus = computed(() => {
     const points = getTotalCpdPoints.value
-    if (points > 60) return 'excellent'
-    if (points === 60) return 'met'
+    if (points >= 60) return 'met' // Changed: Combine excellent and met for simplicity if needed
     if (points > 0) return 'below_minimum'
     return 'none'
 })
@@ -1000,10 +1022,8 @@ const cpdStatus = computed(() => {
 const cpdMessage = computed(() => {
     const points = getTotalCpdPoints.value
     switch (cpdStatus.value) {
-        case 'excellent':
-            return `Excellent work! You have ${points} CPD points, exceeding the minimum requirement of 60.`
         case 'met':
-            return `Good job! You have met the minimum requirement of 60 CPD points.`
+            return `Good job! You have ${points} CPD points, meeting or exceeding the recommended 60 points.`
         case 'below_minimum':
             return `Warning: Your CPD score is ${points} points. While the recommended score is 60, you can still proceed with renewal. We encourage improving your score.`
         case 'none':
@@ -1015,12 +1035,9 @@ const cpdMessage = computed(() => {
 
 const cpdIcon = computed(() => {
     switch (cpdStatus.value) {
-        case 'excellent':
-            return BadgeCheck
         case 'met':
             return CheckCircle
         case 'below_minimum':
-            return TriangleAlert
         case 'none':
             return TriangleAlert
         default:
@@ -1030,10 +1047,8 @@ const cpdIcon = computed(() => {
 
 const cpdCardClass = computed(() => {
     switch (cpdStatus.value) {
-        case 'excellent':
-            return 'bg-green-100'
         case 'met':
-            return 'bg-teal-100'
+            return 'bg-green-100'
         case 'below_minimum':
         case 'none':
             return 'bg-yellow-100'
@@ -1044,10 +1059,8 @@ const cpdCardClass = computed(() => {
 
 const cpdIconClass = computed(() => {
     switch (cpdStatus.value) {
-        case 'excellent':
-            return 'text-green-600'
         case 'met':
-            return 'text-teal-600'
+            return 'text-green-600'
         case 'below_minimum':
         case 'none':
             return 'text-yellow-600'
@@ -1058,10 +1071,8 @@ const cpdIconClass = computed(() => {
 
 const cpdProgressClass = computed(() => {
     switch (cpdStatus.value) {
-        case 'excellent':
-            return 'bg-green-500'
         case 'met':
-            return 'bg-teal-500'
+            return 'bg-green-500'
         case 'below_minimum':
         case 'none':
             return 'bg-yellow-500'
@@ -1072,10 +1083,8 @@ const cpdProgressClass = computed(() => {
 
 const cpdTextClass = computed(() => {
     switch (cpdStatus.value) {
-        case 'excellent':
-            return 'bg-green-200 text-green-800'
         case 'met':
-            return 'bg-teal-200 text-teal-800'
+            return 'bg-green-200 text-green-800'
         case 'below_minimum':
         case 'none':
             return 'bg-yellow-200 text-yellow-800'
@@ -1086,10 +1095,8 @@ const cpdTextClass = computed(() => {
 
 const cpdMessageBgClass = computed(() => {
     switch (cpdStatus.value) {
-        case 'excellent':
-            return 'bg-green-50 text-green-800'
         case 'met':
-            return 'bg-teal-50 text-teal-800'
+            return 'bg-green-50 text-green-800'
         case 'below_minimum':
         case 'none':
             return 'bg-yellow-50 text-yellow-800'
@@ -1100,10 +1107,8 @@ const cpdMessageBgClass = computed(() => {
 
 const cpdMessageIconColor = computed(() => {
     switch (cpdStatus.value) {
-        case 'excellent':
-            return 'text-green-500'
         case 'met':
-            return 'text-teal-500'
+            return 'text-green-500'
         case 'below_minimum':
         case 'none':
             return 'text-yellow-500'
@@ -1126,13 +1131,9 @@ const fetchApplicationData = async () => {
     loadError.value = ''
     try {
         const userCid = authStore.user?.cid
-
-        if (!userCid) {
-            throw new Error('User CID not found. Please ensure you are logged in.')
-        }
+        if (!userCid) throw new Error('User CID not found. Please ensure you are logged in.')
 
         const response = await apiService.getMhpcNewApplications({ params: { cid: userCid } })
-
         let applications = []
         if (Array.isArray(response.data)) {
             applications = response.data
@@ -1141,7 +1142,6 @@ const fetchApplicationData = async () => {
         } else {
             throw new Error('Unexpected response format when fetching applications.')
         }
-
         if (applications.length === 0) {
             throw new Error(
                 'No existing application found for your CID. Please complete a new application first.'
@@ -1183,23 +1183,14 @@ const fetchCpdRecords = async (cid) => {
         cpdLoadError.value = 'Cannot fetch CPD records without a CID.'
         return
     }
-
     isCpdLoading.value = true
     cpdLoadError.value = ''
     cpdRecords.value = []
-
     try {
         const response = await apiService.getMhpcCpdRecordsByCid(cid)
-
         if (response && response.data) {
-            if (Array.isArray(response.data)) {
-                cpdRecords.value = response.data
-            } else {
-                console.warn('CPD API response was not an array:', response.data)
-                cpdRecords.value = []
-            }
+            cpdRecords.value = Array.isArray(response.data) ? response.data : []
         } else {
-            console.warn('No data received from CPD API')
             cpdRecords.value = []
         }
     } catch (error) {
@@ -1248,22 +1239,18 @@ const confirmSubmit = async () => {
     try {
         const appResponse = await apiService.getMhpcNewApplication(formData.value.id)
         const application = appResponse.data
-
         if (!application.user_qualifications || application.user_qualifications.length === 0) {
             throw new Error('No qualifications associated with this application found.')
         }
-
         const primaryQualification = application.user_qualifications.find(
             (q) => q.is_primary_qualification
         )
         const qualificationIdToRenew = primaryQualification
             ? primaryQualification.id
             : application.user_qualifications[0].id
-
         if (!qualificationIdToRenew) {
             throw new Error('Could not determine which qualification to renew.')
         }
-
         const formattedNewExpiryDate = formatDateForAPI(getNewExpiryDate.value)
         if (!formattedNewExpiryDate) {
             throw new Error('Invalid new expiry date calculated.')
@@ -1277,10 +1264,7 @@ const confirmSubmit = async () => {
             renewal_endorsement_decision: 'Pending',
         }
 
-        console.log('Submitting Renewal Payload:', renewalPayload)
-
         await apiService.createMhpcRenewal(renewalPayload)
-
         toast.success(
             'Renewal application submitted successfully! It will be reviewed by our staff.'
         )
@@ -1316,42 +1300,34 @@ const handleCancel = () => {
 .animate-spin {
     animation: spin 1s linear infinite;
 }
-
 :focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
 }
-
 input[disabled] {
     opacity: 0.8;
     cursor: not-allowed;
 }
-
 input[type='checkbox'] {
     width: 1rem;
     height: 1rem;
 }
-
 .transition-all {
     transition-property: all;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
 }
-
 .overflow-y-auto {
     -ms-overflow-style: none;
     scrollbar-width: thin;
     scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
 }
-
 .overflow-y-auto::-webkit-scrollbar {
     width: 6px;
 }
-
 .overflow-y-auto::-webkit-scrollbar-track {
     background: transparent;
 }
-
 .overflow-y-auto::-webkit-scrollbar-thumb {
     background-color: rgba(156, 163, 175, 0.5);
     border-radius: 3px;

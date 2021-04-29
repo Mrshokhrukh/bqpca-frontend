@@ -1,7 +1,6 @@
 <template>
   <div class="bg-gray-50 min-h-screen">
     <div class="mx-auto px-4 py-8">
-      <!-- Added padding and mx-auto -->
       <!-- Header -->
       <div class="text-center mb-8">
         <h2 class="text-3xl font-extrabold text-gray-900 mb-4">CPD Activity Reports</h2>
@@ -64,26 +63,20 @@
           </div>
         </form>
 
-        <!-- Export Buttons -->
+        <!-- Export Button (Changed) -->
         <div class="flex justify-end space-x-4 mt-6">
           <button
             type="button"
-            @click="exportToExcel"
-            class="bg-green-100 text-green-700 rounded-md py-3 px-6 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+            @click="exportToCSV"
+            :disabled="filteredReports.length === 0 || isLoading"
+            class="bg-teal-100 text-teal-700 rounded-md py-3 px-6 hover:bg-teal-200 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Export to Excel
-          </button>
-          <button
-            type="button"
-            @click="exportToPDF"
-            class="bg-red-100 text-red-700 rounded-md py-3 px-6 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            Export to PDF
+            Export to CSV
           </button>
         </div>
       </div>
 
-      <!-- Results Section -->
+      <!-- Results Section (No changes needed here) -->
       <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
@@ -171,9 +164,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import apiServices from '@/services/services'
-import * as XLSX from 'xlsx'
-import { jsPDF } from 'jspdf'
-import autoTable from 'jspdf-autotable'
+import Papa from 'papaparse' // Import Papa Parse
 
 const filters = reactive({
   fromDate: '',
@@ -188,11 +179,14 @@ const isLoading = ref(false)
 // Format date for display
 const formatDate = (dateString) => {
   if (!dateString) return '' // Handle null/undefined dates.
-  return new Date(dateString).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })
+  // Use consistent format for display and potential export
+  return new Date(dateString).toLocaleDateString('en-CA') // YYYY-MM-DD format is often good for CSV
+  // Or keep your original format if preferred:
+  // return new Date(dateString).toLocaleDateString('en-GB', {
+  //   day: '2-digit',
+  //   month: 'short',
+  //   year: 'numeric',
+  // })
 }
 
 // Fetch data on component mount
@@ -207,6 +201,7 @@ onMounted(async () => {
         applicantName: item.full_name,
         reviewStatus: item.review_status, // Use review_status
         date: item.created_at, // Keep the original date
+        // Keep other fields if needed elsewhere, but they won't be exported by default
         registrationNumber: item.registration_no,
         cidNumber: item.cid_no,
         fullName: item.full_name,
@@ -234,6 +229,7 @@ onMounted(async () => {
 })
 
 const generateReport = () => {
+  // Filter logic remains the same
   filteredReports.value = reports.value.filter((report) => {
     const reportDate = report.date ? new Date(report.date) : null
     const fromDate = filters.fromDate ? new Date(filters.fromDate) : null
@@ -260,69 +256,54 @@ const resetFilters = () => {
   generateReport() // Re-apply filters (which will now show all data)
 }
 
-const exportToExcel = () => {
-  //Prepare data
-  const excelData = filteredReports.value.map((report) => ({
-    'CPD ID': report.id,
-    Title: report.title,
-    'Applicant Name': report.applicantName,
-    Status: report.reviewStatus,
-    Date: formatDate(report.date), // Use the formatDate function
-  }))
-  //Create worksheet
-  const ws = XLSX.utils.json_to_sheet(excelData)
-  //create workbook
-  const wb = XLSX.utils.book_new()
-  //append worksheet
-  XLSX.utils.book_append_sheet(wb, ws, 'CPD_Reports')
-  //export
-  XLSX.writeFile(wb, 'CPD_Reports.xlsx')
-}
-
-const exportToPDF = () => {
+// --- NEW CSV Export Function ---
+const exportToCSV = () => {
   if (filteredReports.value.length === 0) {
     alert('No data to export.') // Or use a more sophisticated notification
     return
   }
 
-  const doc = new jsPDF()
-
-  // Define columns for autoTable
-  const columns = [
-    { header: 'CPD ID', dataKey: 'id' },
-    { header: 'Title', dataKey: 'title' },
-    { header: 'Applicant Name', dataKey: 'applicantName' },
-    { header: 'Status', dataKey: 'reviewStatus' },
-    { header: 'Date', dataKey: 'date' },
-  ]
-
-  // Prepare data for autoTable
-  const data = filteredReports.value.map((report) => ({
-    id: report.id,
-    title: report.title,
-    applicantName: report.applicantName,
-    reviewStatus: report.reviewStatus,
-    date: formatDate(report.date), // Use consistent date format
+  // 1. Prepare data in the desired format (Array of Objects)
+  const dataToExport = filteredReports.value.map((report) => ({
+    'CPD ID': report.id, // Use headers as keys
+    Title: report.title,
+    'Applicant Name': report.applicantName,
+    Status: report.reviewStatus,
+    Date: formatDate(report.date), // Use the formatted date
+    // Add other fields here if needed for the export
+    // 'Registration No': report.registrationNumber,
+    // 'CID No': report.cidNumber,
+    // ... etc
   }))
-  doc.text('CPD Activity Report', 14, 15)
-  // Use autoTable to generate the table in the PDF
-  autoTable(doc, {
-    columns: columns,
-    body: data,
-    startY: 20, // Adjust start position as needed
-    didDrawPage: (data) => {
-      //header for each page
-      if (data.pageNumber !== 1) {
-        doc.text('CPD Activity Report', 14, 15) //header
-      }
-    },
-  })
 
-  // Save the PDF
-  doc.save('CPD_Reports.pdf')
+  // 2. Use Papa Parse to convert JSON to CSV string
+  const csv = Papa.unparse(dataToExport)
+
+  // 3. Create a Blob and trigger download
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+
+  link.setAttribute('href', url)
+  link.setAttribute('download', 'CPD_Reports.csv') // Set the filename
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url); // Clean up the object URL
 }
+
+// Remove the old exportToExcel and exportToPDF functions
+// const exportToExcel = () => { ... } // REMOVE
+// const exportToPDF = () => { ... } // REMOVE
+
 </script>
 
 <style scoped>
 /* Add any component-specific styles here */
+/* Add styles for disabled button */
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 </style>

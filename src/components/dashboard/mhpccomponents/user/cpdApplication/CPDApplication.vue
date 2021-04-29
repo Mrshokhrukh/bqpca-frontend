@@ -1,18 +1,20 @@
 <template>
   <div class="w-full mx-auto px-4 sm:px-6 py-8 pb-10">
-    <!-- Header Section - Reduced padding and font sizes -->
-    <div
-      class="relative bg-gradient-to-r from-indigo-50 via-blue-50 to-indigo-100 rounded-xl p-6 mb-10 overflow-hidden border border-indigo-100/50 shadow-sm">
-      <div class="absolute inset-0 bg-indigo-100 opacity-10 animate-pulse-slow"></div>
-      <h2 class="relative text-2xl font-bold text-gray-800 mb-3 text-center tracking-tight">
-        CPD Application
-      </h2>
-      <p class="relative text-gray-600 text-center max-w-xl mx-auto text-sm">
-        Complete required fields <span class="text-red-600 font-semibold">*</span>. Ensure information is accurate.
-      </p>
-    </div>
+    <!-- Use the new PageHeader component -->
+    <PageHeader
+      title="CPD Application"
+      subtitle="Complete required fields *. Ensure information is accurate."
+    >
+      <template #icon>
+        <ClipboardList class="w-6 h-6 text-indigo-600" />
+      </template>
+      <!-- Override the subtitle slot to include the red asterisk styling -->
+      <template #subtitle>
+         Complete required fields <span class="text-red-600 font-semibold">*</span>. Ensure information is accurate.
+      </template>
+    </PageHeader>
 
-    <!-- Form Section - Reduced shadow and padding -->
+    <!-- Form Section - Adjusted shadow and rounding slightly -->
     <form @submit.prevent="handleSubmit" class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
       <!-- Hidden fields -->
       <input type="hidden" v-model="form.registration_no" />
@@ -21,18 +23,18 @@
       <input type="hidden" v-model="form.gender" />
       <input type="hidden" v-model="form.cpd_credit" />
 
-      <!-- Form Header - Reduced padding and font sizes -->
-      <div class="bg-gradient-to-r from-gray-50/50 to-indigo-50/50 p-6 border-b border-gray-100">
+      <!-- Form Header - Simplified background -->
+      <div class="bg-gray-50/70 p-6 border-b border-gray-100">
         <h3 class="text-lg font-semibold text-gray-800">CPD Details</h3>
         <p class="mt-1 text-gray-500 text-sm">
           Provide information about your CPD activity.
         </p>
       </div>
 
-      <!-- Form Body - Reduced padding and spacing -->
+      <!-- Form Body - Kept existing layout -->
       <div class="p-6 space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6">
-          <!-- Input Fields - Adjusted padding, rounding, font size -->
+          <!-- Input Fields -->
           <div class="space-y-1.5">
             <label for="title_of_cpd" class="text-xs font-medium text-gray-700 flex items-center">
               Title of CPD <span class="text-red-500 ml-1">*</span>
@@ -57,7 +59,7 @@
             }}</span>
           </div>
 
-          <!-- Select Fields - Adjusted padding, rounding, font size -->
+          <!-- Select Fields -->
           <div class="space-y-1.5">
             <label for="participation_category" class="text-xs font-medium text-gray-700 flex items-center">
               Participation Category <span class="text-red-500 ml-1">*</span>
@@ -113,7 +115,7 @@
             }}</span>
           </div>
 
-          <!-- File Input - Adjusted styling -->
+          <!-- File Input -->
           <div class="space-y-1.5">
             <label for="attachment" class="text-xs font-medium text-gray-700">Supporting Documents</label>
             <div class="relative">
@@ -138,7 +140,7 @@
         </div>
       </div>
 
-      <!-- Form Footer / Actions - Reduced padding, button sizes -->
+      <!-- Form Footer / Actions -->
       <div class="bg-gray-50/70 px-6 py-4 flex justify-end space-x-3 border-t border-gray-100">
         <button type="button" @click="handleCancel"
           class="px-4 py-2 rounded-md bg-white text-gray-700 text-sm border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition duration-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-gray-400">
@@ -173,6 +175,8 @@ import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
 import apiService from '@/services/services'
 import { useRouter } from 'vue-router'
+import PageHeader from '@/components/common/MHPC/PageHeader.vue' // Import the common header
+import { ClipboardList } from 'lucide-vue-next' // Import the icon
 
 const toast = useToast()
 const authStore = useAuthStore()
@@ -421,12 +425,5 @@ select:disabled {
 }
 input[type='file']:focus-within {
   outline: none; /* Focus handled by ring utility */
-}
-@keyframes pulse-slow {
-  0%, 100% { opacity: 0.1; }
-  50% { opacity: 0.15; }
-}
-.animate-pulse-slow {
-  animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style>

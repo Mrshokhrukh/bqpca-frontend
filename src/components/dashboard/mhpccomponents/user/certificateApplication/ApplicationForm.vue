@@ -1,5 +1,18 @@
 <template>
   <div class="w-full mx-auto px-2 sm:px-4 py-4 sm:py-6">
+    <!-- Use the common PageHeader component -->
+    <PageHeader
+      :title="selectedType === 'cid' ? 'CID Holder Registration' : 'Non-CID Holder Registration'"
+    >
+      <template #icon>
+        <UserPlus class="w-6 h-6 text-indigo-600" />
+      </template>
+      <template #subtitle>
+        Please fill in all required fields marked with an asterisk (<span class="text-red-600">*</span>).
+        Ensure all information provided is accurate and up-to-date.
+      </template>
+    </PageHeader>
+
     <!-- Confirmation Modal -->
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
       <Dialog
@@ -88,18 +101,6 @@
         </div>
       </Dialog>
     </TransitionRoot>
-
-    <!-- Header Section -->
-    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-4 sm:p-6 mb-6">
-      <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 text-center">
-        {{ selectedType === 'cid' ? 'CID Holder Registration' : 'Non-CID Holder Registration' }}
-      </h2>
-      <p class="text-sm sm:text-base text-gray-600 text-center max-w-2xl mx-auto">
-        Please fill in all required fields marked with an asterisk (<span class="text-red-600"
-          >*</span
-        >). Ensure all information provided is accurate and up-to-date.
-      </p>
-    </div>
 
     <!-- Step 1: Personal Information Form -->
     <form
@@ -364,9 +365,9 @@
     <!-- Step 2: Medical Institution Registration Form -->
     <form class="bg-white border rounded-xl shadow-sm p-4 sm:p-6" v-else-if="stage === 2">
       <h3 class="text-lg font-semibold text-gray-900 my-3">
-        Step 2: Medical Institution Registration
+        Step 2: Qualification & Document Upload
       </h3>
-      
+
       <!-- Qualification Details Section -->
       <div class="mt-6">
         <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
@@ -566,6 +567,8 @@ import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import PageHeader from '@/components/common/MHPC/PageHeader.vue' // Import the common header
+import { UserPlus } from 'lucide-vue-next' // Import an appropriate icon
 
 const authStore = useAuthStore()
 const userId = authStore.userId
@@ -633,199 +636,7 @@ const updateFormDocuments = () => {
 }
 
 const countries = [
-  'Afghanistan',
-  'Albania',
-  'Algeria',
-  'Andorra',
-  'Angola',
-  'Antigua and Barbuda',
-  'Argentina',
-  'Armenia',
-  'Australia',
-  'Austria',
-  'Azerbaijan',
-  'Bahamas',
-  'Bahrain',
-  'Bangladesh',
-  'Barbados',
-  'Belarus',
-  'Belgium',
-  'Belize',
-  'Benin',
-  'Bhutan',
-  'Bolivia',
-  'Bosnia and Herzegovina',
-  'Botswana',
-  'Brazil',
-  'Brunei',
-  'Bulgaria',
-  'Burkina Faso',
-  'Burundi',
-  'Cambodia',
-  'Cameroon',
-  'Canada',
-  'Cape Verde',
-  'Central African Republic',
-  'Chad',
-  'Chile',
-  'China',
-  'Colombia',
-  'Comoros',
-  'Congo',
-  'Costa Rica',
-  'Croatia',
-  'Cuba',
-  'Cyprus',
-  'Czech Republic',
-  'Denmark',
-  'Djibouti',
-  'Dominica',
-  'Dominican Republic',
-  'East Timor',
-  'Ecuador',
-  'Egypt',
-  'El Salvador',
-  'Equatorial Guinea',
-  'Eritrea',
-  'Estonia',
-  'Ethiopia',
-  'Fiji',
-  'Finland',
-  'France',
-  'Gabon',
-  'Gambia',
-  'Georgia',
-  'Germany',
-  'Ghana',
-  'Greece',
-  'Grenada',
-  'Guatemala',
-  'Guinea',
-  'Guinea-Bissau',
-  'Guyana',
-  'Haiti',
-  'Honduras',
-  'Hungary',
-  'Iceland',
-  'India',
-  'Indonesia',
-  'Iran',
-  'Iraq',
-  'Ireland',
-  'Israel',
-  'Italy',
-  'Ivory Coast',
-  'Jamaica',
-  'Japan',
-  'Jordan',
-  'Kazakhstan',
-  'Kenya',
-  'Kiribati',
-  'Korea, North',
-  'Korea, South',
-  'Kuwait',
-  'Kyrgyzstan',
-  'Laos',
-  'Latvia',
-  'Lebanon',
-  'Lesotho',
-  'Liberia',
-  'Libya',
-  'Liechtenstein',
-  'Lithuania',
-  'Luxembourg',
-  'Macedonia',
-  'Madagascar',
-  'Malawi',
-  'Malaysia',
-  'Maldives',
-  'Mali',
-  'Malta',
-  'Marshall Islands',
-  'Mauritania',
-  'Mauritius',
-  'Mexico',
-  'Micronesia',
-  'Moldova',
-  'Monaco',
-  'Mongolia',
-  'Montenegro',
-  'Morocco',
-  'Mozambique',
-  'Myanmar',
-  'Namibia',
-  'Nauru',
-  'Nepal',
-  'Netherlands',
-  'New Zealand',
-  'Nicaragua',
-  'Niger',
-  'Nigeria',
-  'Norway',
-  'Oman',
-  'Pakistan',
-  'Palau',
-  'Panama',
-  'Papua New Guinea',
-  'Paraguay',
-  'Peru',
-  'Philippines',
-  'Poland',
-  'Portugal',
-  'Qatar',
-  'Romania',
-  'Russia',
-  'Saint Kitts and Nevis',
-  'Saint Lucia',
-  'Saint Vincent',
-  'Samoa',
-  'San Marino',
-  'Sao Tome and Principe',
-  'Saudi Arabia',
-  'Senegal',
-  'Serbia',
-  'Seychelles',
-  'Sierra Leone',
-  'Singapore',
-  'Slovakia',
-  'Slovenia',
-  'Solomon Islands',
-  'Somalia',
-  'South Africa',
-  'South Sudan',
-  'Spain',
-  'Sri Lanka',
-  'Sudan',
-  'Suriname',
-  'Swaziland',
-  'Sweden',
-  'Switzerland',
-  'Syria',
-  'Taiwan',
-  'Tajikistan',
-  'Tanzania',
-  'Thailand',
-  'Togo',
-  'Tonga',
-  'Trinidad and Tobago',
-  'Tunisia',
-  'Turkey',
-  'Turkmenistan',
-  'Tuvalu',
-  'Uganda',
-  'Ukraine',
-  'United Arab Emirates',
-  'United Kingdom',
-  'United States',
-  'Uruguay',
-  'Uzbekistan',
-  'Vanuatu',
-  'Vatican City',
-  'Venezuela',
-  'Vietnam',
-  'Yemen',
-  'Zambia',
-  'Zimbabwe',
+  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'East Timor', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Ivory Coast', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Korea, North', 'Korea, South', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe',
 ]
 
 const qualificationTypes = ref([])
@@ -877,7 +688,7 @@ const localFormData = reactive({
   year_of_completion: null,
   is_active: 'False',
   application: null,
-  registration_type: '1',
+  registration_type: '1', // Default registration_type ID
 })
 
 const errors = reactive({})
@@ -976,72 +787,10 @@ const validateForm = () => {
   Object.keys(errors).forEach((key) => delete errors[key])
   let isValid = true
 
-  if (!localFormData.full_name) {
-    errors.full_name = 'Full name is required'
-    isValid = false
-  }
-  if (!localFormData.gender) {
-    errors.gender = 'Gender is required'
-    isValid = false
-  }
-  if (!localFormData.date_of_birth) {
-    errors.date_of_birth = 'Date of birth is required'
-    isValid = false
-  }
-  if (!localFormData.contact_no) {
-    errors.contact_no = 'Contact number is required'
-    isValid = false
-  }
-  if (!localFormData.passport_photo) {
-    errors.passport_photo = 'Passport photo is required'
-    isValid = false
-  }
+  // Stage 1 Validations (re-run just in case)
+  if (!validateFormStageOne()) isValid = false;
 
-  if (props.selectedType === 'cid') {
-    if (!localFormData.cid_no) {
-      errors.cid_no = 'CID is required'
-      isValid = false
-    } else if (localFormData.cid_no.length > 11) {
-      errors.cid_no = 'CID must be no more than 11 digits.'
-      isValid = false
-    }
-
-    if (!localFormData.dzongkhag) {
-      errors.dzongkhag = 'Dzongkhag is required'
-      isValid = false
-    }
-    if (!localFormData.village) {
-      errors.village = 'Village is required'
-      isValid = false
-    }
-  } else {
-    if (!localFormData.nationality) {
-      errors.nationality = 'Nationality is required'
-      isValid = false
-    }
-    if (!localFormData.email_address) {
-      errors.email_address = 'Email is required'
-      isValid = false
-    }
-    if (!localFormData.workPermitNo) {
-      errors.workPermitNo = 'Work permit number is required'
-      isValid = false
-    }
-    if (!localFormData.country) {
-      errors.country = 'Country is required'
-      isValid = false
-    }
-    if (!localFormData.mobileNumber) {
-      errors.mobileNumber = 'Mobile number is required'
-      isValid = false
-    } else if (localFormData.mobileNumber.length > 8) {
-      errors.mobileNumber = 'Mobile number must be no more than 8 digits.'
-      isValid = false
-    } else if (!/^[17]/.test(localFormData.mobileNumber)) {
-      errors.mobileNumber = 'Mobile number must start with 1 or 7.'
-      isValid = false
-    }
-  }
+  // Stage 2 Validations
   if (!localFormData.qualification_type) {
     errors.qualification_type = 'Qualification Type is required'
     isValid = false
@@ -1059,9 +808,24 @@ const validateForm = () => {
     isValid = false
   }
 
+  // Document validation
+  let documentsValid = true;
+  supportingDocuments.value.forEach((doc, index) => {
+    if (!doc.type) {
+      toast.error(`Please select a document type for document ${index + 1}.`)
+      documentsValid = false;
+    }
+    if (doc.files.length === 0) {
+      toast.error(`Please select file(s) to upload for document ${index + 1}.`)
+      documentsValid = false;
+    }
+  });
+  if (!documentsValid) isValid = false;
+
+
   if (!localFormData.declaration) {
     toast.error('Please accept the declaration.')
-    return false
+    isValid = false
   }
 
   return isValid
@@ -1160,6 +924,7 @@ const handleNext = async () => {
       delete formDataStageOne.workPermitNo
     }
 
+    // Remove fields not needed for the first API call
     delete formDataStageOne.documents
     delete formDataStageOne.remarks
     delete formDataStageOne.declaration
@@ -1171,7 +936,7 @@ const handleNext = async () => {
     delete formDataStageOne.year_of_completion
     delete formDataStageOne.is_active
     delete formDataStageOne.application
-    // Keep registration_type for now, will use its value
+    // Keep registration_type
 
     const today = new Date()
     const expiry = new Date(today)
@@ -1183,7 +948,7 @@ const handleNext = async () => {
     const apiFormData = new FormData()
     for (const key in formDataStageOne) {
       if (Object.prototype.hasOwnProperty.call(formDataStageOne, key)) {
-        // Skip the original registration_type, we'll add registration_type_id later
+        // Skip the original registration_type; we'll add its ID below
         if (key === 'registration_type') {
             continue;
         }
@@ -1195,74 +960,85 @@ const handleNext = async () => {
       }
     }
 
-    // Add the required fields with correct names
-    apiFormData.append('applicant', user.id)
-    apiFormData.append('registration_type', localFormData.registration_type) // Use the value from local form
+    // Add required fields with correct names
+    apiFormData.append('applicant', user.id); // Assuming user.id holds the applicant's user ID
+    apiFormData.append('registration_type', localFormData.registration_type); // Send the ID
 
+    isSubmitting.value = true;
     try {
       const response = await apiService.createMhpcNewApplication(apiFormData)
 
       applicationId.value = response.data.id
-      localFormData.application = response.data.id
+      localFormData.application = response.data.id // Store the created application ID
 
       toast.success('Personal information saved!')
       stage.value = 2
     } catch (error) {
       console.error('Error submitting personal information:', error)
       if (error.response && error.response.data) {
-           // Convert the error response data object to a string for display
            const errorMessages = Object.entries(error.response.data)
-             .map(([key, value]) => `${key}: ${value.join(', ')}`)
+             .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
              .join('; ');
            toast.error(`Failed to save personal information: ${errorMessages}`);
          } else {
            toast.error('Failed to save personal information. An unknown error occurred.');
          }
+    } finally {
+        isSubmitting.value = false;
     }
+  } else {
+      toast.error("Please fix the errors in Step 1.")
   }
 }
 
+
 const openConfirmationModal = () => {
-  if (validateForm()) {
+  if (validateForm()) { // Validate the *entire* form before showing confirmation
     isConfirmationModalOpen.value = true
+  } else {
+      toast.error("Please fix the errors in Step 2.")
   }
 }
 
 const handleSubmitActual = async () => {
   isConfirmationModalOpen.value = false
+  if (!validateForm()) { // Double-check validation
+      toast.error("Submission cancelled due to validation errors.")
+      return;
+  }
+
   isSubmitting.value = true
 
   try {
     const formData = new FormData();
 
     // --- Fields for UserQualification model ---
-    formData.append('application', localFormData.application); 
+    formData.append('application', localFormData.application); // Ensure this has the ID from stage 1
     formData.append('qualification_name', localFormData.qualification_name);
     formData.append('qualification_type', localFormData.qualification_type);
     formData.append('institute_university', localFormData.institute);
-    
-    if (localFormData.year_of_completion) {
-      try {
-        const completionDate = new Date(localFormData.year_of_completion);
-        if (!isNaN(completionDate.getFullYear())) {
-          formData.append('completion_year', completionDate.getFullYear());
-        } else {
-          console.warn("Invalid year_of_completion format:", localFormData.year_of_completion);
-        }
-      } catch(e) {
-        console.error("Error parsing year_of_completion:", e);
+
+    // Safely get year from 'YYYY-MM' format
+    if (localFormData.year_of_completion && typeof localFormData.year_of_completion === 'string') {
+      const year = localFormData.year_of_completion.split('-')[0];
+      if (year && !isNaN(parseInt(year))) {
+          formData.append('completion_year', year);
+      } else {
+          console.warn("Invalid year_of_completion format, cannot extract year:", localFormData.year_of_completion);
       }
     }
-    
+
     formData.append('declaration', localFormData.declaration ? 'True' : 'False');
     formData.append('remarks', localFormData.remarks || '');
-    formData.append('is_primary_qualification', 'True');
+    formData.append('is_primary_qualification', 'True'); // Assuming this is the primary one for now
 
     // --- Handle Attachments ---
+    updateFormDocuments(); // Ensure localFormData.documents is up-to-date
     localFormData.documents.forEach((doc, index) => {
       if (doc.files && doc.files.length > 0 && doc.type) {
         doc.files.forEach((file) => {
-          formData.append(`attachments-${index}-file`, file);
+          // Use a consistent naming scheme expected by the backend
+          formData.append(`attachments-${index}-file`, file, file.name); // Add filename
           formData.append(`attachments-${index}-document_type`, doc.type);
         });
       } else {
@@ -1270,15 +1046,12 @@ const handleSubmitActual = async () => {
       }
     });
 
-    console.log('Submitting Qualification FormData:');
-    for (let pair of formData.entries()) {
-      console.log(pair[0]+ ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
-    }
 
     await apiService.createMhpcNewQualification(formData);
 
-    toast.success('Qualification submitted successfully!');
-    router.push('/admin/user/health_certification/dashboard');
+    toast.success('Registration submitted successfully!');
+    emit('submit', localFormData); // Emit the final form data if needed
+    router.push('/admin/user/health_certification/dashboard'); // Redirect
 
   } catch (error) {
     console.error('Error submitting qualification:', error);
@@ -1299,16 +1072,16 @@ const handleSubmitActual = async () => {
 <style scoped>
 .required::after {
   content: ' *';
-  color: #ef4444;
+  color: #ef4444; /* Tailwind's red-500 */
 }
 
 /* Responsive text styles */
 @media (max-width: 640px) {
   .text-sm {
-    font-size: 0.8125rem;
+    font-size: 0.8125rem; /* Slightly smaller than Tailwind's sm */
   }
   .text-xs {
-    font-size: 0.75rem;
+    font-size: 0.75rem; /* Tailwind's xs */
   }
 }
 
