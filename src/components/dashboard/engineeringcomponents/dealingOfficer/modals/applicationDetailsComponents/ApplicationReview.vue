@@ -25,30 +25,25 @@
         <h5 class="text-lg font-medium text-gray-900 mb-3">Payment Status</h5>
         <div class="flex items-center space-x-3">
           <!-- Status Indicator Dot -->
-          <span
-            :class="[
-              'w-3 h-3 rounded-full',
-              // Use the prop value here
-              props.qualification.payment_status === 'pending'
-                ? 'bg-yellow-400' // Pending = Yellow
-                : props.qualification.payment_status === 'completed' // Match API value (like 'completed')
-                  ? 'bg-green-400' // Completed = Green
-                  : 'bg-gray-300', // Default/Unknown = Gray
-            ]"
-          >
+          <span :class="[
+            'w-3 h-3 rounded-full',
+            // Use the prop value here
+            props.qualification.payment_status === 'pending'
+              ? 'bg-yellow-400' // Pending = Yellow
+              : props.qualification.payment_status === 'completed' // Match API value (like 'completed')
+                ? 'bg-green-400' // Completed = Green
+                : 'bg-gray-300', // Default/Unknown = Gray
+          ]">
           </span>
           <!-- Status Text -->
-          <span
-            class="text-sm font-medium capitalize"
-            :class="[
-              // Use the prop value here
-              props.qualification.payment_status === 'pending'
-                ? 'text-yellow-600'
-                : props.qualification.payment_status === 'completed' // Match API value
-                  ? 'text-green-600'
-                  : 'text-gray-600',
-            ]"
-          >
+          <span class="text-sm font-medium capitalize" :class="[
+            // Use the prop value here
+            props.qualification.payment_status === 'pending'
+              ? 'text-yellow-600'
+              : props.qualification.payment_status === 'completed' // Match API value
+                ? 'text-green-600'
+                : 'text-gray-600',
+          ]">
             <!-- Display the actual status from the prop, or 'Unknown' if null/undefined -->
             {{ props.qualification.payment_status || 'Unknown' }}
           </span>
@@ -62,12 +57,10 @@
         <div class="space-y-2">
           <h6 class="text-sm font-medium text-gray-700">Document Review</h6>
           <div class="flex items-center space-x-2">
-            <span
-              :class="[
-                'w-2 h-2 rounded-full',
-                getStatusClass(editableData.application_review_status),
-              ]"
-            ></span>
+            <span :class="[
+              'w-2 h-2 rounded-full',
+              getStatusClass(editableData.application_review_status),
+            ]"></span>
             <span class="text-sm text-gray-600">{{ editableData.application_review_status }}</span>
           </div>
           <p v-if="editableData.application_review_remark" class="text-sm text-gray-500 mt-1">
@@ -79,9 +72,7 @@
         <div class="space-y-2">
           <h6 class="text-sm font-medium text-gray-700">Physical Verification</h6>
           <div class="flex items-center space-x-2">
-            <span
-              :class="['w-2 h-2 rounded-full', getStatusClass(editableData.physical_review_status)]"
-            ></span>
+            <span :class="['w-2 h-2 rounded-full', getStatusClass(editableData.physical_review_status)]"></span>
             <span class="text-sm text-gray-600">{{ editableData.physical_review_status }}</span>
           </div>
           <p v-if="editableData.physical_review_remark" class="text-sm text-gray-500 mt-1">
@@ -93,9 +84,7 @@
         <div class="space-y-2">
           <h6 class="text-sm font-medium text-gray-700">Final Endorsement</h6>
           <div class="flex items-center space-x-2">
-            <span
-              :class="['w-2 h-2 rounded-full', getStatusClass(editableData.endorsement_decision)]"
-            ></span>
+            <span :class="['w-2 h-2 rounded-full', getStatusClass(editableData.endorsement_decision)]"></span>
             <span class="text-sm text-gray-600">{{ editableData.endorsement_decision }}</span>
           </div>
           <p v-if="editableData.endorsement_remarks" class="text-sm text-gray-500 mt-1">
@@ -110,21 +99,16 @@
         <div class="space-y-4">
           <div class="p-4 bg-gray-50 rounded-lg">
             <h5 class="font-medium text-gray-900 mb-3">Document Review</h5>
-            <select
-              v-model="editableData.application_review_status"
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
+            <select v-model="editableData.application_review_status"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               <option value="Pending">Pending Review</option>
               <option value="Approved">Approve Documents</option>
               <option value="Regretted">Regret Documents</option>
             </select>
-            <textarea
-              v-if="editableData.application_review_status === 'Regretted'"
-              v-model="editableData.application_review_remark"
-              placeholder="Provide rejection reason..."
+            <textarea v-if="editableData.application_review_status === 'Regretted'"
+              v-model="editableData.application_review_remark" placeholder="Provide rejection reason..."
               class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              rows="3"
-            ></textarea>
+              rows="3"></textarea>
           </div>
         </div>
 
@@ -132,21 +116,16 @@
         <div class="space-y-4">
           <div class="p-4 bg-gray-50 rounded-lg">
             <h5 class="font-medium text-gray-900 mb-3">Physical Verification</h5>
-            <select
-              v-model="editableData.physical_review_status"
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
+            <select v-model="editableData.physical_review_status"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               <option value="Pending">Pending Verification</option>
               <option value="Approved">Verify Documents</option>
               <option value="Regretted">Regret Verification</option>
             </select>
-            <textarea
-              v-if="editableData.physical_review_status === 'Regretted'"
-              v-model="editableData.physical_review_remark"
-              placeholder="Provide rejection reason..."
+            <textarea v-if="editableData.physical_review_status === 'Regretted'"
+              v-model="editableData.physical_review_remark" placeholder="Provide rejection reason..."
               class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              rows="3"
-            ></textarea>
+              rows="3"></textarea>
           </div>
         </div>
 
@@ -154,21 +133,16 @@
         <div class="space-y-4">
           <div class="p-4 bg-gray-50 rounded-lg">
             <h5 class="font-medium text-gray-900 mb-3">Final Endorsement</h5>
-            <select
-              v-model="editableData.endorsement_decision"
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
+            <select v-model="editableData.endorsement_decision"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               <option value="Pending">Pending Decision</option>
               <option value="Approved">Endorse Application</option>
               <option value="Regretted">Regret Application</option>
             </select>
-            <textarea
-              v-if="editableData.endorsement_decision === 'Regretted'"
-              v-model="editableData.endorsement_remarks"
-              placeholder="Provide rejection reason..."
+            <textarea v-if="editableData.endorsement_decision === 'Regretted'"
+              v-model="editableData.endorsement_remarks" placeholder="Provide rejection reason..."
               class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              rows="3"
-            ></textarea>
+              rows="3"></textarea>
           </div>
         </div>
       </div>
@@ -258,31 +232,31 @@ const saveChanges = async () => {
     ) {
       // Specific handling for remarks: if status changes away from 'Regretted', clear the remark
       if (key === 'application_review_status' && editableData.value[key] !== 'Regretted') {
-         if (editableData.value.application_review_remark !== originalData.value.application_review_remark) {
-            changedFields.application_review_remark = '' // Clear remark explicitly if status changed
-         }
+        if (editableData.value.application_review_remark !== originalData.value.application_review_remark) {
+          changedFields.application_review_remark = '' // Clear remark explicitly if status changed
+        }
       } else if (key === 'physical_review_status' && editableData.value[key] !== 'Regretted') {
-         if (editableData.value.physical_review_remark !== originalData.value.physical_review_remark) {
-           changedFields.physical_review_remark = ''
-         }
+        if (editableData.value.physical_review_remark !== originalData.value.physical_review_remark) {
+          changedFields.physical_review_remark = ''
+        }
       } else if (key === 'endorsement_decision' && editableData.value[key] !== 'Regretted') {
-          if (editableData.value.endorsement_remarks !== originalData.value.endorsement_remarks) {
-            changedFields.endorsement_remarks = ''
-          }
+        if (editableData.value.endorsement_remarks !== originalData.value.endorsement_remarks) {
+          changedFields.endorsement_remarks = ''
+        }
       }
 
       // Add the changed field
       changedFields[key] = editableData.value[key]
 
-       // If status is 'Regretted' but remark is empty, don't send empty remark unless it was changed from non-empty
+      // If status is 'Regretted' but remark is empty, don't send empty remark unless it was changed from non-empty
       if (key.endsWith('_remark') && editableData.value[key.replace('_remark', '_status')] !== 'Regretted') {
-           // If the corresponding status is NOT 'Regretted', ensure we send an empty remark if it was cleared
-          if (originalData.value[key] !== '' && changedFields[key] === '') {
-             // keep changedFields[key] = '';
-          } else if (changedFields[key] === '') {
-              // If remark is empty and status is not Regretted, don't send the empty remark unless it was explicitly cleared
-              delete changedFields[key];
-          }
+        // If the corresponding status is NOT 'Regretted', ensure we send an empty remark if it was cleared
+        if (originalData.value[key] !== '' && changedFields[key] === '') {
+          // keep changedFields[key] = '';
+        } else if (changedFields[key] === '') {
+          // If remark is empty and status is not Regretted, don't send the empty remark unless it was explicitly cleared
+          delete changedFields[key];
+        }
       }
 
 
@@ -291,7 +265,7 @@ const saveChanges = async () => {
       !Object.prototype.hasOwnProperty.call(originalData.value, key) &&
       editableData.value[key] != null // Check for non-null/undefined new values
     ) {
-       changedFields[key] = editableData.value[key]
+      changedFields[key] = editableData.value[key]
     }
   }
 
@@ -318,7 +292,7 @@ const saveChanges = async () => {
 
     // Make the API call
     // Ensure the service function signature matches (ID, data)
-    await apiServices.patchMhpcNewQualification(props.qualification.id, formData)
+    await apiServices.patchEpcNewQualification(props.qualification.id, formData)
 
     // Update the local 'originalData' baseline to the new saved state
     originalData.value = JSON.parse(JSON.stringify(editableData.value))
