@@ -1,22 +1,26 @@
-<!-- src/components/SearchRecords.vue -->
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <!-- Header with Gradient (Preserved as requested) -->
-      <div
-        class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md"
-      >
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Search Records</h1>
-        <p class="text-gray-600">Find and manage professional records within the system.</p>
-      </div>
+      <!-- Use DOPageHeader -->
+      <DOPageHeader
+        title="Search Records"
+        description="Find and manage professional records within the system."
+        :search-query="searchQuery"
+        @update:searchQuery="searchQuery = $event"
+        search-placeholder="Search by Name, CID/Work Permit/Passport..."
+        :show-filter="false"
+      />
 
-      <!-- Filter Section - Redesigned -->
+      <!-- Removed the old gradient header -->
+
+      <!-- Filter Section - Remaining Filters -->
       <div class="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-100">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-lg font-semibold text-gray-900">Search Filters</h3>
+          <h3 class="text-lg font-semibold text-gray-900">Advanced Filters</h3>
           <button
             @click="resetFilters"
             class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg shadow-sm transition-all duration-200 hover:shadow"
+            aria-label="Reset all filters"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -24,6 +28,7 @@
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              aria-hidden="true"
             >
               <path
                 stroke-linecap="round"
@@ -36,7 +41,7 @@
           </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <!-- Registration Date Range -->
           <div class="space-y-2">
             <label for="reg-from" class="block text-sm font-medium text-gray-700"
@@ -49,6 +54,7 @@
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
+                  aria-hidden="true"
                 >
                   <path
                     fill-rule="evenodd"
@@ -76,6 +82,7 @@
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
+                    aria-hidden="true"
                 >
                   <path
                     fill-rule="evenodd"
@@ -93,63 +100,7 @@
             </div>
           </div>
 
-          <!-- Search by Name -->
-          <div class="space-y-2">
-            <label for="name-search" class="block text-sm font-medium text-gray-700">Name</label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  class="h-5 w-5 text-gray-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </div>
-              <input
-                id="name-search"
-                type="text"
-                v-model="filters.name"
-                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg"
-                placeholder="Enter name..."
-              />
-            </div>
-          </div>
-
-          <!-- CID/Work Permit/Passport No. -->
-          <div class="space-y-2">
-            <label for="cid-search" class="block text-sm font-medium text-gray-700"
-              >CID/Work Permit/Passport</label
-            >
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  class="h-5 w-5 text-gray-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h6v4H7V5zm8 8V7H5v6h10z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </div>
-              <input
-                id="cid-search"
-                type="text"
-                v-model="filters.cid"
-                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg"
-                placeholder="Enter CID/Work Permit/Passport No...."
-              />
-            </div>
-          </div>
+          <!-- Removed Name and CID search - Handled by DOPageHeader -->
 
           <!-- Gender -->
           <div class="space-y-2">
@@ -158,23 +109,15 @@
             >
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  class="h-5 w-5 text-gray-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
+                 <!-- Gender Icon -->
+                 <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                   <path fill-rule="evenodd" d="M3.5 8a.5.5 0 01.5-.5h12a.5.5 0 010 1H4a.5.5 0 01-.5-.5zM8 3a.5.5 0 01.5.5v13a.5.5 0 01-1 0V3.5A.5.5 0 018 3zm4 14a.5.5 0 01-.5-.5V3.5a.5.5 0 011 0v13a.5.5 0 01-.5.5z" clip-rule="evenodd" />
+                 </svg>
               </div>
               <select
                 id="gender-filter"
                 v-model="filters.gender"
-                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg appearance-none bg-none"
+                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg appearance-none bg-white"
               >
                 <option value="">All Genders</option>
                 <option value="male">Male</option>
@@ -187,6 +130,7 @@
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
+                  aria-hidden="true"
                 >
                   <path
                     fill-rule="evenodd"
@@ -205,25 +149,20 @@
             >
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  class="h-5 w-5 text-gray-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"
-                  />
-                </svg>
+                 <!-- Category Icon -->
+                 <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                   <path d="M2 4a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H3a1 1 0 01-1-1V4zM8 4a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1V4zM14 4a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1h-2a1 1 0 01-1-1V4zM3 9a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1V9zM8 9a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1V9zM14 9a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1h-2a1 1 0 01-1-1V9zM3 14a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-1zM8 14a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1v-1zM14 14a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1h-2a1 1 0 01-1-1v-1z"/>
+                 </svg>
               </div>
               <select
                 id="category-filter"
                 v-model="filters.category"
-                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg appearance-none"
+                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg appearance-none bg-white"
               >
                 <option value="">All Categories</option>
-                <option>University</option>
-                <option>Sector</option>
+                 <!-- Populate dynamically if possible -->
+                <option value="health_certification">Health Certification</option>
+                <option value="other_category">Other Category</option>
               </select>
               <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 <svg
@@ -231,6 +170,7 @@
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
+                  aria-hidden="true"
                 >
                   <path
                     fill-rule="evenodd"
@@ -242,31 +182,25 @@
             </div>
           </div>
 
-          <!-- Sub Category -->
+          <!-- Sub Category (Kept for consistency, but maybe less used) -->
           <div class="space-y-2">
             <label for="sub-category-filter" class="block text-sm font-medium text-gray-700"
               >Sub Category</label
             >
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  class="h-5 w-5 text-gray-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z"
-                  />
-                </svg>
+                  <!-- Sub Category Icon -->
+                  <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                  </svg>
               </div>
               <select
                 id="sub-category-filter"
                 v-model="filters.subCategory"
-                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg appearance-none"
+                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg appearance-none bg-white"
               >
                 <option value="">All Sub Categories</option>
-                <option>Qualification Type</option>
+                <!-- Populate dynamically -->
               </select>
               <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 <svg
@@ -274,6 +208,7 @@
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
+                   aria-hidden="true"
                 >
                   <path
                     fill-rule="evenodd"
@@ -285,34 +220,27 @@
             </div>
           </div>
 
-          <!-- Health Facility -->
+          <!-- Health Facility (Now uses service_type) -->
           <div class="space-y-2">
             <label for="health-facility-filter" class="block text-sm font-medium text-gray-700"
-              >Health Facility</label
+              >Service Type</label
             >
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  class="h-5 w-5 text-gray-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
+                 <!-- Facility/Service Icon -->
+                  <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                  </svg>
               </div>
               <select
                 id="health-facility-filter"
-                v-model="filters.healthFacility"
-                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg appearance-none"
+                v-model="filters.serviceType"
+                class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg appearance-none bg-white"
               >
-                <option value="">All Facilities</option>
-                <option>Hospital</option>
-                <option>Clinic</option>
+                <option value="">All Service Types</option>
+                <!-- Populate dynamically if possible -->
+                <option value="health_certification">Health Certification</option>
+                <option value="other_service">Other Service</option>
               </select>
               <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 <svg
@@ -320,6 +248,7 @@
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
+                   aria-hidden="true"
                 >
                   <path
                     fill-rule="evenodd"
@@ -346,6 +275,7 @@
           <div
             class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"
           ></div>
+          <p class="ml-4 text-gray-600 self-center">Loading records...</p>
         </div>
 
         <!-- Table -->
@@ -358,7 +288,6 @@
                 >
                   Ref.
                 </th>
-                <!-- <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Date</th> -->
                 <th
                   class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32"
                 >
@@ -382,7 +311,7 @@
                 <th
                   class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32"
                 >
-                  Facility
+                  Service Type
                 </th>
                 <th
                   class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24"
@@ -405,21 +334,20 @@
                 <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                   {{ index + 1 }}
                 </td>
-                <!-- <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ formatDate(record.registration_date) }}</td> -->
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 truncate">
-                  {{ record.username }}
+                  {{ record.username || 'N/A' }}
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 font-mono">
-                  {{ record.cid }}
+                  {{ record.cid || 'N/A' }}
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                  {{ record.gender }}
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 capitalize">
+                  {{ record.gender || 'N/A' }}
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                  {{ record.category }}
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 capitalize">
+                   {{ (record.category || 'N/A').replace('_', ' ') }}
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 truncate">
-                  {{ record.service_type }}
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 truncate capitalize">
+                   {{ (record.service_type || 'N/A').replace('_', ' ') }}
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
                   <span
@@ -432,9 +360,10 @@
                   <button
                     @click="viewRecord(record)"
                     class="inline-flex items-center p-1.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition-colors duration-200"
+                     title="View Record"
+                     aria-label="View record details"
                   >
-                    <span class="sr-only">View</span>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -452,9 +381,10 @@
                   <button
                     @click="editRecord(record)"
                     class="inline-flex items-center p-1.5 rounded-full bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-800 transition-colors duration-200"
+                     title="Edit Record"
+                     aria-label="Edit record details"
                   >
-                    <span class="sr-only">Edit</span>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -466,9 +396,10 @@
                   <button
                     @click="deleteRecord(record.id)"
                     class="inline-flex items-center p-1.5 rounded-full bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
+                     title="Delete Record"
+                     aria-label="Delete this record"
                   >
-                    <span class="sr-only">Delete</span>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -491,6 +422,7 @@
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            aria-hidden="true"
           >
             <path
               stroke-linecap="round"
@@ -501,7 +433,7 @@
           </svg>
           <h3 class="mt-2 text-lg font-medium text-gray-900">No matching records found</h3>
           <p class="mt-1 text-sm text-gray-500">
-            Try adjusting your search filters to find what you're looking for.
+            Try adjusting your search or advanced filters to find what you're looking for.
           </p>
           <div class="mt-6">
             <button
@@ -531,103 +463,123 @@
 import { ref, computed, onMounted } from 'vue'
 import apiServices from '@/services/services' // Import your API service
 import UserDetailsModal from './modals/UserDetailsModal.vue'
+import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue' // Import the header
 
+// --- State ---
 const filters = ref({
   regFrom: '',
   regTo: '',
-  name: '',
-  cid: '',
+  // name: '', // Removed, handled by searchQuery
+  // cid: '', // Removed, handled by searchQuery
   gender: '',
   category: '',
   subCategory: '',
-  healthFacility: '',
+  serviceType: '', // Renamed from healthFacility to match API field? Check API response.
 })
-
+const searchQuery = ref('') // New state for the header search
 const records = ref([])
 const showModal = ref(false)
 const isEditing = ref(false)
 const selectedRecord = ref(null)
 const loading = ref(false)
 
+// --- API Fetching ---
 const fetchUsers = async () => {
   loading.value = true
   try {
     const response = await apiServices.getAllUsers()
-    records.value = response.data.results.filter(
-      (user) => user.role === 'user' && user.service_type === 'health_certification',
-    )
-    loading.value = false
+    // Adjust filtering if needed based on your API structure and desired records
+    records.value = response?.data?.results || response?.data || [] // More robust check
+    // Example: Keep only specific roles/types if necessary
+    // records.value = (response?.data?.results || response?.data || []).filter(
+    //   (user) => user.role === 'user' && user.service_type === 'health_certification',
+    // )
   } catch (error) {
     console.error('Error fetching users:', error)
+    records.value = [] // Clear data on error
+    // Consider adding a toast notification for the error
+  } finally {
     loading.value = false
   }
 }
 
 onMounted(fetchUsers)
 
+// --- Computed Properties ---
 const filteredRecords = computed(() => {
+  if (!Array.isArray(records.value)) return []
+
   return records.value.filter((record) => {
-    const regDate = record.registration_date ? new Date(record.registration_date) : null
-    const from = filters.value.regFrom ? new Date(filters.value.regFrom) : null
-    const to = filters.value.regTo ? new Date(filters.value.regTo) : null
-    return (
-      (!from || (regDate && regDate >= from)) &&
-      (!to || (regDate && regDate <= to)) &&
-      (!filters.value.name ||
-        (record.username &&
-          record.username.toLowerCase().includes(filters.value.name.toLowerCase()))) &&
-      (!filters.value.cid || (record.cid && record.cid.includes(filters.value.cid))) &&
-      (!filters.value.gender || (record.gender && record.gender === filters.value.gender)) &&
-      (!filters.value.category ||
-        (record.category && record.category === filters.value.category)) &&
-      (!filters.value.healthFacility ||
-        (record.service_type && record.service_type === filters.value.healthFacility))
-    )
+    // Date filtering (remains the same)
+    const regDate = record.registration_date ? new Date(record.registration_date) : null; // Ensure field exists
+    const from = filters.value.regFrom ? new Date(filters.value.regFrom) : null;
+    const to = filters.value.regTo ? new Date(filters.value.regTo) : null;
+    const isDateMatch = (!from || (regDate && regDate >= from)) && (!to || (regDate && regDate <= to));
+
+    // Search Query filtering (uses new searchQuery ref)
+    const query = searchQuery.value.trim().toLowerCase();
+    const isSearchMatch = !query ||
+        (record.username && record.username.toLowerCase().includes(query)) ||
+        (record.cid && record.cid.toLowerCase().includes(query)) ||
+        (record.permit_no && record.permit_no.toLowerCase().includes(query)) || // Example: Add other relevant fields
+        (record.passport_no && record.passport_no.toLowerCase().includes(query));
+
+    // Specific field filters (remain the same)
+    const isGenderMatch = !filters.value.gender || (record.gender && record.gender.toLowerCase() === filters.value.gender.toLowerCase());
+    const isCategoryMatch = !filters.value.category || (record.category && record.category.toLowerCase() === filters.value.category.toLowerCase());
+    const isSubCategoryMatch = !filters.value.subCategory || (record.sub_category && record.sub_category.toLowerCase() === filters.value.subCategory.toLowerCase()); // Check field name
+    const isServiceTypeMatch = !filters.value.serviceType || (record.service_type && record.service_type.toLowerCase() === filters.value.serviceType.toLowerCase());
+
+    return isDateMatch && isSearchMatch && isGenderMatch && isCategoryMatch && isSubCategoryMatch && isServiceTypeMatch;
   })
 })
 
-// const formatDate = (dateString) => {
-//   if (!dateString) return '-';
-//   const options = { year: 'numeric', month: 'short', day: 'numeric' };
-//   return new Date(dateString).toLocaleDateString(undefined, options);
-// };
+
+// --- Methods ---
 
 // Filter reset functionality
 const resetFilters = () => {
   filters.value = {
     regFrom: '',
     regTo: '',
-    name: '',
-    cid: '',
     gender: '',
     category: '',
     subCategory: '',
-    healthFacility: '',
+    serviceType: '', // Reset specific filters
   }
+  searchQuery.value = '' // Reset header search query
 }
 
 const viewRecord = (record) => {
-  selectedRecord.value = { ...record }
+  selectedRecord.value = { ...record } // Create a shallow copy
   isEditing.value = false
   showModal.value = true
 }
 
 const editRecord = (record) => {
-  selectedRecord.value = { ...record }
+  selectedRecord.value = { ...record } // Create a shallow copy
   isEditing.value = true
   showModal.value = true
 }
 
 const deleteRecord = async (id) => {
-  if (confirm('Are you sure you want to delete this record?')) {
-    try {
-      await apiServices.deleteUser(id)
-      fetchUsers() // Refresh the list
-    } catch (error) {
-      console.error('Error deleting user:', error)
+    if (!id) {
+        console.error("Delete failed: Record ID is missing.");
+        // Show error toast notification
+        return;
     }
-  }
+    if (confirm(`Are you sure you want to delete record ID ${id}? This action cannot be undone.`)) {
+        try {
+            await apiServices.deleteUser(id); // Ensure this matches your API service method
+            // Optionally show success toast
+            await fetchUsers(); // Refresh the list after successful deletion
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            // Optionally show error toast
+        }
+    }
 }
+
 
 const closeModal = () => {
   showModal.value = false

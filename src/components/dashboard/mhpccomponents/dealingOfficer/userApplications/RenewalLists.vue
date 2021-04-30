@@ -1,55 +1,18 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
-    <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Renewal Applications</h1>
-      <div class="flex items-center text-gray-600">
-        <span class="flex items-center">
-          <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-          Total Matches: {{ filteredCombinedData.length }}
-        </span>
-        <span class="mx-4">|</span>
-        <span class="flex items-center">
-          <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
-          Pending: {{ pendingCount }}
-        </span>
-      </div>
-    </div>
+    <!-- Use the DOPageHeader Component -->
+    <DOPageHeader
+      title="Renewal Applications"
+      :description="headerDescription"
+      :search-query="searchQuery"
+      @update:searchQuery="searchQuery = $event"
+      search-placeholder="Search by name, CID or registration number..."
+      :filter-value="filterStatus"
+      @update:filterValue="filterStatus = $event"
+      :filter-options="statusFilterOptions"
+    />
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-      <div class="relative">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search by name, CID or registration number..."
-          class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      </div>
-      <div class="flex gap-4">
-        <select
-          v-model="filterStatus"
-          class="flex-1 px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="all">All Statuses</option>
-          <option value="Pending">Pending</option>
-          <option value="Approved">Approved</option>
-          <option value="Regretted">Regretted</option>
-        </select>
-      </div>
-    </div>
+    <!-- Removed the old header and filter grid -->
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
@@ -105,7 +68,7 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div
-                    class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center mr-3"
+                    class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center mr-3 flex-shrink-0"
                   >
                     <span class="text-gray-600 text-xs">{{ getInitials(item) }}</span>
                   </div>
@@ -158,8 +121,9 @@
       </div>
     </div>
 
+    <!-- Pagination -->
     <div
-      v-if="!isLoading && filteredCombinedData.length > itemsPerPage"
+      v-if="totalPages > 1"
       class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100"
     >
       <div class="flex-1 flex justify-between sm:hidden">
@@ -245,6 +209,7 @@
       </div>
     </div>
 
+    <!-- Modal -->
     <RenewalDetailsModal
       :is-open="isModalOpen"
       :application="selectedItem"
@@ -259,47 +224,54 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import apiServices from '@/services/services' // Adjust path if needed
-import RenewalDetailsModal from '../modals/RenewalDetailsModal.vue' // Adjust path if needed
+import apiServices from '@/services/services'
+import RenewalDetailsModal from '../modals/RenewalDetailsModal.vue'
+import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue' // Import the header
 import { useToast } from 'vue-toastification'
 
 // --- State ---
-const renewals = ref([]) // Raw data from /mhpc-renewals/
-const qualificationsData = ref([]) // Raw data from /mhpc-new-qualification/
+const renewals = ref([])
+const qualificationsData = ref([])
 const filterStatus = ref('all')
 const searchQuery = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 10
 const isModalOpen = ref(false)
-// selectedItem holds the combined object for the modal
 const selectedItem = ref(null)
 const personnelCategories = ref([])
 const personnelSubcategories = ref([])
 const sectors = ref([])
 const toast = useToast()
-// isLoading now tracks the combined loading state
 const isLoading = ref(true)
 const isFetchingRenewals = ref(false)
 const isFetchingQualifications = ref(false)
 
+// Filter options for the DOPageHeader
+const statusFilterOptions = ref([
+  { value: 'all', text: 'All Statuses' },
+  { value: 'Pending', text: 'Pending' },
+  { value: 'Approved', text: 'Approved' },
+  { value: 'Regretted', text: 'Regretted' },
+])
+
 // --- Watchers ---
 watch([searchQuery, filterStatus], () => {
-  currentPage.value = 1
+  if (currentPage.value !== 1) {
+    currentPage.value = 1
+  }
 })
 
-// Combined loading state watcher
 watch([isFetchingRenewals, isFetchingQualifications], ([renewing, qualifying]) => {
   isLoading.value = renewing || qualifying
 })
 
 // --- Computed Properties ---
-
-// Map for quick lookup of qualification/application data by ID
 const qualificationMap = computed(() => {
   const map = {}
   if (Array.isArray(qualificationsData.value)) {
     qualificationsData.value.forEach((qual) => {
       if (qual && qual.id != null) {
+        // Assuming 'qual.id' is the correct key to match renewal.user_qualification
         map[qual.id] = qual
       }
     })
@@ -307,15 +279,13 @@ const qualificationMap = computed(() => {
   return map
 })
 
-// 1. Combine renewal data with qualification data
 const combinedData = computed(() => {
   if (!Array.isArray(renewals.value)) return []
 
   return renewals.value.map((renewal) => {
+    // Ensure renewal.user_qualification holds the ID expected as key in qualificationMap
     const qualification = qualificationMap.value[renewal.user_qualification]
-    // Create a combined object
     return {
-      // Renewal fields
       renewal_id: renewal.id,
       renewal_status: renewal.renewal_endorsement_decision || 'Pending',
       new_expiry_date: renewal.new_expiry_date,
@@ -323,32 +293,26 @@ const combinedData = computed(() => {
       renewal_review_remarks: renewal.renewal_review_remarks,
       endorsement_remarks: renewal.endorsement_remarks,
       created_at: renewal.created_at,
-
-      // Qualification/Application fields (use defaults if lookup failed)
-      // IMPORTANT: Verify these field names against your actual API response for qualificationsData
+      // Pull relevant fields from the qualification object found via the map
       application_id: qualification?.id ?? null,
       full_name: qualification?.full_name || 'N/A',
       cid_no: qualification?.cid_no || 'N/A',
       registration_no: qualification?.registration_no || 'N/A',
-      expiry_date: qualification?.expiry_date || null, // Original expiry date
-      // Assuming 'user_qualifications' is the field containing the array for display purposes
+      expiry_date: qualification?.expiry_date || null,
+      // Pass the specific qualifications array if available and needed by helpers/modal
       user_qualifications: qualification?.user_qualifications || [],
-      // Add other fields from 'qualification' if needed by template/modal/helpers
     }
   })
 })
 
-// 2. Filter the combined data
 const filteredCombinedData = computed(() => {
   if (!Array.isArray(combinedData.value)) return []
 
   return combinedData.value.filter((item) => {
-    // Filter by status
     if (filterStatus.value !== 'all') {
-      if (item.renewal_status !== filterStatus.value) return false
+      if (getRenewalStatus(item) !== filterStatus.value) return false
     }
 
-    // Filter by search query
     if (searchQuery.value) {
       const query = searchQuery.value.toLowerCase()
       const name = (item.full_name || '').toLowerCase()
@@ -369,11 +333,10 @@ const filteredCombinedData = computed(() => {
         return false
       }
     }
-    return true // Passed filters
+    return true
   })
 })
 
-// 3. Paginate the filtered data
 const paginatedCombinedData = computed(() => {
   if (!Array.isArray(filteredCombinedData.value)) return []
   const start = (currentPage.value - 1) * itemsPerPage
@@ -381,10 +344,13 @@ const paginatedCombinedData = computed(() => {
   return filteredCombinedData.value.slice(start, end)
 })
 
-// --- Other Computed Properties (Counts, Pagination Info) ---
-
 const pendingCount = computed(() => {
-  return filteredCombinedData.value.filter((item) => item.renewal_status === 'Pending').length
+  return filteredCombinedData.value.filter((item) => getRenewalStatus(item) === 'Pending').length
+})
+
+// Computed property for the header description string
+const headerDescription = computed(() => {
+  return `Total Matches: ${filteredCombinedData.value.length} | Pending Review: ${pendingCount.value}`
 })
 
 const totalPages = computed(() => {
@@ -404,9 +370,8 @@ const paginationEnd = computed(() => {
 })
 
 // --- Methods ---
-
-// Helper functions operate on the 'item' (combined object)
 const getPrimaryQualification = (item) => {
+  // Check the user_qualifications array within the combined item
   if (Array.isArray(item.user_qualifications) && item.user_qualifications.length > 0) {
     return item.user_qualifications.find((q) => q.is_primary_qualification)
   }
@@ -425,6 +390,7 @@ const getInitials = (item) => {
 }
 
 const getRenewalStatus = (item) => {
+  // Uses the renewal_status field from the combined object
   return item.renewal_status || 'Pending'
 }
 
@@ -445,107 +411,104 @@ const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   try {
     const date = new Date(dateString)
+    // Check if the date is valid
     if (isNaN(date.getTime())) return 'N/A'
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString('en-GB', { // Using en-GB for DD/MM/YYYY format
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
+      day: '2-digit',
     })
   } catch {
     return 'N/A'
   }
 }
 
-// Fetch Master Data
 const fetchMasterData = async () => {
   try {
     const responses = await Promise.allSettled([
-      apiServices.getMhpcMastersPersonnelCategories(),
-      apiServices.getMhpcMastersSubCategories(),
-      apiServices.getMhpcMastersSectors(),
+      apiServices.getMhpcMastersPersonnelCategories ? apiServices.getMhpcMastersPersonnelCategories() : Promise.resolve({ data: null }),
+      apiServices.getMhpcMastersSubCategories ? apiServices.getMhpcMastersSubCategories() : Promise.resolve({ data: null }),
+      apiServices.getMhpcMastersSectors ? apiServices.getMhpcMastersSectors() : Promise.resolve({ data: null }),
     ])
-    if (responses[0].status === 'fulfilled' && responses[0].value.data) {
-      personnelCategories.value = responses[0].value.data.results || responses[0].value.data || []
-    } else {
-      console.error('Failed fetch personnel categories:', responses[0].reason)
+
+    const processResponse = (response, targetRef) => {
+      if (response.status === 'fulfilled' && response.value?.data) {
+        targetRef.value = response.value.data.results || response.value.data || []
+      } else if (response.status === 'rejected') {
+        console.error(`Failed fetch: ${response.reason}`)
+      }
     }
-    if (responses[1].status === 'fulfilled' && responses[1].value.data) {
-      personnelSubcategories.value =
-        responses[1].value.data.results || responses[1].value.data || []
-    } else {
-      console.error('Failed fetch personnel subcategories:', responses[1].reason)
-    }
-    if (responses[2].status === 'fulfilled' && responses[2].value.data) {
-      sectors.value = responses[2].value.data.results || responses[2].value.data || []
-    } else {
-      console.error('Failed fetch sectors:', responses[2].reason)
-    }
+
+    processResponse(responses[0], personnelCategories);
+    processResponse(responses[1], personnelSubcategories);
+    processResponse(responses[2], sectors);
+
   } catch (error) {
     console.error('Error fetching master data container:', error)
     toast.error('Failed to load master data')
   }
 }
 
-// Fetch Renewals
 const fetchRenewals = async () => {
   isFetchingRenewals.value = true
   renewals.value = []
   try {
     const response = await apiServices.getMhpcRenewals()
-    if (response.data && Array.isArray(response.data.results)) {
-      renewals.value = response.data.results
-    } else if (Array.isArray(response.data)) {
-      renewals.value = response.data
+    // Handle potential variations in API response structure
+    const results = response?.data?.results ?? response?.data ?? null;
+    if (Array.isArray(results)) {
+        renewals.value = results;
     } else {
-      console.error('Unexpected API response structure for renewals:', response.data)
-      toast.error('Received invalid renewal data structure.')
+        console.error('Unexpected API response structure for renewals:', response?.data);
+        toast.error('Received invalid renewal data structure.');
+        renewals.value = []; // Ensure it's an empty array on error
     }
   } catch (error) {
     console.error('Error fetching renewals:', error)
     const errorMsg = error.response?.data?.detail || error.message || 'Unknown error'
     toast.error(`Failed to load renewal data: ${errorMsg}`)
+    renewals.value = []; // Ensure it's an empty array on error
   } finally {
     isFetchingRenewals.value = false
   }
 }
 
-// Fetch Qualifications/Application Details
 const fetchQualifications = async () => {
   isFetchingQualifications.value = true
   qualificationsData.value = []
   try {
-    // IMPORTANT: Verify getMhpcNewQualifications fetches the needed list/details
+    // This endpoint should return the list needed to map renewal.user_qualification to details
     const response = await apiServices.getMhpcNewQualifications()
-    if (response.data && Array.isArray(response.data.results)) {
-      qualificationsData.value = response.data.results
-    } else if (Array.isArray(response.data)) {
-      qualificationsData.value = response.data
+     const results = response?.data?.results ?? response?.data ?? null;
+    if (Array.isArray(results)) {
+       qualificationsData.value = results;
     } else {
-      console.error('Unexpected API response structure for qualifications:', response.data)
+      console.error('Unexpected API response structure for qualifications:', response?.data)
       toast.error('Received invalid qualification data structure.')
+      qualificationsData.value = []
     }
   } catch (error) {
     console.error('Error fetching qualifications:', error)
     const errorMsg = error.response?.data?.detail || error.message || 'Unknown error'
     toast.error(`Failed to load qualification/application details: ${errorMsg}`)
+    qualificationsData.value = []
   } finally {
     isFetchingQualifications.value = false
   }
 }
 
-// View Details passes the combined item
 const viewDetails = (item) => {
+  // Pass the *combined* item to the modal
   selectedItem.value = JSON.parse(JSON.stringify(item))
   isModalOpen.value = true
 }
 
-// Handle Update needs to refetch both lists potentially
 const handleUpdate = async () => {
-  isLoading.value = true // Show loading indicator during refetch
+  isLoading.value = true
+  // Refetch both lists as an update might affect cross-referenced data
   await Promise.allSettled([fetchRenewals(), fetchQualifications()])
   closeModal()
   toast.success('Renewal application processed successfully')
-  // isLoading will update via watcher
 }
 
 const closeModal = () => {
@@ -553,7 +516,6 @@ const closeModal = () => {
   selectedItem.value = null
 }
 
-// Pagination methods
 const prevPage = () => {
   if (currentPage.value > 1) currentPage.value--
 }
@@ -566,12 +528,14 @@ const nextPage = () => {
 onMounted(async () => {
   isLoading.value = true
   await Promise.allSettled([fetchMasterData(), fetchRenewals(), fetchQualifications()])
-  // isLoading will update via watcher
 })
 </script>
 
 <style scoped>
-/* Component-specific styles */
+th,
+td {
+  vertical-align: middle;
+}
 td .flex {
   flex-wrap: nowrap;
 }

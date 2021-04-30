@@ -1,55 +1,18 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
-    <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Additional Qualification Applications</h1>
-      <div class="flex items-center text-gray-600">
-        <span class="flex items-center">
-          <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-          Total: {{ filteredApplications.length }}
-        </span>
-        <span class="mx-4">|</span>
-        <span class="flex items-center">
-          <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
-          Pending: {{ pendingCount }}
-        </span>
-      </div>
-    </div>
+    <!-- Use the DOPageHeader Component -->
+    <DOPageHeader
+      title="Additional Qualification Applications"
+      :description="headerDescription"
+      :search-query="searchQuery"
+      @update:searchQuery="searchQuery = $event"
+      search-placeholder="Search by name, CID or registration number..."
+      :filter-value="filterStatus"
+      @update:filterValue="filterStatus = $event"
+      :filter-options="statusFilterOptions"
+    />
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-      <div class="relative">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search by name, CID or registration number..."
-          class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      </div>
-      <div class="flex gap-4">
-        <select
-          v-model="filterStatus"
-          class="flex-1 px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="all">All Statuses</option>
-          <option value="Pending">Pending</option>
-          <option value="Approved">Approved</option>
-          <option value="Regretted">Regretted</option>
-        </select>
-      </div>
-    </div>
+    <!-- Removed the old header and filter grid -->
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
@@ -196,9 +159,27 @@
       </div>
     </div>
 
+    <!-- Pagination -->
     <div
+      v-if="totalPages > 1"
       class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100"
     >
+       <div class="flex-1 flex justify-between sm:hidden">
+        <button
+          @click="prevPage"
+          :disabled="currentPage === 1"
+          class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <button
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+          class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
       <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
           <p class="text-sm text-gray-700">
@@ -264,24 +245,9 @@
           </nav>
         </div>
       </div>
-      <div class="sm:hidden flex-1 flex justify-between">
-        <button
-          @click="prevPage"
-          :disabled="currentPage === 1"
-          class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-        >
-          Previous
-        </button>
-        <button
-          @click="nextPage"
-          :disabled="currentPage === totalPages"
-          class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
     </div>
 
+    <!-- Modal -->
     <ViewDetailsModal
       :isOpen="isModalOpen"
       :application="selectedApplication"
@@ -296,22 +262,31 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import apiServices from '@/services/services' // Assuming this path is correct
-import ViewDetailsModal from '../modals/ViewApplicationDetailsModal.vue' // Assuming this path is correct
+import apiServices from '@/services/services'
+import ViewDetailsModal from '../modals/ViewApplicationDetailsModal.vue'
+import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue' // Import the header
 import { useToast } from 'vue-toastification'
 
 // --- Reactive State ---
-const applications = ref([]) // Raw data from API
-const filterStatus = ref('all') // Filter dropdown state
-const searchQuery = ref('') // Search input state
-const currentPage = ref(1) // Current page for pagination
-const itemsPerPage = 10 // Number of items per page
-const isModalOpen = ref(false) // Modal visibility state
-const selectedApplication = ref(null) // Data for the modal
-const personnelCategories = ref([]) // Master data
-const personnelSubcategories = ref([]) // Master data
-const sectors = ref([]) // Master data
-const toast = useToast() // Toast notification system
+const applications = ref([])
+const filterStatus = ref('all')
+const searchQuery = ref('')
+const currentPage = ref(1)
+const itemsPerPage = 10
+const isModalOpen = ref(false)
+const selectedApplication = ref(null)
+const personnelCategories = ref([])
+const personnelSubcategories = ref([])
+const sectors = ref([])
+const toast = useToast()
+
+// Filter options for the DOPageHeader
+const statusFilterOptions = ref([
+  { value: 'all', text: 'All Statuses' },
+  { value: 'Pending', text: 'Pending' },
+  { value: 'Approved', text: 'Approved' },
+  { value: 'Regretted', text: 'Regretted' },
+])
 
 // --- Computed Properties ---
 
@@ -323,10 +298,6 @@ const filteredApplications = computed(() => {
       .filter((app) => app.user_qualifications?.some((q) => q.is_primary_qualification === false))
       // 2. Filter by selected status (uses getStatus which checks additional qualifications)
       .filter((app) => {
-        // Reset to page 1 when filters change
-        // Note: This might ideally be handled by a watcher, but included here for simplicity
-        // if (filterStatus.value !== 'all') currentPage.value = 1; // Reset page on status filter change
-
         if (filterStatus.value !== 'all') {
           return getStatus(app) === filterStatus.value
         }
@@ -334,9 +305,6 @@ const filteredApplications = computed(() => {
       })
       // 3. Filter by search query (checks name, CID, registration number)
       .filter((app) => {
-        // Reset page on search change
-        // if (searchQuery.value) currentPage.value = 1; // Reset page on search
-
         if (searchQuery.value) {
           const query = searchQuery.value.toLowerCase()
           return (
@@ -359,7 +327,6 @@ const paginatedApplications = computed(() => {
 
 // Calculate total number of pages needed
 const totalPages = computed(() => {
-  // Ensure at least 1 page even if no results
   return Math.max(1, Math.ceil(filteredApplications.value.length / itemsPerPage))
 })
 
@@ -376,39 +343,58 @@ const paginationEnd = computed(() => {
 
 // Calculate count of pending applications based on the additional qualification status
 const pendingCount = computed(() => {
+  // This counts pending within the *currently filtered* list
   return filteredApplications.value.filter((app) => getStatus(app) === 'Pending').length
+})
+
+// Computed property for the header description string
+const headerDescription = computed(() => {
+  return `Total: ${filteredApplications.value.length} | Pending Review: ${pendingCount.value}`
 })
 
 // --- Watchers ---
 // Watch for changes in filters or search query to reset to page 1
 watch([filterStatus, searchQuery], () => {
-  currentPage.value = 1
+  if (currentPage.value !== 1) {
+    currentPage.value = 1
+  }
 })
 
 // --- Methods ---
 
 // Determines the overall status of the application based on its *additional* qualifications
 const getStatus = (app) => {
-  // Find the first qualification marked as NOT primary
-  const additionalQualification = app.user_qualifications?.find((q) => !q.is_primary_qualification)
+  const additionalQualifications = app.user_qualifications?.filter((q) => !q.is_primary_qualification) || [];
 
-  if (additionalQualification) {
-    // Return the status derived from this specific additional qualification's fields
-    return getIndividualQualificationStatus(additionalQualification)
+  if (additionalQualifications.length === 0) {
+    // This case should ideally not happen due to the initial filter, but good to handle
+    console.warn(`Application ID ${app.id} has no additional qualifications despite filtering.`);
+    return 'Pending'; // Or perhaps 'Error'?
   }
 
-  // Fallback if somehow no additional qualification is found (shouldn't happen with current filtering)
-  console.warn(`Application ID ${app.id} has no additional qualifications despite filtering.`)
-  return 'Pending'
+  // Check if ANY additional qualification is Regretted
+  const isRegretted = additionalQualifications.some(q => getIndividualQualificationStatus(q) === 'Regretted');
+  if (isRegretted) {
+    return 'Regretted';
+  }
+
+  // Check if ALL additional qualifications are Approved
+  const allApproved = additionalQualifications.every(q => getIndividualQualificationStatus(q) === 'Approved');
+  if (allApproved) {
+    return 'Approved';
+  }
+
+  // Otherwise, at least one is Pending (and none are Regretted)
+  return 'Pending';
 }
+
 
 // Determines the status of a SINGLE qualification object
 const getIndividualQualificationStatus = (qualification) => {
-  if (!qualification) return 'Pending' // Handle null/undefined case
+  if (!qualification) return 'Pending'
 
   const { application_review_status, physical_review_status, endorsement_decision } = qualification
 
-  // If any step is regretted, the overall status is Regretted
   if (
     application_review_status === 'Regretted' ||
     physical_review_status === 'Regretted' ||
@@ -416,7 +402,6 @@ const getIndividualQualificationStatus = (qualification) => {
   ) {
     return 'Regretted'
   }
-  // If all steps are approved, the overall status is Approved
   if (
     application_review_status === 'Approved' &&
     physical_review_status === 'Approved' &&
@@ -424,15 +409,14 @@ const getIndividualQualificationStatus = (qualification) => {
   ) {
     return 'Approved'
   }
-  // Otherwise, it's pending at least one step
   return 'Pending'
 }
 
 // Returns CSS classes for the overall status badge based on the result of getStatus()
 const getStatusClasses = (app) => {
-  const status = getStatus(app) // Use the function that checks additional qualifications
+  const status = getStatus(app)
   return [
-    'px-3 py-1 rounded-full text-xs font-medium inline-block', // Added inline-block
+    'px-3 py-1 rounded-full text-xs font-medium inline-block',
     {
       'bg-yellow-100 text-yellow-800': status === 'Pending',
       'bg-green-100 text-green-800': status === 'Approved',
@@ -456,10 +440,9 @@ const formatDate = (date) => {
   if (!date) return 'N/A'
   try {
     return new Date(date).toLocaleDateString('en-GB', {
-      // Using en-GB for dd/mm/yyyy
       year: 'numeric',
       month: 'short',
-      day: '2-digit', // Use 2-digit day
+      day: '2-digit',
     })
   } catch (e) {
     console.error('Error formatting date:', date, e)
@@ -467,15 +450,13 @@ const formatDate = (date) => {
   }
 }
 
-// Fetches necessary master data (categories, subcategories, sectors)
+// Fetches necessary master data
 const fetchMasterData = async () => {
   try {
-    // Using specific endpoints if available, otherwise fallback or adjust as needed
     const [categoriesRes, subcategoriesRes, sectorsRes] = await Promise.allSettled([
-      // Use Promise.allSettled
       apiServices.getMhpcMastersPersonnelCategories
         ? apiServices.getMhpcMastersPersonnelCategories()
-        : Promise.resolve({ data: { results: [] } }), // Example fallback
+        : Promise.resolve({ data: { results: [] } }),
       apiServices.getMhpcMastersSubCategories
         ? apiServices.getMhpcMastersSubCategories()
         : Promise.resolve({ data: { results: [] } }),
@@ -484,20 +465,13 @@ const fetchMasterData = async () => {
         : Promise.resolve({ data: { results: [] } }),
     ])
 
-    // Process results safely checking status
     personnelCategories.value =
       categoriesRes.status === 'fulfilled' ? categoriesRes.value?.data?.results || [] : []
     personnelSubcategories.value =
       subcategoriesRes.status === 'fulfilled' ? subcategoriesRes.value?.data?.results || [] : []
     sectors.value = sectorsRes.status === 'fulfilled' ? sectorsRes.value?.data?.results || [] : []
 
-    console.log('Fetched Master Data:', {
-      categories: personnelCategories.value.length,
-      subcategories: personnelSubcategories.value.length,
-      sectors: sectors.value.length,
-    })
   } catch (error) {
-    // Catch any unexpected error during setup
     console.error('Error fetching master data:', error)
     toast.error('Failed to load master data.')
   }
@@ -506,54 +480,50 @@ const fetchMasterData = async () => {
 // Fetches the list of applications from the API
 const fetchApplications = async () => {
   try {
-    const response = await apiServices.getMhpcNewApplications() // Uses the same endpoint
-    // Ensure the response structure is as expected
+    // Assuming getMhpcNewApplications returns ALL application types, including 'Additional Qualification'
+    const response = await apiServices.getMhpcNewApplications()
     applications.value = response?.data?.results || []
-    console.log(`Fetched ${applications.value.length} total applications.`)
   } catch (error) {
     console.error('Error fetching applications:', error)
     toast.error('Failed to load applications.')
-    applications.value = [] // Reset on error
+    applications.value = []
   }
 }
 
 // Fetches detailed user information and opens the modal
 const viewDetails = async (application) => {
   if (!application) return
-  selectedApplication.value = { ...application, userDetails: null, isLoading: true } // Set loading state
+  selectedApplication.value = { ...application, userDetails: null, isLoading: true }
   isModalOpen.value = true
 
   try {
-    // Fetch all users to find matching user details (consider if a direct user fetch by ID/CID is possible)
     const response = await apiServices.getAllUsers()
     const users = response?.data?.results || []
     const matchingUser = users.find((user) => user.cid === application.cid_no)
 
-    // Update selectedApplication with fetched details
     selectedApplication.value = {
       ...application,
-      is_counselor: matchingUser?.is_counselor || false, // Example field
-      userDetails: matchingUser, // Store the full user object
-      isLoading: false, // Turn off loading state
+      is_counselor: matchingUser?.is_counselor || false,
+      userDetails: matchingUser,
+      isLoading: false,
     }
   } catch (error) {
     console.error('Error fetching user details for modal:', error)
     toast.error('Could not load full user details.')
-    // Keep modal open but indicate loading failed
     selectedApplication.value = {
       ...application,
-      userDetails: null, // Indicate details are missing
-      isLoading: false, // Turn off loading state
-      errorLoadingDetails: true, // Add an error flag
+      userDetails: null,
+      isLoading: false,
+      errorLoadingDetails: true,
     }
   }
 }
 
-// Handles the update event from the modal (refreshes data)
+// Handles the update event from the modal
 const handleUpdate = async () => {
-  closeModal() // Close modal first
+  closeModal()
   toast.info('Refreshing application list...')
-  await fetchApplications() // Refetch the list
+  await fetchApplications()
   toast.success('Application list updated.')
 }
 
@@ -578,22 +548,14 @@ const nextPage = () => {
 }
 
 // --- Lifecycle Hook ---
-
-// Fetch initial data when the component is mounted
 onMounted(async () => {
-  console.log('Additional Qualifications Page Mounted')
-  // Use Promise.allSettled to ensure all fetches complete, even if one fails
   await Promise.allSettled([fetchApplications(), fetchMasterData()])
-  console.log('Initial data fetch complete.')
 })
 </script>
 
 <style scoped>
-/* Add component-specific styles here if needed */
-/* Ensure proper alignment and spacing */
 th,
 td {
   vertical-align: middle;
-  /* Align cell content vertically */
 }
 </style>

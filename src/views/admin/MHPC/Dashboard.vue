@@ -75,7 +75,7 @@ import InstituteReport from '@/components/dashboard/mhpccomponents/dealingOffice
 import CpdApplicationReview from '@/components/dashboard/mhpccomponents/dealingOfficer/CPDManagement/CpdApplicationReview.vue'
 import CpdCreateApplication from '@/components/dashboard/mhpccomponents/dealingOfficer/CPDManagement/CpdCreateApplication.vue'
 import CpdProviderManagement from '@/components/dashboard/mhpccomponents/dealingOfficer/CPDManagement/CpdProviderManagement.vue'
-import CpdAwardCredits from '@/components/dashboard/mhpccomponents/dealingOfficer/CPDManagement/CpdAwardCredits.vue'
+import CpdAwardCredits from '@/components/dashboard/mhpccomponents/dealingOfficer/CPDManagement/SelfCpdManagement.vue'
 import CpdReports from '@/components/dashboard/mhpccomponents/dealingOfficer/CPDManagement/CpdReports.vue'
 import AdditionalApplication from '@/components/dashboard/mhpccomponents/dealingOfficer/userApplications/AdditionalApplication.vue'
 import TeachingHospitals from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/TeachingHospitals.vue'
