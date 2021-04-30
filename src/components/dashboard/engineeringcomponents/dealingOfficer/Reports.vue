@@ -1,3 +1,9 @@
+<script>
+export default {
+  name: 'ReportsDashboard'
+}
+</script>
+
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
     <!-- Header -->

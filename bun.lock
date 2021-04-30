@@ -31,6 +31,7 @@
       },
       "devDependencies": {
         "@eslint/js": "^9.14.0",
+        "@rollup/rollup-win32-x64-msvc": "^4.40.1",
         "@vitejs/plugin-vue": "^5.2.1",
         "@vitest/eslint-plugin": "1.1.20",
         "@vue/eslint-config-prettier": "^10.1.0",
@@ -275,6 +276,8 @@
     "@rollup/pluginutils": ["@rollup/pluginutils@5.1.4", "", { "dependencies": { "@types/estree": "^1.0.0", "estree-walker": "^2.0.2", "picomatch": "^4.0.2" }, "peerDependencies": { "rollup": "^1.20.0||^2.0.0||^3.0.0||^4.0.0" } }, ""],
 
     "@rollup/rollup-darwin-arm64": ["@rollup/rollup-darwin-arm64@4.30.0", "", { "os": "darwin", "cpu": "arm64" }, ""],
+
+    "@rollup/rollup-win32-x64-msvc": ["@rollup/rollup-win32-x64-msvc@4.40.1", "", { "os": "win32", "cpu": "x64" }, "sha512-ECyOuDeH3C1I8jH2MK1RtBJW+YPMvSfT0a5NN0nHfQYnDSJ6tUiZH3gzwVP5/Kfh/+Tt7tpWVF9LXNTnhTJ3kA=="],
 
     "@sec-ant/readable-stream": ["@sec-ant/readable-stream@0.4.1", "", {}, ""],
 
