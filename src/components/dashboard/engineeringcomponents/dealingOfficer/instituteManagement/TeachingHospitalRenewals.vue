@@ -119,28 +119,12 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div class="flex space-x-3">
-                  <button
-                    v-if="center.tc_review_decision === 'Pending'"
-                    @click="handleApprove(center)"
-                    class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    v-if="center.tc_review_decision === 'Pending'"
-                    @click="handleReject(center)"
-                    class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                  >
-                    Reject
-                  </button>
-                  <button
-                    @click="openDetailsModal(center)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                  >
-                    View
-                  </button>
-                </div>
+                <button
+                  @click="openDetailsModal(center)"
+                  class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+                >
+                  View
+                </button>
               </td>
             </tr>
           </tbody>
@@ -277,7 +261,26 @@
             </div>
           </div>
 
-          <!-- Review Form (only for pending applications) -->
+          <!-- Approve/Reject Buttons for Pending Applications -->
+          <div
+            v-if="selectedCenter.tc_review_decision === 'Pending'"
+            class="flex justify-end space-x-3"
+          >
+            <button
+              @click="handleApprove"
+              class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+            >
+              Approve
+            </button>
+            <button
+              @click="handleReject"
+              class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+            >
+              Reject
+            </button>
+          </div>
+
+          <!-- Review Form (for pending applications) -->
           <div v-if="selectedCenter.tc_review_decision === 'Pending'">
             <h4 class="text-sm font-medium text-gray-500 mb-1">Review Form</h4>
             <form @submit.prevent="submitReview" class="p-4 bg-gray-50 rounded-lg space-y-4">
@@ -637,8 +640,8 @@ const closeDetailsModal = () => {
 }
 
 // Quick approve handler
-const handleApprove = (center) => {
-  selectedCenter.value = center
+const handleApprove = () => {
+  if (!selectedCenter.value) return
   showApproveModal.value = true
 }
 
@@ -658,7 +661,7 @@ const confirmApprove = async () => {
       tc_review_summary: 'Application reviewed and approved.',
       tc_review_decision: 'Approved',
       is_active: true,
-      is_payment_complete: true, // Assuming payment is complete when approving
+      is_payment_complete: true,
     }
 
     // Send PATCH request to update center
@@ -679,12 +682,13 @@ const confirmApprove = async () => {
   } finally {
     isSubmitting.value = false
     showApproveModal.value = false
+    closeDetailsModal()
   }
 }
 
 // Quick reject handler
-const handleReject = (center) => {
-  selectedCenter.value = center
+const handleReject = () => {
+  if (!selectedCenter.value) return
   rejectReason.value = ''
   showRejectModal.value = true
 }
@@ -726,6 +730,7 @@ const confirmReject = async () => {
   } finally {
     isSubmitting.value = false
     showRejectModal.value = false
+    closeDetailsModal()
   }
 }
 
@@ -806,7 +811,10 @@ const fetchTeachingCenters = async () => {
     const response = await apiService.getEpcTeachingCenters()
 
     if (response && response.data && response.data.results) {
-      teachingCenters.value = response.data.results
+      // Filter for teaching centers only
+      teachingCenters.value = response.data.results.filter(
+        (center) => center.target_category === 'Teaching Center'
+      )
     } else {
       teachingCenters.value = []
     }
