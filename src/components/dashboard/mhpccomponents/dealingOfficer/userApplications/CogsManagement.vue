@@ -1,56 +1,17 @@
 <template>
     <div class="min-h-screen">
         <div class="mx-auto w-full py-12 px-4 sm:px-6 lg:px-8">
-            <!-- Header Section with Glassmorphism -->
-            <div
-                class="backdrop-blur-md bg-white/80 rounded-2xl p-8 mb-10 shadow-lg border border-indigo-100 overflow-hidden relative"
-            >
-                <div
-                    class="absolute -top-16 -right-16 w-64 h-64 bg-indigo-200 rounded-full opacity-20"
-                ></div>
-                <div
-                    class="absolute -bottom-8 -left-8 w-32 h-32 bg-blue-200 rounded-full opacity-20"
-                ></div>
-
-                <div
-                    class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10"
-                >
-                    <div>
-                        <h1
-                            class="text-3xl font-bold text-gray-900 bg-gradient-to-r from-indigo-700 to-blue-700 bg-clip-text text-transparent"
-                        >
-                            Certificate of Good Standing
-                        </h1>
-                        <p class="text-gray-600 mt-1">
-                            Manage and review COGS applications efficiently
-                        </p>
-                    </div>
-                    <div
-                        class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full md:w-auto"
-                    >
-                        <div class="relative flex-grow">
-                            <input
-                                v-model.trim="searchQuery"
-                                type="text"
-                                placeholder="Search by name, CID, or registration number..."
-                                class="pl-10 pr-4 py-3 border-0 rounded-xl focus:ring-2 focus:ring-indigo-500 w-full shadow-md text-sm bg-white"
-                            />
-                            <span class="absolute left-3 top-3 text-gray-400">
-                                <SearchIcon class="w-5 h-5" />
-                            </span>
-                        </div>
-                        <select
-                            v-model="statusFilter"
-                            class="border-0 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 shadow-md text-sm bg-white"
-                        >
-                            <option value="">All Status</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Approved">Approved</option>
-                            <option value="Rejected">Rejected</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+            <!-- Use the new Header Component -->
+            <DOPageHeader
+                title="Certificate of Good Standing"
+                description="Manage and review COGS applications efficiently"
+                :search-query="searchQuery"
+                @update:searchQuery="searchQuery = $event"
+                search-placeholder="Search by name, CID, or registration number..."
+                :filter-value="statusFilter"
+                @update:filterValue="statusFilter = $event"
+                :filter-options="statusOptions"
+            />
 
             <!-- Applications List Card -->
             <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8">
@@ -64,7 +25,6 @@
                         <div class="flex space-x-4">
                             <div class="flex items-center">
                                 <span class="w-3 h-3 rounded-full bg-yellow-400 mr-2"></span>
-                                <!-- CORRECTED: Removed the misplaced JS code -->
                                 <span class="text-sm text-gray-600">
                                     Pending ({{ getPendingCount() }})
                                 </span>
@@ -365,7 +325,6 @@
                 </div>
 
                 <!-- Empty State -->
-                <!-- CORRECTED: Refined v-if condition for empty state -->
                 <div
                     v-if="!displayedApplications.length && !isLoading && !error"
                     class="text-center py-16 px-4"
@@ -508,23 +467,22 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import {
-    SearchIcon,
     CircleAlert,
     InboxIcon,
     CheckCircleIcon,
     EyeIcon,
     DownloadIcon,
-    ArrowUpDownIcon, // Icon used, but no sorting logic
+    ArrowUpDownIcon,
     ChevronLeftIcon,
     ChevronRightIcon,
     ChevronsLeftIcon,
     ChevronsRightIcon,
     XIcon,
 } from 'lucide-vue-next'
-// Assuming apiServices and modal components are correctly located
 import apiServices from '@/services/services'
 import CogsReviewModal from '../modals/CogsReviewModal.vue'
 import CogsConfirmationModal from '../modals/CogsConfirmationModal.vue'
+import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue' // Import the new header component
 
 // --- State ---
 const applications = ref([])
@@ -542,9 +500,16 @@ const showSuccessToast = ref(false)
 const toastMessage = ref('')
 const confirmData = ref(null)
 
+// Define status options for the filter dropdown
+const statusOptions = ref([
+    { value: '', text: 'All Status' },
+    { value: 'Pending', text: 'Pending' },
+    { value: 'Approved', text: 'Approved' },
+    { value: 'Rejected', text: 'Rejected' },
+])
+
 // --- Computed Properties ---
 
-// Calculate counts for application stats
 const getPendingCount = () =>
     applications.value.filter(
         (app) => app.review_status === 'Pending' || app.endorsement_decision === 'Pending'
@@ -556,21 +521,17 @@ const getRejectedCount = () =>
         (app) => app.review_status === 'Rejected' || app.endorsement_decision === 'Rejected'
     ).length
 
-// Get initials for avatar placeholder
 const getInitials = (name) => {
     if (!name) return '??'
-    // Split by space and hyphen, then take first char of first two parts
     const parts = name.split(/[\s-]+/).filter(Boolean)
     if (parts.length === 0) return '??'
     if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
     return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase()
 }
 
-// Filter applications based on search query and status filter
 const filteredApplications = computed(() => {
     let filtered = applications.value
     if (statusFilter.value) {
-        // Apply status filter: check *either* review_status or endorsement_decision
         filtered = filtered.filter(
             (app) =>
                 app.review_status === statusFilter.value ||
@@ -582,94 +543,38 @@ const filteredApplications = computed(() => {
         filtered = filtered.filter(
             (app) =>
                 (app.full_name && app.full_name.toLowerCase().includes(query)) ||
-                (app.cid_no && String(app.cid_no).toLowerCase().includes(query)) || // Ensure CID is string
-                (app.registration_no && String(app.registration_no).toLowerCase().includes(query)) // Ensure registration_no is string
+                (app.cid_no && String(app.cid_no).toLowerCase().includes(query)) ||
+                (app.registration_no && String(app.registration_no).toLowerCase().includes(query))
         )
     }
     return filtered
 })
 
-// Calculate total pages for pagination
 const totalPages = computed(() =>
     Math.max(1, Math.ceil(filteredApplications.value.length / itemsPerPage.value))
 )
 
-// Get applications for the current page
 const displayedApplications = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage.value
     const end = start + itemsPerPage.value
     return filteredApplications.value.slice(start, end)
 })
 
-// Generate pagination range with ellipsis for many pages
 const paginationRange = computed(() => {
     const total = totalPages.value
     const current = currentPage.value
-    const delta = 2 // How many pages to show around the current page
+    const delta = 2
 
-    const range = []
-    let l = 1
-    let r = total
-    let i
-
-    // Add initial pages and potentially ellipsis
-    for (i = l; i <= Math.min(current - delta, total); i++) {
-        if (i < l + 1) range.push(i)
-        else if (i === l + 1 && i < current - delta) range.push('...')
-    }
-
-    // Add pages around the current page
-    for (i = Math.max(1, current - delta); i <= Math.min(current + delta, total); i++) {
-        range.push(i)
-    }
-
-    // Add final pages and potentially ellipsis
-    for (i = Math.max(current + delta, 1); i <= r; i++) {
-        if (i > total - 1) range.push(i)
-        else if (i === total - 1 && i > current + delta) range.push('...')
-    }
-
-    // Ensure the range starts with 1 and ends with total, adding ellipsis if needed
-    const finalRange = []
-    if (total > 0) {
-        finalRange.push(1)
-        if (current > delta + 2 && total > 2 * delta + 1) {
-            finalRange.push('...')
-        }
-
-        const start = Math.max(2, current - delta)
-        const end = Math.min(total - 1, current + delta)
-
-        for (let i = start; i <= end; i++) {
-            if (i !== 1 && i !== total) {
-                finalRange.push(i)
-            }
-        }
-
-        if (current < total - delta - 1 && total > 2 * delta + 1) {
-            finalRange.push('...')
-        }
-        if (total > 1) {
-            finalRange.push(total)
-        }
-    }
-
-    // Remove duplicates and ensure correct order
-    // A simpler, more robust pagination range generator logic:
     const pages = []
     let lastPage = 0
-    // Always include first page
     if (total > 0) pages.push(1)
 
-    // Pages around current
     for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
         pages.push(i)
     }
 
-    // Always include last page if more than 1
     if (total > 1) pages.push(total)
 
-    // Add ellipsis
     let result = []
     for (let i = 0; i < pages.length; i++) {
         if (pages[i] - lastPage > 1) {
@@ -684,114 +589,95 @@ const paginationRange = computed(() => {
 
 // --- Methods ---
 
-// Fetch COGS applications from the API
 const fetchData = async () => {
     isLoading.value = true
     error.value = null
     try {
-        // Assuming apiServices.getMhpcCogs returns { data: { results: [...] } } or { data: [...] }
         const response = await apiServices.getMhpcCogs()
         applications.value = response.data?.results || response.data || []
     } catch (err) {
         error.value = 'Failed to load applications. Please try again later.'
         console.error('Error fetching applications:', err)
-        applications.value = [] // Clear previous data on error
+        applications.value = []
     } finally {
         isLoading.value = false
     }
 }
 
-// Get CSS classes for status badges
 const getStatusClass = (status) => {
     const classes = {
         Pending: 'bg-yellow-100 text-yellow-800',
         Approved: 'bg-green-100 text-green-800',
         Rejected: 'bg-red-100 text-red-800',
         Processing: 'bg-blue-100 text-blue-800',
-        // Add any other statuses you might have
-        Submitted: 'bg-gray-100 text-gray-800', // Example: initial state
+        Submitted: 'bg-gray-100 text-gray-800',
     }
-    // Fallback to a default class if status is not recognized or null/undefined
     return classes[status] || 'bg-gray-100 text-gray-800'
 }
 
-// Get CSS classes for status indicator dots
 const getStatusDotClass = (status) => {
     const classes = {
         Pending: 'bg-yellow-500',
         Approved: 'bg-green-500',
         Rejected: 'bg-red-500',
         Processing: 'bg-blue-500',
-        // Add any other statuses you might have
-        Submitted: 'bg-gray-500', // Example: initial state
+        Submitted: 'bg-gray-500',
     }
-    // Fallback to a default class
     return classes[status] || 'bg-gray-500'
 }
 
-// Reset search and filter controls
 const resetFilters = () => {
     searchQuery.value = ''
     statusFilter.value = ''
-    // Page will be reset by the watch effect
 }
 
-// Open the review modal
 const reviewApplication = (application) => {
     selectedApplication.value = application
     isModalOpen.value = true
 }
 
-// Close the review modal
 const closeReviewModal = () => {
     selectedApplication.value = null
     isModalOpen.value = false
 }
 
-// Handle the update event from the Review Modal
 const handleUpdate = (data) => {
     confirmData.value = data
 
-    const action = data.review_status || data.endorsement_decision || 'update' // Determine action for message
+    const action = data.review_status || data.endorsement_decision || 'update'
     const type = data.review_status
         ? 'Review'
         : data.endorsement_decision
         ? 'Endorsement'
-        : 'Application' // Determine type for message
+        : 'Application'
 
     confirmationMessage.value = `Are you sure you want to change the ${type} status to ${action}?`
     showConfirmation.value = true
 }
 
-// Confirm the update action
 const confirmReviewAction = async () => {
-    showConfirmation.value = false // Close confirmation modal
+    showConfirmation.value = false
 
     if (!confirmData.value || !selectedApplication.value) {
-        // Should not happen if logic is correct, but safety check
         console.error('Confirm action called without data or selected application')
         return
     }
 
-    isLoading.value = true // Show loading state for the update
-    error.value = null // Clear previous errors
+    isLoading.value = true
+    error.value = null
 
     try {
-        // Assuming patchMhpcCogs expects the application ID and the data object
         const response = await apiServices.patchMhpcCogs(
             selectedApplication.value.id,
             confirmData.value
         )
 
         if (response.status === 200) {
-            // Update the local application list reactively
             const index = applications.value.findIndex(
                 (app) => app.id === selectedApplication.value.id
             )
             if (index !== -1) {
-                // Merge existing data with response data to ensure all fields are updated
                 const updatedApp = { ...applications.value[index], ...response.data }
-                // Create a new array to trigger reactivity update for the list
                 applications.value = [
                     ...applications.value.slice(0, index),
                     updatedApp,
@@ -799,62 +685,51 @@ const confirmReviewAction = async () => {
                 ]
             }
 
-            // Show success feedback
             const action =
                 confirmData.value.review_status ||
                 confirmData.value.endorsement_decision ||
-                'updated' // Get actual action word
+                'updated'
             const type = confirmData.value.review_status
                 ? 'Review'
                 : confirmData.value.endorsement_decision
                 ? 'Endorsement'
-                : 'Application' // Get type word
+                : 'Application'
             toastMessage.value = `${type} status changed to ${action} successfully.`
             showSuccessToast.value = true
             setTimeout(() => {
                 showSuccessToast.value = false
-            }, 3000) // Auto-hide toast
+            }, 3000)
 
-            closeReviewModal() // Close the review modal after successful update
+            closeReviewModal()
         } else {
-            // Handle unexpected success statuses if needed (e.g., 201 Created etc. depending on API)
-            // For PATCH, 200 or 204 are typical. 200 with data is handled above.
             error.value = `Update failed: Server responded with status ${response.status}.`
             console.error('Update API returned non-200 status:', response.status, response.data)
         }
     } catch (err) {
-        // Handle API errors (network issues, 400, 500 responses)
         console.error('Error updating application:', err.response?.data || err.message || err)
-        // Provide a user-friendly error message
         error.value = `Failed to update application: ${
             err.response?.data?.detail ||
             err.response?.data?.message ||
             err.message ||
             'Please try again.'
         }`
-        // Maybe keep the modal open with an error? Or just show the error banner.
     } finally {
-        isLoading.value = false // Hide loading state
-        confirmData.value = null // Clear staged data regardless of success/failure
+        isLoading.value = false
+        confirmData.value = null
     }
 }
 
-// --- Methods (from misplaced code) ---
-
-// Cancel the update action
 const cancelReviewAction = () => {
     showConfirmation.value = false
-    confirmData.value = null // Clear staged data
+    confirmData.value = null
 }
 
-// Download certificate function
 const downloadCertificate = async (id) => {
-    isLoading.value = true // Optionally show loading while downloading
-    error.value = null // Clear previous errors
+    isLoading.value = true
+    error.value = null
     try {
         const response = await apiServices.downloadCogsCertificate(id)
 
-        // Check for successful response and that data is a Blob (typical for files)
         if (response.status === 200 && response.data instanceof Blob) {
             const url = window.URL.createObjectURL(
                 new Blob([response.data], {
@@ -864,38 +739,33 @@ const downloadCertificate = async (id) => {
             const link = document.createElement('a')
             link.href = url
 
-            // Attempt to get filename from Content-Disposition header
             const contentDisposition = response.headers['content-disposition']
-            let filename = `COGS_Certificate_${id}.pdf` // Default filename
+            let filename = `COGS_Certificate_${id}.pdf`
             if (contentDisposition) {
                 const filenameMatch = contentDisposition.match(
                     /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
                 )
                 if (filenameMatch && filenameMatch[1]) {
-                    // Remove quotes from filename if present
                     filename = filenameMatch[1].replace(/['"]/g, '')
                 }
             }
 
             link.setAttribute('download', filename)
-            document.body.appendChild(link) // Required for Firefox
+            document.body.appendChild(link)
             link.click()
-            document.body.removeChild(link) // Clean up
-            window.URL.revokeObjectURL(url) // Release the object URL
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(url)
 
-            // Show success feedback
             toastMessage.value = 'Certificate downloaded successfully'
             showSuccessToast.value = true
             setTimeout(() => {
                 showSuccessToast.value = false
-            }, 3000) // Auto-hide toast
+            }, 3000)
         } else if (response.status === 204) {
-            // Handle cases where the API might return 204 No Content if the cert isn't ready/found
             error.value = 'Certificate not available yet or not found.'
             console.warn('Download API returned 204 No Content', response)
         } else {
-            // Handle other non-200/204 responses
-            const errorData = await response.data.text() // Try to read response as text for error message
+            const errorData = await response.data.text()
             throw new Error(
                 `Download failed: Server responded with status ${response.status}. ${
                     errorData || ''
@@ -911,13 +781,12 @@ const downloadCertificate = async (id) => {
             'Please try again.'
         }`
     } finally {
-        isLoading.value = false // Hide loading
+        isLoading.value = false
     }
 }
 
 // --- Watchers ---
 
-// Reset pagination when filters change
 watch([searchQuery, statusFilter], () => {
     if (currentPage.value !== 1) {
         currentPage.value = 1
@@ -926,6 +795,5 @@ watch([searchQuery, statusFilter], () => {
 
 // --- Lifecycle Hooks ---
 
-// Fetch initial data when component mounts
 onMounted(fetchData)
 </script>
