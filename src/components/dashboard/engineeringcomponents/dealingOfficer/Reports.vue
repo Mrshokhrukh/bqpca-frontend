@@ -1,22 +1,17 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
       <h1 class="text-2xl font-bold text-gray-800">ECP Applications & Reports</h1>
       <div class="flex gap-4">
-        <button @click="exportToExcel" class="btn-success" :disabled="isLoading || !reportData.length || isLoadingExport">
-          <span v-if="isLoadingExport === 'excel'" class="mr-2">
+        <!-- Modified Export Button for CSV -->
+        <button @click="exportToCSV" class="btn-primary" :disabled="isLoading || !reportData.length || isLoadingExport">
+          <span v-if="isLoadingExport" class="mr-2">
             <i class="fas fa-spinner fa-spin"></i>
           </span>
-          📄 Export Excel
+          📄 Export CSV
         </button>
-        <button @click="exportToPDF" class="btn-danger" :disabled="isLoading || !reportData.length || isLoadingExport">
-           <span v-if="isLoadingExport === 'pdf'" class="mr-2">
-            <i class="fas fa-spinner fa-spin"></i>
-          </span>
-          📄 Export PDF
-        </button>
+        <!-- Removed Excel/PDF Buttons -->
       </div>
     </div>
 
@@ -32,7 +27,7 @@
         <option value="" disabled>-- Select a Report Type --</option>
         <optgroup label="Applications">
             <option value="new_applications">New Applications</option>
-            <!-- <option value="additional_applications">Additional Applications</option> --> {/* API function missing */}
+            {/* <option value="additional_applications">Additional Applications</option> API function missing */}
             <option value="renewal_applications">Renewal Applications</option>
         </optgroup>
          <optgroup label="CoGS">
@@ -40,17 +35,17 @@
          </optgroup>
         <optgroup label="CPD Management">
             <option value="cpd_review">CPD Applications Review</option>
-            <!-- <option value="cpd_self_assessed">Self Assessed CPD Applications</option> --> {/* API function missing */}
+            {/* <option value="cpd_self_assessed">Self Assessed CPD Applications</option> API function missing */}
         </optgroup>
         <optgroup label="Institute Management">
-            <!-- <option value="eoi_applications">EOI Applications</option> --> {/* API function missing */}
-            <!-- <option value="dpr_applications">DPR Applications</option> --> {/* API function missing */}
+            {/* <option value="eoi_applications">EOI Applications</option> API function missing */}
+            {/* <option value="dpr_applications">DPR Applications</option> API function missing */}
             <option value="capa_management">CAPA Management</option>
-            <!-- <option value="institute_renewals">Institute Renewals</option> --> {/* API function missing */}
-            <!-- <option value="teaching_institute_renewals">Teaching Institute Renewals</option> --> {/* API function missing */}
+            {/* <option value="institute_renewals">Institute Renewals</option> API function missing */}
+            {/* <option value="teaching_institute_renewals">Teaching Institute Renewals</option> API function missing */}
         </optgroup>
          <optgroup label="Other Reports">
-             <!-- <option value="generic_reports">Generic Reports</option> --> {/* API function missing */}
+             {/* <option value="generic_reports">Generic Reports</option> API function missing */}
          </optgroup>
       </select>
     </div>
@@ -261,17 +256,36 @@
 import { ref, computed, reactive, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import debounce from 'lodash/debounce';
-import * as XLSX from 'xlsx';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import Papa from 'papaparse'; // Import papaparse
 import apiServices from '@/services/services';
 // import { useRouter } from 'vue-router';
+
+// Removed XLSX and jsPDF imports
 
 const toast = useToast();
 // const router = useRouter();
 
 const ITEMS_PER_PAGE = 10;
 
+// --- Headers, apiMethods, other refs like activeReport, reportData, isLoading etc. remain the same ---
+const activeReport = ref('');
+const reportData = ref([]);
+const isLoading = ref(false);
+const isLoadingExport = ref(false); // Changed to boolean for single export type
+const error = ref(null);
+const currentPage = ref(1);
+const totalItems = ref(0);
+const sortBy = ref('');
+const sortOrder = ref('asc');
+
+const filters = reactive({
+  search: '',
+  startDate: '',
+  endDate: '',
+  status: '',
+});
+
+// --- Keep the headers definition object ---
 const headers = {
   new_applications: [
     { key: 'application_id', label: 'App ID', sortable: true, backendSortKey: 'id' },
@@ -367,6 +381,7 @@ const headers = {
    ]
 };
 
+// --- Keep the apiMethods definition object ---
 const apiMethods = {
   new_applications: {
     fetch: apiServices.getEpcNewApplications, // Corrected
@@ -466,23 +481,9 @@ const apiMethods = {
   }
 };
 
-const activeReport = ref('');
-const reportData = ref([]);
-const isLoading = ref(false);
-const isLoadingExport = ref(null);
-const error = ref(null);
-const currentPage = ref(1);
-const totalItems = ref(0);
-const sortBy = ref('');
-const sortOrder = ref('asc');
 
-const filters = reactive({
-  search: '',
-  startDate: '',
-  endDate: '',
-  status: '',
-});
-
+// --- Computed properties, getNestedValue, fetchData, debouncedFetchData, handleSort, handleReportTypeChange, clearFilters, prevPage, nextPage ---
+// --- These remain largely the same, ensuring isLoadingExport is treated as boolean ---
 const activeHeaders = computed(() => headers[activeReport.value] || []);
 const totalPages = computed(() => Math.ceil(totalItems.value / ITEMS_PER_PAGE));
 const startIndex = computed(() => (currentPage.value - 1) * ITEMS_PER_PAGE);
@@ -535,7 +536,8 @@ const fetchData = async (isExport = false) => {
   if (!activeReport.value) {
     reportData.value = []; totalItems.value = 0; error.value = null; isLoading.value = false; return;
   }
-  if (!isExport) { isLoading.value = true; isLoadingExport.value = null; }
+  // Reset isLoadingExport only when it's a normal fetch, not during an export process
+  if (!isExport) { isLoading.value = true; isLoadingExport.value = false; }
   error.value = null;
 
   const currentApiMethod = apiMethods[activeReport.value];
@@ -543,7 +545,7 @@ const fetchData = async (isExport = false) => {
     const reportLabel = activeReport.value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     error.value = `Report type "${reportLabel}" is not configured correctly (API fetch function missing).`;
     toast.error(error.value, { timeout: 6000 });
-    reportData.value = []; totalItems.value = 0; isLoading.value = false; isLoadingExport.value = null; return;
+    reportData.value = []; totalItems.value = 0; isLoading.value = false; isLoadingExport.value = false; return;
   }
 
   const sortHeader = activeHeaders.value.find((h) => h.key === sortBy.value);
@@ -557,10 +559,10 @@ const fetchData = async (isExport = false) => {
       end_date: filters.endDate || undefined, status: filters.status || undefined,
     };
     Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
-    console.log(`Fetching ${activeReport.value} with params:`, params);
+    // console.log(`Fetching ${activeReport.value} with params:`, params); // Keep for debugging if needed
 
     const response = await currentApiMethod.fetch(params);
-    console.log('Raw API Response:', response);
+    // console.log('Raw API Response:', response); // Keep for debugging if needed
 
     if (response.data && Array.isArray(response.data.results)) {
        reportData.value = response.data.results.map((item, index) => {
@@ -580,7 +582,8 @@ const fetchData = async (isExport = false) => {
     error.value = `Failed to load ${reportLabel} data. ${err.response?.data?.detail || err.message || 'Try again.'}`;
     toast.error(error.value, { timeout: 5000 }); reportData.value = []; totalItems.value = 0;
   } finally {
-    if (!isExport) { isLoading.value = false; }
+    // Only set isLoading to false if it's not part of an export fetch operation
+     if (!isExport) { isLoading.value = false; }
   }
 };
 
@@ -598,7 +601,7 @@ const handleReportTypeChange = () => {
   currentPage.value = 1; sortBy.value = ''; sortOrder.value = 'asc';
   filters.search = ''; filters.startDate = ''; filters.endDate = ''; filters.status = '';
   reportData.value = []; totalItems.value = 0; error.value = null;
-  isLoading.value = false; isLoadingExport.value = null;
+  isLoading.value = false; isLoadingExport.value = false; // Reset export loading state
   fetchData();
 };
 
@@ -610,6 +613,7 @@ const clearFilters = () => {
 const prevPage = () => { if (currentPage.value > 1) { currentPage.value--; fetchData(); } };
 const nextPage = () => { if (currentPage.value < totalPages.value) { currentPage.value++; fetchData(); } };
 
+// --- fetchAllData remains mostly the same, adapted for boolean isLoadingExport ---
 const fetchAllData = async () => {
   if (!activeReport.value) return [];
   const currentApiMethod = apiMethods[activeReport.value];
@@ -617,10 +621,12 @@ const fetchAllData = async () => {
     const reportLabel = activeReport.value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     toast.error(`Export config error for ${reportLabel}.`, { timeout: 4000, id: 'export-toast' }); return [];
   }
+
   const allData = []; let currentPageForExport = 1; let hasMore = true; const EXPORT_PAGE_SIZE = 100;
   const reportLabel = activeReport.value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   const loadingToastId = toast.info(`Preparing export: ${reportLabel}...`, { timeout: false, closeButton: false, icon: 'fas fa-spinner fa-spin', id: 'export-toast' });
-  isLoadingExport.value = 'fetching';
+  // isLoadingExport state is managed by the calling function (exportToCSV)
+
   const sortHeader = activeHeaders.value.find((h) => h.key === sortBy.value);
   const backendSortKey = sortHeader?.backendSortKey || sortBy.value;
 
@@ -633,7 +639,8 @@ const fetchAllData = async () => {
     };
     Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
     try {
-      const response = await currentApiMethod.fetch(params);
+      // Pass true to indicate this fetch is part of an export
+      const response = await currentApiMethod.fetch(params); // No need for isExport=true here, API call is the same
       if (response.data && Array.isArray(response.data.results)) {
         const transformedData = response.data.results.map((item, index) => {
           try { return currentApiMethod.transform ? currentApiMethod.transform(item) : item; }
@@ -644,85 +651,122 @@ const fetchAllData = async () => {
         });
         allData.push(...transformedData);
         hasMore = !!response.data.next || (response.data.results.length === EXPORT_PAGE_SIZE && (response.data.count ? allData.length < response.data.count : true));
-        currentPageForExport++; toast.update(loadingToastId, { content: `Fetched ${allData.length} records...` }, true);
+        currentPageForExport++; toast.update(loadingToastId, { content: `Fetched ${allData.length} of approx ${response.data.count || 'many'} records...` }, true);
       } else { console.warn('Export fetch error:', response.data); hasMore = false; }
     } catch (err) {
       console.error('Export fetchAllData error:', err.response?.data || err.message || err);
       toast.dismiss(loadingToastId); toast.error('Error fetching data for export.', { timeout: 5000 });
-      isLoadingExport.value = null; throw err;
+      throw err; // Re-throw to be caught by exportToCSV
     }
   }
-  toast.dismiss(loadingToastId); isLoadingExport.value = null;
+  toast.dismiss(loadingToastId);
   if (allData.length === 0) { toast.warning('No data found to export.', { timeout: 3000 }); }
   return allData;
 };
 
-const exportToExcel = async () => {
-  if (isLoadingExport.value) return; isLoadingExport.value = 'excel';
+// --- REMOVED exportToExcel and exportToPDF ---
+
+// --- ADDED exportToCSV using PapaParse ---
+const exportToCSV = async () => {
+  if (isLoadingExport.value) return; // Prevent multiple clicks
+  isLoadingExport.value = true;
+  const reportLabel = activeReport.value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
   try {
-    const allRawData = await fetchAllData(); if (!allRawData || allRawData.length === 0) return;
-    const reportLabel = activeReport.value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    const excelData = allRawData.map((item) => {
-      const row = {}; activeHeaders.value.forEach((header) => {
-        const value = getNestedValue(item, header.key); let excelValue = '';
-        if (header.type === 'date' || header.type === 'datetime') { excelValue = formatDate(value, header.type) !== '-' ? formatDate(value, header.type) : ''; }
-        else if (header.type === 'currency') { const num = Number(value); excelValue = !isNaN(num) && value !== null ? num : ''; }
-        else if (typeof value === 'object' && value !== null) { excelValue = JSON.stringify(value); }
-        else { excelValue = value ?? ''; }
-        row[header.label] = excelValue;
-      }); return row;
+    const allRawData = await fetchAllData();
+    // fetchAllData handles the "no data" warning, so just return if empty
+    if (!allRawData || allRawData.length === 0) {
+      return;
+    }
+
+    // 1. Prepare Headers (Use labels from activeHeaders)
+    const csvHeader = activeHeaders.value.map(header => header.label);
+
+    // 2. Prepare Body Data (Format based on type, handle nulls, use getNestedValue)
+    const csvBody = allRawData.map(item => {
+      return activeHeaders.value.map(header => {
+        const value = getNestedValue(item, header.key);
+        let csvValue = '';
+
+        if (value === null || value === undefined) {
+            csvValue = ''; // Represent null/undefined as empty string in CSV
+        } else if (header.type === 'date') {
+            // Use the same formatting as the table, handle '-' return value
+            const formatted = formatDate(value);
+            csvValue = formatted === '-' ? '' : formatted;
+        } else if (header.type === 'datetime') {
+            const formatted = formatDate(value, 'datetime');
+            csvValue = formatted === '-' ? '' : formatted;
+        } else if (header.type === 'currency') {
+            // Export currency as a plain number string for better compatibility
+            const num = Number(value);
+            csvValue = !isNaN(num) ? num.toString() : '';
+            // Alternatively, use formatted string without currency symbol:
+            // const formatted = formatCurrency(value);
+            // csvValue = formatted === '-' ? '' : formatted.replace(/^[^\d.,]+/, '').trim(); // Attempt to remove prefix like 'BTN '
+        } else if (typeof value === 'object') {
+            // Basic object stringification, might need refinement for complex objects
+            csvValue = JSON.stringify(value);
+        } else {
+            // Default case: convert to string
+            csvValue = String(value);
+        }
+
+        // Basic CSV escaping (double quotes for fields containing comma, newline, or double quote)
+        // Papa.unparse handles this automatically, but doing it manually ensures control if needed.
+        // However, relying on Papa.unparse is simpler and generally recommended.
+        // if (typeof csvValue === 'string' && /[",\n]/.test(csvValue)) {
+        //    csvValue = `"${csvValue.replace(/"/g, '""')}"`;
+        // }
+        return csvValue; // Return the processed value for this cell
+      });
     });
-    const ws = XLSX.utils.json_to_sheet(excelData);
-    ws['!cols'] = activeHeaders.value.map(h => ({ wch: Math.max(h.label.length, 15) }));
-    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, `${reportLabel.slice(0, 25)} Data`);
-    XLSX.writeFile(wb, `${reportLabel}_Report_${formatDate(new Date(), 'yyyy-mm-dd')}.xlsx`);
-    toast.success('Excel export successful', { timeout: 3000 });
-  } catch (err) { console.error('Excel Export failed:', err); if (!toast.isActive('export-toast')) { toast.error('Excel export failed.', { timeout: 4000 }); } }
-  finally { isLoadingExport.value = null; }
+
+    // 3. Combine Header and Body
+    const csvData = [csvHeader, ...csvBody];
+
+    // 4. Use PapaParse to generate CSV string (handles quoting/escaping automatically)
+    const csvString = Papa.unparse(csvData);
+
+    // 5. Create Blob and Trigger Download
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    const fileName = `${reportLabel}_Report_${formatDate(new Date(), 'yyyy-mm-dd')}.csv`;
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', fileName);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click(); // Trigger download
+    document.body.removeChild(link); // Clean up
+    URL.revokeObjectURL(url); // Free up memory
+
+    toast.success('CSV export successful!', { timeout: 3000 });
+
+  } catch (err) {
+    // Error handling is partially done in fetchAllData, catch any other issues here
+    console.error('CSV Export process failed:', err);
+    // Avoid duplicate toasts if fetchAllData already showed one
+    if (!toast.isActive('export-toast')) {
+        toast.error('CSV export failed. Check console for details.', { timeout: 4000 });
+    }
+  } finally {
+    isLoadingExport.value = false; // Ensure loading state is always reset
+  }
 };
 
-const exportToPDF = async () => {
-   if (isLoadingExport.value) return; isLoadingExport.value = 'pdf';
-  try {
-    const allRawData = await fetchAllData(); if (!allRawData || allRawData.length === 0) return;
-    const reportLabel = activeReport.value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' }); doc.setFont('helvetica');
-    const pageWidth = doc.internal.pageSize.getWidth(); const margin = 40;
-    doc.setFontSize(16); doc.setFont(undefined, 'bold'); doc.text(`${reportLabel} Report`, pageWidth / 2, margin, { align: 'center' });
-    doc.setFont(undefined, 'normal'); doc.setFontSize(9); doc.text(`Generated: ${formatDate(new Date(), 'datetime')}`, margin, margin + 20);
-    let filterInfo = 'Filters: '; const activeFilters = [];
-    if (filters.search) activeFilters.push(`Search="${filters.search}"`); if (filters.startDate) activeFilters.push(`From ${formatDate(filters.startDate)}`);
-    if (filters.endDate) activeFilters.push(`To ${formatDate(filters.endDate)}`);
-    if (filters.status) { const statusLabel = statusOptions.value.find(s => s.value === filters.status)?.label || filters.status; activeFilters.push(`Status="${statusLabel}"`); }
-    filterInfo += activeFilters.length > 0 ? activeFilters.join(' | ') : 'None';
-    doc.text(filterInfo, margin, margin + 35, { maxWidth: pageWidth - 2 * margin });
-    const head = [activeHeaders.value.map((header) => header.label)];
-    const body = allRawData.map((item) => activeHeaders.value.map((header) => {
-        const value = getNestedValue(item, header.key); let cellValue = '';
-        if (header.type === 'date') cellValue = formatDate(value); else if (header.type === 'datetime') cellValue = formatDate(value, 'datetime');
-        else if (header.type === 'currency') cellValue = formatCurrency(value); else if (typeof value === 'object' && value !== null) cellValue = JSON.stringify(value);
-        else cellValue = value?.toString() ?? '';
-        if (cellValue.length > 150) cellValue = cellValue.substring(0, 147) + '...'; return cellValue;
-      }),
-    );
-    doc.autoTable({
-      head: head, body: body, startY: margin + 50, theme: 'grid',
-      margin: { top: margin + 50, right: margin, bottom: margin + 20, left: margin },
-      styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak', lineWidth: 0.5, lineColor: [200, 200, 200] },
-      headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold', halign: 'left', fontSize: 8, lineWidth: 0.5, lineColor: [200, 200, 200] },
-      didDrawPage: (data) => { doc.setFontSize(8); doc.setTextColor(150); doc.text(`Page ${data.pageNumber}`, pageWidth / 2, doc.internal.pageSize.getHeight() - margin + 10, { align: 'center' }); },
-    });
-    doc.save(`${reportLabel}_Report_${formatDate(new Date(), 'yyyy-mm-dd')}.pdf`);
-    toast.success('PDF export successful', { timeout: 3000 });
-  } catch (err) { console.error('PDF Export failed:', err); if (!toast.isActive('export-toast')) { toast.error('PDF export failed.', { timeout: 4000 }); } }
-  finally { isLoadingExport.value = null; }
-};
 
+// --- formatDate, formatCurrency, statusBadge remain the same ---
 const formatDate = (dateString, format = 'default') => {
     if (!dateString) return '-'; try { const date = new Date(dateString); if (isNaN(date.getTime())) return '-';
         if (format === 'yyyy-mm-dd') { const y = date.getFullYear(); const m = (date.getMonth() + 1).toString().padStart(2, '0'); const d = date.getDate().toString().padStart(2, '0'); return `${y}-${m}-${d}`; }
         if (format === 'datetime') { return date.toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).replace(',', ''); }
-        return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        // Default format (DD/MM/YYYY)
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
     } catch (e) { console.error('Date format error:', e); return '-'; }
 };
 
@@ -751,6 +795,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* --- Keep existing styles --- */
 .filter-label{display:block;font-size:.875rem;font-weight:500;color:#4b5563;margin-bottom:.25rem}
 .filter-input,.report-type-selector{width:100%;padding:.625rem .75rem;border:1px solid #d1d5db;border-radius:.375rem;background-color:#fff;font-size:.875rem;color:#111827;transition:border-color .2s ease-in-out,box-shadow .2s ease-in-out}
 .filter-input:disabled,.report-type-selector:disabled{background-color:#f3f4f6;cursor:not-allowed}
@@ -764,15 +809,24 @@ onMounted(() => {
 .btn:disabled{opacity:.6;cursor:not-allowed;box-shadow:none}
 .btn i.fas{margin-right:.5rem;font-size:.875em}
 .btn span.mr-2{display:inline-flex;align-items:center}
+
+/* --- Add or modify button styles as needed --- */
+.btn-primary { @apply btn bg-blue-500 text-white; }
+.btn-primary:hover:not(:disabled){ @apply bg-blue-600 shadow-md; }
+.btn-primary:disabled{ @apply bg-blue-500; }
+
 .btn-success{ @apply btn bg-green-500 text-white; }
 .btn-success:hover:not(:disabled){ @apply bg-green-600 shadow-md; }
 .btn-success:disabled{ @apply bg-green-500; }
+
 .btn-danger{ @apply btn bg-red-500 text-white; }
 .btn-danger:hover:not(:disabled){ @apply bg-red-600 shadow-md; }
 .btn-danger:disabled{ @apply bg-red-500; }
+
 .btn-secondary{ @apply btn bg-gray-500 text-white; }
 .btn-secondary:hover:not(:disabled){ @apply bg-gray-600 shadow-md; }
 .btn-secondary:disabled{ @apply bg-gray-500; }
+
 .pagination-btn{padding:.5rem 1rem;border:1px solid #d1d5db;border-radius:.375rem;background-color:#fff;color:#374151;font-size:.875rem;transition:background-color .2s,border-color .2s;display:inline-flex;align-items:center}
 .pagination-btn:hover:not(:disabled){background-color:#f9fafb;border-color:#9ca3af}
 .pagination-btn:disabled{opacity:.5;cursor:not-allowed;background-color:#f9fafb}
