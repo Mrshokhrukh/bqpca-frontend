@@ -474,6 +474,12 @@ const handleFileUpload = (event) => {
 }
 
 const fetchMasterData = async () => {
+  // Initialize refs as empty arrays
+  learningMethods.value = [];
+  methodologies.value = [];
+  providingAgencies.value = [];
+  reasonsForConducting.value = [];
+
   try {
     const [
       learningMethodsResponse,
@@ -481,110 +487,110 @@ const fetchMasterData = async () => {
       providingAgenciesResponse,
       reasonsResponse,
     ] = await Promise.all([
-      apiServices.getEpcCpdTaskLearningMethods(),
-      apiServices.getEpcCpdTaskMethodologies(),
-      apiServices.getEpcCpdProvidingAgencies(),
-      apiServices.getEpcCpdReasonsForConducting(),
-    ])
+      apiServices.getEpcCpdTaskLearningMethods(), // Endpoint returns EnggCPDTaskLearningMethod objects
+      apiServices.getEpcCpdTaskMethodologies(), // Endpoint returns EnggCPDTaskMethodology objects
+      apiServices.getEpcCpdProvidingAgencies(), // Endpoint returns EnggCPDProvidingAgency objects
+      apiServices.getEpcCpdReasonsForConducting(), // Endpoint returns EnggCPDReasonForConducting objects
+    ]);
 
+    // --- Process Learning Methods ---
     if (
       learningMethodsResponse &&
       learningMethodsResponse.data &&
       Array.isArray(learningMethodsResponse.data.results)
     ) {
-      // Access .data.results
       learningMethods.value = learningMethodsResponse.data.results.map((item) => ({
-        // Map over .data.results
         id: item.id,
-        name: item.name || item.description || `Learning Method ${item.id}`,
-      }))
+        // Use the 'activities' field from the API response as the display name
+        name: item.activities || `Learning Method ${item.id}`, // Fallback if 'activities' is empty
+      }));
+      if (learningMethods.value.length === 0) {
+          console.warn("API returned 0 learning methods.");
+      }
     } else {
+      // Log the error but DON'T assign hardcoded data
       console.error(
-        'Error: learningMethodsResponse.data.results is not an array or is missing. Falling back to default data.',
-        learningMethodsResponse,
-      )
-      learningMethods.value = [
-        { id: 1, name: 'Workshop' },
-        { id: 2, name: 'Seminar' },
-        { id: 3, name: 'Online Course' },
-        { id: 4, name: 'Conference' },
-      ]
+        'Error: Invalid or empty data received for Learning Methods.',
+        learningMethodsResponse?.data // Log received data if available
+      );
+      toast.error("Failed to load Learning Methods options.");
     }
 
+    // --- Process Methodologies ---
     if (
       methodologiesResponse &&
       methodologiesResponse.data &&
       Array.isArray(methodologiesResponse.data.results)
     ) {
-      // Access .data.results
-      methodologies.value = methodologiesResponse.data.results.map((item) => ({
-        // Map over .data.results
-        id: item.id,
-        name: item.name || item.description || `Methodology ${item.id}`,
-      }))
+      methodologies.value = methodologiesResponse.data.results
+        // Filter out results where the nested methodology might be null
+        .filter(item => item.methodology)
+        .map((item) => ({
+          // Use the ID from the *nested* methodology object
+          id: item.methodology.id,
+          // Use the methodology_name from the *nested* object
+          name: item.methodology.methodology_name || `Methodology ${item.methodology.id}`,
+        }));
+       if (methodologies.value.length === 0) {
+          console.warn("API returned 0 methodologies (after filtering).");
+      }
     } else {
+      // Log the error but DON'T assign hardcoded data
       console.error(
-        'Error: methodologiesResponse.data.results is not an array or is missing. Falling back to default data.',
-        methodologiesResponse,
-      )
-      methodologies.value = [
-        { id: 1, name: 'Lecture' },
-        { id: 2, name: 'Hands-on Practice' },
-        { id: 3, name: 'Case Study' },
-        { id: 4, name: 'Group Discussion' },
-      ]
+        'Error: Invalid or empty data received for Methodologies.',
+        methodologiesResponse?.data // Log received data if available
+      );
+       toast.error("Failed to load Methodologies options.");
     }
 
+    // --- Process Providing Agencies ---
     if (
       providingAgenciesResponse &&
       providingAgenciesResponse.data &&
       Array.isArray(providingAgenciesResponse.data.results)
     ) {
-      // Access .data.results
       providingAgencies.value = providingAgenciesResponse.data.results.map((item) => ({
-        // Map over .data.results
         id: item.id,
-        name: item.name || item.agency_name || `Agency ${item.id}`,
-      }))
+        // Assuming the API returns a 'name' field for EnggCPDProvidingAgency
+        name: item.name || `Agency ${item.id}`,
+      }));
+       if (providingAgencies.value.length === 0) {
+          console.warn("API returned 0 providing agencies.");
+      }
     } else {
+       // Log the error but DON'T assign hardcoded data
       console.error(
-        'Error: providingAgenciesResponse.data.results is not an array or is missing. Falling back to default data.',
-        providingAgenciesResponse,
-      )
-      providingAgencies.value = [
-        { id: 1, name: 'Engineering Council' },
-        { id: 2, name: 'Professional Association' },
-        { id: 3, name: 'Training Institute' },
-        { id: 4, name: 'University' },
-      ]
+        'Error: Invalid or empty data received for Providing Agencies.',
+        providingAgenciesResponse?.data // Log received data if available
+      );
+       toast.error("Failed to load Providing Agencies options.");
     }
 
+    // --- Process Reasons for Conducting ---
     if (reasonsResponse && reasonsResponse.data && Array.isArray(reasonsResponse.data.results)) {
-      // Access .data.results
       reasonsForConducting.value = reasonsResponse.data.results.map((item) => ({
-        // Map over .data.results
         id: item.id,
-        name: item.name || item.reason || `Reason ${item.id}`,
-      }))
+         // Assuming the API returns a 'name' field for EnggCPDReasonForConducting
+        name: item.name || `Reason ${item.id}`,
+      }));
+       if (reasonsForConducting.value.length === 0) {
+          console.warn("API returned 0 reasons for conducting.");
+      }
     } else {
+      // Log the error but DON'T assign hardcoded data
       console.error(
-        'Error: reasonsResponse.data.results is not an array or is missing. Falling back to default data.',
-        reasonsResponse,
-      )
-      reasonsForConducting.value = [
-        { id: 1, name: 'Professional Development' },
-        { id: 2, name: 'License Renewal' },
-        { id: 3, name: 'Skill Enhancement' },
-        { id: 4, name: 'Knowledge Update' },
-      ]
+        'Error: Invalid or empty data received for Reasons for Conducting.',
+        reasonsResponse?.data // Log received data if available
+      );
+       toast.error("Failed to load Reasons for Conducting options.");
     }
-  } catch (error) {
-    toast.error('Failed to fetch master data: ' + error.message)
-    console.error('Error fetching master data:', error)
-    // Fallback data is handled within each if/else block now.
-  }
-}
 
+  } catch (error) {
+    toast.error('Failed to fetch master data options: ' + error.message);
+    console.error('Error fetching master data:', error);
+    // Keep arrays empty if the entire fetch fails
+  }
+};
 onMounted(async () => {
   if (authStore.user) {
     form.cid_no = authStore.user.cid
