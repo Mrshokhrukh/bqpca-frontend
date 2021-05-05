@@ -95,8 +95,6 @@ const iconMap = {
 // import { useAuthStore } from '@/stores/authStore'
 // import { useInstitutionStore } from '@/stores/institutionNavigationStore'
 
-
-
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
   return iconMap[iconName] || File
@@ -796,6 +794,10 @@ const serviceSpecificMenuItems = {
             name: 'Categories',
             route: (serviceType) => `/admin/admin/${serviceType}/participation_category`,
           },
+          {
+            name: 'Sub Categories',
+            route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
+          },
         ],
       },
       {
@@ -807,8 +809,8 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/personnel_categories`,
           },
           {
-            name: 'Sub Categories',
-            route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
+            name: 'PersonnelSubCategory',
+            route: (serviceType) => `/admin/admin/${serviceType}/MastersPersonnelSubCategory`,
           },
           {
             name: 'Qualifications',
@@ -1427,8 +1429,7 @@ const serviceSpecificMenuItems = {
       {
         name: 'Profile',
         icon: getIconComponent('UserPlus'),
-        route: (serviceType) =>
-          `/admin/cme_cpd_provider/${serviceType}/cme_cpd_provider_profile`,
+        route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cme_cpd_provider_profile`,
       },
     ],
 

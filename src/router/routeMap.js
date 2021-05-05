@@ -108,6 +108,7 @@ export default {
       cogs_agency: mhpcDashboard,
       cogs_dept: mhpcDashboard,
       cogs_workplace: mhpcDashboard,
+      MastersPersonnelSubCategory: mhpcDashboard,
     },
   },
   user: {

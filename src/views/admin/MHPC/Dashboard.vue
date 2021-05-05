@@ -97,6 +97,7 @@ import MastersFileTypes from '@/components/dashboard/mhpccomponents/admin/Master
 import MastersParticipationCategory from '@/components/dashboard/mhpccomponents/admin/MastersParticipationCategory.vue'
 import MastersParticipationSubCategory from '@/components/dashboard/mhpccomponents/admin/MastersPersonnelSubCategory.vue'
 import MastersPersonnelCategories from '@/components/dashboard/mhpccomponents/admin/MastersPersonnelCategories.vue'
+import MastersPersonnelSubCategory from '@/components/dashboard/mhpccomponents/admin/MastersPersonnelSubCategory.vue'
 import MastersQualificationTypes from '@/components/dashboard/mhpccomponents/admin/MastersQualificationTypes.vue'
 import MastersQualifications from '@/components/dashboard/mhpccomponents/admin/MastersQualifications.vue'
 import MastersRegistrationType from '@/components/dashboard/mhpccomponents/admin/MastersRegistrationType.vue'
@@ -183,6 +184,8 @@ const bmhAdminComponent = computed(() => {
       return CogsDepartment
     case path.endsWith('/health_certification/cogs_workplace'):
       return CogsWorkplace
+    case path.endsWith('/health_certification/MastersPersonnelSubCategory'):
+      return MastersPersonnelSubCategory
     default:
       return null
   }
