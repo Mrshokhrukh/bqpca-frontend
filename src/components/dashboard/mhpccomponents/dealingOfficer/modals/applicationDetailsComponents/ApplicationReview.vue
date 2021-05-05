@@ -19,51 +19,59 @@
           </button>
         </div>
       </div>
+
+      <!-- Read-only Payment Status - Always displayed the same way -->
       <div class="p-4 bg-gray-50 rounded-lg mb-6">
         <h5 class="text-lg font-medium text-gray-900 mb-3">Payment Status</h5>
         <div class="flex items-center space-x-3">
-          <span
-            :class="[
-              'w-3 h-3 rounded-full',
-              paymentStatus === 'pending'
-                ? 'bg-yellow-400'
-                : paymentStatus === 'approved'
+          <span :class="[
+            'w-3 h-3 rounded-full',
+            currentPaymentStatus === 'pending'
+              ? 'bg-yellow-400'
+              : currentPaymentStatus === 'processing payment'
+                ? 'bg-blue-400'
+                : currentPaymentStatus === 'completed'
                   ? 'bg-green-400'
-                  : 'bg-gray-300',
-            ]"
-          >
+                  : currentPaymentStatus === 'failed'
+                    ? 'bg-red-400'
+                    : 'bg-gray-300',
+          ]">
           </span>
-          <span
-            class="text-sm font-medium"
-            :class="[
-              paymentStatus === 'pending'
-                ? 'text-yellow-600'
-                : paymentStatus === 'approved'
+          <span class="text-sm font-medium" :class="[
+            currentPaymentStatus === 'pending'
+              ? 'text-yellow-600'
+              : currentPaymentStatus === 'processing payment'
+                ? 'text-blue-600'
+                : currentPaymentStatus === 'completed'
                   ? 'text-green-600'
-                  : 'text-gray-600',
-            ]"
-          >
+                  : currentPaymentStatus === 'failed'
+                    ? 'text-red-600'
+                    : 'text-gray-600',
+          ]">
             {{
-              paymentStatus === 'pending'
+              currentPaymentStatus === 'pending'
                 ? 'Pending'
-                : paymentStatus === 'approved'
-                  ? 'Approved'
-                  : 'Unknown'
+                : currentPaymentStatus === 'processing payment'
+                  ? 'Processing Payment'
+                  : currentPaymentStatus === 'completed'
+                    ? 'Completed'
+                    : currentPaymentStatus === 'failed'
+                      ? 'Failed'
+                      : (props.qualification.payment_status || 'Unknown')
             }}
           </span>
         </div>
       </div>
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6" v-if="!isEditing">
         <!-- Application Review (Display) -->
         <div class="space-y-2">
           <h6 class="text-sm font-medium text-gray-700">Document Review</h6>
           <div class="flex items-center space-x-2">
-            <span
-              :class="[
-                'w-2 h-2 rounded-full',
-                getStatusClass(editableData.application_review_status),
-              ]"
-            ></span>
+            <span :class="[
+              'w-2 h-2 rounded-full',
+              getStatusClass(editableData.application_review_status),
+            ]"></span>
             <span class="text-sm text-gray-600">{{ editableData.application_review_status }}</span>
           </div>
           <p v-if="editableData.application_review_remark" class="text-sm text-gray-500 mt-1">
@@ -75,9 +83,7 @@
         <div class="space-y-2">
           <h6 class="text-sm font-medium text-gray-700">Physical Verification</h6>
           <div class="flex items-center space-x-2">
-            <span
-              :class="['w-2 h-2 rounded-full', getStatusClass(editableData.physical_review_status)]"
-            ></span>
+            <span :class="['w-2 h-2 rounded-full', getStatusClass(editableData.physical_review_status)]"></span>
             <span class="text-sm text-gray-600">{{ editableData.physical_review_status }}</span>
           </div>
           <p v-if="editableData.physical_review_remark" class="text-sm text-gray-500 mt-1">
@@ -89,9 +95,7 @@
         <div class="space-y-2">
           <h6 class="text-sm font-medium text-gray-700">Final Endorsement</h6>
           <div class="flex items-center space-x-2">
-            <span
-              :class="['w-2 h-2 rounded-full', getStatusClass(editableData.endorsement_decision)]"
-            ></span>
+            <span :class="['w-2 h-2 rounded-full', getStatusClass(editableData.endorsement_decision)]"></span>
             <span class="text-sm text-gray-600">{{ editableData.endorsement_decision }}</span>
           </div>
           <p v-if="editableData.endorsement_remarks" class="text-sm text-gray-500 mt-1">
@@ -105,21 +109,16 @@
         <div class="space-y-4">
           <div class="p-4 bg-gray-50 rounded-lg">
             <h5 class="font-medium text-gray-900 mb-3">Document Review</h5>
-            <select
-              v-model="editableData.application_review_status"
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
+            <select v-model="editableData.application_review_status"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               <option value="Pending">Pending Review</option>
               <option value="Approved">Approve Documents</option>
               <option value="Regretted">Regret Documents</option>
             </select>
-            <textarea
-              v-if="editableData.application_review_status === 'Regretted'"
-              v-model="editableData.application_review_remark"
-              placeholder="Provide rejection reason..."
+            <textarea v-if="editableData.application_review_status === 'Regretted'"
+              v-model="editableData.application_review_remark" placeholder="Provide rejection reason..."
               class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              rows="3"
-            ></textarea>
+              rows="3"></textarea>
           </div>
         </div>
 
@@ -127,43 +126,48 @@
         <div class="space-y-4">
           <div class="p-4 bg-gray-50 rounded-lg">
             <h5 class="font-medium text-gray-900 mb-3">Physical Verification</h5>
-            <select
-              v-model="editableData.physical_review_status"
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
+            <select v-model="editableData.physical_review_status"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               <option value="Pending">Pending Verification</option>
               <option value="Approved">Verify Documents</option>
               <option value="Regretted">Regret Verification</option>
             </select>
-            <textarea
-              v-if="editableData.physical_review_status === 'Regretted'"
-              v-model="editableData.physical_review_remark"
-              placeholder="Provide rejection reason..."
+            <textarea v-if="editableData.physical_review_status === 'Regretted'"
+              v-model="editableData.physical_review_remark" placeholder="Provide rejection reason..."
               class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              rows="3"
-            ></textarea>
+              rows="3"></textarea>
           </div>
         </div>
 
         <!-- Endorsement -->
         <div class="space-y-4">
           <div class="p-4 bg-gray-50 rounded-lg">
-            <h5 class="font-medium text-gray-900 mb-3">Final Endorsement</h5>
-            <select
-              v-model="editableData.endorsement_decision"
-              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
+            <h5 class="font-medium text-gray-900 mb-3">
+              Final Endorsement
+              <span v-if="currentPaymentStatus !== 'completed'" class="text-sm text-red-500 ml-2">
+                {{
+                  currentPaymentStatus === 'processing payment'
+                    ? '(Payment in progress)'
+                    : currentPaymentStatus === 'failed'
+                      ? '(Payment failed)'
+                      : '(Requires payment completion)'
+                }}
+              </span>
+            </h5>
+            <select v-model="editableData.endorsement_decision" :disabled="currentPaymentStatus !== 'completed'" :class="[
+              'w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+              { 'opacity-50 cursor-not-allowed': currentPaymentStatus !== 'completed' }
+            ]">
               <option value="Pending">Pending Decision</option>
               <option value="Approved">Endorse Application</option>
               <option value="Regretted">Regret Application</option>
             </select>
-            <textarea
-              v-if="editableData.endorsement_decision === 'Regretted'"
-              v-model="editableData.endorsement_remarks"
-              placeholder="Provide rejection reason..."
-              class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              rows="3"
-            ></textarea>
+            <textarea v-if="editableData.endorsement_decision === 'Regretted'"
+              v-model="editableData.endorsement_remarks" :disabled="currentPaymentStatus !== 'completed'"
+              placeholder="Provide rejection reason..." :class="[
+                'mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                { 'opacity-50 cursor-not-allowed': currentPaymentStatus !== 'completed' }
+              ]" rows="3"></textarea>
           </div>
         </div>
       </div>
@@ -173,7 +177,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { ClipboardCheck, Pencil, Check, X } from 'lucide-vue-next'
 import apiServices from '@/services/services'
 import isEqual from 'lodash/isEqual'
@@ -195,7 +199,13 @@ const isEditing = ref(false)
 const editableData = ref({})
 const originalData = ref({})
 const errorMessage = ref('')
-const paymentStatus = ref('pending') // Replace with actual data source
+
+// Computed property to get current payment status directly from props
+const currentPaymentStatus = computed(() => {
+  return props.qualification.payment_status?.toLowerCase()
+})
+
+console.log('props.qualification', props.qualification)
 
 onMounted(() => {
   originalData.value = JSON.parse(JSON.stringify(props.qualification))
