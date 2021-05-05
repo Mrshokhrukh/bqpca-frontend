@@ -370,11 +370,11 @@ const fetchApplications = async () => {
   try {
     const response = await apiServices.getMhpcNewApplications()
     applications.value = response.data?.results || []
-    currentPage.value = 1 // Reset to first page on new data fetch
+    currentPage.value = 1
   } catch (error) {
     console.error('Error fetching applications:', error)
     applications.value = [] // Clear data on error
-    // Handle error display to user if needed
+
   }
 }
 
@@ -415,8 +415,6 @@ const viewDetails = async (application) => {
 
 
 const handleUpdate = async () => {
-  // This function is called after the modal updates something.
-  // We should re-fetch applications to reflect changes.
   await fetchApplications()
   closeModal()
 }
@@ -435,7 +433,7 @@ const nextPage = () => {
 }
 
 onMounted(async () => {
-  // Fetch applications and master data when the component mounts
+  
   await Promise.all([fetchApplications(), fetchMasterData()])
 })
 </script>
