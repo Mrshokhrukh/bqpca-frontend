@@ -40,7 +40,7 @@
                             leave-from="opacity-100 scale-100"
                             leave-to="opacity-0 scale-95"
                         >
-                            <DialogPanel class="bg-white rounded-lg p-8 shadow-xl w-full relative">
+                            <DialogPanel class="bg-white rounded-lg p-8 shadow-xl max-w-7xl relative">
                                 <button
                                     @click="showModal = false"
                                     class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 focus:outline-none"
