@@ -3,16 +3,26 @@
   <div class="bg-white rounded-xl shadow-sm overflow-hidden">
     <!-- Auth Tabs -->
     <div class="flex border-b border-gray-200">
-      <button @click="activeTab = 'login'" class="flex-1 py-4 px-6 text-center font-medium" :class="activeTab === 'login'
-        ? 'text-primary border-b-2 border-primary'
-        : 'text-gray-500 hover:text-gray-700'
-        ">
+      <button
+        @click="activeTab = 'login'"
+        class="flex-1 py-4 px-6 text-center font-medium"
+        :class="
+          activeTab === 'login'
+            ? 'text-primary border-b-2 border-primary'
+            : 'text-gray-500 hover:text-gray-700'
+        "
+      >
         Login
       </button>
-      <button @click="activeTab = 'register'" class="flex-1 py-4 px-6 text-center font-medium" :class="activeTab === 'register'
-        ? 'text-primary border-b-2 border-primary'
-        : 'text-gray-500 hover:text-gray-700'
-        ">
+      <button
+        @click="activeTab = 'register'"
+        class="flex-1 py-4 px-6 text-center font-medium"
+        :class="
+          activeTab === 'register'
+            ? 'text-primary border-b-2 border-primary'
+            : 'text-gray-500 hover:text-gray-700'
+        "
+      >
         Register
       </button>
     </div>
@@ -23,30 +33,12 @@
         <!-- NDI Login Button -->
         <div class="space-y-4">
           <button
-            @click="showQRCode = !showQRCode"
+            @click="openNdiLoginModal"
             class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 hover:bg-gray-50"
           >
             <img src="@/assets/ndi-logo.png" alt="NDI" class="h-5 w-5 mr-2" />
             Login with NDI
           </button>
-
-          <!-- QR Code Display -->
-          <div
-            v-if="showQRCode"
-            class="flex flex-col items-center space-y-4 p-4 bg-gray-50 rounded-lg"
-          >
-            <div
-              class="w-48 h-48 bg-white rounded-lg flex items-center justify-center shadow-inner"
-            >
-              <QrCodeIcon class="w-32 h-32 text-gray-400" />
-            </div>
-            <p class="text-sm text-gray-600 text-center">
-              Scan this QR code with your NDI app to login
-            </p>
-            <button @click="showQRCode = false" class="text-sm text-gray-500 hover:text-gray-700">
-              Cancel QR Login
-            </button>
-          </div>
         </div>
 
         <div class="relative">
@@ -65,6 +57,7 @@
             <input
               type="email"
               v-model="loginForm.email"
+              required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
             />
           </div>
@@ -73,19 +66,25 @@
             <input
               type="password"
               v-model="loginForm.password"
+              required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
             />
           </div>
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <input type="checkbox" v-model="loginForm.remember"
-                class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" />
+              <input
+                type="checkbox"
+                v-model="loginForm.remember"
+                class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+              />
               <label class="ml-2 block text-sm text-gray-700">Remember me</label>
             </div>
             <a href="#" class="text-sm text-primary hover:text-primary/90">Forgot password?</a>
           </div>
-          <button type="submit"
-            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+          <button
+            type="submit"
+            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+          >
             Sign in
           </button>
         </form>
@@ -93,47 +92,6 @@
 
       <!-- Registration Section -->
       <div v-else class="space-y-6">
-        <!-- NDI Registration Option -->
-        <div class="space-y-4">
-          <button
-            @click="showRegisterQRCode = !showRegisterQRCode"
-            class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 hover:bg-gray-50"
-          >
-            <img src="@/assets/ndi-logo.png" alt="NDI" class="h-5 w-5 mr-2" />
-            Register with NDI QR Code
-          </button>
-
-          <!-- QR Code Display for Registration -->
-          <div
-            v-if="showRegisterQRCode"
-            class="flex flex-col items-center space-y-4 p-4 bg-gray-50 rounded-lg"
-          >
-            <div
-              class="w-48 h-48 bg-white rounded-lg flex items-center justify-center shadow-inner"
-            >
-              <QrCodeIcon class="w-32 h-32 text-gray-400" />
-            </div>
-            <p class="text-sm text-gray-600 text-center">
-              Scan this QR code with your NDI app to register
-            </p>
-            <button
-              @click="showRegisterQRCode = false"
-              class="text-sm text-gray-500 hover:text-gray-700"
-            >
-              Cancel QR Registration
-            </button>
-          </div>
-        </div>
-
-        <div class="relative">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-300"></div>
-          </div>
-          <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white text-gray-500">Or continue with email</span>
-          </div>
-        </div>
-
         <!-- Registration Notice -->
         <div class="bg-amber-50 border-l-4 border-amber-400 p-4">
           <div class="flex">
@@ -156,18 +114,29 @@
           <div class="grid grid-cols-3 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700">First Name</label>
-              <input type="text" v-model="registerForm.first_name" required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
+              <input
+                type="text"
+                v-model="registerForm.first_name"
+                required
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Middle Name</label>
-              <input type="text" v-model="registerForm.middle_name"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
+              <input
+                type="text"
+                v-model="registerForm.middle_name"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Last Name</label>
-              <input type="text" v-model="registerForm.last_name" required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
+              <input
+                type="text"
+                v-model="registerForm.last_name"
+                required
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              />
             </div>
           </div>
 
@@ -176,18 +145,30 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
             <div class="flex space-x-4">
               <label class="inline-flex items-center">
-                <input type="radio" v-model="registerForm.gender" value="male"
-                  class="form-radio h-4 w-4 text-primary focus:ring-primary border-gray-300" />
+                <input
+                  type="radio"
+                  v-model="registerForm.gender"
+                  value="male"
+                  class="form-radio h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                />
                 <span class="ml-2 text-gray-700">Male</span>
               </label>
               <label class="inline-flex items-center">
-                <input type="radio" v-model="registerForm.gender" value="female"
-                  class="form-radio h-4 w-4 text-primary focus:ring-primary border-gray-300" />
+                <input
+                  type="radio"
+                  v-model="registerForm.gender"
+                  value="female"
+                  class="form-radio h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                />
                 <span class="ml-2 text-gray-700">Female</span>
               </label>
               <label class="inline-flex items-center">
-                <input type="radio" v-model="registerForm.gender" value="other"
-                  class="form-radio h-4 w-4 text-primary focus:ring-primary border-gray-300" />
+                <input
+                  type="radio"
+                  v-model="registerForm.gender"
+                  value="other"
+                  class="form-radio h-4 w-4 text-primary focus:ring-primary border-gray-300"
+                />
                 <span class="ml-2 text-gray-700">Other</span>
               </label>
             </div>
@@ -202,6 +183,7 @@
                 readonly
                 :value="formattedDOB"
                 @click="showDatePicker = true"
+                placeholder="YYYY-MM-DD"
                 class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary cursor-pointer"
               />
 
@@ -209,20 +191,25 @@
               <div
                 v-if="showDatePicker"
                 class="absolute z-10 mt-1 w-72 bg-white rounded-lg shadow-lg border border-gray-200 p-4"
+                @click.stop
               >
                 <div class="flex justify-between items-center mb-4">
                   <button @click="adjustDate(-1, 'month')" class="p-1 hover:bg-gray-100 rounded">
                     <ChevronLeft class="h-5 w-5 text-gray-600" />
                   </button>
                   <div class="flex space-x-2">
-                    <select v-model="datePickerMonth"
-                      class="form-select text-sm border-gray-300 rounded-md focus:ring-primary focus:border-primary">
+                    <select
+                      v-model="datePickerMonth"
+                      class="form-select text-sm border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    >
                       <option v-for="(month, index) in months" :key="index" :value="index">
                         {{ month }}
                       </option>
                     </select>
-                    <select v-model="datePickerYear"
-                      class="form-select text-sm border-gray-300 rounded-md focus:ring-primary focus:border-primary">
+                    <select
+                      v-model="datePickerYear"
+                      class="form-select text-sm border-gray-300 rounded-md focus:ring-primary focus:border-primary"
+                    >
                       <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
                     </select>
                   </div>
@@ -234,20 +221,24 @@
                 <!-- Calendar Grid -->
                 <div class="grid grid-cols-7 gap-1">
                   <!-- Day headers -->
-                  <div v-for="day in ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']" :key="day"
-                    class="text-center text-xs font-medium text-gray-500 p-1">
+                  <div
+                    v-for="day in ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']"
+                    :key="day"
+                    class="text-center text-xs font-medium text-gray-500 p-1"
+                  >
                     {{ day }}
                   </div>
                   <!-- Calendar days -->
                   <button
                     v-for="date in calendarDates"
-                    :key="date.date"
+                    :key="date.date.toISOString()"
                     @click="selectDate(date)"
+                    :disabled="!date.isCurrentMonth"
                     :class="[
-                      'p-1 text-sm rounded-full hover:bg-gray-100 relative',
+                      'p-1 text-sm rounded-full hover:bg-gray-100 relative disabled:opacity-50 disabled:cursor-not-allowed',
                       date.isCurrentMonth ? 'text-gray-900' : 'text-gray-400',
                       isSelectedDate(date) ? 'bg-primary text-white hover:bg-primary/90' : '',
-                      isToday(date) ? 'font-bold' : '',
+                      isToday(date) && !isSelectedDate(date) ? 'font-bold border border-gray-300' : '',
                     ]"
                   >
                     {{ date.day }}
@@ -263,50 +254,76 @@
           <!-- CID Number -->
           <div>
             <label class="block text-sm font-medium text-gray-700">CID/Work Permit Number</label>
-            <input type="number" v-model="registerForm.cid" required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
+            <input
+              type="number"
+              v-model="registerForm.cid"
+              required
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
           </div>
 
           <!-- Contact Number -->
           <div>
             <label class="block text-sm font-medium text-gray-700">Contact Number</label>
-            <input type="tel" v-model="registerForm.contact_number" required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
+            <input
+              type="tel"
+              v-model="registerForm.contact_number"
+              required
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
           </div>
 
           <!-- Email -->
           <div>
             <label class="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" v-model="registerForm.email" required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
+            <input
+              type="email"
+              v-model="registerForm.email"
+              required
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
           </div>
 
           <!-- Password Fields -->
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700">Password</label>
-              <input type="password" v-model="registerForm.password" required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
+              <input
+                type="password"
+                v-model="registerForm.password"
+                required
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
-              <input type="password" v-model="registerForm.confirm_password" required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
+              <input
+                type="password"
+                v-model="registerForm.confirm_password"
+                required
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+              />
             </div>
           </div>
 
           <!-- Terms and Conditions -->
           <div class="flex items-center">
-            <input type="checkbox" v-model="registerForm.terms" required
-              class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" />
+            <input
+              type="checkbox"
+              v-model="registerForm.terms"
+              required
+              class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+            />
             <label class="ml-2 block text-sm text-gray-700">
               I agree to the <a href="#" class="text-primary hover:text-primary/90">Terms</a> and
               <a href="#" class="text-primary hover:text-primary/90">Privacy Policy</a>
             </label>
           </div>
 
-          <button type="submit"
-            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+          <button
+            type="submit"
+            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+          >
             Create Account
           </button>
         </form>
@@ -384,7 +401,17 @@ const registerForm = reactive({
   service_type: props.serviceType,
 })
 
-// Date picker computed properties and methods
+// --- Date Picker Logic ---
+
+// Helper function to format date as YYYY-MM-DD using local parts
+const formatLocalDate = (date) => {
+  if (!date) return '';
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 const calendarDates = computed(() => {
   const dates = []
   const firstDayOfMonth = new Date(datePickerYear.value, datePickerMonth.value, 1)
@@ -422,8 +449,7 @@ const calendarDates = computed(() => {
 
 // Use the helper function for display
 const formattedDOB = computed(() => {
-  if (!selectedDate.value) return ''
-  return selectedDate.value.toISOString().split('T')[0]
+  return formatLocalDate(selectedDate.value);
 })
 
 const adjustDate = (amount, unit) => {
@@ -436,18 +462,29 @@ const adjustDate = (amount, unit) => {
 }
 
 const selectDate = (dateObj) => {
-  selectedDate.value = dateObj.date
-  registerForm.date_of_birth = dateObj.date.toISOString().split('T')[0]
+  if (!dateObj.isCurrentMonth) return; // Don't allow selecting dates from other months easily
+  selectedDate.value = dateObj.date // Store the full Date object
+  registerForm.date_of_birth = formatLocalDate(dateObj.date); // Store the correct YYYY-MM-DD string
   showDatePicker.value = false
 }
 
 const isSelectedDate = (dateObj) => {
   if (!selectedDate.value) return false
-  return dateObj.date.toDateString() === selectedDate.value.toDateString()
+  // Compare year, month, and day
+  return (
+    dateObj.date.getFullYear() === selectedDate.value.getFullYear() &&
+    dateObj.date.getMonth() === selectedDate.value.getMonth() &&
+    dateObj.date.getDate() === selectedDate.value.getDate()
+  )
 }
 
 const isToday = (dateObj) => {
-  return dateObj.date.toDateString() === new Date().toDateString()
+  const today = new Date()
+  return (
+    dateObj.date.getFullYear() === today.getFullYear() &&
+    dateObj.date.getMonth() === today.getMonth() &&
+    dateObj.date.getDate() === today.getDate()
+  )
 }
 
 // Close date picker if clicking outside
@@ -609,3 +646,4 @@ const handleRegister = async () => {
           appearance: none;
 }
 </style>
+
