@@ -828,8 +828,9 @@ const handleNext = async () => {
     }
 
     // Add required fields with correct names
-    apiFormData.append('applicant', user.id); // Assuming user.id holds the applicant's user ID
-    apiFormData.append('registration_type', localFormData.registration_type); // Send the ID
+    apiFormData.append('applicant', user.id); 
+    apiFormData.append('registration_type', localFormData.registration_type);
+    apiFormData.append('is_draft', 'false');
 
     isSubmitting.value = true;
     try {

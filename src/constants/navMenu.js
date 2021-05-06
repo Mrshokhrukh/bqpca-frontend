@@ -649,11 +649,6 @@ const serviceSpecificMenuItems = {
           })
 
           items.push({
-            name: 'My Applications',
-            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
-          })
-
-          items.push({
             name: 'Renewal',
             route: (serviceType) => `/admin/user/${serviceType}/renewal`,
           })
@@ -661,6 +656,10 @@ const serviceSpecificMenuItems = {
           items.push({
             name: 'Additional Qualification',
             route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
+          })
+          items.push({
+            name: 'Track My Applications',
+            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
           })
 
           return items

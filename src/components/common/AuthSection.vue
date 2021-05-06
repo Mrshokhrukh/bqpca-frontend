@@ -20,17 +20,24 @@
     <div class="p-8">
       <!-- Login Section -->
       <div v-if="activeTab === 'login'" class="space-y-6">
-        <!-- NDI Login Options -->
+        <!-- NDI Login Button -->
         <div class="space-y-4">
-          <button @click="showQRCode = !showQRCode"
-            class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 hover:bg-gray-50">
+          <button
+            @click="showQRCode = !showQRCode"
+            class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 hover:bg-gray-50"
+          >
             <img src="@/assets/ndi-logo.png" alt="NDI" class="h-5 w-5 mr-2" />
-            Login with NDI QR Code
+            Login with NDI
           </button>
 
           <!-- QR Code Display -->
-          <div v-if="showQRCode" class="flex flex-col items-center space-y-4 p-4 bg-gray-50 rounded-lg">
-            <div class="w-48 h-48 bg-white rounded-lg flex items-center justify-center shadow-inner">
+          <div
+            v-if="showQRCode"
+            class="flex flex-col items-center space-y-4 p-4 bg-gray-50 rounded-lg"
+          >
+            <div
+              class="w-48 h-48 bg-white rounded-lg flex items-center justify-center shadow-inner"
+            >
               <QrCodeIcon class="w-32 h-32 text-gray-400" />
             </div>
             <p class="text-sm text-gray-600 text-center">
@@ -55,13 +62,19 @@
         <form @submit.prevent="handleLogin" class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" v-model="loginForm.email"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
+            <input
+              type="email"
+              v-model="loginForm.email"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" v-model="loginForm.password"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
+            <input
+              type="password"
+              v-model="loginForm.password"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            />
           </div>
           <div class="flex items-center justify-between">
             <div class="flex items-center">
@@ -82,21 +95,31 @@
       <div v-else class="space-y-6">
         <!-- NDI Registration Option -->
         <div class="space-y-4">
-          <button @click="showRegisterQRCode = !showRegisterQRCode"
-            class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 hover:bg-gray-50">
+          <button
+            @click="showRegisterQRCode = !showRegisterQRCode"
+            class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 hover:bg-gray-50"
+          >
             <img src="@/assets/ndi-logo.png" alt="NDI" class="h-5 w-5 mr-2" />
             Register with NDI QR Code
           </button>
 
           <!-- QR Code Display for Registration -->
-          <div v-if="showRegisterQRCode" class="flex flex-col items-center space-y-4 p-4 bg-gray-50 rounded-lg">
-            <div class="w-48 h-48 bg-white rounded-lg flex items-center justify-center shadow-inner">
+          <div
+            v-if="showRegisterQRCode"
+            class="flex flex-col items-center space-y-4 p-4 bg-gray-50 rounded-lg"
+          >
+            <div
+              class="w-48 h-48 bg-white rounded-lg flex items-center justify-center shadow-inner"
+            >
               <QrCodeIcon class="w-32 h-32 text-gray-400" />
             </div>
             <p class="text-sm text-gray-600 text-center">
               Scan this QR code with your NDI app to register
             </p>
-            <button @click="showRegisterQRCode = false" class="text-sm text-gray-500 hover:text-gray-700">
+            <button
+              @click="showRegisterQRCode = false"
+              class="text-sm text-gray-500 hover:text-gray-700"
+            >
               Cancel QR Registration
             </button>
           </div>
@@ -174,12 +197,19 @@
           <div>
             <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
             <div class="mt-1 relative">
-              <input type="text" readonly :value="formattedDOB" @click="showDatePicker = true"
-                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary cursor-pointer" />
+              <input
+                type="text"
+                readonly
+                :value="formattedDOB"
+                @click="showDatePicker = true"
+                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary cursor-pointer"
+              />
 
               <!-- Custom Date Picker -->
-              <div v-if="showDatePicker"
-                class="absolute z-10 mt-1 w-72 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
+              <div
+                v-if="showDatePicker"
+                class="absolute z-10 mt-1 w-72 bg-white rounded-lg shadow-lg border border-gray-200 p-4"
+              >
                 <div class="flex justify-between items-center mb-4">
                   <button @click="adjustDate(-1, 'month')" class="p-1 hover:bg-gray-100 rounded">
                     <ChevronLeft class="h-5 w-5 text-gray-600" />
@@ -209,15 +239,23 @@
                     {{ day }}
                   </div>
                   <!-- Calendar days -->
-                  <button v-for="date in calendarDates" :key="date.date" @click="selectDate(date)" :class="[
-                    'p-1 text-sm rounded-full hover:bg-gray-100 relative',
-                    date.isCurrentMonth ? 'text-gray-900' : 'text-gray-400',
-                    isSelectedDate(date) ? 'bg-primary text-white hover:bg-primary/90' : '',
-                    isToday(date) ? 'font-bold' : '',
-                  ]">
+                  <button
+                    v-for="date in calendarDates"
+                    :key="date.date"
+                    @click="selectDate(date)"
+                    :class="[
+                      'p-1 text-sm rounded-full hover:bg-gray-100 relative',
+                      date.isCurrentMonth ? 'text-gray-900' : 'text-gray-400',
+                      isSelectedDate(date) ? 'bg-primary text-white hover:bg-primary/90' : '',
+                      isToday(date) ? 'font-bold' : '',
+                    ]"
+                  >
                     {{ date.day }}
                   </button>
                 </div>
+                 <button @click="showDatePicker = false" class="mt-4 text-sm text-gray-500 hover:text-gray-700 w-full text-center">
+                    Close
+                 </button>
               </div>
             </div>
           </div>
@@ -274,20 +312,25 @@
         </form>
       </div>
     </div>
+
+    <!-- NDI Login Modal -->
+    <NdiModal v-if="isNdiModalOpen" @close="isNdiModalOpen = false" />
+
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useToast } from 'vue-toastification'
 import {
-  QrCode as QrCodeIcon,
+  // QrCodeIcon, // No longer needed as QR code is removed
   AlertTriangle as AlertTriangleIcon,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/authStore'
 import apiService from '@/services/services'
+import NdiModal from './NdiModal.vue' // Import the NDI Modal
 
 const props = defineProps({
   serviceType: {
@@ -300,31 +343,24 @@ const toast = useToast()
 const authStore = useAuthStore() // Use the auth store
 
 const activeTab = ref('login')
-const showQRCode = ref(false)
-const showRegisterQRCode = ref(false)
+// const showQRCode = ref(false) // Removed
+// const showRegisterQRCode = ref(false); // Removed
 const showDatePicker = ref(false)
+const isNdiModalOpen = ref(false) // State for NDI Modal visibility
 
 // Date picker state
 const datePickerMonth = ref(new Date().getMonth())
 const datePickerYear = ref(new Date().getFullYear())
-const selectedDate = ref(null)
+const selectedDate = ref(null) // Stores the full Date object
 
 const months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
 ]
 
-const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 99 + i)
+// Generate years (e.g., last 100 years from current)
+const currentYear = new Date().getFullYear()
+const years = Array.from({ length: 100 }, (_, i) => currentYear - i) // Descending order might be better
 
 const loginForm = reactive({
   email: '',
@@ -338,7 +374,7 @@ const registerForm = reactive({
   middle_name: '',
   last_name: '',
   gender: '',
-  date_of_birth: null,
+  date_of_birth: null, // Will store YYYY-MM-DD string
   cid: '',
   contact_number: '',
   email: '',
@@ -347,127 +383,127 @@ const registerForm = reactive({
   terms: false,
   service_type: props.serviceType,
 })
-// --- NEW Helper Function ---
-const formatDateToYYYYMMDD = (date) => {
-  if (!date) return '';
-  const year = date.getFullYear();
-  // +1 because getMonth is 0-indexed, padStart adds leading zero if needed
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
+
 // Date picker computed properties and methods
 const calendarDates = computed(() => {
   const dates = []
-  const firstDay = new Date(datePickerYear.value, datePickerMonth.value, 1)
-  const lastDay = new Date(datePickerYear.value, datePickerMonth.value + 1, 0)
+  const firstDayOfMonth = new Date(datePickerYear.value, datePickerMonth.value, 1)
+  const lastDayOfMonth = new Date(datePickerYear.value, datePickerMonth.value + 1, 0)
 
-  // Add previous month's days
-  const startPadding = firstDay.getDay()
-  for (let i = startPadding - 1; i >= 0; i--) {
-    const date = new Date(datePickerYear.value, datePickerMonth.value, -i)
-    dates.push({
-      date,
-      day: date.getDate(),
-      isCurrentMonth: false,
-    })
+  // Start day of the week (0=Sun, 1=Mon, ...)
+  const startDayOfWeek = firstDayOfMonth.getDay()
+
+  // Days from previous month
+  const lastDayOfPrevMonth = new Date(datePickerYear.value, datePickerMonth.value, 0)
+  for (let i = startDayOfWeek - 1; i >= 0; i--) {
+    const day = lastDayOfPrevMonth.getDate() - i;
+    const date = new Date(datePickerYear.value, datePickerMonth.value - 1, day);
+    dates.push({ date, day, isCurrentMonth: false });
   }
 
-  // Add current month's days
-  for (let i = 1; i <= lastDay.getDate(); i++) {
-    const date = new Date(datePickerYear.value, datePickerMonth.value, i)
-    dates.push({
-      date,
-      day: i,
-      isCurrentMonth: true,
-    })
+  // Days of current month
+  for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
+    const date = new Date(datePickerYear.value, datePickerMonth.value, day);
+    dates.push({ date, day, isCurrentMonth: true });
   }
 
-  // Add next month's days
-  const endPadding = 42 - dates.length
-  for (let i = 1; i <= endPadding; i++) {
-    const date = new Date(datePickerYear.value, datePickerMonth.value + 1, i)
-    dates.push({
-      date,
-      day: date.getDate(),
-      isCurrentMonth: false,
-    })
-  }
+  // Days from next month to fill the grid (usually 42 cells = 6 rows * 7 days)
+   const gridCells = 42; // Or 35 if you prefer 5 rows sometimes
+   let nextMonthDay = 1;
+   while (dates.length < gridCells) {
+     const date = new Date(datePickerYear.value, datePickerMonth.value + 1, nextMonthDay);
+     dates.push({ date, day: nextMonthDay, isCurrentMonth: false });
+     nextMonthDay++;
+   }
 
-  return dates
+
+  return dates.slice(0, gridCells); // Ensure we don't exceed the grid size needed
 })
 
+// Use the helper function for display
 const formattedDOB = computed(() => {
-  return formatDateToYYYYMMDD(selectedDate.value);
-});
+  if (!selectedDate.value) return ''
+  return selectedDate.value.toISOString().split('T')[0]
+})
 
 const adjustDate = (amount, unit) => {
   if (unit === 'month') {
-    const newDate = new Date(datePickerYear.value, datePickerMonth.value + amount, 1)
-    datePickerMonth.value = newDate.getMonth()
-    datePickerYear.value = newDate.getFullYear()
+    const currentDate = new Date(datePickerYear.value, datePickerMonth.value, 1);
+    currentDate.setMonth(currentDate.getMonth() + amount);
+    datePickerMonth.value = currentDate.getMonth();
+    datePickerYear.value = currentDate.getFullYear();
   }
 }
 
 const selectDate = (dateObj) => {
-  selectedDate.value = dateObj.date;
-  registerForm.date_of_birth = formatDateToYYYYMMDD(dateObj.date);
-  showDatePicker.value = false;
-};
-
-const isSelectedDate = (dateObj) => {
-  if (!selectedDate.value) return false;
-  return (
-    dateObj.date.getFullYear() === selectedDate.value.getFullYear() &&
-    dateObj.date.getMonth() === selectedDate.value.getMonth() &&
-    dateObj.date.getDate() === selectedDate.value.getDate()
-  );
-};
-
-const isToday = (dateObj) => {
-  const today = new Date();
-  return (
-    dateObj.date.getFullYear() === today.getFullYear() &&
-    dateObj.date.getMonth() === today.getMonth() &&
-    dateObj.date.getDate() === today.getDate()
-  );
+  selectedDate.value = dateObj.date
+  registerForm.date_of_birth = dateObj.date.toISOString().split('T')[0]
+  showDatePicker.value = false
 }
 
-// Updated handleLogin function for better error handling
-// Refined handleLogin function for better error handling
+const isSelectedDate = (dateObj) => {
+  if (!selectedDate.value) return false
+  return dateObj.date.toDateString() === selectedDate.value.toDateString()
+}
+
+const isToday = (dateObj) => {
+  return dateObj.date.toDateString() === new Date().toDateString()
+}
+
+// Close date picker if clicking outside
+const handleClickOutside = (event) => {
+  // Find the date picker input and the picker div itself
+  const inputElement = event.target.closest('input[readonly]');
+  const pickerElement = event.target.closest('.absolute.z-10');
+
+  // If the click is not on the input or inside the picker, close it
+  if (!inputElement && !pickerElement && showDatePicker.value) {
+      showDatePicker.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
+
+// --- NDI Modal Logic ---
+const openNdiLoginModal = () => {
+  isNdiModalOpen.value = true;
+}
+
+// --- Form Handlers (Login/Register) ---
+
 const handleLogin = async () => {
   try {
     await authStore.login({ ...loginForm, from: 'authSection' })
+    // Success navigation/handling is likely within authStore.login
   } catch (error) {
     console.error('Login error:', error)
-
-    // Get error response if available
     const response = error.response || {}
     const data = response.data || {}
     const status = response.status
 
-    // Check for specific error messages in the non_field_errors array
     if (
       data.non_field_errors &&
       Array.isArray(data.non_field_errors) &&
       data.non_field_errors.length > 0
     ) {
       const errorMsg = data.non_field_errors[0]
-
-      // For the generic "Unable to log in with provided credentials" message
       if (errorMsg.includes('Unable to log in with provided credentials')) {
         toast.error('Invalid email or password. Please check your credentials.')
       } else {
         toast.error(errorMsg)
       }
-    }
-    // Specific status code handling
-    else if (status === 401) {
+    } else if (status === 401) {
       toast.error('Invalid email or password. Please check your credentials.')
     } else if (status === 404) {
       toast.error('Account not found. Please check your email or register.')
     } else if (status === 400) {
-      // Check field-specific errors
       if (data.email) {
         toast.error(`Email error: ${data.email[0]}`)
       } else if (data.password) {
@@ -478,109 +514,98 @@ const handleLogin = async () => {
     } else if (error.message && error.message.includes('Network Error')) {
       toast.error('Cannot connect to the server. Please check your internet connection.')
     } else {
-      toast.error('Login failed. Please check your credentials and try again.')
+      toast.error('Login failed. Please try again.')
     }
   }
 }
 
-// Refined handleRegister function remains the same
 const handleRegister = async () => {
-  // Password matching validation
   if (registerForm.password !== registerForm.confirm_password) {
     toast.error('Passwords do not match')
     return
   }
+  // Add validation for date of birth if needed
+   if (!registerForm.date_of_birth) {
+     toast.error('Please select your Date of Birth.');
+     return;
+   }
 
   try {
+    // Payload already contains the formatted date_of_birth string
     const payload = {
       first_name: registerForm.first_name,
       middle_name: registerForm.middle_name,
       last_name: registerForm.last_name,
       gender: registerForm.gender,
-      date_of_birth: registerForm.date_of_birth,
+      date_of_birth: registerForm.date_of_birth, // Use the pre-formatted string
       cid: registerForm.cid,
       contact_number: registerForm.contact_number,
       email: registerForm.email,
       password: registerForm.password,
-      confirm_password: registerForm.confirm_password,
+      confirm_password: registerForm.confirm_password, // Send confirmation for potential backend validation
       service_type: registerForm.service_type,
     }
 
     await apiService.register(payload)
     toast.success('Registration successful! Please login.')
     activeTab.value = 'login'
+    // Optionally clear the registration form
+    Object.keys(registerForm).forEach(key => {
+       if (key !== 'service_type') registerForm[key] = key === 'terms' ? false : key === 'date_of_birth' ? null : '';
+    });
+    selectedDate.value = null; // Clear selected date object too
+
   } catch (error) {
     console.error('Registration error:', error)
-
-    // Get error response if available
     const response = error.response || {}
     const data = response.data || {}
     const status = response.status
 
-    // Handle field-specific errors
-    if (data.email && Array.isArray(data.email) && data.email.length > 0) {
-      if (
-        data.email[0].toLowerCase().includes('exist') ||
-        data.email[0].toLowerCase().includes('already') ||
-        data.email[0].toLowerCase().includes('unique')
-      ) {
-        toast.error('Email already registered. Please use a different email address.')
-      } else {
-        toast.error(`Email error: ${data.email[0]}`)
-      }
-    } else if (data.cid && Array.isArray(data.cid) && data.cid.length > 0) {
-      if (
-        data.cid[0].toLowerCase().includes('exist') ||
-        data.cid[0].toLowerCase().includes('already') ||
-        data.cid[0].toLowerCase().includes('unique')
-      ) {
-        toast.error('CID/Work Permit Number already registered. Please verify your information.')
-      } else {
-        toast.error(`CID error: ${data.cid[0]}`)
-      }
-    } else if (
-      data.contact_number &&
-      Array.isArray(data.contact_number) &&
-      data.contact_number.length > 0
-    ) {
-      if (
-        data.contact_number[0].toLowerCase().includes('exist') ||
-        data.contact_number[0].toLowerCase().includes('already') ||
-        data.contact_number[0].toLowerCase().includes('unique')
-      ) {
-        toast.error('Contact number already registered. Please use a different number.')
-      } else {
-        toast.error(`Contact number error: ${data.contact_number[0]}`)
-      }
-    }
-    // Handle non_field_errors
-    else if (
-      data.non_field_errors &&
-      Array.isArray(data.non_field_errors) &&
-      data.non_field_errors.length > 0
-    ) {
-      toast.error(data.non_field_errors[0])
-    }
-    // Fallback error handling based on status
-    else if (status === 409) {
-      toast.error('Account with these details already exists. Please check your information.')
-    } else if (status === 400) {
-      // Check if there are any field errors we haven't handled yet
-      const firstFieldError = Object.entries(data).find(
-        ([key, value]) => Array.isArray(value) && value.length > 0 && key !== 'non_field_errors',
-      )
+    // Improved error message handling from backend
+    let errorMessage = 'Registration failed. Please check your details and try again.'; // Default message
 
-      if (firstFieldError) {
-        const [field, errors] = firstFieldError
-        toast.error(`${field.replace('_', ' ')}: ${errors[0]}`)
-      } else {
-        toast.error('Please check your registration information and try again.')
-      }
+    if (status === 400) {
+        // Concatenate all field errors for a more informative message
+        const fieldErrors = Object.entries(data)
+            .map(([field, messages]) => {
+                if (Array.isArray(messages) && messages.length > 0) {
+                    // Make field name more readable
+                    const readableField = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    return `${readableField}: ${messages[0]}`; // Show first error message per field
+                }
+                return null;
+            })
+            .filter(msg => msg !== null)
+            .join('. ');
+
+        if (fieldErrors) {
+            errorMessage = fieldErrors;
+        } else if (data.non_field_errors && data.non_field_errors.length > 0) {
+             errorMessage = data.non_field_errors[0];
+        }
+    } else if (status === 409) { // Conflict (e.g., email/CID exists)
+        errorMessage = 'An account with this email or CID already exists.';
     } else if (error.message && error.message.includes('Network Error')) {
-      toast.error('Cannot connect to the server. Please check your internet connection.')
-    } else {
-      toast.error('Registration failed. Please try again later.')
+      errorMessage = 'Cannot connect to the server. Please check your internet connection.';
+    } else if (status >= 500) {
+        errorMessage = 'Server error during registration. Please try again later.';
     }
+
+    toast.error(errorMessage);
   }
 }
 </script>
+
+<style scoped>
+/* Add any specific styles if needed */
+.form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+}
+</style>

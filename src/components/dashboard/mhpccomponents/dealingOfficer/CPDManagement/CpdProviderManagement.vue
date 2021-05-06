@@ -835,10 +835,6 @@ onMounted(fetchProviders);
 td {
   text-align: left;
 }
-/* Center specific columns if needed */
-td:last-child {
-    /* text-align: center; */ /* Actions column is already centered via flex */
-}
 td:nth-child(5), td:nth-child(6) { /* Status and Actions columns */
     text-align: center;
 }
