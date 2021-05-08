@@ -61,25 +61,25 @@ export default {
     return apiClient.delete(`/mhpc/masters-cpd-methodologies/${id}/`)
   },
 
-  // Masters CPD Activity
-  // getMhpcMastersCpdActivities() {
-  //   return apiClient.get('/mhpc/masters-cpd-activity/')
-  // },
-  // createMhpcMastersCpdActivity(data) {
-  //   return apiClient.post('/mhpc/masters-cpd-activity/', data)
-  // },
-  // getMhpcMastersCpdActivity(id) {
-  //   return apiClient.get(`/mhpc/masters-cpd-activity/${id}/`)
-  // },
-  // updateMhpcMastersCpdActivity(id, data) {
-  //   return apiClient.put(`/mhpc/masters-cpd-activity/${id}/`, data)
-  // },
-  // patchMhpcMastersCpdActivity(id, data) {
-  //   return apiClient.patch(`/mhpc/masters-cpd-activity/${id}/`, data)
-  // },
-  // deleteMhpcMastersCpdActivity(id) {
-  //   return apiClient.delete(`/mhpc/masters-cpd-activity/${id}/`)
-  // },
+  // Masters CPD Single Activity
+  getMhpcMastersSingleCpdActivity() {
+    return apiClient.get('/mhpc/masters-cpd-activity/')
+  },
+  createMhpcMastersSingleCpdActivity(data) {
+    return apiClient.post('/mhpc/masters-cpd-activity/', data)
+  },
+  getMhpcMastersSingleCpdActivityById(id) {
+    return apiClient.get(`/mhpc/masters-cpd-activity/${id}/`)
+  },
+  updateMhpcMastersSingleCpdActivity(id, data) {
+    return apiClient.put(`/mhpc/masters-cpd-activity/${id}/`, data)
+  },
+  patchMhpcMastersSingleCpdActivity(id, data) {
+    return apiClient.patch(`/mhpc/masters-cpd-activity/${id}/`, data)
+  },
+  deleteMhpcMastersSingleCpdActivity(id) {
+    return apiClient.delete(`/mhpc/masters-cpd-activity/${id}/`)
+  },
 
   // Masters Document Types
   getMhpcMastersDocumentTypes() {

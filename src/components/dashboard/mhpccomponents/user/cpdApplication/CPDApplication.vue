@@ -1,16 +1,13 @@
 <template>
   <div class="w-full mx-auto px-4 sm:px-6 py-8 pb-10">
     <!-- Use the new PageHeader component -->
-    <PageHeader
-      title="CPD Application"
-      subtitle="Complete required fields *. Ensure information is accurate."
-    >
+    <PageHeader title="CPD Application" subtitle="Complete required fields *. Ensure information is accurate.">
       <template #icon>
         <ClipboardList class="w-6 h-6 text-indigo-600" />
       </template>
       <!-- Override the subtitle slot to include the red asterisk styling -->
       <template #subtitle>
-         Complete required fields <span class="text-red-600 font-semibold">*</span>. Ensure information is accurate.
+        Complete required fields <span class="text-red-600 font-semibold">*</span>. Ensure information is accurate.
       </template>
     </PageHeader>
 
@@ -72,7 +69,7 @@
                 {{ category.participation_category_name }}
               </option>
             </select>
-             <span v-if="errors.participation_category" class="text-xs text-red-500 block">{{
+            <span v-if="errors.participation_category" class="text-xs text-red-500 block">{{
               errors.participation_category
             }}</span>
           </div>
@@ -93,7 +90,7 @@
                 {{ subCategory.participation_sub_category_name }}
               </option>
             </select>
-             <span v-if="errors.participant_sub_category" class="text-xs text-red-500 block">{{
+            <span v-if="errors.participant_sub_category" class="text-xs text-red-500 block">{{
               errors.participant_sub_category
             }}</span>
           </div>
@@ -122,8 +119,8 @@
               <input id="attachment" type="file" ref="fileInputRef" @change="handleFileUpload"
                 class="w-full px-3 py-2 rounded-md border-2 border-dashed border-gray-200 bg-gray-50/50 text-gray-800 text-sm placeholder-gray-400 hover:border-indigo-300 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 cursor-pointer file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
               <p class="mt-1.5 text-xs text-gray-500 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor" stroke-width="1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1 text-gray-400" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -368,14 +365,60 @@ const fetchMasterData = async () => {
   try {
     const [activitiesResponse, categoriesResponse, subCategoriesResponse] =
       await Promise.allSettled([
-        apiService.getMhpcMastersCpdActivities(),
+        apiService.getMhpcMastersSingleCpdActivity(),
         apiService.getMhpcMastersMHPCParticipationCategories(),
         apiService.getMhpcMastersMhpcParticipationSubCategories(),
       ]);
 
-    cpdActivities.value = activitiesResponse.status === 'fulfilled' && activitiesResponse.value?.data?.results ? activitiesResponse.value.data.results : [];
-    participationCategories.value = categoriesResponse.status === 'fulfilled' && categoriesResponse.value?.data?.results ? categoriesResponse.value.data.results : [];
-    participationSubCategories.value = subCategoriesResponse.status === 'fulfilled' && subCategoriesResponse.value?.data?.results ? subCategoriesResponse.value.data.results : [];
+    // Console logging for debugging
+    console.log('Activities response:', activitiesResponse);
+    console.log('Categories response:', categoriesResponse);
+    console.log('SubCategories response:', subCategoriesResponse);
+
+    // Updated data assignments to correctly access results directly from response
+    if (activitiesResponse.status === 'fulfilled') {
+      if (activitiesResponse.value?.results) {
+        cpdActivities.value = activitiesResponse.value.results;
+      } else if (activitiesResponse.value?.data?.results) {
+        cpdActivities.value = activitiesResponse.value.data.results;
+      } else {
+        console.error('Unexpected activities response structure:', activitiesResponse.value);
+        cpdActivities.value = [];
+      }
+    } else {
+      cpdActivities.value = [];
+    }
+
+    if (categoriesResponse.status === 'fulfilled') {
+      if (categoriesResponse.value?.results) {
+        participationCategories.value = categoriesResponse.value.results;
+      } else if (categoriesResponse.value?.data?.results) {
+        participationCategories.value = categoriesResponse.value.data.results;
+      } else {
+        console.error('Unexpected categories response structure:', categoriesResponse.value);
+        participationCategories.value = [];
+      }
+    } else {
+      participationCategories.value = [];
+    }
+
+    if (subCategoriesResponse.status === 'fulfilled') {
+      if (subCategoriesResponse.value?.results) {
+        participationSubCategories.value = subCategoriesResponse.value.results;
+      } else if (subCategoriesResponse.value?.data?.results) {
+        participationSubCategories.value = subCategoriesResponse.value.data.results;
+      } else {
+        console.error('Unexpected subcategories response structure:', subCategoriesResponse.value);
+        participationSubCategories.value = [];
+      }
+    } else {
+      participationSubCategories.value = [];
+    }
+
+    // Log loaded data for verification
+    console.log('CPD Activities loaded:', cpdActivities.value);
+    console.log('Participation Categories loaded:', participationCategories.value);
+    console.log('Participation SubCategories loaded:', participationSubCategories.value);
 
     if (activitiesResponse.status === 'rejected' || categoriesResponse.status === 'rejected' || subCategoriesResponse.status === 'rejected') {
       toast.warning('Could not fetch all dropdown data.');
@@ -410,20 +453,28 @@ onMounted(async () => {
 
 <style scoped>
 select:required:invalid {
-  color: #9ca3af; /* gray-400 */
+  color: #9ca3af;
+  /* gray-400 */
 }
+
 option[value=''][disabled] {
   color: #9ca3af;
 }
+
 option {
-  color: #1f2937; /* gray-800 */
+  color: #1f2937;
+  /* gray-800 */
 }
+
 select:disabled {
-  background-color: #f3f4f6; /* gray-100 */
+  background-color: #f3f4f6;
+  /* gray-100 */
   cursor: not-allowed;
   opacity: 0.7;
 }
+
 input[type='file']:focus-within {
-  outline: none; /* Focus handled by ring utility */
+  outline: none;
+  /* Focus handled by ring utility */
 }
 </style>
