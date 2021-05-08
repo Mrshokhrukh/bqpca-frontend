@@ -1,163 +1,227 @@
 <template>
-  <div class="min-h-screen">
+  <div class="min-h-screen bg-gray-50">
     <div class="mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <div v-if="institute" class="bg-white rounded-3xl shadow-xl overflow-hidden">
-        <!-- Header Section -->
-        <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-8 text-white relative">
-          <!-- Institute Name (Large and Centered) -->
-          <h1 class="text-4xl font-extrabold text-center mb-4">
-            {{ institute.name_of_institution }}
-          </h1>
+      <!-- Header Section -->
+      <InstituteHeader
+        :title="institute?.name_of_institution || 'Institute Profile'"
+        :subtitle="institute ? `Headed by ${institute.head_of_institution_name}` : 'Loading institute details...'"
+      />
 
-          <!-- Website (if available, styled as a link) -->
-          <p v-if="institute.website" class="text-center text-blue-100 hover:underline">
-            <a
-              :href="institute.website"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center justify-center"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5 mr-2"
+      <!-- Main Content -->
+      <div v-if="institute" class="space-y-8">
+        <!-- Overview Card -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 transition-all duration-300">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <h2 class="text-3xl font-bold text-gray-900">{{ institute.name_of_institution }}</h2>
+              <p v-if="institute.website" class="mt-2 text-indigo-600 hover:underline">
+                <a :href="institute.website" target="_blank" rel="noopener noreferrer" class="flex items-center">
+                  <GlobeAltIcon class="w-5 h-5 mr-2" />
+                  {{ institute.website }}
+                </a>
+              </p>
+            </div>
+            <div class="flex items-center gap-4">
+              <span
+                :class="{
+                  'bg-green-100 text-green-800': institute.review_decision === 'Approved',
+                  'bg-yellow-100 text-yellow-800': institute.review_decision === 'Pending',
+                  'bg-red-100 text-red-800': institute.review_decision !== 'Approved' && institute.review_decision !== 'Pending',
+                }"
+                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
-                />
-              </svg>
-              {{ institute.website }}
-            </a>
-          </p>
-
-          <!-- Head of Institution (Subtle, smaller text) -->
-          <p class="text-center text-sm mt-4 text-blue-200">
-            Headed by: {{ institute.head_of_institution_name }}
-          </p>
+                {{ institute.review_decision }}
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 p-8">
-          <!-- Left Column: Contact Information -->
-          <div class="md:col-span-1">
-            <h2 class="text-2xl font-bold text-gray-700 mb-4">Contact Information</h2>
-            <div class="space-y-4">
+        <!-- Details Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Contact Information -->
+          <div class="bg-white rounded-2xl shadow-lg p-6 transition-all duration-300">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Contact Information</h3>
+            <dl class="space-y-4">
               <div>
-                <p class="text-gray-600 font-medium">Address:</p>
-                <p class="text-gray-800">
-                  {{ institute.address }}, {{ institute.village }}, {{ institute.gewog }},
+                <dt class="text-sm font-medium text-gray-600">Address</dt>
+                <dd class="text-gray-800">
+                  {{ institute.address }},
+                  {{ institute.village ? `${institute.village}, ` : '' }}
+                  {{ institute.gewog ? `${institute.gewog}, ` : '' }}
                   {{ institute.dzongkhag }}
-                </p>
+                </dd>
               </div>
               <div>
-                <p class="text-gray-600 font-medium">Email:</p>
-                <p class="text-gray-800 hover:text-blue-600">
-                  <a :href="`mailto:${institute.head_of_institution_email}`">
-                    {{ institute.head_of_institution_email }}</a
+                <dt class="text-sm font-medium text-gray-600">Email</dt>
+                <dd>
+                  <a
+                    :href="`mailto:${institute.head_of_institution_email}`"
+                    class="text-indigo-600 hover:underline"
                   >
-                </p>
+                    {{ institute.head_of_institution_email }}
+                  </a>
+                </dd>
               </div>
               <div>
-                <p class="text-gray-600 font-medium">Phone:</p>
-                <p class="text-gray-800">{{ institute.head_of_institution_phone_number }}</p>
+                <dt class="text-sm font-medium text-gray-600">Phone</dt>
+                <dd class="text-gray-800">{{ institute.head_of_institution_phone_number }}</dd>
               </div>
-            </div>
+            </dl>
           </div>
 
-          <!-- Middle Column: Program Details -->
-          <div class="md:col-span-1">
-            <h2 class="text-2xl font-bold text-gray-700 mb-4">Program Overview</h2>
-            <div class="space-y-4">
+          <!-- Program Details -->
+          <div class="bg-white rounded-2xl shadow-lg p-6 transition-all duration-300">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Program Overview</h3>
+            <dl class="space-y-4">
               <div>
-                <p class="text-gray-600 font-medium">Course:</p>
-                <p class="text-gray-800">{{ institute.title_of_course }}</p>
+                <dt class="text-sm font-medium text-gray-600">Course</dt>
+                <dd class="text-gray-800">{{ institute.title_of_course }}</dd>
               </div>
               <div>
-                <p class="text-gray-600 font-medium">Duration:</p>
-                <p class="text-gray-800">{{ institute.course_duration }} Months</p>
+                <dt class="text-sm font-medium text-gray-600">Duration</dt>
+                <dd class="text-gray-800">{{ institute.course_duration }} Months</dd>
               </div>
               <div>
-                <p class="text-gray-600 font-medium">Commencement Date:</p>
-                <p class="text-gray-800">{{ formattedCommencementDate }}</p>
+                <dt class="text-sm font-medium text-gray-600">Commencement Date</dt>
+                <dd class="text-gray-800">{{ formattedCommencementDate }}</dd>
               </div>
               <div>
-                <p class="text-gray-600 font-medium">Program Type:</p>
-                <p class="text-gray-800">
-                  {{ institute.type_of_programme === 'D' ? 'Diploma' : 'Other' }}
-                </p>
-                <!--  Handles 'D' for diploma. Add more as needed. -->
+                <dt class="text-sm font-medium text-gray-600">Program Type</dt>
+                <dd class="text-gray-800">
+                  {{ institute.type_of_programme === 'D' ? 'Diploma' : institute.type_of_programme === 'B' ? 'Bachelor' : 'Other' }}
+                </dd>
               </div>
-            </div>
+            </dl>
           </div>
 
-          <!-- Right Column:  Status and Validity -->
-          <div class="md:col-span-1">
-            <h2 class="text-2xl font-bold text-gray-700 mb-4">Status & Validity</h2>
-            <div class="space-y-4">
+          <!-- Status & Validity -->
+          <div class="bg-white rounded-2xl shadow-lg p-6 transition-all duration-300">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Status & Validity</h3>
+            <dl class="space-y-4">
               <div>
-                <p class="text-gray-600 font-medium">Review Decision:</p>
-                <p
-                  :class="{
-                    'text-green-600': institute.review_decision === 'Approved',
-                    'text-yellow-600': institute.review_decision === 'Pending',
-                    'text-red-600':
-                      institute.review_decision !== 'Approved' &&
-                      institute.review_decision !== 'Pending',
-                    'font-semibold': true,
-                  }"
-                >
-                  {{ institute.review_decision }}
-                </p>
+                <dt class="text-sm font-medium text-gray-600">Valid From</dt>
+                <dd class="text-gray-800">{{ formattedValidSince }}</dd>
               </div>
-              <div v-if="institute.valid_since && institute.valid_till">
-                <p class="text-gray-600 font-medium">Valid From:</p>
-                <p class="text-gray-800">{{ formattedValidSince }}</p>
-                <p class="text-gray-600 font-medium">Valid Until:</p>
-                <p class="text-gray-800">{{ formattedValidTill }}</p>
-              </div>
-              <div v-else class="text-gray-500 italic">Validity information not available.</div>
               <div>
-                <p class="text-gray-600 font-medium">Remarks:</p>
-                <p class="text-gray-800">{{ institute.remarks }}</p>
+                <dt class="text-sm font-medium text-gray-600">Valid Until</dt>
+                <dd class="text-gray-800">{{ formattedValidTill }}</dd>
               </div>
-            </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-600">Remarks</dt>
+                <dd class="text-gray-800">{{ institute.remarks || 'None' }}</dd>
+              </div>
+            </dl>
           </div>
         </div>
 
-        <!-- Documents Section -->
-        <div class="bg-gray-50 p-8">
-          <h2 class="text-2xl font-bold text-gray-700 mb-4">Supporting Documents</h2>
-          <div v-if="institute.supporting_documents" class="mt-2">
+        <!-- Teaching Centers Section -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 transition-all duration-300">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Associated Teaching Centers</h3>
+          <div v-if="teachingCenters.length > 0" class="space-y-4">
+            <div
+              v-for="center in teachingCenters"
+              :key="center.id"
+              class="border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 transition-all duration-200 hover:shadow-md"
+            >
+              <div>
+                <h4 class="text-lg font-medium text-gray-800">{{ center.center_name }}</h4>
+                <p class="text-sm text-gray-600">
+                  Location: {{ center.center_location }}, {{ center.state_dzongkhag }}
+                </p>
+                <p v-if="center.tc_remarks" class="text-sm text-gray-600">
+                  Remarks: {{ center.tc_remarks }}
+                </p>
+                <p class="text-sm text-gray-600">
+                  Valid: {{ formatDate(center.valid_since) }} - {{ formatDate(center.valid_till) }}
+                </p>
+                <div v-if="center.tc_attachments || center.tc_report" class="mt-2 flex gap-4">
+                  <a
+                    v-if="center.tc_attachments"
+                    :href="center.tc_attachments"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-indigo-600 hover:underline flex items-center text-sm"
+                  >
+                    <DocumentIcon class="w-4 h-4 mr-1" />
+                    Attachments
+                  </a>
+                  <a
+                    v-if="center.tc_report"
+                    :href="center.tc_report"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-indigo-600 hover:underline flex items-center text-sm"
+                  >
+                    <DocumentIcon class="w-4 h-4 mr-1" />
+                    Report
+                  </a>
+                </div>
+              </div>
+              <div>
+                <span
+                  :class="{
+                    'bg-green-100 text-green-800': center.tc_review_decision === 'Approved',
+                    'bg-yellow-100 text-yellow-800': center.tc_review_decision === 'Pending',
+                    'bg-red-100 text-red-800': center.tc_review_decision !== 'Approved' && center.tc_review_decision !== 'Pending',
+                  }"
+                  class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                >
+                  {{ center.tc_review_decision }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <p v-else class="text-gray-500 italic">No associated teaching centers registered.</p>
+        </div>
+
+        <!-- Supporting Documents Section -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 transition-all duration-300">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Supporting Documents</h3>
+          <div v-if="institute.supporting_documents || institute.institute_eoi_supporting_documents || institute.do_dpr_report" class="space-y-2">
             <a
+              v-if="institute.supporting_documents"
               :href="institute.supporting_documents"
               target="_blank"
               rel="noopener noreferrer"
-              class="text-blue-600 hover:underline flex items-center"
+              class="text-indigo-600 hover:underline flex items-center"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5 mr-1"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"
-                />
-              </svg>
-
-              View Document
+              <DocumentIcon class="w-5 h-5 mr-2" />
+              EoI Supporting Document
+            </a>
+            <a
+              v-if="institute.institute_eoi_supporting_documents"
+              :href="institute.institute_eoi_supporting_documents"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-indigo-600 hover:underline flex items-center"
+            >
+              <DocumentIcon class="w-5 h-5 mr-2" />
+              Additional EoI Document
+            </a>
+            <a
+              v-if="institute.do_dpr_report"
+              :href="institute.do_dpr_report"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-indigo-600 hover:underline flex items-center"
+            >
+              <DocumentIcon class="w-5 h-5 mr-2" />
+              DPR Report
             </a>
           </div>
           <p v-else class="text-gray-500 italic">No supporting documents available.</p>
         </div>
+      </div>
+
+      <!-- Loading or Error State -->
+      <div v-else-if="errorMessage" class="text-center py-12">
+        <p class="text-red-600 text-xl">{{ errorMessage }}</p>
+        <button
+          @click="fetchInstitute"
+          class="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-150"
+        >
+          Retry
+        </button>
       </div>
       <div v-else class="text-center py-12">
         <p class="text-gray-600 text-xl">Loading institute profile...</p>
@@ -168,17 +232,25 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { useToast } from 'vue-toastification'
 import apiServices from '@/services/services'
 import { useAuthStore } from '@/stores/authStore'
 import { storeToRefs } from 'pinia'
+import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
+import { GlobeAltIcon, DocumentIcon } from '@heroicons/vue/24/outline'
 
 const institute = ref(null)
+const teachingCenters = ref([])
+const errorMessage = ref('')
 const authStore = useAuthStore()
 const { user } = storeToRefs(authStore)
-const errorMessage = ref('')
+const toast = useToast()
 
+// Computed properties for formatted dates
 const formattedCommencementDate = computed(() => {
-  return institute.value?.commencement_date ? formatDate(institute.value.commencement_date) : 'N/A'
+  return institute.value?.commencement_date
+    ? formatDate(institute.value.commencement_date)
+    : 'N/A'
 })
 
 const formattedValidSince = computed(() => {
@@ -190,59 +262,37 @@ const formattedValidTill = computed(() => {
 })
 
 const formatDate = (dateString) => {
-  if (!dateString) return null
+  if (!dateString) return 'N/A'
   const date = new Date(dateString)
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
+
+// Fetch institute data
 const fetchInstitute = async () => {
   try {
-    const response = await apiServices.getMhpcInstitutes()
-
-    // Corrected validation check: Access 'results' through response.data
-    if (
-      !response ||
-      !response.data ||
-      !response.data.results ||
-      !Array.isArray(response.data.results)
-    ) {
-      console.error("Error: Invalid API response. Expected 'results' array.", response)
-      errorMessage.value = 'Failed to load institute data. Please try again later.'
-      return
+    const cid = user.value?.cid
+    const response = await apiServices.getMhpcInstitute(cid)
+    if (!response || !response.data ) {
+      throw new Error("Invalid API response. Expected 'results' array.")
     }
 
-    // Check if user and user.cid is available
     if (!user.value || !user.value.cid) {
-      console.error('Error: User CID is not available.')
-      errorMessage.value = 'User information is missing. Please log in again.'
-      return
+      throw new Error('User CID is not available.')
     }
 
-    // Access 'results' through response.data
-    institute.value = response.data.results.find((inst) => inst.CID === user.value.cid)
+    institute.value = response.data
 
-    // Check if the institute is found or not
     if (!institute.value) {
-      console.error(
-        `Institute with CID ${user.value.cid} not found in the API response`,
-        response.data.results,
-      )
-      errorMessage.value = `Institute profile not found.`
-      return
+      throw new Error(`Institute with CID ${user.value.cid} not found.`)
     }
+
+    // Populate teaching centers from institute.teaching_centers
+    teachingCenters.value = institute.value.teaching_centers || []
   } catch (error) {
-    console.error('Error fetching institutes:', error)
-    // More specific error handling (same as before - no changes needed here)
-    if (error.response) {
-      console.error('Server Error:', error.response.status, error.response.data)
-      errorMessage.value = `Server error (${error.response.status}). Please try again later.`
-    } else if (error.request) {
-      console.error('Network Error:', error.request)
-      errorMessage.value = 'Network error. Please check your internet connection.'
-    } else {
-      console.error('Request Error:', error.message)
-      errorMessage.value = 'An unexpected error occurred. Please try again.'
-    }
+    console.error('Error fetching institute:', error)
+    errorMessage.value = error.message || 'An unexpected error occurred. Please try again.'
+    toast.error(errorMessage.value)
   }
 }
 
@@ -252,5 +302,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Add custom styles here if needed */
+/* No additional styles needed, Tailwind CSS handles everything */
 </style>

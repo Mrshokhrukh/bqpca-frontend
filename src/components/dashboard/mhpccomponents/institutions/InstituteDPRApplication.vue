@@ -1,957 +1,507 @@
 <template>
-    <div class="w-full mx-auto px-4 py-8">
-        <!-- Not Available Status -->
-        <div
-            v-if="reviewDecision === 'Regretted'"
-            class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4"
-            role="alert"
-        >
-            <p class="font-bold">Application Status: Not Available</p>
-            <p>You cannot submit a DPR until your EOI application has been approved.</p>
-        </div>
+  <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-gray-50 min-h-screen">
+    <InstituteHeader
+      title="Detailed Project Proposal (DPR)"
+      subtitle="Complete and submit your proposal for establishing a Medical and Health Educational Institution."
+      :show-actions="false"
+    />
 
-        <!-- Loading State -->
-        <div v-if="isLoading">Loading...</div>
-
-        <!-- Pending Status -->
-        <div
-            v-else-if="reviewDecision === 'Pending'"
-            class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4"
-            role="alert"
-        >
-            <p class="font-bold">Application Status: Pending</p>
-            <p>
-                Your application is currently under review. You will be notified once a decision has
-                been made.
-            </p>
-        </div>
-
-        <!-- Approved Status with Form -->
-        <div v-else-if="reviewDecision === 'Approved'">
-            <!-- Form Header -->
-            <div
-                class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10"
-            >
-                <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
-                    Detailed Project Proposal
-                </h2>
-                <p class="text-gray-600 text-center max-w-2xl mx-auto">
-                    Prepare your Detailed Project Proposal for establishing a Medical and Health
-                    Educational Institution.
-                </p>
-            </div>
-
-            <!-- Main Form Card -->
-            <div class="bg-white border rounded-xl shadow-sm p-6">
-                <!-- Institution Details Section -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">
-                        1. College/Institution Details
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Enter the details of the proposed institution.
-                    </p>
-                </div>
-
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <!-- College/Institution Details -->
-                    <div>
-                        <label
-                            for="institutionName"
-                            class="block text-sm font-medium text-gray-700"
-                        >
-                            Proposed Name:
-                        </label>
-                        <!-- fetch from API and show but dont submit -->
-                        <input
-                            type="text"
-                            id="institutionName"
-                            v-model="instituteName"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                            placeholder="Enter proposed name"
-                            disabled
-                        />
-                        <!--  Disabled to prevent editing -->
-                    </div>
-                </div>
-
-                <!--  DPR details-->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">2. DPR Details</h3>
-                    <p class="mt-1 text-sm text-gray-500">Describe the DPR details.</p>
-                </div>
-
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label for="dprName" class="block text-sm font-medium text-gray-700">
-                            DPR name:
-                        </label>
-                        <input
-                            id="dprName"
-                            v-model="formData.dpr_name"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label
-                            for="institute_eoi_supporting_documents"
-                            class="block text-sm font-medium text-gray-700"
-                        >
-                            EOI Supporting Documents:
-                        </label>
-                        <input
-                            type="file"
-                            id="institute_eoi_supporting_documents"
-                            @change="handleFileUpload('institute_eoi_supporting_documents')"
-                            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                        />
-                    </div>
-
-                    <div>
-                        <label
-                            for="institute_dpr_remarks"
-                            class="block text-sm font-medium text-gray-700"
-                        >
-                            Institute DPR Remarks:
-                        </label>
-                        <textarea
-                            id="institute_dpr_remarks"
-                            v-model="formData.institute_dpr_remarks"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-
-                    <div>
-                        <label
-                            for="do_dpr_review_report"
-                            class="block text-sm font-medium text-gray-700"
-                        >
-                            DPR Review Report:
-                        </label>
-                        <textarea
-                            id="do_dpr_review_report"
-                            v-model="formData.do_dpr_review_report"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-
-                    <div>
-                        <label
-                            for="do_dpr_review_summary"
-                            class="block text-sm font-medium text-gray-700"
-                        >
-                            DPR Review Summary:
-                        </label>
-                        <textarea
-                            id="do_dpr_review_summary"
-                            v-model="formData.do_dpr_review_summary"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-
-                    <div>
-                        <label for="do_dpr_report" class="block text-sm font-medium text-gray-700">
-                            DPR Report:
-                        </label>
-                        <input
-                            type="file"
-                            id="do_dpr_report"
-                            @change="handleFileUpload('do_dpr_report')"
-                            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                        />
-                    </div>
-                </div>
-
-                <!-- Vision, Mission, Implementation Section -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">
-                        3. Vision, Mission, and Implementation Strategies
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Describe the vision, mission, and strategies of the institution.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label
-                            for="implementationStrategies"
-                            class="block text-sm font-medium text-gray-700"
-                        >
-                            Vision, Mission Implementation Strategies:
-                        </label>
-                        <textarea
-                            id="implementationStrategies"
-                            v-model="formData.vision_mission_strategies"
-                            rows="5"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                            required
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Project Scheduling Section -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">
-                        4. Project Scheduling, Implementation, and Management
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Provide the project schedule, implementation plan, and management details.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label for="projectSchedule" class="block text-sm font-medium text-gray-700"
-                            >Project Schedule:</label
-                        >
-                        <textarea
-                            id="projectSchedule"
-                            v-model="formData.project_scheduling"
-                            rows="5"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                            required
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Gross National Happiness Section -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">
-                        5. Values of Gross National Happiness
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Describe how the institution will contribute to Gross National Happiness.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label for="gnhValues" class="block text-sm font-medium text-gray-700"
-                            >Contribution to GNH:</label
-                        >
-                        <textarea
-                            id="gnhValues"
-                            v-model="formData.gross_national_happiness"
-                            rows="5"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                            required
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Land Section -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">6. Land</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Provide land details as required by relevant regulations.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label for="landDetails" class="block text-sm font-medium text-gray-700">
-                            Land Details (as required by regulations):
-                        </label>
-                        <textarea
-                            id="landDetails"
-                            v-model="formData.land_details"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Conceptual Master Plan Section -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">7. Conceptual Master Plan</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Describe the conceptual master plan for the institution.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label for="masterPlan" class="block text-sm font-medium text-gray-700"
-                            >Master Plan Description:</label
-                        >
-                        <textarea
-                            id="masterPlan"
-                            v-model="formData.conceptual_master_plan"
-                            rows="5"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                            required
-                        ></textarea>
-                        <p class="text-gray-500 text-sm mt-1">
-                            <em>Include all aspects of the physical infrastructure.</em>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Academic Plan Section -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">8. Academic Plan/Profile</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Describe the intent and purpose of the institute in terms of its academic
-                        character.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label for="academicPlan" class="block text-sm font-medium text-gray-700"
-                            >Academic Plan:</label
-                        >
-                        <textarea
-                            id="academicPlan"
-                            v-model="formData.academic_plan"
-                            rows="5"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                            required
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Affiliation -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">9. Affiliation</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Provide details on the affiliation of the training institute with a
-                        recognized university.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label
-                            for="affiliationDetails"
-                            class="block text-sm font-medium text-gray-700"
-                            >Affiliation Details:</label
-                        >
-                        <textarea
-                            id="affiliationDetails"
-                            v-model="formData.affiliation_details"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Teaching Hospital -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">10. Teaching Hospital</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Provide details on the teaching hospital arrangement.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label
-                            for="teachingHospitalDetails"
-                            class="block text-sm font-medium text-gray-700"
-                            >Teaching Hospital Details:</label
-                        >
-                        <textarea
-                            id="teachingHospitalDetails"
-                            v-model="formData.teaching_hospital"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Research Policy -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">11. Research Policy</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Outline the research policy of the institution.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label for="researchPolicy" class="block text-sm font-medium text-gray-700"
-                            >Research Policy:</label
-                        >
-                        <textarea
-                            id="researchPolicy"
-                            v-model="formData.research_policy"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Human Resource -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">12. Human Resource</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Describe the human resource plan for the institution.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label
-                            for="humanResourcePlan"
-                            class="block text-sm font-medium text-gray-700"
-                            >Human Resource Plan:</label
-                        >
-                        <textarea
-                            id="humanResourcePlan"
-                            v-model="formData.human_resource"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Quality Assurance System -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">
-                        13. Quality Assurance System
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Provide details on the quality assurance system of the institution.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label
-                            for="qualityAssurance"
-                            class="block text-sm font-medium text-gray-700"
-                            >Quality Assurance System Details:</label
-                        >
-                        <textarea
-                            id="qualityAssurance"
-                            v-model="formData.quality_assurance"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Governance Structure -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">14. Governance Structure</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Describe the governance structure of the institution.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label
-                            for="governanceStructure"
-                            class="block text-sm font-medium text-gray-700"
-                            >Governance Structure Details:</label
-                        >
-                        <textarea
-                            id="governanceStructure"
-                            v-model="formData.governance_structure"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Business Plan -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">15. Business Plan</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Provide details on the business plan of the institution.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label for="businessPlan" class="block text-sm font-medium text-gray-700"
-                            >Business Plan Details:</label
-                        >
-                        <textarea
-                            id="businessPlan"
-                            v-model="formData.business_plan"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Project Cost and Analysis -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">
-                        16. Project Cost and Analysis
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Provide details on the project cost and analysis.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label
-                            for="projectCostAnalysis"
-                            class="block text-sm font-medium text-gray-700"
-                            >Project Cost Analysis Details:</label
-                        >
-                        <textarea
-                            id="projectCostAnalysis"
-                            v-model="formData.project_cost_analysis"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Facilities and Student Services -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">
-                        17. Facilities and Student Services
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Provide details on the facilities and student services offered by the
-                        institution.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label
-                            for="facilitiesAndServices"
-                            class="block text-sm font-medium text-gray-700"
-                            >Facilities and Services Details:</label
-                        >
-                        <textarea
-                            id="facilitiesAndServices"
-                            v-model="formData.facilities_student_services"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Admission Policy and Scholarships -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">
-                        18. Admission Policy and Scholarships
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Provide details on the admission policy and scholarships.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label for="admissionPolicy" class="block text-sm font-medium text-gray-700"
-                            >Admission Policy Details:</label
-                        >
-                        <textarea
-                            id="admissionPolicy"
-                            v-model="formData.admission_policy"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Service Conditions -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">19. Service Conditions</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Provide details on the service conditions for employees.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label
-                            for="serviceConditions"
-                            class="block text-sm font-medium text-gray-700"
-                            >Service Conditions Details:</label
-                        >
-                        <textarea
-                            id="serviceConditions"
-                            v-model="formData.service_conditions"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Safety and Security -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">20. Safety and Security</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Provide details on the safety and security measures.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label
-                            for="safetyAndSecurity"
-                            class="block text-sm font-medium text-gray-700"
-                            >Safety and Security Details:</label
-                        >
-                        <textarea
-                            id="safetyAndSecurity"
-                            v-model="formData.safety_security"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Public Information System -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">
-                        21. Public Information System
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Provide details on the public information system.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label
-                            for="publicInformationSystem"
-                            class="block text-sm font-medium text-gray-700"
-                            >Public Information System Details:</label
-                        >
-                        <textarea
-                            id="publicInformationSystem"
-                            v-model="formData.public_information_system"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Others -->
-                <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-                    <h3 class="text-lg font-semibold text-gray-900">22. Others</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Provide details on any other relevant information.
-                    </p>
-                </div>
-                <div class="p-8 grid grid-cols-1 gap-6">
-                    <div>
-                        <label
-                            for="otherInformation"
-                            class="block text-sm font-medium text-gray-700"
-                            >Other Information:</label
-                        >
-                        <textarea
-                            id="otherInformation"
-                            v-model="formData.other_details"
-                            rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="mt-12 flex justify-end space-x-4 p-8">
-                    <button
-                        type="button"
-                        @click="handleSaveDraft"
-                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                    >
-                        Save as Draft
-                    </button>
-                    <button
-                        type="button"
-                        @click="handleSubmit"
-                        class="px-6 py-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-                    >
-                        Submit Application
-                    </button>
-                </div>
-            </div>
-        </div>
+    <div v-if="isLoading" class="flex flex-col items-center justify-center min-h-[400px] mt-8">
+      <Loader class="animate-spin text-indigo-600 w-12 h-12" />
+      <p class="mt-4 text-lg font-medium text-gray-700">Loading Application Status...</p>
     </div>
+
+    <div v-else-if="apiError" class="mt-8 text-center py-16 bg-red-50 rounded-2xl border border-red-200 shadow-sm">
+        <p class="text-red-700 text-lg font-medium">{{ initialErrorMsg || 'An error occurred' }}</p>
+        <p class="text-red-600 text-sm mt-2">Please try refreshing the page or contact support.</p>
+    </div>
+
+    <div v-else-if="reviewDecision === 'Regretted'" class="max-w-3xl mx-auto mt-8">
+      <div class="bg-red-50 border border-red-200 rounded-xl p-6 shadow-md" role="alert">
+        <div class="flex items-start">
+          <ExclamationTriangleIcon class="h-6 w-6 text-red-500 mr-3 flex-shrink-0 mt-0.5" />
+          <div>
+            <p class="font-semibold text-lg text-red-800">EOI Application Regretted</p>
+            <p class="mt-2 text-red-700">
+              Your Expression of Interest (EOI) application was not approved. You cannot submit a
+              Detailed Project Report (DPR) at this time.
+            </p>
+            <p v-if="eoiRejectionReason" class="mt-1 text-sm text-red-600">
+              Reason: {{ eoiRejectionReason }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-else-if="reviewDecision === 'PendingEOI'" class="max-w-3xl mx-auto mt-8">
+      <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 shadow-md" role="alert">
+        <div class="flex items-start">
+          <ClockIcon class="h-6 w-6 text-yellow-500 mr-3 flex-shrink-0 mt-0.5" />
+          <div>
+            <p class="font-semibold text-lg text-yellow-800">EOI Application Pending</p>
+            <p class="mt-2 text-yellow-700">
+              Your Expression of Interest (EOI) application is currently under review.
+              You can prepare your DPR details below and save as a draft. Submission will be
+              enabled once your EOI is approved.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+     <div v-else-if="reviewDecision === 'NotSubmitted'" class="max-w-3xl mx-auto mt-8">
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 shadow-md" role="alert">
+        <div class="flex items-start">
+          <InformationCircleIcon class="h-6 w-6 text-blue-500 mr-3 flex-shrink-0 mt-0.5" />
+          <div>
+            <p class="font-semibold text-lg text-blue-800">No EOI Submitted</p>
+            <p class="mt-2 text-blue-700">
+              No Expression of Interest (EOI) application was found for your account.
+              Please submit an EOI before proceeding with a DPR.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <form
+      v-if="reviewDecision === 'Approved' || reviewDecision === 'PendingDPR'"
+      @submit.prevent="handleSubmit"
+      class="bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden mt-8"
+    >
+      <div
+        v-for="(section, sectionIndex) in formSections"
+        :key="section.id"
+        class="form-section"
+      >
+        <div
+          :class="[
+            'section-header',
+            sectionIndex === 0 ? '' : 'border-t border-gray-200',
+          ]"
+        >
+          <component
+            :is="section.icon"
+            class="w-6 h-6 text-indigo-700 mr-3 flex-shrink-0"
+            aria-hidden="true"
+          />
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">{{ section.title }}</h3>
+            <p v-if="section.description" class="mt-1 text-xs text-gray-500">
+              {{ section.description }}
+            </p>
+          </div>
+        </div>
+
+        <div class="section-content">
+          <div
+            v-for="field in section.fields"
+            :key="field.id"
+            :class="field.fullWidth ? 'md:col-span-2' : ''"
+          >
+            <label
+              :for="field.id"
+              class="form-label"
+              :class="{ 'required-label': field.required }"
+            >
+              {{ field.label }}
+            </label>
+            <input
+              v-if="['text', 'email', 'number'].includes(field.type)"
+              :type="field.type"
+              :id="field.id"
+              :value="field.modelKey ? formData[field.modelKey] : field.staticModel"
+              @input="field.modelKey ? (formData[field.modelKey] = $event.target.value) : null"
+              class="form-input"
+              :placeholder="field.placeholder"
+              :required="field.required"
+              :disabled="field.disabled || (isSubmitting && field.type !== 'file')"
+            />
+            <textarea
+              v-else-if="field.type === 'textarea'"
+              :id="field.id"
+              v-model="formData[field.modelKey]"
+              :rows="field.rows || 4"
+              class="form-textarea"
+              :placeholder="field.placeholder"
+              :required="field.required"
+              :disabled="isSubmitting"
+            ></textarea>
+            <div v-else-if="field.type === 'file'" class="mt-1">
+              <input
+                :type="field.type"
+                :id="field.id"
+                ref="fileInputs"
+                @change="handleFileUpload(field.modelKey, $event)"
+                :accept="field.accept || '.pdf,.doc,.docx,.jpg,.png'"
+                class="form-file-input"
+                :disabled="isSubmitting"
+              />
+              <div v-if="formData[field.modelKey] || formData[field.modelKey + '_filename']" class="mt-2 text-sm">
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-md border border-gray-200">
+                    <p class="text-gray-700 truncate flex-grow">
+                        <PaperClipIcon class="w-4 h-4 inline mr-1.5 text-gray-400" />
+                        <span class="font-medium">Current:</span> {{ getFileName(formData[field.modelKey]) || formData[field.modelKey + '_filename'] }}
+                    </p>
+                    <button
+                        type="button"
+                        @click="clearFile(field.modelKey, field.id)"
+                        class="ml-2 text-red-600 hover:text-red-800 font-medium text-xs"
+                        :disabled="isSubmitting"
+                    >
+                        Clear
+                    </button>
+                </div>
+              </div>
+            </div>
+            <p v-if="field.hint" class="text-gray-500 text-xs mt-1.5">
+              <em>{{ field.hint }}</em>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 md:p-8 bg-gray-50 border-t border-gray-200">
+        <p v-if="reviewDecision === 'PendingDPR'" class="mb-4 text-sm text-yellow-700 bg-yellow-50 p-3 rounded-md border border-yellow-200 text-center">
+            Your EOI application is pending review. You can save this DPR as a draft.
+            Submission will be enabled once your EOI is approved.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-end items-center space-y-3 sm:space-y-0 sm:space-x-4">
+          <button
+            type="button"
+            @click="handleSaveDraft"
+            class="btn btn-outline w-full sm:w-auto"
+            :disabled="isSubmitting || reviewDecision === 'Regretted'"
+          >
+            <ArrowDownTrayIcon class="w-5 h-5 mr-2" />
+            Save as Draft
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary w-full sm:w-auto"
+            :disabled="isSubmitting || reviewDecision !== 'Approved'"
+          >
+            <PaperAirplaneIcon
+              v-if="!isSubmitting"
+              class="w-5 h-5 mr-2 transform -rotate-45"
+            />
+            <Loader v-else class="animate-spin h-5 w-5 mr-2 text-white" />
+            {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import apiService from '@/services/services'
-import { useRouter } from 'vue-router' // Import useRouter
-import { useToast } from 'vue-toastification' // Import useToast
-import 'vue-toastification/dist/index.css' // Import the CSS for toast
+import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
+import 'vue-toastification/dist/index.css'
+import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
+import { Loader } from 'lucide-vue-next'
 
-const router = useRouter() // Initialize router
-const toast = useToast() // Initialize toast
+import {
+    BuildingOfficeIcon, DocumentTextIcon, LightBulbIcon, CalendarDaysIcon, SparklesIcon, MapPinIcon,
+    PuzzlePieceIcon, AcademicCapIcon, LinkIcon, HeartIcon, BeakerIcon, UsersIcon, ShieldCheckIcon,
+    CogIcon, BriefcaseIcon, ChartBarIcon, HomeModernIcon, TicketIcon, UserGroupIcon, LockClosedIcon,
+    InformationCircleIcon, QuestionMarkCircleIcon, ExclamationTriangleIcon, ClockIcon,
+    ArrowDownTrayIcon, PaperAirplaneIcon, PaperClipIcon,
+} from '@heroicons/vue/24/outline'
+
+const router = useRouter()
+const toast = useToast()
 
 const instituteName = ref('')
 const isSubmitting = ref(false)
-const instituteId = ref(null) // We'll store the institute ID here
-const reviewDecision = ref('') // Add a ref for reviewDecision
-const isLoading = ref(true) // Add loading state
+const instituteId = ref(null)
+const reviewDecision = ref('')
+const eoiRejectionReason = ref('')
+const isLoading = ref(true)
+const apiError = ref(false)
+const initialErrorMsg = ref('')
+const fileInputs = ref([])
 
 const formData = ref({
-    dpr_name: '',
-    executive_summary: '',
-    institute_eoi_supporting_documents: null,
-    institute_dpr_remarks: '',
-    do_dpr_review_report: '',
-    do_dpr_review_summary: '',
-    do_dpr_report: null,
-    vision_mission_strategies: '',
-    project_scheduling: '',
-    gross_national_happiness: '',
-    land_details: '',
-    conceptual_master_plan: '',
-    academic_plan: '',
-    affiliation_details: '',
-    teaching_hospital: '',
-    research_policy: '',
-    human_resource: '',
-    quality_assurance: '',
-    governance_structure: '',
-    business_plan: '',
-    project_cost_analysis: '',
-    facilities_student_services: '',
-    admission_policy: '',
-    service_conditions: '',
-    safety_security: '',
-    public_information_system: '',
-    other_details: '',
+    dpr_name: '', executive_summary: '', institute_eoi_supporting_documents: null,
+    institute_dpr_remarks: '', do_dpr_review_report: '', do_dpr_review_summary: '',
+    do_dpr_report: null, vision_mission_strategies: '', project_scheduling: '',
+    gross_national_happiness: '', land_details: '', conceptual_master_plan: '',
+    academic_plan: '', affiliation_details: '', teaching_hospital: '', research_policy: '',
+    human_resource: '', quality_assurance: '', governance_structure: '', business_plan: '',
+    project_cost_analysis: '', facilities_student_services: '', admission_policy: '',
+    service_conditions: '', safety_security: '', public_information_system: '', other_details: '',
+    institute_eoi_supporting_documents_filename: '', do_dpr_report_filename: '',
 })
 
-onMounted(async () => {
-    const userString = localStorage.getItem('user')
-    console.log('userString from localStorage:', userString)
+const formSections = computed(() => [
+    { id: 'collegeDetails', title: '1. College/Institution Details', description: 'Details of the proposed institution.', icon: BuildingOfficeIcon, fields: [ { id: 'institutionName', label: 'Proposed Name (from EOI):', staticModel: instituteName.value, type: 'text', disabled: true, placeholder: 'Institution Name', fullWidth: true } ] },
+    { id: 'dprDetails', title: '2. DPR Specifics', description: 'Core details and documents for this DPR.', icon: DocumentTextIcon, fields: [ { id: 'dprName', label: 'DPR Name:', modelKey: 'dpr_name', type: 'text', required: true, placeholder: 'e.g., DPR for Establishment of [Institution Name]', fullWidth: true }, { id: 'institute_eoi_supporting_documents', label: 'EOI Supporting Documents:', modelKey: 'institute_eoi_supporting_documents', type: 'file', accept: '.pdf,.doc,.docx', hint: 'Attach relevant documents supporting your EOI (if any new/updated).' }, { id: 'institute_dpr_remarks', label: 'Institute DPR Remarks:', modelKey: 'institute_dpr_remarks', type: 'textarea', placeholder: 'Any remarks regarding this DPR submission.', fullWidth: true }, { id: 'do_dpr_review_report', label: 'DPR Review Report (Desk Officer):', modelKey: 'do_dpr_review_report', type: 'textarea', placeholder: 'For Desk Officer use, if applicable.', fullWidth: true }, { id: 'do_dpr_review_summary', label: 'DPR Review Summary (Desk Officer):', modelKey: 'do_dpr_review_summary', type: 'textarea', placeholder: 'For Desk Officer use, if applicable.', fullWidth: true }, { id: 'do_dpr_report', label: 'DPR Report (Desk Officer):', modelKey: 'do_dpr_report', type: 'file', accept: '.pdf,.doc,.docx', hint: 'Final DPR report document from Desk Officer, if applicable.' } ] },
+    { id: 'visionMission', title: '3. Vision, Mission, and Implementation Strategies', description: "Outline the institution's core philosophy and execution plan.", icon: LightBulbIcon, fields: [ { id: 'vision_mission_strategies', label: 'Vision, Mission & Strategies:', modelKey: 'vision_mission_strategies', type: 'textarea', rows: 5, required: true, placeholder: "Describe the institution's vision, mission, and key implementation strategies.", fullWidth: true } ] },
+    { id: 'projectScheduling', title: '4. Project Scheduling, Implementation, and Management', description: 'Detail the project timeline and management approach.', icon: CalendarDaysIcon, fields: [ { id: 'project_scheduling', label: 'Project Schedule & Management:', modelKey: 'project_scheduling', type: 'textarea', rows: 5, required: true, placeholder: 'Provide a detailed project schedule, implementation plan, and management structure.', fullWidth: true } ] },
+    { id: 'gnhValues', title: '5. Values of Gross National Happiness', description: 'How the institution aligns with and promotes GNH values.', icon: SparklesIcon, fields: [ { id: 'gross_national_happiness', label: 'Contribution to GNH:', modelKey: 'gross_national_happiness', type: 'textarea', rows: 5, required: true, placeholder: 'Describe how the institution will contribute to the pillars of Gross National Happiness.', fullWidth: true } ] },
+    { id: 'landDetails', title: '6. Land', description: 'Information regarding the land for the institution.', icon: MapPinIcon, fields: [ { id: 'land_details', label: 'Land Details:', modelKey: 'land_details', type: 'textarea', placeholder: 'Provide details as required by relevant land regulations (e.g., location, area, ownership, clearance status).', fullWidth: true } ] },
+    { id: 'masterPlan', title: '7. Conceptual Master Plan', description: 'The overall physical layout and infrastructure plan.', icon: PuzzlePieceIcon, fields: [ { id: 'conceptual_master_plan', label: 'Master Plan Description:', modelKey: 'conceptual_master_plan', type: 'textarea', rows: 5, required: true, placeholder: 'Describe the conceptual master plan, including all aspects of physical infrastructure (buildings, labs, libraries, hostels, etc.).', hint: 'Include all aspects of the physical infrastructure.', fullWidth: true } ] },
+    { id: 'academicPlan', title: '8. Academic Plan/Profile', description: 'The educational character and programs of the institute.', icon: AcademicCapIcon, fields: [ { id: 'academic_plan', label: 'Academic Plan:', modelKey: 'academic_plan', type: 'textarea', rows: 5, required: true, placeholder: 'Describe the intent and purpose of the institute in terms of its academic character, proposed courses, curriculum framework, and teaching methodologies.', fullWidth: true } ] },
+    { id: 'affiliation', title: '9. Affiliation', description: 'Details of affiliation with a recognized university.', icon: LinkIcon, fields: [ { id: 'affiliation_details', label: 'Affiliation Details:', modelKey: 'affiliation_details', type: 'textarea', placeholder: 'Provide details on the affiliation of the training institute with a recognized university (e.g., name of university, status of affiliation).', fullWidth: true } ] },
+    { id: 'teachingHospital', title: '10. Teaching Hospital', description: 'Arrangements for a teaching hospital.', icon: HeartIcon, fields: [ { id: 'teaching_hospital', label: 'Teaching Hospital Details:', modelKey: 'teaching_hospital', type: 'textarea', placeholder: 'Provide details on the teaching hospital arrangement (e.g., own hospital, MoU with existing hospital, capacity).', fullWidth: true } ] },
+    { id: 'researchPolicy', title: '11. Research Policy', description: "The institution's policy on research activities.", icon: BeakerIcon, fields: [ { id: 'research_policy', label: 'Research Policy:', modelKey: 'research_policy', type: 'textarea', placeholder: 'Outline the research policy of the institution, including focus areas, funding, and ethical guidelines.', fullWidth: true } ] },
+    { id: 'humanResource', title: '12. Human Resource', description: 'Plan for staffing and human resource management.', icon: UsersIcon, fields: [ { id: 'human_resource', label: 'Human Resource Plan:', modelKey: 'human_resource', type: 'textarea', placeholder: 'Describe the human resource plan, including faculty recruitment, staff roles, qualifications, and development programs.', fullWidth: true } ] },
+    { id: 'qualityAssurance', title: '13. Quality Assurance System', description: 'Mechanisms for ensuring educational quality.', icon: ShieldCheckIcon, fields: [ { id: 'quality_assurance', label: 'Quality Assurance System:', modelKey: 'quality_assurance', type: 'textarea', placeholder: 'Provide details on the quality assurance system (e.g., internal reviews, external accreditation, student feedback mechanisms).', fullWidth: true } ] },
+    { id: 'governanceStructure', title: '14. Governance Structure', description: 'The organizational and administrative framework.', icon: CogIcon, fields: [ { id: 'governance_structure', label: 'Governance Structure:', modelKey: 'governance_structure', type: 'textarea', placeholder: 'Describe the governance structure (e.g., governing body, academic council, administrative hierarchy, roles and responsibilities).', fullWidth: true } ] },
+    { id: 'businessPlan', title: '15. Business Plan', description: 'Financial projections and sustainability plan.', icon: BriefcaseIcon, fields: [ { id: 'business_plan', label: 'Business Plan:', modelKey: 'business_plan', type: 'textarea', placeholder: 'Provide details on the business plan, including financial projections, funding sources, revenue streams, and sustainability model.', fullWidth: true } ] },
+    { id: 'projectCost', title: '16. Project Cost and Analysis', description: 'Detailed breakdown of project costs and financial analysis.', icon: ChartBarIcon, fields: [ { id: 'project_cost_analysis', label: 'Project Cost & Analysis:', modelKey: 'project_cost_analysis', type: 'textarea', placeholder: 'Provide a detailed project cost breakdown and financial viability analysis.', fullWidth: true } ] },
+    { id: 'facilitiesServices', title: '17. Facilities and Student Services', description: 'Amenities and support services for students.', icon: HomeModernIcon, fields: [ { id: 'facilities_student_services', label: 'Facilities & Student Services:', modelKey: 'facilities_student_services', type: 'textarea', placeholder: 'Describe available facilities (library, labs, sports) and student support services (counseling, career guidance, healthcare).', fullWidth: true } ] },
+    { id: 'admissionPolicy', title: '18. Admission Policy and Scholarships', description: 'Criteria for admission and scholarship programs.', icon: TicketIcon, fields: [ { id: 'admission_policy', label: 'Admission Policy & Scholarships:', modelKey: 'admission_policy', type: 'textarea', placeholder: 'Detail the admission policy, eligibility criteria, selection process, and any scholarship programs.', fullWidth: true } ] },
+    { id: 'serviceConditions', title: '19. Service Conditions', description: 'Terms of employment for staff.', icon: UserGroupIcon, fields: [ { id: 'service_conditions', label: 'Service Conditions:', modelKey: 'service_conditions', type: 'textarea', placeholder: 'Outline the service conditions for employees, including contracts, benefits, and grievance redressal.', fullWidth: true } ] },
+    { id: 'safetySecurity', title: '20. Safety and Security', description: 'Measures to ensure a safe campus environment.', icon: LockClosedIcon, fields: [ { id: 'safety_security', label: 'Safety & Security Measures:', modelKey: 'safety_security', type: 'textarea', placeholder: 'Describe safety and security measures for students, staff, and assets (e.g., campus security, emergency protocols, OHS).', fullWidth: true } ] },
+    { id: 'publicInfoSystem', title: '21. Public Information System', description: 'How information is disseminated to the public.', icon: InformationCircleIcon, fields: [ { id: 'public_information_system', label: 'Public Information System:', modelKey: 'public_information_system', type: 'textarea', placeholder: 'Describe the system for providing public information (e.g., website, prospectus, RTI compliance).', fullWidth: true } ] },
+    { id: 'otherDetails', title: '22. Others', description: 'Any other relevant information.', icon: QuestionMarkCircleIcon, fields: [ { id: 'other_details', label: 'Other Relevant Information:', modelKey: 'other_details', type: 'textarea', placeholder: 'Include any other details or documents pertinent to the DPR not covered elsewhere.', fullWidth: true } ] },
+])
 
+onMounted(async () => {
+    isLoading.value = true
+    apiError.value = false
+    initialErrorMsg.value = ''
+
+    const userString = localStorage.getItem('user')
     if (!userString) {
-        console.error('No user data found in localStorage.')
-        isLoading.value = false // Stop loading
+        initialErrorMsg.value = 'User session not found. Please log in again.'
+        apiError.value = true
+        isLoading.value = false
+        toast.error(initialErrorMsg.value)
+        router.push('/login')
         return
     }
 
     let userObject
     try {
         userObject = JSON.parse(userString)
-        console.log('userObject:', userObject)
     } catch (error) {
-        console.error('Error parsing user data from localStorage:', error)
+        console.error('Error parsing user session data:', error)
+        initialErrorMsg.value = 'Invalid user session data. Please try again.'
+        apiError.value = true
         isLoading.value = false
+        toast.error(initialErrorMsg.value)
         return
     }
 
-    if (!userObject || !userObject.cid) {
-        console.error('User object is invalid or cid is missing:', userObject)
+    if (!userObject?.cid) {
+        initialErrorMsg.value = 'User CID not found in session data.'
+        apiError.value = true
         isLoading.value = false
+        toast.error(initialErrorMsg.value)
         return
     }
     const userCID = userObject.cid
-    console.log('userCID:', userCID)
 
     try {
-        const response = await apiService.getMhpcInstitutes()
-        const institutes = response.data.results
-        console.log('All institutes:', institutes)
+        const response = await apiService.getMhpcInstitutes({ params: { CID: userCID } })
+        const institutes = response.data?.results || response.data
+
+        if (!Array.isArray(institutes) || institutes.length === 0) {
+            reviewDecision.value = 'NotSubmitted'
+            isLoading.value = false;
+            return;
+        }
 
         const matchedInstitute = institutes.find((institute) => institute.CID === userCID)
-        console.log('Matched institute:', matchedInstitute)
 
         if (!matchedInstitute) {
-            console.error("No institute found matching the user's CID.")
+            reviewDecision.value = 'NotSubmitted'
             isLoading.value = false
             return
         }
 
         instituteId.value = matchedInstitute.id
-        reviewDecision.value = matchedInstitute.review_decision // Set reviewDecision
+        instituteName.value = matchedInstitute.name_of_institution || 'N/A'
+        eoiRejectionReason.value = matchedInstitute.reason_if_rejected || ''
 
-        // Only fetch data IF the review is approved
-        if (reviewDecision.value === 'Approved') {
+        if (matchedInstitute.review_decision === 'Pending') {
+            reviewDecision.value = 'PendingDPR' // EOI is pending, allow DPR draft
+        } else {
+            reviewDecision.value = matchedInstitute.review_decision // Approved, Regretted
+        }
+
+        if (reviewDecision.value === 'Approved' || reviewDecision.value === 'PendingDPR') {
             await fetchDprData()
-            fetchInstituteName()
         }
     } catch (error) {
-        console.error('Error fetching institute data:', error)
-        toast.error('Error fetching institute data. Please try again.', { timeout: 3000 }) // Error toast on fetch fail
+        console.error('Error fetching EOI application status:', error)
+        initialErrorMsg.value = 'Failed to load EOI application status. Please try again.'
+        apiError.value = true
+        toast.error(initialErrorMsg.value)
     } finally {
-        isLoading.value = false // Stop loading in all cases
+        isLoading.value = false
     }
 })
 
-const fetchInstituteName = async () => {
-    try {
-        const response = await apiService.getMhpcInstitute(instituteId.value)
-        if (response.data && response.data.name_of_institution) {
-            instituteName.value = response.data.name_of_institution
-        }
-    } catch (error) {
-        console.error('Error fetching institute name:', error)
-        toast.error('Error fetching institute name. Please try again.', { timeout: 3000 }) // Error toast on fetch fail
-    }
-}
-
 const fetchDprData = async () => {
+    if (!instituteId.value) return
     try {
         const response = await apiService.getMhpcInstitute(instituteId.value)
         if (response.data) {
-            // *ONLY* populate the fields you intend to update:
-            formData.value.dpr_name = response.data.dpr_name || ''
-            formData.value.executive_summary = response.data.executive_summary || ''
-            formData.value.institute_dpr_remarks = response.data.institute_dpr_remarks || ''
-            formData.value.do_dpr_review_report = response.data.do_dpr_review_report || ''
-            formData.value.do_dpr_review_summary = response.data.do_dpr_review_summary || ''
-            formData.value.vision_mission_strategies = response.data.vision_mission_strategies || ''
-            formData.value.project_scheduling = response.data.project_scheduling || ''
-            formData.value.gross_national_happiness = response.data.gross_national_happiness || ''
-            formData.value.land_details = response.data.land_details || ''
-            formData.value.conceptual_master_plan = response.data.conceptual_master_plan || ''
-            formData.value.academic_plan = response.data.academic_plan || ''
-            formData.value.affiliation_details = response.data.affiliation_details || ''
-            formData.value.teaching_hospital = response.data.teaching_hospital || ''
-            formData.value.research_policy = response.data.research_policy || ''
-            formData.value.human_resource = response.data.human_resource || ''
-            formData.value.quality_assurance = response.data.quality_assurance || ''
-            formData.value.governance_structure = response.data.governance_structure || ''
-            formData.value.business_plan = response.data.business_plan || ''
-            formData.value.project_cost_analysis = response.data.project_cost_analysis || ''
-            formData.value.facilities_student_services =
-                response.data.facilities_student_services || ''
-            formData.value.admission_policy = response.data.admission_policy || ''
-            formData.value.service_conditions = response.data.service_conditions || ''
-            formData.value.safety_security = response.data.safety_security || ''
-            formData.value.public_information_system = response.data.public_information_system || ''
-            formData.value.other_details = response.data.other_details || ''
-            // Do *NOT* populate other fields.
+            const dprData = response.data
+            Object.keys(formData.value).forEach((key) => {
+                if (Object.prototype.hasOwnProperty.call(dprData, key) &&
+                    key !== 'institute_eoi_supporting_documents' && key !== 'do_dpr_report' &&
+                    !key.endsWith('_filename')) {
+                    formData.value[key] = dprData[key] === null ? '' : dprData[key];
+                }
+            })
+            formData.value.institute_eoi_supporting_documents_filename = getFileName(dprData.institute_eoi_supporting_documents) || ''
+            formData.value.do_dpr_report_filename = getFileName(dprData.do_dpr_report) || ''
         }
     } catch (error) {
-        console.error('Error fetching DPR data:', error)
-        toast.error('Error fetching DPR data. Please try again.', { timeout: 3000 }) // Error toast on fetch fail
+        console.error('Error fetching existing DPR data:', error)
+        toast.error('Could not load existing DPR data.')
     }
 }
 
-const handleFileUpload = (fieldName) => (event) => {
+const getFileName = (fileData) => {
+    if (fileData instanceof File) {
+        return fileData.name
+    }
+    if (typeof fileData === 'string' && fileData.trim() !== '') {
+        try {
+            const url = new URL(fileData)
+            const pathname = url.pathname
+            return pathname.substring(pathname.lastIndexOf('/') + 1)
+        } catch (e) {
+            console.error('Error parsing file URL:', e)
+            return fileData.substring(fileData.lastIndexOf('/') + 1)
+        }
+    }
+    return ''
+}
+
+const handleFileUpload = (modelKey, event) => {
     const file = event.target.files[0]
     if (file) {
-        formData.value[fieldName] = file
+        formData.value[modelKey] = file
+        formData.value[modelKey + '_filename'] = file.name
+    } else {
+        formData.value[modelKey] = null
+        formData.value[modelKey + '_filename'] = ''
     }
 }
 
-const handleSubmit = async () => {
-    console.log('handleSubmit called, instituteId.value:', instituteId.value)
+const clearFile = (modelKey, inputId) => {
+    formData.value[modelKey] = null
+    formData.value[modelKey + '_filename'] = ''
 
-    if (!instituteId.value) {
-        console.error('Institute ID is missing.')
-        toast.error('Institute ID is missing. Please refresh the page.', { timeout: 3000 }) // Error toast
-        return
+    const inputElement = document.getElementById(inputId);
+    if (inputElement) {
+        inputElement.value = '';
     }
-    if (!formData.value.dpr_name) {
-        toast.error('Please enter the DPR name.', { timeout: 3000 }) // Error toast
-        return
-    }
+}
 
+
+const prepareSubmitData = () => {
     const submitData = new FormData()
+    Object.keys(formData.value).forEach((key) => {
+        if (key.endsWith('_filename')) return
 
-    // *ONLY* append the fields you want to update:
-    submitData.append('dpr_name', formData.value.dpr_name)
-    submitData.append('executive_summary', formData.value.executive_summary)
-    if (formData.value.institute_eoi_supporting_documents) {
-        submitData.append(
-            'institute_eoi_supporting_documents',
-            formData.value.institute_eoi_supporting_documents
-        )
-    }
-    submitData.append('institute_dpr_remarks', formData.value.institute_dpr_remarks)
-    submitData.append('do_dpr_review_report', formData.value.do_dpr_review_report)
-    submitData.append('do_dpr_review_summary', formData.value.do_dpr_review_summary)
-    if (formData.value.do_dpr_report) {
-        submitData.append('do_dpr_report', formData.value.do_dpr_report)
-    }
-    submitData.append('vision_mission_strategies', formData.value.vision_mission_strategies)
-    submitData.append('project_scheduling', formData.value.project_scheduling)
-    submitData.append('gross_national_happiness', formData.value.gross_national_happiness)
-    submitData.append('land_details', formData.value.land_details)
-    submitData.append('conceptual_master_plan', formData.value.conceptual_master_plan)
-    submitData.append('academic_plan', formData.value.academic_plan)
-    submitData.append('affiliation_details', formData.value.affiliation_details)
-    submitData.append('teaching_hospital', formData.value.teaching_hospital)
-    submitData.append('research_policy', formData.value.research_policy)
-    submitData.append('human_resource', formData.value.human_resource)
-    submitData.append('quality_assurance', formData.value.quality_assurance)
-    submitData.append('governance_structure', formData.value.governance_structure)
-    submitData.append('business_plan', formData.value.business_plan)
-    submitData.append('project_cost_analysis', formData.value.project_cost_analysis)
-    submitData.append('facilities_student_services', formData.value.facilities_student_services)
-    submitData.append('admission_policy', formData.value.admission_policy)
-    submitData.append('service_conditions', formData.value.service_conditions)
-    submitData.append('safety_security', formData.value.safety_security)
-    submitData.append('public_information_system', formData.value.public_information_system)
-    submitData.append('other_details', formData.value.other_details)
-    // Do *NOT* append other fields.
-
-    try {
-        isSubmitting.value = true
-        const response = await apiService.patchMhpcInstitute(instituteId.value, submitData)
-        if (response.status === 200 || response.status === 204) {
-            toast.success('DPR submitted successfully!') // Success toast
-            setTimeout(() => {
-                router.push('/admin/institutions/health_certification/dashboard') // Redirect after successful submission
-            }, 1500) // Delay for toast to be visible
-        } else {
-            toast.error(`Failed to submit DPR. Status: ${response.status}`, { timeout: 5000 }) // Error toast with status
+        const value = formData.value[key]
+        if (value !== null && value !== undefined) {
+            if (value instanceof File) {
+                submitData.append(key, value, value.name)
+            } else if (typeof value === 'string' && value.trim() !== '') {
+                submitData.append(key, value)
+            } else if (typeof value === 'number') {
+                submitData.append(key, value.toString())
+            }
         }
-    } catch (error) {
-        console.error('Error submitting DPR data:', error)
-        toast.error('Error submitting DPR data. Please try again.', { timeout: 5000 }) // Generic error toast
-    } finally {
-        isSubmitting.value = false
-    }
+    })
+    return submitData
 }
 
-const handleSaveDraft = async () => {
+const commonSubmitLogic = async (isDraft) => {
     if (!instituteId.value) {
-        console.error('Institute ID is missing.')
-        toast.error('Institute ID is missing. Please refresh the page.', { timeout: 3000 }) // Error toast
+        toast.error('Institute ID is missing. Cannot proceed.')
         return
     }
-    const draftData = new FormData()
+    if (!isDraft && reviewDecision.value !== 'Approved') {
+        toast.error('Your EOI application is not yet approved. DPR cannot be submitted.')
+        return
+    }
+    if (reviewDecision.value === 'Regretted') {
+        toast.error('EOI was regretted. Cannot save draft or submit DPR.')
+        return;
+    }
+    if (!formData.value.dpr_name.trim() && !isDraft) {
+        toast.error('DPR Name is required for submission.')
+        return
+    }
 
-    // *ONLY* append the fields you want to update (same as handleSubmit):
-    draftData.append('dpr_name', formData.value.dpr_name)
-    draftData.append('executive_summary', formData.value.executive_summary)
-    if (formData.value.institute_eoi_supporting_documents) {
-        draftData.append(
-            'institute_eoi_supporting_documents',
-            formData.value.institute_eoi_supporting_documents
-        )
-    }
-    draftData.append('institute_dpr_remarks', formData.value.institute_dpr_remarks)
-    draftData.append('do_dpr_review_report', formData.value.do_dpr_review_report)
-    draftData.append('do_dpr_review_summary', formData.value.do_dpr_review_summary)
-    if (formData.value.do_dpr_report) {
-        draftData.append('do_dpr_report', formData.value.do_dpr_report)
-    }
-    draftData.append('vision_mission_strategies', formData.value.vision_mission_strategies)
-    draftData.append('project_scheduling', formData.value.project_scheduling)
-    draftData.append('gross_national_happiness', formData.value.gross_national_happiness)
-    draftData.append('land_details', formData.value.land_details)
-    draftData.append('conceptual_master_plan', formData.value.conceptual_master_plan)
-    draftData.append('academic_plan', formData.value.academic_plan)
-    draftData.append('affiliation_details', formData.value.affiliation_details)
-    draftData.append('teaching_hospital', formData.value.teaching_hospital)
-    draftData.append('research_policy', formData.value.research_policy)
-    draftData.append('human_resource', formData.value.human_resource)
-    draftData.append('quality_assurance', formData.value.quality_assurance)
-    draftData.append('governance_structure', formData.value.governance_structure)
-    draftData.append('business_plan', formData.value.business_plan)
-    draftData.append('project_cost_analysis', formData.value.project_cost_analysis)
-    draftData.append('facilities_student_services', formData.value.facilities_student_services)
-    draftData.append('admission_policy', formData.value.admission_policy)
-    draftData.append('service_conditions', formData.value.service_conditions)
-    draftData.append('safety_security', formData.value.safety_security)
-    draftData.append('public_information_system', formData.value.public_information_system)
-    draftData.append('other_details', formData.value.other_details)
+    isSubmitting.value = true
+    const dataToSubmit = prepareSubmitData()
 
     try {
-        isSubmitting.value = true
-        const response = await apiService.patchMhpcInstitute(instituteId.value, draftData) // Same API
-
+        const response = await apiService.patchMhpcInstitute(instituteId.value, dataToSubmit)
         if (response.status >= 200 && response.status < 300) {
-            toast.success('Draft saved successfully!') // Success toast
+            toast.success(isDraft ? 'Draft saved successfully!' : 'DPR submitted successfully!')
+            if (!isDraft) {
+                setTimeout(() => {
+                    router.push('/admin/institutions/health_certification/dashboard')
+                }, 1500)
+            } else {
+                await fetchDprData()
+            }
         } else {
-            toast.error(`Failed to save draft. Status: ${response.status}`, { timeout: 5000 }) // Error toast with status
+            toast.error(`Failed to ${isDraft ? 'save draft' : 'submit DPR'}. Server responded with status: ${response.status}`)
         }
     } catch (error) {
-        console.error('Error saving draft:', error)
-        toast.error('Error saving draft. Please try again.', { timeout: 5000 }) // Generic error toast
+        const errorMsg = error.response?.data?.detail || error.response?.data?.error || `An unexpected error occurred while ${isDraft ? 'saving draft' : 'submitting'}.`
+        toast.error(errorMsg, { timeout: 7000 })
     } finally {
         isSubmitting.value = false
     }
 }
+
+const handleSubmit = () => commonSubmitLogic(false)
+const handleSaveDraft = () => commonSubmitLogic(true)
+
 </script>
+
+<style scoped>
+.required-label::after {
+    content: ' *';
+    color: #dc2626;
+    margin-left: 2px;
+}
+
+.form-input,
+.form-textarea {
+    @apply block w-full rounded-lg border-gray-300 shadow-sm p-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0 disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors duration-150;
+}
+.form-file-input {
+    @apply block w-full text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border file:border-gray-200 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed;
+}
+.form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1.5;
+}
+
+.btn {
+    @apply inline-flex items-center justify-center rounded-lg border py-2.5 px-5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed;
+}
+.btn-primary {
+    @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
+}
+.btn-outline {
+    @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500;
+}
+
+.section-header {
+    @apply flex items-start py-5 px-6 md:px-8 bg-gray-50;
+}
+.form-section:first-child > .section-header {
+    @apply rounded-t-2xl;
+}
+.section-content {
+    @apply p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6;
+}
+</style>

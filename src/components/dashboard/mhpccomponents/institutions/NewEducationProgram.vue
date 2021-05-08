@@ -1,250 +1,257 @@
 <template>
-  <div class="p-8 rounded-xl">
-    <h2 class="text-3xl font-bold text-gray-800 mb-8">New Educational Programme Application</h2>
+    <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-gray-50 min-h-screen">
+        <InstituteHeader
+            title="New Educational Programme Application"
+            subtitle="Complete the form to apply for a new educational programme for your institute."
+            :show-actions="false"
+        />
 
-    <!-- Loading state -->
-    <div v-if="isLoading" class="flex justify-center my-8">
-      <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
-      <p class="ml-2 text-gray-600">Loading institute data...</p>
-    </div>
-
-    <!-- Error state -->
-    <div
-      v-else-if="apiError"
-      class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6"
-    >
-      <p class="font-medium">{{ errorMessage }}</p>
-      <p class="mt-2">Please try again later or contact support.</p>
-    </div>
-
-    <!-- No institute found -->
-    <div
-      v-else-if="!userInstitute && !isLoading"
-      class="bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-lg mb-6"
-    >
-      <p class="font-medium">No institute information found</p>
-      <p class="mt-2">
-        Please ensure you have registered your institute before applying for a new educational
-        program.
-      </p>
-    </div>
-
-    <!-- Form -->
-    <form v-else @submit.prevent="handleSubmit" class="space-y-8">
-      <!-- Proponent Details -->
-      <section class="p-6 bg-white rounded-lg shadow">
-        <h3 class="text-2xl font-semibold text-gray-700 mb-6">Proponent Details</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-600"> Training Institute Name </label>
-            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
-              {{ userInstitute.name_of_institution }}
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-600"> Country </label>
-            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
-              {{ userInstitute.country }}
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-600"> Dzongkhag/Throme </label>
-            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
-              {{ userInstitute.dzongkhag }}
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-600"> City/Gewog </label>
-            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
-              {{ userInstitute.gewog }}
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-600"> Address/Location </label>
-            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
-              {{ userInstitute.address }}
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-600"> Contact No. </label>
-            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
-              {{ userInstitute.contact_no }}
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-600"> Email Address </label>
-            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
-              {{ userInstitute.email_address }}
-            </div>
-          </div>
+        <div v-if="isLoading" class="flex flex-col items-center justify-center min-h-[400px] mt-8">
+            <Loader class="animate-spin text-indigo-600 w-10 h-10" />
+            <p class="mt-4 text-lg font-medium text-gray-700">Loading institute data...</p>
         </div>
-      </section>
 
-      <!-- Head of Institution Details -->
-      <section class="p-6 bg-white rounded-lg shadow">
-        <h3 class="text-2xl font-semibold text-gray-700 mb-6">Head of Institution Details</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-600"> Name </label>
-            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
-              {{ userInstitute.head_of_institution_name }}
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-600"> Mobile Number </label>
-            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
-              {{ userInstitute.head_of_institution_phone_number }}
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-600"> Email Address </label>
-            <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
-              {{ userInstitute.head_of_institution_email }}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Website -->
-      <section class="p-6 bg-white rounded-lg shadow">
-        <h3 class="text-2xl font-semibold text-gray-700 mb-6">Website</h3>
-        <div>
-          <label class="block text-sm font-medium text-gray-600"> Website </label>
-          <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
-            {{ userInstitute.website }}
-          </div>
-        </div>
-      </section>
-
-      <!-- Proposal Details - Editable by user -->
-      <section class="p-6 bg-white rounded-lg shadow">
-        <h3 class="text-2xl font-semibold text-gray-700 mb-6">Proposal Details</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-          <div>
-            <label for="proposalTitle" class="block text-sm font-medium text-gray-600">
-              Proposal Title <span class="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              id="proposalTitle"
-              v-model="formData.course_title"
-              required
-              class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-            <p v-if="validationErrors.course_title" class="mt-1 text-sm text-red-600">
-              {{ validationErrors.course_title }}
-            </p>
-          </div>
-          <div>
-            <label for="duration" class="block text-sm font-medium text-gray-600">
-              Duration (in months) <span class="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              id="duration"
-              v-model.number="formData.duration_in_months"
-              required
-              min="1"
-              class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-            <p v-if="validationErrors.duration_in_months" class="mt-1 text-sm text-red-600">
-              {{ validationErrors.duration_in_months }}
-            </p>
-          </div>
-          <div>
-            <label for="commencementDate" class="block text-sm font-medium text-gray-600">
-              Commencement Date <span class="text-red-500">*</span>
-            </label>
-            <input
-              type="date"
-              id="commencementDate"
-              v-model="formData.commencement_date"
-              required
-              class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-            <p v-if="validationErrors.commencement_date" class="mt-1 text-sm text-red-600">
-              {{ validationErrors.commencement_date }}
-            </p>
-          </div>
-          <div>
-            <label for="attachments" class="block text-sm font-medium text-gray-600">
-              Attachments (if any)
-            </label>
-            <input
-              type="file"
-              id="attachments"
-              @change="handleFileUpload"
-              class="mt-2 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-            />
-            <p class="mt-1 text-sm text-gray-500">You can attach relevant documents here.</p>
-            <p v-if="selectedFileName" class="mt-1 text-sm text-green-600">
-              Selected: {{ selectedFileName }}
-            </p>
-          </div>
-        </div>
-        <div class="mt-6">
-          <label for="remarks" class="block text-sm font-medium text-gray-600"> Remarks </label>
-          <textarea
-            id="remarks"
-            v-model="formData.remarks"
-            rows="3"
-            class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          ></textarea>
-        </div>
-      </section>
-
-      <!-- Declaration -->
-      <div class="flex items-start p-6 bg-white rounded-lg shadow">
-        <div class="flex items-center h-5">
-          <input
-            id="declaration"
-            aria-describedby="declaration-description"
-            type="checkbox"
-            v-model="formData.ins_declaration"
-            required
-            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-          />
-        </div>
-        <div class="ml-3 text-sm">
-          <label for="declaration" class="font-medium text-gray-700"
-            >Declaration <span class="text-red-500">*</span></label
-          >
-          <p id="declaration-description" class="text-gray-500">
-            I hereby declare that the information provided above is true and correct to the best of
-            my knowledge.
-          </p>
-        </div>
-      </div>
-
-      <!-- Buttons -->
-      <div class="flex justify-end space-x-4 p-6 bg-white rounded-lg shadow">
-        <button
-          type="button"
-          class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-          @click="handleCancel"
+        <div
+            v-else-if="apiError || (!userInstitute && !isLoading)"
+            class="mt-8 text-center py-16 rounded-2xl border shadow-sm"
+            :class="apiError ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'"
         >
-          Cancel
-        </button>
-        <button
-          type="button"
-          class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-300"
-          @click="handleSaveDraft"
-          :disabled="isSubmitting"
+            <InformationCircleIcon
+                v-if="!userInstitute"
+                class="mx-auto h-12 w-12"
+                :class="apiError ? 'text-red-400' : 'text-yellow-400'"
+            />
+            <ExclamationTriangleIcon v-else class="mx-auto h-12 w-12 text-red-400" />
+            <h3
+                class="mt-2 text-lg font-medium"
+                :class="apiError ? 'text-red-900' : 'text-yellow-900'"
+            >
+                {{ apiError ? 'Error Loading Data' : 'Institute Information Not Found' }}
+            </h3>
+            <p class="mt-1 text-sm" :class="apiError ? 'text-red-700' : 'text-yellow-700'">
+                {{ errorMessage }}
+            </p>
+            <p v-if="!userInstitute && !apiError" class="mt-1 text-sm text-yellow-700">
+                Please ensure your institute is registered before applying for a new educational
+                programme.
+            </p>
+        </div>
+
+        <form
+            v-else
+            @submit.prevent="handleSubmit"
+            class="mt-8 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden"
         >
-          Save as Draft
-        </button>
-        <button
-          type="submit"
-          :disabled="isSubmitting || !formData.ins_declaration"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          :class="{ 'opacity-50 cursor-not-allowed': isSubmitting || !formData.ins_declaration }"
-        >
-          <span v-if="isSubmitting">Submitting...</span>
-          <span v-else>Submit</span>
-        </button>
-      </div>
-    </form>
-  </div>
+            <div class="form-section">
+                <div class="section-header">
+                    <BuildingOffice2Icon
+                        class="w-6 h-6 text-indigo-700 mr-3 flex-shrink-0"
+                        aria-hidden="true"
+                    />
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Proponent Details</h3>
+                        <p class="mt-1 text-xs text-gray-500">
+                            Information about your registered institute.
+                        </p>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <ReadOnlyField
+                        label="Training Institute Name"
+                        :value="userInstitute.name_of_institution"
+                    />
+                    <ReadOnlyField label="Country" :value="userInstitute.country" />
+                    <ReadOnlyField label="Dzongkhag/Thromde" :value="userInstitute.dzongkhag" />
+                    <ReadOnlyField label="City/Gewog" :value="userInstitute.gewog" />
+                    <ReadOnlyField label="Address/Location" :value="userInstitute.address" />
+                    <ReadOnlyField label="Contact No." :value="userInstitute.contact_no" />
+                    <ReadOnlyField label="Email Address" :value="userInstitute.email_address" />
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-header border-t border-gray-200">
+                    <UserCircleIcon
+                        class="w-6 h-6 text-indigo-700 mr-3 flex-shrink-0"
+                        aria-hidden="true"
+                    />
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            Head of Institution Details
+                        </h3>
+                        <p class="mt-1 text-xs text-gray-500">
+                            Contact information for the head of the institute.
+                        </p>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <ReadOnlyField label="Name" :value="userInstitute.head_of_institution_name" />
+                    <ReadOnlyField
+                        label="Mobile Number"
+                        :value="userInstitute.head_of_institution_phone_number"
+                    />
+                    <ReadOnlyField
+                        label="Email Address"
+                        :value="userInstitute.head_of_institution_email"
+                    />
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-header border-t border-gray-200">
+                    <GlobeAltIcon
+                        class="w-6 h-6 text-indigo-700 mr-3 flex-shrink-0"
+                        aria-hidden="true"
+                    />
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Website</h3>
+                    </div>
+                </div>
+                <div class="section-content md:grid-cols-1">
+                    <ReadOnlyField label="Website" :value="userInstitute.website || 'N/A'" />
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-header border-t border-gray-200">
+                    <DocumentTextIcon
+                        class="w-6 h-6 text-indigo-700 mr-3 flex-shrink-0"
+                        aria-hidden="true"
+                    />
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Proposal Details</h3>
+                        <p class="mt-1 text-xs text-gray-500">
+                            Information about the proposed educational programme.
+                        </p>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div>
+                        <label for="proposalTitle" class="form-label required-label"
+                            >Proposal Title</label
+                        >
+                        <input
+                            type="text"
+                            id="proposalTitle"
+                            v-model="formData.course_title"
+                            required
+                            class="form-input"
+                        />
+                        <p v-if="validationErrors.course_title" class="form-error-message">
+                            {{ validationErrors.course_title }}
+                        </p>
+                    </div>
+                    <div>
+                        <label for="duration" class="form-label required-label"
+                            >Duration (in months)</label
+                        >
+                        <input
+                            type="number"
+                            id="duration"
+                            v-model.number="formData.duration_in_months"
+                            required
+                            min="1"
+                            class="form-input"
+                        />
+                        <p v-if="validationErrors.duration_in_months" class="form-error-message">
+                            {{ validationErrors.duration_in_months }}
+                        </p>
+                    </div>
+                    <div>
+                        <label for="commencementDate" class="form-label required-label"
+                            >Commencement Date</label
+                        >
+                        <input
+                            type="date"
+                            id="commencementDate"
+                            v-model="formData.commencement_date"
+                            required
+                            class="form-input"
+                            :min="todayDate"
+                        />
+                        <p v-if="validationErrors.commencement_date" class="form-error-message">
+                            {{ validationErrors.commencement_date }}
+                        </p>
+                    </div>
+                    <div>
+                        <label for="attachments" class="form-label">Attachments (Optional)</label>
+                        <input
+                            type="file"
+                            id="attachments"
+                            @change="handleFileUpload"
+                            class="form-file-input"
+                        />
+                        <p class="mt-1.5 text-xs text-gray-500">
+                            You can attach relevant documents here.
+                        </p>
+                        <p v-if="selectedFileName" class="mt-1.5 text-xs text-green-600">
+                            Selected: {{ selectedFileName }}
+                        </p>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="remarks" class="form-label">Remarks</label>
+                        <textarea
+                            id="remarks"
+                            v-model="formData.remarks"
+                            rows="3"
+                            class="form-textarea"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-8 border-t border-gray-200">
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input
+                            id="declaration"
+                            type="checkbox"
+                            v-model="formData.ins_declaration"
+                            required
+                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                        />
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="declaration" class="font-medium text-gray-700 required-label"
+                            >Declaration</label
+                        >
+                        <p class="text-gray-500 text-xs">
+                            I hereby declare that the information provided above is true and correct
+                            to the best of my knowledge.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="p-6 md:p-8 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row justify-end items-center space-y-3 sm:space-y-0 sm:space-x-4"
+            >
+                <button
+                    type="button"
+                    @click="handleCancel"
+                    class="btn btn-outline w-full sm:w-auto"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    @click="handleSaveDraft"
+                    :disabled="isSubmitting"
+                    class="btn btn-outline border-yellow-400 text-yellow-700 hover:bg-yellow-50 focus:ring-yellow-500 w-full sm:w-auto"
+                >
+                    Save as Draft
+                </button>
+                <button
+                    type="submit"
+                    :disabled="isSubmitting || !formData.ins_declaration"
+                    class="btn btn-primary w-full sm:w-auto"
+                >
+                    <Loader v-if="isSubmitting" class="animate-spin h-5 w-5 mr-2 text-white" />
+                    {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
+                </button>
+            </div>
+        </form>
+    </div>
 </template>
 
 <script setup>
@@ -254,6 +261,16 @@ import { useAuthStore } from '@/stores/authStore'
 import { useToast } from 'vue-toastification'
 import apiServices from '@/services/services'
 import { Loader } from 'lucide-vue-next'
+import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
+import ReadOnlyField from '@/components/common/MHPC/ReadOnlyField.vue' // Assuming you create this
+import {
+    BuildingOffice2Icon,
+    UserCircleIcon,
+    GlobeAltIcon,
+    DocumentTextIcon,
+    InformationCircleIcon,
+    ExclamationTriangleIcon,
+} from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -269,185 +286,199 @@ const selectedFileName = ref('')
 const selectedFile = ref(null)
 
 const formData = ref({
-  course_title: '',
-  duration_in_months: null,
-  commencement_date: '',
-  institute_attachments: null,
-  remarks: '',
-  ins_declaration: false,
-  ins_renewal_review_name: '',
-  ins_review_summary: '',
-  ins_report: '',
-  ins_review_decision: 'Pending',
-  ins_reason_if_rejected: '',
-  ins_remarks: '',
-  is_active: true,
-  institute: null,
-  institute_name: '',
+    course_title: '',
+    duration_in_months: null,
+    commencement_date: '',
+    institute_attachments: null,
+    remarks: '',
+    ins_declaration: false,
+    ins_renewal_review_name: '',
+    ins_review_summary: '',
+    ins_report: '',
+    ins_review_decision: 'Pending',
+    ins_reason_if_rejected: '',
+    ins_remarks: '',
+    is_active: true,
+    institute: null,
+    institute_name: '',
 })
 
-const userCid = computed(() => {
-  return authStore.user?.cid || ''
+const userCid = computed(() => authStore.user?.cid || '')
+
+const todayDate = computed(() => {
+    const today = new Date()
+    return today.toISOString().split('T')[0]
 })
 
 const fetchInstituteData = async () => {
-  if (!userCid.value) {
-    errorMessage.value = 'User information not available. Please log in again.'
-    apiError.value = true
-    isLoading.value = false
-    return
-  }
-
-  isLoading.value = true
-  apiError.value = false
-
-  try {
-    const response = await apiServices.getMhpcInstitutes()
-
-    if (response && response.data && response.data.results) {
-      const userInstitutes = response.data.results.filter(
-        (institute) => institute.CID.toLowerCase() === userCid.value.toLowerCase(),
-      )
-
-      if (userInstitutes.length > 0) {
-        userInstitute.value = userInstitutes[0]
-        formData.value.institute = userInstitute.value.id
-        formData.value.institute_name = userInstitute.value.name_of_institution
-      } else {
-        errorMessage.value =
-          'No institute found for your CID. Please register your institute first.'
+    if (!userCid.value) {
+        errorMessage.value = 'User information not available. Please log in again.'
         apiError.value = true
-      }
-    } else {
-      errorMessage.value = 'Unable to retrieve institute data.'
-      apiError.value = true
+        isLoading.value = false
+        return
     }
-  } catch (error) {
-    console.error('Error fetching institute data:', error)
-    errorMessage.value =
-      error.response?.data?.message || 'Error fetching institute data. Please try again.'
-    apiError.value = true
-  } finally {
-    isLoading.value = false
-  }
+    isLoading.value = true
+    apiError.value = false
+    errorMessage.value = ''
+    try {
+        const response = await apiServices.getMhpcInstitutes({ params: { CID: userCid.value } })
+        if (response.data?.results?.length > 0) {
+            userInstitute.value = response.data.results[0]
+            formData.value.institute = userInstitute.value.id
+            formData.value.institute_name = userInstitute.value.name_of_institution
+        } else {
+            errorMessage.value =
+                'No institute found for your CID. Please register your institute first.'
+            userInstitute.value = null
+        }
+    } catch (error) {
+        console.error('Error fetching institute data:', error)
+        errorMessage.value =
+            error.response?.data?.message || 'Error fetching institute data. Please try again.'
+        apiError.value = true
+    } finally {
+        isLoading.value = false
+    }
 }
 
 const handleFileUpload = (event) => {
-  const file = event.target.files[0]
-  if (file) {
-    selectedFile.value = file
-    selectedFileName.value = file.name
-  } else {
-    selectedFile.value = null
-    selectedFileName.value = ''
-  }
+    const file = event.target.files[0]
+    if (file) {
+        selectedFile.value = file
+        selectedFileName.value = file.name
+        formData.value.institute_attachments = file
+    } else {
+        selectedFile.value = null
+        selectedFileName.value = ''
+        formData.value.institute_attachments = null
+    }
 }
 
 const validateForm = () => {
-  const errors = {}
+    const errors = {}
+    if (!formData.value.course_title.trim()) errors.course_title = 'Proposal title is required'
+    if (!formData.value.duration_in_months || formData.value.duration_in_months <= 0)
+        errors.duration_in_months = 'Duration must be a positive number'
+    if (!formData.value.commencement_date)
+        errors.commencement_date = 'Commencement date is required'
+    else if (new Date(formData.value.commencement_date) < new Date(todayDate.value))
+        errors.commencement_date = 'Commencement date cannot be in the past'
 
-  if (!formData.value.course_title.trim()) {
-    errors.course_title = 'Proposal title is required'
-  }
+    validationErrors.value = errors
+    return Object.keys(errors).length === 0
+}
 
-  if (!formData.value.duration_in_months || formData.value.duration_in_months <= 0) {
-    errors.duration_in_months = 'Duration must be a positive number'
-  }
-
-  if (!formData.value.commencement_date) {
-    errors.commencement_date = 'Commencement date is required'
-  }
-
-  validationErrors.value = errors
-  return Object.keys(errors).length === 0
+const prepareFormData = (isDraft = false) => {
+    const submissionData = new FormData()
+    Object.keys(formData.value).forEach((key) => {
+        if (key === 'institute_attachments' && selectedFile.value) {
+            submissionData.append(key, selectedFile.value)
+        } else if (
+            key !== 'institute_attachments' &&
+            formData.value[key] !== null &&
+            formData.value[key] !== undefined
+        ) {
+            submissionData.append(key, formData.value[key])
+        }
+    })
+    if (isDraft) {
+        submissionData.set('ins_review_decision', 'Draft')
+    } else {
+        submissionData.set('ins_review_decision', 'Pending')
+    }
+    submissionData.set('duration_in_months', Number(formData.value.duration_in_months) || 0)
+    return submissionData
 }
 
 const handleSubmit = async () => {
-  if (!validateForm()) {
-    toast.error('Please correct the errors in the form')
-    return
-  }
-
-  if (!formData.value.ins_declaration) {
-    toast.error('Please accept the declaration')
-    return
-  }
-
-  isSubmitting.value = true
-
-  try {
-    const submissionData = new FormData()
-
-    Object.keys(formData.value).forEach((key) => {
-      if (key !== 'institute_attachments') {
-        submissionData.append(key, formData.value[key])
-      }
-    })
-
-    submissionData.set('duration_in_months', Number(formData.value.duration_in_months))
-
-    if (selectedFile.value) {
-      submissionData.append('institute_attachments', selectedFile.value)
+    if (!validateForm() || !formData.value.ins_declaration) {
+        toast.error(
+            !formData.value.ins_declaration
+                ? 'Please accept the declaration'
+                : 'Please correct the errors in the form'
+        )
+        return
     }
-
-    await apiServices.createMhpcCourseDetail(submissionData)
-
-    toast.success('Educational programme application submitted successfully!')
-
-    router.push('/mhpc/course-applications')
-  } catch (error) {
-    console.error('Error submitting form:', error)
-
-    if (error.response?.data?.errors) {
-      validationErrors.value = error.response.data.errors
-      toast.error('Please correct the errors in the form')
-    } else {
-      toast.error(
-        error.response?.data?.message || 'Failed to submit application. Please try again.',
-      )
+    isSubmitting.value = true
+    try {
+        const submissionData = prepareFormData(false)
+        await apiServices.createMhpcCourseDetail(submissionData)
+        toast.success('Educational programme application submitted successfully!')
+        router.push('/mhpc/course-applications')
+    } catch (error) {
+        console.error('Error submitting form:', error.response || error)
+        validationErrors.value = error.response?.data?.errors || {}
+        toast.error(
+            error.response?.data?.message || 'Failed to submit application. Please try again.'
+        )
+    } finally {
+        isSubmitting.value = false
     }
-  } finally {
-    isSubmitting.value = false
-  }
 }
 
 const handleSaveDraft = async () => {
-  try {
     isSubmitting.value = true
-
-    const draftData = new FormData()
-
-    Object.keys(formData.value).forEach((key) => {
-      if (key !== 'institute_attachments') {
-        draftData.append(key, formData.value[key])
-      }
-    })
-
-    draftData.append('ins_review_decision', 'Draft')
-
-    draftData.set('duration_in_months', Number(formData.value.duration_in_months))
-
-    if (selectedFile.value) {
-      draftData.append('institute_attachments', selectedFile.value)
+    try {
+        const draftData = prepareFormData(true)
+        await apiServices.createMhpcCourseDetail(draftData)
+        toast.success('Draft saved successfully!')
+    } catch (error) {
+        console.error('Error saving draft:', error.response || error)
+        toast.error(error.response?.data?.message || 'Failed to save draft. Please try again.')
+    } finally {
+        isSubmitting.value = false
     }
-    await apiServices.createMhpcCourseDetail(draftData)
-
-    toast.success('Draft saved successfully!')
-  } catch (error) {
-    console.error('Error saving draft:', error)
-    toast.error(error.response?.data?.message || 'Failed to save draft. Please try again.')
-  } finally {
-    isSubmitting.value = false
-  }
 }
 
 const handleCancel = () => {
-  router.go(-1)
+    router.go(-1)
 }
 
 onMounted(fetchInstituteData)
 </script>
 
 <style scoped>
-/* Component-specific styles */
+.form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1.5;
+}
+.required-label::after {
+    content: ' *';
+    color: #dc2626;
+    margin-left: 2px;
+}
+.form-input,
+.form-select,
+.form-textarea {
+    @apply block w-full rounded-lg border-gray-300 shadow-sm p-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0 disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors duration-150;
+}
+.form-file-input {
+    @apply block w-full text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border file:border-gray-200 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed;
+}
+.form-error-message {
+    @apply mt-1.5 text-xs text-red-600;
+}
+
+.readonly-field-container {
+    @apply mt-1;
+}
+.readonly-field-value {
+    @apply block w-full px-3 py-2.5 bg-gray-100 border border-gray-200 rounded-md shadow-sm sm:text-sm text-gray-700;
+}
+
+.btn {
+    @apply inline-flex items-center justify-center rounded-lg border py-2.5 px-5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed;
+}
+.btn-primary {
+    @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
+}
+.btn-outline {
+    @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500;
+}
+
+.section-header {
+    @apply flex items-start py-5 px-6 md:px-8 bg-gray-50;
+}
+.section-content {
+    @apply p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6;
+}
 </style>
