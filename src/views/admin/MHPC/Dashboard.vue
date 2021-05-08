@@ -83,6 +83,7 @@ import EducationPrograms from '@/components/dashboard/mhpccomponents/dealingOffi
 import InstituteProfiles from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/InstituteProfiles.vue'
 import InstituteRenewals from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/InstituteRenewals.vue'
 import TeachingHospitalRenewals from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/TeachingHospitalRenewals.vue'
+import Complaints from '@/components/dashboard/mhpccomponents/dealingOfficer/Complaints.vue'
 
 //MHPC masters components
 import MastersCpdActivities from '@/components/dashboard/mhpccomponents/admin/MastersCpdActivities.vue'
@@ -279,6 +280,8 @@ const bmhDealingOfficerComponent = computed(() => {
       return TeachingHospitalRenewals
     case path.endsWith('/health_certification/institute_profiles'):
       return InstituteProfiles
+    case path.endsWith('/health_certification/complaints'):
+      return Complaints
     default:
       return null
   }

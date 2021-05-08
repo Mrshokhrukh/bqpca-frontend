@@ -965,6 +965,11 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/counselor_application`,
       },
       {
+        name: 'Complaints',
+        icon: getIconComponent('ClipboardCheck'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/complaints`,
+      },
+      {
         name: 'Reports',
         icon: getIconComponent('ClipboardCheck'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,

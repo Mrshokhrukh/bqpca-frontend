@@ -282,6 +282,7 @@ export default {
       institute_renewals: mhpcDashboard,
       teaching_hospital_renewals: mhpcDashboard,
       institute_profiles: mhpcDashboard,
+      complaints: mhpcDashboard,
     },
   },
   chief: {

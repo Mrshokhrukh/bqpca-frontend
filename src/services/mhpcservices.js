@@ -747,4 +747,33 @@ export default {
   deleteMhpcCpdTaskParticipant(id) {
     return apiClient.delete(`/mhpc/mhpc-cpd-task-participants/${id}/`)
   },
+   // --- Complaint Management Endpoints ---
+   getComplaints(params = {}) {
+    return apiClient.get('/mhpc/complaints/', { params });
+  },
+
+  getComplaintDetails(complaintId) {
+    return apiClient.get(`/mhpc/complaints/${complaintId}/`);
+  },
+
+  updateComplaint(complaintId, data) {
+    return apiClient.patch(`/mhpc/complaints/${complaintId}/`, data);
+  },
+
+  searchProfessionals(query) {
+    return apiClient.get('/mhpc/personnel/search/', { params: { q: query } });
+  },
+
+  getComplaintMasterStatuses() {
+
+    return apiClient.get('/mhpc/masters-complaint-statuses/');
+},
+  submitMhpcComplaint(formData) {
+    return apiClient.post('/mhpc/complaints/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
 }
