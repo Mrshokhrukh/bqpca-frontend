@@ -59,10 +59,7 @@
             <div
                 v-for="center in filteredTeachingCenters"
                 :key="center.id"
-                :class="[
-                    'bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden hover:border-indigo-300 hover:shadow-lg transition-all duration-300',
-                    getStatusBorderClass(center),
-                ]"
+                class="bg-white rounded-2xl shadow-md hover:shadow-lg border border-gray-200 overflow-hidden transition-all duration-300"
             >
                 <div class="p-6 md:p-8">
                     <div class="flex items-start justify-between flex-wrap gap-4 mb-6">
@@ -490,16 +487,7 @@ const isRenewal = (center) => {
     const diffInMilliseconds = today - firstValidSince
     const diffInDays = diffInMilliseconds / (1000 * 60 * 60 * 24)
 
-    return diffInDays > 30 // If it's been valid for more than 30 days, consider it potentially in a renewal cycle
-}
-
-const getStatusBorderClass = (center) => {
-    if (!center.is_active) return 'border-l-4 border-yellow-500'
-    const daysLeft = getDaysUntilExpiration(center)
-    if (daysLeft <= 0) return 'border-l-4 border-red-500'
-    if (daysLeft <= 30) return 'border-l-4 border-orange-500'
-    if (daysLeft <= 90) return 'border-l-4 border-yellow-500'
-    return 'border-l-4 border-green-500'
+    return diffInDays > 30
 }
 
 const getExpirationTextClass = (center) => {
