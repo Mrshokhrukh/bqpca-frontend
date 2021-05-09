@@ -60,17 +60,6 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
     )
   })
 
-  const isInReregistrationPeriod = computed(() => {
-    const application = currentUserApplication.value
-    if (!application?.expiry_date || !hasApprovedQualification.value) return false
-
-    const expiryDate = new Date(application.expiry_date)
-    const today = new Date()
-    const monthsSinceExpiry = (today - expiryDate) / (1000 * 60 * 60 * 24 * 30)
-
-    return monthsSinceExpiry > 0 && monthsSinceExpiry <= 2
-  })
-
   const hasPendingRenewalApplication = computed(() => {
     if (!applicationDetails.value?.results || applicationDetails.value.results.length === 0) {
       return false
@@ -110,8 +99,7 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
           applyForCertification: true,
           myApplications: false,
           renewal: false,
-          reRegistration: false,
-          additionalQualification: false, // Add it here, initially false
+          additionalQualification: false,
         },
         hasRenewalInProgress: false,
       }
@@ -131,8 +119,7 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
           applyForCertification: true,
           myApplications: true,
           renewal: false,
-          reRegistration: false,
-          additionalQualification: false, // Also false here
+          additionalQualification: false,
         },
         hasRenewalInProgress: false,
       }
@@ -152,8 +139,7 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
         applyForCertification: true,
         myApplications: true,
         renewal: false,
-        reRegistration: false,
-        additionalQualification: true, // Set to true when approved!
+        additionalQualification: true,
       }
 
       // 4. Renewal Period:
@@ -167,17 +153,13 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
         }
       }
 
-      // 5. Re-registration Period:
-      if (isInReregistrationPeriod.value) {
-        certificationSubMenus.reRegistration = true
-      }
-
       return {
         baseMenus,
         certificationSubMenus,
         hasRenewalInProgress: hasPendingRenewalApplication.value,
       }
     }
+
     //default menus incase of an error
     return {
       baseMenus: {
@@ -191,8 +173,7 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
         applyForCertification: false,
         myApplications: false,
         renewal: false,
-        reRegistration: false,
-        additionalQualification: false, // Add it here
+        additionalQualification: false,
       },
       hasRenewalInProgress: false,
     }
@@ -244,7 +225,6 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
     hasSubmittedApplication,
     hasApprovedQualification,
     isRenewalPeriod,
-    isInReregistrationPeriod,
     hasPendingRenewalApplication,
     visibleMenus,
 

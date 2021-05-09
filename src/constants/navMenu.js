@@ -673,13 +673,6 @@ const serviceSpecificMenuItems = {
             })
           }
 
-          if (store.visibleMenus.certificationSubMenus.reRegistration) {
-            items.push({
-              name: 'Re-Registration',
-              route: (serviceType) => `/admin/user/${serviceType}/reregistration`,
-            })
-          }
-
           if (store.visibleMenus.certificationSubMenus.additionalQualification) {
             items.push({
               name: 'Additional Qualification',
