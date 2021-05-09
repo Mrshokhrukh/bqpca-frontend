@@ -586,7 +586,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, defineProps, defineEmits } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import {
     XIcon,
     UserIcon,
