@@ -7,73 +7,33 @@
 
     <div class="bg-white border rounded-xl shadow-lg p-6">
       <ApplicantDetailsForm :applicant="applicant" />
-      <ApplicationDetailsForm
-        :application="application"
-        :handle-approval-letter-upload="handleApprovalLetterUpload"
-        @approval-change="toggleApprovedFields"
-      />
-      <CpdProviderForm
-        :cpd-provider="cpdProvider"
-        :agency-options="agencyOptions"
-        :reason-options="reasonOptions"
-      />
+      <ApplicationDetailsForm :application="application" :handle-approval-letter-upload="handleApprovalLetterUpload"
+        @approval-change="toggleApprovedFields" />
+      <CpdProviderForm :cpd-provider="cpdProvider" :agency-options="agencyOptions" :reason-options="reasonOptions" />
       <!-- Pass userRegistrations to ResourcePersonsForm -->
-      <ResourcePersonsForm
-        :resource-persons="resourcePersons"
-        :resource-person-certificate="resourcePersonCertificate"
-        :fetch-resource-person-details="fetchResourcePersonDetails"
-        :handle-certificate-upload="handleCertificateUpload"
-        :add-resource-person="addResourcePerson"
-        :remove-resource-person="removeResourcePerson"
-        :user-registrations="userRegistrations"
-      />
-      <TeachingLearningMethodForm
-        :teaching-method="teachingMethod"
-        :cpd-type-options="cpdTypeOptions"
-        :methodology-options="methodologyOptions"
-        :selected-methodologies="selectedMethodologies"
-        :teaching-methods="teachingMethods"
-        :total-hours="totalHours"
-        :calculated-credits="calculatedCredits"
-        :course-document="courseDocument"
-        :handle-course-document-upload="handleCourseDocumentUpload"
-        :add-teaching-method="addTeachingMethod"
-        :remove-teaching-method="removeTeachingMethod"
-        :calculate-total-hours="calculateTotalHours"
-      />
-      <ParticipantsDetailsForm
-        :participant-details="participantDetails"
+      <ResourcePersonsForm :resource-persons="resourcePersons" :resource-person-certificate="resourcePersonCertificate"
+        :fetch-resource-person-details="fetchResourcePersonDetails" :handle-certificate-upload="handleCertificateUpload"
+        :add-resource-person="addResourcePerson" :remove-resource-person="removeResourcePerson"
+        :user-registrations="userRegistrations" />
+      <TeachingLearningMethodForm :teaching-method="teachingMethod" :cpd-type-options="cpdTypeOptions"
+        :methodology-options="methodologyOptions" :selected-methodologies="selectedMethodologies"
+        :teaching-methods="teachingMethods" :total-hours="totalHours" :calculated-credits="calculatedCredits"
+        :course-document="courseDocument" :handle-course-document-upload="handleCourseDocumentUpload"
+        :add-teaching-method="addTeachingMethod" :remove-teaching-method="removeTeachingMethod"
+        :calculate-total-hours="calculateTotalHours" />
+      <ParticipantsDetailsForm :participant-details="participantDetails"
         :participation-category-options="participationCategoryOptions"
-        :participant-subcategory-options="participantSubcategoryOptions"
-        :load-subcategories="loadSubcategories"
-        :filtered-subcategories="filteredSubcategories"
-      />
-      <ApprovedCpdForm
-        :is-cpd-approved="isCpdApproved"
-        :participants="participants"
-        :attendance-sheet="attendanceSheet"
-        :handle-attendance-sheet-upload="handleAttendanceSheetUpload"
-        :add-participant="addParticipant"
-        :remove-participant="removeParticipant"
-        :fetch-participant-name="fetchParticipantName"
-        :attachment="attachment"
-        :handle-attachment-upload="handleAttachmentUpload"
-        :application="application"
-      />
-      <FormActions
-        :loading="loading"
-        :save-draft="saveDraft"
-        :handle-submit="handleSubmit"
-        :cancel-form="cancelForm"
-      />
+        :participant-subcategory-options="participantSubcategoryOptions" :load-subcategories="loadSubcategories"
+        :filtered-subcategories="filteredSubcategories" />
+      <ApprovedCpdForm :is-cpd-approved="isCpdApproved" :participants="participants" :attendance-sheet="attendanceSheet"
+        :handle-attendance-sheet-upload="handleAttendanceSheetUpload" :add-participant="addParticipant"
+        :remove-participant="removeParticipant" :fetch-participant-name="fetchParticipantName" :attachment="attachment"
+        :handle-attachment-upload="handleAttachmentUpload" :application="application" />
+      <FormActions :loading="loading" :save-draft="saveDraft" :handle-submit="handleSubmit" :cancel-form="cancelForm" />
     </div>
 
-    <ConfirmationModal
-      :show-confirmation="showConfirmation"
-      :loading="loading"
-      :confirm-submit="confirmSubmit"
-      @update:showConfirmation="showConfirmation = $event"
-    />
+    <ConfirmationModal :show-confirmation="showConfirmation" :loading="loading" :confirm-submit="confirmSubmit"
+      @update:showConfirmation="showConfirmation = $event" />
   </div>
 </template>
 
@@ -695,7 +655,7 @@ const loadDropdownOptions = async () => {
     const cpdTypeResponse = await apiService.getMhpcMastersCpdActivities()
     cpdTypeOptions.value =
       cpdTypeResponse.data?.results.map((type) => ({
-        text: type.cpd_activity_name,
+        text: type.cme_activity_name,
         value: type.id,
       })) || []
 
@@ -727,6 +687,7 @@ const loadDropdownOptions = async () => {
     loading.value = false
   }
 }
+
 
 onMounted(async () => {
   applicant.cidNumber = authStore.user?.cid || ''
