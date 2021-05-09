@@ -13,7 +13,7 @@
         >
         <select
           id="participationCategory"
-          v-model="participantDetails.category"
+          :value="participantDetails.category"
           @change="onCategoryChange"
           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
         >
@@ -35,7 +35,8 @@
         >
         <select
           id="participantSubcategory"
-          v-model="participantDetails.subcategory"
+          :value="participantDetails.subcategory"
+          @change="onSubcategoryChange"
           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
         >
           <option value="">Select Sub-Category</option>
@@ -57,7 +58,8 @@
         <input
           type="number"
           id="numberParticipants"
-          v-model="participantDetails.number"
+          :value="participantDetails.number"
+          @input="onNumberInput"
           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
         />
       </div>
@@ -69,7 +71,8 @@
         </label>
         <textarea
           id="relevanceProfession"
-          v-model="participantDetails.relevance"
+          :value="participantDetails.relevance"
+          @input="onRelevanceInput"
           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
           rows="4"
         ></textarea>
@@ -79,7 +82,6 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
   participantDetails: Object,
@@ -88,13 +90,17 @@ const props = defineProps({
   loadSubcategories: Function,
   filteredSubcategories: Array,
 })
+const emit = defineEmits(['update:category', 'update:participantDetails'])
 
-const emit = defineEmits(['update:category'])
-
-const onCategoryChange = () => {
-  // Reset subcategory when parent category changes
-  props.participantDetails.subcategory = ''
+const onCategoryChange = (event) => {
+  // Emit event to update category and reset subcategory in parent
+  emit('update:participantDetails', {
+    ...props.participantDetails,
+    category: event.target.value,
+    subcategory: ''
+  })
   // Call the parent's loadSubcategories function
   props.loadSubcategories()
+
 }
 </script>

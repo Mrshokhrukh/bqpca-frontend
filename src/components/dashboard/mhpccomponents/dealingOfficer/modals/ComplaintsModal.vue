@@ -1,9 +1,9 @@
-<!-- ComplaintManageModal.vue -->
+```vue
 <template>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModal" class="relative z-10"> <!-- Main modal z-10 -->
       <TransitionChild
-        as="template"
+        as="div"
         enter="duration-300 ease-out"
         enter-from="opacity-0"
         enter-to="opacity-100"
@@ -17,7 +17,7 @@
       <div class="fixed inset-0 overflow-y-auto">
         <div class="flex min-h-full items-center justify-center p-4 text-center">
           <TransitionChild
-            as="template"
+            as="div"
             enter="duration-300 ease-out"
             enter-from="opacity-0 scale-95"
             enter-to="opacity-100 scale-100"
@@ -25,7 +25,7 @@
             leave-from="opacity-100 scale-100"
             leave-to="opacity-0 scale-95"
           >
-            <DialogPanel class="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+            <DialogPanel class="w-full transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
               <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
                 Manage Complaint: {{ localFormData.complaint_id }}
               </DialogTitle>
@@ -34,7 +34,7 @@
                 <p class="text-gray-500">Loading complaint details...</p>
               </div>
               <div v-else class="mt-4 space-y-6">
-                <!-- Original Complaint Details (Unchanged) -->
+                <!-- Original Complaint Details -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <strong class="block text-gray-700">Complainant:</strong>
@@ -48,7 +48,7 @@
                     <strong class="block text-gray-700">Initially Reported Professional:</strong>
                     <p class="text-gray-600">{{ localFormData.professional_name || 'N/A' }} ({{ localFormData.professional_designation || 'N/A' }})</p>
                   </div>
-                   <div>
+                  <div>
                     <strong class="block text-gray-700">Workplace (Initially Reported):</strong>
                     <p class="text-gray-600">{{ localFormData.professional_workplace || 'N/A' }}</p>
                   </div>
@@ -63,19 +63,19 @@
                   <div class="md:col-span-2">
                     <strong class="block text-gray-700">Grievance Details:</strong>
                     <p class="text-gray-600 bg-gray-50 p-2 rounded border max-h-40 overflow-y-auto">
-                        {{ localFormData.grievance_details }}
+                      {{ localFormData.grievance_details }}
                     </p>
                   </div>
                   <div v-if="localFormData.attachment" class="md:col-span-2">
                     <strong class="block text-gray-700">Attachment:</strong>
                     <a :href="localFormData.attachment" target="_blank" class="text-blue-600 hover:underline">
-                        View Attachment
+                      View Attachment
                     </a>
                   </div>
                 </div>
                 <hr/>
 
-                <!-- Fields for Dealing Officer to Update (Unchanged) -->
+                <!-- Fields for Dealing Officer to Update -->
                 <div>
                   <label for="modal-status" class="block text-sm font-medium text-gray-700">Update Status:</label>
                   <select
@@ -90,7 +90,7 @@
                   </select>
                 </div>
 
-                <!-- Manage Professionals Implicated in Complaint Section (MODIFIED) -->
+                <!-- Manage Professionals Implicated in Complaint Section -->
                 <div class="space-y-3">
                   <div class="flex justify-between items-center">
                     <label class="block text-sm font-medium text-gray-700">Professionals Implicated in Complaint:</label>
@@ -98,21 +98,21 @@
                       type="button"
                       @click="openProfessionalPickerModal"
                       class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                      Manage Implicated
+                    >Assign Professionals
+
                     </button>
                   </div>
 
                   <!-- Display Implicated Professionals -->
                   <div v-if="localFormData.implicated_professionals_list && localFormData.implicated_professionals_list.length > 0" class="mt-1">
-                     <p class="text-xs text-gray-500 mb-1">
-                        {{ localFormData.implicated_professionals_list.length }} professional(s) implicated.
+                    <p class="text-xs text-gray-500 mb-1">
+                      {{ localFormData.implicated_professionals_list.length }} professional(s) implicated.
                     </p>
                     <ul class="space-y-1 max-h-48 overflow-y-auto border rounded-md p-2">
                       <li
                         v-for="(implicatedProf, index) in localFormData.implicated_professionals_list"
                         :key="implicatedProf.id"
-                        class="flex justify-between items-center p-1.5 bg-gray-50 rounded-md text-sm "
+                        class="flex justify-between items-center p-1.5 bg-gray-50 rounded-md text-sm"
                       >
                         <div>
                           <span class="font-medium">{{ implicatedProf.name }}</span>
@@ -137,7 +137,7 @@
                 </div>
                 <!-- End Manage Implicated Professionals Section -->
 
-                <!-- Remarks (Unchanged) -->
+                <!-- Remarks -->
                 <div>
                   <label for="modal-remarks" class="block text-sm font-medium text-gray-700">Internal Remarks/Notes:</label>
                   <textarea
@@ -151,7 +151,7 @@
               </div>
 
               <div class="mt-6 flex justify-end space-x-3">
-                 <button
+                <button
                   type="button"
                   class="inline-flex justify-center rounded-md border border-transparent bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
                   @click="closeModal"
@@ -174,7 +174,7 @@
     </Dialog>
   </TransitionRoot>
 
-  <!-- Professional Picker Modal (NEW) -->
+  <!-- Professional Picker Modal -->
   <ProfessionalPickerModal
     :is-open="isProfessionalPickerOpen"
     :initially-selected-ids="localFormData.implicated_professionals_list.map(p => p.id)"
@@ -184,7 +184,7 @@
 </template>
 
 <script setup>
-import { ref, watch, defineProps, defineEmits, reactive } from 'vue';
+import { ref, watch,  reactive, onBeforeUnmount } from 'vue';
 import {
   TransitionRoot,
   TransitionChild,
@@ -192,7 +192,6 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@headlessui/vue';
-// Import the new component
 import ProfessionalPickerModal from './ProfessionalPickerModal.vue';
 
 const props = defineProps({
@@ -207,9 +206,9 @@ const localFormData = reactive({
   id: null,
   complaint_id: '',
   grievance_details: '',
-  professional_name: '', // Initially reported professional
-  professional_designation: '', // Initially reported professional
-  professional_workplace: '', // Initially reported professional
+  professional_name: '',
+  professional_designation: '',
+  professional_workplace: '',
   incident_datetime: null,
   created_at: null,
   attachment: null,
@@ -219,29 +218,33 @@ const localFormData = reactive({
   professional_category_name: '',
   status: '',
   remarks: '',
-  implicated_professionals_list: [] // Array of professional objects
+  implicated_professionals_list: []
 });
 
-// State for the professional picker modal
 const isProfessionalPickerOpen = ref(false);
+let isMounted = ref(true); // Track if component is mounted
 
 const openProfessionalPickerModal = () => {
-  isProfessionalPickerOpen.value = true;
+  if (isMounted.value) {
+    isProfessionalPickerOpen.value = true;
+  }
 };
 
-// This function is called when the ProfessionalPickerModal emits 'confirm'
 const handleProfessionalsSelected = (selectedProfessionalsFromPicker) => {
-  // selectedProfessionalsFromPicker is an array of full professional objects
-  localFormData.implicated_professionals_list = [...selectedProfessionalsFromPicker.map(p => ({...p}))]; // Replace list with new selection (ensure copies)
-  isProfessionalPickerOpen.value = false; // Close the picker modal
+  if (isMounted.value) {
+    localFormData.implicated_professionals_list = [...selectedProfessionalsFromPicker.map(p => ({...p}))];
+    isProfessionalPickerOpen.value = false;
+  }
 };
 
 const removeImplicatedProfessional = (index) => {
-  localFormData.implicated_professionals_list.splice(index, 1);
+  if (isMounted.value) {
+    localFormData.implicated_professionals_list.splice(index, 1);
+  }
 };
 
-// Watch for changes in the incoming complaint prop
 watch(() => props.complaint, (newComplaintData) => {
+  if (!isMounted.value) return; // Skip if unmounted
   if (newComplaintData && typeof newComplaintData === 'object' && newComplaintData.id) {
     localFormData.id = newComplaintData.id;
     localFormData.complaint_id = newComplaintData.complaint_id || '';
@@ -258,13 +261,10 @@ watch(() => props.complaint, (newComplaintData) => {
     localFormData.professional_category_name = newComplaintData.professional_category_name || '';
     localFormData.status = newComplaintData.status || '';
     localFormData.remarks = newComplaintData.remarks || '';
-
-    // Initialize implicated_professionals_list from the prop
-    // Assume `newComplaintData.implicated_professionals` is an array of professional objects
     localFormData.implicated_professionals_list = Array.isArray(newComplaintData.implicated_professionals)
-      ? newComplaintData.implicated_professionals.map(p => ({ ...p })) // Store copies
+      ? newComplaintData.implicated_professionals.map(p => ({ ...p }))
       : [];
-  } else if (newComplaintData === null) { // Reset form if complaint is null
+  } else if (newComplaintData === null) {
     Object.keys(localFormData).forEach(key => {
       if (key === 'implicated_professionals_list') {
         localFormData[key] = [];
@@ -277,20 +277,23 @@ watch(() => props.complaint, (newComplaintData) => {
 }, { immediate: true, deep: true });
 
 const closeModal = () => {
-  emit('close');
-  isProfessionalPickerOpen.value = false; // Ensure picker is also closed
+  if (isMounted.value) {
+    emit('close');
+    isProfessionalPickerOpen.value = false;
+  }
 };
 
 const handleUpdate = () => {
-  const updatePayload = {
-    id: localFormData.id,
-    status: localFormData.status,
-    remarks: localFormData.remarks,
-    // Send only IDs of the implicated professionals
-    implicated_professional_ids: localFormData.implicated_professionals_list.map(p => p.id),
-  };
-  console.log('Modal: Emitting update event with payload:', updatePayload);
-  emit('updated', updatePayload);
+  if (isMounted.value) {
+    const updatePayload = {
+      id: localFormData.id,
+      status: localFormData.status,
+      remarks: localFormData.remarks,
+      implicated_professional_ids: localFormData.implicated_professionals_list.map(p => p.id),
+    };
+    console.log('Modal: Emitting update event with payload:', updatePayload);
+    emit('updated', updatePayload);
+  }
 };
 
 const formatDate = (dateString) => {
@@ -304,13 +307,19 @@ const formatDate = (dateString) => {
     return 'Invalid Date';
   }
 };
+
+// Cleanup on unmount
+onBeforeUnmount(() => {
+  isMounted.value = false;
+});
 </script>
 
 <style scoped>
 .max-h-40 {
-  max-height: 10rem; /* 160px */
+  max-height: 10rem;
 }
 .max-h-48 {
-  max-height: 12rem; /* 192px for the list of implicated professionals */
+  max-height: 12rem;
 }
 </style>
+```
