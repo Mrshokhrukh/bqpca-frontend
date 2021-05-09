@@ -469,8 +469,6 @@ import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue' // Import t
 const filters = ref({
   regFrom: '',
   regTo: '',
-  // name: '', // Removed, handled by searchQuery
-  // cid: '', // Removed, handled by searchQuery
   gender: '',
   category: '',
   subCategory: '',
@@ -488,9 +486,15 @@ const fetchUsers = async () => {
   loading.value = true
   try {
     const response = await apiServices.getAllUsers()
-    // Adjust filtering if needed based on your API structure and desired records
-    records.value = response?.data?.results || response?.data || [] // More robust check
-    // Example: Keep only specific roles/types if necessary
+    const allUsers = response?.data?.results || response?.data || [] // Get all users
+
+    // *** ADD THIS LINE TO FILTER BY service_type ***
+    // Filter the users to include only those with service_type 'health_certification'
+    records.value = allUsers.filter(
+      (user) => user.service_type === 'health_certification'
+    )
+    // The commented-out example below was a good starting point,
+    // but we only need to filter by service_type for this specific request.
     // records.value = (response?.data?.results || response?.data || []).filter(
     //   (user) => user.role === 'user' && user.service_type === 'health_certification',
     // )
@@ -509,6 +513,8 @@ onMounted(fetchUsers)
 const filteredRecords = computed(() => {
   if (!Array.isArray(records.value)) return []
 
+  // records.value will now only contain users with service_type: 'health_certification'
+  // The existing filters will apply on top of this pre-filtered list.
   return records.value.filter((record) => {
     // Date filtering (remains the same)
     const regDate = record.registration_date ? new Date(record.registration_date) : null; // Ensure field exists
@@ -533,7 +539,6 @@ const filteredRecords = computed(() => {
     return isDateMatch && isSearchMatch && isGenderMatch && isCategoryMatch && isSubCategoryMatch && isServiceTypeMatch;
   })
 })
-
 
 // --- Methods ---
 

@@ -754,16 +754,16 @@ const serviceSpecificMenuItems = {
           return !store.visibleMenus.baseMenus.profile
         },
       },
-      {
-        name: 'Reports',
-        icon: getIconComponent('FileSearch'),
-        route: (serviceType) => `/admin/user/${serviceType}/reports`,
-        // Assuming Reports should be visible when CPD/COGS is visible
-        hidden: () => {
-          const store = useHealthCertificationStore()
-          return !store.visibleMenus.baseMenus.cpdManagement
-        },
-      },
+      // {
+      //   name: 'Reports',
+      //   icon: getIconComponent('FileSearch'),
+      //   route: (serviceType) => `/admin/user/${serviceType}/reports`,
+      //   // Assuming Reports should be visible when CPD/COGS is visible
+      //   hidden: () => {
+      //     const store = useHealthCertificationStore()
+      //     return !store.visibleMenus.baseMenus.cpdManagement
+      //   },
+      // },
     ],
     admin: [
       {

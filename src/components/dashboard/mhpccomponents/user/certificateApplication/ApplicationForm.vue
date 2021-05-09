@@ -555,7 +555,7 @@ const localFormData = reactive({
   year_of_completion: null,
   is_active: 'False',
   application: null,
-  registration_type: '',
+  registration_type: 1,
 })
 
 const errors = reactive({})
@@ -828,7 +828,7 @@ const handleNext = async () => {
     }
 
     // Add required fields with correct names
-    apiFormData.append('applicant', user.id); 
+    apiFormData.append('applicant', user.id);
     apiFormData.append('registration_type', localFormData.registration_type);
     apiFormData.append('is_draft', 'false');
 
