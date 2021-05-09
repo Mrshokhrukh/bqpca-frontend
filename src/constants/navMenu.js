@@ -91,7 +91,7 @@ const iconMap = {
   GraduationCap,
   Sliders,
 }
-// import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
+import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
 // import { useAuthStore } from '@/stores/authStore'
 // import { useInstitutionStore } from '@/stores/institutionNavigationStore'
 
@@ -634,33 +634,58 @@ const serviceSpecificMenuItems = {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
-        hidden: () => false,
+        hidden: () => {
+          const store = useHealthCertificationStore()
+          return !store.visibleMenus.baseMenus.dashboard
+        },
       },
       {
         name: 'Certification',
         icon: getIconComponent('Certificate'),
-        hidden: () => false,
+        hidden: () => {
+          const store = useHealthCertificationStore()
+          return !store.visibleMenus.baseMenus.certification
+        },
         children: () => {
+          const store = useHealthCertificationStore()
           const items = []
 
-          items.push({
-            name: 'Apply for Certification',
-            route: (serviceType) => `/admin/user/${serviceType}/registration`,
-          })
+          if (store.visibleMenus.certificationSubMenus.applyForCertification) {
+            items.push({
+              name: 'Apply for Certification',
+              route: (serviceType) => `/admin/user/${serviceType}/registration`,
+            })
+          }
 
-          items.push({
-            name: 'Renewal',
-            route: (serviceType) => `/admin/user/${serviceType}/renewal`,
-          })
+          // Always show Track My Applications once application is submitted
+          if (store.visibleMenus.certificationSubMenus.myApplications) {
+            items.push({
+              name: 'Track My Applications',
+              route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+            })
+          }
 
-          items.push({
-            name: 'Additional Qualification',
-            route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
-          })
-          items.push({
-            name: 'Track My Applications',
-            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
-          })
+          if (store.visibleMenus.certificationSubMenus.renewal) {
+            items.push({
+              name: 'Renewal',
+              route: (serviceType) => `/admin/user/${serviceType}/renewal`,
+              badge: store.visibleMenus.hasRenewalInProgress ? 'In Progress' : null,
+            })
+          }
+
+          if (store.visibleMenus.certificationSubMenus.reRegistration) {
+            items.push({
+              name: 'Re-Registration',
+              route: (serviceType) => `/admin/user/${serviceType}/reregistration`,
+            })
+          }
+
+          if (store.visibleMenus.certificationSubMenus.additionalQualification) {
+            items.push({
+              name: 'Additional Qualification',
+              route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
+            })
+          }
 
           return items
         },
@@ -668,7 +693,10 @@ const serviceSpecificMenuItems = {
       {
         name: 'CPD Management',
         icon: getIconComponent('BookOpen'),
-        hidden: () => false,
+        hidden: () => {
+          const store = useHealthCertificationStore()
+          return !store.visibleMenus.baseMenus.cpdManagement
+        },
         children: [
           {
             name: 'Apply for CPD',
@@ -683,7 +711,10 @@ const serviceSpecificMenuItems = {
       {
         name: 'CoGS Management',
         icon: getIconComponent('Users'),
-        hidden: () => false,
+        hidden: () => {
+          const store = useHealthCertificationStore()
+          return !store.visibleMenus.baseMenus.cogsManagement
+        },
         children: [
           {
             name: 'Apply for CoGS',
@@ -698,7 +729,11 @@ const serviceSpecificMenuItems = {
       {
         name: 'Counselor Management',
         icon: getIconComponent('FileText'),
-        hidden: () => false,
+        // Assuming Counselor Management should follow same visibility as CPD/COGS
+        hidden: () => {
+          const store = useHealthCertificationStore()
+          return !store.visibleMenus.baseMenus.cpdManagement
+        },
         children: [
           {
             name: 'Submit Application',
@@ -714,14 +749,20 @@ const serviceSpecificMenuItems = {
         name: 'Profile',
         icon: getIconComponent('Users'),
         route: (serviceType) => `/admin/user/${serviceType}/user_profile`,
-        hidden: () => false,
+        hidden: () => {
+          const store = useHealthCertificationStore()
+          return !store.visibleMenus.baseMenus.profile
+        },
       },
-
       {
         name: 'Reports',
         icon: getIconComponent('FileSearch'),
         route: (serviceType) => `/admin/user/${serviceType}/reports`,
-        hidden: () => false,
+        // Assuming Reports should be visible when CPD/COGS is visible
+        hidden: () => {
+          const store = useHealthCertificationStore()
+          return !store.visibleMenus.baseMenus.cpdManagement
+        },
       },
     ],
     admin: [
