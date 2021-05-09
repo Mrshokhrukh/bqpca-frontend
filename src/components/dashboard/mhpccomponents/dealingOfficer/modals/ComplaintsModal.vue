@@ -1,6 +1,7 @@
+<!-- ComplaintManageModal.vue -->
 <template>
   <TransitionRoot appear :show="isOpen" as="template">
-    <Dialog as="div" @close="closeModal" class="relative z-10">
+    <Dialog as="div" @close="closeModal" class="relative z-10"> <!-- Main modal z-10 -->
       <TransitionChild
         as="template"
         enter="duration-300 ease-out"
@@ -33,7 +34,7 @@
                 <p class="text-gray-500">Loading complaint details...</p>
               </div>
               <div v-else class="mt-4 space-y-6">
-                <!-- Display Original Complaint Details (Mostly Read-Only) -->
+                <!-- Original Complaint Details (Unchanged) -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <strong class="block text-gray-700">Complainant:</strong>
@@ -74,7 +75,7 @@
                 </div>
                 <hr/>
 
-                <!-- Fields for Dealing Officer to Update -->
+                <!-- Fields for Dealing Officer to Update (Unchanged) -->
                 <div>
                   <label for="modal-status" class="block text-sm font-medium text-gray-700">Update Status:</label>
                   <select
@@ -89,61 +90,29 @@
                   </select>
                 </div>
 
-                <!-- Manage Professionals Implicated in Complaint Section -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Manage Professionals Implicated in this Complaint:</label>
-                  <div class="flex space-x-2">
-                    <input
-                      type="text"
-                      v-model="professionalSearchQuery"
-                      @keyup.enter="searchProfessionals"
-                      placeholder="Search by CID or Registration No."
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
-                    />
+                <!-- Manage Professionals Implicated in Complaint Section (MODIFIED) -->
+                <div class="space-y-3">
+                  <div class="flex justify-between items-center">
+                    <label class="block text-sm font-medium text-gray-700">Professionals Implicated in Complaint:</label>
                     <button
                       type="button"
-                      @click="searchProfessionals"
-                      :disabled="isSearchingProfessionals"
-                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                      @click="openProfessionalPickerModal"
+                      class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
-                      {{ isSearchingProfessionals ? 'Searching...' : 'Search' }}
+                      Manage Implicated
                     </button>
                   </div>
 
-                  <!-- Search Results -->
-                  <div v-if="professionalSearchResults.length > 0" class="mt-2 border rounded-md max-h-48 overflow-y-auto">
-                    <ul>
-                      <li
-                        v-for="prof in professionalSearchResults"
-                        :key="prof.id"
-                        class="p-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center text-sm"
-                        @click="addImplicatedProfessional(prof)"
-                      >
-                        <div>
-                          <span class="font-semibold">{{ prof.name }}</span>
-                          <span class="block text-xs text-gray-500">CID: {{ prof.cid }} | Reg No: {{ prof.registration_no }}</span>
-                        </div>
-                        <button
-                          type="button"
-                          class="ml-2 px-2 py-1 text-xs font-medium text-white bg-green-500 hover:bg-green-600 rounded-md"
-                        >
-                          Add to Implicated
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                  <p v-if="professionalSearchAttempted && professionalSearchResults.length === 0 && !isSearchingProfessionals" class="text-sm text-gray-500 mt-1">
-                    No professionals found matching your query.
-                  </p>
-
                   <!-- Display Implicated Professionals -->
-                  <div v-if="localFormData.implicated_professionals_list && localFormData.implicated_professionals_list.length > 0" class="mt-3">
-                    <strong class="block text-xs font-medium text-gray-600 mb-1">Currently Implicated Professionals:</strong>
-                    <ul class="space-y-1">
+                  <div v-if="localFormData.implicated_professionals_list && localFormData.implicated_professionals_list.length > 0" class="mt-1">
+                     <p class="text-xs text-gray-500 mb-1">
+                        {{ localFormData.implicated_professionals_list.length }} professional(s) implicated.
+                    </p>
+                    <ul class="space-y-1 max-h-48 overflow-y-auto border rounded-md p-2">
                       <li
                         v-for="(implicatedProf, index) in localFormData.implicated_professionals_list"
                         :key="implicatedProf.id"
-                        class="flex justify-between items-center p-2 bg-gray-50 rounded-md text-sm border"
+                        class="flex justify-between items-center p-1.5 bg-gray-50 rounded-md text-sm "
                       >
                         <div>
                           <span class="font-medium">{{ implicatedProf.name }}</span>
@@ -152,19 +121,23 @@
                         <button
                           type="button"
                           @click="removeImplicatedProfessional(index)"
-                          class="text-red-500 hover:text-red-700 text-xs font-semibold"
+                          class="text-red-500 hover:text-red-700 text-xs font-semibold p-1 hover:bg-red-100 rounded"
+                          title="Remove from this complaint"
                         >
-                          Remove
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
                         </button>
                       </li>
                     </ul>
                   </div>
-                   <p v-else-if="localFormData.implicated_professionals_list" class="text-sm text-gray-500 mt-1">
-                    No professionals formally implicated in this complaint yet.
+                  <p v-else class="text-sm text-gray-500 mt-1 py-2 px-3 bg-gray-50 rounded-md border">
+                    No professionals formally implicated. Click "Manage Implicated" to add.
                   </p>
                 </div>
                 <!-- End Manage Implicated Professionals Section -->
 
+                <!-- Remarks (Unchanged) -->
                 <div>
                   <label for="modal-remarks" class="block text-sm font-medium text-gray-700">Internal Remarks/Notes:</label>
                   <textarea
@@ -175,11 +148,10 @@
                     placeholder="Add any internal notes or actions taken..."
                   ></textarea>
                 </div>
-
               </div>
 
               <div class="mt-6 flex justify-end space-x-3">
-                <button
+                 <button
                   type="button"
                   class="inline-flex justify-center rounded-md border border-transparent bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
                   @click="closeModal"
@@ -201,6 +173,14 @@
       </div>
     </Dialog>
   </TransitionRoot>
+
+  <!-- Professional Picker Modal (NEW) -->
+  <ProfessionalPickerModal
+    :is-open="isProfessionalPickerOpen"
+    :initially-selected-ids="localFormData.implicated_professionals_list.map(p => p.id)"
+    @close="isProfessionalPickerOpen = false"
+    @confirm="handleProfessionalsSelected"
+  />
 </template>
 
 <script setup>
@@ -212,22 +192,20 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@headlessui/vue';
+// Import the new component
+import ProfessionalPickerModal from './ProfessionalPickerModal.vue';
 
 const props = defineProps({
   isOpen: Boolean,
-  complaint: Object, // This will be the selectedComplaint object
-  // Example: complaint: { ..., implicated_professionals: [{id:'1', name:'X', cid:'Y'}] }
+  complaint: Object,
   complaintStatuses: Array
 });
 
 const emit = defineEmits(['close', 'updated']);
 
 const localFormData = reactive({
-  // Complaint's own ID (PK)
   id: null,
   complaint_id: '',
-
-  // Fields for display (mostly from original complaint)
   grievance_details: '',
   professional_name: '', // Initially reported professional
   professional_designation: '', // Initially reported professional
@@ -239,84 +217,31 @@ const localFormData = reactive({
   submitted_by_email: '',
   submitted_by_contact_number: '',
   professional_category_name: '',
-
-  // Fields for officer to update
   status: '',
   remarks: '',
-  implicated_professionals_list: [] // NEW: Array to hold ALL professionals implicated in the complaint
+  implicated_professionals_list: [] // Array of professional objects
 });
 
-// State for professional search
-const professionalSearchQuery = ref('');
-const professionalSearchResults = ref([]);
-const isSearchingProfessionals = ref(false);
-const professionalSearchAttempted = ref(false);
+// State for the professional picker modal
+const isProfessionalPickerOpen = ref(false);
 
-// --- Mock Professional Search API (Replace with actual API) ---
-async function fetchProfessionalsAPI(query) {
-  console.log(`API: Searching professionals with query: "${query}"`);
-  await new Promise(resolve => setTimeout(resolve, 700));
-  const mockProfessionals = [
-    { id: 'prof_1', name: 'Dr. Eva Green', cid: '123450001', registration_no: 'REG001X', designation: 'Cardiologist' },
-    { id: 'prof_2', name: 'Mr. John Doe', cid: '678900002', registration_no: 'REG002Y', designation: 'Nurse Practitioner' },
-    { id: 'prof_3', name: 'Ms. Jane Smith', cid: '112230003', registration_no: 'REG003Z', designation: 'Surgeon' },
-    { id: 'prof_4', name: 'Dr. Eva Marlie', cid: '555550004', registration_no: 'REG004A', designation: 'Pediatrician' },
-    { id: 'prof_5', name: 'Mr. Johnathan Doel', cid: '999990005', registration_no: 'REG005B', designation: 'General Practitioner' }
-  ];
-  if (!query || query.trim() === '') return [];
-  const lowerQuery = query.toLowerCase();
-  return mockProfessionals.filter(p =>
-    p.cid.includes(lowerQuery) ||
-    p.registration_no.toLowerCase().includes(lowerQuery) ||
-    p.name.toLowerCase().includes(lowerQuery)
-  );
-}
-// --- End Mock API ---
-
-const searchProfessionals = async () => {
-  if (!professionalSearchQuery.value.trim()) {
-    professionalSearchResults.value = [];
-    professionalSearchAttempted.value = false;
-    return;
-  }
-  isSearchingProfessionals.value = true;
-  professionalSearchAttempted.value = true;
-  try {
-    professionalSearchResults.value = await fetchProfessionalsAPI(professionalSearchQuery.value);
-  } catch (error) {
-    console.error("Error searching professionals:", error);
-    professionalSearchResults.value = [];
-  } finally {
-    isSearchingProfessionals.value = false;
-  }
+const openProfessionalPickerModal = () => {
+  isProfessionalPickerOpen.value = true;
 };
 
-const addImplicatedProfessional = (professional) => {
-  if (!localFormData.implicated_professionals_list) {
-    localFormData.implicated_professionals_list = [];
-  }
-  const isAlreadyAdded = localFormData.implicated_professionals_list.some(p => p.id === professional.id);
-  if (!isAlreadyAdded) {
-    // Ensure we add all necessary fields, esp. if search result has more/less than needed for display
-    localFormData.implicated_professionals_list.push({
-        id: professional.id,
-        name: professional.name,
-        cid: professional.cid,
-        registration_no: professional.registration_no
-        // Add other relevant fields like designation if available and needed in the list
-    });
-  }
-  professionalSearchResults.value = [];
-  professionalSearchQuery.value = '';
-  professionalSearchAttempted.value = false;
+// This function is called when the ProfessionalPickerModal emits 'confirm'
+const handleProfessionalsSelected = (selectedProfessionalsFromPicker) => {
+  // selectedProfessionalsFromPicker is an array of full professional objects
+  localFormData.implicated_professionals_list = [...selectedProfessionalsFromPicker.map(p => ({...p}))]; // Replace list with new selection (ensure copies)
+  isProfessionalPickerOpen.value = false; // Close the picker modal
 };
 
 const removeImplicatedProfessional = (index) => {
   localFormData.implicated_professionals_list.splice(index, 1);
 };
 
+// Watch for changes in the incoming complaint prop
 watch(() => props.complaint, (newComplaintData) => {
-  console.log('Modal: props.complaint changed:', newComplaintData);
   if (newComplaintData && typeof newComplaintData === 'object' && newComplaintData.id) {
     localFormData.id = newComplaintData.id;
     localFormData.complaint_id = newComplaintData.complaint_id || '';
@@ -335,12 +260,11 @@ watch(() => props.complaint, (newComplaintData) => {
     localFormData.remarks = newComplaintData.remarks || '';
 
     // Initialize implicated_professionals_list from the prop
-    // Assuming prop `complaint` has a field like `implicated_professionals` (array of professional objects)
+    // Assume `newComplaintData.implicated_professionals` is an array of professional objects
     localFormData.implicated_professionals_list = Array.isArray(newComplaintData.implicated_professionals)
-      ? [...newComplaintData.implicated_professionals.map(p => ({...p}))] // Deep copy
+      ? newComplaintData.implicated_professionals.map(p => ({ ...p })) // Store copies
       : [];
-
-  } else if (newComplaintData === null) {
+  } else if (newComplaintData === null) { // Reset form if complaint is null
     Object.keys(localFormData).forEach(key => {
       if (key === 'implicated_professionals_list') {
         localFormData[key] = [];
@@ -349,15 +273,12 @@ watch(() => props.complaint, (newComplaintData) => {
       }
     });
     localFormData.id = null;
-    professionalSearchQuery.value = '';
-    professionalSearchResults.value = [];
-    isSearchingProfessionals.value = false;
-    professionalSearchAttempted.value = false;
   }
 }, { immediate: true, deep: true });
 
 const closeModal = () => {
   emit('close');
+  isProfessionalPickerOpen.value = false; // Ensure picker is also closed
 };
 
 const handleUpdate = () => {
@@ -365,7 +286,7 @@ const handleUpdate = () => {
     id: localFormData.id,
     status: localFormData.status,
     remarks: localFormData.remarks,
-    // Send IDs of all currently implicated professionals
+    // Send only IDs of the implicated professionals
     implicated_professional_ids: localFormData.implicated_professionals_list.map(p => p.id),
   };
   console.log('Modal: Emitting update event with payload:', updatePayload);
@@ -390,6 +311,6 @@ const formatDate = (dateString) => {
   max-height: 10rem; /* 160px */
 }
 .max-h-48 {
-  max-height: 12rem; /* 192px */
+  max-height: 12rem; /* 192px for the list of implicated professionals */
 }
 </style>
