@@ -1,305 +1,252 @@
 <template>
-  <div class="container mx-auto p-4 sm:p-6 lg:p-8">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">Department Management</h1>
+  <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-gray-50 min-h-screen">
+      <InstituteHeader
+          title="Department Management"
+          subtitle="Manage departments within registered institutes."
+          :show-actions="false"
+      />
 
-    <!-- Add Department Button -->
-    <button
-      @click="openAddModal"
-      class="mb-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow"
-    >
-      Add Department
-    </button>
-
-    <!-- Loading Indicator for Institutes -->
-    <div v-if="isLoadingInstitutes && !showModal" class="text-center text-gray-500 py-4">
-      Loading institute data...
-    </div>
-
-    <!-- Error Display for fetching institutes -->
-    <div v-if="error" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-      {{ error }}
-    </div>
-
-    <!-- Success message area -->
-    <div
-      v-if="successMessage"
-      class="mt-4 mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded"
-    >
-      {{ successMessage }}
-    </div>
-
-    <!-- Departments Table -->
-    <div class="mt-6 overflow-hidden shadow-md rounded-lg">
-      <div v-if="isLoadingDepartments" class="text-center text-gray-500 py-4">
-        Loading departments...
-      </div>
-      <div v-else-if="departments.length === 0" class="text-center text-gray-500 py-4">
-        No departments found. Add your first department using the button above.
-      </div>
-      <div v-else class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                ID
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Department Name
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Institution
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="department in departments" :key="department.id">
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ department.id }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {{ department.department_name }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ department.institute?.name_of_institution }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <button
-                  @click="viewDepartmentDetails(department)"
-                  class="text-blue-600 hover:text-blue-900 mr-2"
-                >
-                  View
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Add Department Modal -->
-    <Transition name="modal-fade">
-      <div
-        v-if="showModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-        @click.self="closeModal"
-      >
-        <div class="bg-white rounded-lg shadow-xl overflow-hidden w-full max-w-md mx-4">
-          <form @submit.prevent="addDepartment">
-            <!-- Modal Header -->
-            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h5 class="text-lg font-semibold text-gray-800">Add Department</h5>
-              <button
-                type="button"
-                class="text-gray-400 hover:text-gray-600"
-                @click="closeModal"
-                aria-label="Close"
-              >
-                <svg
-                  class="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  ></path>
-                </svg>
+      <div class="mt-8">
+          <div class="flex justify-end mb-6">
+              <button @click="openAddModal" type="button" class="btn btn-primary">
+                  <PlusIcon class="w-5 h-5 mr-2 -ml-1" aria-hidden="true" />
+                  Add New Department
               </button>
-            </div>
+          </div>
 
-            <!-- Modal Body -->
-            <div class="p-6 space-y-4">
-              <!-- Error within modal -->
+          <div v-if="error" class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 shadow-sm">
+              <div class="flex">
+                  <div class="flex-shrink-0">
+                      <XCircleIcon class="h-6 w-6 text-red-500" aria-hidden="true" />
+                  </div>
+                  <div class="ml-3">
+                      <h3 class="text-sm font-semibold text-red-800">Operation Failed</h3>
+                      <p class="mt-1 text-sm text-red-700">{{ error }}</p>
+                  </div>
+              </div>
+          </div>
+
+          <div v-if="successMessage" class="mb-6 p-4 rounded-xl bg-green-50 border border-green-200 shadow-sm">
+              <div class="flex">
+                  <div class="flex-shrink-0">
+                      <CheckCircleIcon class="h-6 w-6 text-green-500" aria-hidden="true" />
+                  </div>
+                  <div class="ml-3">
+                      <h3 class="text-sm font-semibold text-green-800">Success</h3>
+                      <p class="mt-1 text-sm text-green-700">{{ successMessage }}</p>
+                  </div>
+              </div>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+              <div v-if="isLoadingDepartments && departments.length === 0" class="flex flex-col items-center justify-center min-h-[300px] py-16">
+                  <Loader class="animate-spin text-indigo-600 w-10 h-10" />
+                  <p class="mt-4 text-lg font-medium text-gray-700">Loading departments...</p>
+              </div>
+              <div v-else-if="departments.length === 0 && !isLoadingDepartments" class="text-center py-16">
+                   <BuildingLibraryIcon class="mx-auto h-16 w-16 text-gray-400" aria-hidden="true" />
+                  <h3 class="mt-4 text-xl font-semibold text-gray-800">No Departments Found</h3>
+                  <p class="mt-2 text-sm text-gray-500">
+                      Get started by adding the first department for an institute.
+                  </p>
+                   <div class="mt-6">
+                      <button @click="openAddModal" type="button" class="btn btn-primary">
+                          <PlusIcon class="w-5 h-5 mr-2 -ml-1" aria-hidden="true" />
+                          Add Department
+                      </button>
+                  </div>
+              </div>
+              <div v-else class="overflow-x-auto">
+                  <table class="min-w-full divide-y divide-gray-200">
+                      <thead class="bg-gray-50">
+                          <tr>
+                              <th scope="col" class="table-header-cell">ID</th>
+                              <th scope="col" class="table-header-cell">Department Name</th>
+                              <th scope="col" class="table-header-cell">Institution</th>
+                              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                          </tr>
+                      </thead>
+                      <tbody class="bg-white divide-y divide-gray-200">
+                          <tr v-for="department in departments" :key="department.id" class="hover:bg-gray-50 transition-colors duration-150">
+                              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ department.id }}</td>
+                              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {{ department.department_name }}
+                              </td>
+                              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                  {{ department.institute?.name_of_institution || 'N/A' }}
+                              </td>
+                              <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                  <button @click="viewDepartmentDetails(department)" class="text-gray-400 hover:text-indigo-600 transition-colors" title="View Details">
+                                      <EyeIcon class="w-5 h-5" />
+                                  </button>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      </div>
+
+      <Transition name="modal-fade">
+          <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="closeModal" aria-hidden="true"></div>
               <div
-                v-if="modalError"
-                class="p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm"
+                  class="relative w-full max-w-lg bg-white rounded-xl shadow-2xl transform transition-all overflow-y-auto max-h-[90vh]"
+                  role="dialog" aria-modal="true" aria-labelledby="modal-title-add-dept"
+                  @click.stop
               >
-                {{ modalError }}
-              </div>
+                  <div class="py-5 px-6 md:px-8 bg-gray-50 rounded-t-xl border-b border-gray-200 flex items-center justify-between">
+                      <div class="flex items-center">
+                           <BuildingLibraryIcon class="w-6 h-6 text-indigo-700 mr-3 flex-shrink-0" aria-hidden="true" />
+                          <div>
+                              <h2 id="modal-title-add-dept" class="text-lg font-semibold text-gray-900">
+                                  Add New Department
+                              </h2>
+                              <p class="text-xs text-gray-500">
+                                  Specify the department name and associate it with an institute.
+                              </p>
+                          </div>
+                      </div>
+                      <button @click="closeModal" class="p-1 text-gray-400 rounded-md hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                          <span class="sr-only">Close</span>
+                          <XMarkIcon class="w-6 h-6" aria-hidden="true" />
+                      </button>
+                  </div>
 
-              <div>
-                <label for="departmentName" class="block text-sm font-medium text-gray-700 mb-1"
-                  >Department Name</label
-                >
-                <input
-                  type="text"
-                  id="departmentName"
-                  v-model="newDepartment.department_name"
-                  required
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-              <div>
-                <label for="instituteSelect" class="block text-sm font-medium text-gray-700 mb-1"
-                  >Name of Institution</label
-                >
-                <select
-                  id="instituteSelect"
-                  v-model="newDepartment.institute_id"
-                  required
-                  class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md appearance-none"
-                >
-                  <option :value="null" disabled>-- Select Institute --</option>
-                  <option v-for="institute in institutes" :key="institute.id" :value="institute.id">
-                    {{ institute.name_of_institution }}
-                  </option>
-                </select>
-                <div v-if="isLoadingInstitutes" class="text-xs text-gray-500 mt-1">
-                  Loading institutes...
-                </div>
-              </div>
-            </div>
+                  <form @submit.prevent="addDepartment" class="p-6 md:p-8">
+                      <div v-if="modalError" class="mb-5 p-3 rounded-md bg-red-50 border border-red-200 text-sm text-red-700">
+                           <div class="flex">
+                              <div class="flex-shrink-0">
+                                  <XCircleIcon class="h-5 w-5 text-red-400" aria-hidden="true" />
+                              </div>
+                              <div class="ml-2">
+                                  {{ modalError }}
+                              </div>
+                          </div>
+                      </div>
 
-            <!-- Modal Footer -->
-            <div
-              class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3 bg-gray-50 rounded-b-lg"
-            >
-              <button
-                type="button"
-                @click="closeModal"
-                class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 text-sm font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                :disabled="isSaving"
-                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {{ isSaving ? 'Saving...' : 'Save Department' }}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </Transition>
+                      <div class="space-y-5">
+                          <div>
+                              <label for="departmentName" class="form-label required-label">Department Name</label>
+                              <input type="text" id="departmentName" v-model="newDepartment.department_name" required class="form-input" />
+                          </div>
+                          <div>
+                              <label for="instituteSelect" class="form-label required-label">Name of Institution</label>
+                              <select id="instituteSelect" v-model="newDepartment.institute_id" required class="form-select" :disabled="isLoadingInstitutes">
+                                  <option :value="null" disabled>
+                                      {{ isLoadingInstitutes && institutes.length === 0 ? 'Loading institutes...' : '-- Select Institute --' }}
+                                  </option>
+                                  <option v-for="institute in institutes" :key="institute.id" :value="institute.id">
+                                      {{ institute.name_of_institution }}
+                                  </option>
+                                  <option v-if="!isLoadingInstitutes && institutes.length === 0 && !error" :value="null" disabled>
+                                      No institutes available to select.
+                                  </option>
+                                   <option v-if="!isLoadingInstitutes && institutes.length === 0 && error" :value="null" disabled>
+                                      Could not load institutes.
+                                  </option>
+                              </select>
+                              <div v-if="isLoadingInstitutes && institutes.length === 0" class="flex items-center mt-2 text-xs text-gray-500">
+                                  <Loader class="animate-spin h-4 w-4 mr-1.5 text-indigo-500" />
+                                  Loading institutes...
+                              </div>
+                          </div>
+                      </div>
 
-    <!-- Department Details Modal -->
-    <Transition name="modal-fade">
-      <div
-        v-if="showDetailsModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-        @click.self="closeDetailsModal"
-      >
-        <div class="bg-white rounded-lg shadow-xl overflow-hidden w-full max-w-2xl mx-4">
-          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h5 class="text-lg font-semibold text-gray-800">Department Details</h5>
-            <button
-              type="button"
-              class="text-gray-400 hover:text-gray-600"
-              @click="closeDetailsModal"
-              aria-label="Close"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                ></path>
-              </svg>
-            </button>
+                      <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 space-y-3 space-y-reverse sm:space-y-0">
+                          <button type="button" @click="closeModal" class="btn btn-outline w-full sm:w-auto">
+                              Cancel
+                          </button>
+                          <button type="submit" :disabled="isSaving" class="btn btn-primary w-full sm:w-auto">
+                              <Loader v-if="isSaving" class="animate-spin h-5 w-5 mr-2 text-white" />
+                              {{ isSaving ? 'Saving...' : 'Save Department' }}
+                          </button>
+                      </div>
+                  </form>
+              </div>
           </div>
+      </Transition>
 
-          <div class="p-6 space-y-4 max-h-96 overflow-y-auto">
-            <div v-if="selectedDepartment">
-              <div class="mb-4">
-                <h3 class="text-lg font-semibold mb-2">Department Information</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div class="bg-gray-50 p-3 rounded">
-                    <p class="text-sm text-gray-500">ID</p>
-                    <p class="font-medium">{{ selectedDepartment.id }}</p>
+      <Transition name="modal-fade">
+          <div v-if="showDetailsModal && selectedDepartment" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="closeDetailsModal" aria-hidden="true"></div>
+              <div
+                  class="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl transform transition-all overflow-y-auto max-h-[90vh]"
+                  role="dialog" aria-modal="true" aria-labelledby="modal-title-dept-details"
+                  @click.stop
+              >
+                  <div class="py-5 px-6 md:px-8 bg-gray-50 rounded-t-xl border-b border-gray-200 flex items-center justify-between">
+                       <div class="flex items-center">
+                          <InformationCircleIcon class="w-6 h-6 text-indigo-700 mr-3 flex-shrink-0" aria-hidden="true" />
+                          <div>
+                              <h2 id="modal-title-dept-details" class="text-lg font-semibold text-gray-900">
+                                  Department Details
+                              </h2>
+                              <p class="text-xs text-gray-500">
+                                 Viewing information for department: <span class="font-medium">{{ selectedDepartment.department_name }}</span>
+                              </p>
+                          </div>
+                      </div>
+                      <button @click="closeDetailsModal" class="p-1 text-gray-400 rounded-md hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                          <span class="sr-only">Close</span>
+                          <XMarkIcon class="w-6 h-6" aria-hidden="true" />
+                      </button>
                   </div>
-                  <div class="bg-gray-50 p-3 rounded">
-                    <p class="text-sm text-gray-500">Department Name</p>
-                    <p class="font-medium">{{ selectedDepartment.department_name }}</p>
+
+                  <div class="p-6 md:p-8 space-y-6">
+                      <div class="form-section-sm">
+                          <h3 class="section-title-sm">Department Information</h3>
+                          <div class="details-grid">
+                              <ReadOnlyDetail label="Department ID" :value="selectedDepartment.id" />
+                              <ReadOnlyDetail label="Department Name" :value="selectedDepartment.department_name" />
+                          </div>
+                      </div>
+
+                      <div v-if="selectedDepartment.institute" class="form-section-sm border-t border-gray-200 pt-6">
+                          <h3 class="section-title-sm">Associated Institution</h3>
+                          <div class="details-grid">
+                              <ReadOnlyDetail label="Institution Name" :value="selectedDepartment.institute.name_of_institution" />
+                              <ReadOnlyDetail label="Institution ID" :value="selectedDepartment.institute.id" />
+                              <ReadOnlyDetail label="Head of Institution" :value="selectedDepartment.institute.head_of_institution_name" />
+                              <ReadOnlyDetail label="Contact Number" :value="selectedDepartment.institute.head_of_institution_phone_number" />
+                              <ReadOnlyDetail label="Email Address" :value="selectedDepartment.institute.head_of_institution_email" />
+                              <ReadOnlyDetail label="Address" :value="selectedDepartment.institute.address" class="md:col-span-2" />
+                          </div>
+                      </div>
+                       <div v-else class="form-section-sm border-t border-gray-200 pt-6">
+                           <p class="text-sm text-gray-500">No associated institute information available for this department.</p>
+                       </div>
                   </div>
-                </div>
+
+                  <div class="p-6 md:p-8 bg-gray-50 border-t border-gray-200 flex justify-end">
+                      <button type="button" @click="closeDetailsModal" class="btn btn-outline">
+                          Close
+                      </button>
+                  </div>
               </div>
-
-              <div v-if="selectedDepartment.institute" class="mb-4">
-                <h3 class="text-lg font-semibold mb-2">Institution Information</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div class="bg-gray-50 p-3 rounded">
-                    <p class="text-sm text-gray-500">Institution Name</p>
-                    <p class="font-medium">
-                      {{ selectedDepartment.institute.name_of_institution }}
-                    </p>
-                  </div>
-                  <div class="bg-gray-50 p-3 rounded">
-                    <p class="text-sm text-gray-500">Institution ID</p>
-                    <p class="font-medium">{{ selectedDepartment.institute.id }}</p>
-                  </div>
-                  <div class="bg-gray-50 p-3 rounded">
-                    <p class="text-sm text-gray-500">Head of Institution</p>
-                    <p class="font-medium">
-                      {{ selectedDepartment.institute.head_of_institution_name }}
-                    </p>
-                  </div>
-                  <div class="bg-gray-50 p-3 rounded">
-                    <p class="text-sm text-gray-500">Contact</p>
-                    <p class="font-medium">
-                      {{ selectedDepartment.institute.head_of_institution_phone_number }}
-                    </p>
-                  </div>
-                  <div class="bg-gray-50 p-3 rounded">
-                    <p class="text-sm text-gray-500">Email</p>
-                    <p class="font-medium">
-                      {{ selectedDepartment.institute.head_of_institution_email }}
-                    </p>
-                  </div>
-                  <div class="bg-gray-50 p-3 rounded">
-                    <p class="text-sm text-gray-500">Location</p>
-                    <p class="font-medium">{{ selectedDepartment.institute.address }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
-
-          <div class="px-6 py-4 border-t border-gray-200 flex justify-end bg-gray-50 rounded-b-lg">
-            <button
-              type="button"
-              @click="closeDetailsModal"
-              class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 text-sm font-medium"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </Transition>
+      </Transition>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import services from '@/services/services.js'
+import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
+import { Loader } from 'lucide-vue-next'
+import { PlusIcon, EyeIcon, XMarkIcon, XCircleIcon, CheckCircleIcon, BuildingLibraryIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
 
-// --- Reactive State ---
+const ReadOnlyDetail = (props) => {
+  return `
+      <div>
+          <p class="text-xs font-medium text-gray-500">${props.label}</p>
+          <p class="mt-0.5 text-sm text-gray-800">${props.value || 'N/A'}</p>
+      </div>
+  `;
+};
+ReadOnlyDetail.props = ['label', 'value'];
+
+
 const institutes = ref([])
 const departments = ref([])
 const showModal = ref(false)
@@ -310,235 +257,213 @@ const newDepartment = ref({
   institute_id: null,
 })
 const isLoadingInstitutes = ref(false)
-const isLoadingDepartments = ref(false)
+const isLoadingDepartments = ref(true)
 const isSaving = ref(false)
 const error = ref(null)
 const modalError = ref(null)
 const successMessage = ref('')
 
-// --- Methods ---
 
-// Fetch institutes for the dropdown
 const fetchInstitutes = async () => {
   isLoadingInstitutes.value = true
-  // Reset error specific to institutes if needed, or keep general page error
-  // error.value = null;
   try {
-    const response = await services.getMhpcInstitutes()
-    console.log('Raw response from getMhpcInstitutes:', response) // Verify this log output!
-
-    let instituteList = [] // Initialize
-
-    // === Check for the specific paginated structure: response.data.results ===
-    // === !!! Adjust this based on the ACTUAL console log for getMhpcInstitutes !!! ===
-    if (response && response.data && Array.isArray(response.data.results)) {
-      instituteList = response.data.results // <--- Assumed path
-      console.log('Interpreted: Institute array found in response.data.results.')
-    }
-    // === Example Fallback: If institutes API returns array directly in data ===
-    // else if (response && Array.isArray(response.data)) {
-    //    instituteList = response.data;
-    //    console.log("Interpreted: Institute array found directly in response.data.");
-    // }
-    // === Example Fallback: If institutes API returns array directly ===
-    // else if (Array.isArray(response)) {
-    //     instituteList = response;
-    //     console.log("Interpreted: Institute response is the array itself.");
-    // }
-    else {
-      // If the expected structure isn't found
-      console.warn('Could not find institute array in the expected location:', response)
-      // Set error only if institutes are crucial and failed to load
-      if (!error.value) {
-        // Avoid overwriting a more severe error from departments fetch
-        error.value = 'Unexpected data format for institutes. Dropdown may be empty.'
+      const response = await services.getMhpcInstitutes()
+      let instituteList = []
+      if (response?.data?.results && Array.isArray(response.data.results)) {
+          instituteList = response.data.results
+      } else if (response?.data && Array.isArray(response.data)) {
+          instituteList = response.data
+      } else if (Array.isArray(response)) {
+           instituteList = response
       }
-      // instituteList remains []
-    }
-
-    // Assign the processed list (filtering nulls is safe practice)
-    institutes.value = (instituteList || []).filter((inst) => inst != null)
-
-    if (institutes.value.length === 0 && !error.value) {
-      if (response?.data?.count > 0 && instituteList.length === 0) {
-        console.warn(
-          "API reported institutes (count > 0), but the 'results' array was empty or contained only nulls.",
-        )
-      } else {
-        console.log('No institutes found or loaded for the dropdown.')
+       else {
+          error.value = 'Failed to load institutes: Unexpected data format from server for institutes list.'
       }
-    }
+      institutes.value = (instituteList || []).filter(inst => inst != null && inst.id && inst.name_of_institution);
+
+      if (institutes.value.length === 0 && !error.value) {
+           error.value = "No institutes are currently registered or available. Departments cannot be added without institutes.";
+      }
+
   } catch (err) {
-    console.error('Error fetching institutes:', err)
-    // Set a general error if institutes failed, as they are needed for adding departments
-    error.value = 'Failed to load institute data. Cannot add new departments.'
-    institutes.value = [] // Ensure empty array on error
+      console.error('Error fetching institutes:', err)
+      error.value = `Failed to load institute data: ${err.message || 'Network error'}. Cannot add new departments.`
+      institutes.value = []
   } finally {
-    isLoadingInstitutes.value = false
+      isLoadingInstitutes.value = false
   }
 }
 
-// Fetch departments
 const fetchDepartments = async () => {
   isLoadingDepartments.value = true
   error.value = null
+  successMessage.value = ''
   try {
-    const response = await services.getMhpcInstituteDepartments()
-    // Log the raw response structure for verification during debugging
-    console.log('Raw response from getMhpcInstituteDepartments:', response)
+      const response = await services.getMhpcInstituteDepartments()
+      let departmentList = []
 
-    let departmentList = [] // Initialize with an empty array
-
-    // === Check for the specific paginated structure: response.data.results ===
-    if (response && response.data && Array.isArray(response.data.results)) {
-      departmentList = response.data.results // <--- Correct path to the array
-      console.log('Interpreted: Department array found in response.data.results.')
-    } else {
-      // If the expected structure isn't found
-      console.warn(
-        'Could not find department array in the expected location (response.data.results):',
-        response,
-      )
-      error.value =
-        "Unexpected data format received for departments. Expected an array within 'data.results'."
-      // departmentList remains []
-    }
-
-    // Filter out any null/undefined entries *within* the array
-    // This handles cases like [ {dept1}, null, {dept3} ] if the API ever sends them
-    departments.value = (departmentList || []).filter((dept) => dept != null)
-
-    // Log if empty, considering pagination info
-    if (departments.value.length === 0 && !error.value) {
-      if (response?.data?.count > 0 && departmentList.length === 0) {
-        console.warn(
-          "API reported items (count > 0), but the 'results' array was empty or contained only nulls.",
-        )
-      } else {
-        console.log('No departments found or loaded.') // Normal empty state if count is 0 or API structure was wrong
+      if (response?.data?.results && Array.isArray(response.data.results)) {
+          departmentList = response.data.results
+      } else if (response?.data && Array.isArray(response.data)) {
+          departmentList = response.data
       }
-    }
-
-    // Optional: Warn if filtering removed items
-    if (departmentList && departments.value.length < departmentList.length) {
-      console.warn('Filtered out null/undefined entries from the departments list.')
-    }
+       else {
+          error.value = "Unexpected data format received for departments."
+      }
+      departments.value = (departmentList || []).filter(dept => dept != null);
   } catch (err) {
-    console.error('Error fetching departments:', err)
-    let errorMessage = 'Failed to load departments.'
-    if (err.response) {
-      errorMessage += ` Server status: ${err.response.status}.`
-      // Attempt to extract a more specific error message from DRF/backend
-      const detail =
-        err.response.data?.detail ||
-        err.response.data?.message ||
-        (typeof err.response.data === 'string' ? err.response.data : null)
-      if (detail) {
-        errorMessage += ` Message: ${detail}`
-      } else if (typeof err.response.data === 'object' && err.response.data !== null) {
-        // Handle potential validation errors (show first one)
-        const firstErrorKey = Object.keys(err.response.data)[0]
-        if (firstErrorKey && Array.isArray(err.response.data[firstErrorKey])) {
-          errorMessage += ` Error: ${firstErrorKey} - ${err.response.data[firstErrorKey][0]}`
-        }
+      console.error('Error fetching departments:', err)
+      let errorMessage = 'Failed to load departments.'
+      if (err.response) {
+          errorMessage += ` Server status: ${err.response.status}.`
+          const detail = err.response.data?.detail || err.response.data?.message || (typeof err.response.data === 'string' ? err.response.data : null)
+          if (detail) errorMessage += ` Message: ${detail}`
+      } else if (err.request) {
+          errorMessage += ' No response from server.'
+      } else {
+          errorMessage += ` Error: ${err.message}`
       }
-    } else if (err.request) {
-      errorMessage += ' No response from server.'
-    } else {
-      errorMessage += ` Error: ${err.message}`
-    }
-    error.value = errorMessage
-    departments.value = [] // Ensure it's an empty array on error
+      error.value = errorMessage
+      departments.value = []
   } finally {
-    isLoadingDepartments.value = false
+      isLoadingDepartments.value = false
   }
 }
 
-// Reset the new department form
 const resetNewDepartmentForm = () => {
   newDepartment.value = {
-    department_name: '',
-    institute_id: null,
+      department_name: '',
+      institute_id: null,
   }
   modalError.value = null
 }
 
-// Open the modal to add a new department
 const openAddModal = () => {
   resetNewDepartmentForm()
   successMessage.value = ''
+  error.value = null
   showModal.value = true
+  if (institutes.value.length === 0 && !isLoadingInstitutes.value) {
+      fetchInstitutes(); // Attempt to reload if empty and not already loading
+  }
 }
 
-// Close the modal
 const closeModal = () => {
   showModal.value = false
 }
 
-// View department details
 const viewDepartmentDetails = (department) => {
   selectedDepartment.value = department
   showDetailsModal.value = true
 }
 
-// Close details modal
 const closeDetailsModal = () => {
   showDetailsModal.value = false
   selectedDepartment.value = null
 }
 
-// Add the new department
 const addDepartment = async () => {
   isSaving.value = true
   modalError.value = null
   successMessage.value = ''
 
   const payload = {
-    department_name: newDepartment.value.department_name?.trim(),
-    institute_id: newDepartment.value.institute_id,
+      department_name: newDepartment.value.department_name?.trim(),
+      institute: newDepartment.value.institute_id,
   }
 
-  // Basic validation
-  if (!payload.department_name || payload.institute_id === null) {
-    modalError.value = 'Please fill in all fields.'
-    isSaving.value = false
-    return
+  if (!payload.department_name) {
+      modalError.value = 'Department name is required.'
+      isSaving.value = false
+      return
+  }
+  if (payload.institute === null) {
+      modalError.value = 'Please select an institute.'
+      isSaving.value = false
+      return
   }
 
   try {
-    const response = await services.createMhpcInstituteDepartment(payload)
-    console.log('Department added successfully:', response.data)
-    successMessage.value = `Department "${payload.department_name}" added successfully!`
-    closeModal()
-
-    // Refresh departments list after adding
-    await fetchDepartments()
+      await services.createMhpcInstituteDepartment(payload)
+      successMessage.value = `Department "${payload.department_name}" added successfully!`
+      closeModal()
+      fetchDepartments()
   } catch (err) {
-    console.error('Error adding department:', err)
-    modalError.value =
-      err.response?.data?.message ||
-      err.message ||
-      'Failed to add department. Please check the details and try again.'
+      console.error('Error adding department:', err)
+       if (err.response?.data) {
+          const errors = err.response.data;
+          if (errors.department_name && Array.isArray(errors.department_name)) {
+              modalError.value = `Department Name: ${errors.department_name.join(', ')}`;
+          } else if (errors.institute && Array.isArray(errors.institute)) {
+               modalError.value = `Institute: ${errors.institute.join(', ')}`;
+          }
+           else if (errors.detail) {
+               modalError.value = errors.detail;
+          }
+          else {
+               modalError.value = 'An unexpected error occurred. Please check details and try again.';
+          }
+      } else {
+          modalError.value = err.message || 'Failed to add department. Please try again.'
+      }
   } finally {
-    isSaving.value = false
+      isSaving.value = false
   }
 }
 
-// --- Lifecycle Hooks ---
 onMounted(async () => {
-  await Promise.all([fetchInstitutes(), fetchDepartments()])
+  await fetchInstitutes(); // Fetch institutes first as they are needed for adding departments
+  await fetchDepartments();
 })
 </script>
 
 <style scoped>
-/* Modal Fade Transition */
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.3s ease;
+.form-label {
+  @apply block text-sm font-medium text-gray-700 mb-1.5;
+}
+.required-label::after {
+  content: ' *';
+  color: #dc2626;
+  margin-left: 2px;
+}
+.form-input,
+.form-select {
+  @apply block w-full rounded-lg border-gray-300 shadow-sm p-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0 disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors duration-150;
+}
+.btn {
+  @apply inline-flex items-center justify-center rounded-lg border py-2.5 px-5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150 disabled:opacity-70 disabled:cursor-not-allowed;
+}
+.btn-primary {
+  @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
+}
+.btn-outline {
+  @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500;
 }
 
+.table-header-cell {
+  @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider select-none;
+}
+
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 .modal-fade-enter-from,
 .modal-fade-leave-to {
-  opacity: 0;
+opacity: 0;
+}
+.modal-fade-enter-from .relative,
+.modal-fade-leave-to .relative {
+transform: scale(0.95) translateY(20px);
+}
+
+.form-section-sm {
+  @apply space-y-3;
+}
+.section-title-sm {
+  @apply text-base font-semibold text-gray-800 mb-3;
+}
+.details-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4;
 }
 </style>
