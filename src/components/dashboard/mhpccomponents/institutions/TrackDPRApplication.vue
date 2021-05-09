@@ -62,6 +62,7 @@
     </div>
 
     <div class="mx-4">
+      <!-- Loading Skeleton -->
       <div v-if="isLoading" class="space-y-6">
         <div v-for="n in 3" :key="n" class="bg-white rounded-xl shadow-lg p-6 animate-pulse">
           <div class="flex justify-between mb-4">
@@ -91,6 +92,7 @@
         </div>
       </div>
 
+      <!-- API Error -->
       <div v-else-if="apiError" class="text-center py-12 bg-red-50 rounded-xl border border-red-200">
         <h3 class="text-xl font-semibold text-red-700 mb-2">Oops! Something went wrong.</h3>
         <p class="text-red-600">{{ errorMessage }}</p>
@@ -102,6 +104,7 @@
         </button>
       </div>
 
+      <!-- Applications List -->
       <div v-else-if="filteredApplications.length > 0" class="space-y-6">
         <div
           v-for="application in paginatedApplications"
@@ -149,6 +152,7 @@
             </button>
 
             <div v-if="expandedApplications[application.id]" :id="'details-' + application.id" class="space-y-6">
+              <!-- ... details content ... -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 pt-4 border-t border-gray-100">
                 <div>
                   <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Details</p>
@@ -212,6 +216,7 @@
               </div>
             </div>
 
+            <!-- Payment and Certificate Actions -->
             <div v-if="isPaymentPending(application) || isPaymentCompleted(application)" class="mt-6 pt-4 border-t border-gray-100">
               <div class="flex flex-col sm:flex-row items-center justify-end gap-3">
                 <p
@@ -222,7 +227,7 @@
                 </p>
                 <button
                   v-if="isPaymentPending(application)"
-                  @click="showPaymentModal(application)"
+                  @click="openPaymentConfirmationModal(application)"
                   :disabled="isActionLoading[application.id]"
                   class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors w-full sm:w-auto disabled:opacity-50"
                 >
@@ -249,6 +254,7 @@
           </div>
         </div>
 
+        <!-- Pagination -->
         <div class="flex justify-between items-center mt-6">
           <div class="text-sm text-gray-600">
             Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ Math.min(currentPage * itemsPerPage, filteredApplications.length) }} of {{ filteredApplications.length }} applications
@@ -286,6 +292,7 @@
         </div>
       </div>
 
+      <!-- No Applications Found -->
       <div v-else class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
           <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
@@ -303,6 +310,7 @@
       </div>
     </div>
 
+    <!-- Payment Confirmation Modal -->
     <div v-if="showPaymentConfirmModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 max-w-md w-full">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirm Payment</h3>
@@ -311,13 +319,13 @@
         </p>
         <div class="flex justify-end gap-4">
           <button
-            @click="showPaymentConfirmModal = false"
+            @click="cancelPaymentConfirmation"
             class="inline-flex items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
           >
             Cancel
           </button>
           <button
-            @click="handleMakePayment(selectedApplication)"
+            @click="handleProceedWithPaymentFlow"
             class="inline-flex items-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
           >
             Proceed
@@ -326,6 +334,7 @@
       </div>
     </div>
 
+    <!-- Certificate Modal -->
     <div v-if="showCertificateModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 max-w-md w-full">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">View Certificate</h3>
@@ -348,6 +357,14 @@
         </div>
       </div>
     </div>
+
+    <!-- Actual Payment Modal (Imported) -->
+    <PaymentModal
+      ref="paymentModalRef"
+      :amount="dprPaymentAmount"
+      @payment-completed="handleDPRPaymentCompleted"
+      @close="closeDPRPaymentModal"
+    />
   </div>
 </template>
 
@@ -357,8 +374,9 @@ import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
 import debounce from 'lodash/debounce'
-import apiServices from '@/services/services'
+import apiServices from '@/services/services' // Assuming your services are here
 import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
+import PaymentModal from '@/components/common/PaymentModal.vue' // IMPORT PAYMENT MODAL
 
 const router = useRouter()
 const toast = useToast()
@@ -385,10 +403,15 @@ const sortOrder = ref('desc')
 const currentPage = ref(1)
 const itemsPerPage = 10
 const expandedApplications = ref({})
-const isActionLoading = ref({})
+const isActionLoading = ref({}) // For individual application buttons
 const showPaymentConfirmModal = ref(false)
 const showCertificateModal = ref(false)
-const selectedApplication = ref(null)
+const selectedApplication = ref(null) // For confirmation modal and certificate modal
+
+// --- Payment Modal Refs ---
+const paymentModalRef = ref(null)
+const selectedApplicationForPayment = ref(null) // Specifically for the PaymentModal
+const dprPaymentAmount = ref(1500) // Example: DPR Payment Amount (can be dynamic)
 
 const filteredApplications = computed(() => {
   let result = applications.value
@@ -439,6 +462,7 @@ const getStatusColor = (status) => {
 }
 
 const getStatusTooltip = (status) => {
+  // ... (same as before)
   switch (status) {
     case STATUS_APPROVED:
       return 'Application has been approved. Proceed to payment if pending.'
@@ -471,9 +495,7 @@ const formatDate = (dateString) => {
 }
 
 const isApplicationApproved = (app) => app.do_dpr_review_decision === STATUS_APPROVED
-
 const isPaymentPending = (app) => isApplicationApproved(app) && app.is_payment_complete === false
-
 const isPaymentCompleted = (app) => isApplicationApproved(app) && app.is_payment_complete === true
 
 const getTimeline = (app) => {
@@ -512,12 +534,14 @@ const fetchApplications = async () => {
   errorMessage.value = ''
 
   try {
+    // Assuming 'is_payment_complete' is part of your application data model.
+    // If not, you might need to initialize it (e.g., to false) when fetching.
     const response = await apiServices.getMhpcInstitutes()
     if (response && response.data && Array.isArray(response.data.results)) {
       const userCid = authStore.user.cid.toLowerCase()
-      applications.value = response.data.results.filter(
-        (app) => app && typeof app.CID === 'string' && app.CID.toLowerCase() === userCid
-      )
+      applications.value = response.data.results
+        .filter(app => app && typeof app.CID === 'string' && app.CID.toLowerCase() === userCid)
+        .map(app => ({ ...app, is_payment_complete: app.is_payment_complete || false })); // Ensure is_payment_complete exists
     } else {
       console.warn('Unexpected API response structure:', response)
       applications.value = []
@@ -535,33 +559,117 @@ const fetchApplications = async () => {
   }
 }
 
-const showPaymentModal = (application) => {
+// --- Payment Flow Functions ---
+
+// Step 1: User clicks "Make Payment" on an application card
+const openPaymentConfirmationModal = (application) => {
   selectedApplication.value = application
+  isActionLoading.value[application.id] = true // Set loading for the card button
   showPaymentConfirmModal.value = true
 }
+
+// Step 1b: User cancels the confirmation modal
+const cancelPaymentConfirmation = () => {
+  showPaymentConfirmModal.value = false
+  if (selectedApplication.value && selectedApplication.value.id) {
+    isActionLoading.value[selectedApplication.value.id] = false // Reset loading for card button
+  }
+  selectedApplication.value = null
+}
+
+// Step 2: User clicks "Proceed" on the confirmation modal
+const handleProceedWithPaymentFlow = async () => {
+  if (!selectedApplication.value || !selectedApplication.value.id) {
+    toast.error("No application selected to proceed with payment.")
+    return
+  }
+
+  const appId = selectedApplication.value.id;
+  showPaymentConfirmModal.value = false // Close confirmation modal
+  selectedApplicationForPayment.value = selectedApplication.value // Set for the actual PaymentModal
+
+  if (paymentModalRef.value) {
+    paymentModalRef.value.openModal() // Open the imported PaymentModal
+  } else {
+    console.error("Payment modal reference is not available.")
+    toast.error("Could not open payment window. Please try again.")
+    if (isActionLoading.value[appId] !== undefined) {
+        isActionLoading.value[appId] = false; // Reset loading for card button if modal fails to open
+    }
+  }
+  // Note: isActionLoading[appId] remains true; it will be reset by handleDPRPaymentCompleted or closeDPRPaymentModal
+}
+
+// Step 3: PaymentModal emits 'payment-completed'
+const handleDPRPaymentCompleted = async (paymentData) => {
+  if (!selectedApplicationForPayment.value) {
+    toast.error('Error: No application was associated with this payment.')
+    if (selectedApplication.value && selectedApplication.value.id && isActionLoading.value[selectedApplication.value.id]) {
+      isActionLoading.value[selectedApplication.value.id] = false; // Reset loading on card button
+    }
+    return
+  }
+
+  const appBeingPaid = selectedApplicationForPayment.value
+  // isActionLoading[appBeingPaid.id] is already true from openPaymentConfirmationModal
+
+  try {
+    console.log('DPR Payment completed event received:', paymentData)
+    console.log('For application:', appBeingPaid.name_of_institution, appBeingPaid.dpr_name)
+
+    // --- TODO: API CALL TO UPDATE PAYMENT STATUS ON BACKEND ---
+    // Example: Replace with your actual API call
+    // const payload = {
+    //   is_payment_complete: true,
+    //   payment_reference: paymentData.paymentHash || paymentData.transactionId // Or whatever PaymentModal provides
+    // };
+    // await apiServices.updateDprApplicationPaymentStatus(appBeingPaid.id, payload);
+    // For simulation:
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    // --- END TODO ---
+
+    // Update local application data
+    const appIndex = applications.value.findIndex(a => a.id === appBeingPaid.id)
+    if (appIndex !== -1) {
+      // Ensure you're creating a new object for reactivity if just updating a property
+      applications.value[appIndex] = { ...applications.value[appIndex], is_payment_complete: true }
+    }
+
+    toast.success(`Payment for "${appBeingPaid.dpr_name}" completed successfully!`)
+
+    if (paymentModalRef.value) {
+      paymentModalRef.value.closeModal() // Ask PaymentModal to close itself
+    }
+
+  } catch (error) {
+    console.error('Error updating DPR application after payment:', error)
+    toast.error('Failed to update application after payment. Please contact support.')
+  } finally {
+    isActionLoading.value[appBeingPaid.id] = false // Reset loading for the card button
+    selectedApplicationForPayment.value = null
+    selectedApplication.value = null // Clear general selection as well
+  }
+}
+
+// Step 3b: PaymentModal emits 'close' (user cancelled payment in PaymentModal)
+const closeDPRPaymentModal = () => {
+  toast.info('Payment process cancelled.')
+  if (selectedApplicationForPayment.value && selectedApplicationForPayment.value.id) {
+     isActionLoading.value[selectedApplicationForPayment.value.id] = false // Reset loading for card button
+  } else if (selectedApplication.value && selectedApplication.value.id) {
+     // Fallback if selectedApplicationForPayment was not set but general selection exists
+     isActionLoading.value[selectedApplication.value.id] = false;
+  }
+  selectedApplicationForPayment.value = null
+  selectedApplication.value = null
+}
+
+// --- End Payment Flow Functions ---
+
 
 const openCertificateModal = (application) => {
   selectedApplication.value = application
   showCertificateModal.value = true
-}
-
-const handleMakePayment = async (application) => {
-  if (!application || !application.id) return
-  isActionLoading.value[application.id] = true
-  try {
-    console.log('Initiating payment for application ID:', application.id, application.dpr_name)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    toast.success(`Payment initiated for "${application.dpr_name}". Redirecting to payment gateway...`)
-    showPaymentConfirmModal.value = false
-    selectedApplication.value = null
-  } catch (error) {
-    console.error('Error initiating payment:', error)
-    toast.error('Failed to initiate payment. Please try again.')
-  } finally {
-    if (application && application.id) {
-      isActionLoading.value[application.id] = false
-    }
-  }
 }
 
 const handleViewCertificate = async (application) => {
@@ -569,8 +677,11 @@ const handleViewCertificate = async (application) => {
   isActionLoading.value[application.id] = true
   try {
     console.log('Viewing certificate for application ID:', application.id, application.dpr_name)
+    // Simulate certificate generation/fetch
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    toast.success(`Certificate for "${application.dpr_name}" opened in new tab.`)
+    toast.success(`Certificate for "${application.dpr_name}" opened in new tab (simulated).`)
+    // In a real app, you'd open a URL or display a PDF:
+    // window.open(`/api/certificate/${application.id}`, '_blank');
     showCertificateModal.value = false
     selectedApplication.value = null
   } catch (error) {
@@ -584,7 +695,7 @@ const handleViewCertificate = async (application) => {
 }
 
 const startNewApplication = () => {
-  router.push('/eoi-form')
+  router.push('/eoi-form') // Or your relevant route for new DPR application
 }
 
 onMounted(fetchApplications)

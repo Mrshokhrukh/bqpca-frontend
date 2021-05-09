@@ -147,7 +147,8 @@
                               <input
                                 v-else
                                 type="date"
-                                v-model="editableApplication.commencement_date"
+                                :value="formatDateForInput(editableApplication.commencement_date)"
+                                @input="e => editableApplication.commencement_date = e.target.value"
                                 class="w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                               />
                             </div>
