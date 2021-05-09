@@ -3,7 +3,7 @@
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModal" class="relative z-20"> <!-- Higher z-index for secondary modal -->
       <TransitionChild
-        as="template"
+        as="div"
         enter="duration-300 ease-out"
         enter-from="opacity-0"
         enter-to="opacity-100"
@@ -17,7 +17,7 @@
       <div class="fixed inset-0 overflow-y-auto">
         <div class="flex min-h-full items-center justify-center p-4 text-center">
           <TransitionChild
-            as="template"
+            as="div"
             enter="duration-300 ease-out"
             enter-from="opacity-0 scale-95"
             enter-to="opacity-100 scale-100"
@@ -25,7 +25,7 @@
             leave-from="opacity-100 scale-100"
             leave-to="opacity-0 scale-95"
           >
-            <DialogPanel class="w-full max-w-xl lg:max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+            <DialogPanel class="w-full lg:max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
               <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
                 Select Implicated Professionals
               </DialogTitle>
@@ -120,73 +120,111 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@headlessui/vue';
-import { debounce } from 'lodash-es'; // Using lodash for debounce
+import { debounce } from 'lodash-es';
+import apiServices from '@/services/services'; // Your existing import
 
 const props = defineProps({
   isOpen: Boolean,
-  // Pass IDs of professionals already selected in the main modal
   initiallySelectedIds: {
     type: Array,
-    default: () => []
-  }
+    default: () => [],
+  },
 });
 
 const emit = defineEmits(['close', 'confirm']);
 
-const allProfessionals = ref([]); // Holds all professionals fetched from API
-const filteredProfessionals = ref([]);
-// Use a temporary list for selections within this modal to avoid direct mutation of main modal's state
+const allProfessionals = ref([]); // Holds ALL fetched users for client-side filtering
+const filteredProfessionals = ref([]); // Users displayed after filtering
 const tempSelectedProfessionals = ref([]); // Array of selected professional *objects*
 const searchQuery = ref('');
 const isLoading = ref(false);
 
-// --- Mock API: Fetch ALL Professionals from Health Certifications ---
-// Replace this with your actual API call
-async function fetchAllHealthProfessionalsAPI() {
+/**
+ * Fetches all users from the backend and maps them to the required format.
+ */
+async function fetchAndMapUsers() {
   isLoading.value = true;
-  console.log("API: Fetching ALL health professionals...");
-  await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-  const mockData = [
-    { id: 'prof_1', name: 'Dr. Eva Green', cid: '123450001', registration_no: 'REG001X', designation: 'Cardiologist' },
-    { id: 'prof_2', name: 'Mr. John Doe', cid: '678900002', registration_no: 'REG002Y', designation: 'Nurse Practitioner' },
-    { id: 'prof_3', name: 'Ms. Jane Smith', cid: '112230003', registration_no: 'REG003Z', designation: 'Surgeon' },
-    { id: 'prof_4', name: 'Dr. Eva Marlie', cid: '555550004', registration_no: 'REG004A', designation: 'Pediatrician' },
-    { id: 'prof_5', name: 'Mr. Johnathan Doel', cid: '999990005', registration_no: 'REG005B', designation: 'General Practitioner' },
-    { id: 'prof_6', name: 'Dr. Alice Wonderland', cid: 'AABBCC006', registration_no: 'REG006C', designation: 'Psychiatrist' },
-    { id: 'prof_7', name: 'Mr. Bob The Builder', cid: 'XXYYZZ007', registration_no: 'REG007D', designation: 'Orthopedic Surgeon' },
-    { id: 'prof_8', name: 'Ms. Clara Oswald', cid: 'TARDIS008', registration_no: 'REG008E', designation: 'Physiotherapist' },
-    { id: 'prof_9', name: 'Dr. Who Cares', cid: 'GALLIFREY009', registration_no: 'REG009F', designation: 'Radiologist' },
-    { id: 'prof_10', name: 'Prof. Albus Dumbledore', cid: 'HOGWARTS010', registration_no: 'REG010G', designation: 'Chief Medical Officer' },
-  ];
-  isLoading.value = false;
-  return mockData.map(p => ({...p})); // Return copies
-}
-// --- End Mock API ---
+  console.log("API: Fetching ALL users...");
+  try {
+    // Using getAllUsers() from your general user management API
+    const response = await apiServices.getAllUsers();
 
-const loadProfessionals = async () => {
-  if (allProfessionals.value.length > 0 && !searchQuery.value) { // Avoid re-fetching if already loaded and no search
-      _applyFilters();
-      return;
+    let rawUsers = [];
+    // Adjust based on your API's response structure
+    if (response.data && Array.isArray(response.data.results)) { // Common for DRF paginated results
+      rawUsers = response.data.results;
+      // TODO: If paginated and you need ALL users,
+      // implement logic here to fetch subsequent pages (response.data.next).
+      // For now, this takes the first page.
+    } else if (response.data && Array.isArray(response.data)) { // If it's a direct array
+      rawUsers = response.data;
+    } else {
+      console.warn("API response for users is not in the expected array format:", response.data);
+      rawUsers = [];
+    }
+
+    // --- CRUCIAL MAPPING ---
+    // YOU MUST ADJUST THIS MAPPING based on the fields returned by your `/users/users/` endpoint.
+    // The modal expects objects with: id, name, cid, registration_no, designation.
+    return rawUsers.map(user => {
+      // Construct name - common patterns:
+      let displayName = user.username; // Fallback to username
+      if (user.first_name && user.last_name) {
+        displayName = `${user.first_name} ${user.last_name}`;
+      } else if (user.full_name) {
+        displayName = user.full_name;
+      } else if (user.name) {
+        displayName = user.name;
+      }
+
+      return {
+        id: user.id || user.pk, // Adjust if your ID field is different (e.g., user.user_id)
+        name: displayName,
+        // For the fields below, you need to determine how they are stored on your User model
+        // or if they come from a related profile. They might be null if not available.
+        cid: user.cid || user.citizen_id || null, // Example: user.profile.cid
+        registration_no: user.registration_no || user.professional_reg_no || null, // Example: user.profile.registration_no
+        designation: user.designation || user.professional_designation || null, // Example: user.profile.designation
+        // You might want to include the original user object or other fields if needed later
+        // originalUser: user,
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return [];
+  } finally {
+    isLoading.value = false;
   }
-  allProfessionals.value = await fetchAllHealthProfessionalsAPI();
-  _applyFilters();
+}
+
+/**
+ * Loads the initial list of users when the modal opens.
+ */
+const loadInitialUsers = async () => {
+  allProfessionals.value = await fetchAndMapUsers(); // `allProfessionals` now stores mapped users
+  _applyClientSideFilters(); // Apply client-side filtering for any existing searchQuery
 };
 
-const _applyFilters = () => {
+/**
+ * Filters the `allProfessionals` list (which contains all fetched users)
+ * client-side based on `searchQuery`.
+ */
+const _applyClientSideFilters = () => {
   if (!searchQuery.value.trim()) {
     filteredProfessionals.value = [...allProfessionals.value];
   } else {
     const lowerQuery = searchQuery.value.toLowerCase();
     filteredProfessionals.value = allProfessionals.value.filter(prof =>
-      prof.name.toLowerCase().includes(lowerQuery) ||
-      prof.cid.toLowerCase().includes(lowerQuery) ||
-      prof.registration_no.toLowerCase().includes(lowerQuery) ||
+      (prof.name && prof.name.toLowerCase().includes(lowerQuery)) ||
+      (prof.cid && prof.cid.toLowerCase().includes(lowerQuery)) ||
+      (prof.registration_no && prof.registration_no.toLowerCase().includes(lowerQuery)) ||
       (prof.designation && prof.designation.toLowerCase().includes(lowerQuery))
     );
   }
 };
 
-const debouncedFilterProfessionals = debounce(_applyFilters, 300);
+// Debounces the client-side filtering logic
+const debouncedFilterProfessionals = debounce(_applyClientSideFilters, 300);
 
 const isSelected = (profId) => {
   return tempSelectedProfessionals.value.some(p => p.id === profId);
@@ -195,9 +233,9 @@ const isSelected = (profId) => {
 const toggleSelection = (professional) => {
   const index = tempSelectedProfessionals.value.findIndex(p => p.id === professional.id);
   if (index > -1) {
-    tempSelectedProfessionals.value.splice(index, 1); // Deselect
+    tempSelectedProfessionals.value.splice(index, 1);
   } else {
-    tempSelectedProfessionals.value.push({...professional}); // Select (add a copy)
+    tempSelectedProfessionals.value.push({ ...professional });
   }
 };
 
@@ -206,32 +244,25 @@ const closeModal = () => {
 };
 
 const confirmSelection = () => {
-  emit('confirm', [...tempSelectedProfessionals.value]); // Send a copy of selected items
+  emit('confirm', [...tempSelectedProfessionals.value]);
   closeModal();
 };
 
 watch(() => props.isOpen, (newVal) => {
   if (newVal) {
-    searchQuery.value = ''; // Reset search on open
-    // Initialize tempSelectedProfessionals based on initiallySelectedIds from the main modal
-    // Ensure allProfessionals is loaded before trying to find objects by ID
-    loadProfessionals().then(() => {
-        tempSelectedProfessionals.value = allProfessionals.value.filter(p =>
-            props.initiallySelectedIds.includes(p.id)
-        ).map(p => ({...p})); // Store copies
+    searchQuery.value = '';
+    loadInitialUsers().then(() => {
+      if (allProfessionals.value && allProfessionals.value.length > 0) {
+        tempSelectedProfessionals.value = allProfessionals.value
+          .filter(p => props.initiallySelectedIds.includes(p.id))
+          .map(p => ({ ...p }));
+      } else {
+        tempSelectedProfessionals.value = [];
+      }
     });
-
-  } else {
-    // Optional: Clear selections when modal is fully closed to avoid stale state if reopened quickly
-    // tempSelectedProfessionals.value = [];
   }
 });
-
-// Fetch professionals when the component is mounted or when the modal becomes visible
-// This example loads when modal becomes visible.
-// onMounted(loadProfessionals); // Could also load on mount if preferred
 </script>
-
 <style scoped>
 .max-h-96 {
   max-height: 24rem; /* 384px */
