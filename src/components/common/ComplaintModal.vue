@@ -126,25 +126,41 @@
                     </div>
                   </div>
 
-                  <!-- Date and time of Incident -->
+                  <!-- Date and Time of Incident -->
                   <div class="bg-gray-50 p-5 rounded-lg">
                     <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
                       <Calendar class="w-4 h-4 mr-2 text-red-500" />
                       Incident Details
                     </h4>
-                    <div>
-                      <label for="incidentDateTime" class="block text-sm font-medium text-gray-700 mb-1">
-                        Date and Time of Incident <span class="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="datetime-local"
-                        id="incidentDateTime"
-                        v-model="form.incidentDateTime"
-                        required
-                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                        :class="{ 'border-red-500 ring-1 ring-red-500': errors.incidentDateTime }"
-                      />
-                      <p v-if="errors.incidentDateTime" class="mt-1 text-xs text-red-600">{{ errors.incidentDateTime }}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label for="incidentDate" class="block text-sm font-medium text-gray-700 mb-1">
+                          Date of Incident <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="date"
+                          id="incidentDate"
+                          v-model="form.incidentDate"
+                          required
+                          class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                          :class="{ 'border-red-500 ring-1 ring-red-500': errors.incidentDate }"
+                        />
+                        <p v-if="errors.incidentDate" class="mt-1 text-xs text-red-600">{{ errors.incidentDate }}</p>
+                      </div>
+                      <div>
+                        <label for="incidentTime" class="block text-sm font-medium text-gray-700 mb-1">
+                          Time of Incident <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="time"
+                          id="incidentTime"
+                          v-model="form.incidentTime"
+                          required
+                          class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                          :class="{ 'border-red-500 ring-1 ring-red-500': errors.incidentTime }"
+                        />
+                        <p v-if="errors.incidentTime" class="mt-1 text-xs text-red-600">{{ errors.incidentTime }}</p>
+                      </div>
                     </div>
                   </div>
 
@@ -155,7 +171,8 @@
                       Complaint Details
                     </h4>
                     <div>
-                      <label for="grievance" class="block text-sm font-medium text-gray-700 mb-1">
+                      <label for="grievance" class="block text-sm font-medium text-gray- نداشته
+                      mb-1">
                         Grievance/Complaint Details <span class="text-red-500">*</span>
                       </label>
                       <textarea
@@ -257,11 +274,12 @@
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label for="submitterContact" class="block text-sm font-medium text-gray-700 mb-1">
-                            Contact Number (9 digits) <span class="text-red-500">*</span>
+                            Contact Number <span class="text-red-500">*</span>
                           </label>
                           <div class="relative">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                               <Phone class="h-4 w-4 text-gray-400" />
+                              <span class="ml-2 text-gray-500">+975</span>
                             </div>
                             <input
                               type="tel"
@@ -271,7 +289,7 @@
                               maxlength="9"
                               pattern="\d{9}"
                               title="Please enter a 9-digit contact number"
-                              class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                              class="block w-full pl-16 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                               :class="{ 'border-red-500 ring-1 ring-red-500': errors.submitterContact }"
                             />
                           </div>
@@ -398,7 +416,7 @@ import {
   Shield
 } from 'lucide-vue-next'
 import { useToast } from 'vue-toastification'
-import apiService from '@/services/services' // Updated apiService path
+import apiService from '@/services/services'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -417,7 +435,8 @@ const initialFormState = () => ({
     designation: '',
     workplace: '',
   },
-  incidentDateTime: '',
+  incidentDate: '',
+  incidentTime: '',
   grievance: '',
   aggrievedParty: {
     name: '',
@@ -440,37 +459,38 @@ const captcha = reactive({ num1: 0, num2: 0, answer: 0 })
 const isSubmitting = ref(false)
 
 const formProgress = computed(() => {
-  let filledFields = 0;
-  let totalFields = 11;
+  let filledFields = 0
+  let totalFields = 12 // Increased due to separate date and time fields
 
-  if (form.professionalCategory) filledFields++;
-  if (form.professionalDetails.name.trim()) filledFields++;
-  if (form.professionalDetails.designation.trim()) filledFields++;
-  if (form.professionalDetails.workplace.trim()) filledFields++;
-  if (form.incidentDateTime) filledFields++;
-  if (form.grievance.trim()) filledFields++;
-  if (form.aggrievedParty.name.trim()) filledFields++;
-  if (form.aggrievedParty.address.trim()) filledFields++;
-  if (form.submittedBy.name.trim()) filledFields++;
-  if (form.submittedBy.contactNumber.trim() && /^\d{9}$/.test(form.submittedBy.contactNumber.trim())) filledFields++;
-  if (form.submittedBy.email.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.submittedBy.email.trim())) filledFields++;
-  if (form.submittedBy.address.trim()) filledFields++;
-  if (form.captchaAnswer !== '' && parseInt(form.captchaAnswer) === captcha.answer) filledFields++;
+  if (form.professionalCategory) filledFields++
+  if (form.professionalDetails.name.trim()) filledFields++
+  if (form.professionalDetails.designation.trim()) filledFields++
+  if (form.professionalDetails.workplace.trim()) filledFields++
+  if (form.incidentDate) filledFields++
+  if (form.incidentTime) filledFields++
+  if (form.grievance.trim()) filledFields++
+  if (form.aggrievedParty.name.trim()) filledFields++
+  if (form.aggrievedParty.address.trim()) filledFields++
+  if (form.submittedBy.name.trim()) filledFields++
+  if (form.submittedBy.contactNumber.trim() && /^\d{9}$/.test(form.submittedBy.contactNumber.trim())) filledFields++
+  if (form.submittedBy.email.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.submittedBy.email.trim())) filledFields++
+  if (form.submittedBy.address.trim()) filledFields++
+  if (form.captchaAnswer !== '' && parseInt(form.captchaAnswer) === captcha.answer) filledFields++
 
-  return Math.round((filledFields / totalFields) * 100);
-});
+  return Math.round((filledFields / totalFields) * 100)
+})
 
 const generateCaptcha = () => {
   captcha.num1 = Math.floor(Math.random() * 10) + 1
   captcha.num2 = Math.floor(Math.random() * 10) + 1
   captcha.answer = captcha.num1 + captcha.num2
-  form.captchaAnswer = '';
+  form.captchaAnswer = ''
 }
 
 const fetchProfessionalCategories = async () => {
   try {
     const response = await apiService.getMhpcMastersPersonnelCategories()
-    professionalCategories.value = response.data.results || response.data;
+    professionalCategories.value = response.data.results || response.data
   } catch (error) {
     console.error('Error fetching professional categories:', error)
     toast.error('Failed to load professional categories.')
@@ -478,15 +498,15 @@ const fetchProfessionalCategories = async () => {
 }
 
 const resetForm = () => {
-  Object.assign(form, initialFormState());
-  Object.keys(errors).forEach(key => delete errors[key]);
-  generateCaptcha();
-  attachmentName.value = '';
+  Object.assign(form, initialFormState())
+  Object.keys(errors).forEach(key => delete errors[key])
+  generateCaptcha()
+  attachmentName.value = ''
   nextTick(() => {
     if (fileInput.value) {
-      fileInput.value.value = '';
+      fileInput.value.value = ''
     }
-  });
+  })
 }
 
 const closeModal = () => {
@@ -496,7 +516,7 @@ const closeModal = () => {
 
 watch(() => props.isOpen, (newVal) => {
   if (newVal) {
-    resetForm();
+    resetForm()
     if (professionalCategories.value.length === 0) {
       fetchProfessionalCategories()
     }
@@ -505,162 +525,167 @@ watch(() => props.isOpen, (newVal) => {
 })
 
 const handleFileChange = (event) => {
-  const files = event.target.files;
-  errors.attachment = '';
+  const files = event.target.files
+  errors.attachment = ''
 
   if (files && files.length > 0) {
-    const file = files[0];
+    const file = files[0]
 
     if (file.type !== 'application/pdf') {
-      errors.attachment = 'Only PDF files are allowed.';
-      attachmentName.value = '';
+      errors.attachment = 'Only PDF files are allowed.'
+      attachmentName.value = ''
       if (fileInput.value) {
-        fileInput.value.value = '';
+        fileInput.value.value = ''
       }
-      return;
+      return
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      errors.attachment = 'File size must be less than 5MB.';
-      attachmentName.value = '';
+      errors.attachment = 'File size must be less than 5MB.'
+      attachmentName.value = ''
       if (fileInput.value) {
-        fileInput.value.value = '';
+        fileInput.value.value = ''
       }
-      return;
+      return
     }
 
-    attachmentName.value = file.name;
-    form.attachment = file;
+    attachmentName.value = file.name
+    form.attachment = file
   } else {
-    attachmentName.value = '';
-    form.attachment = null;
+    attachmentName.value = ''
+    form.attachment = null
   }
 }
 
 const validateForm = () => {
-  Object.keys(errors).forEach(key => delete errors[key]);
-  let isValid = true;
+  Object.keys(errors).forEach(key => delete errors[key])
+  let isValid = true
 
   if (!form.professionalCategory) {
-    errors.professionalCategory = 'Professional category is required.';
-    isValid = false;
+    errors.professionalCategory = 'Professional category is required.'
+    isValid = false
   }
   if (!form.professionalDetails.name.trim()) {
-    errors.profName = 'Professional\'s name is required.';
-    isValid = false;
+    errors.profName = 'Professional\'s name is required.'
+    isValid = false
   }
   if (!form.professionalDetails.designation.trim()) {
-    errors.profDesignation = 'Professional\'s designation is required.';
-    isValid = false;
+    errors.profDesignation = 'Professional\'s designation is required.'
+    isValid = false
   }
   if (!form.professionalDetails.workplace.trim()) {
-    errors.profWorkplace = 'Professional\'s workplace is required.';
-    isValid = false;
+    errors.profWorkplace = 'Professional\'s workplace is required.'
+    isValid = false
   }
-  if (!form.incidentDateTime) {
-    errors.incidentDateTime = 'Incident date and time are required.';
-    isValid = false;
+  if (!form.incidentDate) {
+    errors.incidentDate = 'Incident date is required.'
+    isValid = false
   } else {
-    const incidentDate = new Date(form.incidentDateTime);
+    const incidentDate = new Date(form.incidentDate)
     if (incidentDate > new Date()) {
-        errors.incidentDateTime = 'Incident date cannot be in the future.';
-        isValid = false;
+      errors.incidentDate = 'Incident date cannot be in the future.'
+      isValid = false
     }
   }
+  if (!form.incidentTime) {
+    errors.incidentTime = 'Incident time is required.'
+    isValid = false
+  }
   if (!form.grievance.trim()) {
-    errors.grievance = 'Grievance details are required.';
-    isValid = false;
+    errors.grievance = 'Grievance details are required.'
+    isValid = false
   }
   if (!form.aggrievedParty.name.trim()) {
-    errors.aggrievedName = 'Aggrieved party name is required.';
-    isValid = false;
+    errors.aggrievedName = 'Aggrieved party name is required.'
+    isValid = false
   }
   if (!form.aggrievedParty.address.trim()) {
-    errors.aggrievedAddress = 'Aggrieved party address is required.';
-    isValid = false;
+    errors.aggrievedAddress = 'Aggrieved party address is required.'
+    isValid = false
   }
   if (!form.submittedBy.name.trim()) {
-    errors.submitterName = 'Your name is required.';
-    isValid = false;
+    errors.submitterName = 'Your name is required.'
+    isValid = false
   }
   if (!form.submittedBy.contactNumber.trim()) {
-    errors.submitterContact = 'Your contact number is required.';
-    isValid = false;
+    errors.submitterContact = 'Your contact number is required.'
+    isValid = false
   } else if (!/^\d{9}$/.test(form.submittedBy.contactNumber.trim())) {
-    errors.submitterContact = 'Contact number must be 9 digits.';
-    isValid = false;
+    errors.submitterContact = 'Contact number must be 9 digits.'
+    isValid = false
   }
   if (!form.submittedBy.email.trim()) {
-    errors.submitterEmail = 'Your email is required.';
-    isValid = false;
+    errors.submitterEmail = 'Your email is required.'
+    isValid = false
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.submittedBy.email.trim())) {
-    errors.submitterEmail = 'Invalid email format.';
-    isValid = false;
+    errors.submitterEmail = 'Invalid email format.'
+    isValid = false
   }
   if (!form.submittedBy.address.trim()) {
-    errors.submitterAddress = 'Your address is required.';
-    isValid = false;
+    errors.submitterAddress = 'Your address is required.'
+    isValid = false
   }
   if (form.captchaAnswer === '' || parseInt(form.captchaAnswer) !== captcha.answer) {
-    errors.captcha = 'Incorrect captcha answer.';
-    isValid = false;
+    errors.captcha = 'Incorrect captcha answer.'
+    isValid = false
   }
 
-  return isValid;
+  return isValid
 }
 
 const handleSubmitComplaint = async () => {
   if (!validateForm()) {
-    toast.error('Please correct the errors in the form.');
-    const firstErrorElement = document.querySelector('.border-red-500');
+    toast.error('Please correct the errors in the form.')
+    const firstErrorElement = document.querySelector('.border-red-500')
     if (firstErrorElement) {
-      firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
-    return;
+    return
   }
 
-  isSubmitting.value = true;
+  isSubmitting.value = true
 
-  const formData = new FormData();
-  formData.append('professional_category', form.professionalCategory);
-  formData.append('professional_name', form.professionalDetails.name);
-  formData.append('professional_designation', form.professionalDetails.designation);
-  formData.append('professional_workplace', form.professionalDetails.workplace);
-  formData.append('incident_datetime', form.incidentDateTime);
-  formData.append('grievance_details', form.grievance);
-  formData.append('aggrieved_party_name', form.aggrievedParty.name);
-  formData.append('aggrieved_party_address', form.aggrievedParty.address);
-  formData.append('submitted_by_name', form.submittedBy.name);
-  formData.append('submitted_by_contact_number', form.submittedBy.contactNumber);
-  formData.append('submitted_by_email', form.submittedBy.email);
-  formData.append('submitted_by_address', form.submittedBy.address);
+  const formData = new FormData()
+  formData.append('professional_category', form.professionalCategory)
+  formData.append('professional_name', form.professionalDetails.name)
+  formData.append('professional_designation', form.professionalDetails.designation)
+  formData.append('professional_workplace', form.professionalDetails.workplace)
+  formData.append('incident_date', form.incidentDate)
+  formData.append('incident_time', form.incidentTime)
+  formData.append('grievance_details', form.grievance)
+  formData.append('aggrieved_party_name', form.aggrievedParty.name)
+  formData.append('aggrieved_party_address', form.aggrievedParty.address)
+  formData.append('submitted_by_name', form.submittedBy.name)
+  formData.append('submitted_by_contact_number', `+975${form.submittedBy.contactNumber}`)
+  formData.append('submitted_by_email', form.submittedBy.email)
+  formData.append('submitted_by_address', form.submittedBy.address)
 
   if (form.attachment) {
-    formData.append('attachment', form.attachment);
+    formData.append('attachment', form.attachment)
   }
 
   try {
-    const response = await apiService.submitMhpcComplaint(formData);
+    const response = await apiService.submitMhpcComplaint(formData)
     toast.success('Complaint submitted successfully!', {
       icon: '✅',
       timeout: 4000,
-    });
-    emit('complaint-submitted', response.data);
-    closeModal();
+    })
+    emit('complaint-submitted', response.data)
+    closeModal()
   } catch (error) {
-    console.error('Error submitting complaint:', error);
-    toast.error(error.response?.data?.message || 'Failed to submit complaint. Please try again.');
+    console.error('Error submitting complaint:', error)
+    toast.error(error.response?.data?.message || 'Failed to submit complaint. Please try again.')
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
 }
 
 onMounted(() => {
   if (props.isOpen && professionalCategories.value.length === 0) {
-    fetchProfessionalCategories();
-    generateCaptcha();
+    fetchProfessionalCategories()
+    generateCaptcha()
   }
-});
+})
 </script>
 
 <style scoped>
