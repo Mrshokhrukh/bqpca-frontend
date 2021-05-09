@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <!-- Complaints.vue -->
 <template>
   <div class="p-4 md:p-6 bg-gray-100 min-h-screen">
@@ -62,7 +63,7 @@
           </tr>
           <!-- ***** MODIFIED SECTION FOR DISPLAYING COMPLAINT DATA ***** -->
           <tr v-for="complaint in filteredComplaints" :key="complaint.id">
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ complaint.complaint_id }}</td> 
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ complaint.complaint_id }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 max-w-xs truncate" :title="complaint.grievance_details">
               {{ complaint.grievance_details }}
             </td>

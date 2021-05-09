@@ -1,4 +1,3 @@
-<!-- ComplaintManageModal.vue -->
 <template>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModal" class="relative z-10">
@@ -33,7 +32,7 @@
               <div v-if="!props.complaint" class="mt-4 text-center">
                 <p class="text-gray-500">Loading complaint details...</p>
               </div>
-              <div v-else class="mt-4 space-y-4">
+              <div v-else class="mt-4 space-y-6">
                 <!-- Display Original Complaint Details (Mostly Read-Only) -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
@@ -45,12 +44,12 @@
                     <p class="text-gray-600">{{ localFormData.submitted_by_email }} | {{ localFormData.submitted_by_contact_number }}</p>
                   </div>
                   <div>
-                    <strong class="block text-gray-700">Professional Involved:</strong>
-                    <p class="text-gray-600">{{ localFormData.professional_name }} ({{ localFormData.professional_designation }})</p>
+                    <strong class="block text-gray-700">Initially Reported Professional:</strong>
+                    <p class="text-gray-600">{{ localFormData.professional_name || 'N/A' }} ({{ localFormData.professional_designation || 'N/A' }})</p>
                   </div>
                    <div>
-                    <strong class="block text-gray-700">Workplace:</strong>
-                    <p class="text-gray-600">{{ localFormData.professional_workplace }}</p>
+                    <strong class="block text-gray-700">Workplace (Initially Reported):</strong>
+                    <p class="text-gray-600">{{ localFormData.professional_workplace || 'N/A' }}</p>
                   </div>
                   <div>
                     <strong class="block text-gray-700">Incident Date:</strong>
@@ -74,6 +73,7 @@
                   </div>
                 </div>
                 <hr/>
+
                 <!-- Fields for Dealing Officer to Update -->
                 <div>
                   <label for="modal-status" class="block text-sm font-medium text-gray-700">Update Status:</label>
@@ -89,12 +89,88 @@
                   </select>
                 </div>
 
+                <!-- Manage Professionals Implicated in Complaint Section -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-gray-700">Manage Professionals Implicated in this Complaint:</label>
+                  <div class="flex space-x-2">
+                    <input
+                      type="text"
+                      v-model="professionalSearchQuery"
+                      @keyup.enter="searchProfessionals"
+                      placeholder="Search by CID or Registration No."
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
+                    />
+                    <button
+                      type="button"
+                      @click="searchProfessionals"
+                      :disabled="isSearchingProfessionals"
+                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                    >
+                      {{ isSearchingProfessionals ? 'Searching...' : 'Search' }}
+                    </button>
+                  </div>
+
+                  <!-- Search Results -->
+                  <div v-if="professionalSearchResults.length > 0" class="mt-2 border rounded-md max-h-48 overflow-y-auto">
+                    <ul>
+                      <li
+                        v-for="prof in professionalSearchResults"
+                        :key="prof.id"
+                        class="p-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center text-sm"
+                        @click="addImplicatedProfessional(prof)"
+                      >
+                        <div>
+                          <span class="font-semibold">{{ prof.name }}</span>
+                          <span class="block text-xs text-gray-500">CID: {{ prof.cid }} | Reg No: {{ prof.registration_no }}</span>
+                        </div>
+                        <button
+                          type="button"
+                          class="ml-2 px-2 py-1 text-xs font-medium text-white bg-green-500 hover:bg-green-600 rounded-md"
+                        >
+                          Add to Implicated
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                  <p v-if="professionalSearchAttempted && professionalSearchResults.length === 0 && !isSearchingProfessionals" class="text-sm text-gray-500 mt-1">
+                    No professionals found matching your query.
+                  </p>
+
+                  <!-- Display Implicated Professionals -->
+                  <div v-if="localFormData.implicated_professionals_list && localFormData.implicated_professionals_list.length > 0" class="mt-3">
+                    <strong class="block text-xs font-medium text-gray-600 mb-1">Currently Implicated Professionals:</strong>
+                    <ul class="space-y-1">
+                      <li
+                        v-for="(implicatedProf, index) in localFormData.implicated_professionals_list"
+                        :key="implicatedProf.id"
+                        class="flex justify-between items-center p-2 bg-gray-50 rounded-md text-sm border"
+                      >
+                        <div>
+                          <span class="font-medium">{{ implicatedProf.name }}</span>
+                          <span class="block text-xs text-gray-500">CID: {{ implicatedProf.cid }} | Reg No: {{ implicatedProf.registration_no }}</span>
+                        </div>
+                        <button
+                          type="button"
+                          @click="removeImplicatedProfessional(index)"
+                          class="text-red-500 hover:text-red-700 text-xs font-semibold"
+                        >
+                          Remove
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                   <p v-else-if="localFormData.implicated_professionals_list" class="text-sm text-gray-500 mt-1">
+                    No professionals formally implicated in this complaint yet.
+                  </p>
+                </div>
+                <!-- End Manage Implicated Professionals Section -->
+
                 <div>
                   <label for="modal-remarks" class="block text-sm font-medium text-gray-700">Internal Remarks/Notes:</label>
                   <textarea
                     id="modal-remarks"
                     v-model="localFormData.remarks"
-                    rows="4"
+                    rows="3"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
                     placeholder="Add any internal notes or actions taken..."
                   ></textarea>
@@ -128,56 +204,122 @@
 </template>
 
 <script setup>
-import {  watch, defineProps, defineEmits, reactive } from 'vue';
+import { ref, watch, defineProps, defineEmits, reactive } from 'vue';
 import {
   TransitionRoot,
   TransitionChild,
   Dialog,
   DialogPanel,
   DialogTitle,
-} from '@headlessui/vue'; // Assuming you have headlessui installed
+} from '@headlessui/vue';
 
 const props = defineProps({
   isOpen: Boolean,
   complaint: Object, // This will be the selectedComplaint object
-  complaintStatuses: Array // Array of status objects {id, name} or strings
+  // Example: complaint: { ..., implicated_professionals: [{id:'1', name:'X', cid:'Y'}] }
+  complaintStatuses: Array
 });
 
 const emit = defineEmits(['close', 'updated']);
 
-// Reactive form data for the modal
 const localFormData = reactive({
   // Complaint's own ID (PK)
   id: null,
-  // Displayable Complaint ID (e.g., COMP-XXXX)
   complaint_id: '',
 
   // Fields for display (mostly from original complaint)
   grievance_details: '',
-  professional_name: '',
-  professional_designation: '',
-  professional_workplace: '',
+  professional_name: '', // Initially reported professional
+  professional_designation: '', // Initially reported professional
+  professional_workplace: '', // Initially reported professional
   incident_datetime: null,
-  created_at: null, // Date submitted
+  created_at: null,
   attachment: null,
   submitted_by_name: '',
   submitted_by_email: '',
   submitted_by_contact_number: '',
-  professional_category_name: '', // From the fetched detail
+  professional_category_name: '',
 
   // Fields for officer to update
   status: '',
-  remarks: ''
+  remarks: '',
+  implicated_professionals_list: [] // NEW: Array to hold ALL professionals implicated in the complaint
 });
 
-// Watch the incoming complaint prop to update the local form data
+// State for professional search
+const professionalSearchQuery = ref('');
+const professionalSearchResults = ref([]);
+const isSearchingProfessionals = ref(false);
+const professionalSearchAttempted = ref(false);
+
+// --- Mock Professional Search API (Replace with actual API) ---
+async function fetchProfessionalsAPI(query) {
+  console.log(`API: Searching professionals with query: "${query}"`);
+  await new Promise(resolve => setTimeout(resolve, 700));
+  const mockProfessionals = [
+    { id: 'prof_1', name: 'Dr. Eva Green', cid: '123450001', registration_no: 'REG001X', designation: 'Cardiologist' },
+    { id: 'prof_2', name: 'Mr. John Doe', cid: '678900002', registration_no: 'REG002Y', designation: 'Nurse Practitioner' },
+    { id: 'prof_3', name: 'Ms. Jane Smith', cid: '112230003', registration_no: 'REG003Z', designation: 'Surgeon' },
+    { id: 'prof_4', name: 'Dr. Eva Marlie', cid: '555550004', registration_no: 'REG004A', designation: 'Pediatrician' },
+    { id: 'prof_5', name: 'Mr. Johnathan Doel', cid: '999990005', registration_no: 'REG005B', designation: 'General Practitioner' }
+  ];
+  if (!query || query.trim() === '') return [];
+  const lowerQuery = query.toLowerCase();
+  return mockProfessionals.filter(p =>
+    p.cid.includes(lowerQuery) ||
+    p.registration_no.toLowerCase().includes(lowerQuery) ||
+    p.name.toLowerCase().includes(lowerQuery)
+  );
+}
+// --- End Mock API ---
+
+const searchProfessionals = async () => {
+  if (!professionalSearchQuery.value.trim()) {
+    professionalSearchResults.value = [];
+    professionalSearchAttempted.value = false;
+    return;
+  }
+  isSearchingProfessionals.value = true;
+  professionalSearchAttempted.value = true;
+  try {
+    professionalSearchResults.value = await fetchProfessionalsAPI(professionalSearchQuery.value);
+  } catch (error) {
+    console.error("Error searching professionals:", error);
+    professionalSearchResults.value = [];
+  } finally {
+    isSearchingProfessionals.value = false;
+  }
+};
+
+const addImplicatedProfessional = (professional) => {
+  if (!localFormData.implicated_professionals_list) {
+    localFormData.implicated_professionals_list = [];
+  }
+  const isAlreadyAdded = localFormData.implicated_professionals_list.some(p => p.id === professional.id);
+  if (!isAlreadyAdded) {
+    // Ensure we add all necessary fields, esp. if search result has more/less than needed for display
+    localFormData.implicated_professionals_list.push({
+        id: professional.id,
+        name: professional.name,
+        cid: professional.cid,
+        registration_no: professional.registration_no
+        // Add other relevant fields like designation if available and needed in the list
+    });
+  }
+  professionalSearchResults.value = [];
+  professionalSearchQuery.value = '';
+  professionalSearchAttempted.value = false;
+};
+
+const removeImplicatedProfessional = (index) => {
+  localFormData.implicated_professionals_list.splice(index, 1);
+};
+
 watch(() => props.complaint, (newComplaintData) => {
   console.log('Modal: props.complaint changed:', newComplaintData);
   if (newComplaintData && typeof newComplaintData === 'object' && newComplaintData.id) {
-    // Assign all relevant fields from the prop to localFormData
     localFormData.id = newComplaintData.id;
     localFormData.complaint_id = newComplaintData.complaint_id || '';
-
     localFormData.grievance_details = newComplaintData.grievance_details || '';
     localFormData.professional_name = newComplaintData.professional_name || '';
     localFormData.professional_designation = newComplaintData.professional_designation || '';
@@ -189,18 +331,28 @@ watch(() => props.complaint, (newComplaintData) => {
     localFormData.submitted_by_email = newComplaintData.submitted_by_email || '';
     localFormData.submitted_by_contact_number = newComplaintData.submitted_by_contact_number || '';
     localFormData.professional_category_name = newComplaintData.professional_category_name || '';
-
-
-    // Fields officer can edit
     localFormData.status = newComplaintData.status || '';
-    localFormData.remarks = newComplaintData.remarks || ''; // Load existing remarks
+    localFormData.remarks = newComplaintData.remarks || '';
+
+    // Initialize implicated_professionals_list from the prop
+    // Assuming prop `complaint` has a field like `implicated_professionals` (array of professional objects)
+    localFormData.implicated_professionals_list = Array.isArray(newComplaintData.implicated_professionals)
+      ? [...newComplaintData.implicated_professionals.map(p => ({...p}))] // Deep copy
+      : [];
 
   } else if (newComplaintData === null) {
-    // Reset form when complaint is null (e.g., modal closed and prop reset)
     Object.keys(localFormData).forEach(key => {
-      localFormData[key] = (typeof localFormData[key] === 'string') ? '' : null;
+      if (key === 'implicated_professionals_list') {
+        localFormData[key] = [];
+      } else {
+        localFormData[key] = (typeof localFormData[key] === 'string') ? '' : null;
+      }
     });
-    localFormData.id = null; // Ensure ID is also reset
+    localFormData.id = null;
+    professionalSearchQuery.value = '';
+    professionalSearchResults.value = [];
+    isSearchingProfessionals.value = false;
+    professionalSearchAttempted.value = false;
   }
 }, { immediate: true, deep: true });
 
@@ -209,20 +361,17 @@ const closeModal = () => {
 };
 
 const handleUpdate = () => {
-  // Prepare only the data that needs to be sent for update
-  // Typically, this would be the fields the officer can change: status and remarks.
-  // The `id` is crucial for the backend to know which complaint to update.
   const updatePayload = {
-    id: localFormData.id, // The PK of the complaint
+    id: localFormData.id,
     status: localFormData.status,
-    remarks: localFormData.remarks
-    // Add any other fields that the dealing officer is allowed to modify via this modal
+    remarks: localFormData.remarks,
+    // Send IDs of all currently implicated professionals
+    implicated_professional_ids: localFormData.implicated_professionals_list.map(p => p.id),
   };
   console.log('Modal: Emitting update event with payload:', updatePayload);
   emit('updated', updatePayload);
 };
 
-// Utility function for formatting dates (can be moved to a utils file)
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
   try {
@@ -230,15 +379,17 @@ const formatDate = (dateString) => {
       year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
     });
   } catch (e) {
+    console.error('Error formatting date:', e);
     return 'Invalid Date';
   }
 };
-
 </script>
 
 <style scoped>
-/* Add any modal-specific styles if needed */
 .max-h-40 {
   max-height: 10rem; /* 160px */
+}
+.max-h-48 {
+  max-height: 12rem; /* 192px */
 }
 </style>
