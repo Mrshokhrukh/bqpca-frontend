@@ -1,696 +1,712 @@
 <template>
-  <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-gray-50 min-h-screen">
+  <div class="min-h-screen py-8">
     <InstituteHeader
-      title="Detailed Project Report (DPR)"
-      subtitle="Complete and submit your report for establishing a Medical and Health Educational Institution."
+      title="Your DPR Applications"
+      subtitle="Manage and track your Detailed Project Report applications for MHPC accreditation."
       :show-actions="false"
+      class="mx-4"
     />
 
-    <div v-if="isLoading" class="flex flex-col items-center justify-center min-h-[400px] mt-8">
-      <Loader class="animate-spin text-indigo-600 w-12 h-12" />
-      <p class="mt-4 text-lg font-medium text-gray-700">Loading Application Status & DPR Data...</p>
-    </div>
-
-    <div v-else-if="apiError" class="mt-8 text-center py-16 bg-red-50 rounded-2xl border border-red-200 shadow-sm">
-        <p class="text-red-700 text-lg font-medium">{{ initialErrorMsg || 'An error occurred loading DPR application data.' }}</p>
-        <p class="text-red-600 text-sm mt-2">Please try refreshing the page. If the problem persists, contact support.</p>
-        <p v-if="debugErrorDetails" class="text-xs text-red-400 mt-1">Debug: {{ debugErrorDetails }}</p>
-    </div>
-
-    <!-- EOI Status Messages -->
-    <div v-else-if="reviewDecision === 'Regretted'" class="max-w-3xl mx-auto mt-8">
-      <div class="bg-red-50 border border-red-200 rounded-xl p-6 shadow-md" role="alert">
-        <div class="flex items-start">
-          <ExclamationTriangleIcon class="h-6 w-6 text-red-500 mr-3 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-semibold text-lg text-red-800">EOI Application Regretted</p>
-            <p class="mt-2 text-red-700">
-              Your Expression of Interest (EOI) application was not approved. You cannot submit a
-              Detailed Project Report (DPR) at this time.
-            </p>
-            <p v-if="eoiRejectionReason" class="mt-1 text-sm text-red-600">
-              Reason: {{ eoiRejectionReason }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div v-else-if="reviewDecision === 'NotSubmitted'" class="max-w-3xl mx-auto mt-8">
-      <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 shadow-md" role="alert">
-        <div class="flex items-start">
-          <InformationCircleIcon class="h-6 w-6 text-blue-500 mr-3 flex-shrink-0 mt-0.5" />
-          <div>
-            <p class="font-semibold text-lg text-blue-800">No EOI Submitted or Found</p>
-            <p class="mt-2 text-blue-700">
-              No matching Expression of Interest (EOI) application was found for your account (CID: {{ userCIDForDisplay }}).
-              Please submit an EOI before proceeding with a DPR.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- End EOI Status Messages -->
-
-
-    <!-- DPR Form (shown if EOI is Approved or PendingDPR) -->
-    <form
-      v-if="!isLoading && !apiError && (reviewDecision === 'Approved' || reviewDecision === 'PendingDPR')"
-      @submit.prevent="handleSubmit"
-      class="bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden mt-8"
-    >
-      <div v-if="reviewDecision === 'PendingDPR'" class="p-4 bg-yellow-50 border-b border-yellow-200 text-center">
-          <div class="flex items-center justify-center">
-            <ClockIcon class="h-5 w-5 text-yellow-600 mr-2 flex-shrink-0" />
-            <p class="text-sm text-yellow-800 font-medium">
-              Your EOI application is currently under review. You can prepare your DPR details below and save as a draft.
-              Submission will be enabled once your EOI is approved.
-            </p>
-          </div>
-      </div>
-
-      <div
-        v-for="(section, sectionIndex) in formSections"
-        :key="section.id"
-        class="form-section"
-      >
-        <div
-          :class="[
-            'section-header',
-            sectionIndex === 0 && reviewDecision !== 'PendingDPR' ? '' : 'border-t border-gray-200',
-          ]"
-        >
-          <component
-            :is="section.icon"
-            class="w-6 h-6 text-indigo-700 mr-3 flex-shrink-0"
-            aria-hidden="true"
-          />
-          <div>
-            <h3 class="text-lg font-semibold text-gray-900">{{ section.title }}</h3>
-            <p v-if="section.description" class="mt-1 text-xs text-gray-500">
-              {{ section.description }}
-            </p>
-          </div>
-        </div>
-
-        <div class="section-content">
-          <div
-            v-for="field in section.fields"
-            :key="field.id"
-            :class="field.fullWidth ? 'md:col-span-2' : ''"
-          >
-            <label
-              :for="field.id"
-              class="form-label"
-              :class="{ 'required-label': field.required && reviewDecision === 'Approved' }"
-            >
-              {{ field.label }}
-            </label>
+    <div class="sticky top-0 bg-white shadow-sm z-10 p-4 mx-4 rounded-lg mb-6">
+      <!-- Filter and Sort Controls -->
+      <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div class="flex gap-4 w-full md:w-auto">
+          <div class="relative w-full md:w-64">
             <input
-              v-if="['text', 'email', 'number'].includes(field.type)"
-              :type="field.type"
-              :id="field.id"
-              :value="field.modelKey ? formData[field.modelKey] : field.staticModel"
-              @input="field.modelKey ? (formData[field.modelKey] = $event.target.value) : null"
-              class="form-input"
-              :placeholder="field.placeholder"
-              :required="field.required && reviewDecision === 'Approved'"
-              :disabled="field.disabled || isSubmitting"
+              type="text"
+              v-model="searchQuery"
+              placeholder="Search by institution or DPR name..."
+              class="w-full pl-10 pr-4 py-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+              aria-label="Search applications"
             />
-            <textarea
-              v-else-if="field.type === 'textarea'"
-              :id="field.id"
-              v-model="formData[field.modelKey]"
-              :rows="field.rows || 4"
-              class="form-textarea"
-              :placeholder="field.placeholder"
-              :required="field.required && reviewDecision === 'Approved'"
-              :disabled="isSubmitting"
-            ></textarea>
-            <div v-else-if="field.type === 'file'" class="mt-1">
-              <input
-                :type="field.type"
-                :id="field.id"
-                :ref="el => { if (el) fileInputs[field.id] = el }"
-                @change="handleFileUpload(field.modelKey, $event)"
-                :accept="field.accept || '.pdf,.doc,.docx,.jpg,.png'"
-                class="form-file-input"
-                :disabled="isSubmitting"
-              />
-              <div v-if="formData[field.modelKey + '_filename'] || (typeof formData[field.modelKey] === 'string' && formData[field.modelKey])" class="mt-2 text-sm">
-                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-md border border-gray-200">
-                    <p class="text-gray-700 truncate flex-grow">
-                        <PaperClipIcon class="w-4 h-4 inline mr-1.5 text-gray-400" />
-                        <span class="font-medium">Current:</span>
-                        <a v-if="typeof formData[field.modelKey] === 'string' && formData[field.modelKey].startsWith('http')"
-                           :href="formData[field.modelKey]" target="_blank" class="text-blue-600 hover:underline">
-                            {{ getFileName(formData[field.modelKey]) }}
-                        </a>
-                        <span v-else>
-                            {{ formData[field.modelKey + '_filename'] || getFileName(formData[field.modelKey]) }}
-                        </span>
+            <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <select
+            v-model="filterStatus"
+            class="w-full md:w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2"
+            aria-label="Filter by status"
+          >
+            <option value="">All Statuses</option>
+            <option v-for="status in statusOptions" :key="status" :value="status">{{ status }}</option>
+          </select>
+          <select
+            v-model="filterDzongkhag"
+            class="w-full md:w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2"
+            aria-label="Filter by Dzongkhag"
+          >
+            <option value="">All Dzongkhags</option>
+            <option v-for="dzongkhag in dzongkhagOptions" :key="dzongkhag" :value="dzongkhag">{{ dzongkhag }}</option>
+          </select>
+        </div>
+        <div class="flex gap-4">
+          <button
+            @click="sortApplications"
+            class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            aria-label="Sort applications"
+          >
+            Sort by {{ sortOrder === 'desc' ? 'Newest' : 'Oldest' }}
+            <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="sortOrder === 'desc' ? 'M19 14l-7 7m0 0l-7-7m7 7V3' : 'M5 10l7-7m0 0l7 7m-7-7v18'" />
+            </svg>
+          </button>
+          <button
+            @click="fetchApplications"
+            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+            aria-label="Refresh applications"
+          >
+            Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-4">
+      <!-- Loading Skeleton -->
+      <div v-if="isLoading" class="space-y-6">
+        <div v-for="n in 3" :key="n" class="bg-white rounded-xl shadow-lg p-6 animate-pulse">
+          <div class="flex justify-between mb-4">
+            <div class="space-y-2">
+              <div class="h-6 bg-gray-200 rounded w-3/4"></div>
+              <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+            <div class="space-y-2">
+              <div class="h-4 bg-gray-200 rounded w-24"></div>
+              <div class="h-4 bg-gray-200 rounded w-32"></div>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="space-y-2">
+              <div class="h-4 bg-gray-200 rounded w-20"></div>
+              <div class="h-4 bg-gray-200 rounded w-28"></div>
+            </div>
+            <div class="space-y-2">
+              <div class="h-4 bg-gray-200 rounded w-20"></div>
+              <div class="h-4 bg-gray-200 rounded w-24"></div>
+            </div>
+            <div class="space-y-2">
+              <div class="h-4 bg-gray-200 rounded w-20"></div>
+              <div class="h-4 bg-gray-200 rounded w-28"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Error -->
+      <div v-else-if="apiError" class="text-center py-12 bg-red-50 rounded-xl border border-red-200">
+        <h3 class="text-xl font-semibold text-red-700 mb-2">Oops! Something went wrong.</h3>
+        <p class="text-red-600">{{ errorMessage }}</p>
+        <button
+          @click="fetchApplications"
+          class="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+
+      <!-- Applications List -->
+      <div v-else-if="filteredApplications.length > 0" class="space-y-6">
+        <div
+          v-for="application in paginatedApplications"
+          :key="application.id"
+          class="bg-white rounded-xl shadow-lg border border-gray-200 hover:border-blue-300 transition-all duration-300"
+        >
+          <div class="p-6 md:p-8">
+            <div class="flex flex-col sm:flex-row items-start justify-between mb-4">
+              <div class="mb-4 sm:mb-0">
+                <h3 class="text-xl font-semibold text-gray-900 mb-1">{{ application.name_of_institution }}</h3>
+                <p class="text-sm text-gray-500 mb-2">CID: {{ application.CID }} | DPR Name: {{ application.dpr_name }}</p>
+                <span
+                  :class="[
+                    'px-2.5 py-1 text-xs font-medium rounded-full cursor-help',
+                    getStatusColor(application.do_dpr_review_decision),
+                  ]"
+                  :title="getStatusTooltip(application.do_dpr_review_decision)"
+                >
+                  {{ application.do_dpr_review_decision || 'N/A' }}
+                </span>
+              </div>
+              <div class="text-left sm:text-right w-full sm:w-auto">
+                <p class="text-sm font-medium text-gray-800">Head of Institution</p>
+                <p class="text-sm text-gray-600">{{ application.head_of_institution_name }}</p>
+                <p class="text-sm text-gray-600">{{ application.head_of_institution_email }}</p>
+              </div>
+            </div>
+
+            <button
+              @click="toggleDetails(application.id)"
+              class="w-full flex items-center justify-between text-sm font-medium text-blue-600 hover:text-blue-800 mb-4"
+              :aria-expanded="expandedApplications[application.id]"
+              :aria-controls="'details-' + application.id"
+            >
+              {{ expandedApplications[application.id] ? 'Hide Details' : 'Show Details' }}
+              <svg
+                class="w-5 h-5 transform transition-transform"
+                :class="{ 'rotate-180': expandedApplications[application.id] }"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <div v-if="expandedApplications[application.id]" :id="'details-' + application.id" class="space-y-6">
+              <!-- Details Content -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 pt-4 border-t border-gray-100">
+                <div>
+                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Details</p>
+                  <p class="text-sm text-gray-700">{{ application.contact_no }}</p>
+                  <p class="text-sm text-gray-700">{{ application.email_address }}</p>
+                </div>
+                <div>
+                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Location</p>
+                  <p class="text-sm text-gray-700">{{ application.dzongkhag }}, {{ application.gewog || 'N/A' }}</p>
+                </div>
+                <div>
+                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Course Start Date</p>
+                  <p class="text-sm text-gray-700">{{ formatDate(application.commencement_date) }}</p>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-gray-100">
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">DPR Details</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <p class="text-sm font-semibold text-gray-800 mb-1">Executive Summary</p>
+                    <p class="text-sm text-gray-600">{{ application.executive_summary || 'Not provided' }}</p>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-gray-800 mb-1">DPR Review Summary</p>
+                    <p class="text-sm text-gray-600">{{ application.do_dpr_review_summary || 'Pending Review' }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-gray-100">
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Program Information</p>
+                <div class="flex flex-wrap gap-x-6 gap-y-4">
+                  <div>
+                    <p class="text-sm font-semibold text-gray-800">Program Type</p>
+                    <p class="text-sm text-gray-600">
+                      {{ application.type_of_programme === 'D' ? 'Diploma' : application.type_of_programme === 'B' ? 'Bachelor' : 'Other' }}
                     </p>
-                    <button
-                        type="button"
-                        @click="clearFile(field.modelKey, field.id)"
-                        class="ml-2 text-red-600 hover:text-red-800 font-medium text-xs"
-                        :disabled="isSubmitting"
-                    >
-                        Clear
-                    </button>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-gray-800">Duration</p>
+                    <p class="text-sm text-gray-600">{{ application.course_duration }} months</p>
+                  </div>
+                  <div v-if="application.do_dpr_review_decision === STATUS_REJECTED && application.do_dpr_reason_if_rejected">
+                    <p class="text-sm font-semibold text-red-700">Rejection Reason</p>
+                    <p class="text-sm text-red-600">{{ application.do_dpr_reason_if_rejected }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-gray-100">
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Application Timeline</p>
+                <div class="relative pl-6">
+                  <div class="absolute left-2 top-0 h-full w-0.5 bg-gray-200"></div>
+                  <div v-for="(event, index) in getTimeline(application)" :key="index" class="mb-4 relative">
+                    <div class="absolute left-[-20px] top-1 w-4 h-4 bg-blue-600 rounded-full border-2 border-white"></div>
+                    <p class="text-sm font-medium text-gray-800">{{ event.status }}</p>
+                    <p class="text-xs text-gray-500">{{ formatDate(event.date) }}</p>
+                  </div>
                 </div>
               </div>
             </div>
-            <p v-if="field.hint" class="text-gray-500 text-xs mt-1.5">
-              <em>{{ field.hint }}</em>
-            </p>
+
+            <!-- Payment and Certificate Actions -->
+            <div v-if="isPaymentPending(application) || isPaymentCompleted(application)" class="mt-6 pt-4 border-t border-gray-100">
+              <div class="flex flex-col sm:flex-row items-center justify-end gap-3">
+                <p
+                  v-if="isPaymentPending(application)"
+                  class="text-sm text-yellow-800 bg-yellow-100 px-3 py-1.5 rounded-md font-medium mr-0 sm:mr-auto text-center sm:text-left w-full sm:w-auto"
+                >
+                  <span class="font-semibold">Action Required:</span> Payment pending for approved application.
+                </p>
+                <button
+                  v-if="isPaymentPending(application)"
+                  @click="openPaymentConfirmationModal(application)"
+                  :disabled="isActionLoading[application.id]"
+                  class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors w-full sm:w-auto disabled:opacity-50"
+                >
+                  <svg v-if="isActionLoading[application.id]" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Make Payment
+                </button>
+                <button
+                  v-if="isPaymentCompleted(application)"
+                  @click="openCertificateModal(application)"
+                  :disabled="isActionLoading[application.id]"
+                  class="inline-flex items-center justify-center px-4 py-2 border border-green-600 text-sm font-medium rounded-md text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors w-full sm:w-auto disabled:opacity-50"
+                >
+                  <svg v-if="isActionLoading[application.id]" class="animate-spin -ml-1 mr-3 h-5 w-5 text-green-700" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  View Certificate
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-between items-center mt-6">
+          <div class="text-sm text-gray-600">
+            Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ Math.min(currentPage * itemsPerPage, filteredApplications.length) }} of {{ filteredApplications.length }} applications
+          </div>
+          <div class="flex gap-2">
+            <button
+              @click="currentPage--"
+              :disabled="currentPage === 1"
+              class="px-3 py-1 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              aria-label="Previous page"
+            >
+              Previous
+            </button>
+            <button
+              v-for="page in totalPages"
+              :key="page"
+              @click="currentPage = page"
+              :class="[
+                'px-3 py-1 rounded-md border text-sm font-medium',
+                currentPage === page ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
+              ]"
+              :aria-label="'Page ' + page"
+            >
+              {{ page }}
+            </button>
+            <button
+              @click="currentPage++"
+              :disabled="currentPage === totalPages"
+              class="px-3 py-1 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              aria-label="Next page"
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>
 
-      <div class="p-6 md:p-8 bg-gray-50 border-t border-gray-200">
-        <div class="flex flex-col sm:flex-row justify-end items-center space-y-3 sm:space-y-0 sm:space-x-4">
+      <!-- No Applications Found -->
+      <div v-else class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+        </svg>
+        <h3 class="mt-2 text-lg font-medium text-gray-900">No DPR Applications Found</h3>
+        <p class="mt-1 text-sm text-gray-500">
+          You currently don't have any DPR applications matching your records in the system.
+        </p>
+        <button
+          @click="startNewApplication"
+          class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+        >
+          Start New Application
+        </button>
+      </div>
+    </div>
+
+    <!-- Payment Confirmation Modal -->
+    <div v-if="showPaymentConfirmModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 max-w-md w-full">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirm Payment</h3>
+        <p class="text-sm text-gray-600 mb-6">
+          You are about to initiate payment for "{{ selectedApplication?.name_of_institution }}" (DPR: {{ selectedApplication?.dpr_name }}). Proceed to the payment gateway?
+        </p>
+        <div class="flex justify-end gap-4">
           <button
-            type="button"
-            @click="handleSaveDraft"
-            class="btn btn-outline w-full sm:w-auto"
-            :disabled="isSubmitting || reviewDecision === 'Regretted'"
+            @click="cancelPaymentConfirmation"
+            class="inline-flex items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
           >
-            <ArrowDownTrayIcon class="w-5 h-5 mr-2" />
-            Save as Draft
+            Cancel
           </button>
           <button
-            type="submit"
-            class="btn btn-primary w-full sm:w-auto"
-            :disabled="isSubmitting || reviewDecision !== 'Approved'"
+            @click="handleProceedWithPaymentFlow"
+            class="inline-flex items-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
           >
-            <PaperAirplaneIcon
-              v-if="!isSubmitting"
-              class="w-5 h-5 mr-2 transform -rotate-45"
-            />
-            <Loader v-else class="animate-spin h-5 w-5 mr-2 text-white" />
-            {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
+            Proceed
           </button>
         </div>
-         <p v-if="formError" class="mt-4 text-sm text-red-600 text-center">{{ formError }}</p>
       </div>
-    </form>
+    </div>
+
+    <!-- Certificate Modal -->
+    <div v-if="showCertificateModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 max-w-md w-full">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">View Certificate</h3>
+        <p class="text-sm text-gray-600 mb-6">
+          View the certificate for "{{ selectedApplication?.name_of_institution }}" (DPR: {{ selectedApplication?.dpr_name }}). The certificate will be watermarked with the BHMC logo.
+        </p>
+        <div class="flex justify-end gap-4">
+          <button
+            @click="showCertificateModal = false; selectedApplication = null;"
+            class="inline-flex items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            @click="handleViewCertificate(selectedApplication)"
+            class="inline-flex items-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700"
+          >
+            View Certificate
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actual Payment Modal (Imported) -->
+    <PaymentModal
+      ref="paymentModalRef"
+      :amount="dprPaymentAmount"
+      @payment-completed="handleDPRPaymentCompleted"
+      @close="closeDPRPaymentModal"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import apiService from '@/services/services' // Assuming services.js is now the correct path
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
-import 'vue-toastification/dist/index.css'
-import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue' // Adjust path
-import { Loader } from 'lucide-vue-next' // Assuming lucide is used
-
-import {
-    BuildingOfficeIcon, DocumentTextIcon, LightBulbIcon, CalendarDaysIcon, SparklesIcon, MapPinIcon,
-    PuzzlePieceIcon, AcademicCapIcon, LinkIcon, HeartIcon, BeakerIcon, UsersIcon, ShieldCheckIcon,
-    CogIcon, BriefcaseIcon, ChartBarIcon, HomeModernIcon, TicketIcon, UserGroupIcon, LockClosedIcon,
-    InformationCircleIcon, QuestionMarkCircleIcon, ExclamationTriangleIcon, ClockIcon,
-    ArrowDownTrayIcon, PaperAirplaneIcon, PaperClipIcon,
-} from '@heroicons/vue/24/outline' // Ensure path is correct or you use these
+import { useAuthStore } from '@/stores/authStore'
+import debounce from 'lodash/debounce'
+import apiServices from '@/services/services'
+import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
+import PaymentModal from '@/components/common/PaymentModal.vue'
 
 const router = useRouter()
 const toast = useToast()
+const authStore = useAuthStore()
 
-const instituteName = ref('')
-const isSubmitting = ref(false)
-const instituteId = ref(null)
-const reviewDecision = ref('') // Possible values: 'Approved', 'Regretted', 'PendingDPR', 'NotSubmitted'
-const eoiRejectionReason = ref('')
-const isLoading = ref(true)
+const STATUS_APPROVED = 'Approved'
+const STATUS_REJECTED = 'Rejected'
+const STATUS_PENDING = 'Pending'
+const statusOptions = [STATUS_APPROVED, STATUS_REJECTED, STATUS_PENDING, 'In Review', 'Submitted']
+const dzongkhagOptions = [
+  'Bumthang', 'Chukha', 'Dagana', 'Gasa', 'Haa', 'Lhuntse', 'Mongar', 'Paro',
+  'Pemagatshel', 'Punakha', 'Samdrup Jongkhar', 'Samtse', 'Sarpang', 'Thimphu',
+  'Trashigang', 'Trashiyangtse', 'Trongsa', 'Tsirang', 'Wangdue Phodrang', 'Zhemgang'
+]
+
+const applications = ref([])
+const isLoading = ref(false)
 const apiError = ref(false)
-const initialErrorMsg = ref('')
-const debugErrorDetails = ref(''); // For more detailed error messages in UI if needed
-const userCIDForDisplay = ref(''); // To show user's CID in "NotSubmitted" message
-const formError = ref('');
+const errorMessage = ref('')
+const searchQuery = ref('')
+const filterStatus = ref('')
+const filterDzongkhag = ref('')
+const sortOrder = ref('desc')
+const currentPage = ref(1)
+const itemsPerPage = 10
+const expandedApplications = ref({})
+const isActionLoading = ref({})
+const showPaymentConfirmModal = ref(false)
+const showCertificateModal = ref(false)
+const selectedApplication = ref(null)
 
+const paymentModalRef = ref(null)
+const selectedApplicationForPayment = ref(null)
+const dprPaymentAmount = ref(1500)
 
-const fileInputs = ref({}); // Changed to object for dynamic refs by field.id
+const paymentOutcomeHandled = ref(false)
 
-const formData = ref({
-    dpr_name: '', // From EOI, if available, else user input
-    executive_summary: '',
-    institute_eoi_supporting_documents: null, // File object or URL string
-    institute_eoi_supporting_documents_filename: '', // For displaying name of new/existing file
-    institute_dpr_remarks: '',
-    // Desk Officer fields - likely read-only or not for user input on this form
-    // do_dpr_review_report: '', // Text area
-    // do_dpr_review_summary: '', // Text area
-    do_dpr_report: null, // File object or URL string for the MAIN DPR document
-    do_dpr_report_filename: '', // For displaying name
-    // --- Core DPR Sections ---
-    vision_mission_strategies: '',
-    project_scheduling: '',
-    gross_national_happiness: '',
-    land_details: '',
-    conceptual_master_plan: '',
-    academic_plan: '',
-    affiliation_details: '',
-    teaching_hospital: '',
-    research_policy: '',
-    human_resource: '',
-    quality_assurance: '',
-    governance_structure: '',
-    business_plan: '',
-    project_cost_analysis: '',
-    facilities_student_services: '',
-    admission_policy: '',
-    service_conditions: '',
-    safety_security: '',
-    public_information_system: '',
-    other_details: '',
+const filteredApplications = computed(() => {
+  let result = applications.value
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    result = result.filter(
+      (app) =>
+        app.name_of_institution?.toLowerCase().includes(query) ||
+        app.dpr_name?.toLowerCase().includes(query)
+    )
+  }
+  if (filterStatus.value) {
+    result = result.filter((app) => app.do_dpr_review_decision === filterStatus.value)
+  }
+  if (filterDzongkhag.value) {
+    result = result.filter((app) => app.dzongkhag === filterDzongkhag.value)
+  }
+  return result.sort((a, b) => {
+    const dateA = new Date(a.commencement_date || a.created_at || 0)
+    const dateB = new Date(b.commencement_date || b.created_at || 0)
+    return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB
+  })
 })
 
-const formSections = computed(() => [
-    { id: 'collegeDetails', title: '1. College/Institution Details', description: 'Details of the proposed institution.', icon: BuildingOfficeIcon, fields: [ { id: 'institutionNameDisplay', label: 'Proposed Name (from EOI):', staticModel: instituteName.value || 'Loading...', type: 'text', disabled: true, placeholder: 'Institution Name', fullWidth: true } ] },
-    { id: 'dprDetails', title: '2. DPR Specifics', description: 'Core details and documents for this DPR.', icon: DocumentTextIcon, fields: [
-        { id: 'dprNameInput', label: 'DPR Proposed Name:', modelKey: 'dpr_name', type: 'text', required: true, placeholder: 'e.g., DPR for Establishment of [Institution Name]', fullWidth: true },
-        { id: 'eoiDocsFile', label: 'EOI Supporting Documents (Optional Update):', modelKey: 'institute_eoi_supporting_documents', type: 'file', accept: '.pdf', hint: 'Upload if you have new/updated EOI documents. Max 5MB.' },
-        // { id: 'dprRemarksInput', label: 'Institute DPR Remarks:', modelKey: 'institute_dpr_remarks', type: 'textarea', placeholder: 'Any remarks regarding this DPR submission.', fullWidth: true },
-    ]},
-    { id: 'visionMission', title: '3. Vision, Mission, and Implementation Strategies', icon: LightBulbIcon, fields: [ { id: 'visionMissionText', label: 'Vision, Mission & Strategies:', modelKey: 'vision_mission_strategies', type: 'textarea', rows: 5, required: true, placeholder: "Describe...", fullWidth: true } ] },
-    { id: 'projectScheduling', title: '4. Project Scheduling, Implementation, and Management', icon: CalendarDaysIcon, fields: [ { id: 'projectSchedulingText', label: 'Project Schedule & Management:', modelKey: 'project_scheduling', type: 'textarea', rows: 5, required: true, placeholder: 'Provide a detailed project schedule...', fullWidth: true } ] },
-    { id: 'gnhValues', title: '5. Values of Gross National Happiness', icon: SparklesIcon, fields: [ { id: 'gnhText', label: 'Contribution to GNH:', modelKey: 'gross_national_happiness', type: 'textarea', rows: 5, required: true, placeholder: 'Describe how...', fullWidth: true } ] },
-    { id: 'landDetails', title: '6. Land', icon: MapPinIcon, fields: [ { id: 'landDetailsText', label: 'Land Details:', modelKey: 'land_details', type: 'textarea', placeholder: 'Provide details as required...', fullWidth: true, required: true } ] },
-    { id: 'masterPlan', title: '7. Conceptual Master Plan', icon: PuzzlePieceIcon, fields: [ { id: 'masterPlanText', label: 'Master Plan Description:', modelKey: 'conceptual_master_plan', type: 'textarea', rows: 5, required: true, placeholder: 'Describe the conceptual master plan...', fullWidth: true } ] },
-    { id: 'academicPlan', title: '8. Academic Plan/Profile', icon: AcademicCapIcon, fields: [ { id: 'academicPlanText', label: 'Academic Plan:', modelKey: 'academic_plan', type: 'textarea', rows: 5, required: true, placeholder: 'Describe the intent and purpose...', fullWidth: true } ] },
-    { id: 'affiliation', title: '9. Affiliation', icon: LinkIcon, fields: [ { id: 'affiliationText', label: 'Affiliation Details:', modelKey: 'affiliation_details', type: 'textarea', placeholder: 'Provide details on the affiliation...', fullWidth: true } ] },
-    { id: 'teachingHospital', title: '10. Teaching Hospital', icon: HeartIcon, fields: [ { id: 'teachingHospitalText', label: 'Teaching Hospital Details:', modelKey: 'teaching_hospital', type: 'textarea', placeholder: 'Provide details on the teaching hospital...', fullWidth: true } ] },
-    { id: 'researchPolicy', title: '11. Research Policy', icon: BeakerIcon, fields: [ { id: 'researchPolicyText', label: 'Research Policy:', modelKey: 'research_policy', type: 'textarea', placeholder: 'Outline the research policy...', fullWidth: true } ] },
-    { id: 'humanResource', title: '12. Human Resource', icon: UsersIcon, fields: [ { id: 'hrText', label: 'Human Resource Plan:', modelKey: 'human_resource', type: 'textarea', required: true, placeholder: 'Describe the human resource plan...', fullWidth: true } ] },
-    { id: 'qualityAssurance', title: '13. Quality Assurance System', icon: ShieldCheckIcon, fields: [ { id: 'qaText', label: 'Quality Assurance System:', modelKey: 'quality_assurance', type: 'textarea', required: true, placeholder: 'Provide details on the quality assurance system...', fullWidth: true } ] },
-    { id: 'governanceStructure', title: '14. Governance Structure', icon: CogIcon, fields: [ { id: 'governanceText', label: 'Governance Structure:', modelKey: 'governance_structure', type: 'textarea', required: true, placeholder: 'Describe the governance structure...', fullWidth: true } ] },
-    { id: 'businessPlan', title: '15. Business Plan', icon: BriefcaseIcon, fields: [ { id: 'businessPlanText', label: 'Business Plan:', modelKey: 'business_plan', type: 'textarea', required: true, placeholder: 'Provide details on the business plan...', fullWidth: true } ] },
-    { id: 'projectCost', title: '16. Project Cost and Analysis', icon: ChartBarIcon, fields: [ { id: 'projectCostText', label: 'Project Cost & Analysis:', modelKey: 'project_cost_analysis', type: 'textarea', required: true, placeholder: 'Provide a detailed project cost breakdown...', fullWidth: true } ] },
-    { id: 'facilitiesServices', title: '17. Facilities and Student Services', icon: HomeModernIcon, fields: [ { id: 'facilitiesText', label: 'Facilities & Student Services:', modelKey: 'facilities_student_services', type: 'textarea', placeholder: 'Describe available facilities...', fullWidth: true } ] },
-    { id: 'admissionPolicy', title: '18. Admission Policy and Scholarships', icon: TicketIcon, fields: [ { id: 'admissionPolicyText', label: 'Admission Policy & Scholarships:', modelKey: 'admission_policy', type: 'textarea', required: true, placeholder: 'Detail the admission policy...', fullWidth: true } ] },
-    { id: 'serviceConditions', title: '19. Service Conditions', icon: UserGroupIcon, fields: [ { id: 'serviceConditionsText', label: 'Service Conditions:', modelKey: 'service_conditions', type: 'textarea', placeholder: 'Outline the service conditions...', fullWidth: true } ] },
-    { id: 'safetySecurity', title: '20. Safety and Security', icon: LockClosedIcon, fields: [ { id: 'safetyText', label: 'Safety & Security Measures:', modelKey: 'safety_security', type: 'textarea', placeholder: 'Describe safety and security measures...', fullWidth: true } ] },
-    { id: 'publicInfoSystem', title: '21. Public Information System', icon: InformationCircleIcon, fields: [ { id: 'publicInfoText', label: 'Public Information System:', modelKey: 'public_information_system', type: 'textarea', placeholder: 'Describe the system for providing public information...', fullWidth: true } ] },
-    { id: 'otherDetails', title: '22. Other Relevant Information', description: 'Attach your primary DPR document here. Other details can be noted below.', icon: QuestionMarkCircleIcon, fields: [
-        { id: 'mainDprReportFile', label: 'Main DPR Document (Required for Submission):', modelKey: 'do_dpr_report', type: 'file', accept: '.pdf', hint: 'Upload your main DPR document. Max 10MB.', required: true },
-        { id: 'otherDetailsText', label: 'Other Narrative Details:', modelKey: 'other_details', type: 'textarea', placeholder: 'Include any other details or documents pertinent to the DPR not covered elsewhere.', fullWidth: true }
-    ]},
-])
+const totalPages = computed(() => Math.ceil(filteredApplications.value.length / itemsPerPage))
 
-onMounted(async () => {
-    isLoading.value = true
-    apiError.value = false
-    initialErrorMsg.value = ''
-    debugErrorDetails.value = '';
-
-    const userString = localStorage.getItem('user')
-    if (!userString) {
-        initialErrorMsg.value = 'User session not found. Please log in again.'
-        apiError.value = true; isLoading.value = false; toast.error(initialErrorMsg.value); router.push('/login');
-        return
-    }
-
-    let userObject
-    try {
-        userObject = JSON.parse(userString)
-    } catch (error) {
-        initialErrorMsg.value = 'Invalid user session data. Please log in again.';
-        debugErrorDetails.value = `Error parsing user JSON: ${error.message}`;
-        apiError.value = true; isLoading.value = false; toast.error(initialErrorMsg.value);
-        return
-    }
-
-    if (!userObject?.cid) {
-        initialErrorMsg.value = 'User CID not found in session data. Cannot proceed.';
-        apiError.value = true; isLoading.value = false; toast.error(initialErrorMsg.value);
-        return
-    }
-    const userCID = userObject.cid
-    userCIDForDisplay.value = userCID; // For display purposes
-
-    try {
-        console.log(`Fetching institutes for CID: ${userCID}`);
-        const response = await apiService.getMhpcInstitutes({ params: { CID: userCID } })
-        console.log('Initial institute list response:', response);
-
-        const institutes = response.data?.results || (Array.isArray(response.data) ? response.data : []);
-
-        if (!Array.isArray(institutes) || institutes.length === 0) {
-            console.log('No institutes found for this CID. Setting reviewDecision to NotSubmitted.');
-            reviewDecision.value = 'NotSubmitted'
-            isLoading.value = false;
-            return;
-        }
-
-        const matchedInstitute = institutes[0];
-
-        if (!matchedInstitute || !matchedInstitute.id) {
-            console.log('Matched institute is invalid or missing ID. Setting reviewDecision to NotSubmitted.');
-            reviewDecision.value = 'NotSubmitted'
-            initialErrorMsg.value = 'Could not identify a valid EOI application for your account.';
-            apiError.value = true;
-            isLoading.value = false;
-            return
-        }
-
-        instituteId.value = matchedInstitute.id
-        console.log(`Institute ID found and set in onMounted: ${instituteId.value}`); // DEBUG
-        instituteName.value = matchedInstitute.name_of_institution || 'N/A'
-        eoiRejectionReason.value = matchedInstitute.reason_if_rejected || ''
-
-        if (matchedInstitute.review_decision === 'Approved') {
-            reviewDecision.value = 'Approved'
-        } else if (matchedInstitute.review_decision === 'Regretted') {
-            reviewDecision.value = 'Regretted'
-        } else if (matchedInstitute.review_decision === 'Pending') {
-            reviewDecision.value = 'PendingDPR'
-        } else {
-            console.warn(`Unexpected EOI review_decision: ${matchedInstitute.review_decision}. Defaulting to NotSubmitted or error.`);
-            reviewDecision.value = 'NotSubmitted';
-            initialErrorMsg.value = `Your EOI application has an unclear status (${matchedInstitute.review_decision || 'Unknown'}). Cannot proceed with DPR.`;
-        }
-
-        console.log(`EOI review decision set to: ${reviewDecision.value}`);
-
-        if (reviewDecision.value === 'Approved' || reviewDecision.value === 'PendingDPR') {
-            console.log('EOI status allows fetching/editing DPR. Calling fetchDprData...');
-            await fetchDprData();
-        }
-
-    } catch (error) {
-        console.error('Error during initial EOI/DPR status check:', error);
-        initialErrorMsg.value = 'Failed to load your EOI/DPR application status.';
-        if (error.response) {
-            debugErrorDetails.value = `Server error: ${error.response.status} - ${JSON.stringify(error.response.data?.detail || error.response.data)}`;
-            initialErrorMsg.value += ` Details: ${error.response.data?.detail || 'Server error'}`;
-        } else {
-            debugErrorDetails.value = `Network or client-side error: ${error.message}`;
-        }
-        apiError.value = true;
-        toast.error(initialErrorMsg.value, {timeout: 7000});
-    } finally {
-        isLoading.value = false;
-    }
+const paginatedApplications = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredApplications.value.slice(start, end)
 })
 
-const fetchDprData = async () => {
-    console.log(`fetchDprData called with instituteId: ${instituteId.value}`); // DEBUG
-    if (!instituteId.value) {
-        console.warn('fetchDprData called without instituteId. Aborting.');
-        toast.error('Cannot load DPR data: Institute identifier is missing.');
-        apiError.value = true;
-        initialErrorMsg.value = 'Failed to identify the institute for loading DPR data.';
-        return;
-    }
-
-    console.log(`fetchDprData: Fetching DPR details for institute ID: ${instituteId.value}`);
-    try {
-        const response = await apiService.getMhpcInstitute(instituteId.value);
-        console.log('fetchDprData: Response from getMhpcInstitute:', response);
-        if (response.data) {
-            const dprData = response.data;
-            Object.keys(formData.value).forEach((key) => {
-                if (Object.prototype.hasOwnProperty.call(dprData, key)) {
-                    if (key === 'institute_eoi_supporting_documents' || key === 'do_dpr_report') {
-                        if (typeof dprData[key] === 'string' && dprData[key]) {
-                            formData.value[key] = dprData[key];
-                            formData.value[key + '_filename'] = getFileName(dprData[key]);
-                        } else {
-                            formData.value[key] = null;
-                            formData.value[key + '_filename'] = '';
-                        }
-                    } else if (!key.endsWith('_filename')) {
-                        formData.value[key] = dprData[key] === null ? '' : dprData[key];
-                    }
-                }
-            });
-            if (dprData.name_of_institution) {
-                instituteName.value = dprData.name_of_institution;
-            }
-            if (Object.keys(dprData).some(k => Object.hasOwn(formData.value, k) && dprData[k] !== null && dprData[k] !== '')) {
-              toast.info('Loaded existing DPR data draft.', {timeout: 2000});
-            } else {
-              toast.info('No DPR data to load. Ready for new entry.', {timeout: 2000});
-            }
-        } else {
-          console.warn('fetchDprData: No data in response for getMhpcInstitute, though request was successful.');
-        }
-    } catch (error) {
-        console.error(`Error fetching existing DPR data for institute ID ${instituteId.value}:`, error);
-        if (error.response && error.response.status === 404) {
-            toast.info('No existing DPR data found for this EOI. You can start a new DPR draft.', {timeout: 4000});
-            debugErrorDetails.value = `404 Not Found when fetching DPR detail for ID ${instituteId.value}. This is okay if it's a new DPR. Detail: ${JSON.stringify(error.response.data)}`;
-        } else {
-            const detail = error.response?.data?.detail || 'Could not load existing DPR data draft.';
-            toast.error(detail, {timeout: 5000});
-            initialErrorMsg.value = `Error loading DPR draft: ${detail}`;
-            debugErrorDetails.value = `Error fetching DPR detail: ${error.message}. Response: ${JSON.stringify(error.response?.data)}`;
-            // Consider not setting apiError to true if EOI is approved to allow new DPR submission
-            // apiError.value = true;
-        }
-    }
+const getStatusColor = (status) => {
+  switch (status) {
+    case STATUS_APPROVED:
+      return 'bg-green-100 text-green-700'
+    case STATUS_REJECTED:
+      return 'bg-red-100 text-red-700'
+    case STATUS_PENDING:
+      return 'bg-yellow-100 text-yellow-700'
+    case 'In Review':
+      return 'bg-blue-100 text-blue-700'
+    case 'Submitted':
+      return 'bg-gray-100 text-gray-700'
+    default:
+      return 'bg-gray-100 text-gray-700'
+  }
 }
 
-const getFileName = (fileData) => {
-    if (fileData instanceof File) {
-        return fileData.name;
-    }
-    if (typeof fileData === 'string' && fileData.trim() !== '') {
-        try {
-            if (fileData.startsWith('http://') || fileData.startsWith('https://')) {
-                const url = new URL(fileData);
-                const pathname = url.pathname;
-                return decodeURIComponent(pathname.substring(pathname.lastIndexOf('/') + 1));
-            } else {
-                return decodeURIComponent(fileData.substring(fileData.lastIndexOf('/') + 1));
-            }
-        } catch (e) {
-            console.warn('Error parsing file URL/path:', fileData, e);
-            return decodeURIComponent(fileData.substring(fileData.lastIndexOf('/') + 1));
-        }
-    }
-    return '';
+const getStatusTooltip = (status) => {
+  switch (status) {
+    case STATUS_APPROVED:
+      return 'Application has been approved. Proceed to payment if pending.'
+    case STATUS_REJECTED:
+      return 'Application was rejected. Review the reason for rejection.'
+    case STATUS_PENDING:
+      return 'Application is awaiting review by the dealing officer.'
+    case 'In Review':
+      return 'Application is currently under review.'
+    case 'Submitted':
+      return 'Application has been submitted and is pending processing.'
+    default:
+      return 'Status not available.'
+  }
 }
 
-const handleFileUpload = (modelKey, event) => {
-    const file = event.target.files[0];
-    if (file) {
-        if (modelKey === 'do_dpr_report' || modelKey === 'institute_eoi_supporting_documents') {
-            if (file.type !== 'application/pdf') {
-                toast.error('Please upload PDF files only for DPR and EOI documents.');
-                event.target.value = '';
-                return;
-            }
-        }
-        if (file.size > 5 * 1024 * 1024 && (modelKey === 'institute_eoi_supporting_documents')) {
-            toast.error('EOI document file size should not exceed 5MB.');
-            event.target.value = '';
-            return;
-        }
-        if (file.size > 10 * 1024 * 1024 && (modelKey === 'do_dpr_report')) {
-            toast.error('Main DPR document file size should not exceed 10MB.');
-            event.target.value = '';
-            return;
-        }
-
-        formData.value[modelKey] = file;
-        formData.value[modelKey + '_filename'] = file.name;
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+  try {
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) {
+      console.warn(`Invalid date string received: ${dateString}`)
+      return 'Invalid Date'
     }
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  } catch (e) {
+    console.error(`Error formatting date: ${dateString}`, e)
+    return 'Date Error'
+  }
 }
 
-const clearFile = (modelKey, inputId) => {
-    formData.value[modelKey] = null;
-    formData.value[modelKey + '_filename'] = '';
+const isApplicationApproved = (app) => app.do_dpr_review_decision === STATUS_APPROVED
+const isPaymentPending = (app) => isApplicationApproved(app) && app.is_payment_complete === false
+const isPaymentCompleted = (app) => isApplicationApproved(app) && app.is_payment_complete === true
 
-    if (fileInputs.value[inputId]) {
-      fileInputs.value[inputId].value = '';
-    }
+const getTimeline = (app) => {
+  return [
+    { status: 'Submitted', date: app.created_at || new Date().toISOString() },
+    { status: app.do_dpr_review_decision || 'Pending', date: app.updated_at || new Date().toISOString() },
+  ]
 }
 
-
-const prepareSubmitData = () => {
-    const submitData = new FormData();
-    console.log('Preparing data for submission (raw formData.value):', JSON.parse(JSON.stringify(formData.value)));
-
-    Object.keys(formData.value).forEach((key) => {
-        if (key.endsWith('_filename')) return;
-
-        const value = formData.value[key];
-
-        if (value instanceof File) {
-            submitData.append(key, value, value.name);
-            console.log(`Appended file for ${key}: ${value.name}`);
-        } else if (value !== null && value !== undefined && value !== '') {
-             submitData.append(key, value);
-             console.log(`Appended value for ${key}: ${value}`);
-        } else if (value === null || value === '') {
-            // Explicitly send empty string for cleared/empty fields if backend expects this
-            // This ensures that if a field was previously set and is now cleared,
-            // the backend updates it to null or empty.
-            // Otherwise, if not sent, PATCH might ignore it (no change).
-            submitData.append(key, '');
-            console.log(`Appended empty string for ${key} (was null or empty)`);
-        }
-    });
-
-    // For debugging FormData contents:
-    // console.log("FormData contents before submission:");
-    // for (let pair of submitData.entries()) {
-    //   console.log(pair[0]+ ': ' + (pair[1] instanceof File ? `File(${pair[1].name})` : pair[1]));
-    // }
-    return submitData;
+const toggleDetails = (id) => {
+  expandedApplications.value[id] = !expandedApplications.value[id]
 }
 
-const commonSubmitLogic = async (isDraft) => {
-    console.log(`commonSubmitLogic called with instituteId: ${instituteId.value}`); // DEBUG
-    formError.value = '';
-    if (!instituteId.value) {
-        toast.error('Critical Error: Institute ID is missing. Cannot proceed.');
-        formError.value = 'Your application session is invalid. Please refresh.';
-        return;
-    }
-
-    if (!isDraft && reviewDecision.value === 'Approved') {
-        if (!formData.value.dpr_name.trim()) {
-            toast.error('DPR Proposed Name is required for submission.');
-            formError.value = 'DPR Proposed Name is required.';
-            return;
-        }
-        const mainDprDocProvided = (typeof formData.value.do_dpr_report === 'string' && formData.value.do_dpr_report) || (formData.value.do_dpr_report instanceof File);
-        if (!mainDprDocProvided) {
-            toast.error('Main DPR Document is required for submission.');
-            formError.value = 'Main DPR Document is required.';
-            return;
-        }
-    }
-
-    if (reviewDecision.value === 'Regretted') {
-        toast.error('EOI was regretted. Cannot save draft or submit DPR.');
-        return;
-    }
-
-    isSubmitting.value = true;
-    const dataToSubmit = prepareSubmitData();
-
-    // Example: Add a flag if it's a draft, if backend expects it
-    // if (isDraft) {
-    //    dataToSubmit.append('status', 'DRAFT_DPR'); // Or some other field
-    // } else if (reviewDecision.value === 'Approved') {
-    //    dataToSubmit.append('status', 'SUBMITTED_DPR'); // Example status field
-    // }
-
-    console.log(`Submitting to patchMhpcInstitute with ID: ${instituteId.value}`);
-    // Log FormData content before sending (for environments that support it well)
-    // for(var pair of dataToSubmit.entries()) {
-    //    console.log(pair[0]+ ', '+ pair[1]);
-    // }
-
-    try {
-        const response = await apiService.patchMhpcInstitute(instituteId.value, dataToSubmit);
-        console.log('Response from patchMhpcInstitute:', response);
-
-        if (response.status >= 200 && response.status < 300) {
-            toast.success(isDraft ? 'DPR Draft Saved Successfully!' : 'DPR Submitted Successfully!');
-
-            // Update formData with response data, especially for file URLs
-            if (response.data) {
-                Object.keys(formData.value).forEach((key) => {
-                    if (Object.prototype.hasOwnProperty.call(response.data, key)) {
-                         if (key === 'institute_eoi_supporting_documents' || key === 'do_dpr_report') {
-                            if (typeof response.data[key] === 'string' && response.data[key]) {
-                                formData.value[key] = response.data[key];
-                                formData.value[key + '_filename'] = getFileName(response.data[key]);
-                            }
-                         } else if (!key.endsWith('_filename')) {
-                            formData.value[key] = response.data[key] === null ? '' : response.data[key];
-                         }
-                    }
-                });
-            }
-
-            if (!isDraft) {
-                setTimeout(() => {
-                    router.push('/admin/institutions/health_certification/dashboard');
-                }, 1500);
-            }
-        } else {
-            const errorDetail = response.data?.detail || `Server responded with status: ${response.status}`;
-            toast.error(`Failed to ${isDraft ? 'save draft' : 'submit DPR'}. ${errorDetail}`);
-            formError.value = `Submission failed: ${errorDetail}`;
-            debugErrorDetails.value = `PATCH response not OK: ${response.status}, ${JSON.stringify(response.data)}`;
-        }
-    } catch (error) {
-        console.error(`Error during ${isDraft ? 'saving draft' : 'submitting DPR'}:`, error);
-        let errorMsg = `An unexpected error occurred.`;
-        if (error.response) {
-            // Try to get a more specific error message from the response
-            const responseData = error.response.data;
-            if (typeof responseData === 'string') {
-                errorMsg = responseData;
-            } else if (responseData && typeof responseData === 'object') {
-                // Concatenate all error messages if it's an object of arrays/strings
-                errorMsg = Object.values(responseData)
-                    .map(err => Array.isArray(err) ? err.join(', ') : err)
-                    .join('; ') || `Server error (${error.response.status}). Please try again.`;
-            } else {
-                errorMsg = `Server error (${error.response.status}). Please try again.`;
-            }
-             debugErrorDetails.value = `PATCH error: ${error.response.status}, ${JSON.stringify(error.response.data)}`;
-        } else if (error.request) {
-            errorMsg = "No response from server. Check your network connection.";
-            debugErrorDetails.value = "PATCH error: No response from server.";
-        } else {
-            errorMsg = error.message;
-            debugErrorDetails.value = `PATCH error: ${error.message}`;
-        }
-        toast.error(errorMsg, { timeout: 7000 });
-        formError.value = `Error: ${errorMsg}`;
-    } finally {
-        isSubmitting.value = false;
-    }
+const sortApplications = () => {
+  sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc'
 }
 
-const handleSubmit = () => commonSubmitLogic(false);
-const handleSaveDraft = () => commonSubmitLogic(true);
+const debouncedSearch = debounce(() => {
+  currentPage.value = 1
+}, 300)
 
+watch(searchQuery, () => {
+  debouncedSearch()
+})
+
+const fetchApplications = async () => {
+  if (!authStore.user || !authStore.user.cid) {
+    errorMessage.value = 'User information not available. Please log in again.'
+    apiError.value = true
+    isLoading.value = false
+    return
+  }
+
+  isLoading.value = true
+  apiError.value = false
+  errorMessage.value = ''
+
+  try {
+    const response = await apiServices.getMhpcInstitutes()
+    if (response && response.data && Array.isArray(response.data.results)) {
+      const userCid = authStore.user.cid.toLowerCase()
+      applications.value = response.data.results
+        .filter(app => app && typeof app.CID === 'string' && app.CID.toLowerCase() === userCid)
+        .map(app => ({ ...app, is_payment_complete: app.is_payment_complete || false }))
+    } else {
+      console.warn('Unexpected API response structure:', response)
+      applications.value = []
+    }
+  } catch (error) {
+    console.error('Error fetching DPR applications:', error)
+    applications.value = []
+    apiError.value = true
+    errorMessage.value = error.response?.data?.message || (error.request
+      ? 'Network error. Please check your connection and try again.'
+      : 'An unexpected error occurred while fetching applications. Please try again.')
+    toast.error(errorMessage.value)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// --- Payment Flow Functions ---
+
+const openPaymentConfirmationModal = (application) => {
+  selectedApplication.value = application
+  paymentOutcomeHandled.value = false
+  if (application && application.id) {
+    isActionLoading.value[application.id] = true
+  }
+  showPaymentConfirmModal.value = true
+}
+
+const cancelPaymentConfirmation = () => {
+  showPaymentConfirmModal.value = false
+  if (selectedApplication.value && selectedApplication.value.id) {
+    isActionLoading.value[selectedApplication.value.id] = false
+  }
+  selectedApplication.value = null
+}
+
+const handleProceedWithPaymentFlow = async () => {
+  if (!selectedApplication.value || !selectedApplication.value.id) {
+    toast.error("No application selected to proceed with payment.")
+    if (selectedApplication.value?.id && isActionLoading.value[selectedApplication.value.id]) {
+      isActionLoading.value[selectedApplication.value.id] = false
+    }
+    return
+  }
+
+  const appId = selectedApplication.value.id
+  showPaymentConfirmModal.value = false
+  selectedApplicationForPayment.value = selectedApplication.value
+
+  if (paymentModalRef.value && typeof paymentModalRef.value.openModal === 'function') {
+    paymentModalRef.value.openModal()
+  } else {
+    console.error("Payment modal reference or openModal method is not available.")
+    toast.error("Could not open payment window. Please try again.")
+    if (isActionLoading.value[appId] !== undefined) {
+      isActionLoading.value[appId] = false
+    }
+    selectedApplication.value = null
+    selectedApplicationForPayment.value = null
+  }
+}
+
+const handleDPRPaymentCompleted = async (paymentData) => {
+  paymentOutcomeHandled.value = true
+
+  if (!selectedApplicationForPayment.value) {
+    toast.error('Error: No application was associated with this payment.')
+    const initialAppId = selectedApplication.value?.id
+    if (initialAppId && isActionLoading.value[initialAppId]) {
+      isActionLoading.value[initialAppId] = false
+    }
+    return
+  }
+
+  const appBeingPaid = selectedApplicationForPayment.value
+
+  try {
+    console.log('DPR Payment completed event received:', paymentData)
+    console.log('For application:', appBeingPaid.name_of_institution, appBeingPaid.dpr_name)
+
+    // Simulate API call to update payment status
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    // Update the application in the local state
+    const appIndex = applications.value.findIndex(a => a.id === appBeingPaid.id)
+    if (appIndex !== -1) {
+      applications.value[appIndex] = { ...applications.value[appIndex], is_payment_complete: true }
+    } else {
+      throw new Error('Application not found in local state.')
+    }
+
+    // Show success message only after successful update
+    toast.success(`Payment for "${appBeingPaid.dpr_name}" completed successfully!`)
+
+    // Rely on PaymentModal to emit 'close' event, which triggers closeDPRPaymentModal
+  } catch (error) {
+    console.error('Error updating DPR application after payment:', error)
+    toast.error(`Failed to update application for "${appBeingPaid.dpr_name}" after payment. Please contact support.`)
+  } finally {
+    if (appBeingPaid && appBeingPaid.id) {
+      isActionLoading.value[appBeingPaid.id] = false
+    }
+    selectedApplicationForPayment.value = null
+    // The modal should close itself and emit 'close', which calls closeDPRPaymentModal
+  }
+}
+
+const closeDPRPaymentModal = () => {
+  if (!paymentOutcomeHandled.value) {
+    toast.info('Payment process cancelled.')
+  }
+  paymentOutcomeHandled.value = false
+
+  const initialAppId = selectedApplication.value?.id || selectedApplicationForPayment.value?.id
+  if (initialAppId && isActionLoading.value[initialAppId] !== undefined) {
+    isActionLoading.value[initialAppId] = false
+  }
+
+  selectedApplicationForPayment.value = null
+  selectedApplication.value = null
+}
+// --- End Payment Flow Functions ---
+
+const openCertificateModal = (application) => {
+  selectedApplication.value = application
+  if (application && application.id) {
+    isActionLoading.value[application.id] = true
+  }
+  showCertificateModal.value = true
+}
+
+const handleViewCertificate = async (application) => {
+  if (!application || !application.id) {
+    const currentSelectedAppId = selectedApplication.value?.id
+    if (currentSelectedAppId && isActionLoading.value[currentSelectedAppId]) {
+      isActionLoading.value[currentSelectedAppId] = false
+    }
+    selectedApplication.value = null
+    return
+  }
+
+  try {
+    console.log('Viewing certificate for application ID:', application.id, application.dpr_name)
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    toast.success(`Certificate for "${application.dpr_name}" opened in new tab (simulated).`)
+    showCertificateModal.value = false
+  } catch (error) {
+    console.error('Error viewing certificate:', error)
+    toast.error('Failed to view certificate. Please try again.')
+  } finally {
+    if (application && application.id) {
+      isActionLoading.value[application.id] = false
+    }
+    selectedApplication.value = null
+  }
+}
+
+const startNewApplication = () => {
+  router.push('/eoi-form')
+}
+
+onMounted(fetchApplications)
 </script>
 
 <style scoped>
-.required-label::after {
-    content: ' *';
-    color: #dc2626; /* Tailwind's red-600 */
-    margin-left: 2px;
-}
-
-.form-input,
-.form-textarea {
-    @apply block w-full rounded-lg border-gray-300 shadow-sm p-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0 disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors duration-150;
-}
-.form-file-input {
-    @apply block w-full text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border file:border-gray-200 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed;
-}
-.form-label {
-    @apply block text-sm font-medium text-gray-700 mb-1.5;
-}
-
-.btn {
-    @apply inline-flex items-center justify-center rounded-lg border py-2.5 px-5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed;
-}
-.btn-primary {
-    @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
-}
-.btn-outline {
-    @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500;
-}
-
-.section-header {
-    @apply flex items-start py-5 px-6 md:px-8 bg-gray-50;
-}
-.form-section:first-child > .section-header:not(.border-t) { /* Avoid double border if first section also has a top message */
-    @apply rounded-t-2xl;
-}
-.section-content {
-    @apply p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6;
+.cursor-help:hover {
+  opacity: 0.8
 }
 </style>
