@@ -3,12 +3,15 @@
     <!-- Header -->
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
       <h1 class="text-4xl font-bold text-gray-900 mb-3">Branch ECPF Establishment</h1>
-      <p class="text-gray-600">Please fill in the details below for branch ECPF establishment.</p>
+      <p class="text-gray-600">
+        Information from your existing ECPF profile has been auto-populated. Please verify and fill
+        in the details for the new branch proposal below.
+      </p>
     </div>
 
     <!-- Loading/Error/Success Messages -->
     <div v-if="isLoading" class="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded">
-      <p>Loading initial data...</p>
+      <p>Loading initial data and ECPF profile...</p>
     </div>
     <div
       v-if="formMessage.text"
@@ -25,7 +28,7 @@
     <!-- Form Section -->
     <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
       <form v-if="!isLoading" @submit.prevent="submitForm" ref="formEl">
-        <!-- Personal Information (Fetched from Auth Store) -->
+        <!-- Personal Information (Fetched & Read Only for core details) -->
         <section class="mb-8">
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">Personal Information</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -35,7 +38,7 @@
                 id="cid_no"
                 type="text"
                 v-model="formData.cid_no"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none cursor-not-allowed"
                 readonly
               />
             </div>
@@ -47,7 +50,7 @@
                 id="applicant_name"
                 type="text"
                 v-model="formData.applicant_name"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none cursor-not-allowed"
                 readonly
               />
             </div>
@@ -57,7 +60,7 @@
                 id="gender"
                 type="text"
                 v-model="formData.gender"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none cursor-not-allowed"
                 readonly
               />
             </div>
@@ -68,8 +71,8 @@
               <input
                 id="date_of_birth"
                 type="text"
-                v-model="formData.date_of_birth"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
+                :value="formatDateForDisplay(formData.date_of_birth)"
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none cursor-not-allowed"
                 readonly
               />
             </div>
@@ -100,11 +103,10 @@
           </div>
         </section>
 
-        <!-- Residential/Present Address -->
+        <!-- Residential/Present Address (Pre-filled from Profile, Editable for some fields) -->
         <section class="mb-8">
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">Residential/Present Address</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Fields remain the same -->
             <div>
               <label for="office_number" class="block text-sm font-medium text-gray-700"
                 >Office Number:</label
@@ -138,66 +140,56 @@
             </div>
             <div>
               <label for="location" class="block text-sm font-medium text-gray-700"
-                >Location:<span class="text-red-500">*</span></label
+                >Location (Area/Street):<span class="text-red-500">*</span></label
               >
-              <select
+              <input
                 id="location"
+                type="text"
                 v-model="formData.location"
                 required
+                placeholder="E.g., Changzamtog, Near Hospital"
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option disabled :value="null">-- Select Location --</option>
-                <option v-for="loc in locations" :key="loc.id" :value="loc.id">
-                  {{ loc.name }}
-                </option>
-              </select>
+              />
             </div>
             <div>
-              <label for="gewog_throm" class="block text-sm font-medium text-gray-700"
-                >Gewog/Throm:<span class="text-red-500">*</span></label
+              <label for="dzongkhag_thromde_present" class="block text-sm font-medium text-gray-700"
+                >Dzongkhag/Thromde (Present Address):<span class="text-red-500">*</span></label
               >
-              <select
-                id="gewog_throm"
-                v-model="formData.gewog_throm"
-                required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option disabled :value="null">-- Select Gewog/Throm --</option>
-                <option v-for="gt in gewogThroms" :key="gt.id" :value="gt.id">{{ gt.name }}</option>
-              </select>
+              <input
+                id="dzongkhag_thromde_present"
+                type="text"
+                v-model="formData.dzongkhag_thromde_present"
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none cursor-not-allowed"
+                readonly
+              />
             </div>
             <div>
-              <label for="dzongkhag_thromde" class="block text-sm font-medium text-gray-700"
-                >Dzongkhag/Thromde:<span class="text-red-500">*</span></label
+              <label for="gewog_throm_present" class="block text-sm font-medium text-gray-700"
+                >Gewog/Throm (Present Address):<span class="text-red-500">*</span></label
               >
-              <select
-                id="dzongkhag_thromde"
-                v-model="formData.dzongkhag_thromde"
-                required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option disabled :value="null">-- Select Dzongkhag/Thromde --</option>
-                <option v-for="dt in dzongkhagThromdes" :key="dt.id" :value="dt.id">
-                  {{ dt.name }}
-                </option>
-              </select>
+              <input
+                id="gewog_throm_present"
+                type="text"
+                v-model="formData.gewog_throm_present"
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none cursor-not-allowed"
+                readonly
+              />
             </div>
           </div>
         </section>
 
-        <!-- Education Details -->
+        <!-- Education Details (Pre-filled from Profile, Editable) -->
         <section class="mb-8">
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">Education Details</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Fields remain the same -->
             <div>
-              <label for="qualification" class="block text-sm font-medium text-gray-700"
+              <label for="qualification_edu" class="block text-sm font-medium text-gray-700"
                 >Qualification:<span class="text-red-500">*</span></label
               >
               <input
-                id="qualification"
+                id="qualification_edu"
                 type="text"
-                v-model="formData.qualification"
+                v-model="formData.qualification_edu"
                 required
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -229,7 +221,7 @@
           </div>
         </section>
 
-        <!-- Permanent Address (Fetched via API based on CID) -->
+        <!-- Permanent Address (Fetched from Profile - Read Only) -->
         <section class="mb-8">
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">Permanent Address</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -241,17 +233,17 @@
                 id="village_chiwog"
                 type="text"
                 v-model="formData.village_chiwog"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none cursor-not-allowed"
                 readonly
               />
             </div>
             <div>
-              <label for="gewog" class="block text-sm font-medium text-gray-700">Gewog:</label>
+              <label for="gewog_perm" class="block text-sm font-medium text-gray-700">Gewog:</label>
               <input
-                id="gewog"
+                id="gewog_perm"
                 type="text"
-                v-model="formData.gewog"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
+                v-model="formData.gewog_perm"
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none cursor-not-allowed"
                 readonly
               />
             </div>
@@ -263,7 +255,7 @@
                 id="dungkhag"
                 type="text"
                 v-model="formData.dungkhag"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none cursor-not-allowed"
                 readonly
               />
             </div>
@@ -275,7 +267,7 @@
                 id="dzongkhag_thromde_perm"
                 type="text"
                 v-model="formData.dzongkhag_thromde_perm"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none cursor-not-allowed"
                 readonly
               />
             </div>
@@ -288,17 +280,16 @@
             Branch ECPF Establishment Proposal Details
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Fields remain the same -->
             <div>
               <label for="existing_ecpf_name" class="block text-sm font-medium text-gray-700"
-                >Name of the Existing ECPF:<span class="text-red-500">*</span></label
+                >Name of the Existing ECPF:</label
               >
               <input
                 id="existing_ecpf_name"
                 type="text"
                 v-model="formData.existing_ecpf_name"
-                required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none cursor-not-allowed"
+                readonly
               />
             </div>
             <div>
@@ -315,7 +306,9 @@
             </div>
             <div>
               <label for="proposed_firm_location" class="block text-sm font-medium text-gray-700"
-                >Location of the Proposed Branch:<span class="text-red-500">*</span></label
+                >Location (Dzongkhag/Thromde) of Proposed Branch:<span class="text-red-500"
+                  >*</span
+                ></label
               >
               <select
                 id="proposed_firm_location"
@@ -323,15 +316,15 @@
                 required
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option disabled :value="null">-- Select Location --</option>
-                <option v-for="loc in locations" :key="loc.id" :value="loc.id">
+                <option disabled :value="null">-- Select Dzongkhag/Thromde --</option>
+                <option v-for="loc in dzongkhagThromdes" :key="loc.id" :value="loc.id">
                   {{ loc.name }}
                 </option>
               </select>
             </div>
             <div>
               <label for="firm_type" class="block text-sm font-medium text-gray-700"
-                >Type of Firm:<span class="text-red-500">*</span></label
+                >Type of Firm (for New Branch):<span class="text-red-500">*</span></label
               >
               <select
                 id="firm_type"
@@ -351,7 +344,7 @@
         <!-- Infrastructure -->
         <section class="mb-8">
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">
-            Infrastructure<span class="text-red-500">*</span>
+            Infrastructure (for New Branch)<span class="text-red-500">*</span>
           </h2>
           <p class="text-sm text-gray-500 mb-4">
             Add details of the infrastructure available at the proposed branch.
@@ -364,7 +357,6 @@
             :key="`infra-${index}`"
             class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-4 border rounded-md relative"
           >
-            <!-- Remove Button -->
             <button
               type="button"
               @click="removeInfrastructure(index)"
@@ -382,14 +374,13 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <!-- Fields -->
             <div>
               <label :for="`particulars_${index}`" class="block text-sm font-medium text-gray-700"
                 >Particulars:<span class="text-red-500">*</span></label
               >
               <select
                 :id="`particulars_${index}`"
-                v-model="infra.particulars"
+                v-model="infra.particular_name"
                 required
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               >
@@ -460,7 +451,7 @@
         <!-- Human Resource -->
         <section class="mb-8">
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">
-            Human Resource<span class="text-red-500">*</span>
+            Human Resource (for New Branch)<span class="text-red-500">*</span>
           </h2>
           <p class="text-sm text-gray-500 mb-4">
             Add details of the staff proposed for the branch. At least one Counselor is required.
@@ -473,7 +464,6 @@
             :key="`hr-${index}`"
             class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-4 border rounded-md relative"
           >
-            <!-- Remove Button -->
             <button
               type="button"
               @click="removeHumanResource(index)"
@@ -491,7 +481,6 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <!-- Fields -->
             <div>
               <label :for="`position_${index}`" class="block text-sm font-medium text-gray-700"
                 >Position:<span class="text-red-500">*</span></label
@@ -509,11 +498,11 @@
               </select>
             </div>
             <div>
-              <label :for="`cid_${index}`" class="block text-sm font-medium text-gray-700"
+              <label :for="`cid_hr_${index}`" class="block text-sm font-medium text-gray-700"
                 >CID:<span class="text-red-500">*</span></label
               >
               <input
-                :id="`cid_${index}`"
+                :id="`cid_hr_${index}`"
                 type="text"
                 v-model="hr.cid"
                 required
@@ -535,11 +524,13 @@
               />
             </div>
             <div>
-              <label :for="`qualification_${index}`" class="block text-sm font-medium text-gray-700"
+              <label
+                :for="`qualification_hr_${index}`"
+                class="block text-sm font-medium text-gray-700"
                 >Qualification:<span class="text-red-500">*</span></label
               >
               <select
-                :id="`qualification_${index}`"
+                :id="`qualification_hr_${index}`"
                 v-model="hr.qualification"
                 required
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -565,11 +556,13 @@
               />
             </div>
             <div>
-              <label :for="`email_address_${index}`" class="block text-sm font-medium text-gray-700"
+              <label
+                :for="`email_address_hr_${index}`"
+                class="block text-sm font-medium text-gray-700"
                 >Email Address:<span class="text-red-500">*</span></label
               >
               <input
-                :id="`email_address_${index}`"
+                :id="`email_address_hr_${index}`"
                 type="email"
                 v-model="hr.email_address"
                 required
@@ -585,14 +578,28 @@
               <input
                 :id="`cv_certificates_${index}`"
                 type="file"
-                required
+                :required="!getHrFileState(index).hasExistingFile"
                 accept=".pdf,.doc,.docx,.jpg,.png"
                 @change="handleFileUpload($event, 'humanResources', index, 'cv_certificates')"
                 class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
               />
-              <span v-if="getHrFileName(index)" class="text-xs text-gray-600 mt-1 block"
-                >Selected: {{ getHrFileName(index) }}</span
+              <span v-if="getHrFileState(index).fileName" class="text-xs text-gray-600 mt-1 block">
+                Selected: {{ getHrFileState(index).fileName }}
+                <button
+                  v-if="getHrFileState(index).hasExistingFile"
+                  type="button"
+                  @click="clearHrFile(index)"
+                  class="ml-2 text-red-500 text-xs hover:underline"
+                >
+                  (Replace)
+                </button>
+              </span>
+              <span
+                v-else-if="getHrFileState(index).hasExistingFile"
+                class="text-xs text-gray-500 mt-1 block"
               >
+                Previously uploaded file exists. Upload new to replace.
+              </span>
             </div>
           </div>
           <button
@@ -653,7 +660,6 @@
           >
             {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
           </button>
-          <!-- Add Edit Draft button if needed, similar to previous form -->
           <button
             type="button"
             @click="editDraft"
@@ -673,12 +679,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import apiServices from '@/services/services'
-import { useAuthStore } from '@/stores/authStore' // 1. Import Auth Store
+import { ref, reactive, onMounted, } from 'vue'
+import apiServices from '@/services/services' // Ensure this path is correct
+import { useAuthStore } from '@/stores/authStore' // Ensure this path is correct
+import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js' // Ensure this path is correct
 
 // --- Store Instance ---
-const authStore = useAuthStore() // 2. Instantiate Auth Store
+const authStore = useAuthStore()
 
 // --- State ---
 const isLoading = ref(true)
@@ -686,6 +693,8 @@ const isSubmitting = ref(false)
 const formMessage = reactive({ text: '', type: '' })
 const formEl = ref(null)
 const declarationAgreed = ref(false)
+const counselorPositionId = ref(null)
+const roomParticularsId = ref(null)
 
 // --- Form Data ---
 const getInitialFormData = () => ({
@@ -694,51 +703,78 @@ const getInitialFormData = () => ({
   applicant_name: '',
   gender: '',
   date_of_birth: '',
-  village_chiwog: '',
-  gewog: '',
-  dungkhag: '',
-  dzongkhag_thromde_perm: '',
-  // Editable personal details (pre-filled from store)
   contact_no: '',
   email_address: '',
-  // Editable present address
   office_number: '',
   flat_no: '',
   building_no: '',
-  location: null,
-  gewog_throm: null,
-  dzongkhag_thromde: null,
-  // Editable education
-  qualification: '',
+  location: '',
+  dzongkhag_thromde_present: '', // For Present Address (Text Input)
+  gewog_throm_present: '',       // For Present Address (Text Input)
+  qualification_edu: '',
   institute_name: '',
   university_name: '',
-  // Branch Proposal Details
+  village_chiwog: '',
+  gewog_perm: '',
+  dungkhag: '',
+  dzongkhag_thromde_perm: '',
   existing_ecpf_name: '',
   proposed_firm_address: '',
-  proposed_firm_location: null,
+  proposed_firm_location: null, // For Proposed Branch (Dropdown - ID)
   firm_type: null,
-  // Dynamic sections
   infrastructure: [],
   humanResources: [],
-  // Meta fields
   isDraft: false,
   draftId: null,
-  declaration_agreed: false, // Loaded from draft if exists
+  declaration_agreed: false,
 })
 
 const formData = reactive(getInitialFormData())
 
-// --- Master Data --- (Populate from API or keep static)
-// !! Replace with actual API calls in fetchMasterData !!
-const locations = ref([])
-const gewogThroms = ref([])
+// --- Master Data (Dzongkhags still needed for Proposed Branch Location dropdown) ---
 const dzongkhagThromdes = ref([])
-const firmTypes = ref([{ id: 'ft1', name: 'Independent' } /* ... */])
-const infrastructureOptions = ref([{ id: 'io1', name: 'Room' } /* ... */])
-const positionOptions = ref([{ id: 'po1', name: 'Counselor' } /* ... */])
-const qualificationOptions = ref([{ id: 'qo1', name: 'Masters' } /* ... */])
+// allGewogThroms is no longer needed for a dependent dropdown for present address
+const firmTypes = ref([])
+const infrastructureOptions = ref([])
+const positionOptions = ref([])
+const qualificationOptions = ref([])
 
 // --- Helper Functions ---
+const formatDateForDisplay = (dateString) => {
+  if (!dateString) return ''
+  try {
+    return dateString.split('T')[0]
+  } catch (e) {
+    console.error('Error formatting date:', e)
+    return dateString
+  }
+}
+
+const getHrFileState = (index) => {
+  const hrItem = formData.humanResources[index];
+  if (!hrItem) return { fileName: '', hasExistingFile: false };
+  const file = hrItem.cv_certificates;
+  const existingFileName = hrItem.cv_filename;
+
+  if (file instanceof File) {
+    return { fileName: file.name, hasExistingFile: false };
+  }
+  if (existingFileName) {
+     return { fileName: existingFileName, hasExistingFile: true };
+  }
+  return { fileName: '', hasExistingFile: false };
+};
+
+const clearHrFile = (index) => {
+  if (formData.humanResources[index]) {
+    formData.humanResources[index].cv_certificates = null;
+    formData.humanResources[index].cv_certificates_base64 = null;
+    formData.humanResources[index].cv_filename = null;
+    const fileInput = formEl.value?.querySelector(`#cv_certificates_${index}`);
+    if (fileInput) fileInput.value = '';
+  }
+};
+
 const setMessage = (text, type = 'error') => {
   formMessage.text = text
   formMessage.type = type
@@ -748,49 +784,41 @@ const clearMessage = () => {
   formMessage.text = ''
   formMessage.type = ''
 }
-// Get filename for dynamically added HR files
-const getHrFileName = (index) => {
-  const file = formData.humanResources[index]?.cv_certificates
-  return file instanceof File ? file.name : ''
-}
 
-// --- Add/Remove Dynamic Sections ---
+// --- Computed Property and Watcher for Present Address Dzongkhag/Gewog are REMOVED ---
+
+// --- Add/Remove Dynamic Sections (No change here) ---
 const addInfrastructure = () => {
-  formData.infrastructure.push({ particulars: null, description: '', quantity: null, remarks: '' })
+  formData.infrastructure.push({ particulars: null, description: '', quantity: 1, remarks: '' })
 }
 const removeInfrastructure = (index) => {
   formData.infrastructure.splice(index, 1)
 }
 const addHumanResource = () => {
   formData.humanResources.push({
-    position: null,
-    cid: '',
-    full_name: '',
-    qualification: null,
-    contact_number: '',
-    email_address: '',
-    cv_certificates: null,
+    position: null, cid: '', full_name: '', qualification: null,
+    contact_number: '', email_address: '', cv_certificates: null, cv_certificates_base64: null, cv_filename: null
   })
 }
 const removeHumanResource = (index) => {
   formData.humanResources.splice(index, 1)
 }
 
-// --- File Upload Handler ---
+// --- File Upload Handler (No change here) ---
 const handleFileUpload = (event, sectionName, index, fileKey) => {
   const file = event.target.files[0]
-  if (sectionName === 'humanResources') {
-    formData.humanResources[index][fileKey] = file || null
+  if (file && sectionName === 'humanResources') {
+    formData.humanResources[index][fileKey] = file
+    formData.humanResources[index].cv_certificates_base64 = null;
+    formData.humanResources[index].cv_filename = file.name;
   }
-  // Add other sections if needed
 }
 
-// --- Base64 Conversion ---
+// --- Base64 Conversion (No change here) ---
 const toBase64 = (file) =>
   new Promise((resolve, reject) => {
     if (!file) {
-      resolve(null)
-      return
+      resolve(null); return;
     }
     const reader = new FileReader()
     reader.readAsDataURL(file)
@@ -798,339 +826,285 @@ const toBase64 = (file) =>
     reader.onerror = (error) => reject(error)
   })
 
-// --- Data Preparation (Assuming Base64 for files) ---
+// --- Data Preparation ---
 const prepareDataForSubmission = async (status = 'submitted') => {
   const data = JSON.parse(JSON.stringify(formData))
+  delete data.isDraft
 
-  delete data.isDraft // Don't send meta field
-
-  // Convert HR files
   if (data.humanResources && Array.isArray(data.humanResources)) {
     for (const hr of data.humanResources) {
       if (hr.cv_certificates instanceof File) {
-        // Only convert if it's a File object
-        hr.cv_certificates_base64 = await toBase64(hr.cv_certificates) // Send as separate field maybe?
+        hr.cv_certificates_base64 = await toBase64(hr.cv_certificates)
       }
-      delete hr.cv_certificates // Remove the File object before sending
+      delete hr.cv_certificates
     }
   }
 
   data.status = status
   data.declaration_agreed = declarationAgreed.value
 
-  // *** IMPORTANT: Map `data` to the structure your BACKEND API expects ***
-  // This is just an EXAMPLE structure, adjust it precisely!
   const submissionPayload = {
     applicant_cid: data.cid_no,
-    applicant_name: data.applicant_name, // Already populated
+    applicants_name: data.applicant_name,
     gender: data.gender,
     date_of_birth: data.date_of_birth,
     contact_no: data.contact_no,
-    email_address: data.email_address,
-    present_address: {
-      // Example nesting
-      office_number: data.office_number,
-      flat_no: data.flat_no,
-      building_no: data.building_no,
-      location_id: data.location,
-      gewog_throm_id: data.gewog_throm,
-      dzongkhag_thromde_id: data.dzongkhag_thromde,
-    },
-    education_details: {
-      qualification: data.qualification,
-      institute_name: data.institute_name,
-      university_name: data.university_name,
-    },
-    permanent_address: {
-      // Example nesting
-      village_chiwog: data.village_chiwog,
-      gewog: data.gewog,
-      dungkhag: data.dungkhag,
-      dzongkhag_thromde: data.dzongkhag_thromde_perm,
-    },
-    branch_proposal: {
-      // Example nesting
-      existing_ecpf_name: data.existing_ecpf_name,
-      proposed_firm_address: data.proposed_firm_address,
-      proposed_firm_location_id: data.proposed_firm_location,
-      firm_type_id: data.firm_type,
-    },
+    email: data.email_address,
+    office_number: data.office_number,
+    flat_no: data.flat_no,
+    building_no: data.building_no,
+    location: data.location,
+    // For Present Address, send the string values directly as per ECPF profile example
+    gewog_throm: data.gewog_throm_present,
+    dzongkhag_thromde: data.dzongkhag_thromde_present,
+    qualification: data.qualification_edu,
+    institute_name: data.institute_name,
+    university_name: data.university_name,
+    // Branch specific details
+    proposed_firm_address: data.proposed_firm_address,
+    proposed_firm_location_id: data.proposed_firm_location, // This is the ID from dropdown
+    type_of_firm: data.firm_type,
     infrastructure_details: data.infrastructure.map((infra) => ({
-      // Rename array maybe
       particulars_id: infra.particulars,
       description: infra.description,
       quantity: infra.quantity,
       remarks: infra.remarks,
     })),
     human_resource_details: data.humanResources.map((hr) => ({
-      // Rename array maybe
       position_id: hr.position,
       cid: hr.cid,
       full_name: hr.full_name,
       qualification_id: hr.qualification,
       contact_number: hr.contact_number,
       email: hr.email_address,
-      cv_certificates_base64: hr.cv_certificates_base64 || null, // Send base64 data
+      cv_certificates_base64: hr.cv_certificates_base64 || null,
+      cv_filename: hr.cv_filename || null,
     })),
     status: data.status,
-    declaration_agreed: data.declaration_agreed,
-    draft_id: data.draftId, // Send draftId if updating
+    declaration: data.declaration_agreed,
+    draft_id: data.draftId || null,
+    // Include permanent address fields if your API expects them in this payload
+    // permanent_village: data.village_chiwog,
+    // permanent_gewog: data.gewog_perm,
+    // permanent_dungkhag: data.dungkhag,
+    // permanent_dzongkhag: data.dzongkhag_thromde_perm,
   }
-
-  // Clean up null/undefined values if backend prefers missing keys
-  // Object.keys(submissionPayload).forEach(key => {
-  //     if (submissionPayload[key] === null || submissionPayload[key] === undefined) {
-  //         delete submissionPayload[key];
-  //     }
-  // });
-
   return submissionPayload
 }
 
 // --- Form Validation ---
 const validateForm = () => {
-  clearMessage()
-  let isValid = true
-  const errors = []
+  clearMessage();
+  let isValid = true;
+  const errors = [];
 
-  // Personal Info
-  if (!formData.contact_no) errors.push('Contact Number is required.')
+  if (!formData.contact_no) errors.push('Contact Number is required.');
   if (!formData.email_address || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email_address)) {
-    errors.push('Please enter a valid personal Email Address.')
+    errors.push('Please enter a valid personal Email Address.');
   }
-  // Present Address
-  if (formData.location === null) errors.push('Please select a Location for present address.')
-  if (formData.gewog_throm === null) errors.push('Please select a Gewog/Throm for present address.')
-  if (formData.dzongkhag_thromde === null)
-    errors.push('Please select a Dzongkhag/Thromde for present address.')
-  // Education
-  if (!formData.qualification) errors.push('Qualification is required.')
-  if (!formData.institute_name) errors.push('Institute Name is required.')
-  if (!formData.university_name) errors.push('University Name is required.')
-  // Branch Proposal
-  if (!formData.existing_ecpf_name) errors.push('Existing ECPF Name is required.')
-  if (!formData.proposed_firm_address) errors.push('Proposed Branch Address is required.')
-  if (formData.proposed_firm_location === null) errors.push('Proposed Branch Location is required.')
-  if (formData.firm_type === null) errors.push('Firm Type is required.')
+  if (!formData.location) errors.push('Location (Area/Street) for present address is required.');
+  if (!formData.dzongkhag_thromde_present) errors.push('Dzongkhag/Thromde for present address is required (auto-populated).');
+  if (!formData.gewog_throm_present) errors.push('Gewog/Throm for present address is required (auto-populated).');
 
-  // Infrastructure Validation
+
+  if (!formData.qualification_edu) errors.push('Education Qualification is required.');
+  if (!formData.institute_name) errors.push('Institute Name is required.');
+  if (!formData.university_name) errors.push('University Name is required.');
+
+  if (!formData.proposed_firm_address) errors.push('Proposed Branch Address is required.');
+  if (formData.proposed_firm_location === null) errors.push('Proposed Branch Location (Dzongkhag/Thromde) is required.');
+  if (formData.firm_type === null) errors.push('Type of Firm for the New Branch is required.');
+
   if (formData.infrastructure.length === 0) {
-    errors.push('At least one infrastructure item must be added.')
+    errors.push('At least one infrastructure item must be added for the new branch.');
   } else {
     for (let i = 0; i < formData.infrastructure.length; i++) {
-      const infra = formData.infrastructure[i]
-      if (
-        infra.particulars === null ||
-        !infra.description ||
-        infra.quantity === null ||
-        infra.quantity < 1
-      ) {
-        errors.push(
-          `Please complete all required fields (Particulars, Description, Quantity >= 1) for Infrastructure item #${i + 1}.`,
-        )
-        isValid = false // Stop further checks if one item is invalid
-        break
-      }
-      // Specific check example (adjust 'io1' and condition as needed)
-      if (infra.particulars === 'io1' && infra.quantity < 2) {
-        errors.push('Infrastructure check: At least two rooms (Particulars: Room) are required.')
+      const infra = formData.infrastructure[i];
+      if (infra.particulars === null || !infra.description || infra.quantity === null || infra.quantity < 1) {
+        errors.push(`Complete required fields (Particulars, Description, Quantity >= 1) for Infrastructure item #${i + 1}.`);
+        isValid = false; break;
       }
     }
   }
 
-  // Human Resource Validation
   if (formData.humanResources.length === 0) {
-    errors.push('At least one human resource item must be added.')
+    errors.push('At least one human resource item must be added for the new branch.');
   } else {
-    let hasCounselor = false
-    const counselorCids = new Set()
+    let hasCounselor = false;
+    const counselorCids = new Set();
     for (let i = 0; i < formData.humanResources.length; i++) {
-      const hr = formData.humanResources[i]
-      const itemNum = i + 1
-      if (
-        !hr.position ||
-        !hr.cid ||
-        !hr.full_name ||
-        !hr.qualification ||
-        !hr.contact_number ||
-        !hr.email_address
-      ) {
-        errors.push(`Please complete all required fields for Human Resource item #${itemNum}.`)
-        isValid = false
-        break
+      const hr = formData.humanResources[i]; const itemNum = i + 1;
+      if (!hr.position || !hr.cid || !hr.full_name || !hr.qualification || !hr.contact_number || !hr.email_address) {
+        errors.push(`Complete all required fields for Human Resource item #${itemNum}.`); isValid = false; break;
       }
-      if (!/^\d{11}$/.test(hr.cid)) {
-        errors.push(`Invalid CID format for Human Resource item #${itemNum}. Must be 11 digits.`)
-      }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(hr.email_address)) {
-        errors.push(`Invalid Email format for Human Resource item #${itemNum}.`)
-      }
-      if (!hr.cv_certificates) {
-        // Check if file is selected
-        errors.push(`CV & Certificates file is required for Human Resource item #${itemNum}.`)
+      if (!/^\d{11}$/.test(hr.cid)) errors.push(`Invalid CID for HR item #${itemNum}.`);
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(hr.email_address)) errors.push(`Invalid Email for HR item #${itemNum}.`);
+
+      const fileState = getHrFileState(i);
+      if (!fileState.fileName && !fileState.hasExistingFile) {
+         errors.push(`CV & Certificates file is required for Human Resource item #${itemNum}.`);
       }
 
-      if (hr.position === 'po1') {
-        // Assuming 'po1' is Counselor ID
-        hasCounselor = true
+      if (counselorPositionId.value && hr.position === counselorPositionId.value) {
+        hasCounselor = true;
         if (counselorCids.has(hr.cid)) {
-          errors.push(
-            `Duplicate Counselor CID found: ${hr.cid}. Each counselor must have a unique CID.`,
-          )
+          errors.push(`Duplicate Counselor CID: ${hr.cid}. Each counselor must have a unique CID.`);
         } else {
-          counselorCids.add(hr.cid)
+          counselorCids.add(hr.cid);
         }
       }
     }
-    if (!hasCounselor && formData.humanResources.length > 0) {
-      // Check only if HR items exist
-      errors.push('At least one Counselor (Position: Counselor) must be added to Human Resources.')
+    if (counselorPositionId.value && !hasCounselor && formData.humanResources.length > 0) {
+      errors.push('At least one Counselor must be added to Human Resources for the new branch.');
     }
   }
 
-  // Declaration
-  if (!declarationAgreed.value) errors.push('You must agree to the declaration to submit.')
+  if (!declarationAgreed.value) errors.push('You must agree to the declaration to submit.');
 
   if (errors.length > 0) {
-    setMessage(`Please fix the following errors:\n- ${errors.join('\n- ')}`)
-    isValid = false
+    setMessage(`Please fix the following errors:\n- ${errors.join('\n- ')}`);
+    isValid = false;
   }
-  return isValid
+  return isValid;
 }
 
-// --- API Interaction ---
 
+// --- API Interaction ---
 /** Fetch Master Data for Dropdowns */
 const fetchMasterData = async () => {
   try {
-    console.log('Fetching master data (locations, firm types, etc.)...')
-    // !! Replace with actual API calls using apiServices !!
-    // const [locRes, gtRes, dtRes, ftRes, infraOptRes, posOptRes, qualOptRes] = await Promise.all([
-    //     apiServices.getLocations(),
-    //     apiServices.getGewogThroms(),
-    //     apiServices.getDzongkhagThromdes(),
-    //     apiServices.getFirmTypes(),
-    //     apiServices.getInfrastructureOptions(),
-    //     apiServices.getPositionOptions(),
-    //     apiServices.getQualificationOptions(),
-    // ]);
-    // locations.value = locRes?.data || [];
-    // gewogThroms.value = gtRes?.data || [];
-    // dzongkhagThromdes.value = dtRes?.data || [];
-    // firmTypes.value = ftRes?.data || [];
-    // infrastructureOptions.value = infraOptRes?.data || [];
-    // positionOptions.value = posOptRes?.data || [];
-    // qualificationOptions.value = qualOptRes?.data || [];
+    console.log('Fetching/loading master data...')
 
-    // Using static data for now:
-    locations.value = [
-      { id: 'loc1', name: 'Thimphu' },
-      { id: 'loc2', name: 'Paro' },
+    // 1. Dzongkhags from Constant (still needed for proposed branch location)
+    const dzongkhagsData = [];
+    let dzongkhagIdCounter = 1;
+
+    // Only process dzongkhags for the dropdown
+    bhutanDzongkhagsGewogs.forEach(item => {
+      dzongkhagsData.push({
+        id: dzongkhagIdCounter++,
+        name: item.dzongkhag
+      });
+    });
+    dzongkhagThromdes.value = dzongkhagsData;
+
+    if (dzongkhagThromdes.value.length === 0) console.warn('Dzongkhag master data for dropdown is empty after loading from constant.');
+    console.log(`Loaded ${dzongkhagThromdes.value.length} Dzongkhags for dropdown from constant.`);
+
+    // 2. Fetch other masters from API
+    const apiCalls = [
+      apiServices.getMastersTypesOfFirm ? apiServices.getMastersTypesOfFirm() : Promise.resolve({ data: { results: [] } }),
+      apiServices.getMastersInfrastructures ? apiServices.getMastersInfrastructures() : Promise.resolve({ data: { results: [] } }),
+      apiServices.getMastersPositions ? apiServices.getMastersPositions() : Promise.resolve({ data: { results: [] } }),
+      apiServices.getMastersEcpfQualifications ? apiServices.getMastersEcpfQualifications() : Promise.resolve({ data: { results: [] } }),
     ]
-    gewogThroms.value = [
-      { id: 'gt1', name: 'Chang Gewog' },
-      { id: 'gt2', name: 'Kawang Gewog' },
-    ]
-    dzongkhagThromdes.value = [
-      { id: 'dt1', name: 'Thimphu Thromde' },
-      { id: 'dt2', name: 'Paro Thromde' },
-    ]
-    firmTypes.value = [
-      { id: 'ft1', name: 'Independent Branch' },
-      { id: 'ft2', name: 'Managed Branch' },
-    ]
-    infrastructureOptions.value = [
-      { id: 'io1', name: 'Counseling Room' },
-      { id: 'io2', name: 'Office Space' },
-      { id: 'io3', name: 'Computer' },
-      { id: 'io4', name: 'Furniture Set' },
-    ]
-    positionOptions.value = [
-      { id: 'po1', name: 'Counselor' },
-      { id: 'po2', name: 'Admin Staff' },
-      { id: 'po3', name: 'Manager' },
-    ]
-    qualificationOptions.value = [
-      { id: 'qo1', name: 'Masters in Counseling' },
-      { id: 'qo2', name: 'Bachelors Degree' },
-      { id: 'qo3', name: 'Relevant Diploma' },
-    ]
-    console.log('Master data loaded.')
+    const [firmTypeRes, infraRes, posRes, qualRes] = await Promise.all(apiCalls);
+
+    const extractData = (response) => response?.data?.results || response?.data || [];
+
+    firmTypes.value = extractData(firmTypeRes).map(item => ({ id: item.id, name: item.type_of_firm || item.name }));
+    infrastructureOptions.value = extractData(infraRes).map(item => ({ id: item.id, name: item.particular_name  || 'Unnamed Particular' }));
+    positionOptions.value = extractData(posRes).map(item => ({ id: item.id, name: item.position_name || item.name }));
+    qualificationOptions.value = extractData(qualRes).map(item => ({ id: item.id, name: item.qualification_name || item.name }));
+
+    const counselorPos = positionOptions.value.find(p => p.name?.toLowerCase().includes('counselor'));
+    if (counselorPos) counselorPositionId.value = counselorPos.id; else console.warn("Counselor position ID not found in master data.");
+    const roomInfra = infrastructureOptions.value.find(i => i.name?.toLowerCase().includes('room'));
+    if (roomInfra) roomParticularsId.value = roomInfra.id; else console.warn("Room particulars ID not found in master data.");
+
+    console.log('Master data fetching/loading completed.');
   } catch (error) {
-    console.error('Error fetching master data:', error)
-    setMessage('Failed to load dropdown options. Please try refreshing.', 'error')
+    console.error('Error in fetchMasterData:', error);
+    setMessage('Failed to load required master data. Please try refreshing.', 'error');
   }
-}
+};
 
-/** Fetch Permanent Address based on CID */
-const autoPopulatePermanentAddress = async (cid) => {
-  // This function now *only* fetches permanent address details
-  if (!cid) return
-  // !! ENSURE this method exists and returns permanent address fields !!
-  if (typeof apiServices.getUserPermanentAddressByCID !== 'function') {
-    // Changed method name assumption
-    console.warn('apiServices.getUserPermanentAddressByCID method is not defined.')
-    return // Don't show error, just skip
+/** Fetch and populate ECPF Profile data */
+const populateFromEcpfProfile = async (cid) => {
+  if (!cid || typeof apiServices.getEcpfDetailsByCID !== 'function') {
+    console.warn('CID missing or getEcpfDetailsByCID service not defined.');
+    return;
   }
   try {
-    console.log(`Fetching permanent address for CID: ${cid}...`)
-    const response = await apiServices.getUserPermanentAddressByCID(cid) // Use the specific method
+    console.log(`Fetching ECPF profile for CID: ${cid}...`);
+    const response = await apiServices.getEcpfDetailsByCID(cid);
+    const profile = response?.data; // Assuming response.data is the object like your example
 
-    if (response?.data) {
-      // !! Adjust keys based on your API response !!
-      formData.village_chiwog = response.data.village || response.data.chiwog || ''
-      formData.gewog = response.data.gewogName || response.data.gewog || '' // Prefer name if available
-      formData.dungkhag = response.data.dungkhagName || response.data.dungkhag || ''
-      formData.dzongkhag_thromde_perm = response.data.dzongkhagName || response.data.dzongkhag || ''
-      console.log('Populated permanent address.')
+    if (profile) {
+      console.log('ECPF Profile data received:', profile);
+      formData.contact_no = profile.contact_no || formData.contact_no;
+      formData.email_address = profile.email || formData.email_address; // API key is 'email'
+      formData.date_of_birth = profile.date_of_birth || formData.date_of_birth;
+      formData.office_number = profile.office_number || '';
+      formData.flat_no = profile.flat_no || '';
+      formData.building_no = profile.building_no || '';
+      formData.location = profile.location || ''; // Present address location
+
+      // For Present Address Dzongkhag/Gewog, directly use the string values from profile
+      formData.dzongkhag_thromde_present = profile.dzongkhag_thromde || ''; // API key is 'dzongkhag_thromde'
+      formData.gewog_throm_present = profile.gewog_throm || '';           // API key is 'gewog_throm'
+      console.log(`Set Present Address Dzongkhag: ${formData.dzongkhag_thromde_present}, Gewog: ${formData.gewog_throm_present}`);
+
+
+      formData.qualification_edu = profile.qualification || '';
+      formData.institute_name = profile.institute_name || '';
+      formData.university_name = profile.university_name || '';
+      formData.village_chiwog = profile.permanent_village || '';
+      formData.gewog_perm = profile.permanent_gewog || '';
+      formData.dungkhag = profile.permanent_dungkhag || '';
+      formData.dzongkhag_thromde_perm = profile.permanent_dzongkhag || '';
+      formData.existing_ecpf_name = profile.proposed_firm_name || ''; // Name of the main ECPF
+
+      console.log('FormData populated from ECPF profile.');
     } else {
-      console.log('No permanent address data found for CID via API.')
-      // Clear fields if no data found? Optional.
-      // formData.village_chiwog = '';
-      // formData.gewog = '';
-      // formData.dungkhag = '';
-      // formData.dzongkhag_thromde_perm = '';
+      console.log('No ECPF profile data found for CID.');
+      // Potentially set default values or show a message if profile data is crucial and missing
+      formData.dzongkhag_thromde_present = ''; // Ensure fields are cleared if no profile data
+      formData.gewog_throm_present = '';
     }
   } catch (error) {
-    console.warn(`Could not fetch permanent address: ${error.message || 'Unknown error'}`)
-    // Optionally inform user, but don't block
+    console.error('Error fetching/populating ECPF profile:', error);
+    setMessage('Failed to load your ECPF profile data.', 'error');
+    // Clear fields if error occurs to avoid stale data
+    formData.dzongkhag_thromde_present = '';
+    formData.gewog_throm_present = '';
   }
-}
+};
 
 /** Submit the form data */
 const submitForm = async () => {
-  // Logic is similar, ensure correct API endpoint is called
   if (!validateForm()) return
   isSubmitting.value = true
   clearMessage()
   console.log('Submitting branch application...')
   try {
     const dataToSubmit = await prepareDataForSubmission('submitted')
+    console.log('Data to submit:', JSON.stringify(dataToSubmit, null, 2));
+
     let response
-    // !! Use correct API method names from apiServices !!
-    const apiCreateMethod = 'submitBranchEcpfApplication' // Assumed name
-    const apiUpdateMethod = 'updateBranchEcpfApplication' // Assumed name (takes ID)
+    const apiCreateMethod = 'createEcpfBranch'; // Replace with your actual API method name
+    const apiUpdateMethod = 'updateEcpfBranch'; // Replace with your actual API method name
 
     if (formData.draftId && typeof apiServices[apiUpdateMethod] === 'function') {
       response = await apiServices[apiUpdateMethod](formData.draftId, dataToSubmit)
     } else if (typeof apiServices[apiCreateMethod] === 'function') {
       response = await apiServices[apiCreateMethod](dataToSubmit)
     } else {
-      throw new Error(
-        `Required API method (${formData.draftId ? apiUpdateMethod : apiCreateMethod}) not found.`,
-      )
+      console.error(`API methods for submission not found. Checked for ${apiCreateMethod} and ${apiUpdateMethod}.`);
+      throw new Error(`Required API method for submission not found.`);
     }
 
     if (response?.status === 200 || response?.status === 201) {
       setMessage('Branch application submitted successfully!', 'success')
       resetForm()
     } else {
-      throw new Error(`Submission failed with status: ${response?.status || 'Unknown'}`)
+      const errorDetail = response?.data?.detail || response?.data || `Submission failed: ${response?.status || 'Unknown'}`;
+      throw new Error(JSON.stringify(errorDetail));
     }
   } catch (error) {
     console.error('Error submitting branch form:', error)
     const errorMsg = error.response?.data?.detail || error.message || 'Submission failed.'
-    setMessage(errorMsg)
+    setMessage(`Error: ${errorMsg}`, 'error')
   } finally {
     isSubmitting.value = false
   }
@@ -1138,250 +1112,285 @@ const submitForm = async () => {
 
 /** Save the form data as a draft */
 const saveAsDraft = async () => {
-  // Logic is similar, ensure correct API endpoint is called
-  isSubmitting.value = true
-  clearMessage()
-  console.log('Saving branch application as draft...')
+  isSubmitting.value = true;
+  clearMessage();
+  console.log('Saving branch application as draft...');
   try {
-    const dataToSubmit = await prepareDataForSubmission('draft')
-    let response
-    // !! Use correct API method names from apiServices !!
-    const apiCreateMethod = 'saveBranchEcpfDraft' // Assumed name
-    const apiUpdateMethod = 'updateBranchEcpfDraft' // Assumed name (takes ID)
+    const dataToSubmit = await prepareDataForSubmission('draft');
+    console.log('Data to save as draft:', JSON.stringify(dataToSubmit, null, 2));
+    let response;
 
-    if (formData.draftId && typeof apiServices[apiUpdateMethod] === 'function') {
-      response = await apiServices[apiUpdateMethod](formData.draftId, dataToSubmit)
-    } else if (typeof apiServices[apiCreateMethod] === 'function') {
-      response = await apiServices[apiCreateMethod](dataToSubmit)
+    const apiCreateDraftMethod = 'createEcpfBranch'; // Or a specific draft creation endpoint
+    const apiUpdateDraftMethod = 'updateEcpfBranch'; // Or a specific draft update endpoint
+
+    if (formData.draftId && typeof apiServices[apiUpdateDraftMethod] === 'function') {
+        response = await apiServices[apiUpdateDraftMethod](formData.draftId, dataToSubmit);
+    } else if (typeof apiServices[apiCreateDraftMethod] === 'function') {
+        response = await apiServices[apiCreateDraftMethod](dataToSubmit);
     } else {
-      throw new Error(
-        `Required API method (${formData.draftId ? apiUpdateMethod : apiCreateMethod}) not found.`,
-      )
+        console.error(`API methods for saving draft not found. Checked for ${apiCreateDraftMethod} and ${apiUpdateDraftMethod}.`);
+        throw new Error(`Required API method for saving draft not found.`);
     }
 
     if (response?.status === 200 || response?.status === 201) {
-      if (!formData.draftId && response?.data?.id) {
-        formData.draftId = response.data.id
+      const draftId = response.data?.id || formData.draftId;
+      if (draftId) {
+         formData.draftId = draftId;
+         formData.isDraft = true;
+         setMessage(`Branch application saved as draft. (Draft ID: ${draftId})`, 'success');
+      } else {
+         setMessage('Draft saved, but could not retrieve Draft ID.', 'success');
       }
-      formData.isDraft = true
-      setMessage(
-        `Branch application saved as draft successfully. ${formData.draftId ? `(Draft ID: ${formData.draftId})` : ''}`,
-        'success',
-      )
     } else {
-      throw new Error(`Draft save failed with status: ${response?.status || 'Unknown'}`)
+      const errorDetail = response?.data?.detail || response?.data || `Draft save failed: ${response?.status || 'Unknown'}`;
+      throw new Error(JSON.stringify(errorDetail));
     }
   } catch (error) {
-    console.error('Error saving branch draft:', error)
-    const errorMsg = error.response?.data?.detail || error.message || 'Draft save failed.'
-    setMessage(errorMsg)
+    console.error('Error saving branch draft:', error);
+    const errorMsg = error.response?.data?.detail || error.message || 'Draft save failed.';
+    setMessage(`Error: ${errorMsg}`, 'error');
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
-}
+};
 
 /** Load draft data from API */
 const loadDraft = async (id) => {
-  // Logic is similar, ensure correct API endpoint is called
-  if (!id) return
-  isLoading.value = true
-  clearMessage()
-  console.log(`Loading branch draft with ID: ${id}...`)
-  // !! Use correct API method name from apiServices !!
-  const apiGetMethod = 'getBranchEcpfDraft' // Assumed name
-  if (typeof apiServices[apiGetMethod] !== 'function') {
-    setMessage('API method to get branch draft is missing.', 'error')
-    isLoading.value = false
-    return
-  }
-  try {
-    const response = await apiServices[apiGetMethod](id)
-    if (response?.data) {
-      // *** IMPORTANT: Map the response data back to formData structure ***
-      // This needs careful mapping if backend structure differs from formData
-      // Example (adjust based on actual response):
-      const draftData = response.data
-      Object.assign(formData, {
-        // Assign common fields first
-        ...getInitialFormData(), // Start with default structure
-        // Overwrite with fetched data (ensure keys match formData)
-        cid_no: draftData.applicant_cid,
-        applicant_name: draftData.applicant_name,
-        gender: draftData.gender,
-        date_of_birth: draftData.date_of_birth,
-        contact_no: draftData.contact_no,
-        email_address: draftData.email_address,
-        office_number: draftData.present_address?.office_number || '',
-        flat_no: draftData.present_address?.flat_no || '',
-        building_no: draftData.present_address?.building_no || '',
-        location: draftData.present_address?.location_id || null,
-        gewog_throm: draftData.present_address?.gewog_throm_id || null,
-        dzongkhag_thromde: draftData.present_address?.dzongkhag_thromde_id || null,
-        qualification: draftData.education_details?.qualification || '',
-        institute_name: draftData.education_details?.institute_name || '',
-        university_name: draftData.education_details?.university_name || '',
-        village_chiwog: draftData.permanent_address?.village_chiwog || '',
-        gewog: draftData.permanent_address?.gewog || '',
-        dungkhag: draftData.permanent_address?.dungkhag || '',
-        dzongkhag_thromde_perm: draftData.permanent_address?.dzongkhag_thromde || '',
-        existing_ecpf_name: draftData.branch_proposal?.existing_ecpf_name || '',
-        proposed_firm_address: draftData.branch_proposal?.proposed_firm_address || '',
-        proposed_firm_location: draftData.branch_proposal?.proposed_firm_location_id || null,
-        firm_type: draftData.branch_proposal?.firm_type_id || null,
-        infrastructure:
-          draftData.infrastructure_details?.map((infra) => ({
-            // Map arrays back
-            particulars: infra.particulars_id,
-            description: infra.description,
-            quantity: infra.quantity,
-            remarks: infra.remarks,
-          })) || [],
-        humanResources:
-          draftData.human_resource_details?.map((hr) => ({
-            position: hr.position_id,
-            cid: hr.cid,
-            full_name: hr.full_name,
-            qualification: hr.qualification_id,
-            contact_number: hr.contact_number,
-            email_address: hr.email,
-            cv_certificates: null, // File object cannot be restored
-            // Maybe store filename: cv_filename: hr.cv_filename
-          })) || [],
-        declaration_agreed: draftData.declaration_agreed || false, // Restore saved declaration state
-      })
+    if (!id) return;
+    isLoading.value = true;
+    clearMessage();
+    console.log(`Loading branch draft with ID: ${id}...`);
 
-      // Add initial items if arrays are empty after loading
-      if (formData.infrastructure.length === 0) addInfrastructure()
-      if (formData.humanResources.length === 0) addHumanResource()
+    const apiGetMethod = 'getEcpfBranch'; // Replace with your actual API method name
 
-      formData.draftId = id
-      formData.isDraft = true
-      declarationAgreed.value = formData.declaration_agreed // Sync checkbox
-
-      setMessage(`Branch draft loaded (ID: ${id}).`, 'success')
-    } else {
-      throw new Error('Branch draft data not found.')
+    if (typeof apiServices[apiGetMethod] !== 'function') {
+        setMessage('API method to get branch draft is missing.', 'error');
+        isLoading.value = false; return;
     }
-  } catch (error) {
-    console.error('Error loading branch draft:', error)
-    setMessage(
-      `Failed to load branch draft (ID: ${id}): ${error.message}. Starting new form.`,
-      'error',
-    )
-    resetForm()
-  } finally {
-    isLoading.value = false
-  }
-}
+
+    try {
+        // Ensure master data for dropdowns is loaded
+        if (dzongkhagThromdes.value.length === 0 || firmTypes.value.length === 0 ||
+            infrastructureOptions.value.length === 0 || positionOptions.value.length === 0 ||
+            qualificationOptions.value.length === 0) {
+             console.log("Master data for dropdowns not fully ready, fetching before loading draft...");
+             await fetchMasterData();
+        }
+
+        const response = await apiServices[apiGetMethod](id);
+        const draftData = response?.data; // Assuming response.data is the object like your ECPF profile example
+
+        if (draftData) {
+            console.log('Loaded draft data:', draftData);
+
+            const freshForm = getInitialFormData();
+            Object.assign(formData, freshForm); // Reset form before populating
+
+            // Populate from Auth first (core identity)
+            if (authStore.isAuthenticated && authStore.user) {
+                formData.cid_no = authStore.user?.cid || authStore.username || draftData.applicant_cid || '';
+                formData.applicant_name = authStore.fullName || draftData.applicants_name || '';
+                formData.gender = authStore.gender || draftData.gender || '';
+                // date_of_birth is typically static from profile, but draft might override
+            }
+
+            // Overwrite/Populate with Draft Data
+            formData.cid_no = draftData.applicant_cid || draftData.cid_no; // Key from your example is 'cid_no'
+            formData.applicant_name = draftData.applicants_name || formData.applicant_name;
+            formData.gender = draftData.gender || formData.gender;
+            formData.date_of_birth = draftData.date_of_birth || formData.date_of_birth;
+            formData.contact_no = draftData.contact_no || '';
+            formData.email_address = draftData.email || ''; // Key from your example is 'email'
+
+            formData.office_number = draftData.office_number || '';
+            formData.flat_no = draftData.flat_no || '';
+            formData.building_no = draftData.building_no || '';
+            formData.location = draftData.location || ''; // Present address location
+
+            // Present Address Dzongkhag/Gewog (Text Inputs)
+            formData.dzongkhag_thromde_present = draftData.dzongkhag_thromde || ''; // Key from your example
+            formData.gewog_throm_present = draftData.gewog_throm || '';           // Key from your example
+
+
+            formData.qualification_edu = draftData.qualification || ''; // Key from your example
+            formData.institute_name = draftData.institute_name || '';
+            formData.university_name = draftData.university_name || '';
+
+            // Permanent address details
+            formData.village_chiwog = draftData.permanent_village || '';
+            formData.gewog_perm = draftData.permanent_gewog || '';
+            formData.dungkhag = draftData.permanent_dungkhag || '';
+            formData.dzongkhag_thromde_perm = draftData.permanent_dzongkhag || '';
+
+            formData.existing_ecpf_name = draftData.proposed_firm_name || ''; // Key from your example
+
+            // Branch specific details
+            formData.proposed_firm_address = draftData.firm_address || ''; // Key from your example for branch address
+            // For proposed_firm_location, if draft sends name ('firm_location' from your example), map to ID
+            if (draftData.firm_location_id) { // Prefer ID if available
+                formData.proposed_firm_location = draftData.firm_location_id;
+            } else if (draftData.firm_location && dzongkhagThromdes.value.length > 0) {
+                const matchedDzongkhag = dzongkhagThromdes.value.find(d => d.name === draftData.firm_location);
+                formData.proposed_firm_location = matchedDzongkhag ? matchedDzongkhag.id : null;
+            } else {
+                formData.proposed_firm_location = null;
+            }
+            formData.firm_type = draftData.type_of_firm || null; // Assuming API sends ID for this
+
+            formData.infrastructure = (draftData.infrastructure_details || []).map(infra => ({
+                particulars: infra.particulars_id, description: infra.description,
+                quantity: infra.quantity, remarks: infra.remarks,
+            }));
+            formData.humanResources = (draftData.human_resource_details || []).map(hr => ({
+                position: hr.position_id, cid: hr.cid, full_name: hr.full_name,
+                qualification: hr.qualification_id, contact_number: hr.contact_number,
+                email_address: hr.email, cv_certificates: null,
+                cv_certificates_base64: hr.cv_certificates_base64 || null,
+                cv_filename: hr.cv_filename || (hr.cv_certificates_base64 ? 'Previously uploaded file' : null)
+            }));
+
+            declarationAgreed.value = draftData.declaration || false;
+            // Adjust 'is_draft' based on your API's field that indicates a draft status
+            formData.isDraft = draftData.is_draft === true || draftData.status === 'draft';
+            formData.draftId = id;
+
+            // Ensure dynamic sections have at least one item for UI consistency
+            if (formData.infrastructure.length === 0) addInfrastructure();
+            if (formData.humanResources.length === 0) addHumanResource();
+
+            setMessage(`Draft (ID: ${id}) loaded. ${formData.isDraft ? 'Status: Draft.' : ''}`, 'success');
+        } else {
+            throw new Error('Draft data not found in API response.');
+        }
+    } catch (error) {
+        console.error('Error loading draft:', error);
+        setMessage(`Failed to load draft (ID: ${id}): ${error.message}. Starting new form.`, 'error');
+        resetForm(); // Reset to a clean state if draft loading fails
+    } finally {
+        isLoading.value = false;
+    }
+};
 
 /** Allow editing of a loaded draft */
 const editDraft = () => {
-  // Logic remains the same
   if (formData.draftId) {
-    formData.isDraft = false
-    setMessage('Draft unlocked for editing and submission.', 'success')
+    formData.isDraft = false // Unlock the form for submission
+    setMessage('Draft unlocked for editing and final submission.', 'success')
   }
 }
 
-/** Reset form to initial state, preserving auth details */
-const resetForm = () => {
-  // Preserve initially fetched user details
-  const initialUserDetails = {
+/** Reset form to initial state, preserving auth & ECPF profile info */
+const resetForm = async () => {
+  // Preserve data that is auto-populated and shouldn't be cleared by a typical reset
+  const preservedData = {
     cid_no: formData.cid_no,
     applicant_name: formData.applicant_name,
     gender: formData.gender,
     date_of_birth: formData.date_of_birth,
-    contact_no: formData.contact_no, // Keep initially populated contact/email too
+    // ECPF Profile specific (present address, education, permanent address, existing ECPF name)
+    contact_no: formData.contact_no,
     email_address: formData.email_address,
-    // Preserve fetched permanent address too
+    office_number: formData.office_number,
+    flat_no: formData.flat_no,
+    building_no: formData.building_no,
+    location: formData.location,
+    // Preserve the present address text fields
+    dzongkhag_thromde_present: formData.dzongkhag_thromde_present,
+    gewog_throm_present: formData.gewog_throm_present,
+    qualification_edu: formData.qualification_edu,
+    institute_name: formData.institute_name,
+    university_name: formData.university_name,
     village_chiwog: formData.village_chiwog,
-    gewog: formData.gewog,
+    gewog_perm: formData.gewog_perm,
     dungkhag: formData.dungkhag,
     dzongkhag_thromde_perm: formData.dzongkhag_thromde_perm,
-  }
-  // Get fresh initial state for other fields
-  const freshFormData = getInitialFormData()
-  // Merge preserved details with fresh state
-  Object.assign(formData, { ...freshFormData, ...initialUserDetails })
+    existing_ecpf_name: formData.existing_ecpf_name,
+  };
 
-  declarationAgreed.value = false // Reset declaration checkbox
-  formData.draftId = null
-  formData.isDraft = false
-  clearMessage()
-  // Add initial items back if needed after reset
-  if (formData.infrastructure.length === 0) addInfrastructure()
-  if (formData.humanResources.length === 0) addHumanResource()
-  // Clear file inputs visually
+  Object.assign(formData, getInitialFormData()); // Reset all fields to their initial empty/null state
+
+  // Re-apply the preserved data
+  Object.assign(formData, preservedData);
+
+  declarationAgreed.value = false;
+  formData.draftId = null; // Clear draft ID on full reset
+  formData.isDraft = false; // Not a draft anymore
+  clearMessage();
+
+  // Ensure dynamic sections have at least one item for UI
+  if (formData.infrastructure.length === 0) addInfrastructure();
+  if (formData.humanResources.length === 0) addHumanResource();
+
+  // Clear file input fields visually
   if (formEl.value) {
-    const fileInputs = formEl.value.querySelectorAll('input[type="file"]')
-    fileInputs.forEach((input) => (input.value = ''))
+    formEl.value.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
   }
-  console.log('Form reset, user details preserved.')
-}
+  console.log('Form reset. Auto-populated details preserved.');
+};
 
 // --- Lifecycle Hook ---
 onMounted(async () => {
-  isLoading.value = true
-  clearMessage()
-  authStore.initializeAuth()
+  isLoading.value = true;
+  clearMessage();
+  authStore.initializeAuth(); // Make sure auth state is fresh
 
-  let userCid = null
+  let userCid = null;
 
-  // 1. Populate from Auth Store
+  // 1. Populate from Auth Store (basic identity)
   if (authStore.isAuthenticated && authStore.user) {
-    // *** VERIFY CID source in your authStore.user object ***
-    formData.cid_no = authStore.user?.cid || authStore.username || '' // Example: Prioritize 'cid' field
-    formData.applicant_name = authStore.fullName || ''
-    formData.gender = authStore.gender || ''
-    formData.date_of_birth = authStore.dateOfBirth || ''
-    formData.contact_no = authStore.contactNumber || ''
-    formData.email_address = authStore.email || ''
-
-    userCid = formData.cid_no
-    console.log('Populated user details from auth store.')
-
-    // 2. Auto-populate Permanent Address (after getting CID)
-    if (userCid) {
-      await autoPopulatePermanentAddress(userCid)
-    } else {
-      console.warn('Cannot fetch permanent address: CID not found in auth store.')
-    }
+    formData.cid_no = authStore.user?.cid || authStore.username || '';
+    formData.applicant_name = authStore.fullName || '';
+    formData.gender = authStore.gender || '';
+    formData.date_of_birth = authStore.dateOfBirth || '';
+    userCid = formData.cid_no;
+    console.log('Populated initial user details from auth store.');
   } else {
-    setMessage('User data not found. Please log in.', 'error')
-    isLoading.value = false
-    return
+    setMessage('User data not found. Please log in.', 'error');
+    isLoading.value = false; return; // Stop if no user
   }
 
-  // 3. Fetch Master Data (Dropdowns)
-  await fetchMasterData()
+  // 2. Fetch Master Data (Dzongkhags for proposed branch dropdown, and other masters)
+  await fetchMasterData();
+  console.log('Master data fetching completed in onMounted.');
 
-  // 4. Add Initial Dynamic Rows if empty
-  if (formData.infrastructure.length === 0) {
-    addInfrastructure()
-  }
-  if (formData.humanResources.length === 0) {
-    addHumanResource()
+  // 3. Populate from ECPF Profile (more detailed personal info, including present address text fields)
+  if (userCid) {
+    await populateFromEcpfProfile(userCid);
+    console.log('ECPF Profile population attempt completed in onMounted.');
+  } else {
+    console.warn('CID not available, cannot fetch ECPF profile.');
   }
 
-  // 5. Check for Draft ID from URL
-  const urlParams = new URLSearchParams(window.location.search)
-  const draftIdFromUrl = urlParams.get('draftId')
+  // 4. Initialize dynamic form sections if they are empty
+  if (formData.infrastructure.length === 0) addInfrastructure();
+  if (formData.humanResources.length === 0) addHumanResource();
+
+  // 5. Check for and Load Draft if draftId is in URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const draftIdFromUrl = urlParams.get('draftId');
   if (draftIdFromUrl) {
-    await loadDraft(draftIdFromUrl) // Load draft data if ID is present
+    console.log(`Draft ID found in URL: ${draftIdFromUrl}. Loading draft...`);
+    await loadDraft(draftIdFromUrl); // loadDraft handles setting isLoading = false
   } else {
-    formData.isDraft = false // Ensure it's not marked as draft if no ID loaded
+    formData.isDraft = false; // Ensure it's not marked as draft if no draftId
+    isLoading.value = false;
   }
-
-  isLoading.value = false // Loading finished
-})
+  console.log('onMounted completed.');
+});
 </script>
 
 <style scoped>
 input:read-only,
-input[readonly] {
+input[readonly],
+textarea:read-only,
+textarea[readonly] {
   cursor: not-allowed;
   background-color: #f3f4f6; /* bg-gray-100 */
   opacity: 0.7;
 }
-/* Add other styles if necessary */
+select:disabled {
+  cursor: not-allowed;
+  background-color: #f3f4f6; /* bg-gray-100 */
+  opacity: 0.7;
+}
 </style>
