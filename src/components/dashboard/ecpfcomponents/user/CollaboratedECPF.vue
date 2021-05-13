@@ -11,7 +11,7 @@
     </div>
 
     <!-- Loading/Error/Success Messages -->
-    <div v-if="isLoading" class="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+    <div v-if="isLoading && !formMessage.text" class="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded">
       <p>Loading initial data...</p>
     </div>
     <div
@@ -23,12 +23,12 @@
           : 'bg-green-100 border-green-400 text-green-700',
       ]"
     >
-      <p>{{ formMessage.text }}</p>
+      <p v-html="formMessage.text.replace(/\n/g, '<br />')"></p>
     </div>
 
     <!-- Form Section -->
     <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
-      <form v-if="!isLoading" @submit.prevent="submitForm" ref="formEl">
+      <form v-if="!isLoading || formMessage.text" @submit.prevent="submitForm" ref="formEl">
         <!-- Personal Information (Fetched from Auth Store) -->
         <section class="mb-8">
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">Personal Information</h2>
@@ -108,7 +108,6 @@
         <section class="mb-8">
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">Residential/Present Address</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Fields remain the same -->
             <div>
               <label for="office_number" class="block text-sm font-medium text-gray-700"
                 >Office Number:</label
@@ -140,37 +139,7 @@
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            <div>
-              <label for="location" class="block text-sm font-medium text-gray-700"
-                >Location:<span class="text-red-500">*</span></label
-              >
-              <select
-                id="location"
-                v-model="formData.location"
-                required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option disabled :value="null">-- Select Location --</option>
-                <option v-for="loc in locations" :key="loc.id" :value="loc.id">
-                  {{ loc.name }}
-                </option>
-              </select>
-            </div>
-            <div>
-              <label for="gewog_throm" class="block text-sm font-medium text-gray-700"
-                >Gewog/Throm:<span class="text-red-500">*</span></label
-              >
-              <select
-                id="gewog_throm"
-                v-model="formData.gewog_throm"
-                required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option disabled :value="null">-- Select Gewog/Throm --</option>
-                <option v-for="gt in gewogThroms" :key="gt.id" :value="gt.id">{{ gt.name }}</option>
-              </select>
-            </div>
-            <div>
+             <div>
               <label for="dzongkhag_thromde" class="block text-sm font-medium text-gray-700"
                 >Dzongkhag/Thromde:<span class="text-red-500">*</span></label
               >
@@ -186,12 +155,45 @@
                 </option>
               </select>
             </div>
+            <div>
+              <label for="gewog_throm" class="block text-sm font-medium text-gray-700"
+                >Gewog/Throm:<span class="text-red-500">*</span></label
+              >
+              <select
+                id="gewog_throm"
+                v-model="formData.gewog_throm"
+                :required="isGewogRequired()"
+                :disabled="!formData.dzongkhag_thromde || (gewogThroms.length === 0 && dzongkhagHasGewogs(formData.dzongkhag_thromde))"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option disabled :value="null">-- Select Gewog/Throm --</option>
+                <option v-if="formData.dzongkhag_thromde && gewogThroms.length === 0 && dzongkhagHasGewogs(formData.dzongkhag_thromde)" :value="null" disabled>
+                  -- No Gewogs for selected Dzongkhag --
+                </option>
+                 <option v-if="formData.dzongkhag_thromde && !dzongkhagHasGewogs(formData.dzongkhag_thromde)" :value="NO_GEWOG_OPTION_VALUE" >
+                  N/A (e.g. Thromde)
+                </option>
+                <option v-for="gt in gewogThroms" :key="gt.id" :value="gt.id">{{ gt.name }}</option>
+              </select>
+            </div>
+             <div>
+              <label for="location" class="block text-sm font-medium text-gray-700"
+                >Village/Specific Location:<span class="text-red-500">*</span></label
+              >
+               <input
+                id="location"
+                type="text"
+                v-model="formData.location"
+                required
+                placeholder="Enter village or specific area"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
           </div>
         </section>
 
         <!-- Education Details -->
         <section class="mb-8">
-          <!-- Fields remain the same -->
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">Education Details</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -207,11 +209,11 @@
               />
             </div>
             <div>
-              <label for="institute_name" class="block text-sm font-medium text-gray-700"
+              <label for="education_institute_name" class="block text-sm font-medium text-gray-700"
                 >Name of Institute:<span class="text-red-500">*</span></label
               >
               <input
-                id="institute_name"
+                id="education_institute_name"
                 type="text"
                 v-model="formData.institute_name"
                 required
@@ -235,14 +237,13 @@
 
         <!-- ECPF in Collaboration Proposal Details -->
         <section class="mb-8">
-          <!-- Fields remain the same -->
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">
             ECPF in Collaboration Proposal Details
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label for="existing_ecpf_name" class="block text-sm font-medium text-gray-700"
-                >Existing ECPF Name:</label
+                >Existing ECPF Name (Institute):</label
               >
               <input
                 id="existing_ecpf_name"
@@ -266,7 +267,7 @@
             </div>
             <div>
               <label for="proposed_ecpf_name" class="block text-sm font-medium text-gray-700"
-                >Proposed Name of ECPF:<span class="text-red-500">*</span></label
+                >Proposed Name of ECPF (for Collaboration):<span class="text-red-500">*</span></label
               >
               <input
                 id="proposed_ecpf_name"
@@ -278,7 +279,7 @@
             </div>
             <div>
               <label for="proposed_location" class="block text-sm font-medium text-gray-700"
-                >Proposed Location (if applicable):</label
+                >Proposed Location (for Collaboration, if applicable):</label
               >
               <input
                 id="proposed_location"
@@ -292,7 +293,6 @@
 
         <!-- Details of External Party -->
         <section class="mb-8">
-          <!-- Fields remain the same -->
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">Details of External Party</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -422,7 +422,6 @@
 
         <!-- Collaboration Details -->
         <section class="mb-8">
-          <!-- Field remains the same -->
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">
             Collaboration Details<span class="text-red-500">*</span>
           </h2>
@@ -437,10 +436,9 @@
 
         <!-- Supporting Documents -->
         <section class="mb-8">
-          <!-- Fields remain the same -->
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">Supporting Documents</h2>
           <p class="text-sm text-gray-500 mb-4">
-            Please upload required documents in PDF, JPG, PNG, DOC, or DOCX format.
+            Please upload required documents in PDF, JPG, PNG, DOC, or DOCX format. Max 5MB each.
           </p>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -451,7 +449,7 @@
                 id="concern_letter"
                 type="file"
                 @change="handleFileUpload($event, 'concern_letter')"
-                required
+                :required="!getFileName('concern_letter')"
                 accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                 class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
               />
@@ -469,7 +467,7 @@
                 id="passport_cv"
                 type="file"
                 @change="handleFileUpload($event, 'passport_cv')"
-                required
+                :required="!getFileName('passport_cv')"
                 accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                 class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
               />
@@ -485,7 +483,7 @@
                 id="external_party_license"
                 type="file"
                 @change="handleFileUpload($event, 'external_party_license')"
-                required
+                :required="!getFileName('external_party_license')"
                 accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                 class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
               />
@@ -503,7 +501,7 @@
                 id="mou"
                 type="file"
                 @change="handleFileUpload($event, 'mou')"
-                required
+                :required="!getFileName('mou')"
                 accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                 class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
               />
@@ -547,7 +545,7 @@
           <button
             type="button"
             @click="editDraft"
-            v-if="formData.isDraft"
+            v-if="formData.isDraft && formData.draftId"
             :disabled="isSubmitting"
             class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -555,52 +553,49 @@
           </button>
           <button
             type="submit"
-            :disabled="!declarationAgreed || isSubmitting || formData.isDraft"
+            :disabled="!declarationAgreed || isSubmitting || (formData.isDraft && formData.draftId)"
             class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {{ isSubmitting ? 'Submitting...' : 'Submit' }}
           </button>
         </div>
       </form>
-      <div v-else class="text-center py-10">
+      <div v-else-if="isLoading" class="text-center py-10">
         <p>Loading form data...</p>
-        <!-- You could add a spinner here -->
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import apiServices from '@/services/services' // Import your API service
-import { useAuthStore } from '@/stores/authStore' // 1. Import the auth store
+import { ref, reactive, onMounted, watch } from 'vue'
+import apiServices from '@/services/services'
+import { useAuthStore } from '@/stores/authStore'
+import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js'
+import { countryData } from '@/constants/countries.js'
 
-// --- Store Instance ---
-const authStore = useAuthStore() // 2. Instantiate the store
-
-// --- State ---
+const authStore = useAuthStore()
 const isLoading = ref(true)
 const isSubmitting = ref(false)
 const formMessage = reactive({ text: '', type: '' })
 const formEl = ref(null)
 const declarationAgreed = ref(false)
 
-// --- Form Data ---
+const NO_GEWOG_OPTION_VALUE = 'NO_GEWOG_APPLICABLE';
+
 const getInitialFormData = () => ({
-  // Auto-populated fields
   cid_no: '',
   applicant_name: '',
   gender: '',
   date_of_birth: '',
-  existing_ecpf_name: '',
-  existing_license_number: '',
-  // Editable fields (initialize some from store later)
+  existing_ecpf_name: 'Loading...',
+  existing_license_number: 'Loading...',
   contact_no: '',
   email_address: '',
   office_number: '',
   flat_no: '',
   building_no: '',
-  location: null,
+  location: '',
   gewog_throm: null,
   dzongkhag_thromde: null,
   qualification: '',
@@ -619,30 +614,66 @@ const getInitialFormData = () => ({
   external_party_contact: '',
   website: '',
   collaboration_details: '',
-  // Files
   concern_letter: null,
   passport_cv: null,
   external_party_license: null,
   mou: null,
-  // Meta fields
   isDraft: false,
   draftId: null,
-  declaration_agreed: false, // Stored value from loaded draft
+  declaration_agreed: false,
 })
 
 const formData = reactive(getInitialFormData())
 
-// --- Master Data --- (Keep static or fetch dynamically)
-// !! Replace with actual API calls in fetchMasterData !!
-const locations = ref([]) // Populate in fetchMasterData
-const gewogThroms = ref([]) // Populate in fetchMasterData
-const dzongkhagThromdes = ref([]) // Populate in fetchMasterData
-const countries = ref([
-  { code: 'BT', name: 'Bhutan' },
-  { code: 'IN', name: 'India' } /* ... more ... */,
-])
+const gewogThroms = ref([])
+const dzongkhagThromdes = ref([])
+const countries = ref([])
 
-// --- Helper Functions ---
+const isFileObject = (value) => {
+  if (typeof File === 'function') {
+    return value instanceof File;
+  }
+  // console.warn('[isFileObject] Global File constructor not available for instanceof check.');
+  return false;
+};
+
+const generateId = (prefix, name) => {
+  if (!name || typeof name !== 'string') return `${prefix}_unknown_${Date.now()}`;
+  return `${prefix}_${name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/gi, '')}`;
+};
+
+const dzongkhagHasGewogs = (dzongkhagGeneratedId) => {
+  if (!dzongkhagGeneratedId) return false;
+  const selectedDzongkhagObj = bhutanDzongkhagsGewogs.find(
+    dz => generateId('dz', dz.dzongkhag) === dzongkhagGeneratedId
+  );
+  return selectedDzongkhagObj && selectedDzongkhagObj.gewogs && selectedDzongkhagObj.gewogs.length > 0;
+};
+
+const isGewogRequired = () => {
+    if (!formData.dzongkhag_thromde) return false;
+    if (formData.gewog_throm === NO_GEWOG_OPTION_VALUE) return false;
+    return dzongkhagHasGewogs(formData.dzongkhag_thromde);
+};
+
+watch(() => formData.dzongkhag_thromde, (newDzongkhagGeneratedId) => {
+  formData.gewog_throm = null
+  gewogThroms.value = []
+  if (newDzongkhagGeneratedId) {
+    const selectedDzongkhagObj = bhutanDzongkhagsGewogs.find(
+      dz => generateId('dz', dz.dzongkhag) === newDzongkhagGeneratedId
+    );
+    if (selectedDzongkhagObj && selectedDzongkhagObj.gewogs && selectedDzongkhagObj.gewogs.length > 0) {
+      gewogThroms.value = selectedDzongkhagObj.gewogs.map(gewogName => ({
+        id: generateId(`gw_${selectedDzongkhagObj.dzongkhag}`, gewogName),
+        name: gewogName
+      }));
+    } else if (selectedDzongkhagObj) {
+        gewogThroms.value = [];
+    }
+  }
+})
+
 const setMessage = (text, type = 'error') => {
   formMessage.text = text
   formMessage.type = type
@@ -654,380 +685,464 @@ const clearMessage = () => {
 }
 const getFileName = (fieldName) => {
   const file = formData[fieldName]
-  return file instanceof File ? file.name : ''
+  if (isFileObject(file)) return file.name;
+  if (typeof file === 'string' && file) return file;
+  return '';
 }
 
-// --- File Upload Handler ---
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const ALLOWED_FILE_TYPES = ['.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx'];
+
 const handleFileUpload = (event, fieldName) => {
-  const file = event.target.files[0]
-  formData[fieldName] = file || null
-}
+  const file = event.target.files[0];
+  if (!file) {
+    formData[fieldName] = null;
+    return;
+  }
+  const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+  if (!ALLOWED_FILE_TYPES.includes(fileExtension)) {
+    setMessage(`Invalid file type. Allowed: ${ALLOWED_FILE_TYPES.join(', ')}`, 'error');
+    event.target.value = '';
+    formData[fieldName] = null;
+    return;
+  }
+  if (file.size > MAX_FILE_SIZE) {
+    setMessage(`File too large. Max size: 5MB.`, 'error');
+    event.target.value = '';
+    formData[fieldName] = null;
+    return;
+  }
+  clearMessage();
+  formData[fieldName] = file;
+};
 
-// --- Base64 Conversion ---
-const toBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    if (!file) {
-      resolve(null)
-      return
+const prepareDataForSubmission = (status = 'submitted') => {
+  // console.log('[prepareDataForSubmission] Preparing FormData for status:', status);
+  const submissionFormData = new FormData();
+  const hasOwnProperty = Object.prototype.hasOwnProperty;
+
+  const fieldMapping = {
+    proposed_ecpf_name: 'proposed_name',
+    firm_registration_number: 'external_firm_registration_number',
+    external_party_email: 'email',
+    external_party_contact: 'contact_number',
+    concern_letter: 'concern_authorization_letter',
+    external_party_license: 'license_registration',
+    mou: 'valid_mou',
+  };
+
+  for (const key in formData) {
+    if (hasOwnProperty.call(formData, key)) {
+      const value = formData[key];
+      const nonSubmissionFields = [
+        'isDraft', 'draftId', 'cid_no', 'applicant_name', 'gender', 'date_of_birth',
+        'existing_ecpf_name', 'existing_license_number', 'declaration_agreed'
+      ];
+      if (nonSubmissionFields.includes(key)) continue;
+      const backendKey = fieldMapping[key] || key;
+      if (isFileObject(value)) {
+        submissionFormData.append(backendKey, value, value.name);
+      } else if (value !== null && value !== undefined && value !== '') {
+        submissionFormData.append(backendKey, value);
+      }
     }
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result)
-    reader.onerror = (error) => reject(error)
-  })
+  }
+  submissionFormData.append('is_draft', status === 'draft'); // Send 'is_draft' boolean for backend
+  submissionFormData.append('declaration_agreed', String(declarationAgreed.value));
+  if (formData.existing_license_number && !formData.existing_license_number.startsWith('N/A') && formData.existing_license_number !== 'Loading...') {
+    submissionFormData.append('existing_license_number', formData.existing_license_number);
+  }
 
-// --- Data Preparation (Assuming Base64) ---
-const prepareDataForSubmission = async (status = 'submitted') => {
-  const data = JSON.parse(JSON.stringify(formData))
+  // The following dzongkhag/gewog fields are for APPLICANT'S residential address,
+  // not usually part of the ECPFCollaboration model itself.
+  // If your ECPFCollaboration model needs a *proposed* dzongkhag/gewog for the *collaboration*,
+  // ensure those are separate fields in formData (e.g., formData.collaboration_dzongkhag)
+  // and append them here. The current dzongkhag_thromde and gewog_throm are related to applicant's address.
 
-  delete data.isDraft // Don't send this meta field
-
-  // Convert files
-  data.concern_letter = await toBase64(formData.concern_letter)
-  data.passport_cv = await toBase64(formData.passport_cv)
-  data.external_party_license = await toBase64(formData.external_party_license)
-  data.mou = await toBase64(formData.mou)
-
-  data.status = status
-  data.declaration_agreed = declarationAgreed.value
-
-  // Send draftId only if it exists (for update operations)
-  // if (!data.draftId) {
-  //     delete data.draftId;
+  // console.log('[prepareDataForSubmission] FormData content (keys should match backend ECPFCollaboration model):');
+  // for (let pair of submissionFormData.entries()) {
+  //   console.log(`  ${pair[0]}: ${isFileObject(pair[1]) ? `File(${pair[1].name})` : pair[1]}`);
   // }
-  // Backend might ignore it if creating, depends on API design.
-
-  return data
+  return submissionFormData;
 }
 
-// --- Form Validation ---
+
 const validateForm = () => {
-  clearMessage()
-  let isValid = true
-  const errors = []
-
-  // Validation checks remain the same...
-  if (!formData.contact_no) errors.push('Contact Number is required.')
-  if (!formData.email_address || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email_address)) {
-    errors.push('Please enter a valid personal Email Address.')
+  // console.log('[validateForm] Starting validation. typeof File:', typeof File);
+  clearMessage();
+  const errors = [];
+  if (!formData.contact_no?.trim()) errors.push('Contact Number is required.');
+  if (!formData.email_address?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email_address)) {
+    errors.push('Please enter a valid personal Email Address.');
   }
-  if (formData.location === null) errors.push('Please select a Location.')
-  if (formData.gewog_throm === null) errors.push('Please select a Gewog/Throm.')
-  if (formData.dzongkhag_thromde === null) errors.push('Please select a Dzongkhag/Thromde.')
-  if (!formData.qualification) errors.push('Qualification is required.')
-  if (!formData.institute_name) errors.push('Institute Name is required.')
-  if (!formData.university_name) errors.push('University Name is required.')
-  if (!formData.proposed_ecpf_name) errors.push('Proposed ECPF Name is required.')
-  if (!formData.collaborating_firm_name) errors.push('Collaborating Firm Name is required.')
-  if (formData.external_party_country === null) errors.push('External Party Country is required.')
-  if (!formData.external_party_state) errors.push('External Party State is required.')
-  if (!formData.firm_registration_number) errors.push("Firm's Registration Number is required.")
-  if (!formData.proprietor_name) errors.push("Proprietor's Name is required.")
-  if (!formData.nationality) errors.push('Nationality is required.')
-  if (!formData.designation) errors.push('Designation is required.')
-  if (
-    !formData.external_party_email ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.external_party_email)
-  ) {
-    errors.push('Please enter a valid Email Address for the external party.')
+  if (formData.dzongkhag_thromde === null) errors.push('Please select a Dzongkhag/Thromde.');
+  if (isGewogRequired() && formData.gewog_throm === null) {
+    errors.push('Please select a Gewog/Throm.');
   }
-  if (!formData.external_party_contact) errors.push('External Party Contact Number is required.')
-  if (!formData.collaboration_details) errors.push('Collaboration Details are required.')
-  if (!formData.concern_letter) errors.push('Concern/Authorization Letter is required.')
-  if (!formData.passport_cv) errors.push('Passport & CV file is required.')
-  if (!formData.external_party_license) errors.push('External Party License file is required.')
-  if (!formData.mou) errors.push('Valid Signed MoU file is required.')
-  if (!declarationAgreed.value) errors.push('You must agree to the declaration to submit.')
-
+  if (!formData.location?.trim()) errors.push('Village/Specific Location is required.');
+  if (!formData.qualification?.trim()) errors.push('Qualification is required.');
+  if (!formData.institute_name?.trim()) errors.push('Name of Institute (Education Details) is required.');
+  if (!formData.university_name?.trim()) errors.push('Name of University (Education Details) is required.');
+  if (!formData.proposed_ecpf_name?.trim()) errors.push('Proposed Name of ECPF (for Collaboration) is required.');
+  if (!formData.collaborating_firm_name?.trim()) errors.push('Name of the Collaborating Firm is required.');
+  if (formData.external_party_country === null) errors.push('External Party Country is required.');
+  if (!formData.external_party_state?.trim()) errors.push('External Party State is required.');
+  if (!formData.firm_registration_number?.trim()) errors.push("Firm’s Registration Number is required.");
+  if (!formData.proprietor_name?.trim()) errors.push("Name of the Proprietor (External Party) is required.");
+  if (!formData.nationality?.trim()) errors.push('Nationality (External Party) is required.');
+  if (!formData.designation?.trim()) errors.push('Designation (External Party) is required.');
+  if (!formData.external_party_email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.external_party_email)) {
+    errors.push('Please enter a valid Email Address for the external party.');
+  }
+  if (!formData.external_party_contact?.trim()) errors.push('Contact Number (External Party) is required.');
+  if (!formData.collaboration_details?.trim()) errors.push('Collaboration Details are required.');
+  if (!(typeof formData.concern_letter === 'string' && formData.concern_letter) && !isFileObject(formData.concern_letter)) {
+    errors.push('Concern/Authorization Letter is required.');
+  }
+  if (!(typeof formData.passport_cv === 'string' && formData.passport_cv) && !isFileObject(formData.passport_cv)) {
+    errors.push('Passport & CV file is required.');
+  }
+  if (!(typeof formData.external_party_license === 'string' && formData.external_party_license) && !isFileObject(formData.external_party_license)) {
+    errors.push('External Party License file is required.');
+  }
+  if (!(typeof formData.mou === 'string' && formData.mou) && !isFileObject(formData.mou)) {
+    errors.push('Valid Signed MoU file is required.');
+  }
+  if (!declarationAgreed.value) errors.push('You must agree to the declaration to submit.');
   if (errors.length > 0) {
-    setMessage(`Please fix the following errors:\n- ${errors.join('\n- ')}`)
-    isValid = false
+    setMessage(`Please fix the following errors:\n- ${errors.join('\n- ')}`);
+    return false;
   }
-  return isValid
-}
+  // console.log('[validateForm] Validation successful.');
+  return true;
+};
 
-// --- API Interaction ---
-
-/** Fetch Master Data for Dropdowns */
 const fetchMasterData = async () => {
   try {
-    // !! Replace with actual API calls !!
-    console.log('Fetching master data (locations, gewogs, etc.)...')
-    // Example structure (assuming apiServices methods exist)
-    // const [locRes, gtRes, dtRes] = await Promise.all([
-    //     apiServices.getLocations ? apiServices.getLocations() : Promise.resolve({ data: [] }),
-    //     apiServices.getGewogThroms ? apiServices.getGewogThroms() : Promise.resolve({ data: [] }),
-    //     apiServices.getDzongkhagThromdes ? apiServices.getDzongkhagThromdes() : Promise.resolve({ data: [] }),
-    // ]);
-    // locations.value = locRes.data || [];
-    // gewogThroms.value = gtRes.data || [];
-    // dzongkhagThromdes.value = dtRes.data || [];
-
-    // Using static for now:
-    locations.value = [
-      { id: 'loc1', name: 'Thimphu' },
-      { id: 'loc2', name: 'Paro' } /* ... */,
-    ]
-    gewogThroms.value = [
-      { id: 'gt1', name: 'Chang Gewog' },
-      { id: 'gt2', name: 'Kawang Gewog' } /* ... */,
-    ]
-    dzongkhagThromdes.value = [
-      { id: 'dt1', name: 'Thimphu Thromde' },
-      { id: 'dt2', name: 'Paro Thromde' } /* ... */,
-    ]
-    console.log('Master data loaded.')
+    // console.log('[fetchMasterData] Populating master data...');
+    dzongkhagThromdes.value = bhutanDzongkhagsGewogs.map(item => ({
+      id: generateId('dz', item.dzongkhag),
+      name: item.dzongkhag
+    }));
+    countries.value = countryData;
+    // console.log('[fetchMasterData] Master data for Dzongkhags/Thromdes and Countries loaded.');
   } catch (error) {
-    console.error('Error fetching master data:', error)
-    setMessage('Failed to load dropdown options. Please try refreshing.', 'error')
+    console.error('[fetchMasterData] Error processing master data:', error);
+    setMessage('Failed to load dropdown options. Please try refreshing.', 'error');
   }
 }
 
-/** Fetch details of the user's existing ECPF */
 const fetchExistingEcpfDetails = async (cid) => {
-  // Logic remains the same... uses apiServices.getEcpfDetailsByCID
-  if (!cid) return null
-  if (typeof apiServices.getEcpfDetailsByCID !== 'function') {
-    console.warn('apiServices.getEcpfDetailsByCID method is not defined.')
-    return null
+  if (!cid) {
+    // console.warn('[fetchExistingEcpfDetails] Called without CID.');
+    return null;
   }
+  if (typeof apiServices.getEcpfDetailsByCID !== 'function') {
+    console.error('[fetchExistingEcpfDetails] CRITICAL: apiServices.getEcpfDetailsByCID method is not defined.');
+    formData.existing_ecpf_name = 'N/A (Service Error)';
+    formData.existing_license_number = 'N/A (Service Error)';
+    return null;
+  }
+  // console.log(`[fetchExistingEcpfDetails] Fetching existing ECPF details for CID: ${cid}...`);
   try {
-    console.log(`Fetching existing ECPF details for CID: ${cid}...`)
-    const response = await apiServices.getEcpfDetailsByCID(cid)
-    if (response?.data) {
-      console.log('Existing ECPF details received:', response.data)
-      return response.data
+    const response = await apiServices.getEcpfDetailsByCID(cid);
+    if (response && response.data) {
+      if (Object.keys(response.data).length === 0 && response.data.constructor === Object) {
+        // console.warn(`[fetchExistingEcpfDetails] API returned an empty data object for ECPF details (CID: ${cid}).`);
+        return null;
+      }
+      // console.log('[fetchExistingEcpfDetails] Successfully fetched ECPF details, returning data.');
+      return response.data;
+    } else if (response && response.status === 404) {
+        // console.log(`[fetchExistingEcpfDetails] No existing ECPF found for CID: ${cid} (API 404). Returning null.`);
+        return null;
     } else {
-      return null
+      // console.warn(`[fetchExistingEcpfDetails] API call for ECPF (CID: ${cid}) did not return expected data. Resp status: ${response?.status}. Returning null.`);
+      return null;
     }
   } catch (error) {
-    console.warn(`Could not fetch existing ECPF details: ${error.message || 'Unknown error'}`)
-    return null
+    // console.error(`[fetchExistingEcpfDetails] Error fetching ECPF details for CID ${cid}:`, error, ". Returning null.");
+    if (error.response && error.response.status === 404) {
+        // console.log(`[fetchExistingEcpfDetails] No existing ECPF found for CID: ${cid} (Caught 404). Returning null.`);
+        return null;
+    }
+    formData.existing_ecpf_name = 'N/A (Fetch Error)';
+    formData.existing_license_number = 'N/A (Fetch Error)';
+    return null;
   }
-}
+};
 
-/** Submit the form data */
 const submitForm = async () => {
-  // Logic remains largely the same, ensure API method names are correct
-  if (!validateForm()) return
-  isSubmitting.value = true
-  clearMessage()
-  console.log('Submitting application...')
+  if (!validateForm()) {
+    // console.log('[submitForm] Validation failed.'); // Already handled by validateForm's setMessage
+    return;
+  }
+  isSubmitting.value = true;
+  clearMessage(); // Clear previous messages now that validation passed
+  // console.log('[submitForm] Attempting submission...');
+
   try {
-    const dataToSubmit = await prepareDataForSubmission('submitted')
-    let response
-    // !! ENSURE these methods exist in apiServices !!
-    const apiCreateMethod = 'createEcpfCollaboration'
-    const apiUpdateMethod = 'updateCollaborationEcpf' // Assumes update method takes (id, data)
+    const dataToSubmit = prepareDataForSubmission('submitted');
+    let response;
+    const apiCreateMethod = 'createEcpfCollaboration';
+    const apiUpdateMethod = 'updateCollaborationEcpf';
 
     if (formData.draftId && typeof apiServices[apiUpdateMethod] === 'function') {
-      response = await apiServices[apiUpdateMethod](formData.draftId, dataToSubmit)
+      // console.log('[submitForm] Updating existing collaboration draft ID:', formData.draftId);
+      response = await apiServices[apiUpdateMethod](formData.draftId, dataToSubmit);
     } else if (typeof apiServices[apiCreateMethod] === 'function') {
-      response = await apiServices[apiCreateMethod](dataToSubmit)
+      // console.log('[submitForm] Creating new collaboration.');
+      response = await apiServices[apiCreateMethod](dataToSubmit);
     } else {
-      throw new Error(
-        `Required API method (${formData.draftId ? apiUpdateMethod : apiCreateMethod}) not found.`,
-      )
+      throw new Error(`API method for submission not found.`);
     }
+
+    // console.log('[submitForm] API Response:', response);
 
     if (response?.status === 200 || response?.status === 201) {
-      setMessage('Application submitted successfully!', 'success')
-      resetForm()
+      // console.log('[submitForm] Submission successful. Resetting form and showing message.');
+      resetForm(false);
+      setMessage('Application submitted successfully!', 'success');
     } else {
-      throw new Error(`Submission failed with status: ${response?.status || 'Unknown'}`)
+      const errorDetail = response?.data ? (response.data.detail || JSON.stringify(response.data)) : `Status: ${response?.statusText || response?.status || 'Unknown'}`;
+      // console.error('[submitForm] Submission failed with response:', response);
+      throw new Error(`Submission failed: ${errorDetail}`);
     }
   } catch (error) {
-    console.error('Error submitting form:', error)
-    const errorMsg = error.response?.data?.detail || error.message || 'Submission failed.'
-    setMessage(errorMsg)
+    console.error('[submitForm] Error during submission:', error);
+    const messagePrefix = "Submission failed:";
+    if (error.message && error.message.startsWith(messagePrefix)) {
+        setMessage(error.message);
+    } else {
+        setMessage(`${messagePrefix} ${error.message || 'An unexpected error occurred.'}`);
+    }
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
+    // console.log('[submitForm] Submission process ended. isSubmitting:', isSubmitting.value);
   }
 }
 
-/** Save the form data as a draft */
 const saveAsDraft = async () => {
-  // Logic remains largely the same, ensure API method names are correct
-  isSubmitting.value = true
-  clearMessage()
-  console.log('Saving as draft...')
+  isSubmitting.value = true;
+  clearMessage();
+  // console.log('[saveAsDraft] Attempting to save as draft...');
   try {
-    const dataToSubmit = await prepareDataForSubmission('draft')
-    let response
-    // !! ENSURE these methods exist in apiServices !!
-    const apiCreateMethod = 'saveCollaborationEcpfDraft'
-    const apiUpdateMethod = 'updateCollaborationEcpfDraft' // Assumes update takes (id, data)
-
+    const dataToSubmit = prepareDataForSubmission('draft');
+    let response;
+    const apiCreateMethod = 'saveCollaborationEcpfDraft';
+    const apiUpdateMethod = 'updateCollaborationEcpfDraft';
     if (formData.draftId && typeof apiServices[apiUpdateMethod] === 'function') {
-      response = await apiServices[apiUpdateMethod](formData.draftId, dataToSubmit)
+      response = await apiServices[apiUpdateMethod](formData.draftId, dataToSubmit);
     } else if (typeof apiServices[apiCreateMethod] === 'function') {
-      response = await apiServices[apiCreateMethod](dataToSubmit)
+      response = await apiServices[apiCreateMethod](dataToSubmit);
     } else {
-      throw new Error(
-        `Required API method (${formData.draftId ? apiUpdateMethod : apiCreateMethod}) not found.`,
-      )
+      throw new Error(`API method for draft operation not found.`);
     }
-
     if (response?.status === 200 || response?.status === 201) {
       if (!formData.draftId && response?.data?.id) {
-        // Store ID only if creating new
-        formData.draftId = response.data.id
+        formData.draftId = response.data.id;
       }
-      formData.isDraft = true
-      setMessage(
-        `Application saved as draft successfully. ${formData.draftId ? `(Draft ID: ${formData.draftId})` : ''}`,
-        'success',
-      )
+      formData.isDraft = true;
+      setMessage(`Draft saved. ${formData.draftId ? `(ID: ${formData.draftId})` : ''}`, 'success');
     } else {
-      throw new Error(`Draft save failed with status: ${response?.status || 'Unknown'}`)
+       const errorDetail = response?.data ? (response.data.detail || JSON.stringify(response.data)) : `Status: ${response?.statusText || response?.status || 'Unknown'}`;
+       throw new Error(`Draft save failed: ${errorDetail}`);
     }
   } catch (error) {
-    console.error('Error saving draft:', error)
-    const errorMsg = error.response?.data?.detail || error.message || 'Draft save failed.'
-    setMessage(errorMsg)
+    console.error('[saveAsDraft] Error saving draft:', error);
+    setMessage(error.message || 'Draft save failed due to an unexpected error.');
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
 }
 
-/** Load draft data from API */
 const loadDraft = async (id) => {
-  // Logic remains the same... uses apiServices.getCollaborationEcpfDraft
-  if (!id) return
-  isLoading.value = true
-  clearMessage()
-  console.log(`Loading draft with ID: ${id}...`)
-  // !! ENSURE this method exists !!
+  if (!id) return;
+  isLoading.value = true;
+  clearMessage();
+  // console.log(`[loadDraft] Attempting to load draft with ID: ${id}`);
   if (typeof apiServices.getCollaborationEcpfDraft !== 'function') {
-    setMessage("API method 'getCollaborationEcpfDraft' is missing.", 'error')
-    isLoading.value = false
-    return
+    setMessage("API method 'getCollaborationEcpfDraft' missing.", 'error');
+    isLoading.value = false;
+    return;
   }
   try {
-    const response = await apiServices.getCollaborationEcpfDraft(id)
+    const response = await apiServices.getCollaborationEcpfDraft(id);
     if (response?.data) {
-      Object.assign(formData, response.data) // Populate form
-      // Reset file fields as we don't load base64 back into file inputs
-      formData.concern_letter = null
-      formData.passport_cv = null
-      formData.external_party_license = null
-      formData.mou = null
-      // Set other meta fields
-      formData.draftId = id
-      formData.isDraft = true
-      declarationAgreed.value = formData.declaration_agreed || false // Set checkbox state
+      const draftData = response.data;
+      // console.log('[loadDraft] Draft data received:', JSON.parse(JSON.stringify(draftData)));
+      const preservedUserDetails = {
+        cid_no: formData.cid_no,
+        applicant_name: formData.applicant_name,
+        gender: formData.gender,
+        date_of_birth: formData.date_of_birth,
+        contact_no: formData.contact_no || draftData.contact_no,
+        email_address: formData.email_address || draftData.email_address,
+      };
+      Object.assign(formData, getInitialFormData(), draftData, preservedUserDetails);
 
-      setMessage(`Draft loaded (ID: ${id}).`, 'success')
+      const backendToFrontendMapping = {
+        proposed_name: 'proposed_ecpf_name',
+        external_firm_registration_number: 'firm_registration_number',
+        email: 'external_party_email',
+        contact_number: 'external_party_contact',
+        concern_authorization_letter: 'concern_letter',
+        license_registration: 'external_party_license',
+        valid_mou: 'mou',
+      };
+      for(const backendKey in backendToFrontendMapping) {
+        if (hasOwnProperty.call(draftData, backendKey) && draftData[backendKey]) { // Use hasOwnProperty here
+            formData[backendToFrontendMapping[backendKey]] = draftData[backendKey];
+        }
+      }
+
+      if (draftData.dzongkhag_thromde) {
+          const dzMatch = dzongkhagThromdes.value.find(d => d.name === draftData.dzongkhag_thromde);
+          formData.dzongkhag_thromde = dzMatch ? dzMatch.id : null;
+      }
+
+      if (formData.dzongkhag_thromde) {
+        const selectedDzOriginal = bhutanDzongkhagsGewogs.find(
+            dz => generateId('dz', dz.dzongkhag) === formData.dzongkhag_thromde
+        );
+        if (selectedDzOriginal?.gewogs?.length > 0) {
+          gewogThroms.value = selectedDzOriginal.gewogs.map(gewogName => ({
+            id: generateId(`gw_${selectedDzOriginal.dzongkhag}`, gewogName),
+            name: gewogName
+          }));
+          if (draftData.gewog_throm && draftData.gewog_throm !== "N/A") {
+              const gwMatch = gewogThroms.value.find(g => g.name === draftData.gewog_throm);
+              formData.gewog_throm = gwMatch ? gwMatch.id : null;
+          } else if (draftData.gewog_throm === "N/A") {
+              formData.gewog_throm = NO_GEWOG_OPTION_VALUE;
+          }
+        } else {
+          gewogThroms.value = [];
+          if(draftData.gewog_throm === "N/A") {
+             formData.gewog_throm = NO_GEWOG_OPTION_VALUE;
+          }
+        }
+      }
+      formData.draftId = id;
+      formData.isDraft = true;
+      declarationAgreed.value = String(draftData.declaration_agreed_form).toLowerCase() === 'true' || draftData.declaration_agreed === true; // Handle string "true" or boolean true
+
+      setMessage(`Draft loaded (ID: ${id}). Click 'Edit Draft' to modify and submit.`, 'success');
     } else {
-      throw new Error('Draft data not found.')
+      throw new Error('Draft data not found.');
     }
   } catch (error) {
-    console.error('Error loading draft:', error)
-    setMessage(`Failed to load draft (ID: ${id}): ${error.message}. Starting new form.`, 'error')
-    resetForm()
-  } finally {
-    isLoading.value = false
+    console.error('[loadDraft] Error loading draft:', error);
+    setMessage(`Failed to load draft (ID: ${id}): ${error.message || 'Error'}. New form.`, 'error');
+    resetForm(true);
   }
 }
 
-/** Allow editing of a loaded draft */
 const editDraft = () => {
-  // Logic remains the same
   if (formData.draftId) {
-    formData.isDraft = false
-    setMessage('Draft unlocked for editing and submission.', 'success')
+    formData.isDraft = false;
+    // console.log('[editDraft] Draft unlocked. formData.isDraft set to false.');
+    setMessage('Draft unlocked. You can now modify and submit the application.', 'success');
+  } else {
+    // console.warn('[editDraft] Clicked but no draftId found in formData.');
   }
-}
+};
 
-/** Reset form to initial state */
-const resetForm = () => {
-  // Preserve initially fetched user details
-  const initialUserDetails = {
+const resetForm = (fullReset = false) => {
+  // console.log('[resetForm] Resetting form. Full reset:', fullReset);
+  const initialUserDetails = fullReset ? {} : {
     cid_no: formData.cid_no,
     applicant_name: formData.applicant_name,
     gender: formData.gender,
     date_of_birth: formData.date_of_birth,
-    contact_no: formData.contact_no, // Keep initially populated contact/email too
+    contact_no: formData.contact_no,
     email_address: formData.email_address,
     existing_ecpf_name: formData.existing_ecpf_name,
     existing_license_number: formData.existing_license_number,
   }
-  // Get fresh initial state for other fields
-  const freshFormData = getInitialFormData()
-  // Merge preserved details with fresh state
-  Object.assign(formData, { ...freshFormData, ...initialUserDetails })
+  Object.assign(formData, getInitialFormData(), initialUserDetails)
 
   declarationAgreed.value = false
-  formData.draftId = null
-  formData.isDraft = false
+  if (fullReset) {
+      formData.draftId = null;
+      formData.isDraft = false;
+  }
+
   clearMessage()
   if (formEl.value) {
-    const fileInputs = formEl.value.querySelectorAll('input[type="file"]')
-    fileInputs.forEach((input) => (input.value = ''))
+    formEl.value.reset();
+    formData.concern_letter = null;
+    formData.passport_cv = null;
+    formData.external_party_license = null;
+    formData.mou = null;
   }
-  console.log('Form reset, user details preserved.')
+  gewogThroms.value = [];
 }
 
-// --- Lifecycle Hook ---
 onMounted(async () => {
-  isLoading.value = true
-  clearMessage()
-  authStore.initializeAuth() // Ensure store is initialized
-
-  let userCid = null
-
-  // 1. Populate from Auth Store
+  isLoading.value = true;
+  clearMessage();
+  authStore.initializeAuth();
+  let userCid = null;
   if (authStore.isAuthenticated && authStore.user) {
-    // *** VERIFY this mapping based on your user object structure ***
-    formData.cid_no = authStore.user.cid || authStore.user.cid_number || '' // Assuming username is CID
-    formData.applicant_name = authStore.fullName || ''
-    formData.gender = authStore.gender || ''
-    formData.date_of_birth = authStore.dateOfBirth || ''
-    // Pre-fill editable fields too
-    formData.contact_no = authStore.contactNumber || ''
-    formData.email_address = authStore.email || ''
-
-    userCid = formData.cid_no // Use the populated CID
-    console.log('Populated user details from auth store.')
+    formData.cid_no = authStore.user.cid || authStore.user.cid_number || '';
+    formData.applicant_name = authStore.fullName || '';
+    formData.gender = authStore.gender || '';
+    formData.date_of_birth = authStore.dateOfBirthFormatted || authStore.user.dob || authStore.dateOfBirth || '';
+    formData.contact_no = authStore.contactNumber || authStore.user.mobile_number || '';
+    formData.email_address = authStore.email || authStore.user.email || '';
+    userCid = formData.cid_no;
   } else {
-    setMessage('You are not logged in or user data is unavailable.', 'error')
-    // Decide behavior: redirect? disable form?
-    isLoading.value = false // Stop loading if no user
-    return // Stop further execution in onMounted if no user
+    setMessage('Not logged in. Please log in to continue.', 'error');
+    formData.existing_ecpf_name = 'N/A';
+    formData.existing_license_number = 'N/A';
+    isLoading.value = false;
+    return;
   }
-
-  // 2. Fetch Master Data (can run in parallel or sequence)
-  await fetchMasterData() // Fetch dropdown data
-
-  // 3. Fetch Existing ECPF Details (if CID was found)
+  await fetchMasterData();
   if (userCid) {
-    const existingEcpf = await fetchExistingEcpfDetails(userCid)
+    const existingEcpf = await fetchExistingEcpfDetails(userCid);
     if (existingEcpf) {
-      // Adjust keys based on API response
-      formData.existing_ecpf_name = existingEcpf.ecpfName || 'N/A'
-      formData.existing_license_number = existingEcpf.licenseNumber || 'N/A'
+      formData.existing_ecpf_name = existingEcpf.institute_name || 'N/A (Institute Name not found)';
+      formData.existing_license_number = existingEcpf.license_number || 'N/A (License # not found)';
+    } else {
+      formData.existing_ecpf_name = 'N/A';
+      formData.existing_license_number = 'N/A';
     }
-  }
-
-  // 4. Check for Draft ID from URL
-  const urlParams = new URLSearchParams(window.location.search)
-  const draftIdFromUrl = urlParams.get('draftId')
-  if (draftIdFromUrl) {
-    await loadDraft(draftIdFromUrl)
   } else {
-    formData.isDraft = false
+    formData.existing_ecpf_name = 'N/A (No CID)';
+    formData.existing_license_number = 'N/A (No CID)';
   }
-
-  isLoading.value = false // Loading finished
-})
+  const urlParams = new URLSearchParams(window.location.search);
+  const draftIdFromUrl = urlParams.get('draftId');
+  if (draftIdFromUrl) {
+    const tempEcpfName = formData.existing_ecpf_name;
+    const tempLicenseNo = formData.existing_license_number;
+    await loadDraft(draftIdFromUrl);
+    if (tempEcpfName && !tempEcpfName.startsWith('N/A') && tempEcpfName !== 'Loading...') {
+        formData.existing_ecpf_name = tempEcpfName;
+    }
+    if (tempLicenseNo && !tempLicenseNo.startsWith('N/A') && tempLicenseNo !== 'Loading...') {
+        formData.existing_license_number = tempLicenseNo;
+    }
+  } else {
+    formData.isDraft = false;
+  }
+  isLoading.value = false;
+  // console.log('[MOUNTED] Hook completed. isLoading:', isLoading.value);
+});
 </script>
 
 <style scoped>
 input:read-only,
 input[readonly] {
-  /* Style readonly fields */
   cursor: not-allowed;
-  background-color: #f3f4f6; /* bg-gray-100 */
+  background-color: #f3f4f6;
   opacity: 0.7;
+}
+select:disabled {
+  background-color: #f3f4f6;
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>
