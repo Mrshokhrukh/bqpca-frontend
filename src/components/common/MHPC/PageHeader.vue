@@ -2,8 +2,12 @@
   <div
     class="relative overflow-hidden backdrop-blur-sm bg-white/80 rounded-2xl p-6 sm:p-8 mb-10 shadow-lg border border-indigo-100"
   >
-    <div class="absolute -top-16 -right-16 w-40 h-40 bg-indigo-100 rounded-full opacity-30 blur-xl"></div>
-    <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-blue-100 rounded-full opacity-40 blur-lg"></div>
+    <div
+      class="absolute -top-16 -right-16 w-40 h-40 bg-indigo-100 rounded-full opacity-30 blur-xl"
+    ></div>
+    <div
+      class="absolute -bottom-12 -left-12 w-32 h-32 bg-blue-100 rounded-full opacity-40 blur-lg"
+    ></div>
 
     <div class="relative z-10">
       <div class="flex justify-center mb-5">
@@ -18,7 +22,9 @@
         </div>
       </div>
 
-      <h2 class="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-blue-600 mb-3 text-center">
+      <h2
+        class="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-blue-600 mb-3 text-center"
+      >
         {{ title }}
       </h2>
       <p class="text-gray-600 text-center max-w-xl mx-auto text-sm sm:text-base leading-relaxed">

@@ -15,7 +15,9 @@
       class="mt-8 text-center py-16 bg-red-50 rounded-2xl border border-red-200 shadow-sm"
     >
       <p class="text-red-700 text-lg font-medium">{{ errorMessage }}</p>
-      <p class="text-red-600 text-sm mt-2">Please try refreshing the page or contact support if the issue persists.</p>
+      <p class="text-red-600 text-sm mt-2">
+        Please try refreshing the page or contact support if the issue persists.
+      </p>
     </div>
 
     <div v-else>
@@ -32,27 +34,48 @@
       </div>
 
       <div v-if="filteredCapas.length > 0">
-        <div v-if="viewType === 'table'" class="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden">
+        <div
+          v-if="viewType === 'table'"
+          class="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden"
+        >
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                  >
                     Facility
                   </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                  >
                     Teaching Center
                   </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                  >
                     Inspection Date
                   </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                  >
                     Observation
                   </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                  >
                     Status
                   </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                  >
                     Actions
                   </th>
                 </tr>
@@ -97,7 +120,10 @@
           </div>
         </div>
 
-        <div v-if="viewType === 'cards'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          v-if="viewType === 'cards'"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
           <div
             v-for="capaItem in filteredCapas"
             :key="capaItem.id"
@@ -108,10 +134,12 @@
                 {{ capaItem.teaching_center.institute.name_of_institution }}
               </h3>
               <p class="text-sm text-gray-500 mb-1">
-                <span class="font-medium text-gray-700">Center:</span> {{ capaItem.teaching_center.center_name }}
+                <span class="font-medium text-gray-700">Center:</span>
+                {{ capaItem.teaching_center.center_name }}
               </p>
               <p class="text-sm text-gray-500 mb-3">
-                <span class="font-medium text-gray-700">Inspection:</span> {{ capaItem.inspection_from_date }} to {{ capaItem.inspection_to_date }}
+                <span class="font-medium text-gray-700">Inspection:</span>
+                {{ capaItem.inspection_from_date }} to {{ capaItem.inspection_to_date }}
               </p>
               <div class="mb-3">
                 <p class="text-sm font-medium text-gray-700 mb-1">Observation:</p>
@@ -144,118 +172,137 @@
         v-else
         class="mt-8 text-center py-16 bg-white rounded-2xl border border-gray-200 shadow-sm"
       >
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+        <svg
+          class="mx-auto h-12 w-12 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            vector-effect="non-scaling-stroke"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+          />
         </svg>
         <h3 class="mt-2 text-lg font-medium text-gray-900">No CAPA items found</h3>
-        <p class="mt-1 text-sm text-gray-500">There are currently no CAPA items assigned to your facility.</p>
+        <p class="mt-1 text-sm text-gray-500">
+          There are currently no CAPA items assigned to your facility.
+        </p>
       </div>
     </div>
 
-    <CapaDetailModal v-if="selectedCapa" :capa="selectedCapa" @close="closeModal" @capa-updated="updateCapa" />
+    <CapaDetailModal
+      v-if="selectedCapa"
+      :capa="selectedCapa"
+      @close="closeModal"
+      @capa-updated="updateCapa"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import CapaDetailModal from './CapaModal.vue';
-import apiServices from '@/services/services';
-import { useAuthStore } from '@/stores/authStore';
-import { useToast } from "vue-toastification";
-import { Loader } from 'lucide-vue-next';
-import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue';
+import { ref, onMounted, computed } from 'vue'
+import CapaDetailModal from './CapaModal.vue'
+import apiServices from '@/services/services'
+import { useAuthStore } from '@/stores/authStore'
+import { useToast } from 'vue-toastification'
+import { Loader } from 'lucide-vue-next'
+import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
 
-const capas = ref([]);
-const viewType = ref('table');
-const selectedCapa = ref(null);
-const isLoading = ref(true);
-const apiError = ref(false);
-const errorMessage = ref('');
+const capas = ref([])
+const viewType = ref('table')
+const selectedCapa = ref(null)
+const isLoading = ref(true)
+const apiError = ref(false)
+const errorMessage = ref('')
 
-const authStore = useAuthStore();
-const toast = useToast();
+const authStore = useAuthStore()
+const toast = useToast()
 
 const fetchCapas = async () => {
-  isLoading.value = true;
-  apiError.value = false;
-  errorMessage.value = '';
+  isLoading.value = true
+  apiError.value = false
+  errorMessage.value = ''
 
   if (!authStore.user || !authStore.user.cid) {
-    errorMessage.value = 'User information not available. Please log in again.';
-    apiError.value = true;
-    isLoading.value = false;
-    toast.error(errorMessage.value);
-    return;
+    errorMessage.value = 'User information not available. Please log in again.'
+    apiError.value = true
+    isLoading.value = false
+    toast.error(errorMessage.value)
+    return
   }
 
   try {
-    const response = await apiServices.getMhpcCapas();
+    const response = await apiServices.getMhpcCapas()
     if (response && response.data && Array.isArray(response.data.results)) {
-      capas.value = response.data.results;
+      capas.value = response.data.results
     } else {
-      capas.value = [];
-      errorMessage.value = 'Received unexpected data format from the server.';
-      apiError.value = true;
-      toast.warning(errorMessage.value);
+      capas.value = []
+      errorMessage.value = 'Received unexpected data format from the server.'
+      apiError.value = true
+      toast.warning(errorMessage.value)
     }
   } catch (error) {
-    capas.value = [];
-    apiError.value = true;
-    const backendError = error.response?.data?.message || error.message;
-    errorMessage.value = `Failed to fetch CAPA data: ${backendError}`;
-    toast.error('Failed to fetch CAPA data. Please try again.');
+    capas.value = []
+    apiError.value = true
+    const backendError = error.response?.data?.message || error.message
+    errorMessage.value = `Failed to fetch CAPA data: ${backendError}`
+    toast.error('Failed to fetch CAPA data. Please try again.')
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
-onMounted(fetchCapas);
+onMounted(fetchCapas)
 
 const filteredCapas = computed(() => {
   if (!authStore.user?.cid || !Array.isArray(capas.value)) {
-    return [];
+    return []
   }
-  const userCidLower = authStore.user.cid.toLowerCase();
-  return capas.value.filter(capaItem =>
-    capaItem.teaching_center?.institute?.CID?.toLowerCase() === userCidLower
-  );
-});
+  const userCidLower = authStore.user.cid.toLowerCase()
+  return capas.value.filter(
+    (capaItem) => capaItem.teaching_center?.institute?.CID?.toLowerCase() === userCidLower,
+  )
+})
 
 const openModal = (capaItem) => {
-  selectedCapa.value = capaItem;
-};
+  selectedCapa.value = capaItem
+}
 
 const closeModal = () => {
-  selectedCapa.value = null;
-};
+  selectedCapa.value = null
+}
 
 const updateCapa = (updatedCapa) => {
-  const index = capas.value.findIndex((capaItem) => capaItem.id === updatedCapa.id);
+  const index = capas.value.findIndex((capaItem) => capaItem.id === updatedCapa.id)
   if (index !== -1) {
-    capas.value[index] = { ...capas.value[index], ...updatedCapa };
+    capas.value[index] = { ...capas.value[index], ...updatedCapa }
   }
-  closeModal();
-  toast.success("CAPA remarks submitted successfully!");
-  fetchCapas();
-};
+  closeModal()
+  toast.success('CAPA remarks submitted successfully!')
+  fetchCapas()
+}
 
 const getStatusClass = (status) => {
   const statusClasses = {
-    'P': 'bg-yellow-100 text-yellow-800',
-    'R': 'bg-green-100 text-green-800',
-    'C': 'bg-blue-100 text-blue-800',
-    'A': 'bg-teal-100 text-teal-800', // Assuming 'A' might mean Acknowledged or Actioned
-  };
-  return statusClasses[status] || 'bg-gray-100 text-gray-800';
-};
+    P: 'bg-yellow-100 text-yellow-800',
+    R: 'bg-green-100 text-green-800',
+    C: 'bg-blue-100 text-blue-800',
+    A: 'bg-teal-100 text-teal-800', // Assuming 'A' might mean Acknowledged or Actioned
+  }
+  return statusClasses[status] || 'bg-gray-100 text-gray-800'
+}
 
 const getStatusText = (status) => {
   const statusMap = {
-    'P': 'Pending',
-    'R': 'Resolved',
-    'C': 'Closed', // Changed from Cancelled to Closed as it's common in CAPA
-    'A': 'Actioned',
-  };
-  return statusMap[status] || 'Unknown';
-};
+    P: 'Pending',
+    R: 'Resolved',
+    C: 'Closed', // Changed from Cancelled to Closed as it's common in CAPA
+    A: 'Actioned',
+  }
+  return statusMap[status] || 'Unknown'
+}
 </script>

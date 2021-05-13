@@ -1,5 +1,7 @@
 <template>
-  <span :class="['px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full', badgeClass]">
+  <span
+    :class="['px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full', badgeClass]"
+  >
     {{ status || 'N/A' }}
   </span>
 </template>

@@ -185,7 +185,7 @@ const participantSubcategoryOptions = ref([]) // Holds ALL subcategories with pa
 // --- Computed Property for Filtered Subcategories ---
 const filteredSubcategories = computed(() => {
   if (!participantDetails.category) {
-    console.log("No parent category selected, returning empty subcategories list")
+    console.log('No parent category selected, returning empty subcategories list')
     return []
   }
 
@@ -600,44 +600,50 @@ const loadDropdownOptions = async () => {
       ])
 
     // Process main categories and options
-    agencyOptions.value = agencyRes.data?.results?.map(item => ({
-      text: item.name || `Unnamed (ID: ${item.id})`,
-      value: item.id
-    })) || []
+    agencyOptions.value =
+      agencyRes.data?.results?.map((item) => ({
+        text: item.name || `Unnamed (ID: ${item.id})`,
+        value: item.id,
+      })) || []
 
-    reasonOptions.value = reasonRes.data?.results?.map(item => ({
-      text: item.name || `Unnamed (ID: ${item.id})`,
-      value: item.id
-    })) || []
+    reasonOptions.value =
+      reasonRes.data?.results?.map((item) => ({
+        text: item.name || `Unnamed (ID: ${item.id})`,
+        value: item.id,
+      })) || []
 
-    cpdTypeOptions.value = cpdTypeRes.data?.results?.map(item => ({
-      text: item.cpd_activity_name || `Unnamed (ID: ${item.id})`,
-      value: item.id
-    })) || []
+    cpdTypeOptions.value =
+      cpdTypeRes.data?.results?.map((item) => ({
+        text: item.cpd_activity_name || `Unnamed (ID: ${item.id})`,
+        value: item.id,
+      })) || []
 
-    methodologyOptions.value = methodologyRes.data?.results?.map(item => ({
-      text: item.methodology_name || `Unnamed (ID: ${item.id})`,
-      value: item.id
-    })) || []
+    methodologyOptions.value =
+      methodologyRes.data?.results?.map((item) => ({
+        text: item.methodology_name || `Unnamed (ID: ${item.id})`,
+        value: item.id,
+      })) || []
 
-    participationCategoryOptions.value = categoriesRes.data?.results?.map(item => ({
-      text: item.participation_category_name || `Unnamed (ID: ${item.id})`,
-      value: item.id
-    })) || []
+    participationCategoryOptions.value =
+      categoriesRes.data?.results?.map((item) => ({
+        text: item.participation_category_name || `Unnamed (ID: ${item.id})`,
+        value: item.id,
+      })) || []
 
     // Process subcategories with special attention to the parent ID
-    participantSubcategoryOptions.value = subcategoriesRes.data?.results?.map(item => ({
-      text: item.participation_sub_category_name || `Unnamed (ID: ${item.id})`,
-      value: item.id,
-      // Store parent category ID for filtering
-      categoryId: item.participation_category_name // This field stores the parent category ID
-    })) || []
+    participantSubcategoryOptions.value =
+      subcategoriesRes.data?.results?.map((item) => ({
+        text: item.participation_sub_category_name || `Unnamed (ID: ${item.id})`,
+        value: item.id,
+        // Store parent category ID for filtering
+        categoryId: item.participation_category_name, // This field stores the parent category ID
+      })) || []
 
     console.log('Processed subcategories:', participantSubcategoryOptions.value)
 
     // Log the options count for debugging
     console.log(
-      `Loaded Options: Agencies(${agencyOptions.value.length}), Reasons(${reasonOptions.value.length}), Types(${cpdTypeOptions.value.length}), Methods(${methodologyOptions.value.length}), Cats(${participationCategoryOptions.value.length}), SubCats(${participantSubcategoryOptions.value.length})`
+      `Loaded Options: Agencies(${agencyOptions.value.length}), Reasons(${reasonOptions.value.length}), Types(${cpdTypeOptions.value.length}), Methods(${methodologyOptions.value.length}), Cats(${participationCategoryOptions.value.length}), SubCats(${participantSubcategoryOptions.value.length})`,
     )
 
     // Add warnings if critical options are missing
@@ -650,7 +656,7 @@ const loadDropdownOptions = async () => {
   } catch (error) {
     console.error('Error loading one or more dropdown options:', error)
     validationErrors.value.push(
-      'Critical error loading form selection options. Please try refreshing the page.'
+      'Critical error loading form selection options. Please try refreshing the page.',
     )
     toast.error('Failed to load essential form data. Please refresh.')
   }
@@ -691,7 +697,7 @@ watch(
   (newVal) => {
     console.log('Watcher: application.isApproved changed to', newVal)
     toggleApprovedFields()
-  }
+  },
 )
 
 watch(
@@ -701,7 +707,7 @@ watch(
       console.log('Watcher: participantDetails.category changed to', newCategory)
       participantDetails.subcategory = '' // Reset subcategory selection
     }
-  }
+  },
 )
 
 watch(
@@ -709,6 +715,6 @@ watch(
   () => {
     calculateTotalHours()
   },
-  { deep: true }
+  { deep: true },
 )
 </script>

@@ -73,7 +73,8 @@
                     class="text-center py-4"
                   >
                     <p class="text-sm text-gray-500">
-                      No professionals found matching "<strong>{{ searchQuery }}</strong>".
+                      No professionals found matching "<strong>{{ searchQuery }}</strong
+                      >".
                     </p>
                   </div>
                   <div
@@ -109,7 +110,8 @@
                         <div>
                           <span class="font-semibold text-sm">{{ prof.name }}</span>
                           <span class="block text-xs text-gray-600">
-                            CID: {{ prof.cid || 'N/A' }} | Reg No: {{ prof.registration_no || 'N/A' }}
+                            CID: {{ prof.cid || 'N/A' }} | Reg No:
+                            {{ prof.registration_no || 'N/A' }}
                           </span>
                           <span v-if="prof.designation" class="block text-xs text-gray-500">{{
                             prof.designation
@@ -151,10 +153,10 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue';
-import { debounce } from 'lodash-es';
-import apiServices from '@/services/services';
+import { ref, watch } from 'vue'
+import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
+import { debounce } from 'lodash-es'
+import apiServices from '@/services/services'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -162,39 +164,39 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-});
+})
 
-const emit = defineEmits(['close', 'confirm']);
+const emit = defineEmits(['close', 'confirm'])
 
-const allProfessionals = ref([]);
-const filteredProfessionals = ref([]);
-const tempSelectedProfessionals = ref([]);
-const searchQuery = ref('');
-const isLoading = ref(false);
+const allProfessionals = ref([])
+const filteredProfessionals = ref([])
+const tempSelectedProfessionals = ref([])
+const searchQuery = ref('')
+const isLoading = ref(false)
 
 async function fetchAndMapUsers() {
-  isLoading.value = true;
-  console.log('API: Fetching ALL users...');
+  isLoading.value = true
+  console.log('API: Fetching ALL users...')
   try {
-    const response = await apiServices.getAllUsers();
-    let rawUsers = [];
+    const response = await apiServices.getAllUsers()
+    let rawUsers = []
     if (response.data && Array.isArray(response.data.results)) {
-      rawUsers = response.data.results;
+      rawUsers = response.data.results
     } else if (response.data && Array.isArray(response.data)) {
-      rawUsers = response.data;
+      rawUsers = response.data
     } else {
-      console.warn('API response for users is not in the expected array format:', response.data);
-      rawUsers = [];
+      console.warn('API response for users is not in the expected array format:', response.data)
+      rawUsers = []
     }
 
     return rawUsers.map((user) => {
-      let displayName = user.username;
+      let displayName = user.username
       if (user.first_name && user.last_name) {
-        displayName = `${user.first_name} ${user.last_name}`;
+        displayName = `${user.first_name} ${user.last_name}`
       } else if (user.full_name) {
-        displayName = user.full_name;
+        displayName = user.full_name
       } else if (user.name) {
-        displayName = user.name;
+        displayName = user.name
       }
 
       return {
@@ -203,86 +205,86 @@ async function fetchAndMapUsers() {
         cid: user.cid || user.citizen_id || null,
         registration_no: user.registration_no || user.professional_reg_no || null,
         designation: user.designation || user.professional_designation || null,
-      };
-    });
+      }
+    })
   } catch (error) {
-    console.error('Error fetching users:', error);
-    return [];
+    console.error('Error fetching users:', error)
+    return []
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
 }
 
 const loadInitialUsers = async () => {
-  allProfessionals.value = await fetchAndMapUsers();
-  _applyClientSideFilters();
-};
+  allProfessionals.value = await fetchAndMapUsers()
+  _applyClientSideFilters()
+}
 
 const _applyClientSideFilters = () => {
   if (!searchQuery.value.trim()) {
-    filteredProfessionals.value = [...allProfessionals.value];
+    filteredProfessionals.value = [...allProfessionals.value]
   } else {
-    const lowerQuery = searchQuery.value.toLowerCase();
+    const lowerQuery = searchQuery.value.toLowerCase()
     filteredProfessionals.value = allProfessionals.value.filter(
       (prof) =>
         (prof.name && prof.name.toLowerCase().includes(lowerQuery)) ||
         (prof.cid && prof.cid.toLowerCase().includes(lowerQuery)) ||
         (prof.registration_no && prof.registration_no.toLowerCase().includes(lowerQuery)) ||
-        (prof.designation && prof.designation.toLowerCase().includes(lowerQuery))
-    );
+        (prof.designation && prof.designation.toLowerCase().includes(lowerQuery)),
+    )
   }
-};
+}
 
-const debouncedFilterProfessionals = debounce(_applyClientSideFilters, 300);
+const debouncedFilterProfessionals = debounce(_applyClientSideFilters, 300)
 
 const isSelected = (profId) => {
-  return tempSelectedProfessionals.value.some((p) => p.id === profId);
-};
+  return tempSelectedProfessionals.value.some((p) => p.id === profId)
+}
 
 const toggleSelection = (professional) => {
-  const index = tempSelectedProfessionals.value.findIndex((p) => p.id === professional.id);
+  const index = tempSelectedProfessionals.value.findIndex((p) => p.id === professional.id)
   if (index > -1) {
-    tempSelectedProfessionals.value.splice(index, 1);
+    tempSelectedProfessionals.value.splice(index, 1)
   } else {
-    tempSelectedProfessionals.value.push({ ...professional });
+    tempSelectedProfessionals.value.push({ ...professional })
   }
-};
+}
 
 const handleClose = () => {
-  console.log('ProfessionalPickerModal close triggered');
+  console.log('ProfessionalPickerModal close triggered')
   // Only close if explicitly intended (e.g., via Cancel button or backdrop)
-  emit('close');
-};
+  emit('close')
+}
 
 const closeModal = () => {
-  console.log('closeModal called');
-  emit('close');
-};
+  console.log('closeModal called')
+  emit('close')
+}
 
 const confirmSelection = () => {
-  console.log('confirmSelection called', tempSelectedProfessionals.value);
-  emit('confirm', [...tempSelectedProfessionals.value]);
-  closeModal();
-};
+  console.log('confirmSelection called', tempSelectedProfessionals.value)
+  emit('confirm', [...tempSelectedProfessionals.value])
+  closeModal()
+}
 
 watch(
   () => props.isOpen,
   (newVal) => {
-    console.log('ProfessionalPickerModal isOpen changed:', newVal);
+    console.log('ProfessionalPickerModal isOpen changed:', newVal)
     if (newVal) {
-      searchQuery.value = '';
+      searchQuery.value = ''
       loadInitialUsers().then(() => {
         if (allProfessionals.value && allProfessionals.value.length > 0) {
           tempSelectedProfessionals.value = allProfessionals.value
             .filter((p) => props.initiallySelectedIds.includes(p.id))
-            .map((p) => ({ ...p }));
+            .map((p) => ({ ...p }))
         } else {
-          tempSelectedProfessionals.value = [];
+          tempSelectedProfessionals.value = []
         }
-      });
+      })
     }
-  }
-);
+  },
+)
 </script>
 
 <style scoped>

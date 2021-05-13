@@ -1,38 +1,67 @@
 <template>
   <div class="w-full mx-auto px-2 sm:px-4 py-4 sm:py-6">
     <!-- Use the common PageHeader component -->
-    <PageHeader :title="selectedType === 'cid' ? 'CID Holder Registration' : 'Non-CID Holder Registration'">
+    <PageHeader
+      :title="selectedType === 'cid' ? 'CID Holder Registration' : 'Non-CID Holder Registration'"
+    >
       <template #icon>
         <UserPlus class="w-6 h-6 text-indigo-600" />
       </template>
       <template #subtitle>
-        Please fill in all required fields marked with an asterisk (<span class="text-red-600">*</span>).
-        Ensure all information provided is accurate and up-to-date.
+        Please fill in all required fields marked with an asterisk (<span class="text-red-600"
+          >*</span
+        >). Ensure all information provided is accurate and up-to-date.
       </template>
     </PageHeader>
 
     <!-- Confirmation Modal -->
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
       <Dialog as="div" class="relative z-50" @close="isConfirmationModalOpen = false">
-        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
-          leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+        <TransitionChild
+          as="template"
+          enter="ease-out duration-300"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="ease-in duration-200"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
           <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </TransitionChild>
 
         <div class="fixed inset-0 z-10 overflow-y-auto">
-          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <TransitionChild as="template" enter="ease-out duration-300"
+          <div
+            class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+          >
+            <TransitionChild
+              as="template"
+              enter="ease-out duration-300"
               enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
+              enter-to="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
               leave-from="opacity-100 translate-y-0 sm:scale-100"
-              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
               <DialogPanel
-                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+              >
                 <div>
-                  <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                      stroke="currentColor" aria-hidden="true">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  <div
+                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100"
+                  >
+                    <svg
+                      class="h-6 w-6 text-green-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4.5 12.75l6 6 9-13.5"
+                      />
                     </svg>
                   </div>
                   <div class="mt-3 text-center sm:mt-5">
@@ -48,14 +77,18 @@
                   </div>
                 </div>
                 <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                  <button type="button"
+                  <button
+                    type="button"
                     class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                    @click="handleSubmitActual">
+                    @click="handleSubmitActual"
+                  >
                     Confirm
                   </button>
-                  <button type="button"
+                  <button
+                    type="button"
                     class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-                    @click="isConfirmationModalOpen = false">
+                    @click="isConfirmationModalOpen = false"
+                  >
                     Cancel
                   </button>
                 </div>
@@ -67,7 +100,11 @@
     </TransitionRoot>
 
     <!-- Step 1: Personal Information Form -->
-    <form @submit.prevent="handleNext" class="bg-white border rounded-xl shadow-sm p-4 sm:p-6" v-if="stage === 1">
+    <form
+      @submit.prevent="handleNext"
+      class="bg-white border rounded-xl shadow-sm p-4 sm:p-6"
+      v-if="stage === 1"
+    >
       <h3 class="text-lg font-semibold text-gray-900 my-3">Step 1: Registration</h3>
       <div class="border-b border-gray-200 bg-gray-50 p-4 sm:p-6 rounded-t-xl">
         <h3 class="text-lg font-semibold text-gray-900">Personal Information</h3>
@@ -80,9 +117,14 @@
           <template v-if="selectedType === 'cid'">
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">CID No.</label>
-              <input v-model="localFormData.cid_no" type="number" maxlength="11"
+              <input
+                v-model="localFormData.cid_no"
+                type="number"
+                maxlength="11"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="Enter CID number" @input="fetchDCRCData" />
+                placeholder="Enter CID number"
+                @input="fetchDCRCData"
+              />
               <span v-if="errors.cid_no" class="text-xs text-red-500 mt-1">{{
                 errors.cid_no
               }}</span>
@@ -90,8 +132,11 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Dzongkhag</label>
-              <input type="text" v-model="localFormData.dzongkhag"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2" />
+              <input
+                type="text"
+                v-model="localFormData.dzongkhag"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              />
               <span v-if="errors.dzongkhag" class="text-xs text-red-500 mt-1">{{
                 errors.dzongkhag
               }}</span>
@@ -99,15 +144,21 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Gewog</label>
-              <input type="text" v-model="localFormData.gewog"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2" />
+              <input
+                type="text"
+                v-model="localFormData.gewog"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              />
               <span v-if="errors.gewog" class="text-xs text-red-500 mt-1">{{ errors.gewog }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Village</label>
-              <input type="text" v-model="localFormData.village"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2" />
+              <input
+                type="text"
+                v-model="localFormData.village"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              />
               <span v-if="errors.village" class="text-xs text-red-500 mt-1">{{
                 errors.village
               }}</span>
@@ -118,8 +169,10 @@
           <template v-else>
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Nationality</label>
-              <select v-model="localFormData.nationality"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
+              <select
+                v-model="localFormData.nationality"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              >
                 <option value="">SELECT NATIONALITY</option>
                 <option v-for="country in countries" :key="country" :value="country">
                   {{ country }}
@@ -132,19 +185,27 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Email Address</label>
-              <input v-model="localFormData.email_address" type="email"
+              <input
+                v-model="localFormData.email_address"
+                type="email"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="Email Address" />
+                placeholder="Email Address"
+              />
               <span v-if="errors.email_address" class="text-xs text-red-500 mt-1">{{
                 errors.email_address
               }}</span>
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required">Identity / Work Permit No</label>
-              <input v-model="localFormData.workPermitNo" type="text"
+              <label class="block text-sm font-medium text-gray-700 required"
+                >Identity / Work Permit No</label
+              >
+              <input
+                v-model="localFormData.workPermitNo"
+                type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="Identity / Work Permit No" />
+                placeholder="Identity / Work Permit No"
+              />
               <span v-if="errors.workPermitNo" class="text-xs text-red-500 mt-1">{{
                 errors.workPermitNo
               }}</span>
@@ -152,8 +213,10 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Country</label>
-              <select v-model="localFormData.country"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
+              <select
+                v-model="localFormData.country"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              >
                 <option value="">SELECT COUNTRY</option>
                 <option v-for="country in countries" :key="country" :value="country">
                   {{ country }}
@@ -166,25 +229,34 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700">City</label>
-              <input v-model="localFormData.city" type="text"
+              <input
+                v-model="localFormData.city"
+                type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="City" />
+                placeholder="City"
+              />
               <span v-if="errors.city" class="text-xs text-red-500 mt-1">{{ errors.city }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700">State</label>
-              <input v-model="localFormData.state" type="text"
+              <input
+                v-model="localFormData.state"
+                type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="State" />
+                placeholder="State"
+              />
               <span v-if="errors.state" class="text-xs text-red-500 mt-1">{{ errors.state }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Mobile Number</label>
-              <input v-model="localFormData.mobileNumber" type="tel"
+              <input
+                v-model="localFormData.mobileNumber"
+                type="tel"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="Mobile Number" />
+                placeholder="Mobile Number"
+              />
               <span v-if="errors.mobileNumber" class="text-xs text-red-500 mt-1">{{
                 errors.mobileNumber
               }}</span>
@@ -194,9 +266,12 @@
           <!-- Common Fields -->
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Full Name</label>
-            <input v-model="localFormData.full_name" type="text"
+            <input
+              v-model="localFormData.full_name"
+              type="text"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-              placeholder="Enter full name" />
+              placeholder="Enter full name"
+            />
             <span v-if="errors.full_name" class="text-xs text-red-500 mt-1">{{
               errors.full_name
             }}</span>
@@ -204,8 +279,10 @@
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Gender</label>
-            <select v-model="localFormData.gender"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
+            <select
+              v-model="localFormData.gender"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+            >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
@@ -216,8 +293,11 @@
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Date of Birth</label>
-            <input type="date" v-model="localFormData.date_of_birth"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2" />
+            <input
+              type="date"
+              v-model="localFormData.date_of_birth"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+            />
             <span v-if="errors.date_of_birth" class="text-xs text-red-500 mt-1">{{
               errors.date_of_birth
             }}</span>
@@ -225,21 +305,28 @@
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Contact Number</label>
-            <input v-model="localFormData.contact_no" type="tel"
+            <input
+              v-model="localFormData.contact_no"
+              type="tel"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-              placeholder="Enter phone number" />
+              placeholder="Enter phone number"
+            />
             <span v-if="errors.contact_no" class="text-xs text-red-500 mt-1">{{
               errors.contact_no
             }}</span>
           </div>
         </div>
-        <div class="col-span-1 sm:col-span-2"> <!-- Make it span full width for emphasis? Or col-span-1 -->
+        <div class="col-span-1 sm:col-span-2">
+          <!-- Make it span full width for emphasis? Or col-span-1 -->
           <label class="block text-sm font-medium text-gray-700 required">Registration Type</label>
-          <select v-model="localFormData.registration_type"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
+          <select
+            v-model="localFormData.registration_type"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+          >
             <option value="">Select Registration Type</option>
             <option v-for="regType in registrationTypes" :key="regType.id" :value="regType.id">
-              {{ regType.name }} <!-- Assuming the type has 'id' and 'name' fields -->
+              {{ regType.name }}
+              <!-- Assuming the type has 'id' and 'name' fields -->
             </option>
           </select>
           <span v-if="errors.registration_type" class="text-xs text-red-500 mt-1">{{
@@ -253,10 +340,15 @@
             <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3">Passport Photo</h3>
             <div class="flex items-start space-x-4">
               <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 required">Upload Passport Photo</label>
-                <input type="file" @change="handlePassportPhotoSelect"
+                <label class="block text-sm font-medium text-gray-700 required"
+                  >Upload Passport Photo</label
+                >
+                <input
+                  type="file"
+                  @change="handlePassportPhotoSelect"
                   class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  accept=".jpg,.jpeg,.png" />
+                  accept=".jpg,.jpeg,.png"
+                />
                 <span v-if="errors.passport_photo" class="text-xs text-red-500 mt-1">{{
                   errors.passport_photo
                 }}</span>
@@ -267,12 +359,17 @@
 
         <!-- Navigation Buttons -->
         <div class="mt-8 flex justify-end space-x-3">
-          <button type="button" @click="$emit('back')"
-            class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+          <button
+            type="button"
+            @click="$emit('back')"
+            class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+          >
             Back to Previous Step
           </button>
-          <button type="submit"
-            class="px-4 py-2 bg-blue-600 text-sm text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-600 text-sm text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
             Next
           </button>
         </div>
@@ -288,12 +385,18 @@
       <!-- Qualification Details Section -->
       <div class="mt-6">
         <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3">Qualification Details</h3>
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3">
+            Qualification Details
+          </h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required">Qualification Type</label>
-              <select v-model="localFormData.qualification_type"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
+              <label class="block text-sm font-medium text-gray-700 required"
+                >Qualification Type</label
+              >
+              <select
+                v-model="localFormData.qualification_type"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              >
                 <option value="">Select Qualification Type</option>
                 <option v-for="type in qualificationTypes" :key="type.id" :value="type.id">
                   {{ type.qualification_type_name }}
@@ -305,11 +408,19 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required">Qualification Name</label>
-              <select v-model="localFormData.qualification_name"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
+              <label class="block text-sm font-medium text-gray-700 required"
+                >Qualification Name</label
+              >
+              <select
+                v-model="localFormData.qualification_name"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              >
                 <option value="">Select Qualification Name</option>
-                <option v-for="qualification in qualifications" :key="qualification.id" :value="qualification.id">
+                <option
+                  v-for="qualification in qualifications"
+                  :key="qualification.id"
+                  :value="qualification.id"
+                >
                   {{ qualification.qualification }}
                 </option>
               </select>
@@ -319,11 +430,19 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required">Institute/University</label>
-              <select v-model="localFormData.institute"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
+              <label class="block text-sm font-medium text-gray-700 required"
+                >Institute/University</label
+              >
+              <select
+                v-model="localFormData.institute"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              >
                 <option value="">Select Institute/University</option>
-                <option v-for="university in universities" :key="university.id" :value="university.id">
+                <option
+                  v-for="university in universities"
+                  :key="university.id"
+                  :value="university.id"
+                >
                   {{ university.country }}, {{ university.university }},
                   {{ university.institute_name }}
                 </option>
@@ -334,10 +453,15 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required">Year of Completion</label>
-              <input type="month" v-model="localFormData.year_of_completion"
+              <label class="block text-sm font-medium text-gray-700 required"
+                >Year of Completion</label
+              >
+              <input
+                type="month"
+                v-model="localFormData.year_of_completion"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="YYYY" />
+                placeholder="YYYY"
+              />
               <span v-if="errors.year_of_completion" class="text-xs text-red-500 mt-1">{{
                 errors.year_of_completion
               }}</span>
@@ -349,13 +473,20 @@
       <!-- Supporting Documents Section -->
       <div class="mt-6">
         <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3">Supporting Documents</h3>
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3">
+            Supporting Documents
+          </h3>
           <div class="space-y-3">
-            <div v-for="(doc, index) in supportingDocuments" :key="index"
-              class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-white p-3 rounded-lg border border-gray-100">
+            <div
+              v-for="(doc, index) in supportingDocuments"
+              :key="index"
+              class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-white p-3 rounded-lg border border-gray-100"
+            >
               <div class="w-full sm:w-1/3">
-                <select v-model="doc.type"
-                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm">
+                <select
+                  v-model="doc.type"
+                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm"
+                >
                   <option value="">Select Document Type</option>
                   <option v-for="type in fetchedDocumentTypes" :key="type.id" :value="type.id">
                     {{ type.document_name }}
@@ -363,19 +494,29 @@
                 </select>
               </div>
               <div class="flex-1 flex items-center space-x-2">
-                <input type="file" @change="(e) => handleFileSelect(e, index)"
+                <input
+                  type="file"
+                  @change="(e) => handleFileSelect(e, index)"
                   class="block w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple />
-                <button @click="removeDocument(index)" type="button"
-                  class="p-1.5 text-gray-400 hover:text-red-500 transition-colors">
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  multiple
+                />
+                <button
+                  @click="removeDocument(index)"
+                  type="button"
+                  class="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                >
                   <span class="sr-only">Remove</span>
                   ✕
                 </button>
               </div>
             </div>
 
-            <button type="button" @click="addDocument"
-              class="mt-3 px-3 py-2 bg-blue-50 text-sm text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center">
+            <button
+              type="button"
+              @click="addDocument"
+              class="mt-3 px-3 py-2 bg-blue-50 text-sm text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center"
+            >
               <span class="mr-1.5">+</span>
               Add Another Document
             </button>
@@ -393,14 +534,20 @@
         <div class="space-y-3">
           <div>
             <label class="block text-sm font-medium text-gray-700">Remarks</label>
-            <textarea v-model="localFormData.remarks" rows="3"
+            <textarea
+              v-model="localFormData.remarks"
+              rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm"
-              placeholder="Enter any additional remarks or comments"></textarea>
+              placeholder="Enter any additional remarks or comments"
+            ></textarea>
           </div>
 
           <div class="flex items-start space-x-3 bg-white p-3 rounded-lg">
-            <input type="checkbox" v-model="localFormData.declaration"
-              class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+            <input
+              type="checkbox"
+              v-model="localFormData.declaration"
+              class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
             <label class="text-sm text-gray-700">
               I hereby declare that all the information provided above is true and correct to the
               best of my knowledge. I understand that any false statements may result in the
@@ -412,12 +559,18 @@
 
       <!-- Navigation Buttons -->
       <div class="mt-6 flex justify-end space-x-3">
-        <button type="button" @click="stage = 1"
-          class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+        <button
+          type="button"
+          @click="stage = 1"
+          class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+        >
           Back to Personal Information
         </button>
-        <button type="button" @click="openConfirmationModal"
-          class="px-4 py-2 bg-blue-600 text-sm text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <button
+          type="button"
+          @click="openConfirmationModal"
+          class="px-4 py-2 bg-blue-600 text-sm text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
           Submit Registration
         </button>
       </div>
@@ -501,21 +654,213 @@ const updateFormDocuments = () => {
 }
 
 const countries = [
-  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'East Timor', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Ivory Coast', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Korea, North', 'Korea, South', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe',
+  'Afghanistan',
+  'Albania',
+  'Algeria',
+  'Andorra',
+  'Angola',
+  'Antigua and Barbuda',
+  'Argentina',
+  'Armenia',
+  'Australia',
+  'Austria',
+  'Azerbaijan',
+  'Bahamas',
+  'Bahrain',
+  'Bangladesh',
+  'Barbados',
+  'Belarus',
+  'Belgium',
+  'Belize',
+  'Benin',
+  'Bhutan',
+  'Bolivia',
+  'Bosnia and Herzegovina',
+  'Botswana',
+  'Brazil',
+  'Brunei',
+  'Bulgaria',
+  'Burkina Faso',
+  'Burundi',
+  'Cambodia',
+  'Cameroon',
+  'Canada',
+  'Cape Verde',
+  'Central African Republic',
+  'Chad',
+  'Chile',
+  'China',
+  'Colombia',
+  'Comoros',
+  'Congo',
+  'Costa Rica',
+  'Croatia',
+  'Cuba',
+  'Cyprus',
+  'Czech Republic',
+  'Denmark',
+  'Djibouti',
+  'Dominica',
+  'Dominican Republic',
+  'East Timor',
+  'Ecuador',
+  'Egypt',
+  'El Salvador',
+  'Equatorial Guinea',
+  'Eritrea',
+  'Estonia',
+  'Ethiopia',
+  'Fiji',
+  'Finland',
+  'France',
+  'Gabon',
+  'Gambia',
+  'Georgia',
+  'Germany',
+  'Ghana',
+  'Greece',
+  'Grenada',
+  'Guatemala',
+  'Guinea',
+  'Guinea-Bissau',
+  'Guyana',
+  'Haiti',
+  'Honduras',
+  'Hungary',
+  'Iceland',
+  'India',
+  'Indonesia',
+  'Iran',
+  'Iraq',
+  'Ireland',
+  'Israel',
+  'Italy',
+  'Ivory Coast',
+  'Jamaica',
+  'Japan',
+  'Jordan',
+  'Kazakhstan',
+  'Kenya',
+  'Kiribati',
+  'Korea, North',
+  'Korea, South',
+  'Kuwait',
+  'Kyrgyzstan',
+  'Laos',
+  'Latvia',
+  'Lebanon',
+  'Lesotho',
+  'Liberia',
+  'Libya',
+  'Liechtenstein',
+  'Lithuania',
+  'Luxembourg',
+  'Macedonia',
+  'Madagascar',
+  'Malawi',
+  'Malaysia',
+  'Maldives',
+  'Mali',
+  'Malta',
+  'Marshall Islands',
+  'Mauritania',
+  'Mauritius',
+  'Mexico',
+  'Micronesia',
+  'Moldova',
+  'Monaco',
+  'Mongolia',
+  'Montenegro',
+  'Morocco',
+  'Mozambique',
+  'Myanmar',
+  'Namibia',
+  'Nauru',
+  'Nepal',
+  'Netherlands',
+  'New Zealand',
+  'Nicaragua',
+  'Niger',
+  'Nigeria',
+  'Norway',
+  'Oman',
+  'Pakistan',
+  'Palau',
+  'Panama',
+  'Papua New Guinea',
+  'Paraguay',
+  'Peru',
+  'Philippines',
+  'Poland',
+  'Portugal',
+  'Qatar',
+  'Romania',
+  'Russia',
+  'Saint Kitts and Nevis',
+  'Saint Lucia',
+  'Saint Vincent',
+  'Samoa',
+  'San Marino',
+  'Sao Tome and Principe',
+  'Saudi Arabia',
+  'Senegal',
+  'Serbia',
+  'Seychelles',
+  'Sierra Leone',
+  'Singapore',
+  'Slovakia',
+  'Slovenia',
+  'Solomon Islands',
+  'Somalia',
+  'South Africa',
+  'South Sudan',
+  'Spain',
+  'Sri Lanka',
+  'Sudan',
+  'Suriname',
+  'Swaziland',
+  'Sweden',
+  'Switzerland',
+  'Syria',
+  'Taiwan',
+  'Tajikistan',
+  'Tanzania',
+  'Thailand',
+  'Togo',
+  'Tonga',
+  'Trinidad and Tobago',
+  'Tunisia',
+  'Turkey',
+  'Turkmenistan',
+  'Tuvalu',
+  'Uganda',
+  'Ukraine',
+  'United Arab Emirates',
+  'United Kingdom',
+  'United States',
+  'Uruguay',
+  'Uzbekistan',
+  'Vanuatu',
+  'Vatican City',
+  'Venezuela',
+  'Vietnam',
+  'Yemen',
+  'Zambia',
+  'Zimbabwe',
 ]
 
 const qualificationTypes = ref([])
 const qualifications = ref([])
 const universities = ref([])
-const registrationTypes = ref([]);
+const registrationTypes = ref([])
 
 onMounted(async () => {
   try {
     const qualificationTypesResponse = await apiService.getMhpcMastersQualificationTypes()
     const qualificationsResponse = await apiService.getMhpcMastersQualifications()
     const universitiesResponse = await apiService.getMhpcMastersUniversities()
-    const regTypesResponse = await apiService.getMhpcMastersRegistrationTypes();
-    registrationTypes.value = regTypesResponse.data.results;
+    const regTypesResponse = await apiService.getMhpcMastersRegistrationTypes()
+    registrationTypes.value = regTypesResponse.data.results
     qualificationTypes.value = qualificationTypesResponse.data.results
     qualifications.value = qualificationsResponse.data.results
     universities.value = universitiesResponse.data.results
@@ -655,7 +1000,7 @@ const validateForm = () => {
   let isValid = true
 
   // Stage 1 Validations (re-run just in case)
-  if (!validateFormStageOne()) isValid = false;
+  if (!validateFormStageOne()) isValid = false
 
   // Stage 2 Validations
   if (!localFormData.qualification_type) {
@@ -676,19 +1021,18 @@ const validateForm = () => {
   }
 
   // Document validation
-  let documentsValid = true;
+  let documentsValid = true
   supportingDocuments.value.forEach((doc, index) => {
     if (!doc.type) {
       toast.error(`Please select a document type for document ${index + 1}.`)
-      documentsValid = false;
+      documentsValid = false
     }
     if (doc.files.length === 0) {
       toast.error(`Please select file(s) to upload for document ${index + 1}.`)
-      documentsValid = false;
+      documentsValid = false
     }
-  });
-  if (!documentsValid) isValid = false;
-
+  })
+  if (!documentsValid) isValid = false
 
   if (!localFormData.declaration) {
     toast.error('Please accept the declaration.')
@@ -817,7 +1161,7 @@ const handleNext = async () => {
       if (Object.prototype.hasOwnProperty.call(formDataStageOne, key)) {
         // Skip the original registration_type; we'll add its ID below
         if (key === 'registration_type') {
-          continue;
+          continue
         }
         if (key === 'passport_photo' && formDataStageOne[key] instanceof File) {
           apiFormData.append('passport_photo', formDataStageOne[key])
@@ -828,11 +1172,11 @@ const handleNext = async () => {
     }
 
     // Add required fields with correct names
-    apiFormData.append('applicant', user.id);
-    apiFormData.append('registration_type', localFormData.registration_type);
-    apiFormData.append('is_draft', 'false');
+    apiFormData.append('applicant', user.id)
+    apiFormData.append('registration_type', localFormData.registration_type)
+    apiFormData.append('is_draft', 'false')
 
-    isSubmitting.value = true;
+    isSubmitting.value = true
     try {
       const response = await apiService.createMhpcNewApplication(apiFormData)
 
@@ -846,95 +1190,97 @@ const handleNext = async () => {
       if (error.response && error.response.data) {
         const errorMessages = Object.entries(error.response.data)
           .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
-          .join('; ');
-        toast.error(`Failed to save personal information: ${errorMessages}`);
+          .join('; ')
+        toast.error(`Failed to save personal information: ${errorMessages}`)
       } else {
-        toast.error('Failed to save personal information. An unknown error occurred.');
+        toast.error('Failed to save personal information. An unknown error occurred.')
       }
     } finally {
-      isSubmitting.value = false;
+      isSubmitting.value = false
     }
   } else {
-    toast.error("Please fix the errors in Step 1.")
+    toast.error('Please fix the errors in Step 1.')
   }
 }
 
-
 const openConfirmationModal = () => {
-  if (validateForm()) { // Validate the *entire* form before showing confirmation
+  if (validateForm()) {
+    // Validate the *entire* form before showing confirmation
     isConfirmationModalOpen.value = true
   } else {
-    toast.error("Please fix the errors in Step 2.")
+    toast.error('Please fix the errors in Step 2.')
   }
 }
 
 const handleSubmitActual = async () => {
   isConfirmationModalOpen.value = false
-  if (!validateForm()) { // Double-check validation
-    toast.error("Submission cancelled due to validation errors.")
-    return;
+  if (!validateForm()) {
+    // Double-check validation
+    toast.error('Submission cancelled due to validation errors.')
+    return
   }
 
   isSubmitting.value = true
 
   try {
-    const formData = new FormData();
+    const formData = new FormData()
 
     // --- Fields for UserQualification model ---
-    formData.append('application', localFormData.application); // Ensure this has the ID from stage 1
-    formData.append('qualification_name', localFormData.qualification_name);
-    formData.append('qualification_type', localFormData.qualification_type);
-    formData.append('institute_university', localFormData.institute);
+    formData.append('application', localFormData.application) // Ensure this has the ID from stage 1
+    formData.append('qualification_name', localFormData.qualification_name)
+    formData.append('qualification_type', localFormData.qualification_type)
+    formData.append('institute_university', localFormData.institute)
 
     // Safely get year from 'YYYY-MM' format
     if (localFormData.year_of_completion && typeof localFormData.year_of_completion === 'string') {
-      const year = localFormData.year_of_completion.split('-')[0];
+      const year = localFormData.year_of_completion.split('-')[0]
       if (year && !isNaN(parseInt(year))) {
-        formData.append('completion_year', year);
+        formData.append('completion_year', year)
       } else {
-        console.warn("Invalid year_of_completion format, cannot extract year:", localFormData.year_of_completion);
+        console.warn(
+          'Invalid year_of_completion format, cannot extract year:',
+          localFormData.year_of_completion,
+        )
       }
     }
 
-    formData.append('declaration', localFormData.declaration ? 'True' : 'False');
-    formData.append('remarks', localFormData.remarks || '');
-    formData.append('is_primary_qualification', 'True'); // Assuming this is the primary one for now
+    formData.append('declaration', localFormData.declaration ? 'True' : 'False')
+    formData.append('remarks', localFormData.remarks || '')
+    formData.append('is_primary_qualification', 'True') // Assuming this is the primary one for now
 
     // --- Handle Attachments ---
-    updateFormDocuments(); // Ensure localFormData.documents is up-to-date
+    updateFormDocuments() // Ensure localFormData.documents is up-to-date
     localFormData.documents.forEach((doc, index) => {
       if (doc.files && doc.files.length > 0 && doc.type) {
         doc.files.forEach((file) => {
           // Use a consistent naming scheme expected by the backend
-          formData.append(`attachments-${index}-file`, file, file.name); // Add filename
-          formData.append(`attachments-${index}-document_type`, doc.type);
-        });
+          formData.append(`attachments-${index}-file`, file, file.name) // Add filename
+          formData.append(`attachments-${index}-document_type`, doc.type)
+        })
       } else {
-        console.warn(`Skipping document at index ${index} due to missing file or type.`);
+        console.warn(`Skipping document at index ${index} due to missing file or type.`)
       }
-    });
+    })
 
+    await apiService.createMhpcNewQualification(formData)
 
-    await apiService.createMhpcNewQualification(formData);
-
-    toast.success('Registration submitted successfully!');
-    emit('submit', localFormData); // Emit the final form data if needed
-    router.push('/admin/user/health_certification/dashboard'); // Redirect
-
+    toast.success('Registration submitted successfully!')
+    emit('submit', localFormData) // Emit the final form data if needed
+    router.push('/admin/user/health_certification/dashboard') // Redirect
   } catch (error) {
-    console.error('Error submitting qualification:', error);
+    console.error('Error submitting qualification:', error)
     if (error.response && error.response.data) {
       const errorMessages = Object.entries(error.response.data)
         .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
-        .join('; ');
-      toast.error(`Qualification submission failed: ${errorMessages}`);
+        .join('; ')
+      toast.error(`Qualification submission failed: ${errorMessages}`)
     } else {
-      toast.error(`Qualification submission failed: ${error.message || 'Unknown error'}`);
+      toast.error(`Qualification submission failed: ${error.message || 'Unknown error'}`)
     }
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
-};
+}
 </script>
 
 <style scoped>

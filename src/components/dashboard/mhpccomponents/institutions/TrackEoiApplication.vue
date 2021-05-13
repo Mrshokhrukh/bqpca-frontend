@@ -64,23 +64,15 @@
                 <div>
                   <p class="text-sm font-semibold text-gray-900">Program Type</p>
                   <p class="text-sm text-gray-600">
-                    {{
-                      application.type_of_programme === 'D'
-                        ? 'Diploma'
-                        : 'Bachelor'
-                    }}
+                    {{ application.type_of_programme === 'D' ? 'Diploma' : 'Bachelor' }}
                   </p>
                 </div>
                 <div>
                   <p class="text-sm font-semibold text-gray-900">Duration</p>
-                  <p class="text-sm text-gray-600">
-                    {{ application.course_duration }} months
-                  </p>
+                  <p class="text-sm text-gray-600">{{ application.course_duration }} months</p>
                 </div>
                 <div v-if="application.review_decision === 'Rejected'">
-                  <p class="text-sm font-semibold text-gray-900">
-                    Rejection Reason
-                  </p>
+                  <p class="text-sm font-semibold text-gray-900">Rejection Reason</p>
                   <p class="text-sm text-red-600">
                     {{ application.reason_if_rejected }}
                   </p>
@@ -159,12 +151,12 @@ const fetchApplications = async () => {
     if (response && response.data && Array.isArray(response.data.results)) {
       const userCid = authStore.user.cid
       applications.value = response.data.results.filter(
-        (app) => app.CID && app.CID.toLowerCase() === userCid.toLowerCase()
+        (app) => app.CID && app.CID.toLowerCase() === userCid.toLowerCase(),
       )
     } else {
       applications.value = []
       if (response && response.data && !Array.isArray(response.data.results)) {
-          console.warn('Expected results to be an array, but received:', response.data.results);
+        console.warn('Expected results to be an array, but received:', response.data.results)
       }
     }
   } catch (error) {

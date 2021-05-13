@@ -1,9 +1,7 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
-        Mhpc File Type Management
-      </h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Mhpc File Type Management</h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -264,7 +262,10 @@ const paginatedFileTypes = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMhpcMastersFileType(formData.value.id, formData.value)
+      const response = await apiServices.updateMhpcMastersFileType(
+        formData.value.id,
+        formData.value,
+      )
       const index = fileTypes.value.findIndex((ft) => ft.id === formData.value.id)
       if (index !== -1) {
         fileTypes.value[index] = response.data

@@ -132,10 +132,16 @@
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ formatDate(capa.inspection_to_date) }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.observation_description">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :title="capa.observation_description"
+                  >
                     {{ truncateText(capa.observation_description || 'N/A', 50) }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.root_cause">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :title="capa.root_cause"
+                  >
                     {{ truncateText(capa.root_cause || 'N/A', 50) }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.capa">
@@ -144,7 +150,10 @@
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ capa.implementation_timeline || 'N/A' }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.DO_remarks">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :title="capa.DO_remarks"
+                  >
                     {{ truncateText(capa.DO_remarks || 'N/A', 50) }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -206,8 +215,8 @@ const props = defineProps({
   },
   teachingCenters: {
     type: Array,
-    default: () => []
-  }
+    default: () => [],
+  },
 })
 
 defineEmits(['add-capa', 'view-details', 'delete-capa', 'open-view-details-modal'])
@@ -264,7 +273,7 @@ const formatDate = (dateString) => {
     }
     return date.toLocaleDateString('en-CA')
   } catch (e) {
-    console.error("Error formatting date:", dateString, e)
+    console.error('Error formatting date:', dateString, e)
     return 'Invalid Date'
   }
 }

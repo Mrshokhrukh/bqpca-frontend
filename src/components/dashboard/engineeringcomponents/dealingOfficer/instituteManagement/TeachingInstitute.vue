@@ -18,11 +18,24 @@
     >
       <div class="flex">
         <div class="flex-shrink-0">
-          <svg v-if="alert.type === 'success'" class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          <svg
+            v-if="alert.type === 'success'"
+            class="h-5 w-5 text-green-400"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"
+            />
           </svg>
           <svg v-else class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
+            />
           </svg>
         </div>
         <div class="ml-3">
@@ -30,10 +43,22 @@
         </div>
         <div class="ml-auto pl-3">
           <div class="-mx-1.5 -my-1.5">
-            <button @click="alert.show = false" class="inline-flex rounded-md p-1.5" :class="alert.type === 'success' ? 'text-green-500 hover:bg-green-100' : 'text-red-500 hover:bg-red-100'">
+            <button
+              @click="alert.show = false"
+              class="inline-flex rounded-md p-1.5"
+              :class="
+                alert.type === 'success'
+                  ? 'text-green-500 hover:bg-green-100'
+                  : 'text-red-500 hover:bg-red-100'
+              "
+            >
               <span class="sr-only">Dismiss</span>
               <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                <path
+                  fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                />
               </svg>
             </button>
           </div>
@@ -47,25 +72,60 @@
     </div>
 
     <!-- No Data Message -->
-    <div v-else-if="!loading && teachingCenters.length === 0" class="bg-white p-8 text-center text-gray-500 rounded-xl shadow-sm border border-gray-100">
+    <div
+      v-else-if="!loading && teachingCenters.length === 0"
+      class="bg-white p-8 text-center text-gray-500 rounded-xl shadow-sm border border-gray-100"
+    >
       <p>No teaching Institutes found</p>
     </div>
 
     <!-- Teaching Centers Table -->
-    <div v-else-if="!loading" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div
+      v-else-if="!loading"
+      class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+    >
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Center Name</th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">City / Gewog</th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Target Category</th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                Center Name
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                City / Gewog
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                Target Category
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                Status
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="center in teachingCenters" :key="center.id" class="hover:bg-gray-50 transition-colors">
+            <tr
+              v-for="center in teachingCenters"
+              :key="center.id"
+              class="hover:bg-gray-50 transition-colors"
+            >
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium text-gray-900">{{ center.center_name }}</div>
               </td>
@@ -73,17 +133,31 @@
                 <div class="text-sm text-gray-900">{{ center.city_gewog }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{{ center.target_category }}</span>
+                <span
+                  class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                  >{{ center.target_category }}</span
+                >
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-3 py-1 rounded-full text-xs font-medium"
-                      :class="{ 'bg-yellow-100 text-yellow-800': center.tc_review_decision === 'Pending', 'bg-green-100 text-green-800': center.tc_review_decision === 'Approved', 'bg-red-100 text-red-800': center.tc_review_decision === 'Regretted' }">
+                <span
+                  class="px-3 py-1 rounded-full text-xs font-medium"
+                  :class="{
+                    'bg-yellow-100 text-yellow-800': center.tc_review_decision === 'Pending',
+                    'bg-green-100 text-green-800': center.tc_review_decision === 'Approved',
+                    'bg-red-100 text-red-800': center.tc_review_decision === 'Regretted',
+                  }"
+                >
                   {{ center.tc_review_decision }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
-                  <button @click="openModal(center)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">View/Review</button>
+                  <button
+                    @click="openModal(center)"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+                  >
+                    View/Review
+                  </button>
                 </div>
               </td>
             </tr>
@@ -93,11 +167,27 @@
     </div>
 
     <!-- Integrated Details & Review Modal -->
-    <div v-if="isModalOpen" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="closeModal"></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
+    <div
+      v-if="isModalOpen"
+      class="fixed z-10 inset-0 overflow-y-auto"
+      aria-labelledby="modal-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+      >
+        <div
+          class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+          aria-hidden="true"
+          @click="closeModal"
+        ></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"
+          >&#8203;</span
+        >
+        <div
+          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full"
+        >
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <!-- Modal Header -->
             <div class="sm:flex sm:items-start mb-4 border-b pb-3">
@@ -106,13 +196,28 @@
                   Institute & Review Details
                 </h3>
                 <p class="text-sm text-gray-500 mt-1">
-                  View details and enter review for {{ selectedCenter?.center_name || 'the selected center' }}.
+                  View details and enter review for
+                  {{ selectedCenter?.center_name || 'the selected center' }}.
                 </p>
               </div>
               <div class="ml-auto flex-shrink-0 flex items-center">
-                <button @click="closeModal" class="p-1 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" title="Close">
-                  <svg class="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                <button
+                  @click="closeModal"
+                  class="p-1 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  title="Close"
+                >
+                  <svg
+                    class="h-6 w-6 text-gray-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -122,42 +227,60 @@
             <div class="mt-5 max-h-[65vh] overflow-y-auto pr-2 text-sm">
               <!-- Proponent Details (Read-Only) -->
               <section class="mb-6 opacity-80">
-                <h4 class="text-lg font-semibold text-gray-700 mb-3 border-b pb-1">Proponent Details (Read-Only)</h4>
+                <h4 class="text-lg font-semibold text-gray-700 mb-3 border-b pb-1">
+                  Proponent Details (Read-Only)
+                </h4>
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
                   <div class="sm:col-span-2">
                     <dt class="font-medium text-gray-600">Training Institute Name</dt>
-                    <dd class="mt-1 text-gray-900">{{ selectedCenter.institute?.name_of_institution || 'N/A' }}</dd>
+                    <dd class="mt-1 text-gray-900">
+                      {{ selectedCenter.institute?.name_of_institution || 'N/A' }}
+                    </dd>
                   </div>
                   <div>
                     <dt class="font-medium text-gray-600">Country</dt>
-                    <dd class="mt-1 text-gray-900">{{ selectedCenter.institute?.country || 'N/A' }}</dd>
+                    <dd class="mt-1 text-gray-900">
+                      {{ selectedCenter.institute?.country || 'N/A' }}
+                    </dd>
                   </div>
                   <div>
                     <dt class="font-medium text-gray-600">Dzongkhag/Thromde</dt>
-                    <dd class="mt-1 text-gray-900">{{ selectedCenter.institute?.dzongkhag || 'N/A' }}</dd>
+                    <dd class="mt-1 text-gray-900">
+                      {{ selectedCenter.institute?.dzongkhag || 'N/A' }}
+                    </dd>
                   </div>
                   <div>
                     <dt class="font-medium text-gray-600">City/Gewog</dt>
-                    <dd class="mt-1 text-gray-900">{{ selectedCenter.institute?.gewog || 'N/A' }}</dd>
+                    <dd class="mt-1 text-gray-900">
+                      {{ selectedCenter.institute?.gewog || 'N/A' }}
+                    </dd>
                   </div>
                   <div>
                     <dt class="font-medium text-gray-600">Address/Location</dt>
-                    <dd class="mt-1 text-gray-900 whitespace-pre-wrap">{{ selectedCenter.institute?.address || 'N/A' }}</dd>
+                    <dd class="mt-1 text-gray-900 whitespace-pre-wrap">
+                      {{ selectedCenter.institute?.address || 'N/A' }}
+                    </dd>
                   </div>
                   <div>
                     <dt class="font-medium text-gray-600">Contact No.</dt>
-                    <dd class="mt-1 text-gray-900">{{ selectedCenter.institute?.contact_no || 'N/A' }}</dd>
+                    <dd class="mt-1 text-gray-900">
+                      {{ selectedCenter.institute?.contact_no || 'N/A' }}
+                    </dd>
                   </div>
                   <div>
                     <dt class="font-medium text-gray-600">Email Address</dt>
-                    <dd class="mt-1 text-gray-900">{{ selectedCenter.institute?.email_address || 'N/A' }}</dd>
+                    <dd class="mt-1 text-gray-900">
+                      {{ selectedCenter.institute?.email_address || 'N/A' }}
+                    </dd>
                   </div>
                 </dl>
               </section>
 
               <!-- Proposal Details (Read-Only) -->
               <section class="mb-6 opacity-80">
-                <h4 class="text-lg font-semibold text-gray-700 mb-3 border-b pb-1">Proposal Details (Read-Only)</h4>
+                <h4 class="text-lg font-semibold text-gray-700 mb-3 border-b pb-1">
+                  Proposal Details (Read-Only)
+                </h4>
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
                   <div>
                     <dt class="font-medium text-gray-600">Center Name</dt>
@@ -165,7 +288,9 @@
                   </div>
                   <div>
                     <dt class="font-medium text-gray-600">Center Location</dt>
-                    <dd class="mt-1 text-gray-900">{{ selectedCenter.center_location || 'N/A' }}</dd>
+                    <dd class="mt-1 text-gray-900">
+                      {{ selectedCenter.center_location || 'N/A' }}
+                    </dd>
                   </div>
                   <div>
                     <dt class="font-medium text-gray-600">City/Gewog</dt>
@@ -173,26 +298,41 @@
                   </div>
                   <div>
                     <dt class="font-medium text-gray-600">State/Dzongkhag</dt>
-                    <dd class="mt-1 text-gray-900">{{ selectedCenter.state_dzongkhag || 'N/A' }}</dd>
+                    <dd class="mt-1 text-gray-900">
+                      {{ selectedCenter.state_dzongkhag || 'N/A' }}
+                    </dd>
                   </div>
                   <div class="sm:col-span-2">
                     <dt class="font-medium text-gray-600">Target Category</dt>
-                    <dd class="mt-1 text-gray-900">{{ selectedCenter.target_category || 'N/A' }}</dd>
+                    <dd class="mt-1 text-gray-900">
+                      {{ selectedCenter.target_category || 'N/A' }}
+                    </dd>
                   </div>
                   <div class="sm:col-span-2">
                     <dt class="font-medium text-gray-600">Attachments</dt>
                     <dd class="mt-1 text-gray-900">
-                      <a v-if="selectedCenter.tc_attachments" :href="selectedCenter.tc_attachments" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 hover:underline">View Attachment</a>
+                      <a
+                        v-if="selectedCenter.tc_attachments"
+                        :href="selectedCenter.tc_attachments"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-indigo-600 hover:text-indigo-800 hover:underline"
+                        >View Attachment</a
+                      >
                       <span v-else>N/A</span>
                     </dd>
                   </div>
                   <div class="sm:col-span-2">
                     <dt class="font-medium text-gray-600">Remarks (Proposal)</dt>
-                    <dd class="mt-1 text-gray-900 whitespace-pre-wrap">{{ selectedCenter.remarks || 'N/A' }}</dd>
+                    <dd class="mt-1 text-gray-900 whitespace-pre-wrap">
+                      {{ selectedCenter.remarks || 'N/A' }}
+                    </dd>
                   </div>
                   <div>
                     <dt class="font-medium text-gray-600">Declaration</dt>
-                    <dd class="mt-1 text-gray-900">{{ selectedCenter.tc_declaration ? 'Yes' : 'No' }}</dd>
+                    <dd class="mt-1 text-gray-900">
+                      {{ selectedCenter.tc_declaration ? 'Yes' : 'No' }}
+                    </dd>
                   </div>
                 </dl>
               </section>
@@ -203,31 +343,71 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
                   <!-- Renewal Review Name -->
                   <div class="sm:col-span-2">
-                    <label for="renewal-review-name" class="block text-sm font-medium text-gray-700">Renewal Review Name</label>
-                    <input type="text" id="renewal-review-name" v-model="reviewForm.tc_renewal_review_name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <label for="renewal-review-name" class="block text-sm font-medium text-gray-700"
+                      >Renewal Review Name</label
+                    >
+                    <input
+                      type="text"
+                      id="renewal-review-name"
+                      v-model="reviewForm.tc_renewal_review_name"
+                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
                   </div>
 
                   <!-- Review Summary -->
                   <div class="sm:col-span-2">
-                    <label for="review-summary" class="block text-sm font-medium text-gray-700">Review Summary</label>
-                    <textarea id="review-summary" v-model="reviewForm.tc_review_summary" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                    <label for="review-summary" class="block text-sm font-medium text-gray-700"
+                      >Review Summary</label
+                    >
+                    <textarea
+                      id="review-summary"
+                      v-model="reviewForm.tc_review_summary"
+                      rows="4"
+                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    ></textarea>
                   </div>
 
                   <!-- Report Upload -->
                   <div class="sm:col-span-2">
-                    <label for="report-upload" class="block text-sm font-medium text-gray-700">Upload Review Report</label>
-                    <input type="file" id="report-upload" @change="handleReportUpload" accept=".pdf,.doc,.docx" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                    <p v-if="reviewForm.reportFile" class="mt-1 text-xs text-gray-600">Selected: {{ reviewForm.reportFile.name }}</p>
+                    <label for="report-upload" class="block text-sm font-medium text-gray-700"
+                      >Upload Review Report</label
+                    >
+                    <input
+                      type="file"
+                      id="report-upload"
+                      @change="handleReportUpload"
+                      accept=".pdf,.doc,.docx"
+                      class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                    />
+                    <p v-if="reviewForm.reportFile" class="mt-1 text-xs text-gray-600">
+                      Selected: {{ reviewForm.reportFile.name }}
+                    </p>
                     <p v-else class="mt-1 text-xs text-gray-600">No file chosen</p>
-                    <p v-if="selectedCenter.tc_report && !reviewForm.reportFile" class="mt-1 text-xs text-gray-600">
-                      Current report: <a :href="selectedCenter.tc_report" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">View Existing</a>
+                    <p
+                      v-if="selectedCenter.tc_report && !reviewForm.reportFile"
+                      class="mt-1 text-xs text-gray-600"
+                    >
+                      Current report:
+                      <a
+                        :href="selectedCenter.tc_report"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-indigo-600 hover:underline"
+                        >View Existing</a
+                      >
                     </p>
                   </div>
 
                   <!-- Review Decision -->
                   <div>
-                    <label for="review-decision" class="block text-sm font-medium text-gray-700">Review Decision</label>
-                    <select id="review-decision" v-model="reviewForm.tc_review_decision" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white">
+                    <label for="review-decision" class="block text-sm font-medium text-gray-700"
+                      >Review Decision</label
+                    >
+                    <select
+                      id="review-decision"
+                      v-model="reviewForm.tc_review_decision"
+                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white"
+                    >
                       <option value="Pending">Pending</option>
                       <option value="Approved">Approved</option>
                       <option value="Regretted">Regretted</option>
@@ -236,20 +416,43 @@
 
                   <!-- Valid Till -->
                   <div>
-                    <label for="valid-till" class="block text-sm font-medium text-gray-700">Valid Till</label>
-                    <input type="date" id="valid-till" v-model="reviewForm.valid_till" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="mm/dd/yyyy">
+                    <label for="valid-till" class="block text-sm font-medium text-gray-700"
+                      >Valid Till</label
+                    >
+                    <input
+                      type="date"
+                      id="valid-till"
+                      v-model="reviewForm.valid_till"
+                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      placeholder="mm/dd/yyyy"
+                    />
                   </div>
 
                   <!-- Reason (if rejected) -->
                   <div class="sm:col-span-2" v-if="reviewForm.tc_review_decision === 'Regretted'">
-                    <label for="reason-rejected" class="block text-sm font-medium text-gray-700">Reason (if rejected) <span class="text-red-500">*</span></label>
-                    <textarea id="reason-rejected" v-model="reviewForm.tc_reason_if_rejected" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Provide reason for regretting"></textarea>
+                    <label for="reason-rejected" class="block text-sm font-medium text-gray-700"
+                      >Reason (if rejected) <span class="text-red-500">*</span></label
+                    >
+                    <textarea
+                      id="reason-rejected"
+                      v-model="reviewForm.tc_reason_if_rejected"
+                      rows="3"
+                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      placeholder="Provide reason for regretting"
+                    ></textarea>
                   </div>
 
                   <!-- Remarks (Review) -->
                   <div class="sm:col-span-2">
-                    <label for="review-remarks" class="block text-sm font-medium text-gray-700">Remarks (Review)</label>
-                    <textarea id="review-remarks" v-model="reviewForm.tc_remarks" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                    <label for="review-remarks" class="block text-sm font-medium text-gray-700"
+                      >Remarks (Review)</label
+                    >
+                    <textarea
+                      id="review-remarks"
+                      v-model="reviewForm.tc_remarks"
+                      rows="3"
+                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    ></textarea>
                   </div>
                 </div>
               </section>
@@ -297,23 +500,62 @@
     </div>
 
     <!-- Approve Confirmation Dialog -->
-    <div v-if="approveDialog.show" class="fixed z-20 inset-0 overflow-y-auto" aria-labelledby="approve-dialog-title" role="dialog" aria-modal="true">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="closeApproveDialog"></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+    <div
+      v-if="approveDialog.show"
+      class="fixed z-20 inset-0 overflow-y-auto"
+      aria-labelledby="approve-dialog-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+      >
+        <div
+          class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+          aria-hidden="true"
+          @click="closeApproveDialog"
+        ></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"
+          >&#8203;</span
+        >
+        <div
+          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+        >
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
-              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              <div
+                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10"
+              >
+                <svg
+                  class="h-6 w-6 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               </div>
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                <h3 class="text-lg leading-6 font-medium text-gray-900" id="approve-dialog-title">Approve Teaching Center</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900" id="approve-dialog-title">
+                  Approve Teaching Center
+                </h3>
                 <div class="mt-2">
-                  <p class="text-sm text-gray-500">Are you sure you want to approve "{{ selectedCenter?.center_name || 'this center' }}"? Please provide an approval message.</p>
-                  <textarea v-model="approveDialog.message" rows="4" class="mt-3 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter approval message"></textarea>
+                  <p class="text-sm text-gray-500">
+                    Are you sure you want to approve "{{
+                      selectedCenter?.center_name || 'this center'
+                    }}"? Please provide an approval message.
+                  </p>
+                  <textarea
+                    v-model="approveDialog.message"
+                    rows="4"
+                    class="mt-3 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Enter approval message"
+                  ></textarea>
                 </div>
               </div>
             </div>
@@ -342,23 +584,62 @@
     </div>
 
     <!-- Reject Confirmation Dialog -->
-    <div v-if="rejectDialog.show" class="fixed z-20 inset-0 overflow-y-auto" aria-labelledby="reject-dialog-title" role="dialog" aria-modal="true">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="closeRejectDialog"></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+    <div
+      v-if="rejectDialog.show"
+      class="fixed z-20 inset-0 overflow-y-auto"
+      aria-labelledby="reject-dialog-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+      >
+        <div
+          class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+          aria-hidden="true"
+          @click="closeRejectDialog"
+        ></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"
+          >&#8203;</span
+        >
+        <div
+          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+        >
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
-              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <div
+                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+              >
+                <svg
+                  class="h-6 w-6 text-red-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </div>
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                <h3 class="text-lg leading-6 font-medium text-gray-900" id="reject-dialog-title">Reject Teaching Center</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900" id="reject-dialog-title">
+                  Reject Teaching Center
+                </h3>
                 <div class="mt-2">
-                  <p class="text-sm text-gray-500">Are you sure you want to reject "{{ selectedCenter?.center_name || 'this center' }}"? Please provide a rejection reason.</p>
-                  <textarea v-model="rejectDialog.message" rows="4" class="mt-3 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter rejection reason"></textarea>
+                  <p class="text-sm text-gray-500">
+                    Are you sure you want to reject "{{
+                      selectedCenter?.center_name || 'this center'
+                    }}"? Please provide a rejection reason.
+                  </p>
+                  <textarea
+                    v-model="rejectDialog.message"
+                    rows="4"
+                    class="mt-3 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Enter rejection reason"
+                  ></textarea>
                 </div>
               </div>
             </div>
@@ -432,8 +713,11 @@ const fetchTeachingCenters = async () => {
   loading.value = true
   try {
     const response = await apiServices.getEpcTeachingCenters()
-    let results = response?.data?.results || response?.results || (Array.isArray(response) ? response : (Array.isArray(response?.data) ? response.data : []))
-    teachingCenters.value = results.filter(center => center != null)
+    let results =
+      response?.data?.results ||
+      response?.results ||
+      (Array.isArray(response) ? response : Array.isArray(response?.data) ? response.data : [])
+    teachingCenters.value = results.filter((center) => center != null)
     if (!Array.isArray(results)) {
       console.error('Unexpected API response structure:', response)
       showAlert('error', 'Failed to load teaching centers: Unexpected data format.')
@@ -514,19 +798,29 @@ const confirmApprove = async () => {
     }
 
     const response = await apiServices.patchEpcTeachingCenter(selectedCenter.value.id, formData)
-    const updatedCenterData = response?.data || { ...selectedCenter.value, tc_review_decision: 'Approved', tc_remarks: approveDialog.value.message }
+    const updatedCenterData = response?.data || {
+      ...selectedCenter.value,
+      tc_review_decision: 'Approved',
+      tc_remarks: approveDialog.value.message,
+    }
 
     const index = teachingCenters.value.findIndex((center) => center.id === selectedCenter.value.id)
     if (index !== -1) {
       teachingCenters.value[index] = updatedCenterData
     }
 
-    showAlert('success', `Teaching Center "${selectedCenter.value.center_name}" approved successfully.`)
+    showAlert(
+      'success',
+      `Teaching Center "${selectedCenter.value.center_name}" approved successfully.`,
+    )
     closeApproveDialog()
     closeModal()
   } catch (error) {
     console.error('Error approving teaching center:', error)
-    showAlert('error', `Failed to approve: ${error.response?.data?.detail || error.message || 'Unknown error'}`)
+    showAlert(
+      'error',
+      `Failed to approve: ${error.response?.data?.detail || error.message || 'Unknown error'}`,
+    )
   } finally {
     loading.value = false
   }
@@ -554,19 +848,29 @@ const confirmReject = async () => {
     }
 
     const response = await apiServices.patchEpcTeachingCenter(selectedCenter.value.id, formData)
-    const updatedCenterData = response?.data || { ...selectedCenter.value, tc_review_decision: 'Regretted', tc_reason_if_rejected: rejectDialog.value.message }
+    const updatedCenterData = response?.data || {
+      ...selectedCenter.value,
+      tc_review_decision: 'Regretted',
+      tc_reason_if_rejected: rejectDialog.value.message,
+    }
 
     const index = teachingCenters.value.findIndex((center) => center.id === selectedCenter.value.id)
     if (index !== -1) {
       teachingCenters.value[index] = updatedCenterData
     }
 
-    showAlert('success', `Teaching Center "${selectedCenter.value.center_name}" rejected successfully.`)
+    showAlert(
+      'success',
+      `Teaching Center "${selectedCenter.value.center_name}" rejected successfully.`,
+    )
     closeRejectDialog()
     closeModal()
   } catch (error) {
     console.error('Error rejecting teaching center:', error)
-    showAlert('error', `Failed to reject: ${error.response?.data?.detail || error.message || 'Unknown error'}`)
+    showAlert(
+      'error',
+      `Failed to reject: ${error.response?.data?.detail || error.message || 'Unknown error'}`,
+    )
   } finally {
     loading.value = false
   }
@@ -578,7 +882,10 @@ const saveReview = async () => {
     return
   }
 
-  if (reviewForm.value.tc_review_decision === 'Regretted' && !reviewForm.value.tc_reason_if_rejected?.trim()) {
+  if (
+    reviewForm.value.tc_review_decision === 'Regretted' &&
+    !reviewForm.value.tc_reason_if_rejected?.trim()
+  ) {
     showAlert('error', 'Reason is required when regretting.')
     return
   }
@@ -601,7 +908,11 @@ const saveReview = async () => {
     }
 
     const response = await apiServices.patchEpcTeachingCenter(selectedCenter.value.id, formData)
-    const updatedCenterData = response?.data || { ...selectedCenter.value, ...reviewForm.value, tc_report: response?.data?.tc_report || selectedCenter.value.tc_report }
+    const updatedCenterData = response?.data || {
+      ...selectedCenter.value,
+      ...reviewForm.value,
+      tc_report: response?.data?.tc_report || selectedCenter.value.tc_report,
+    }
 
     const index = teachingCenters.value.findIndex((center) => center.id === selectedCenter.value.id)
     if (index !== -1) {
@@ -612,7 +923,10 @@ const saveReview = async () => {
     closeModal()
   } catch (error) {
     console.error('Error saving review:', error)
-    showAlert('error', `Failed to save review: ${error.response?.data?.detail || error.message || 'Unknown error'}`)
+    showAlert(
+      'error',
+      `Failed to save review: ${error.response?.data?.detail || error.message || 'Unknown error'}`,
+    )
   } finally {
     loading.value = false
   }
@@ -650,10 +964,10 @@ button:disabled {
 .whitespace-pre-wrap {
   white-space: pre-wrap;
 }
-input[type="file"] {
+input[type='file'] {
   color: #6b7280;
 }
-input[type="file"]::file-selector-button {
+input[type='file']::file-selector-button {
   margin-right: 1rem;
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
@@ -665,7 +979,7 @@ input[type="file"]::file-selector-button {
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
 }
-input[type="file"]::file-selector-button:hover {
+input[type='file']::file-selector-button:hover {
   background-color: #e0e7ff;
 }
 </style>

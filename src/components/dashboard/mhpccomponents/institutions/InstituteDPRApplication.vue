@@ -19,8 +19,18 @@
               class="w-full pl-10 pr-4 py-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
               aria-label="Search applications"
             />
-            <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              class="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </div>
           <select
@@ -29,7 +39,9 @@
             aria-label="Filter by status"
           >
             <option value="">All Statuses</option>
-            <option v-for="status in statusOptions" :key="status" :value="status">{{ status }}</option>
+            <option v-for="status in statusOptions" :key="status" :value="status">
+              {{ status }}
+            </option>
           </select>
           <select
             v-model="filterDzongkhag"
@@ -37,7 +49,9 @@
             aria-label="Filter by Dzongkhag"
           >
             <option value="">All Dzongkhags</option>
-            <option v-for="dzongkhag in dzongkhagOptions" :key="dzongkhag" :value="dzongkhag">{{ dzongkhag }}</option>
+            <option v-for="dzongkhag in dzongkhagOptions" :key="dzongkhag" :value="dzongkhag">
+              {{ dzongkhag }}
+            </option>
           </select>
         </div>
         <div class="flex gap-4">
@@ -48,7 +62,14 @@
           >
             Sort by {{ sortOrder === 'desc' ? 'Newest' : 'Oldest' }}
             <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="sortOrder === 'desc' ? 'M19 14l-7 7m0 0l-7-7m7 7V3' : 'M5 10l7-7m0 0l7 7m-7-7v18'" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                :d="
+                  sortOrder === 'desc' ? 'M19 14l-7 7m0 0l-7-7m7 7V3' : 'M5 10l7-7m0 0l7 7m-7-7v18'
+                "
+              />
             </svg>
           </button>
           <button
@@ -94,7 +115,10 @@
       </div>
 
       <!-- API Error -->
-      <div v-else-if="apiError" class="text-center py-12 bg-red-50 rounded-xl border border-red-200">
+      <div
+        v-else-if="apiError"
+        class="text-center py-12 bg-red-50 rounded-xl border border-red-200"
+      >
         <h3 class="text-xl font-semibold text-red-700 mb-2">Oops! Something went wrong.</h3>
         <p class="text-red-600">{{ errorMessage }}</p>
         <button
@@ -115,8 +139,12 @@
           <div class="p-6 md:p-8">
             <div class="flex flex-col sm:flex-row items-start justify-between mb-4">
               <div class="mb-4 sm:mb-0">
-                <h3 class="text-xl font-semibold text-gray-900 mb-1">{{ application.name_of_institution }}</h3>
-                <p class="text-sm text-gray-500 mb-2">CID: {{ application.CID }} | DPR Name: {{ application.dpr_name }}</p>
+                <h3 class="text-xl font-semibold text-gray-900 mb-1">
+                  {{ application.name_of_institution }}
+                </h3>
+                <p class="text-sm text-gray-500 mb-2">
+                  CID: {{ application.CID }} | DPR Name: {{ application.dpr_name }}
+                </p>
                 <span
                   :class="[
                     'px-2.5 py-1 text-xs font-medium rounded-full cursor-help',
@@ -148,56 +176,94 @@
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
-            <div v-if="expandedApplications[application.id]" :id="'details-' + application.id" class="space-y-6">
+            <div
+              v-if="expandedApplications[application.id]"
+              :id="'details-' + application.id"
+              class="space-y-6"
+            >
               <!-- Details Content -->
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 pt-4 border-t border-gray-100">
+              <div
+                class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 pt-4 border-t border-gray-100"
+              >
                 <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Details</p>
+                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Contact Details
+                  </p>
                   <p class="text-sm text-gray-700">{{ application.contact_no }}</p>
                   <p class="text-sm text-gray-700">{{ application.email_address }}</p>
                 </div>
                 <div>
                   <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Location</p>
-                  <p class="text-sm text-gray-700">{{ application.dzongkhag }}, {{ application.gewog || 'N/A' }}</p>
+                  <p class="text-sm text-gray-700">
+                    {{ application.dzongkhag }}, {{ application.gewog || 'N/A' }}
+                  </p>
                 </div>
                 <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Course Start Date</p>
-                  <p class="text-sm text-gray-700">{{ formatDate(application.commencement_date) }}</p>
+                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Course Start Date
+                  </p>
+                  <p class="text-sm text-gray-700">
+                    {{ formatDate(application.commencement_date) }}
+                  </p>
                 </div>
               </div>
 
               <div class="pt-4 border-t border-gray-100">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">DPR Details</p>
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                  DPR Details
+                </p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <p class="text-sm font-semibold text-gray-800 mb-1">Executive Summary</p>
-                    <p class="text-sm text-gray-600">{{ application.executive_summary || 'Not provided' }}</p>
+                    <p class="text-sm text-gray-600">
+                      {{ application.executive_summary || 'Not provided' }}
+                    </p>
                   </div>
                   <div>
                     <p class="text-sm font-semibold text-gray-800 mb-1">DPR Review Summary</p>
-                    <p class="text-sm text-gray-600">{{ application.do_dpr_review_summary || 'Pending Review' }}</p>
+                    <p class="text-sm text-gray-600">
+                      {{ application.do_dpr_review_summary || 'Pending Review' }}
+                    </p>
                   </div>
                 </div>
               </div>
 
               <div class="pt-4 border-t border-gray-100">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Program Information</p>
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                  Program Information
+                </p>
                 <div class="flex flex-wrap gap-x-6 gap-y-4">
                   <div>
                     <p class="text-sm font-semibold text-gray-800">Program Type</p>
                     <p class="text-sm text-gray-600">
-                      {{ application.type_of_programme === 'D' ? 'Diploma' : application.type_of_programme === 'B' ? 'Bachelor' : 'Other' }}
+                      {{
+                        application.type_of_programme === 'D'
+                          ? 'Diploma'
+                          : application.type_of_programme === 'B'
+                            ? 'Bachelor'
+                            : 'Other'
+                      }}
                     </p>
                   </div>
                   <div>
                     <p class="text-sm font-semibold text-gray-800">Duration</p>
                     <p class="text-sm text-gray-600">{{ application.course_duration }} months</p>
                   </div>
-                  <div v-if="application.do_dpr_review_decision === STATUS_REJECTED && application.do_dpr_reason_if_rejected">
+                  <div
+                    v-if="
+                      application.do_dpr_review_decision === STATUS_REJECTED &&
+                      application.do_dpr_reason_if_rejected
+                    "
+                  >
                     <p class="text-sm font-semibold text-red-700">Rejection Reason</p>
                     <p class="text-sm text-red-600">{{ application.do_dpr_reason_if_rejected }}</p>
                   </div>
@@ -205,11 +271,19 @@
               </div>
 
               <div class="pt-4 border-t border-gray-100">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Application Timeline</p>
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                  Application Timeline
+                </p>
                 <div class="relative pl-6">
                   <div class="absolute left-2 top-0 h-full w-0.5 bg-gray-200"></div>
-                  <div v-for="(event, index) in getTimeline(application)" :key="index" class="mb-4 relative">
-                    <div class="absolute left-[-20px] top-1 w-4 h-4 bg-blue-600 rounded-full border-2 border-white"></div>
+                  <div
+                    v-for="(event, index) in getTimeline(application)"
+                    :key="index"
+                    class="mb-4 relative"
+                  >
+                    <div
+                      class="absolute left-[-20px] top-1 w-4 h-4 bg-blue-600 rounded-full border-2 border-white"
+                    ></div>
                     <p class="text-sm font-medium text-gray-800">{{ event.status }}</p>
                     <p class="text-xs text-gray-500">{{ formatDate(event.date) }}</p>
                   </div>
@@ -218,13 +292,17 @@
             </div>
 
             <!-- Payment and Certificate Actions -->
-            <div v-if="isPaymentPending(application) || isPaymentCompleted(application)" class="mt-6 pt-4 border-t border-gray-100">
+            <div
+              v-if="isPaymentPending(application) || isPaymentCompleted(application)"
+              class="mt-6 pt-4 border-t border-gray-100"
+            >
               <div class="flex flex-col sm:flex-row items-center justify-end gap-3">
                 <p
                   v-if="isPaymentPending(application)"
                   class="text-sm text-yellow-800 bg-yellow-100 px-3 py-1.5 rounded-md font-medium mr-0 sm:mr-auto text-center sm:text-left w-full sm:w-auto"
                 >
-                  <span class="font-semibold">Action Required:</span> Payment pending for approved application.
+                  <span class="font-semibold">Action Required:</span> Payment pending for approved
+                  application.
                 </p>
                 <button
                   v-if="isPaymentPending(application)"
@@ -232,9 +310,25 @@
                   :disabled="isActionLoading[application.id]"
                   class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors w-full sm:w-auto disabled:opacity-50"
                 >
-                  <svg v-if="isActionLoading[application.id]" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    v-if="isActionLoading[application.id]"
+                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Make Payment
                 </button>
@@ -244,9 +338,25 @@
                   :disabled="isActionLoading[application.id]"
                   class="inline-flex items-center justify-center px-4 py-2 border border-green-600 text-sm font-medium rounded-md text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors w-full sm:w-auto disabled:opacity-50"
                 >
-                  <svg v-if="isActionLoading[application.id]" class="animate-spin -ml-1 mr-3 h-5 w-5 text-green-700" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    v-if="isActionLoading[application.id]"
+                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-green-700"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   View Certificate
                 </button>
@@ -258,7 +368,9 @@
         <!-- Pagination -->
         <div class="flex justify-between items-center mt-6">
           <div class="text-sm text-gray-600">
-            Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ Math.min(currentPage * itemsPerPage, filteredApplications.length) }} of {{ filteredApplications.length }} applications
+            Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
+            {{ Math.min(currentPage * itemsPerPage, filteredApplications.length) }} of
+            {{ filteredApplications.length }} applications
           </div>
           <div class="flex gap-2">
             <button
@@ -275,7 +387,9 @@
               @click="currentPage = page"
               :class="[
                 'px-3 py-1 rounded-md border text-sm font-medium',
-                currentPage === page ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
+                currentPage === page
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
               ]"
               :aria-label="'Page ' + page"
             >
@@ -295,8 +409,20 @@
 
       <!-- No Applications Found -->
       <div v-else class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+        <svg
+          class="mx-auto h-12 w-12 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            vector-effect="non-scaling-stroke"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+          />
         </svg>
         <h3 class="mt-2 text-lg font-medium text-gray-900">No DPR Applications Found</h3>
         <p class="mt-1 text-sm text-gray-500">
@@ -312,11 +438,15 @@
     </div>
 
     <!-- Payment Confirmation Modal -->
-    <div v-if="showPaymentConfirmModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+    <div
+      v-if="showPaymentConfirmModal"
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
+    >
       <div class="bg-white rounded-lg p-6 max-w-md w-full">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirm Payment</h3>
         <p class="text-sm text-gray-600 mb-6">
-          You are about to initiate payment for "{{ selectedApplication?.name_of_institution }}" (DPR: {{ selectedApplication?.dpr_name }}). Proceed to the payment gateway?
+          You are about to initiate payment for "{{ selectedApplication?.name_of_institution }}"
+          (DPR: {{ selectedApplication?.dpr_name }}). Proceed to the payment gateway?
         </p>
         <div class="flex justify-end gap-4">
           <button
@@ -336,15 +466,23 @@
     </div>
 
     <!-- Certificate Modal -->
-    <div v-if="showCertificateModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+    <div
+      v-if="showCertificateModal"
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
+    >
       <div class="bg-white rounded-lg p-6 max-w-md w-full">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">View Certificate</h3>
         <p class="text-sm text-gray-600 mb-6">
-          View the certificate for "{{ selectedApplication?.name_of_institution }}" (DPR: {{ selectedApplication?.dpr_name }}). The certificate will be watermarked with the BHMC logo.
+          View the certificate for "{{ selectedApplication?.name_of_institution }}" (DPR:
+          {{ selectedApplication?.dpr_name }}). The certificate will be watermarked with the BHMC
+          logo.
         </p>
         <div class="flex justify-end gap-4">
           <button
-            @click="showCertificateModal = false; selectedApplication = null;"
+            @click="
+              showCertificateModal = false
+              selectedApplication = null
+            "
             class="inline-flex items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
           >
             Cancel
@@ -388,9 +526,26 @@ const STATUS_REJECTED = 'Rejected'
 const STATUS_PENDING = 'Pending'
 const statusOptions = [STATUS_APPROVED, STATUS_REJECTED, STATUS_PENDING, 'In Review', 'Submitted']
 const dzongkhagOptions = [
-  'Bumthang', 'Chukha', 'Dagana', 'Gasa', 'Haa', 'Lhuntse', 'Mongar', 'Paro',
-  'Pemagatshel', 'Punakha', 'Samdrup Jongkhar', 'Samtse', 'Sarpang', 'Thimphu',
-  'Trashigang', 'Trashiyangtse', 'Trongsa', 'Tsirang', 'Wangdue Phodrang', 'Zhemgang'
+  'Bumthang',
+  'Chukha',
+  'Dagana',
+  'Gasa',
+  'Haa',
+  'Lhuntse',
+  'Mongar',
+  'Paro',
+  'Pemagatshel',
+  'Punakha',
+  'Samdrup Jongkhar',
+  'Samtse',
+  'Sarpang',
+  'Thimphu',
+  'Trashigang',
+  'Trashiyangtse',
+  'Trongsa',
+  'Tsirang',
+  'Wangdue Phodrang',
+  'Zhemgang',
 ]
 
 const applications = ref([])
@@ -422,7 +577,7 @@ const filteredApplications = computed(() => {
     result = result.filter(
       (app) =>
         app.name_of_institution?.toLowerCase().includes(query) ||
-        app.dpr_name?.toLowerCase().includes(query)
+        app.dpr_name?.toLowerCase().includes(query),
     )
   }
   if (filterStatus.value) {
@@ -502,7 +657,10 @@ const isPaymentCompleted = (app) => isApplicationApproved(app) && app.is_payment
 const getTimeline = (app) => {
   return [
     { status: 'Submitted', date: app.created_at || new Date().toISOString() },
-    { status: app.do_dpr_review_decision || 'Pending', date: app.updated_at || new Date().toISOString() },
+    {
+      status: app.do_dpr_review_decision || 'Pending',
+      date: app.updated_at || new Date().toISOString(),
+    },
   ]
 }
 
@@ -539,8 +697,8 @@ const fetchApplications = async () => {
     if (response && response.data && Array.isArray(response.data.results)) {
       const userCid = authStore.user.cid.toLowerCase()
       applications.value = response.data.results
-        .filter(app => app && typeof app.CID === 'string' && app.CID.toLowerCase() === userCid)
-        .map(app => ({ ...app, is_payment_complete: app.is_payment_complete || false }))
+        .filter((app) => app && typeof app.CID === 'string' && app.CID.toLowerCase() === userCid)
+        .map((app) => ({ ...app, is_payment_complete: app.is_payment_complete || false }))
     } else {
       console.warn('Unexpected API response structure:', response)
       applications.value = []
@@ -549,9 +707,11 @@ const fetchApplications = async () => {
     console.error('Error fetching DPR applications:', error)
     applications.value = []
     apiError.value = true
-    errorMessage.value = error.response?.data?.message || (error.request
-      ? 'Network error. Please check your connection and try again.'
-      : 'An unexpected error occurred while fetching applications. Please try again.')
+    errorMessage.value =
+      error.response?.data?.message ||
+      (error.request
+        ? 'Network error. Please check your connection and try again.'
+        : 'An unexpected error occurred while fetching applications. Please try again.')
     toast.error(errorMessage.value)
   } finally {
     isLoading.value = false
@@ -579,7 +739,7 @@ const cancelPaymentConfirmation = () => {
 
 const handleProceedWithPaymentFlow = async () => {
   if (!selectedApplication.value || !selectedApplication.value.id) {
-    toast.error("No application selected to proceed with payment.")
+    toast.error('No application selected to proceed with payment.')
     if (selectedApplication.value?.id && isActionLoading.value[selectedApplication.value.id]) {
       isActionLoading.value[selectedApplication.value.id] = false
     }
@@ -593,8 +753,8 @@ const handleProceedWithPaymentFlow = async () => {
   if (paymentModalRef.value && typeof paymentModalRef.value.openModal === 'function') {
     paymentModalRef.value.openModal()
   } else {
-    console.error("Payment modal reference or openModal method is not available.")
-    toast.error("Could not open payment window. Please try again.")
+    console.error('Payment modal reference or openModal method is not available.')
+    toast.error('Could not open payment window. Please try again.')
     if (isActionLoading.value[appId] !== undefined) {
       isActionLoading.value[appId] = false
     }
@@ -622,10 +782,10 @@ const handleDPRPaymentCompleted = async (paymentData) => {
     console.log('For application:', appBeingPaid.name_of_institution, appBeingPaid.dpr_name)
 
     // Simulate API call to update payment status
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 1000))
 
     // Update the application in the local state
-    const appIndex = applications.value.findIndex(a => a.id === appBeingPaid.id)
+    const appIndex = applications.value.findIndex((a) => a.id === appBeingPaid.id)
     if (appIndex !== -1) {
       applications.value[appIndex] = { ...applications.value[appIndex], is_payment_complete: true }
     } else {
@@ -638,7 +798,9 @@ const handleDPRPaymentCompleted = async (paymentData) => {
     // Rely on PaymentModal to emit 'close' event, which triggers closeDPRPaymentModal
   } catch (error) {
     console.error('Error updating DPR application after payment:', error)
-    toast.error(`Failed to update application for "${appBeingPaid.dpr_name}" after payment. Please contact support.`)
+    toast.error(
+      `Failed to update application for "${appBeingPaid.dpr_name}" after payment. Please contact support.`,
+    )
   } finally {
     if (appBeingPaid && appBeingPaid.id) {
       isActionLoading.value[appBeingPaid.id] = false
@@ -707,6 +869,6 @@ onMounted(fetchApplications)
 
 <style scoped>
 .cursor-help:hover {
-  opacity: 0.8
+  opacity: 0.8;
 }
 </style>

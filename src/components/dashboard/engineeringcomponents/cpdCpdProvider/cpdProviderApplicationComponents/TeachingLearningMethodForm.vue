@@ -110,7 +110,9 @@
       <!-- Course Document -->
       <div class="col-span-1">
         <label for="courseDocument" class="block text-sm font-medium text-gray-700"
-          >Course Document <span class="text-red-500">*</span></label
+          >Resource Materials/Presentations (Please upload the documents within the permissible file
+          size limit and email any remaining files to cpd@bqpca.gov.bt)
+          <span class="text-red-500">*</span></label
         >
         <input
           type="file"

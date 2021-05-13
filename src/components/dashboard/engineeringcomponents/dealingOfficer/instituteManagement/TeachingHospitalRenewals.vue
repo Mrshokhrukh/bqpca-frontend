@@ -813,7 +813,7 @@ const fetchTeachingCenters = async () => {
     if (response && response.data && response.data.results) {
       // Filter for teaching centers only
       teachingCenters.value = response.data.results.filter(
-        (center) => center.target_category === 'Teaching Center'
+        (center) => center.target_category === 'Teaching Center',
       )
     } else {
       teachingCenters.value = []

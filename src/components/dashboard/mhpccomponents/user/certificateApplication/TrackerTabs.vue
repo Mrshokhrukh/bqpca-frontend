@@ -28,7 +28,7 @@ defineProps({
     type: String,
     required: true,
   },
-});
+})
 
-defineEmits(['update:currentTab']);
+defineEmits(['update:currentTab'])
 </script>

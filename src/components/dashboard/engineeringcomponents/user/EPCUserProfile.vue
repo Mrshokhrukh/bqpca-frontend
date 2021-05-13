@@ -228,7 +228,9 @@
 
           <!-- First Name -->
           <div>
-            <label for="firstName" class="block text-sm font-medium text-gray-700">First Name</label>
+            <label for="firstName" class="block text-sm font-medium text-gray-700"
+              >First Name</label
+            >
             <input
               type="text"
               id="firstName"
@@ -239,7 +241,9 @@
 
           <!-- Middle Name -->
           <div>
-            <label for="middleName" class="block text-sm font-medium text-gray-700">Middle Name</label>
+            <label for="middleName" class="block text-sm font-medium text-gray-700"
+              >Middle Name</label
+            >
             <input
               type="text"
               id="middleName"
@@ -403,13 +407,13 @@ const fetchUserDetails = async () => {
 
 const saveProfile = async () => {
   try {
-    const updatedData = { ...profileForm.value };
-    await epcServices.updateUser(authStore.user.id, updatedData); // Ensure `authStore.user.id` is correct
-    toast.success('Profile updated successfully!');
-    isEditing.value = false;
+    const updatedData = { ...profileForm.value }
+    await epcServices.updateUser(authStore.user.id, updatedData) // Ensure `authStore.user.id` is correct
+    toast.success('Profile updated successfully!')
+    isEditing.value = false
   } catch (error) {
-    console.error('Error updating profile:', error);
-    toast.error('Failed to update profile.');
+    console.error('Error updating profile:', error)
+    toast.error('Failed to update profile.')
   }
 }
 

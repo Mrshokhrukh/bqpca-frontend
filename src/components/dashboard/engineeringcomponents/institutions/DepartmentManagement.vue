@@ -383,7 +383,9 @@
             </div>
           </div>
 
-          <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3 bg-gray-50 rounded-b-lg">
+          <div
+            class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3 bg-gray-50 rounded-b-lg"
+          >
             <button
               v-if="isEditing"
               type="button"

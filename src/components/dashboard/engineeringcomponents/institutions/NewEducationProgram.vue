@@ -6,7 +6,10 @@
     </h2>
 
     <!-- Loading state for Institute Data -->
-    <div v-if="isLoading" class="flex justify-center items-center my-16 bg-white p-10 rounded-xl shadow-sm">
+    <div
+      v-if="isLoading"
+      class="flex justify-center items-center my-16 bg-white p-10 rounded-xl shadow-sm"
+    >
       <Loader class="inline-block animate-spin text-indigo-600 w-8 h-8" />
       <p class="ml-3 text-lg text-gray-600">Loading institute data...</p>
     </div>
@@ -54,44 +57,60 @@
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
             <div>
-              <label class="block text-sm font-medium text-gray-600"> Training Institute Name </label>
-              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700 font-medium">
+              <label class="block text-sm font-medium text-gray-600">
+                Training Institute Name
+              </label>
+              <div
+                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700 font-medium"
+              >
                 {{ userInstitute.name_of_institution || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Country </label>
-              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
+              <div
+                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
+              >
                 {{ userInstitute.country || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Dzongkhag/Throme </label>
-              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
+              <div
+                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
+              >
                 {{ userInstitute.dzongkhag || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> City/Gewog </label>
-              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
+              <div
+                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
+              >
                 {{ userInstitute.gewog || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Address/Location </label>
-              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
+              <div
+                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
+              >
                 {{ userInstitute.address || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Contact No. </label>
-              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
+              <div
+                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
+              >
                 {{ userInstitute.contact_no || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Email Address </label>
-              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
+              <div
+                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
+              >
                 {{ userInstitute.email_address || 'N/A' }}
               </div>
             </div>
@@ -107,19 +126,25 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
             <div>
               <label class="block text-sm font-medium text-gray-600"> Name </label>
-              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
+              <div
+                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
+              >
                 {{ userInstitute.head_of_institution_name || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Mobile Number </label>
-              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
+              <div
+                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
+              >
                 {{ userInstitute.head_of_institution_phone_number || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Email Address </label>
-              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
+              <div
+                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
+              >
                 {{ userInstitute.head_of_institution_email || 'N/A' }}
               </div>
             </div>
@@ -142,7 +167,9 @@
 
         <!-- Proposal Details - Editable by user -->
         <section class="p-6 bg-white rounded-xl shadow-md border border-indigo-100">
-          <h3 class="text-xl font-semibold text-indigo-700 mb-6 border-b border-indigo-100 pb-2 flex items-center">
+          <h3
+            class="text-xl font-semibold text-indigo-700 mb-6 border-b border-indigo-100 pb-2 flex items-center"
+          >
             <ClipboardIcon class="w-5 h-5 mr-2 text-indigo-500" />
             Proposal Details
           </h3>
@@ -162,7 +189,10 @@
                 ]"
                 placeholder="Enter proposal title"
               />
-              <p v-if="validationErrors.proposal_title" class="mt-1 text-sm text-red-600 flex items-center">
+              <p
+                v-if="validationErrors.proposal_title"
+                class="mt-1 text-sm text-red-600 flex items-center"
+              >
                 <AlertCircle class="w-4 h-4 mr-1" />
                 {{ validationErrors.proposal_title[0] }}
               </p>
@@ -184,7 +214,10 @@
                 ]"
                 placeholder="Enter duration"
               />
-              <p v-if="validationErrors.duration_in_months" class="mt-1 text-sm text-red-600 flex items-center">
+              <p
+                v-if="validationErrors.duration_in_months"
+                class="mt-1 text-sm text-red-600 flex items-center"
+              >
                 <AlertCircle class="w-4 h-4 mr-1" />
                 {{ validationErrors.duration_in_months[0] }}
               </p>
@@ -205,7 +238,10 @@
                   validationErrors.commencement_date ? 'border-red-500' : 'border-gray-300',
                 ]"
               />
-              <p v-if="validationErrors.commencement_date" class="mt-1 text-sm text-red-600 flex items-center">
+              <p
+                v-if="validationErrors.commencement_date"
+                class="mt-1 text-sm text-red-600 flex items-center"
+              >
                 <AlertCircle class="w-4 h-4 mr-1" />
                 {{ validationErrors.commencement_date[0] }}
               </p>
@@ -220,27 +256,30 @@
                   for="attachments"
                   class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
                 >
-                  <div class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center hover:bg-gray-50 w-full">
+                  <div
+                    class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center hover:bg-gray-50 w-full"
+                  >
                     <UploadIcon class="w-5 h-5 mr-2 text-indigo-500" />
                     <span>Choose file</span>
                   </div>
-                  <input
-                    type="file"
-                    id="attachments"
-                    @change="handleFileUpload"
-                    class="sr-only"
-                  />
+                  <input type="file" id="attachments" @change="handleFileUpload" class="sr-only" />
                 </label>
               </div>
               <p class="mt-2 text-xs text-gray-500 flex items-center">
                 <InfoIcon class="w-4 h-4 mr-1 text-gray-400" />
                 Max file size: 5MB. Allowed types: PDF, DOC, DOCX, JPG, PNG.
               </p>
-              <p v-if="selectedFileName" class="mt-2 text-sm text-green-700 font-medium flex items-center">
+              <p
+                v-if="selectedFileName"
+                class="mt-2 text-sm text-green-700 font-medium flex items-center"
+              >
                 <CheckCircleIcon class="w-4 h-4 mr-1" />
                 Selected: {{ selectedFileName }}
               </p>
-              <p v-if="validationErrors.institute_attachments" class="mt-1 text-sm text-red-600 flex items-center">
+              <p
+                v-if="validationErrors.institute_attachments"
+                class="mt-1 text-sm text-red-600 flex items-center"
+              >
                 <AlertCircle class="w-4 h-4 mr-1" />
                 {{ validationErrors.institute_attachments[0] }}
               </p>
@@ -283,10 +322,13 @@
               >Declaration <span class="text-red-500">*</span></label
             >
             <p id="declaration-description" class="text-gray-500 mt-1">
-              I hereby declare that the information provided above is true and correct to the best of
-              my knowledge and belief.
+              I hereby declare that the information provided above is true and correct to the best
+              of my knowledge and belief.
             </p>
-            <p v-if="validationErrors.ins_declaration" class="mt-1 text-sm text-red-600 flex items-center">
+            <p
+              v-if="validationErrors.ins_declaration"
+              class="mt-1 text-sm text-red-600 flex items-center"
+            >
               <AlertCircle class="w-4 h-4 mr-1" />
               {{ validationErrors.ins_declaration[0] }}
             </p>
@@ -439,17 +481,27 @@
                   {{ application.proposal_title || 'N/A' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ application.created_at ? new Date(application.created_at).toLocaleDateString() : 'N/A' }}
+                  {{
+                    application.created_at
+                      ? new Date(application.created_at).toLocaleDateString()
+                      : 'N/A'
+                  }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <span :class="getStatusClass(application.review_decision)" class="px-2 py-1 rounded-full text-xs font-medium flex items-center w-fit">
-                    <span class="w-2 h-2 rounded-full mr-1" :class="{
-                      'bg-green-500': application.review_decision === 'Approved',
-                      'bg-red-500': application.review_decision === 'Rejected',
-                      'bg-yellow-500': application.review_decision === 'Pending',
-                      'bg-blue-500': application.review_decision === 'Under Review',
-                      'bg-gray-500': !application.review_decision
-                    }"></span>
+                  <span
+                    :class="getStatusClass(application.review_decision)"
+                    class="px-2 py-1 rounded-full text-xs font-medium flex items-center w-fit"
+                  >
+                    <span
+                      class="w-2 h-2 rounded-full mr-1"
+                      :class="{
+                        'bg-green-500': application.review_decision === 'Approved',
+                        'bg-red-500': application.review_decision === 'Rejected',
+                        'bg-yellow-500': application.review_decision === 'Pending',
+                        'bg-blue-500': application.review_decision === 'Under Review',
+                        'bg-gray-500': !application.review_decision,
+                      }"
+                    ></span>
                     {{ application.review_decision || 'Unknown' }}
                   </span>
                 </td>
@@ -558,8 +610,7 @@ const fetchInstituteData = async () => {
         formData.value.institute_name = userInstitute.value.name_of_institution
         await fetchSubmittedApplications()
       } else {
-        errorMessage.value =
-          'No registered institute found associated with your account (CID).'
+        errorMessage.value = 'No registered institute found associated with your account (CID).'
         userInstitute.value = null
       }
     } else {
@@ -586,14 +637,14 @@ const fetchSubmittedApplications = async () => {
   tableApiError.value = false
   try {
     const filterParams = {
-      institute: userInstitute.value.id
+      institute: userInstitute.value.id,
     }
     const response = await apiService.getEpcNewEducationPrograms(filterParams)
 
     if (response && response.data) {
-       submittedApplications.value = response.data.results || response.data || []
+      submittedApplications.value = response.data.results || response.data || []
     } else {
-       submittedApplications.value = []
+      submittedApplications.value = []
     }
   } catch (error) {
     console.error('Error fetching submitted applications:', error)
@@ -637,7 +688,8 @@ const validateForm = (isDraft = false) => {
       errors.commencement_date = ['Commencement date is required']
     else if (new Date(formData.value.commencement_date) < new Date(todayDate.value))
       errors.commencement_date = ['Commencement date cannot be in the past']
-    if (!formData.value.ins_declaration) errors.ins_declaration = ['You must accept the declaration']
+    if (!formData.value.ins_declaration)
+      errors.ins_declaration = ['You must accept the declaration']
   }
 
   if (Object.keys(errors).length > 0) {
@@ -654,13 +706,13 @@ const prepareFormData = (status = 'Pending') => {
     if (key === 'institute_attachments') return
     const value = formData.value[key]
     if (value !== null && value !== undefined) {
-        if (typeof value === 'boolean') {
-            submissionData.append(key, value ? 'true' : 'false')
-        } else if (key === 'duration_in_months') {
-             submissionData.append(key, Number(value))
-        } else {
-            submissionData.append(key, value)
-        }
+      if (typeof value === 'boolean') {
+        submissionData.append(key, value ? 'true' : 'false')
+      } else if (key === 'duration_in_months') {
+        submissionData.append(key, Number(value))
+      } else {
+        submissionData.append(key, value)
+      }
     }
   })
   submissionData.set('ins_review_decision', status)
@@ -692,21 +744,26 @@ const handleSubmit = async () => {
     await apiService.createEpcproposalDetail(finalFormData)
     toast.success('Educational programme application submitted successfully for review!')
 
-    Object.keys(formData.value).forEach(key => {
-         if(key !== 'institute' && key !== 'institute_name' && key !== 'ins_review_decision' && key !== 'is_active') {
-             if (typeof formData.value[key] === 'boolean') formData.value[key] = false;
-             else if (typeof formData.value[key] === 'number') formData.value[key] = null;
-             else formData.value[key] = '';
-         }
-     });
-     selectedFile.value = null;
-     selectedFileName.value = '';
-     document.getElementById('attachments').value = null;
+    Object.keys(formData.value).forEach((key) => {
+      if (
+        key !== 'institute' &&
+        key !== 'institute_name' &&
+        key !== 'ins_review_decision' &&
+        key !== 'is_active'
+      ) {
+        if (typeof formData.value[key] === 'boolean') formData.value[key] = false
+        else if (typeof formData.value[key] === 'number') formData.value[key] = null
+        else formData.value[key] = ''
+      }
+    })
+    selectedFile.value = null
+    selectedFileName.value = ''
+    document.getElementById('attachments').value = null
 
     await fetchSubmittedApplications()
-    document.getElementById('statusTableSection')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('statusTableSection')?.scrollIntoView({ behavior: 'smooth' })
   } catch (error) {
-     console.error('Error submitting form:', error)
+    console.error('Error submitting form:', error)
     if (error.response && error.response.data) {
       const errors = error.response.data.errors || error.response.data
       if (typeof errors === 'object' && errors !== null && !Array.isArray(errors)) {
@@ -714,14 +771,14 @@ const handleSubmit = async () => {
         toast.error('Submission failed. Please review the errors shown on the form.')
         if (errors.detail) validationErrors.value.detail = errors.detail
       } else if (typeof errors === 'string') {
-         validationErrors.value = { detail: errors }
+        validationErrors.value = { detail: errors }
         toast.error(errors)
       } else {
         toast.error('An unexpected error occurred during submission.')
         validationErrors.value = { detail: 'An unexpected error occurred.' }
       }
     } else {
-       toast.error('Failed to connect to the server.')
+      toast.error('Failed to connect to the server.')
       validationErrors.value = { detail: 'Network error or server unavailable.' }
     }
   } finally {
@@ -730,11 +787,11 @@ const handleSubmit = async () => {
 }
 
 const handleSaveDraft = async () => {
-   if (!formData.value.proposal_title?.trim()) {
+  if (!formData.value.proposal_title?.trim()) {
     toast.warn('Please enter at least a Proposal Title to save a draft.')
-    document.getElementById('proposalTitle')?.focus();
-    validationErrors.value = { proposal_title: ['Proposal title is required to save a draft'] };
-    return;
+    document.getElementById('proposalTitle')?.focus()
+    validationErrors.value = { proposal_title: ['Proposal title is required to save a draft'] }
+    return
   }
 
   isSubmitting.value = true
@@ -745,23 +802,23 @@ const handleSaveDraft = async () => {
     const draftFormData = prepareFormData('Draft')
     await apiService.createEpcproposalDetail(draftFormData)
     toast.success('Draft saved successfully!')
-     await fetchSubmittedApplications()
+    await fetchSubmittedApplications()
   } catch (error) {
-      console.error('Error saving draft:', error)
-      if (error.response && error.response.data) {
-          const errors = error.response.data.errors || error.response.data;
-          let errorMsg = 'Failed to save draft.';
-          if (typeof errors === 'string') {
-              errorMsg = errors;
-          } else if (errors && typeof errors === 'object') {
-              errorMsg = errors.detail || JSON.stringify(errors);
-          }
-          validationErrors.value = { detail: errorMsg };
-          toast.error(`Draft save failed: ${errorMsg}`);
-      } else {
-          validationErrors.value = { detail: 'Network error or server unavailable.' };
-          toast.error('An error occurred while saving the draft.');
+    console.error('Error saving draft:', error)
+    if (error.response && error.response.data) {
+      const errors = error.response.data.errors || error.response.data
+      let errorMsg = 'Failed to save draft.'
+      if (typeof errors === 'string') {
+        errorMsg = errors
+      } else if (errors && typeof errors === 'object') {
+        errorMsg = errors.detail || JSON.stringify(errors)
       }
+      validationErrors.value = { detail: errorMsg }
+      toast.error(`Draft save failed: ${errorMsg}`)
+    } else {
+      validationErrors.value = { detail: 'Network error or server unavailable.' }
+      toast.error('An error occurred while saving the draft.')
+    }
   } finally {
     isSubmitting.value = false
     draftSaveInProgress.value = false
@@ -769,18 +826,20 @@ const handleSaveDraft = async () => {
 }
 
 const handleCancel = () => {
-     const hasData =
+  const hasData =
     Object.keys(formData.value).some((key) => {
       const value = formData.value[key]
-       return (
-        (value !== '' && value !== null && value !== false && !(Array.isArray(value) && value.length === 0)) &&
+      return (
+        value !== '' &&
+        value !== null &&
+        value !== false &&
+        !(Array.isArray(value) && value.length === 0) &&
         !(key === 'institute' && value === null) &&
         !(key === 'institute_name' && value === '') &&
         !(key === 'ins_review_decision' && value === 'Pending') &&
         !(key === 'is_active' && value === true)
       )
-    }) ||
-    selectedFile.value
+    }) || selectedFile.value
 
   if (hasData) {
     if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
@@ -793,17 +852,27 @@ const handleCancel = () => {
 
 // Helper function for status styling
 const getStatusClass = (status) => {
-    status = status?.toLowerCase();
-    if (status === 'approved' || status === 'approved, pending payment' || status === 'active' || status === 'completed') {
-        return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800';
-    } else if (status === 'rejected' || status === 'failed') {
-        return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800';
-    } else if (status === 'pending' || status === 'under review' || status === 'draft' || status === 'processing_payment') {
-        return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800';
-    } else {
-        return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800';
-    }
-};
+  status = status?.toLowerCase()
+  if (
+    status === 'approved' ||
+    status === 'approved, pending payment' ||
+    status === 'active' ||
+    status === 'completed'
+  ) {
+    return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800'
+  } else if (status === 'rejected' || status === 'failed') {
+    return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800'
+  } else if (
+    status === 'pending' ||
+    status === 'under review' ||
+    status === 'draft' ||
+    status === 'processing_payment'
+  ) {
+    return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800'
+  } else {
+    return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800'
+  }
+}
 
 // Lifecycle Hook
 onMounted(fetchInstituteData)

@@ -43,9 +43,7 @@
           </div>
 
           <div class="col-span-2">
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Address/Location</label
-            >
+            <label class="block text-sm font-medium text-gray-700 required">Address/Location</label>
             <textarea
               v-model="application.address"
               rows="3"
@@ -165,7 +163,9 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 required">Source of Funding</label>
+            <label class="block text-sm font-medium text-gray-700 required"
+              >Source of Funding</label
+            >
             <select
               v-model="application.fundingSource"
               required
@@ -902,7 +902,10 @@
               I declare that all the information provided is true and accurate to the best of my
               knowledge. I understand that submission requires payment.
             </p>
-            <p v-if="!application.declaration && formSubmittedAttempt" class="text-red-500 text-xs mt-1">
+            <p
+              v-if="!application.declaration && formSubmittedAttempt"
+              class="text-red-500 text-xs mt-1"
+            >
               You must accept the declaration to submit the form.
             </p>
           </div>
@@ -989,7 +992,9 @@ const getInitialApplicationState = () => ({
   administrativeStaffTotal: '',
   supportStaffGender: null,
   supportStaffTotal: '',
-  standards: [{ standard_id: null, key_aspect_id: null, indicator_id: null, reportByInstitute: '' }],
+  standards: [
+    { standard_id: null, key_aspect_id: null, indicator_id: null, reportByInstitute: '' },
+  ],
   supportingDocuments: [], // Holds File objects - WILL NOT BE SAVED IN DRAFT
   declaration: false,
   is_payment_complete: false, // Renamed for clarity
@@ -1111,7 +1116,7 @@ const loadDraft = () => {
 
       selectedFiles.value = [] // Clear file list on draft load
       if (fileInput.value) fileInput.value.value = '' // Reset file input UI
-      application.status = 'draft'; // Reset status when loading draft
+      application.status = 'draft' // Reset status when loading draft
       toast.info('Draft loaded successfully. Please re-select any supporting documents.')
       console.log('Draft loaded from localStorage')
     } catch (error) {
@@ -1261,7 +1266,7 @@ const onPaymentModalClose = () => {
   // If payment wasn't completed, stop the submission process
   if (!application.is_payment_complete) {
     isSubmitting.value = false
-    application.status = 'draft'; // Reset status if payment cancelled
+    application.status = 'draft' // Reset status if payment cancelled
     toast.info('Payment was cancelled or closed.')
   }
 }
@@ -1271,8 +1276,8 @@ const onPaymentCompleted = (paymentData) => {
   console.log('Payment completed data received from modal:', paymentData)
   if (!paymentData || !paymentData.paymentHash) {
     toast.error('Payment confirmation data is missing. Cannot proceed.')
-    isSubmitting.value = false; // Stop submission
-    application.status = 'payment_failed'; // Mark payment as failed
+    isSubmitting.value = false // Stop submission
+    application.status = 'payment_failed' // Mark payment as failed
     return
   }
   // Update application state with payment details
@@ -1280,7 +1285,7 @@ const onPaymentCompleted = (paymentData) => {
   application.payment_id = paymentData.paymentHash // Store the unique payment identifier
   application.status = 'payment_complete' // Update status
 
-  toast.info("Payment confirmed. Proceeding with application submission...");
+  toast.info('Payment confirmed. Proceeding with application submission...')
 
   // *** CRITICAL: Now call the actual backend submission function ***
   handleSubmitActual()
@@ -1290,63 +1295,93 @@ const onPaymentCompleted = (paymentData) => {
 const handleSubmit = () => {
   formSubmittedAttempt.value = true // Mark that submission was attempted
   isSubmitting.value = true // Set submitting state immediately
-  application.status = 'validating'; // Update status
+  application.status = 'validating' // Update status
 
   // --- Basic Validation Checks ---
   if (!application.declaration) {
     toast.error('Please accept the declaration before submitting.')
     isSubmitting.value = false
-    application.status = 'draft'; // Reset status
+    application.status = 'draft' // Reset status
     document.getElementById('declaration')?.focus()
     return
   }
 
   // Enhanced Required Field Check
   const requiredFields = [
-    'institutionName', 'address', 'dzongkhag', 'contactNumber', 'emailAddress',
-    'yearEstablished', 'institutionType', 'fundingSource', 'headName',
-    'headContactNumber', 'headEmailAddress', 'iqaFocalName', 'iqaFocalContactNumber',
-    'iqaFocalEmailAddress', 'numberOfDepartments', 'qualificationCategory',
-    'facultyF', 'facultyM', 'totalPhdFaculty', 'totalMastersFaculty', 'totalBachelorsFaculty',
+    'institutionName',
+    'address',
+    'dzongkhag',
+    'contactNumber',
+    'emailAddress',
+    'yearEstablished',
+    'institutionType',
+    'fundingSource',
+    'headName',
+    'headContactNumber',
+    'headEmailAddress',
+    'iqaFocalName',
+    'iqaFocalContactNumber',
+    'iqaFocalEmailAddress',
+    'numberOfDepartments',
+    'qualificationCategory',
+    'facultyF',
+    'facultyM',
+    'totalPhdFaculty',
+    'totalMastersFaculty',
+    'totalBachelorsFaculty',
   ]
-    const firstMissingField = requiredFields.find(field => !application[field] && application[field] !== 0); // Check for empty or null/undefined, allow 0
+  const firstMissingField = requiredFields.find(
+    (field) => !application[field] && application[field] !== 0,
+  ) // Check for empty or null/undefined, allow 0
 
-    if (firstMissingField) {
-        toast.error(`Please fill in the required field: ${firstMissingField}`);
-        isSubmitting.value = false;
-        application.status = 'draft'; // Reset status
-        // Attempt to focus the first missing field
-        const fieldElement = document.querySelector(`[name="${firstMissingField}"]`);
-        fieldElement?.focus();
-        // Scroll into view if possible
-        fieldElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-    }
+  if (firstMissingField) {
+    toast.error(`Please fill in the required field: ${firstMissingField}`)
+    isSubmitting.value = false
+    application.status = 'draft' // Reset status
+    // Attempt to focus the first missing field
+    const fieldElement = document.querySelector(`[name="${firstMissingField}"]`)
+    fieldElement?.focus()
+    // Scroll into view if possible
+    fieldElement?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    return
+  }
 
   // Check programmes structure
-   const invalidProgram = application.programmes.find(p => !p.name || typeof p.number !== 'number' || p.number < 0);
+  const invalidProgram = application.programmes.find(
+    (p) => !p.name || typeof p.number !== 'number' || p.number < 0,
+  )
   if (application.programmes.length === 0 || invalidProgram) {
-    toast.error('Please provide a valid name and a non-negative number of students for all programmes.')
+    toast.error(
+      'Please provide a valid name and a non-negative number of students for all programmes.',
+    )
     isSubmitting.value = false
-    application.status = 'draft'; // Reset status
-     const programIndex = application.programmes.findIndex(p => p === invalidProgram);
-     const invalidElement = document.querySelector(`[name="programName_${programIndex}"]`) || document.querySelector(`[name="programNumber_${programIndex}"]`);
-     invalidElement?.focus();
-     invalidElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    application.status = 'draft' // Reset status
+    const programIndex = application.programmes.findIndex((p) => p === invalidProgram)
+    const invalidElement =
+      document.querySelector(`[name="programName_${programIndex}"]`) ||
+      document.querySelector(`[name="programNumber_${programIndex}"]`)
+    invalidElement?.focus()
+    invalidElement?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     return
   }
   // Check standards structure
-   const invalidStandard = application.standards.find(s => !s.standard_id || !s.key_aspect_id || !s.indicator_id || !s.reportByInstitute);
+  const invalidStandard = application.standards.find(
+    (s) => !s.standard_id || !s.key_aspect_id || !s.indicator_id || !s.reportByInstitute,
+  )
   if (application.standards.length === 0 || invalidStandard) {
     toast.error(
       'Please complete all fields (Standard, Key Aspect, Indicator, Report) for all standard entries.',
     )
     isSubmitting.value = false
-    application.status = 'draft'; // Reset status
-     const standardIndex = application.standards.findIndex(s => s === invalidStandard);
-     const invalidElement = document.querySelector(`[name="standardId_${standardIndex}"]`) || document.querySelector(`[name="keyAspectId_${standardIndex}"]`) || document.querySelector(`[name="indicatorId_${standardIndex}"]`) || document.querySelector(`[name="standardReport_${standardIndex}"]`);
-     invalidElement?.focus();
-     invalidElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    application.status = 'draft' // Reset status
+    const standardIndex = application.standards.findIndex((s) => s === invalidStandard)
+    const invalidElement =
+      document.querySelector(`[name="standardId_${standardIndex}"]`) ||
+      document.querySelector(`[name="keyAspectId_${standardIndex}"]`) ||
+      document.querySelector(`[name="indicatorId_${standardIndex}"]`) ||
+      document.querySelector(`[name="standardReport_${standardIndex}"]`)
+    invalidElement?.focus()
+    invalidElement?.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
     return
   }
@@ -1370,7 +1405,7 @@ const handleSubmitActual = async () => {
   }
 
   console.log('Proceeding with actual backend submission (Payment & Application Data)...')
-  application.status = 'submitting'; // Update status
+  application.status = 'submitting' // Update status
 
   try {
     // --- 1. Payment Registration API Call ---
@@ -1403,19 +1438,21 @@ const handleSubmitActual = async () => {
       // const paymentResponse = await apiService.makePayment(paymentFormData);
 
       // Assuming makePayment accepts JSON:
-       const paymentResponse = await apiService.makePayment(paymentRegData);
+      const paymentResponse = await apiService.makePayment(paymentRegData)
 
       console.log('Payment Registration Response:', paymentResponse)
       // Simple status check (adjust based on actual successful response structure)
       if (paymentResponse.status < 200 || paymentResponse.status >= 300) {
-         const errorDetail = paymentResponse.data?.message || paymentResponse.data?.detail || JSON.stringify(paymentResponse.data);
+        const errorDetail =
+          paymentResponse.data?.message ||
+          paymentResponse.data?.detail ||
+          JSON.stringify(paymentResponse.data)
         throw new Error(
           `Payment registration failed with status: ${paymentResponse.status}. Details: ${errorDetail}`,
         )
       }
       toast.info('Payment details successfully registered.')
       application.status = 'payment_registered' // Update status
-
     } catch (paymentError) {
       console.error('Error during payment registration API call:', paymentError)
       const specificError =
@@ -1434,7 +1471,7 @@ const handleSubmitActual = async () => {
 
     // --- 2. Main Application Data Submission ---
     console.log('Submitting main application form data...')
-    application.status = 'submitting_form_data'; // Update status
+    application.status = 'submitting_form_data' // Update status
 
     const formData = new FormData()
 
@@ -1448,7 +1485,7 @@ const handleSubmitActual = async () => {
         } else if (key === 'supportingDocuments') {
           continue // Files handled separately from selectedFiles ref
         } else if (typeof value === 'boolean') {
-           formData.append(key, value.toString()); // Convert boolean to string 'true'/'false'
+          formData.append(key, value.toString()) // Convert boolean to string 'true'/'false'
         } else if (value !== null && value !== undefined && value !== '') {
           // Append other non-empty values
           formData.append(key, value)
@@ -1470,15 +1507,14 @@ const handleSubmitActual = async () => {
       console.error('User ID is missing. Cannot submit application.')
       toast.error('Authentication error: User ID not found. Please log in again.')
       isSubmitting.value = false
-      application.status = 'submission_failed';
-      return; // Stop submission
+      application.status = 'submission_failed'
+      return // Stop submission
     }
 
-     // Add payment ID and status explicitly to the form data being sent
-     formData.append('payment_id', application.payment_id);
-     formData.append('is_payment_complete', 'true'); // Send as string
-     formData.append('status', 'submitted'); // Final submitted status for the record
-
+    // Add payment ID and status explicitly to the form data being sent
+    formData.append('payment_id', application.payment_id)
+    formData.append('is_payment_complete', 'true') // Send as string
+    formData.append('status', 'submitted') // Final submitted status for the record
 
     // Log FormData for debugging (optional)
     // for (let [key, value] of formData.entries()) {
@@ -1491,8 +1527,11 @@ const handleSubmitActual = async () => {
 
     // Check response status from createInstitutionProfile
     if (response.status < 200 || response.status >= 300) {
-        const errorDetail = response.data?.message || response.data?.detail || JSON.stringify(response.data);
-        throw new Error(`Application submission failed with status: ${response.status}. Details: ${errorDetail}`);
+      const errorDetail =
+        response.data?.message || response.data?.detail || JSON.stringify(response.data)
+      throw new Error(
+        `Application submission failed with status: ${response.status}. Details: ${errorDetail}`,
+      )
     }
 
     // --- Success ---
@@ -1500,17 +1539,18 @@ const handleSubmitActual = async () => {
     toast.success('Application submitted successfully! Payment details recorded.')
     clearDraft() // Clear the draft from localStorage on successful submission
     resetForm() // Reset the form fields
-
   } catch (error) {
     console.error('Error submitting application (handleSubmitActual):', error)
-    application.status = 'submission_failed'; // Update status on error
+    application.status = 'submission_failed' // Update status on error
     const errorMessage =
       error.response?.data?.message ||
       error.response?.data?.detail || // Check for 'detail' which DRF sometimes uses
       (error.response?.data ? JSON.stringify(error.response.data) : '') ||
       error.message ||
       'An unknown error occurred during submission.'
-    toast.error(`Error submitting application: ${errorMessage}. Please review the form or contact support.`);
+    toast.error(
+      `Error submitting application: ${errorMessage}. Please review the form or contact support.`,
+    )
     // Do not reset form or clear draft on error, allow user to retry or save draft
   } finally {
     // This runs regardless of success or error in the try block
@@ -1590,8 +1630,8 @@ textarea:focus {
   --tw-ring-color: theme('colors.blue.500');
   --tw-ring-offset-width: 1px;
   --tw-ring-offset-color: #fff;
-  box-shadow:
-    var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width))
+    var(--tw-ring-color);
   border-color: theme('colors.blue.500');
   outline: none; /* Remove default outline */
 }

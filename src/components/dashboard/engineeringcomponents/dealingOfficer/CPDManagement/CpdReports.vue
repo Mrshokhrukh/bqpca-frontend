@@ -290,13 +290,12 @@ const exportToCSV = () => {
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
-  URL.revokeObjectURL(url); // Clean up the object URL
+  URL.revokeObjectURL(url) // Clean up the object URL
 }
 
 // Remove the old exportToExcel and exportToPDF functions
 // const exportToExcel = () => { ... } // REMOVE
 // const exportToPDF = () => { ... } // REMOVE
-
 </script>
 
 <style scoped>

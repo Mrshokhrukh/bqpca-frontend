@@ -236,28 +236,28 @@ const configurationCards = [
       </svg>`,
     },
   },
-  {
-    id: 'genders',
-    title: 'Gender Types',
-    description: 'Manage gender categories and definitions',
-    countLabel: 'Available Types',
-    countRef: 'genders',
-    countSuffix: 'genders',
-    usedIn: ['User Profiles', 'Registration'],
-    route: '/admin/admin/roq/genders',
-    buttonText: 'Manage Genders',
-    gradientClasses: 'from-indigo-600 to-indigo-400',
-    hoverBorderClass: 'hover:border-indigo-200',
-    iconBgClass: 'bg-indigo-50',
-    iconHoverBgClass: 'group-hover:bg-indigo-100',
-    iconColorClass: 'text-indigo-600',
-    buttonClasses: 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100',
-    icon: {
-      template: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>`,
-    },
-  },
+  // {
+  //   id: 'genders',
+  //   title: 'Gender Types',
+  //   description: 'Manage gender categories and definitions',
+  //   countLabel: 'Available Types',
+  //   countRef: 'genders',
+  //   countSuffix: 'genders',
+  //   usedIn: ['User Profiles', 'Registration'],
+  //   route: '/admin/admin/roq/genders',
+  //   buttonText: 'Manage Genders',
+  //   gradientClasses: 'from-indigo-600 to-indigo-400',
+  //   hoverBorderClass: 'hover:border-indigo-200',
+  //   iconBgClass: 'bg-indigo-50',
+  //   iconHoverBgClass: 'group-hover:bg-indigo-100',
+  //   iconColorClass: 'text-indigo-600',
+  //   buttonClasses: 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100',
+  //   icon: {
+  //     template: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  //       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+  //     </svg>`,
+  //   },
+  // },
 ]
 
 // Fetch counts on component mount

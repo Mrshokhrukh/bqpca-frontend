@@ -819,7 +819,9 @@ const submitProvider = async () => {
     console.log('Submitting new provider payload:', payload)
     await apiService.register(payload) // Use the specific registration service method
 
-    toast.success('Provider registration successful! The default password has been sent to the user.')
+    toast.success(
+      'Provider registration successful! The default password has been sent to the user.',
+    )
     closeAddProviderModal()
     await fetchProviders() // Refresh the list after adding
   } catch (error) {

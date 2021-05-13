@@ -186,7 +186,7 @@ const handleFileUpload = (event) => {
 const fetchCategories = async () => {
   try {
     loading.value = true
-    const response = await apiServicess.getMhpcMastersMHPCParticipationCategories()
+    const response = await apiServices.getMhpcMastersMHPCParticipationCategories()
 
     if (response.data && response.data.results) {
       categories.value = response.data.results.map((category) => ({
@@ -205,7 +205,7 @@ const fetchCategories = async () => {
 const fetchSubcategories = async () => {
   try {
     loading.value = true
-    const response = await apiServicess.getMhpcMastersMhpcParticipationSubCategories()
+    const response = await apiServices.getMhpcMastersMhpcParticipationSubCategories()
 
     if (response.data && response.data.results) {
       subcategories.value = response.data.results.map((subcategory) => ({

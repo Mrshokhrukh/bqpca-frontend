@@ -22,9 +22,7 @@
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
-                <label
-                  for="subCategoryName"
-                  class="block text-sm font-medium text-slate-700"
+                <label for="subCategoryName" class="block text-sm font-medium text-slate-700"
                   >Sub-Category Name</label
                 >
                 <input
@@ -37,9 +35,7 @@
                 />
               </div>
               <div>
-                <label
-                  for="categoryId"
-                  class="block text-sm font-medium text-slate-700"
+                <label for="categoryId" class="block text-sm font-medium text-slate-700"
                   >Personnel Category</label
                 >
                 <select
@@ -50,11 +46,7 @@
                   :disabled="isLoading || !categories.length"
                 >
                   <option value="" disabled>Select a category</option>
-                  <option
-                    v-for="category in categories"
-                    :key="category.id"
-                    :value="category.id"
-                  >
+                  <option v-for="category in categories" :key="category.id" :value="category.id">
                     {{ category.category_name }}
                   </option>
                 </select>
@@ -63,9 +55,7 @@
                 </p>
               </div>
               <div>
-                <label
-                  for="subCategoryDescription"
-                  class="block text-sm font-medium text-slate-700"
+                <label for="subCategoryDescription" class="block text-sm font-medium text-slate-700"
                   >Description</label
                 >
                 <textarea
@@ -84,7 +74,13 @@
                   :disabled="isLoading"
                   class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {{ isLoading ? 'Processing...' : isEditing ? 'Update Sub-Category' : 'Add Sub-Category' }}
+                  {{
+                    isLoading
+                      ? 'Processing...'
+                      : isEditing
+                        ? 'Update Sub-Category'
+                        : 'Add Sub-Category'
+                  }}
                 </button>
                 <button
                   v-if="isEditing"
@@ -106,7 +102,9 @@
             <div class="flex justify-between items-center">
               <h2 class="text-xl font-semibold text-slate-900">Personnel Sub-Categories List</h2>
               <span class="text-sm text-slate-500">
-                {{ filteredSubCategories.length }} Sub-Category{{ filteredSubCategories.length !== 1 ? 'ies' : 'y' }}
+                {{ filteredSubCategories.length }} Sub-Category{{
+                  filteredSubCategories.length !== 1 ? 'ies' : 'y'
+                }}
               </span>
             </div>
 

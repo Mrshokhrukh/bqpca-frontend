@@ -97,8 +97,10 @@
 
         <!-- Proposed Change (Editable Fields) -->
         <div class="space-y-4">
-          <h3 class="text-lg font-medium text-gray-800 border-b pb-2 mb-3">Proposed New Location</h3>
-           <div>
+          <h3 class="text-lg font-medium text-gray-800 border-b pb-2 mb-3">
+            Proposed New Location
+          </h3>
+          <div>
             <label for="newDzongkhagThromde" class="block text-sm font-medium text-gray-700"
               >New Dzongkhag/Thromde <span class="text-red-500">*</span></label
             >
@@ -137,10 +139,19 @@
                 {{ option.name || option.label }}
               </option>
             </select>
-            <p v-if="newLocationDetails.dzongkhag_thromde && filteredGewogOptions.length === 0 && !loadingGewogs" class="mt-1 text-xs text-gray-500">
-                No Gewogs/Throms available for the selected Dzongkhag/Thromde.
+            <p
+              v-if="
+                newLocationDetails.dzongkhag_thromde &&
+                filteredGewogOptions.length === 0 &&
+                !loadingGewogs
+              "
+              class="mt-1 text-xs text-gray-500"
+            >
+              No Gewogs/Throms available for the selected Dzongkhag/Thromde.
             </p>
-            <p v-if="loadingGewogs" class="mt-1 text-xs text-indigo-500">Loading Gewogs/Throms...</p>
+            <p v-if="loadingGewogs" class="mt-1 text-xs text-indigo-500">
+              Loading Gewogs/Throms...
+            </p>
           </div>
           <div>
             <label for="newVillage" class="block text-sm font-medium text-gray-700"
@@ -164,7 +175,10 @@
               class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             >
               <option value="">Please select</option>
-              <option value="agree">I hereby declare that the information provided for the new location is true and correct.</option>
+              <option value="agree">
+                I hereby declare that the information provided for the new location is true and
+                correct.
+              </option>
             </select>
           </div>
           <div class="mt-4">
@@ -233,11 +247,13 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  gewogThromOptions: { // This will now be all gewogs, and we will filter them
+  gewogThromOptions: {
+    // This will now be all gewogs, and we will filter them
     type: Array,
     default: () => [],
   },
-  initialData: { // For loading a saved draft
+  initialData: {
+    // For loading a saved draft
     type: Object,
     default: () => ({}),
   },
@@ -272,28 +288,29 @@ const newLocationDetails = reactive({
 const locationChangeDeclaration = ref('')
 const locationChangeRemarks = ref('') // Optional remarks
 
-const loadingGewogs = ref(false); // For loading indicator when dzongkhag changes
+const loadingGewogs = ref(false) // For loading indicator when dzongkhag changes
 
 const emit = defineEmits(['submit-success', 'save-draft-success', 'payment-initiated'])
 
 // Filter Gewog/Throm options based on selected Dzongkhag/Thromde
 const filteredGewogOptions = computed(() => {
   if (!newLocationDetails.dzongkhag_thromde) {
-    return [];
+    return []
   }
   // Assuming gewogThromOptions has a 'dzongkhag_id' or similar property to filter by
   return props.gewogThromOptions.filter(
-    (gewog) => gewog.dzongkhag_id === newLocationDetails.dzongkhag_thromde || gewog.dzongkhag === newLocationDetails.dzongkhag_thromde // Adjust property name as needed
-  );
-});
+    (gewog) =>
+      gewog.dzongkhag_id === newLocationDetails.dzongkhag_thromde ||
+      gewog.dzongkhag === newLocationDetails.dzongkhag_thromde, // Adjust property name as needed
+  )
+})
 
 const handleDzongkhagChange = () => {
-    newLocationDetails.gewog_throm = ''; // Reset gewog when dzongkhag changes
-    // If gewogs were fetched dynamically, trigger fetch here
-    // loadingGewogs.value = true;
-    // fetchGewogsForDzongkhag(newLocationDetails.dzongkhag_thromde).finally(() => loadingGewogs.value = false);
-};
-
+  newLocationDetails.gewog_throm = '' // Reset gewog when dzongkhag changes
+  // If gewogs were fetched dynamically, trigger fetch here
+  // loadingGewogs.value = true;
+  // fetchGewogsForDzongkhag(newLocationDetails.dzongkhag_thromde).finally(() => loadingGewogs.value = false);
+}
 
 // Fetch current ECPF details on component mount
 onMounted(async () => {
@@ -306,8 +323,8 @@ onMounted(async () => {
     }
     if (!authStore.user.cid) {
       toast.error('User CID not found. Cannot fetch ECPF details.')
-      Object.keys(currentDetails).forEach(key => currentDetails[key] = 'N/A');
-      currentDetails.cid = 'N/A';
+      Object.keys(currentDetails).forEach((key) => (currentDetails[key] = 'N/A'))
+      currentDetails.cid = 'N/A'
       return
     }
 
@@ -317,14 +334,20 @@ onMounted(async () => {
     if (fetchedEcpfData) {
       ecpfProfileId = fetchedEcpfData.id
 
-      currentDetails.ecpfName = fetchedEcpfData.institute_name || fetchedEcpfData.name || fetchedEcpfData.firm_name || 'N/A'
+      currentDetails.ecpfName =
+        fetchedEcpfData.institute_name || fetchedEcpfData.name || fetchedEcpfData.firm_name || 'N/A'
 
-      const locationParts = [
-        fetchedEcpfData.dzongkhag, // Assuming these fields exist
-        fetchedEcpfData.gewog,
-        fetchedEcpfData.village,
-      ].filter(Boolean).join(', ') || fetchedEcpfData.location || 'N/A' // Fallback to a general location field
-      currentDetails.location = locationParts;
+      const locationParts =
+        [
+          fetchedEcpfData.dzongkhag, // Assuming these fields exist
+          fetchedEcpfData.gewog,
+          fetchedEcpfData.village,
+        ]
+          .filter(Boolean)
+          .join(', ') ||
+        fetchedEcpfData.location ||
+        'N/A' // Fallback to a general location field
+      currentDetails.location = locationParts
 
       currentDetails.proprietorName = fetchedEcpfData.proprietor_name || authStore.fullName || 'N/A'
       currentDetails.cid = fetchedEcpfData.cid || authStore.user.cid || 'N/A'
@@ -332,43 +355,50 @@ onMounted(async () => {
       currentDetails.emailAddress = fetchedEcpfData.email_address || authStore.email || 'N/A'
     } else {
       toast.error('Could not fetch ECPF details.')
-      Object.keys(currentDetails).forEach(key => currentDetails[key] = 'N/A (Error)');
-      currentDetails.cid = authStore.user.cid || 'N/A (Error)';
+      Object.keys(currentDetails).forEach((key) => (currentDetails[key] = 'N/A (Error)'))
+      currentDetails.cid = authStore.user.cid || 'N/A (Error)'
     }
   } catch (error) {
     console.error('Error fetching ECPF details:', error)
     toast.error('Failed to load ECPF details. Please try again.')
-    Object.keys(currentDetails).forEach(key => currentDetails[key] = 'N/A (Error)');
-     if (authStore.user) currentDetails.cid = authStore.user.cid || 'N/A (Error)';
+    Object.keys(currentDetails).forEach((key) => (currentDetails[key] = 'N/A (Error)'))
+    if (authStore.user) currentDetails.cid = authStore.user.cid || 'N/A (Error)'
   } finally {
     loading.value = false
   }
 
   // If initialData is provided (e.g., for editing a draft), populate the form
-   if (props.initialData && Object.keys(props.initialData).length > 0) {
-        newLocationDetails.dzongkhag_thromde = props.initialData.new_dzongkhag_thromde || props.initialData.dzongkhag_thromde || '';
-        // Ensure dependent dropdowns are populated correctly if dzongkhag is set
-        if(newLocationDetails.dzongkhag_thromde) {
-            // Might need a slight delay or nextTick if filteredGewogOptions depends on async data
-            // or if gewogThromOptions prop isn't immediately ready.
-            // For now, assuming props.gewogThromOptions is fully populated.
-            await nextTick(); // Wait for DOM update if options are dynamic
-            newLocationDetails.gewog_throm = props.initialData.new_gewog_throm || props.initialData.gewog_throm || '';
-        }
-        newLocationDetails.village_street = props.initialData.new_village_street || props.initialData.village_street || '';
-        locationChangeDeclaration.value = props.initialData.declaration === true ? 'agree' : (props.initialData.locationChangeDeclaration || '');
-        locationChangeRemarks.value = props.initialData.remarks || props.initialData.locationChangeRemarks || '';
-        // draftId.value = props.initialData.id; // If tracking draft ID
+  if (props.initialData && Object.keys(props.initialData).length > 0) {
+    newLocationDetails.dzongkhag_thromde =
+      props.initialData.new_dzongkhag_thromde || props.initialData.dzongkhag_thromde || ''
+    // Ensure dependent dropdowns are populated correctly if dzongkhag is set
+    if (newLocationDetails.dzongkhag_thromde) {
+      // Might need a slight delay or nextTick if filteredGewogOptions depends on async data
+      // or if gewogThromOptions prop isn't immediately ready.
+      // For now, assuming props.gewogThromOptions is fully populated.
+      await nextTick() // Wait for DOM update if options are dynamic
+      newLocationDetails.gewog_throm =
+        props.initialData.new_gewog_throm || props.initialData.gewog_throm || ''
     }
+    newLocationDetails.village_street =
+      props.initialData.new_village_street || props.initialData.village_street || ''
+    locationChangeDeclaration.value =
+      props.initialData.declaration === true
+        ? 'agree'
+        : props.initialData.locationChangeDeclaration || ''
+    locationChangeRemarks.value =
+      props.initialData.remarks || props.initialData.locationChangeRemarks || ''
+    // draftId.value = props.initialData.id; // If tracking draft ID
+  }
 })
-
 
 const validateForm = (isDraft = false) => {
   validationErrors.value = []
   if (!ecpfProfileId) {
     validationErrors.value.push('ECPF Profile ID is missing. Cannot proceed.')
   }
-  if (!isDraft) { // Stricter validation for final submission
+  if (!isDraft) {
+    // Stricter validation for final submission
     if (!newLocationDetails.dzongkhag_thromde) {
       validationErrors.value.push('New Dzongkhag/Thromde is required.')
     }
@@ -381,24 +411,33 @@ const validateForm = (isDraft = false) => {
     if (locationChangeDeclaration.value !== 'agree') {
       validationErrors.value.push('You must agree to the declaration.')
     }
-  } else { // Lenient validation for draft
-     if (!newLocationDetails.dzongkhag_thromde && !newLocationDetails.gewog_throm && !newLocationDetails.village_street.trim() && !locationChangeRemarks.value.trim()) {
-        validationErrors.value.push('Please enter at least one field for the new location or remarks to save a draft.')
-     }
+  } else {
+    // Lenient validation for draft
+    if (
+      !newLocationDetails.dzongkhag_thromde &&
+      !newLocationDetails.gewog_throm &&
+      !newLocationDetails.village_street.trim() &&
+      !locationChangeRemarks.value.trim()
+    ) {
+      validationErrors.value.push(
+        'Please enter at least one field for the new location or remarks to save a draft.',
+      )
+    }
   }
   return validationErrors.value.length === 0
 }
 
 const isFormValidForPayment = () => {
-    // Simplified version of validateForm without populating validationErrors array for UI
-    // Just checks if critical fields for submission are filled
-    return ecpfProfileId &&
-           newLocationDetails.dzongkhag_thromde &&
-           newLocationDetails.gewog_throm &&
-           newLocationDetails.village_street.trim() &&
-           locationChangeDeclaration.value === 'agree';
-};
-
+  // Simplified version of validateForm without populating validationErrors array for UI
+  // Just checks if critical fields for submission are filled
+  return (
+    ecpfProfileId &&
+    newLocationDetails.dzongkhag_thromde &&
+    newLocationDetails.gewog_throm &&
+    newLocationDetails.village_street.trim() &&
+    locationChangeDeclaration.value === 'agree'
+  )
+}
 
 const submitApplication = async () => {
   if (!validateForm()) {
@@ -411,7 +450,7 @@ const submitApplication = async () => {
     ecpf_profile: ecpfProfileId,
     current_location_summary: currentDetails.location, // For record keeping
     new_dzongkhag: newLocationDetails.dzongkhag_thromde, // Send ID or name based on backend
-    new_gewog: newLocationDetails.gewog_throm,           // Send ID or name based on backend
+    new_gewog: newLocationDetails.gewog_throm, // Send ID or name based on backend
     new_village_street: newLocationDetails.village_street.trim(),
     declaration: locationChangeDeclaration.value === 'agree',
     remarks: locationChangeRemarks.value.trim(),
@@ -419,23 +458,43 @@ const submitApplication = async () => {
     // status: 'Submitted',
   }
   // Find the text values for Dzongkhag and Gewog if IDs are stored
-    const dzongkhagObj = props.dzongkhagThromdeOptions.find(opt => (opt.id || opt.value) === newLocationDetails.dzongkhag_thromde);
-    const gewogObj = filteredGewogOptions.value.find(opt => (opt.id || opt.value) === newLocationDetails.gewog_throm);
+  const dzongkhagObj = props.dzongkhagThromdeOptions.find(
+    (opt) => (opt.id || opt.value) === newLocationDetails.dzongkhag_thromde,
+  )
+  const gewogObj = filteredGewogOptions.value.find(
+    (opt) => (opt.id || opt.value) === newLocationDetails.gewog_throm,
+  )
 
-    if (dzongkhagObj) payload.new_dzongkhag_name = dzongkhagObj.name || dzongkhagObj.label;
-    if (gewogObj) payload.new_gewog_name = gewogObj.name || gewogObj.label;
-
+  if (dzongkhagObj) payload.new_dzongkhag_name = dzongkhagObj.name || dzongkhagObj.label
+  if (gewogObj) payload.new_gewog_name = gewogObj.name || gewogObj.label
 
   try {
-    console.log("Submitting ECPF Location Change payload:", payload)
+    console.log('Submitting ECPF Location Change payload:', payload)
     // const response = await apiServices.createEcpfLocationChange(payload)
-    const response = await new Promise(resolve => setTimeout(() => resolve({ status: 201, data: { ...payload, id: Date.now(), message: 'Location change application submitted successfully!' } }), 1000)); // Mock API
+    const response = await new Promise((resolve) =>
+      setTimeout(
+        () =>
+          resolve({
+            status: 201,
+            data: {
+              ...payload,
+              id: Date.now(),
+              message: 'Location change application submitted successfully!',
+            },
+          }),
+        1000,
+      ),
+    ) // Mock API
 
     if (response.status === 201 || response.status === 200) {
       toast.success(response.data.message || 'Location change application submitted successfully!')
       emit('submit-success', response.data)
       // Reset form
-      Object.assign(newLocationDetails, { dzongkhag_thromde: '', gewog_throm: '', village_street: '' });
+      Object.assign(newLocationDetails, {
+        dzongkhag_thromde: '',
+        gewog_throm: '',
+        village_street: '',
+      })
       locationChangeDeclaration.value = ''
       locationChangeRemarks.value = ''
       validationErrors.value = []
@@ -451,11 +510,12 @@ const submitApplication = async () => {
 }
 
 const saveAsDraft = async () => {
-  if (!validateForm(true)) { // Pass true for lenient draft validation
-    toast.error(validationErrors.value.join(' ') || "Cannot save an empty draft.");
-    return;
+  if (!validateForm(true)) {
+    // Pass true for lenient draft validation
+    toast.error(validationErrors.value.join(' ') || 'Cannot save an empty draft.')
+    return
   }
-  isSubmitting.value = true;
+  isSubmitting.value = true
 
   const draftPayload = {
     ecpf_profile: ecpfProfileId,
@@ -469,37 +529,50 @@ const saveAsDraft = async () => {
   }
 
   try {
-    console.log("Saving ECPF Location Change as draft:", draftPayload);
+    console.log('Saving ECPF Location Change as draft:', draftPayload)
     // const response = await apiServices.createOrUpdateEcpfLocationChangeDraft(draftPayload);
-    const response = await new Promise(resolve => setTimeout(() => resolve({ status: 200, data: { ...draftPayload, id: Date.now(), message: 'Application saved as draft!' } }), 1000)); // Mock API
+    const response = await new Promise((resolve) =>
+      setTimeout(
+        () =>
+          resolve({
+            status: 200,
+            data: { ...draftPayload, id: Date.now(), message: 'Application saved as draft!' },
+          }),
+        1000,
+      ),
+    ) // Mock API
 
-    toast.success(response.data.message || 'Application saved as draft!');
-    emit('save-draft-success', response.data);
+    toast.success(response.data.message || 'Application saved as draft!')
+    emit('save-draft-success', response.data)
   } catch (error) {
-    console.error('Error saving as draft:', error);
-    toast.error('Failed to save as draft.');
+    console.error('Error saving as draft:', error)
+    toast.error('Failed to save as draft.')
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
 }
 
 const initiatePayment = () => {
-  if (!validateForm()) { // Use strict validation before payment
-    toast.error("Please fill all required fields correctly before proceeding to payment.");
-    return;
+  if (!validateForm()) {
+    // Use strict validation before payment
+    toast.error('Please fill all required fields correctly before proceeding to payment.')
+    return
   }
-  toast.info('Proceeding to payment... (Payment Integration Pending)');
+  toast.info('Proceeding to payment... (Payment Integration Pending)')
   emit('payment-initiated', {
     // amount: LOCATION_CHANGE_FEE,
     description: `Payment for ECPF Location Change`,
-  });
+  })
 
   // Mock payment success and submission
   setTimeout(async () => {
-    const mockPaymentData = { paymentHash: 'mock_payment_hash_loc_' + Date.now(), status: 'Completed' };
-    toast.success("Mock payment successful for location change!");
-    await submitApplication(mockPaymentData);
-  }, 1500);
+    const mockPaymentData = {
+      paymentHash: 'mock_payment_hash_loc_' + Date.now(),
+      status: 'Completed',
+    }
+    toast.success('Mock payment successful for location change!')
+    await submitApplication(mockPaymentData)
+  }, 1500)
 }
 
 // const handlePaymentCompleted = (paymentData) => {
@@ -513,19 +586,21 @@ const initiatePayment = () => {
 watch(
   () => props.initialData,
   async (newData) => {
-    if (newData && Object.keys(newData).length > 0 && !loading.value) { // Ensure initial load is complete
-        newLocationDetails.dzongkhag_thromde = newData.new_dzongkhag || newData.new_dzongkhag_thromde || '';
-        await nextTick(); // Allow filteredGewogOptions to update
-        newLocationDetails.gewog_throm = newData.new_gewog || newData.new_gewog_throm || '';
-        newLocationDetails.village_street = newData.new_village_street || '';
-        locationChangeDeclaration.value = newData.declaration === true ? 'agree' : (newData.locationChangeDeclaration || '');
-        locationChangeRemarks.value = newData.remarks || newData.locationChangeRemarks || '';
-        // draftId.value = newData.id; // If you have a draftId ref
+    if (newData && Object.keys(newData).length > 0 && !loading.value) {
+      // Ensure initial load is complete
+      newLocationDetails.dzongkhag_thromde =
+        newData.new_dzongkhag || newData.new_dzongkhag_thromde || ''
+      await nextTick() // Allow filteredGewogOptions to update
+      newLocationDetails.gewog_throm = newData.new_gewog || newData.new_gewog_throm || ''
+      newLocationDetails.village_street = newData.new_village_street || ''
+      locationChangeDeclaration.value =
+        newData.declaration === true ? 'agree' : newData.locationChangeDeclaration || ''
+      locationChangeRemarks.value = newData.remarks || newData.locationChangeRemarks || ''
+      // draftId.value = newData.id; // If you have a draftId ref
     }
   },
-  { deep: true, immediate: false } // deep: true, immediate: false to run after mount and when prop changes
-);
-
+  { deep: true, immediate: false }, // deep: true, immediate: false to run after mount and when prop changes
+)
 </script>
 
 <style scoped>

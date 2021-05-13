@@ -107,7 +107,9 @@
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">{{ cpdActivity.cme_activity_name }}</h3>
-                    <p class="text-sm text-slate-600 mt-1">{{ cpdActivity.cme_activity_description }}</p>
+                    <p class="text-sm text-slate-600 mt-1">
+                      {{ cpdActivity.cme_activity_description }}
+                    </p>
                   </div>
                   <div class="flex gap-2">
                     <button

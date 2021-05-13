@@ -1,932 +1,1313 @@
 <template>
   <div class="w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
-      <PageHeader
-          title="Renewal Application"
-          subtitle="Please review your personal details and CPD scores to ensure your eligibility for renewal."
-      >
-          <template #icon>
-              <RefreshCw class="w-6 h-6 text-indigo-600" />
-          </template>
-      </PageHeader>
+    <PageHeader
+      title="Renewal Application"
+      subtitle="Please review your personal details and CPD scores to ensure your eligibility for renewal."
+    >
+      <template #icon>
+        <RefreshCw class="w-6 h-6 text-indigo-600" />
+      </template>
+    </PageHeader>
 
-      <!-- Alert: Renewal Already In Progress -->
+    <!-- Alert: Renewal Already In Progress -->
+    <div
+      v-if="healthStore.visibleMenus.hasRenewalInProgress"
+      class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-5 sm:p-6 mb-8 rounded-xl shadow-sm"
+    >
+      <div class="flex items-start">
+        <div class="flex-shrink-0">
+          <AlertCircle class="h-6 w-6 text-blue-500" aria-hidden="true" />
+        </div>
+        <div class="ml-3">
+          <h3 class="text-base sm:text-lg font-medium text-blue-800">
+            Renewal Application In Progress
+          </h3>
+          <div class="mt-2 text-sm sm:text-base text-blue-700">
+            <p>
+              You already have a renewal application under review by our staff. You can track the
+              status of your application in the "My Applications" section.
+            </p>
+          </div>
+          <div class="mt-4 sm:mt-6">
+            <router-link
+              to="/admin/user/health_certification/my_applications"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm"
+            >
+              <ClipboardList class="h-4 w-4 mr-2" />
+              View My Applications
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Area (Handles Loading, Error, Eligibility, Form) -->
+    <div v-else>
+      <!-- Loading State -->
+      <div v-if="isLoading" class="text-center py-8 sm:py-10">
+        <div class="flex justify-center items-center">
+          <Loader class="h-10 w-10 sm:h-12 sm:w-12 text-blue-500 animate-spin" />
+        </div>
+        <p class="mt-4 text-gray-600">Loading your application data...</p>
+      </div>
+
+      <!-- Error State -->
       <div
-          v-if="healthStore.visibleMenus.hasRenewalInProgress"
-          class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-5 sm:p-6 mb-8 rounded-xl shadow-sm"
+        v-else-if="loadError"
+        class="bg-red-50 border border-red-200 rounded-xl p-5 sm:p-6 my-6 shadow-sm"
       >
-          <div class="flex items-start">
-              <div class="flex-shrink-0">
-                  <AlertCircle class="h-6 w-6 text-blue-500" aria-hidden="true" />
-              </div>
-              <div class="ml-3">
-                  <h3 class="text-base sm:text-lg font-medium text-blue-800">
-                      Renewal Application In Progress
-                  </h3>
-                  <div class="mt-2 text-sm sm:text-base text-blue-700">
-                      <p>
-                          You already have a renewal application under review by our staff. You
-                          can track the status of your application in the "My Applications"
-                          section.
-                      </p>
-                  </div>
-                  <div class="mt-4 sm:mt-6">
-                      <router-link
-                          to="/admin/user/health_certification/my_applications"
-                          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm"
-                      >
-                          <ClipboardList class="h-4 w-4 mr-2" />
-                          View My Applications
-                      </router-link>
-                  </div>
-              </div>
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <AlertTriangle class="h-6 w-6 text-red-400" />
           </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">Error Loading Data</h3>
+            <div class="mt-2 text-sm text-red-700">
+              <p>{{ loadError }}</p>
+            </div>
+            <div class="mt-4">
+              <button
+                type="button"
+                @click="fetchApplicationData"
+                class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200"
+              >
+                <RefreshCw class="h-4 w-4 mr-1.5" />
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Main Content Area (Handles Loading, Error, Eligibility, Form) -->
-      <div v-else>
-          <!-- Loading State -->
-          <div v-if="isLoading" class="text-center py-8 sm:py-10">
-              <div class="flex justify-center items-center">
-                  <Loader class="h-10 w-10 sm:h-12 sm:w-12 text-blue-500 animate-spin" />
-              </div>
-              <p class="mt-4 text-gray-600">Loading your application data...</p>
+      <!-- Not Eligible State -->
+      <div
+        v-else-if="!isEligibleForRenewal"
+        class="bg-yellow-50 border border-yellow-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm"
+      >
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <AlertCircle class="h-6 w-6 text-yellow-500" />
           </div>
+          <div class="ml-3">
+            <h3 class="text-base font-medium text-yellow-800">
+              {{ isTooEarlyForRenewal ? 'Renewal Not Available Yet' : 'Renewal Not Eligible' }}
+            </h3>
+            <div class="mt-2 text-sm text-yellow-700">
+              <p v-if="isTooEarlyForRenewal">
+                {{ tooEarlyMessage }}
+              </p>
+              <p v-else>
+                {{ renewalEligibilityMessage }}
+              </p>
+              <p class="mt-2">Renewal is allowed if:</p>
+              <ul class="list-disc ml-5 mt-2 space-y-1">
+                <li>Your registration expires within the next 3 months.</li>
+                <li>Your registration has already expired.</li>
+              </ul>
+            </div>
+            <div class="mt-4">
+              <button
+                type="button"
+                @click="handleCancel"
+                class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-200"
+              >
+                <ArrowLeft class="h-4 w-4 mr-1.5" />
+                Return to Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-          <!-- Error State -->
-          <div
-              v-else-if="loadError"
-              class="bg-red-50 border border-red-200 rounded-xl p-5 sm:p-6 my-6 shadow-sm"
-          >
+      <!-- Eligible: Show Form -->
+      <div v-else class="bg-white border rounded-xl shadow-sm overflow-hidden">
+        <!-- Personal Details Section -->
+        <div
+          class="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm:p-6 rounded-t-xl"
+        >
+          <div class="flex items-center space-x-2">
+            <User class="h-5 w-5 text-blue-600" />
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900">Personal Details</h3>
+          </div>
+          <p class="mt-1 text-xs sm:text-sm text-gray-500 ml-7">
+            Verify your personal information.
+          </p>
+        </div>
+        <div class="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <!-- CID No. -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >CID No./Identity/Work Permit No.</label
+            >
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <CreditCard class="h-4 w-4 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                v-model="formData.cid_no"
+                disabled
+                class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              />
+            </div>
+          </div>
+          <!-- Full Name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Full Name</label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <User class="h-4 w-4 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                v-model="formData.full_name"
+                disabled
+                class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              />
+            </div>
+          </div>
+          <!-- Gender -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Gender</label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Users class="h-4 w-4 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                v-model="formData.gender"
+                disabled
+                class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              />
+            </div>
+          </div>
+          <!-- Date of Birth -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Calendar class="h-4 w-4 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                :value="formatDisplayDate(formData.date_of_birth)"
+                disabled
+                class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              />
+            </div>
+          </div>
+          <!-- Contact Number -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Contact Number</label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Phone class="h-4 w-4 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                v-model="formData.contact_no"
+                disabled
+                class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              />
+            </div>
+          </div>
+          <!-- Email Address -->
+          <div v-if="formData.email_address">
+            <label class="block text-sm font-medium text-gray-700">Email Address</label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Mail class="h-4 w-4 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                v-model="formData.email_address"
+                disabled
+                class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              />
+            </div>
+          </div>
+          <!-- Village -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Village</label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Home class="h-4 w-4 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                v-model="formData.village"
+                disabled
+                class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              />
+            </div>
+          </div>
+          <!-- Gewog -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Gewog</label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <MapPin class="h-4 w-4 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                v-model="formData.gewog"
+                disabled
+                class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              />
+            </div>
+          </div>
+          <!-- Dzongkhag -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Dzongkhag</label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Map class="h-4 w-4 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                v-model="formData.dzongkhag"
+                disabled
+                class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+              />
+            </div>
+          </div>
+          <!-- Registration Info Box -->
+          <div class="col-span-1 md:col-span-1">
+            <div
+              :class="[
+                'rounded-lg p-4 sm:p-5 border',
+                hasExpired
+                  ? 'bg-red-50 border-red-200'
+                  : isExpiringWithin3Months
+                    ? 'bg-yellow-50 border-yellow-200'
+                    : 'bg-blue-50 border-blue-200',
+              ]"
+            >
+              <div class="flex items-center">
+                <div
+                  :class="[
+                    'rounded-full p-1.5 mr-2',
+                    hasExpired
+                      ? 'bg-red-100'
+                      : isExpiringWithin3Months
+                        ? 'bg-yellow-100'
+                        : 'bg-blue-100',
+                  ]"
+                >
+                  <Clock
+                    class="h-5 w-5"
+                    :class="[
+                      hasExpired
+                        ? 'text-red-600'
+                        : isExpiringWithin3Months
+                          ? 'text-yellow-600'
+                          : 'text-blue-600',
+                    ]"
+                  />
+                </div>
+                <span
+                  :class="[
+                    'text-sm font-medium',
+                    hasExpired
+                      ? 'text-red-900'
+                      : isExpiringWithin3Months
+                        ? 'text-yellow-900'
+                        : 'text-blue-900',
+                  ]"
+                  >Registration Information</span
+                >
+              </div>
+              <div class="mt-3 grid grid-cols-2 gap-3">
+                <div>
+                  <div
+                    :class="[
+                      'text-xs sm:text-sm',
+                      hasExpired
+                        ? 'text-red-700'
+                        : isExpiringWithin3Months
+                          ? 'text-yellow-700'
+                          : 'text-blue-700',
+                    ]"
+                  >
+                    Registration Date
+                  </div>
+                  <div
+                    :class="[
+                      'text-xs sm:text-sm font-medium',
+                      hasExpired
+                        ? 'text-red-900'
+                        : isExpiringWithin3Months
+                          ? 'text-yellow-900'
+                          : 'text-blue-900',
+                    ]"
+                  >
+                    {{ formatDisplayDate(formData.registration_date) }}
+                  </div>
+                </div>
+                <div>
+                  <div
+                    :class="[
+                      'text-xs sm:text-sm',
+                      hasExpired
+                        ? 'text-red-700'
+                        : isExpiringWithin3Months
+                          ? 'text-yellow-700'
+                          : 'text-blue-700',
+                    ]"
+                  >
+                    Expiry Date
+                  </div>
+                  <div class="flex items-center">
+                    <div
+                      :class="[
+                        'text-xs sm:text-sm font-medium',
+                        hasExpired
+                          ? 'text-red-900'
+                          : isExpiringWithin3Months
+                            ? 'text-yellow-900'
+                            : 'text-blue-900',
+                      ]"
+                    >
+                      {{ formatDisplayDate(formData.expiry_date) }}
+                    </div>
+                    <span
+                      v-if="hasExpired"
+                      class="ml-2 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full flex items-center"
+                      ><AlertOctagon class="h-3 w-3 mr-1" />Expired</span
+                    >
+                    <span
+                      v-else-if="isExpiringWithin3Months"
+                      class="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full flex items-center"
+                      ><Clock class="h-3 w-3 mr-1" />Expiring Soon</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Registration Status Box -->
+          <div class="col-span-1 md:col-span-1">
+            <div
+              class="rounded-lg p-4 sm:p-5 border"
+              :class="
+                formData.is_active
+                  ? 'bg-green-50 border-green-200'
+                  : 'bg-yellow-50 border-yellow-200'
+              "
+            >
+              <div class="flex items-center">
+                <div
+                  :class="[
+                    'rounded-full p-1.5 mr-2',
+                    formData.is_active ? 'bg-green-100' : 'bg-yellow-100',
+                  ]"
+                >
+                  <Tag
+                    class="h-5 w-5"
+                    :class="formData.is_active ? 'text-green-600' : 'text-yellow-600'"
+                  />
+                </div>
+                <span
+                  class="text-sm font-medium"
+                  :class="formData.is_active ? 'text-green-900' : 'text-yellow-900'"
+                  >Registration Status</span
+                >
+              </div>
+              <div class="mt-3">
+                <div class="flex items-center">
+                  <span
+                    :class="[
+                      'py-1 px-2 text-xs rounded-md font-medium',
+                      formData.is_active
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-yellow-100 text-yellow-800',
+                    ]"
+                    >{{ formData.is_active ? 'Active' : 'Inactive' }}</span
+                  >
+                  <span
+                    class="ml-2 text-xs"
+                    :class="formData.is_active ? 'text-green-700' : 'text-yellow-700'"
+                    >{{
+                      formData.is_active
+                        ? 'Your registration is currently active'
+                        : 'Your registration needs to be renewed or reactivated'
+                    }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CPD Score Details Section -->
+        <div class="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm:p-6">
+          <div class="flex items-center space-x-2">
+            <Award class="h-5 w-5 text-blue-600" />
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900">
+              CPD Score Details (Approved Records)
+            </h3>
+          </div>
+          <p class="mt-1 text-xs sm:text-sm text-gray-500 ml-7">
+            Minimum 60 points recommended for renewal. Score is based on approved activities.
+          </p>
+
+          <div class="mt-4">
+            <!-- CPD Loading -->
+            <div v-if="isCpdLoading" class="flex justify-center items-center p-8">
+              <Loader class="h-8 w-8 text-blue-500 animate-spin" />
+            </div>
+            <!-- CPD Error -->
+            <div v-else-if="cpdLoadError" class="bg-red-50 border border-red-200 rounded-lg p-4">
               <div class="flex">
-                  <div class="flex-shrink-0">
-                      <AlertTriangle class="h-6 w-6 text-red-400" />
-                  </div>
-                  <div class="ml-3">
-                      <h3 class="text-sm font-medium text-red-800">Error Loading Data</h3>
-                      <div class="mt-2 text-sm text-red-700">
-                          <p>{{ loadError }}</p>
-                      </div>
-                      <div class="mt-4">
-                          <button
-                              type="button"
-                              @click="fetchApplicationData"
-                              class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200"
-                          >
-                              <RefreshCw class="h-4 w-4 mr-1.5" />
-                              Try Again
-                          </button>
-                      </div>
-                  </div>
+                <AlertTriangle class="h-5 w-5 text-red-400 flex-shrink-0" />
+                <div class="ml-3">
+                  <h4 class="text-sm font-medium text-red-800">Failed to load CPD data</h4>
+                  <p class="mt-1 text-xs text-red-700">{{ cpdLoadError }}</p>
+                </div>
               </div>
+            </div>
+            <!-- CPD Data -->
+            <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <!-- Total Points Card -->
+              <div class="bg-white border rounded-lg shadow-sm overflow-hidden">
+                <div class="p-4 sm:p-5">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h4 class="text-sm font-medium text-gray-900">Total Approved CPD Points</h4>
+                      <p class="text-xs text-gray-500 mt-0.5">Minimum 60 points recommended</p>
+                    </div>
+                    <div
+                      class="rounded-full h-10 w-10 flex items-center justify-center"
+                      :class="cpdCardClass"
+                    >
+                      <Award class="h-5 w-5" :class="cpdIconClass" />
+                    </div>
+                  </div>
+                  <div class="mt-4">
+                    <div class="relative pt-1">
+                      <div class="flex items-center justify-between">
+                        <div>
+                          <span
+                            class="text-xs font-semibold inline-block py-1 px-2 rounded-full"
+                            :class="cpdTextClass"
+                            >{{ getTotalCpdPoints }} / 60 Points</span
+                          >
+                        </div>
+                        <div class="text-right">
+                          <span class="text-xs font-semibold inline-block text-gray-600"
+                            >{{ Math.min(100, Math.round((getTotalCpdPoints / 60) * 100)) }}% of
+                            Recommended</span
+                          >
+                        </div>
+                      </div>
+                      <div class="overflow-hidden h-2 mt-2 text-xs flex rounded bg-gray-200">
+                        <div
+                          :style="{
+                            width: `${Math.min(100, Math.round((getTotalCpdPoints / 60) * 100))}%`,
+                          }"
+                          class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center"
+                          :class="cpdProgressClass"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-4 p-3 rounded-lg text-sm" :class="cpdMessageBgClass">
+                    <div class="flex">
+                      <div class="flex-shrink-0">
+                        <component
+                          :is="cpdIcon"
+                          class="h-5 w-5 mr-2"
+                          :class="cpdMessageIconColor"
+                        />
+                      </div>
+                      <div>
+                        <p class="font-medium">{{ cpdMessage }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Recent Activities Card -->
+              <div class="bg-white border rounded-lg shadow-sm overflow-hidden">
+                <div class="bg-gray-50 border-b px-4 py-3">
+                  <h4 class="text-sm font-medium text-gray-900">Recent Approved CPD Activities</h4>
+                </div>
+                <div class="p-4 max-h-60 overflow-y-auto">
+                  <div
+                    v-if="cpdRecords.filter((r) => r.review_status === 'Approved').length === 0"
+                    class="text-center py-4 text-gray-500 text-sm"
+                  >
+                    No approved CPD records found
+                  </div>
+                  <ul v-else class="space-y-3">
+                    <li
+                      v-for="record in cpdRecords
+                        .filter((r) => r.review_status === 'Approved')
+                        .slice(0, 5)"
+                      :key="record.id"
+                      class="flex items-start p-2 hover:bg-gray-50 rounded-lg transition-colors duration-150"
+                    >
+                      <div class="flex-shrink-0 mt-1">
+                        <FileText class="h-4 w-4 text-gray-400" />
+                      </div>
+                      <div class="ml-2 flex-1">
+                        <div class="flex justify-between">
+                          <p class="text-xs font-medium text-gray-900 truncate">
+                            {{ record.title_of_cpd || 'Untitled Activity' }}
+                          </p>
+                          <span class="text-xs text-gray-500">{{
+                            formatDisplayDate(record.created_at)
+                          }}</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-0.5 truncate">
+                          {{ record.type_of_cpd_activity_display || 'N/A' }}
+                        </p>
+                        <div class="flex items-center mt-1">
+                          <span
+                            class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full"
+                            >{{ record.cpd_credit || 0 }} points</span
+                          >
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <!-- Not Eligible State -->
+        <!-- Renewal Confirmation & Action Section -->
+        <!-- Show this section only if NOT submitting or processing payment -->
+        <div v-if="!isSubmitting && !isProcessingPayment">
           <div
-              v-else-if="!isEligibleForRenewal"
-              class="bg-yellow-50 border border-yellow-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm"
+            class="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm:p-6"
           >
-               <div class="flex">
-                  <div class="flex-shrink-0">
-                      <AlertCircle class="h-6 w-6 text-yellow-500" />
-                  </div>
-                  <div class="ml-3">
-                      <h3 class="text-base font-medium text-yellow-800">
-                          {{
-                              isTooEarlyForRenewal
-                                  ? 'Renewal Not Available Yet'
-                                  : 'Renewal Not Eligible'
-                          }}
-                      </h3>
-                      <div class="mt-2 text-sm text-yellow-700">
-                          <p v-if="isTooEarlyForRenewal">
-                              {{ tooEarlyMessage }}
-                          </p>
-                          <p v-else>
-                              {{ renewalEligibilityMessage }}
-                          </p>
-                          <p class="mt-2">Renewal is allowed if:</p>
-                          <ul class="list-disc ml-5 mt-2 space-y-1">
-                              <li>Your registration expires within the next 3 months.</li>
-                              <li>Your registration has already expired.</li>
-                          </ul>
-                      </div>
-                      <div class="mt-4">
-                          <button
-                              type="button"
-                              @click="handleCancel"
-                              class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-200"
-                          >
-                              <ArrowLeft class="h-4 w-4 mr-1.5" />
-                              Return to Dashboard
-                          </button>
-                      </div>
-                  </div>
+            <div class="flex items-center space-x-2">
+              <RefreshCw class="h-5 w-5 text-blue-600" />
+              <h3 class="text-base sm:text-lg font-semibold text-gray-900">Renewal Confirmation</h3>
+            </div>
+            <p class="mt-1 text-xs sm:text-sm text-gray-500 ml-7">
+              Confirm your application details and submit for renewal.
+            </p>
+            <div class="mt-5 p-4 sm:p-5 rounded-lg bg-white border shadow-sm">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Current Expiry -->
+                <div
+                  class="flex flex-col items-center p-4 rounded-lg bg-blue-50 border border-blue-100"
+                >
+                  <Calendar class="h-6 w-6 text-blue-600 mb-2" />
+                  <p class="text-xs text-gray-500">Current Expiry</p>
+                  <p class="font-medium text-sm">{{ formatDisplayDate(formData.expiry_date) }}</p>
+                </div>
+                <!-- Arrow / New Expiry -->
+                <div
+                  class="flex flex-col items-center p-4 rounded-lg bg-blue-50 border border-blue-100"
+                >
+                  <ArrowRight class="h-6 w-6 text-blue-600 mb-2" />
+                  <p class="text-xs text-gray-500">New Expiry (Projected)</p>
+                  <p class="font-medium text-sm">{{ formatDisplayDate(getNewExpiryDate) }}</p>
+                </div>
+                <!-- Extension Period -->
+                <div
+                  class="flex flex-col items-center p-4 rounded-lg bg-blue-50 border border-blue-100"
+                >
+                  <Clock class="h-6 w-6 text-blue-600 mb-2" />
+                  <p class="text-xs text-gray-500">Extension Period</p>
+                  <p class="font-medium text-sm">5 Years</p>
+                </div>
               </div>
+              <div class="mt-4 p-3 rounded-lg border border-blue-100 bg-blue-50">
+                <div class="flex">
+                  <AlertCircle class="h-5 w-5 text-blue-600 mr-2 flex-shrink-0" />
+                  <p class="text-xs text-blue-700">
+                    By submitting this renewal application, your registration will be extended for 5
+                    years upon approval (new projected expiry date shown above).
+                    <span v-if="cpdStatus === 'below_minimum' || cpdStatus === 'none'">
+                      Note: Your CPD score is below the recommended 60 points, but you can still
+                      proceed with the renewal.</span
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+            <!-- Remarks -->
+            <div class="mt-5">
+              <label class="block text-sm font-medium text-gray-700">Remarks (Optional)</label>
+              <div class="mt-1 relative rounded-md shadow-sm">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 pt-3 flex items-start pointer-events-none"
+                >
+                  <MessageSquare class="h-4 w-4 text-gray-400" />
+                </div>
+                <textarea
+                  v-model="remarks"
+                  rows="3"
+                  class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                  placeholder="Enter any additional information or remarks for your renewal application"
+                ></textarea>
+              </div>
+            </div>
+            <!-- Declaration -->
+            <div class="mt-6">
+              <div class="flex items-start space-x-3 bg-white p-4 rounded-lg border shadow-sm">
+                <div class="flex items-center h-5 mt-0.5">
+                  <input
+                    type="checkbox"
+                    id="declaration"
+                    v-model="declaration"
+                    class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                </div>
+                <label for="declaration" class="text-sm text-gray-700"
+                  >I hereby declare that all the information provided is true and correct to the
+                  best of my knowledge. I understand that any false statements may result in the
+                  rejection of my renewal application.</label
+                >
+              </div>
+            </div>
           </div>
 
-          <!-- Eligible: Show Form -->
-          <div v-else class="bg-white border rounded-xl shadow-sm overflow-hidden">
-              <!-- Personal Details Section -->
-              <div class="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm:p-6 rounded-t-xl">
-                   <div class="flex items-center space-x-2">
-                      <User class="h-5 w-5 text-blue-600" />
-                      <h3 class="text-base sm:text-lg font-semibold text-gray-900">
-                          Personal Details
-                      </h3>
-                  </div>
-                  <p class="mt-1 text-xs sm:text-sm text-gray-500 ml-7">
-                      Verify your personal information.
-                  </p>
-              </div>
-              <div class="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                  <!-- CID No. -->
-                  <div>
-                      <label class="block text-sm font-medium text-gray-700">CID No./Identity/Work Permit No.</label>
-                      <div class="mt-1 relative rounded-md shadow-sm">
-                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><CreditCard class="h-4 w-4 text-gray-400" /></div>
-                          <input type="text" v-model="formData.cid_no" disabled class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
-                      </div>
-                  </div>
-                  <!-- Full Name -->
-                  <div>
-                      <label class="block text-sm font-medium text-gray-700">Full Name</label>
-                       <div class="mt-1 relative rounded-md shadow-sm">
-                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><User class="h-4 w-4 text-gray-400" /></div>
-                          <input type="text" v-model="formData.full_name" disabled class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
-                      </div>
-                  </div>
-                  <!-- Gender -->
-                   <div>
-                      <label class="block text-sm font-medium text-gray-700">Gender</label>
-                       <div class="mt-1 relative rounded-md shadow-sm">
-                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Users class="h-4 w-4 text-gray-400" /></div>
-                          <input type="text" v-model="formData.gender" disabled class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
-                      </div>
-                  </div>
-                  <!-- Date of Birth -->
-                   <div>
-                      <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
-                       <div class="mt-1 relative rounded-md shadow-sm">
-                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Calendar class="h-4 w-4 text-gray-400" /></div>
-                          <input type="text" :value="formatDisplayDate(formData.date_of_birth)" disabled class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
-                      </div>
-                  </div>
-                   <!-- Contact Number -->
-                   <div>
-                      <label class="block text-sm font-medium text-gray-700">Contact Number</label>
-                       <div class="mt-1 relative rounded-md shadow-sm">
-                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Phone class="h-4 w-4 text-gray-400" /></div>
-                          <input type="text" v-model="formData.contact_no" disabled class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
-                      </div>
-                  </div>
-                  <!-- Email Address -->
-                   <div v-if="formData.email_address">
-                      <label class="block text-sm font-medium text-gray-700">Email Address</label>
-                       <div class="mt-1 relative rounded-md shadow-sm">
-                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Mail class="h-4 w-4 text-gray-400" /></div>
-                          <input type="text" v-model="formData.email_address" disabled class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
-                      </div>
-                  </div>
-                  <!-- Village -->
-                  <div>
-                      <label class="block text-sm font-medium text-gray-700">Village</label>
-                       <div class="mt-1 relative rounded-md shadow-sm">
-                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Home class="h-4 w-4 text-gray-400" /></div>
-                          <input type="text" v-model="formData.village" disabled class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
-                      </div>
-                  </div>
-                  <!-- Gewog -->
-                   <div>
-                      <label class="block text-sm font-medium text-gray-700">Gewog</label>
-                       <div class="mt-1 relative rounded-md shadow-sm">
-                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><MapPin class="h-4 w-4 text-gray-400" /></div>
-                          <input type="text" v-model="formData.gewog" disabled class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
-                      </div>
-                  </div>
-                  <!-- Dzongkhag -->
-                  <div>
-                      <label class="block text-sm font-medium text-gray-700">Dzongkhag</label>
-                       <div class="mt-1 relative rounded-md shadow-sm">
-                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Map class="h-4 w-4 text-gray-400" /></div>
-                          <input type="text" v-model="formData.dzongkhag" disabled class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50" />
-                      </div>
-                  </div>
-                   <!-- Registration Info Box -->
-                  <div class="col-span-1 md:col-span-1">
-                       <div :class="['rounded-lg p-4 sm:p-5 border', hasExpired ? 'bg-red-50 border-red-200' : isExpiringWithin3Months ? 'bg-yellow-50 border-yellow-200' : 'bg-blue-50 border-blue-200']">
-                           <div class="flex items-center">
-                               <div :class="['rounded-full p-1.5 mr-2', hasExpired ? 'bg-red-100' : isExpiringWithin3Months ? 'bg-yellow-100' : 'bg-blue-100']">
-                                   <Clock class="h-5 w-5" :class="[hasExpired ? 'text-red-600' : isExpiringWithin3Months ? 'text-yellow-600' : 'text-blue-600']" />
-                               </div>
-                               <span :class="['text-sm font-medium', hasExpired ? 'text-red-900' : isExpiringWithin3Months ? 'text-yellow-900' : 'text-blue-900']">Registration Information</span>
-                           </div>
-                           <div class="mt-3 grid grid-cols-2 gap-3">
-                               <div>
-                                   <div :class="['text-xs sm:text-sm', hasExpired ? 'text-red-700' : isExpiringWithin3Months ? 'text-yellow-700' : 'text-blue-700']">Registration Date</div>
-                                   <div :class="['text-xs sm:text-sm font-medium', hasExpired ? 'text-red-900' : isExpiringWithin3Months ? 'text-yellow-900' : 'text-blue-900']">{{ formatDisplayDate(formData.registration_date) }}</div>
-                               </div>
-                               <div>
-                                   <div :class="['text-xs sm:text-sm', hasExpired ? 'text-red-700' : isExpiringWithin3Months ? 'text-yellow-700' : 'text-blue-700']">Expiry Date</div>
-                                   <div class="flex items-center">
-                                       <div :class="['text-xs sm:text-sm font-medium', hasExpired ? 'text-red-900' : isExpiringWithin3Months ? 'text-yellow-900' : 'text-blue-900']">{{ formatDisplayDate(formData.expiry_date) }}</div>
-                                       <span v-if="hasExpired" class="ml-2 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full flex items-center"><AlertOctagon class="h-3 w-3 mr-1" />Expired</span>
-                                       <span v-else-if="isExpiringWithin3Months" class="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full flex items-center"><Clock class="h-3 w-3 mr-1" />Expiring Soon</span>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                  </div>
-                  <!-- Registration Status Box -->
-                  <div class="col-span-1 md:col-span-1">
-                       <div class="rounded-lg p-4 sm:p-5 border" :class="formData.is_active ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'">
-                          <div class="flex items-center">
-                              <div :class="['rounded-full p-1.5 mr-2', formData.is_active ? 'bg-green-100' : 'bg-yellow-100']">
-                                  <Tag class="h-5 w-5" :class="formData.is_active ? 'text-green-600' : 'text-yellow-600'" />
-                              </div>
-                              <span class="text-sm font-medium" :class="formData.is_active ? 'text-green-900' : 'text-yellow-900'">Registration Status</span>
-                          </div>
-                          <div class="mt-3">
-                              <div class="flex items-center">
-                                  <span :class="['py-1 px-2 text-xs rounded-md font-medium', formData.is_active ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800']">{{ formData.is_active ? 'Active' : 'Inactive' }}</span>
-                                  <span class="ml-2 text-xs" :class="formData.is_active ? 'text-green-700' : 'text-yellow-700'">{{ formData.is_active ? 'Your registration is currently active' : 'Your registration needs to be renewed or reactivated' }}</span>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- CPD Score Details Section -->
-              <div class="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm:p-6">
-                  <div class="flex items-center space-x-2">
-                      <Award class="h-5 w-5 text-blue-600" />
-                      <h3 class="text-base sm:text-lg font-semibold text-gray-900">CPD Score Details (Approved Records)</h3>
-                  </div>
-                   <p class="mt-1 text-xs sm:text-sm text-gray-500 ml-7">Minimum 60 points recommended for renewal. Score is based on approved activities.</p>
-
-                   <div class="mt-4">
-                      <!-- CPD Loading -->
-                      <div v-if="isCpdLoading" class="flex justify-center items-center p-8">
-                          <Loader class="h-8 w-8 text-blue-500 animate-spin" />
-                      </div>
-                      <!-- CPD Error -->
-                      <div v-else-if="cpdLoadError" class="bg-red-50 border border-red-200 rounded-lg p-4">
-                          <div class="flex">
-                              <AlertTriangle class="h-5 w-5 text-red-400 flex-shrink-0" />
-                              <div class="ml-3">
-                                  <h4 class="text-sm font-medium text-red-800">Failed to load CPD data</h4>
-                                  <p class="mt-1 text-xs text-red-700">{{ cpdLoadError }}</p>
-                              </div>
-                          </div>
-                      </div>
-                      <!-- CPD Data -->
-                      <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                          <!-- Total Points Card -->
-                          <div class="bg-white border rounded-lg shadow-sm overflow-hidden">
-                               <div class="p-4 sm:p-5">
-                                  <div class="flex justify-between items-start">
-                                      <div>
-                                          <h4 class="text-sm font-medium text-gray-900">Total Approved CPD Points</h4>
-                                          <p class="text-xs text-gray-500 mt-0.5">Minimum 60 points recommended</p>
-                                      </div>
-                                      <div class="rounded-full h-10 w-10 flex items-center justify-center" :class="cpdCardClass">
-                                          <Award class="h-5 w-5" :class="cpdIconClass" />
-                                      </div>
-                                  </div>
-                                  <div class="mt-4">
-                                      <div class="relative pt-1">
-                                          <div class="flex items-center justify-between">
-                                              <div><span class="text-xs font-semibold inline-block py-1 px-2 rounded-full" :class="cpdTextClass">{{ getTotalCpdPoints }} / 60 Points</span></div>
-                                              <div class="text-right"><span class="text-xs font-semibold inline-block text-gray-600">{{ Math.min(100, Math.round((getTotalCpdPoints / 60) * 100)) }}% of Recommended</span></div>
-                                          </div>
-                                          <div class="overflow-hidden h-2 mt-2 text-xs flex rounded bg-gray-200">
-                                              <div :style="{ width: `${Math.min(100, Math.round((getTotalCpdPoints / 60) * 100))}%` }" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center" :class="cpdProgressClass"></div>
-                                          </div>
-                                      </div>
-                                  </div>
-                                   <div class="mt-4 p-3 rounded-lg text-sm" :class="cpdMessageBgClass">
-                                      <div class="flex">
-                                          <div class="flex-shrink-0"><component :is="cpdIcon" class="h-5 w-5 mr-2" :class="cpdMessageIconColor" /></div>
-                                          <div><p class="font-medium">{{ cpdMessage }}</p></div>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          <!-- Recent Activities Card -->
-                          <div class="bg-white border rounded-lg shadow-sm overflow-hidden">
-                              <div class="bg-gray-50 border-b px-4 py-3">
-                                  <h4 class="text-sm font-medium text-gray-900">Recent Approved CPD Activities</h4>
-                              </div>
-                              <div class="p-4 max-h-60 overflow-y-auto">
-                                  <div v-if="cpdRecords.filter((r) => r.review_status === 'Approved').length === 0" class="text-center py-4 text-gray-500 text-sm">No approved CPD records found</div>
-                                  <ul v-else class="space-y-3">
-                                      <li v-for="record in cpdRecords.filter((r) => r.review_status === 'Approved').slice(0, 5)" :key="record.id" class="flex items-start p-2 hover:bg-gray-50 rounded-lg transition-colors duration-150">
-                                          <div class="flex-shrink-0 mt-1"><FileText class="h-4 w-4 text-gray-400" /></div>
-                                          <div class="ml-2 flex-1">
-                                              <div class="flex justify-between">
-                                                  <p class="text-xs font-medium text-gray-900 truncate">{{ record.title_of_cpd || 'Untitled Activity' }}</p>
-                                                  <span class="text-xs text-gray-500">{{ formatDisplayDate(record.created_at) }}</span>
-                                              </div>
-                                              <p class="text-xs text-gray-500 mt-0.5 truncate">{{ record.type_of_cpd_activity_display || 'N/A' }}</p>
-                                              <div class="flex items-center mt-1">
-                                                  <span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">{{ record.cpd_credit || 0 }} points</span>
-                                              </div>
-                                          </div>
-                                      </li>
-                                  </ul>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- Renewal Confirmation & Action Section -->
-              <!-- Show this section only if NOT submitting or processing payment -->
-              <div v-if="!isSubmitting && !isProcessingPayment">
-                   <div class="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm:p-6">
-                      <div class="flex items-center space-x-2">
-                          <RefreshCw class="h-5 w-5 text-blue-600" />
-                          <h3 class="text-base sm:text-lg font-semibold text-gray-900">Renewal Confirmation</h3>
-                      </div>
-                      <p class="mt-1 text-xs sm:text-sm text-gray-500 ml-7">Confirm your application details and submit for renewal.</p>
-                      <div class="mt-5 p-4 sm:p-5 rounded-lg bg-white border shadow-sm">
-                          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <!-- Current Expiry -->
-                              <div class="flex flex-col items-center p-4 rounded-lg bg-blue-50 border border-blue-100">
-                                  <Calendar class="h-6 w-6 text-blue-600 mb-2" />
-                                  <p class="text-xs text-gray-500">Current Expiry</p>
-                                  <p class="font-medium text-sm">{{ formatDisplayDate(formData.expiry_date) }}</p>
-                              </div>
-                              <!-- Arrow / New Expiry -->
-                              <div class="flex flex-col items-center p-4 rounded-lg bg-blue-50 border border-blue-100">
-                                  <ArrowRight class="h-6 w-6 text-blue-600 mb-2" />
-                                  <p class="text-xs text-gray-500">New Expiry (Projected)</p>
-                                  <p class="font-medium text-sm">{{ formatDisplayDate(getNewExpiryDate) }}</p>
-                              </div>
-                              <!-- Extension Period -->
-                              <div class="flex flex-col items-center p-4 rounded-lg bg-blue-50 border border-blue-100">
-                                  <Clock class="h-6 w-6 text-blue-600 mb-2" />
-                                  <p class="text-xs text-gray-500">Extension Period</p>
-                                  <p class="font-medium text-sm">5 Years</p>
-                              </div>
-                          </div>
-                           <div class="mt-4 p-3 rounded-lg border border-blue-100 bg-blue-50">
-                              <div class="flex">
-                                  <AlertCircle class="h-5 w-5 text-blue-600 mr-2 flex-shrink-0" />
-                                  <p class="text-xs text-blue-700">
-                                      By submitting this renewal application, your registration will be extended for 5 years upon approval (new projected expiry date shown above).
-                                      <span v-if="cpdStatus === 'below_minimum' || cpdStatus === 'none'"> Note: Your CPD score is below the recommended 60 points, but you can still proceed with the renewal.</span>
-                                  </p>
-                              </div>
-                          </div>
-                      </div>
-                      <!-- Remarks -->
-                      <div class="mt-5">
-                          <label class="block text-sm font-medium text-gray-700">Remarks (Optional)</label>
-                          <div class="mt-1 relative rounded-md shadow-sm">
-                              <div class="absolute inset-y-0 left-0 pl-3 pt-3 flex items-start pointer-events-none"><MessageSquare class="h-4 w-4 text-gray-400" /></div>
-                              <textarea v-model="remarks" rows="3" class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" placeholder="Enter any additional information or remarks for your renewal application"></textarea>
-                          </div>
-                      </div>
-                      <!-- Declaration -->
-                      <div class="mt-6">
-                          <div class="flex items-start space-x-3 bg-white p-4 rounded-lg border shadow-sm">
-                              <div class="flex items-center h-5 mt-0.5">
-                                  <input type="checkbox" id="declaration" v-model="declaration" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                              </div>
-                              <label for="declaration" class="text-sm text-gray-700">I hereby declare that all the information provided is true and correct to the best of my knowledge. I understand that any false statements may result in the rejection of my renewal application.</label>
-                          </div>
-                      </div>
-                  </div>
-
-                  <!-- Action Buttons Area -->
-                  <div class="flex justify-end space-x-4 p-5 sm:p-6 bg-gray-50 border-t">
-                      <button
-                          @click="handleCancel"
-                          :disabled="isSubmitting || isProcessingPayment"
-                          class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-                      >
-                          <X class="h-4 w-4 mr-1.5" />
-                          Cancel
-                      </button>
-                      <button
-                          @click="handleSubmit"
-                          :disabled="isSubmitting || isProcessingPayment || !declaration || !isEligibleForRenewal"
-                          class="px-4 py-2 bg-blue-600 text-sm font-medium text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-                      >
-                          <Check class="h-4 w-4 mr-1.5" />
-                          Submit Renewal
-                      </button>
-                  </div>
-              </div>
-
-               <!-- Submitting / Processing Payment Indicator -->
-               <div v-else class="border-t border-gray-200 bg-gray-50 p-5 sm:p-6 text-center">
-                  <div class="inline-block">
-                      <Loader class="h-10 w-10 text-blue-500 animate-spin" />
-                  </div>
-                  <p class="mt-4 text-gray-700">
-                       {{ isProcessingPayment ? 'Processing payment...' : 'Submitting your renewal application...' }}
-                  </p>
-              </div>
-
+          <!-- Action Buttons Area -->
+          <div class="flex justify-end space-x-4 p-5 sm:p-6 bg-gray-50 border-t">
+            <button
+              @click="handleCancel"
+              :disabled="isSubmitting || isProcessingPayment"
+              class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            >
+              <X class="h-4 w-4 mr-1.5" />
+              Cancel
+            </button>
+            <button
+              @click="handleSubmit"
+              :disabled="
+                isSubmitting || isProcessingPayment || !declaration || !isEligibleForRenewal
+              "
+              class="px-4 py-2 bg-blue-600 text-sm font-medium text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            >
+              <Check class="h-4 w-4 mr-1.5" />
+              Submit Renewal
+            </button>
           </div>
+        </div>
 
-          <!-- Confirmation Dialog -->
-          <Dialog :open="showConfirmation" @close="showConfirmation = false" class="relative z-50">
-               <div class="fixed inset-0 bg-black/30" aria-hidden="true" />
-               <div class="fixed inset-0 flex w-screen items-center justify-center p-4">
-                   <DialogPanel class="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-                       <div class="text-center">
-                           <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100"><RefreshCw class="h-6 w-6 text-blue-600" /></div>
-                           <DialogTitle as="h3" class="text-lg font-medium text-gray-900 mt-4">Confirm Renewal Application</DialogTitle>
-                           <div class="mt-3">
-                               <p class="text-sm text-gray-500">You are about to submit your renewal application. This action cannot be undone. Are you sure you want to proceed?</p>
-                               <div class="mt-4 p-3 bg-yellow-50 rounded-lg text-left">
-                                   <div class="flex">
-                                       <AlertCircle class="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0" />
-                                       <div>
-                                           <p class="text-xs text-yellow-700">
-                                               Upon approval, your new expiry date will be around <span class="font-medium">{{ formatDisplayDate(getNewExpiryDate) }}</span>.
-                                               <span v-if="cpdStatus === 'below_minimum' || cpdStatus === 'none'"> Note: Your CPD score is below the recommended minimum.</span>
-                                           </p>
-                                       </div>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                       <div class="mt-6 flex justify-end space-x-3">
-                           <button type="button" class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" @click="showConfirmation = false">Cancel</button>
-                           <button type="button" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" @click="confirmSubmit">Confirm</button>
-                       </div>
-                   </DialogPanel>
-               </div>
-          </Dialog>
-
-          <!-- Payment Modal -->
-           <PaymentModal
-              ref="paymentModalRef"
-              :amount="renewalAmount"
-              @payment-completed="handlePaymentCompleted"
-              @close="closePaymentModal"
-          />
+        <!-- Submitting / Processing Payment Indicator -->
+        <div v-else class="border-t border-gray-200 bg-gray-50 p-5 sm:p-6 text-center">
+          <div class="inline-block">
+            <Loader class="h-10 w-10 text-blue-500 animate-spin" />
+          </div>
+          <p class="mt-4 text-gray-700">
+            {{
+              isProcessingPayment
+                ? 'Processing payment...'
+                : 'Submitting your renewal application...'
+            }}
+          </p>
+        </div>
       </div>
+
+      <!-- Confirmation Dialog -->
+      <Dialog :open="showConfirmation" @close="showConfirmation = false" class="relative z-50">
+        <div class="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div class="fixed inset-0 flex w-screen items-center justify-center p-4">
+          <DialogPanel class="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+            <div class="text-center">
+              <div
+                class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100"
+              >
+                <RefreshCw class="h-6 w-6 text-blue-600" />
+              </div>
+              <DialogTitle as="h3" class="text-lg font-medium text-gray-900 mt-4"
+                >Confirm Renewal Application</DialogTitle
+              >
+              <div class="mt-3">
+                <p class="text-sm text-gray-500">
+                  You are about to submit your renewal application. This action cannot be undone.
+                  Are you sure you want to proceed?
+                </p>
+                <div class="mt-4 p-3 bg-yellow-50 rounded-lg text-left">
+                  <div class="flex">
+                    <AlertCircle class="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0" />
+                    <div>
+                      <p class="text-xs text-yellow-700">
+                        Upon approval, your new expiry date will be around
+                        <span class="font-medium">{{ formatDisplayDate(getNewExpiryDate) }}</span
+                        >.
+                        <span v-if="cpdStatus === 'below_minimum' || cpdStatus === 'none'">
+                          Note: Your CPD score is below the recommended minimum.</span
+                        >
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+              <button
+                type="button"
+                class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                @click="showConfirmation = false"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                @click="confirmSubmit"
+              >
+                Confirm
+              </button>
+            </div>
+          </DialogPanel>
+        </div>
+      </Dialog>
+
+      <!-- Payment Modal -->
+      <PaymentModal
+        ref="paymentModalRef"
+        :amount="renewalAmount"
+        @payment-completed="handlePaymentCompleted"
+        @close="closePaymentModal"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import apiService from '@/services/services';
-import { useToast } from 'vue-toastification';
-import { useAuthStore } from '@/stores/authStore';
-import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore';
-import { Dialog, DialogPanel, DialogTitle } from '@headlessui/vue';
-import dayjs from 'dayjs';
-import isBetween from 'dayjs/plugin/isBetween';
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import relativeTime from 'dayjs/plugin/relativeTime';
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import apiService from '@/services/services'
+import { useToast } from 'vue-toastification'
+import { useAuthStore } from '@/stores/authStore'
+import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
+import { Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
+import dayjs from 'dayjs'
+import isBetween from 'dayjs/plugin/isBetween'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
 // UI Components
-import PageHeader from '@/components/common/MHPC/PageHeader.vue';
-import PaymentModal from '@/components/common/PaymentModal.vue'; // Import PaymentModal
+import PageHeader from '@/components/common/MHPC/PageHeader.vue'
+import PaymentModal from '@/components/common/PaymentModal.vue' // Import PaymentModal
 
 // Icons
 import {
-  User, Users, Calendar, Phone, Mail, Home, MapPin, Map, Clock, AlertCircle,
-  AlertTriangle, AlertOctagon, Loader, CreditCard, ArrowLeft, ArrowRight,
-  RefreshCw, Check, X, Tag, Award, MessageSquare, ClipboardList, FileText,
-  CheckCircle, Info, TriangleAlert,
-} from 'lucide-vue-next';
+  User,
+  Users,
+  Calendar,
+  Phone,
+  Mail,
+  Home,
+  MapPin,
+  Map,
+  Clock,
+  AlertCircle,
+  AlertTriangle,
+  AlertOctagon,
+  Loader,
+  CreditCard,
+  ArrowLeft,
+  ArrowRight,
+  RefreshCw,
+  Check,
+  X,
+  Tag,
+  Award,
+  MessageSquare,
+  ClipboardList,
+  FileText,
+  CheckCircle,
+  Info,
+  TriangleAlert,
+} from 'lucide-vue-next'
 
 // Dayjs Extensions
-dayjs.extend(isBetween);
-dayjs.extend(isSameOrBefore);
-dayjs.extend(relativeTime);
+dayjs.extend(isBetween)
+dayjs.extend(isSameOrBefore)
+dayjs.extend(relativeTime)
 
 // Initialize Hooks
-const router = useRouter();
-const toast = useToast();
-const authStore = useAuthStore();
-const healthStore = useHealthCertificationStore();
+const router = useRouter()
+const toast = useToast()
+const authStore = useAuthStore()
+const healthStore = useHealthCertificationStore()
 
 // Component State Refs
 const formData = ref({
-  cid_no: '', full_name: '', gender: '', date_of_birth: '', contact_no: '',
-  email_address: '', village: '', gewog: '', dzongkhag: '',
-  registration_date: '', expiry_date: '', id: null, registration_type: null,
+  cid_no: '',
+  full_name: '',
+  gender: '',
+  date_of_birth: '',
+  contact_no: '',
+  email_address: '',
+  village: '',
+  gewog: '',
+  dzongkhag: '',
+  registration_date: '',
+  expiry_date: '',
+  id: null,
+  registration_type: null,
   is_active: false,
-});
-const cpdRecords = ref([]);
-const isCpdLoading = ref(false);
-const cpdLoadError = ref('');
-const showConfirmation = ref(false);
-const isLoading = ref(true);
-const isSubmitting = ref(false); // For initial renewal API call
-const isProcessingPayment = ref(false); // For payment API calls
-const loadError = ref('');
-const declaration = ref(false);
-const remarks = ref('');
-const paymentModalRef = ref(null); // Ref for PaymentModal component instance
-const createdRenewalId = ref(null); // To store the ID of the created renewal record
-const renewalAmount = ref(1000); // Renewal Fee - ADJUST AS NEEDED
+})
+const cpdRecords = ref([])
+const isCpdLoading = ref(false)
+const cpdLoadError = ref('')
+const showConfirmation = ref(false)
+const isLoading = ref(true)
+const isSubmitting = ref(false) // For initial renewal API call
+const isProcessingPayment = ref(false) // For payment API calls
+const loadError = ref('')
+const declaration = ref(false)
+const remarks = ref('')
+const paymentModalRef = ref(null) // Ref for PaymentModal component instance
+const createdRenewalId = ref(null) // To store the ID of the created renewal record
+const renewalAmount = ref(1000) // Renewal Fee - ADJUST AS NEEDED
 
 // Computed Properties
-const today = computed(() => dayjs());
-const expiryDate = computed(() => formData.value.expiry_date ? dayjs(formData.value.expiry_date) : null);
-const threeMonthsFromNow = computed(() => today.value.add(3, 'month'));
-const hasExpired = computed(() => expiryDate.value ? expiryDate.value.isBefore(today.value, 'day') : false);
+const today = computed(() => dayjs())
+const expiryDate = computed(() =>
+  formData.value.expiry_date ? dayjs(formData.value.expiry_date) : null,
+)
+const threeMonthsFromNow = computed(() => today.value.add(3, 'month'))
+const hasExpired = computed(() =>
+  expiryDate.value ? expiryDate.value.isBefore(today.value, 'day') : false,
+)
 const isExpiringWithin3Months = computed(() => {
-  if (!expiryDate.value || hasExpired.value) return false;
-  return expiryDate.value.isBetween(today.value, threeMonthsFromNow.value, 'day', '[]');
-});
+  if (!expiryDate.value || hasExpired.value) return false
+  return expiryDate.value.isBetween(today.value, threeMonthsFromNow.value, 'day', '[]')
+})
 const daysUntilExpiry = computed(() => {
-  if (!expiryDate.value || hasExpired.value) return 0;
-  return expiryDate.value.diff(today.value, 'day');
-});
+  if (!expiryDate.value || hasExpired.value) return 0
+  return expiryDate.value.diff(today.value, 'day')
+})
 const isEligibleForRenewal = computed(() => {
-  if (!expiryDate.value) return false;
-  return isExpiringWithin3Months.value || hasExpired.value;
-});
-const isTooEarlyForRenewal = computed(() => expiryDate.value && !hasExpired.value && !isExpiringWithin3Months.value);
+  if (!expiryDate.value) return false
+  return isExpiringWithin3Months.value || hasExpired.value
+})
+const isTooEarlyForRenewal = computed(
+  () => expiryDate.value && !hasExpired.value && !isExpiringWithin3Months.value,
+)
 const tooEarlyMessage = computed(() => {
-  if (!isTooEarlyForRenewal.value) return '';
-  const days = daysUntilExpiry.value;
-  const formattedExpiry = formatDisplayDate(formData.value.expiry_date);
-  const relativeExpiry = expiryDate.value.from(today.value);
-  return `Your registration is valid until ${formattedExpiry} (${days} days remaining, ${relativeExpiry}). Renewal is only available when the registration has expired or is within 3 months of expiry.`;
-});
+  if (!isTooEarlyForRenewal.value) return ''
+  const days = daysUntilExpiry.value
+  const formattedExpiry = formatDisplayDate(formData.value.expiry_date)
+  const relativeExpiry = expiryDate.value.from(today.value)
+  return `Your registration is valid until ${formattedExpiry} (${days} days remaining, ${relativeExpiry}). Renewal is only available when the registration has expired or is within 3 months of expiry.`
+})
 const renewalEligibilityMessage = computed(() => {
-  if (!expiryDate.value) return 'Cannot determine eligibility without a valid expiry date.';
-  return 'Your registration is currently not eligible for renewal based on the criteria (nearing expiry or expired).';
-});
+  if (!expiryDate.value) return 'Cannot determine eligibility without a valid expiry date.'
+  return 'Your registration is currently not eligible for renewal based on the criteria (nearing expiry or expired).'
+})
 const getNewExpiryDate = computed(() => {
-  if (!expiryDate.value) return dayjs().add(5, 'year').toDate();
+  if (!expiryDate.value) return dayjs().add(5, 'year').toDate()
   // If expired, new expiry is 5 years from *today*
   // If not expired, new expiry is 5 years from the *current expiry date*
-  const baseDate = hasExpired.value ? dayjs() : expiryDate.value;
-  return baseDate.add(5, 'year').toDate();
-});
+  const baseDate = hasExpired.value ? dayjs() : expiryDate.value
+  return baseDate.add(5, 'year').toDate()
+})
 
 // --- CPD Computed Properties ---
 const getTotalCpdPoints = computed(() => {
-  if (!cpdRecords.value || cpdRecords.value.length === 0) return 0;
+  if (!cpdRecords.value || cpdRecords.value.length === 0) return 0
   return cpdRecords.value
-      .filter(record => record.review_status === 'Approved')
-      .reduce((total, record) => total + (Number(record.cpd_credit) || 0), 0);
-});
+    .filter((record) => record.review_status === 'Approved')
+    .reduce((total, record) => total + (Number(record.cpd_credit) || 0), 0)
+})
 const cpdStatus = computed(() => {
-  const points = getTotalCpdPoints.value;
-  if (points >= 60) return 'met';
-  if (points > 0) return 'below_minimum';
-  return 'none';
-});
+  const points = getTotalCpdPoints.value
+  if (points >= 60) return 'met'
+  if (points > 0) return 'below_minimum'
+  return 'none'
+})
 const cpdMessage = computed(() => {
-  const points = getTotalCpdPoints.value;
+  const points = getTotalCpdPoints.value
   switch (cpdStatus.value) {
-      case 'met': return `Good job! You have ${points} CPD points, meeting or exceeding the recommended 60 points.`;
-      case 'below_minimum': return `Warning: Your CPD score is ${points} points. While the recommended score is 60, you can still proceed with renewal. We encourage improving your score.`;
-      case 'none': return `Warning: You currently have 0 approved CPD points. The recommended score is 60. You can still proceed with renewal, but acquiring CPD points is highly recommended.`;
-      default: return 'Checking your CPD score status...';
+    case 'met':
+      return `Good job! You have ${points} CPD points, meeting or exceeding the recommended 60 points.`
+    case 'below_minimum':
+      return `Warning: Your CPD score is ${points} points. While the recommended score is 60, you can still proceed with renewal. We encourage improving your score.`
+    case 'none':
+      return `Warning: You currently have 0 approved CPD points. The recommended score is 60. You can still proceed with renewal, but acquiring CPD points is highly recommended.`
+    default:
+      return 'Checking your CPD score status...'
   }
-});
+})
 const cpdIcon = computed(() => {
   switch (cpdStatus.value) {
-      case 'met': return CheckCircle;
-      case 'below_minimum': case 'none': return TriangleAlert;
-      default: return Info;
+    case 'met':
+      return CheckCircle
+    case 'below_minimum':
+    case 'none':
+      return TriangleAlert
+    default:
+      return Info
   }
-});
+})
 const cpdCardClass = computed(() => {
   switch (cpdStatus.value) {
-      case 'met': return 'bg-green-100';
-      case 'below_minimum': case 'none': return 'bg-yellow-100';
-      default: return 'bg-gray-100';
+    case 'met':
+      return 'bg-green-100'
+    case 'below_minimum':
+    case 'none':
+      return 'bg-yellow-100'
+    default:
+      return 'bg-gray-100'
   }
-});
+})
 const cpdIconClass = computed(() => {
   switch (cpdStatus.value) {
-      case 'met': return 'text-green-600';
-      case 'below_minimum': case 'none': return 'text-yellow-600';
-      default: return 'text-gray-600';
+    case 'met':
+      return 'text-green-600'
+    case 'below_minimum':
+    case 'none':
+      return 'text-yellow-600'
+    default:
+      return 'text-gray-600'
   }
-});
+})
 const cpdProgressClass = computed(() => {
   switch (cpdStatus.value) {
-      case 'met': return 'bg-green-500';
-      case 'below_minimum': case 'none': return 'bg-yellow-500';
-      default: return 'bg-gray-500';
+    case 'met':
+      return 'bg-green-500'
+    case 'below_minimum':
+    case 'none':
+      return 'bg-yellow-500'
+    default:
+      return 'bg-gray-500'
   }
-});
+})
 const cpdTextClass = computed(() => {
   switch (cpdStatus.value) {
-      case 'met': return 'bg-green-200 text-green-800';
-      case 'below_minimum': case 'none': return 'bg-yellow-200 text-yellow-800';
-      default: return 'bg-gray-200 text-gray-800';
+    case 'met':
+      return 'bg-green-200 text-green-800'
+    case 'below_minimum':
+    case 'none':
+      return 'bg-yellow-200 text-yellow-800'
+    default:
+      return 'bg-gray-200 text-gray-800'
   }
-});
+})
 const cpdMessageBgClass = computed(() => {
   switch (cpdStatus.value) {
-      case 'met': return 'bg-green-50 text-green-800';
-      case 'below_minimum': case 'none': return 'bg-yellow-50 text-yellow-800';
-      default: return 'bg-gray-50 text-gray-800';
+    case 'met':
+      return 'bg-green-50 text-green-800'
+    case 'below_minimum':
+    case 'none':
+      return 'bg-yellow-50 text-yellow-800'
+    default:
+      return 'bg-gray-50 text-gray-800'
   }
-});
+})
 const cpdMessageIconColor = computed(() => {
   switch (cpdStatus.value) {
-      case 'met': return 'text-green-500';
-      case 'below_minimum': case 'none': return 'text-yellow-500';
-      default: return 'text-gray-500';
+    case 'met':
+      return 'text-green-500'
+    case 'below_minimum':
+    case 'none':
+      return 'text-yellow-500'
+    default:
+      return 'text-gray-500'
   }
-});
-
+})
 
 // Lifecycle Hook
 onMounted(async () => {
-  await healthStore.initialize(); // Check for existing renewal first
+  await healthStore.initialize() // Check for existing renewal first
   if (!healthStore.visibleMenus.hasRenewalInProgress) {
-      await fetchApplicationData();
+    await fetchApplicationData()
   } else {
-      isLoading.value = false; // Don't show loader if renewal exists
+    isLoading.value = false // Don't show loader if renewal exists
   }
-});
+})
 
 // Methods
 const fetchApplicationData = async () => {
-  isLoading.value = true;
-  loadError.value = '';
+  isLoading.value = true
+  loadError.value = ''
   try {
-      const userCid = authStore.user?.cid;
-      if (!userCid) throw new Error('User CID not found. Please log in.');
+    const userCid = authStore.user?.cid
+    if (!userCid) throw new Error('User CID not found. Please log in.')
 
-      // Fetch the list of applications for the user
-      const response = await apiService.getMhpcNewApplications({ params: { cid: userCid } });
-      let applications = [];
-      if (Array.isArray(response.data)) applications = response.data;
-      else if (response.data && Array.isArray(response.data.results)) applications = response.data.results;
-      else throw new Error('Unexpected response format fetching applications.');
+    // Fetch the list of applications for the user
+    const response = await apiService.getMhpcNewApplications({ params: { cid: userCid } })
+    let applications = []
+    if (Array.isArray(response.data)) applications = response.data
+    else if (response.data && Array.isArray(response.data.results))
+      applications = response.data.results
+    else throw new Error('Unexpected response format fetching applications.')
 
-      if (applications.length === 0) {
-           throw new Error('No existing application found for your CID. Cannot proceed with renewal.');
-      }
+    if (applications.length === 0) {
+      throw new Error('No existing application found for your CID. Cannot proceed with renewal.')
+    }
 
-      // Find the latest *approved* application to get details from
-      // Sort by expiry date descending to get the most recent one
-      applications.sort((a, b) => dayjs(b.expiry_date).isAfter(dayjs(a.expiry_date)) ? 1 : -1);
-      const latestApplication = applications.find(app => app.is_active) || applications[0]; // Prefer active, fallback to latest expiry
+    // Find the latest *approved* application to get details from
+    // Sort by expiry date descending to get the most recent one
+    applications.sort((a, b) => (dayjs(b.expiry_date).isAfter(dayjs(a.expiry_date)) ? 1 : -1))
+    const latestApplication = applications.find((app) => app.is_active) || applications[0] // Prefer active, fallback to latest expiry
 
+    if (!latestApplication || !latestApplication.id || !latestApplication.expiry_date) {
+      throw new Error('Could not find a suitable previous application record for renewal.')
+    }
 
-      if (!latestApplication || !latestApplication.id || !latestApplication.expiry_date) {
-           throw new Error('Could not find a suitable previous application record for renewal.');
-      }
+    formData.value = {
+      id: latestApplication.id, // ID of the *original* application being renewed
+      cid_no: latestApplication.cid_no || '',
+      full_name: latestApplication.full_name || '',
+      gender: latestApplication.gender || '',
+      date_of_birth: latestApplication.date_of_birth || '',
+      contact_no: latestApplication.contact_no || '',
+      email_address: latestApplication.email_address || '',
+      village: latestApplication.village || '',
+      gewog: latestApplication.gewog || '',
+      dzongkhag: latestApplication.dzongkhag || '',
+      registration_date: latestApplication.registration_date || '',
+      expiry_date: latestApplication.expiry_date || '',
+      registration_type: latestApplication.registration_type,
+      is_active: latestApplication.is_active,
+    }
 
-
-      formData.value = {
-          id: latestApplication.id, // ID of the *original* application being renewed
-          cid_no: latestApplication.cid_no || '',
-          full_name: latestApplication.full_name || '',
-          gender: latestApplication.gender || '',
-          date_of_birth: latestApplication.date_of_birth || '',
-          contact_no: latestApplication.contact_no || '',
-          email_address: latestApplication.email_address || '',
-          village: latestApplication.village || '',
-          gewog: latestApplication.gewog || '',
-          dzongkhag: latestApplication.dzongkhag || '',
-          registration_date: latestApplication.registration_date || '',
-          expiry_date: latestApplication.expiry_date || '',
-          registration_type: latestApplication.registration_type,
-          is_active: latestApplication.is_active,
-      };
-
-      await fetchCpdRecords(userCid);
-
+    await fetchCpdRecords(userCid)
   } catch (error) {
-      console.error('Error fetching application data:', error);
-      loadError.value = error.message || 'Failed to load application data. Please try again.';
-      // Reset crucial fields if loading failed
-      formData.value = { ...formData.value, id: null, expiry_date: null, is_active: false };
+    console.error('Error fetching application data:', error)
+    loadError.value = error.message || 'Failed to load application data. Please try again.'
+    // Reset crucial fields if loading failed
+    formData.value = { ...formData.value, id: null, expiry_date: null, is_active: false }
   } finally {
-      isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const fetchCpdRecords = async (cid) => {
   if (!cid) {
-      cpdLoadError.value = 'Cannot fetch CPD records without a CID.';
-      return;
+    cpdLoadError.value = 'Cannot fetch CPD records without a CID.'
+    return
   }
-  isCpdLoading.value = true;
-  cpdLoadError.value = '';
-  cpdRecords.value = [];
+  isCpdLoading.value = true
+  cpdLoadError.value = ''
+  cpdRecords.value = []
   try {
-      const response = await apiService.getMhpcCpdRecordsByCid(cid);
-      cpdRecords.value = (response && Array.isArray(response.data)) ? response.data : [];
+    const response = await apiService.getMhpcCpdRecordsByCid(cid)
+    cpdRecords.value = response && Array.isArray(response.data) ? response.data : []
   } catch (error) {
-      console.error('Error fetching CPD records:', error);
-      cpdLoadError.value = error.response?.data?.detail || error.message || 'Failed to load CPD records.';
-      cpdRecords.value = [];
+    console.error('Error fetching CPD records:', error)
+    cpdLoadError.value =
+      error.response?.data?.detail || error.message || 'Failed to load CPD records.'
+    cpdRecords.value = []
   } finally {
-      isCpdLoading.value = false;
+    isCpdLoading.value = false
   }
-};
+}
 
 const formatDisplayDate = (dateString) => {
-  if (!dateString) return 'N/A';
-  const date = dayjs(dateString);
-  return date.isValid() ? date.format('MMM D, YYYY') : 'Invalid Date';
-};
+  if (!dateString) return 'N/A'
+  const date = dayjs(dateString)
+  return date.isValid() ? date.format('MMM D, YYYY') : 'Invalid Date'
+}
 
 const formatDateForAPI = (date) => {
-  const d = dayjs(date);
-  return d.isValid() ? d.format('YYYY-MM-DD') : null;
-};
+  const d = dayjs(date)
+  return d.isValid() ? d.format('YYYY-MM-DD') : null
+}
 
 const handleSubmit = () => {
   if (!declaration.value) {
-      toast.warning('Please accept the declaration to proceed.');
-      return;
+    toast.warning('Please accept the declaration to proceed.')
+    return
   }
   if (!isEligibleForRenewal.value) {
-      toast.error('Your application is currently not eligible for renewal.');
-      return;
+    toast.error('Your application is currently not eligible for renewal.')
+    return
   }
-  showConfirmation.value = true; // Open confirmation dialog
-};
+  showConfirmation.value = true // Open confirmation dialog
+}
 
 const confirmSubmit = async () => {
-  showConfirmation.value = false; // Close confirmation dialog
-  isSubmitting.value = true;      // Start initial submission indicator
-  createdRenewalId.value = null;  // Reset renewal ID
+  showConfirmation.value = false // Close confirmation dialog
+  isSubmitting.value = true // Start initial submission indicator
+  createdRenewalId.value = null // Reset renewal ID
 
   if (!formData.value.id) {
-      toast.error('Original Application ID is missing. Cannot submit renewal.');
-      isSubmitting.value = false;
-      return;
+    toast.error('Original Application ID is missing. Cannot submit renewal.')
+    isSubmitting.value = false
+    return
   }
 
   try {
-      // 1. Fetch original application to find the primary qualification ID
-      const appResponse = await apiService.getMhpcNewApplication(formData.value.id);
-      const application = appResponse.data;
-      if (!application.user_qualifications?.length) {
-          throw new Error('No qualifications found on the original application.');
-      }
-      // Find the qualification linked to the original application's active/expiry status
-      // Usually the primary one, but check logic if multiple qualifications exist per application
-      const primaryQualification = application.user_qualifications.find(q => q.is_primary_qualification) || application.user_qualifications[0];
-      const qualificationIdToRenew = primaryQualification?.id;
+    // 1. Fetch original application to find the primary qualification ID
+    const appResponse = await apiService.getMhpcNewApplication(formData.value.id)
+    const application = appResponse.data
+    if (!application.user_qualifications?.length) {
+      throw new Error('No qualifications found on the original application.')
+    }
+    // Find the qualification linked to the original application's active/expiry status
+    // Usually the primary one, but check logic if multiple qualifications exist per application
+    const primaryQualification =
+      application.user_qualifications.find((q) => q.is_primary_qualification) ||
+      application.user_qualifications[0]
+    const qualificationIdToRenew = primaryQualification?.id
 
-      if (!qualificationIdToRenew) {
-          throw new Error('Could not determine which qualification to link the renewal to.');
-      }
+    if (!qualificationIdToRenew) {
+      throw new Error('Could not determine which qualification to link the renewal to.')
+    }
 
-      // 2. Prepare Renewal Payload
-      const formattedNewExpiryDate = formatDateForAPI(getNewExpiryDate.value);
-      if (!formattedNewExpiryDate) {
-          throw new Error('Invalid new expiry date calculated.');
-      }
+    // 2. Prepare Renewal Payload
+    const formattedNewExpiryDate = formatDateForAPI(getNewExpiryDate.value)
+    if (!formattedNewExpiryDate) {
+      throw new Error('Invalid new expiry date calculated.')
+    }
 
-      const renewalPayload = {
-          user_qualification: qualificationIdToRenew, // Link to the specific qualification being renewed
-          new_expiry_date: formattedNewExpiryDate,
-          renewal_review_status: 'Pending', // Initial status
-          renewal_review_remarks: remarks.value || '',
-          renewal_endorsement_decision: 'Pending', // Initial status
-          payment_status: 'pending', // Set initial payment status
-          // Add any other fields required by your `createMhpcRenewal` endpoint
-      };
+    const renewalPayload = {
+      user_qualification: qualificationIdToRenew, // Link to the specific qualification being renewed
+      new_expiry_date: formattedNewExpiryDate,
+      renewal_review_status: 'Pending', // Initial status
+      renewal_review_remarks: remarks.value || '',
+      renewal_endorsement_decision: 'Pending', // Initial status
+      payment_status: 'pending', // Set initial payment status
+      // Add any other fields required by your `createMhpcRenewal` endpoint
+    }
 
-      // 3. Create the Renewal Record via API
-      // **** VERIFY THIS API CALL and RESPONSE ****
-      const renewalResponse = await apiService.createMhpcRenewal(renewalPayload);
+    // 3. Create the Renewal Record via API
+    // **** VERIFY THIS API CALL and RESPONSE ****
+    const renewalResponse = await apiService.createMhpcRenewal(renewalPayload)
 
-      // 4. Check if the API returned the new renewal ID
-      if (renewalResponse && renewalResponse.data && renewalResponse.data.id) {
-           createdRenewalId.value = renewalResponse.data.id; // Store the ID
-           toast.info('Renewal request submitted. Please proceed with the payment.');
-           initiateRenewalPayment(); // Trigger payment modal automatically
-      } else {
-           // Fallback if ID is not returned (less ideal)
-           console.warn("Renewal created, but API did not return the new renewal ID. Payment cannot be automatically initiated.");
-           toast.success('Renewal application submitted successfully! Check "My Applications" for payment status or contact support.');
-           await healthStore.initialize(); // Update store state
-           router.push('/admin/user/health_certification/my_applications'); // Navigate away if ID unknown
-      }
-
+    // 4. Check if the API returned the new renewal ID
+    if (renewalResponse && renewalResponse.data && renewalResponse.data.id) {
+      createdRenewalId.value = renewalResponse.data.id // Store the ID
+      toast.info('Renewal request submitted. Please proceed with the payment.')
+      initiateRenewalPayment() // Trigger payment modal automatically
+    } else {
+      // Fallback if ID is not returned (less ideal)
+      console.warn(
+        'Renewal created, but API did not return the new renewal ID. Payment cannot be automatically initiated.',
+      )
+      toast.success(
+        'Renewal application submitted successfully! Check "My Applications" for payment status or contact support.',
+      )
+      await healthStore.initialize() // Update store state
+      router.push('/admin/user/health_certification/my_applications') // Navigate away if ID unknown
+    }
   } catch (error) {
-      console.error('Error submitting renewal:', error);
-      const errorMsg = error.response?.data?.detail || error.response?.data?.message || (typeof error.response?.data === 'object' ? JSON.stringify(error.response.data) : null) || error.message || 'Failed to submit renewal. Please try again.';
-      toast.error(`Submission Failed: ${errorMsg}`);
-      createdRenewalId.value = null; // Clear ID on error
+    console.error('Error submitting renewal:', error)
+    const errorMsg =
+      error.response?.data?.detail ||
+      error.response?.data?.message ||
+      (typeof error.response?.data === 'object' ? JSON.stringify(error.response.data) : null) ||
+      error.message ||
+      'Failed to submit renewal. Please try again.'
+    toast.error(`Submission Failed: ${errorMsg}`)
+    createdRenewalId.value = null // Clear ID on error
   } finally {
-      // Stop *only* the initial submission indicator. Payment has its own indicator.
-      isSubmitting.value = false;
+    // Stop *only* the initial submission indicator. Payment has its own indicator.
+    isSubmitting.value = false
   }
-};
+}
 
 const initiateRenewalPayment = () => {
   if (!createdRenewalId.value) {
-      toast.error("Cannot initiate payment: Renewal ID is missing.");
-      return;
+    toast.error('Cannot initiate payment: Renewal ID is missing.')
+    return
   }
   if (paymentModalRef.value) {
-      paymentModalRef.value.openModal(); // Open the PaymentModal component instance
+    paymentModalRef.value.openModal() // Open the PaymentModal component instance
   } else {
-      console.error("Payment modal reference is not available.");
-      toast.error("Payment modal could not be opened.");
+    console.error('Payment modal reference is not available.')
+    toast.error('Payment modal could not be opened.')
   }
-};
+}
 
 const handlePaymentCompleted = async (paymentData) => {
   if (!createdRenewalId.value) {
-      toast.error('Cannot process payment: Renewal ID is missing.');
-      return;
+    toast.error('Cannot process payment: Renewal ID is missing.')
+    return
   }
 
-  const paymentId = paymentData.paymentHash;
-  const user = authStore.user;
+  const paymentId = paymentData.paymentHash
+  const user = authStore.user
 
   if (!user?.contact_number || !user?.email || !user?.cid || !user?.id) {
-      toast.error('Missing user information. Please update your profile before paying.');
-      return;
+    toast.error('Missing user information. Please update your profile before paying.')
+    return
   }
 
-  isProcessingPayment.value = true; // Start payment processing indicator
+  isProcessingPayment.value = true // Start payment processing indicator
 
   try {
-      // 1. Call makePayment API (Payment Gateway Interaction)
-      const paymentInitiationFormData = new FormData();
-      paymentInitiationFormData.append('refNo', paymentId);
-      // **** VERIFY serviceCode and app_type for RENEWAL ****
-      paymentInitiationFormData.append('serviceCode', '100197'); // Example code for Renewal
-      paymentInitiationFormData.append('taxPayerName', user.cid); // Assuming name is CID here
-      paymentInitiationFormData.append('taxPayerNo', user.cid);
-      paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);
-      paymentInitiationFormData.append('totalPayableAmount', renewalAmount.value);
-      paymentInitiationFormData.append('description', 'MHPC Registration Renewal Fee');
-      paymentInitiationFormData.append('mobileNo', user.contact_number);
-      paymentInitiationFormData.append('payerEmail', user.email);
-      paymentInitiationFormData.append('user', user.id); // User's system ID
-      paymentInitiationFormData.append('payableAmount', renewalAmount.value);
-      paymentInitiationFormData.append('application_no', createdRenewalId.value); // Crucial: Use the stored RENEWAL ID
-      paymentInitiationFormData.append('app_type', 'renewal_for_health_certification'); // Example type for Renewal
+    // 1. Call makePayment API (Payment Gateway Interaction)
+    const paymentInitiationFormData = new FormData()
+    paymentInitiationFormData.append('refNo', paymentId)
+    // **** VERIFY serviceCode and app_type for RENEWAL ****
+    paymentInitiationFormData.append('serviceCode', '100197') // Example code for Renewal
+    paymentInitiationFormData.append('taxPayerName', user.cid) // Assuming name is CID here
+    paymentInitiationFormData.append('taxPayerNo', user.cid)
+    paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
+    paymentInitiationFormData.append('totalPayableAmount', renewalAmount.value)
+    paymentInitiationFormData.append('description', 'MHPC Registration Renewal Fee')
+    paymentInitiationFormData.append('mobileNo', user.contact_number)
+    paymentInitiationFormData.append('payerEmail', user.email)
+    paymentInitiationFormData.append('user', user.id) // User's system ID
+    paymentInitiationFormData.append('payableAmount', renewalAmount.value)
+    paymentInitiationFormData.append('application_no', createdRenewalId.value) // Crucial: Use the stored RENEWAL ID
+    paymentInitiationFormData.append('app_type', 'renewal_for_health_certification') // Example type for Renewal
 
-      await apiService.makePayment(paymentInitiationFormData);
+    await apiService.makePayment(paymentInitiationFormData)
 
-      // 2. Update the Renewal Record's status in *your* backend
-      // **** VERIFY THIS API CALL (PATCH endpoint for Renewals) ****
-      const updatePayload = new FormData();
-      updatePayload.append('payment_id', paymentId);
-      updatePayload.append('payment_status', 'processing_payment'); // Or 'completed' if backend verifies instantly
+    // 2. Update the Renewal Record's status in *your* backend
+    // **** VERIFY THIS API CALL (PATCH endpoint for Renewals) ****
+    const updatePayload = new FormData()
+    updatePayload.append('payment_id', paymentId)
+    updatePayload.append('payment_status', 'processing_payment') // Or 'completed' if backend verifies instantly
 
-      // Assumes an endpoint like: patchMhpcRenewal(renewalId, payload) exists
-      await apiService.patchMhpcRenewal(createdRenewalId.value, updatePayload);
+    // Assumes an endpoint like: patchMhpcRenewal(renewalId, payload) exists
+    await apiService.patchMhpcRenewal(createdRenewalId.value, updatePayload)
 
-      toast.success(`Payment successful (Ref: ${paymentId.substring(0, 8)}...). Your renewal is being processed.`);
+    toast.success(
+      `Payment successful (Ref: ${paymentId.substring(0, 8)}...). Your renewal is being processed.`,
+    )
 
-      // 3. Refresh global state and navigate
-      await healthStore.initialize(); // Update store to reflect renewal in progress
-      router.push('/admin/user/health_certification/my_applications'); // Navigate to tracker
-
+    // 3. Refresh global state and navigate
+    await healthStore.initialize() // Update store to reflect renewal in progress
+    router.push('/admin/user/health_certification/my_applications') // Navigate to tracker
   } catch (error) {
-      console.error('Payment handling error:', error.response || error.request || error);
-      let errorMsg = 'An error occurred while confirming the payment.';
-      if (error.response?.data) {
-          const detail = error.response.data.detail || JSON.stringify(error.response.data);
-          errorMsg = `Payment API Error: ${detail}`;
-      } else if (error.request) {
-          errorMsg = 'Network Error: Could not reach the server to confirm payment.';
-      }
-      toast.error(`${errorMsg} Contact support with payment ref ${paymentId} if issue persists.`);
-       // Optionally: Update renewal status back to 'pending' or 'failed' in backend if patch fails
+    console.error('Payment handling error:', error.response || error.request || error)
+    let errorMsg = 'An error occurred while confirming the payment.'
+    if (error.response?.data) {
+      const detail = error.response.data.detail || JSON.stringify(error.response.data)
+      errorMsg = `Payment API Error: ${detail}`
+    } else if (error.request) {
+      errorMsg = 'Network Error: Could not reach the server to confirm payment.'
+    }
+    toast.error(`${errorMsg} Contact support with payment ref ${paymentId} if issue persists.`)
+    // Optionally: Update renewal status back to 'pending' or 'failed' in backend if patch fails
   } finally {
-      isProcessingPayment.value = false; // Stop payment processing indicator
-      createdRenewalId.value = null; // Clear the ID after processing attempt
-      if (paymentModalRef.value) {
-          paymentModalRef.value.closeModal(); // Ensure modal is closed
-      }
+    isProcessingPayment.value = false // Stop payment processing indicator
+    createdRenewalId.value = null // Clear the ID after processing attempt
+    if (paymentModalRef.value) {
+      paymentModalRef.value.closeModal() // Ensure modal is closed
+    }
   }
-};
+}
 
 const closePaymentModal = () => {
-  console.log('Payment modal closed.');
+  console.log('Payment modal closed.')
   // Optional: Navigate if payment was cancelled
   // if (!isProcessingPayment.value && createdRenewalId.value) {
   //    toast.info("Payment cancelled. You can complete it later from 'My Applications'.")
   //    router.push('/admin/user/health_certification/my_applications');
   // }
   // Always clear the ID if modal is closed without completing the process
-  createdRenewalId.value = null;
-};
+  createdRenewalId.value = null
+}
 
 const handleCancel = () => {
-  router.push('/admin/user/health_certification/dashboard');
-};
-
+  router.push('/admin/user/health_certification/dashboard')
+}
 </script>
 
 <style scoped>
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 .animate-spin {
   animation: spin 1s linear infinite;

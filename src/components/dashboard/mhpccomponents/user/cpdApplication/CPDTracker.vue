@@ -78,7 +78,8 @@
             class="flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0 pb-4 mb-4 border-b border-gray-100"
           >
             <div>
-              <h3 class="text-lg font-semibold text-gray-900 mb-1"> <!-- Slightly smaller title -->
+              <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                <!-- Slightly smaller title -->
                 {{ record.title_of_cpd || 'N/A' }}
               </h3>
               <div class="flex items-center space-x-3">
@@ -188,10 +189,15 @@
           <div v-if="record.attachment" class="flex items-center space-x-3">
             <FileText class="w-5 h-5 text-indigo-600 flex-shrink-0" />
             <span class="font-medium text-gray-700 text-sm">Supporting Document Attached</span>
-             <!-- Optional: Display filename if available and useful -->
-             <!-- <span class="text-xs text-gray-500 italic ml-1">({{ getFileName(record.attachment) }})</span> -->
-            <a :href="record.attachment" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 hover:underline text-sm ml-auto font-medium">
-                View Document
+            <!-- Optional: Display filename if available and useful -->
+            <!-- <span class="text-xs text-gray-500 italic ml-1">({{ getFileName(record.attachment) }})</span> -->
+            <a
+              :href="record.attachment"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-600 hover:text-blue-800 hover:underline text-sm ml-auto font-medium"
+            >
+              View Document
             </a>
           </div>
           <div v-else class="flex items-center space-x-3 text-gray-500">
@@ -199,7 +205,6 @@
             <span class="text-sm italic">No supporting document attached.</span>
           </div>
         </div>
-
       </div>
     </transition-group>
   </div>
@@ -211,17 +216,17 @@ import apiService from '@/services/services'
 import { useAuthStore } from '@/stores/authStore'
 import PageHeader from '@/components/common/MHPC/PageHeader.vue'
 import {
-    FileText,
-    IdCard,
-    User,
-    Users,
-    CreditCard,
-    Calendar,
-    GraduationCap,
-    BookOpen,
-    Target,
-    ListChecks,
-    // Download icon is no longer needed here unless used elsewhere
+  FileText,
+  IdCard,
+  User,
+  Users,
+  CreditCard,
+  Calendar,
+  GraduationCap,
+  BookOpen,
+  Target,
+  ListChecks,
+  // Download icon is no longer needed here unless used elsewhere
 } from 'lucide-vue-next'
 
 // --- State ---
@@ -233,87 +238,84 @@ const authStore = useAuthStore()
 
 // --- Computed Properties ---
 const filteredApplications = computed(() => {
-    if (!authStore.user || !authStore.user.cid) {
-        console.warn('User or User CID not available for filtering CPD records.')
-        return []
-    }
-    const userCid = authStore.user.cid
-    // Sort by creation date, newest first
-    return applications.value
-        .filter((app) => app.cid_no === userCid)
-        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // Added sorting
+  if (!authStore.user || !authStore.user.cid) {
+    console.warn('User or User CID not available for filtering CPD records.')
+    return []
+  }
+  const userCid = authStore.user.cid
+  // Sort by creation date, newest first
+  return applications.value
+    .filter((app) => app.cid_no === userCid)
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // Added sorting
 })
 
 // --- Methods ---
 const fetchCpdRecords = async () => {
-    try {
-        // Assuming pagination might exist, fetch all relevant records if needed
-        // Adjust limit/offset or handle pagination if API supports it
-        const response = await apiService.getMhpcCpdRecords({ limit: 1000 }) // Example: Fetch up to 1000 records
-        if (response.data && Array.isArray(response.data.results)) {
-            applications.value = response.data.results
-            console.log(`Fetched ${applications.value.length} CPD records.`)
-        } else {
-            console.error('API did not return an array of results for CPD records:', response.data)
-            applications.value = []
-            apiError.value = true
-        }
-    } catch (error) {
-        console.error('Error fetching CPD records:', error)
-        applications.value = []
-        apiError.value = true
+  try {
+    // Assuming pagination might exist, fetch all relevant records if needed
+    // Adjust limit/offset or handle pagination if API supports it
+    const response = await apiService.getMhpcCpdRecords({ limit: 1000 }) // Example: Fetch up to 1000 records
+    if (response.data && Array.isArray(response.data.results)) {
+      applications.value = response.data.results
+      console.log(`Fetched ${applications.value.length} CPD records.`)
+    } else {
+      console.error('API did not return an array of results for CPD records:', response.data)
+      applications.value = []
+      apiError.value = true
     }
+  } catch (error) {
+    console.error('Error fetching CPD records:', error)
+    applications.value = []
+    apiError.value = true
+  }
 }
 
 const fetchCpdActivityTypes = async () => {
-    try {
-        const response = await apiService.getMhpcMastersCpdActivities({ limit: 1000 }) // Fetch all types
-        if (response.data && Array.isArray(response.data.results)) {
-            cpdActivityTypesMasterList.value = response.data.results
-            console.log(`Fetched ${cpdActivityTypesMasterList.value.length} CPD Activity Types.`)
-        } else {
-            console.error(
-                'API did not return an array of results for CPD Activity Types:',
-                response.data
-            )
-            cpdActivityTypesMasterList.value = []
-            // Decide if this error should block the whole page or just affect type name display
-            // apiError.value = true; // Maybe not fatal?
-        }
-    } catch (error) {
-        console.error('Error fetching CPD Activity Types:', error)
-        cpdActivityTypesMasterList.value = []
-        // apiError.value = true; // Maybe not fatal?
+  try {
+    const response = await apiService.getMhpcMastersCpdActivities({ limit: 1000 }) // Fetch all types
+    if (response.data && Array.isArray(response.data.results)) {
+      cpdActivityTypesMasterList.value = response.data.results
+      console.log(`Fetched ${cpdActivityTypesMasterList.value.length} CPD Activity Types.`)
+    } else {
+      console.error('API did not return an array of results for CPD Activity Types:', response.data)
+      cpdActivityTypesMasterList.value = []
+      // Decide if this error should block the whole page or just affect type name display
+      // apiError.value = true; // Maybe not fatal?
     }
+  } catch (error) {
+    console.error('Error fetching CPD Activity Types:', error)
+    cpdActivityTypesMasterList.value = []
+    // apiError.value = true; // Maybe not fatal?
+  }
 }
 
 const getActivityTypeName = (activityId) => {
-    if (!activityId) return 'N/A'
-    if (cpdActivityTypesMasterList.value.length === 0) {
-        console.warn('CPD Activity Types list is empty, cannot map ID:', activityId)
-        return `ID: ${activityId}` // Return ID if list isn't loaded
-    }
-    const activityType = cpdActivityTypesMasterList.value.find((type) => type.id === activityId)
-    return activityType ? activityType.cpd_activity_name : `Unknown Type (ID: ${activityId})` // More informative fallback
+  if (!activityId) return 'N/A'
+  if (cpdActivityTypesMasterList.value.length === 0) {
+    console.warn('CPD Activity Types list is empty, cannot map ID:', activityId)
+    return `ID: ${activityId}` // Return ID if list isn't loaded
+  }
+  const activityType = cpdActivityTypesMasterList.value.find((type) => type.id === activityId)
+  return activityType ? activityType.cpd_activity_name : `Unknown Type (ID: ${activityId})` // More informative fallback
 }
 
 const formatDisplayDate = (dateString) => {
-    if (!dateString) return 'N/A'
-    try {
-        // More robust date formatting
-        return new Intl.DateTimeFormat('en-GB', {
-            // Example: Use UK format DD/MM/YYYY
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            // Optional: Add time if needed
-            // hour: '2-digit',
-            // minute: '2-digit',
-        }).format(new Date(dateString))
-    } catch (e) {
-        console.error('Error formatting date:', dateString, e)
-        return 'Invalid Date'
-    }
+  if (!dateString) return 'N/A'
+  try {
+    // More robust date formatting
+    return new Intl.DateTimeFormat('en-GB', {
+      // Example: Use UK format DD/MM/YYYY
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      // Optional: Add time if needed
+      // hour: '2-digit',
+      // minute: '2-digit',
+    }).format(new Date(dateString))
+  } catch (e) {
+    console.error('Error formatting date:', dateString, e)
+    return 'Invalid Date'
+  }
 }
 
 // Optional: Helper to get filename from URL
@@ -330,20 +332,20 @@ const formatDisplayDate = (dateString) => {
 
 // --- Lifecycle Hook ---
 onMounted(async () => {
-    isLoading.value = true
-    apiError.value = false // Reset error state on mount
+  isLoading.value = true
+  apiError.value = false // Reset error state on mount
 
-    // Fetch data concurrently
-    const results = await Promise.allSettled([fetchCpdRecords(), fetchCpdActivityTypes()])
+  // Fetch data concurrently
+  const results = await Promise.allSettled([fetchCpdRecords(), fetchCpdActivityTypes()])
 
-    // Check if any critical fetch failed
-    if (results[0].status === 'rejected') {
-        // Check if fetching records failed
-        apiError.value = true
-    }
-    // You might decide fetchCpdActivityTypes failing isn't critical enough to set apiError = true
+  // Check if any critical fetch failed
+  if (results[0].status === 'rejected') {
+    // Check if fetching records failed
+    apiError.value = true
+  }
+  // You might decide fetchCpdActivityTypes failing isn't critical enough to set apiError = true
 
-    isLoading.value = false
+  isLoading.value = false
 })
 </script>
 
@@ -351,22 +353,22 @@ onMounted(async () => {
 /* List Transition Animations */
 .list-enter-active,
 .list-leave-active {
-    transition: all 0.5s ease;
+  transition: all 0.5s ease;
 }
 
 .list-enter-from,
 .list-leave-to {
-    opacity: 0;
-    transform: translateY(20px); /* Slightly smaller translate */
+  opacity: 0;
+  transform: translateY(20px); /* Slightly smaller translate */
 }
 
 /* Ensure icons align nicely */
 .flex svg {
-    flex-shrink: 0; /* Prevent icons from shrinking */
+  flex-shrink: 0; /* Prevent icons from shrinking */
 }
 
 /* Consistent vertical alignment for icon/text pairs */
 .flex.items-start > svg {
-    margin-top: 0.125rem; /* Adjust as needed for alignment with text-sm */
+  margin-top: 0.125rem; /* Adjust as needed for alignment with text-sm */
 }
 </style>

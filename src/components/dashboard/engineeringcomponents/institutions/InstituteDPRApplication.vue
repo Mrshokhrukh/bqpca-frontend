@@ -75,7 +75,9 @@
             />
           </div>
           <div>
-            <label for="contactNo" class="block text-sm font-medium text-gray-700">Contact No.:</label>
+            <label for="contactNo" class="block text-sm font-medium text-gray-700"
+              >Contact No.:</label
+            >
             <input
               type="text"
               id="contactNo"
@@ -84,7 +86,9 @@
             />
           </div>
           <div>
-            <label for="emailAddress" class="block text-sm font-medium text-gray-700">Email Address:</label>
+            <label for="emailAddress" class="block text-sm font-medium text-gray-700"
+              >Email Address:</label
+            >
             <input
               type="email"
               id="emailAddress"
@@ -96,12 +100,16 @@
 
         <!-- Institute Establishment Proposal Details Section -->
         <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
-          <h3 class="text-lg font-semibold text-gray-900">2. Institute Establishment Proposal Details</h3>
+          <h3 class="text-lg font-semibold text-gray-900">
+            2. Institute Establishment Proposal Details
+          </h3>
           <p class="mt-1 text-sm text-gray-500">Enter the details of the proposed institution.</p>
         </div>
         <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="institutionName" class="block text-sm font-medium text-gray-700">Name of Institution:</label>
+            <label for="institutionName" class="block text-sm font-medium text-gray-700"
+              >Name of Institution:</label
+            >
             <input
               type="text"
               id="institutionName"
@@ -121,7 +129,9 @@
             />
           </div>
           <div>
-            <label for="gewogState" class="block text-sm font-medium text-gray-700">Gewog/State:</label>
+            <label for="gewogState" class="block text-sm font-medium text-gray-700"
+              >Gewog/State:</label
+            >
             <input
               type="text"
               id="gewogState"
@@ -131,7 +141,9 @@
             />
           </div>
           <div>
-            <label for="chiwog" class="block text-sm font-medium text-gray-700">Chiwog/Chiwog:</label>
+            <label for="chiwog" class="block text-sm font-medium text-gray-700"
+              >Chiwog/Chiwog:</label
+            >
             <input
               type="text"
               id="chiwog"
@@ -141,7 +153,9 @@
             />
           </div>
           <div>
-            <label for="teachingInstitute" class="block text-sm font-medium text-gray-700">Teaching Institute:</label>
+            <label for="teachingInstitute" class="block text-sm font-medium text-gray-700"
+              >Teaching Institute:</label
+            >
             <input
               type="text"
               id="teachingInstitute"
@@ -151,7 +165,9 @@
             />
           </div>
           <div>
-            <label for="courseTitle" class="block text-sm font-medium text-gray-700">Title of the Course:</label>
+            <label for="courseTitle" class="block text-sm font-medium text-gray-700"
+              >Title of the Course:</label
+            >
             <input
               type="text"
               id="courseTitle"
@@ -161,7 +177,9 @@
             />
           </div>
           <div>
-            <label for="courseDuration" class="block text-sm font-medium text-gray-700">Course Duration:</label>
+            <label for="courseDuration" class="block text-sm font-medium text-gray-700"
+              >Course Duration:</label
+            >
             <input
               type="text"
               id="courseDuration"
@@ -171,7 +189,9 @@
             />
           </div>
           <div>
-            <label for="commencementDate" class="block text-sm font-medium text-gray-700">Commencement Date:</label>
+            <label for="commencementDate" class="block text-sm font-medium text-gray-700"
+              >Commencement Date:</label
+            >
             <input
               type="text"
               id="commencementDate"
@@ -181,7 +201,9 @@
             />
           </div>
           <div>
-            <label for="programmeType" class="block text-sm font-medium text-gray-700">Type of Programme:</label>
+            <label for="programmeType" class="block text-sm font-medium text-gray-700"
+              >Type of Programme:</label
+            >
             <input
               type="text"
               id="programmeType"
@@ -195,7 +217,9 @@
         <!-- Head of Institution Details Section -->
         <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
           <h3 class="text-lg font-semibold text-gray-900">3. Head of Institution Details</h3>
-          <p class="mt-1 text-sm text-gray-500">Enter the details of the head of the institution.</p>
+          <p class="mt-1 text-sm text-gray-500">
+            Enter the details of the head of the institution.
+          </p>
         </div>
         <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -219,7 +243,9 @@
             />
           </div>
           <div>
-            <label for="headPhone" class="block text-sm font-medium text-gray-700">Phone Number:</label>
+            <label for="headPhone" class="block text-sm font-medium text-gray-700"
+              >Phone Number:</label
+            >
             <input
               type="text"
               id="headPhone"
@@ -229,7 +255,9 @@
             />
           </div>
           <div>
-            <label for="headEmail" class="block text-sm font-medium text-gray-700">Email Address:</label>
+            <label for="headEmail" class="block text-sm font-medium text-gray-700"
+              >Email Address:</label
+            >
             <input
               type="email"
               id="headEmail"
@@ -256,7 +284,9 @@
             />
           </div>
           <div>
-            <label for="executiveSummary" class="block text-sm font-medium text-gray-700">Executive Summary:</label>
+            <label for="executiveSummary" class="block text-sm font-medium text-gray-700"
+              >Executive Summary:</label
+            >
             <textarea
               id="executiveSummary"
               v-model="formData.executive_summary"
@@ -266,7 +296,9 @@
             ></textarea>
           </div>
           <div>
-            <label for="supportingDocuments" class="block text-sm font-medium text-gray-700">Supporting Documents (PDF only):</label>
+            <label for="supportingDocuments" class="block text-sm font-medium text-gray-700"
+              >Supporting Documents (PDF only):</label
+            >
             <input
               type="file"
               id="supportingDocuments"
@@ -294,7 +326,9 @@
               v-model="formData.declaration"
               class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
-            <span class="ml-2 text-sm text-gray-700">I declare that all information provided is accurate.</span>
+            <span class="ml-2 text-sm text-gray-700"
+              >I declare that all information provided is accurate.</span
+            >
           </label>
         </div>
 
@@ -322,19 +356,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import apiService from '@/services/epcServices';
-import { useRouter } from 'vue-router';
-import { useToast } from 'vue-toastification';
-import 'vue-toastification/dist/index.css';
+import { ref, onMounted } from 'vue'
+import apiService from '@/services/epcServices'
+import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
+import 'vue-toastification/dist/index.css'
 
-const router = useRouter();
-const toast = useToast();
+const router = useRouter()
+const toast = useToast()
 
-const instituteId = ref(null);
-const reviewDecision = ref('');
-const isLoading = ref(true);
-const isSubmitting = ref(false);
+const instituteId = ref(null)
+const reviewDecision = ref('')
+const isLoading = ref(true)
+const isSubmitting = ref(false)
 
 const formData = ref({
   cid: '',
@@ -360,209 +394,209 @@ const formData = ref({
   supporting_documents: null,
   remarks: '',
   declaration: false,
-});
+})
 
 onMounted(async () => {
-  const userString = localStorage.getItem('user');
+  const userString = localStorage.getItem('user')
   if (!userString) {
-    console.error('No user data found in localStorage.');
-    isLoading.value = false;
-    return;
+    console.error('No user data found in localStorage.')
+    isLoading.value = false
+    return
   }
 
-  let userObject;
+  let userObject
   try {
-    userObject = JSON.parse(userString);
+    userObject = JSON.parse(userString)
   } catch (error) {
-    console.error('Error parsing user data from localStorage:', error);
-    isLoading.value = false;
-    return;
+    console.error('Error parsing user data from localStorage:', error)
+    isLoading.value = false
+    return
   }
 
   if (!userObject || !userObject.cid) {
-    console.error('User object is invalid or cid is missing:', userObject);
-    isLoading.value = false;
-    return;
+    console.error('User object is invalid or cid is missing:', userObject)
+    isLoading.value = false
+    return
   }
-  const userCID = userObject.cid;
+  const userCID = userObject.cid
 
   try {
-    const response = await apiService.getEpcInstitutes();
-    const institutes = response.data.results;
-    const matchedInstitute = institutes.find((institute) => institute.CID === userCID);
+    const response = await apiService.getEpcInstitutes()
+    const institutes = response.data.results
+    const matchedInstitute = institutes.find((institute) => institute.CID === userCID)
 
     if (!matchedInstitute) {
-      console.error("No institute found matching the user's CID.");
-      isLoading.value = false;
-      return;
+      console.error("No institute found matching the user's CID.")
+      isLoading.value = false
+      return
     }
 
-    instituteId.value = matchedInstitute.id;
-    reviewDecision.value = matchedInstitute.review_decision;
+    instituteId.value = matchedInstitute.id
+    reviewDecision.value = matchedInstitute.review_decision
 
     if (reviewDecision.value === 'Approved') {
-      await fetchInstituteData();
+      await fetchInstituteData()
     }
   } catch (error) {
-    console.error('Error fetching institute data:', error);
-    toast.error('Error fetching institute data. Please try again.', { timeout: 3000 });
+    console.error('Error fetching institute data:', error)
+    toast.error('Error fetching institute data. Please try again.', { timeout: 3000 })
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-});
+})
 
 const fetchInstituteData = async () => {
   try {
-    const response = await apiService.getEpcInstitute(instituteId.value);
+    const response = await apiService.getEpcInstitute(instituteId.value)
     if (response.data) {
-      formData.value.cid = response.data.CID || '';
-      formData.value.full_name = response.data.full_name || '';
-      formData.value.gender = response.data.gender || '';
-      formData.value.contact_no = response.data.contact_no || '';
-      formData.value.email_address = response.data.email_address || '';
-      formData.value.institution_name = response.data.name_of_institution || '';
-      formData.value.country = response.data.country || '';
-      formData.value.gewog_state = response.data.gewog_state || '';
-      formData.value.chiwog = response.data.chiwog || '';
-      formData.value.teaching_institute = response.data.teaching_institute || '';
-      formData.value.course_title = response.data.course_title || '';
-      formData.value.course_duration = response.data.course_duration || '';
-      formData.value.commencement_date = response.data.commencement_date || '';
-      formData.value.programme_type = response.data.programme_type || '';
-      formData.value.head_name = response.data.head_name || '';
-      formData.value.head_gender = response.data.head_gender || '';
-      formData.value.head_phone = response.data.head_phone || '';
-      formData.value.head_email = response.data.head_email || '';
-      formData.value.dpr_name = response.data.dpr_name || '';
-      formData.value.executive_summary = response.data.executive_summary || '';
-      formData.value.remarks = response.data.remarks || '';
+      formData.value.cid = response.data.CID || ''
+      formData.value.full_name = response.data.full_name || ''
+      formData.value.gender = response.data.gender || ''
+      formData.value.contact_no = response.data.contact_no || ''
+      formData.value.email_address = response.data.email_address || ''
+      formData.value.institution_name = response.data.name_of_institution || ''
+      formData.value.country = response.data.country || ''
+      formData.value.gewog_state = response.data.gewog_state || ''
+      formData.value.chiwog = response.data.chiwog || ''
+      formData.value.teaching_institute = response.data.teaching_institute || ''
+      formData.value.course_title = response.data.course_title || ''
+      formData.value.course_duration = response.data.course_duration || ''
+      formData.value.commencement_date = response.data.commencement_date || ''
+      formData.value.programme_type = response.data.programme_type || ''
+      formData.value.head_name = response.data.head_name || ''
+      formData.value.head_gender = response.data.head_gender || ''
+      formData.value.head_phone = response.data.head_phone || ''
+      formData.value.head_email = response.data.head_email || ''
+      formData.value.dpr_name = response.data.dpr_name || ''
+      formData.value.executive_summary = response.data.executive_summary || ''
+      formData.value.remarks = response.data.remarks || ''
     }
   } catch (error) {
-    console.error('Error fetching institute data:', error);
-    toast.error('Error fetching institute data. Please try again.', { timeout: 3000 });
+    console.error('Error fetching institute data:', error)
+    toast.error('Error fetching institute data. Please try again.', { timeout: 3000 })
   }
-};
+}
 
 const handleFileUpload = (fieldName) => (event) => {
-  const file = event.target.files[0];
+  const file = event.target.files[0]
   if (file && file.type === 'application/pdf') {
-    formData.value[fieldName] = file;
+    formData.value[fieldName] = file
   } else {
-    toast.error('Please upload a PDF file.', { timeout: 3000 });
-    event.target.value = '';
+    toast.error('Please upload a PDF file.', { timeout: 3000 })
+    event.target.value = ''
   }
-};
+}
 
 const handleSubmit = async () => {
   if (!instituteId.value) {
-    toast.error('Institute ID is missing. Please refresh the page.', { timeout: 3000 });
-    return;
+    toast.error('Institute ID is missing. Please refresh the page.', { timeout: 3000 })
+    return
   }
   if (!formData.value.dpr_name) {
-    toast.error('Please enter the DPR name.', { timeout: 3000 });
-    return;
+    toast.error('Please enter the DPR name.', { timeout: 3000 })
+    return
   }
   if (!formData.value.executive_summary) {
-    toast.error('Please enter the executive summary.', { timeout: 3000 });
-    return;
+    toast.error('Please enter the executive summary.', { timeout: 3000 })
+    return
   }
   if (!formData.value.declaration) {
-    toast.error('Please check the declaration box.', { timeout: 3000 });
-    return;
+    toast.error('Please check the declaration box.', { timeout: 3000 })
+    return
   }
 
-  const submitData = new FormData();
-  submitData.append('cid', formData.value.cid);
-  submitData.append('full_name', formData.value.full_name);
-  submitData.append('gender', formData.value.gender);
-  submitData.append('contact_no', formData.value.contact_no);
-  submitData.append('email_address', formData.value.email_address);
-  submitData.append('name_of_institution', formData.value.institution_name);
-  submitData.append('country', formData.value.country);
-  submitData.append('gewog_state', formData.value.gewog_state);
-  submitData.append('chiwog', formData.value.chiwog);
-  submitData.append('teaching_institute', formData.value.teaching_institute);
-  submitData.append('course_title', formData.value.course_title);
-  submitData.append('course_duration', formData.value.course_duration);
-  submitData.append('commencement_date', formData.value.commencement_date);
-  submitData.append('programme_type', formData.value.programme_type);
-  submitData.append('head_name', formData.value.head_name);
-  submitData.append('head_gender', formData.value.head_gender);
-  submitData.append('head_phone', formData.value.head_phone);
-  submitData.append('head_email', formData.value.head_email);
-  submitData.append('dpr_name', formData.value.dpr_name);
-  submitData.append('executive_summary', formData.value.executive_summary);
+  const submitData = new FormData()
+  submitData.append('cid', formData.value.cid)
+  submitData.append('full_name', formData.value.full_name)
+  submitData.append('gender', formData.value.gender)
+  submitData.append('contact_no', formData.value.contact_no)
+  submitData.append('email_address', formData.value.email_address)
+  submitData.append('name_of_institution', formData.value.institution_name)
+  submitData.append('country', formData.value.country)
+  submitData.append('gewog_state', formData.value.gewog_state)
+  submitData.append('chiwog', formData.value.chiwog)
+  submitData.append('teaching_institute', formData.value.teaching_institute)
+  submitData.append('course_title', formData.value.course_title)
+  submitData.append('course_duration', formData.value.course_duration)
+  submitData.append('commencement_date', formData.value.commencement_date)
+  submitData.append('programme_type', formData.value.programme_type)
+  submitData.append('head_name', formData.value.head_name)
+  submitData.append('head_gender', formData.value.head_gender)
+  submitData.append('head_phone', formData.value.head_phone)
+  submitData.append('head_email', formData.value.head_email)
+  submitData.append('dpr_name', formData.value.dpr_name)
+  submitData.append('executive_summary', formData.value.executive_summary)
   if (formData.value.supporting_documents) {
-    submitData.append('supporting_documents', formData.value.supporting_documents);
+    submitData.append('supporting_documents', formData.value.supporting_documents)
   }
-  submitData.append('remarks', formData.value.remarks);
+  submitData.append('remarks', formData.value.remarks)
 
   try {
-    isSubmitting.value = true;
-    const response = await apiService.patchEpcInstitute(instituteId.value, submitData);
+    isSubmitting.value = true
+    const response = await apiService.patchEpcInstitute(instituteId.value, submitData)
     if (response.status === 200 || response.status === 204) {
-      toast.success('DPR submitted successfully!');
+      toast.success('DPR submitted successfully!')
       setTimeout(() => {
-        router.push('/admin/institutions/engineering_certification/dashboard');
-      }, 1500);
+        router.push('/admin/institutions/engineering_certification/dashboard')
+      }, 1500)
     } else {
-      toast.error(`Failed to submit DPR. Status: ${response.status}`, { timeout: 5000 });
+      toast.error(`Failed to submit DPR. Status: ${response.status}`, { timeout: 5000 })
     }
   } catch (error) {
-    console.error('Error submitting DPR data:', error);
-    toast.error('Error submitting DPR data. Please try again.', { timeout: 5000 });
+    console.error('Error submitting DPR data:', error)
+    toast.error('Error submitting DPR data. Please try again.', { timeout: 5000 })
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
-};
+}
 
 const handleSaveDraft = async () => {
   if (!instituteId.value) {
-    toast.error('Institute ID is missing. Please refresh the page.', { timeout: 3000 });
-    return;
+    toast.error('Institute ID is missing. Please refresh the page.', { timeout: 3000 })
+    return
   }
 
-  const draftData = new FormData();
-  draftData.append('cid', formData.value.cid);
-  draftData.append('full_name', formData.value.full_name);
-  draftData.append('gender', formData.value.gender);
-  draftData.append('contact_no', formData.value.contact_no);
-  draftData.append('email_address', formData.value.email_address);
-  draftData.append('name_of_institution', formData.value.institution_name);
-  draftData.append('country', formData.value.country);
-  draftData.append('gewog_state', formData.value.gewog_state);
-  draftData.append('chiwog', formData.value.chiwog);
-  draftData.append('teaching_institute', formData.value.teaching_institute);
-  draftData.append('course_title', formData.value.course_title);
-  draftData.append('course_duration', formData.value.course_duration);
-  draftData.append('commencement_date', formData.value.commencement_date);
-  draftData.append('programme_type', formData.value.programme_type);
-  draftData.append('head_name', formData.value.head_name);
-  draftData.append('head_gender', formData.value.head_gender);
-  draftData.append('head_phone', formData.value.head_phone);
-  draftData.append('head_email', formData.value.head_email);
-  draftData.append('dpr_name', formData.value.dpr_name);
-  draftData.append('executive_summary', formData.value.executive_summary);
+  const draftData = new FormData()
+  draftData.append('cid', formData.value.cid)
+  draftData.append('full_name', formData.value.full_name)
+  draftData.append('gender', formData.value.gender)
+  draftData.append('contact_no', formData.value.contact_no)
+  draftData.append('email_address', formData.value.email_address)
+  draftData.append('name_of_institution', formData.value.institution_name)
+  draftData.append('country', formData.value.country)
+  draftData.append('gewog_state', formData.value.gewog_state)
+  draftData.append('chiwog', formData.value.chiwog)
+  draftData.append('teaching_institute', formData.value.teaching_institute)
+  draftData.append('course_title', formData.value.course_title)
+  draftData.append('course_duration', formData.value.course_duration)
+  draftData.append('commencement_date', formData.value.commencement_date)
+  draftData.append('programme_type', formData.value.programme_type)
+  draftData.append('head_name', formData.value.head_name)
+  draftData.append('head_gender', formData.value.head_gender)
+  draftData.append('head_phone', formData.value.head_phone)
+  draftData.append('head_email', formData.value.head_email)
+  draftData.append('dpr_name', formData.value.dpr_name)
+  draftData.append('executive_summary', formData.value.executive_summary)
   if (formData.value.supporting_documents) {
-    draftData.append('supporting_documents', formData.value.supporting_documents);
+    draftData.append('supporting_documents', formData.value.supporting_documents)
   }
-  draftData.append('remarks', formData.value.remarks);
+  draftData.append('remarks', formData.value.remarks)
 
   try {
-    isSubmitting.value = true;
-    const response = await apiService.patchEpcInstitute(instituteId.value, draftData);
+    isSubmitting.value = true
+    const response = await apiService.patchEpcInstitute(instituteId.value, draftData)
     if (response.status >= 200 && response.status < 300) {
-      toast.success('Draft saved successfully!');
+      toast.success('Draft saved successfully!')
     } else {
-      toast.error(`Failed to save draft. Status: ${response.status}`, { timeout: 5000 });
+      toast.error(`Failed to save draft. Status: ${response.status}`, { timeout: 5000 })
     }
   } catch (error) {
-    console.error('Error saving draft:', error);
-    toast.error('Error saving draft. Please try again.', { timeout: 5000 });
+    console.error('Error saving draft:', error)
+    toast.error('Error saving draft. Please try again.', { timeout: 5000 })
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
-};
+}
 </script>
 
 <style scoped>

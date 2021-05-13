@@ -1,9 +1,7 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">
-        MHPC E-Signature Management
-      </h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">MHPC E-Signature Management</h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -15,15 +13,27 @@
             <div class="space-y-4">
               <div>
                 <label for="name" class="block text-sm font-medium text-slate-700">Name</label>
-                <input type="text" id="name" v-model="formData.name"
+                <input
+                  type="text"
+                  id="name"
+                  v-model="formData.name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter name" required />
+                  placeholder="Enter name"
+                  required
+                />
               </div>
               <div>
-                <label for="designation" class="block text-sm font-medium text-slate-700">Designation</label>
-                <input type="text" id="designation" v-model="formData.designation"
+                <label for="designation" class="block text-sm font-medium text-slate-700"
+                  >Designation</label
+                >
+                <input
+                  type="text"
+                  id="designation"
+                  v-model="formData.designation"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter designation" required />
+                  placeholder="Enter designation"
+                  required
+                />
               </div>
 
               <!-- Signature File Upload with Thumbnail -->
@@ -37,9 +47,13 @@
                   <p class="text-sm text-slate-600 mb-2">Current Signature:</p>
                   <div class="flex items-center space-x-4">
                     <div
-                      class="w-24 h-24 border border-slate-200 rounded-lg overflow-hidden flex items-center justify-center bg-slate-50">
-                      <img :src="formData.signatureUrl" alt="Current signature"
-                        class="max-w-full max-h-full object-contain" />
+                      class="w-24 h-24 border border-slate-200 rounded-lg overflow-hidden flex items-center justify-center bg-slate-50"
+                    >
+                      <img
+                        :src="formData.signatureUrl"
+                        alt="Current signature"
+                        class="max-w-full max-h-full object-contain"
+                      />
                     </div>
                     <div>
                       <p class="text-xs text-slate-500">
@@ -50,19 +64,31 @@
                 </div>
 
                 <!-- File Upload Input -->
-                <input type="file" id="signature" @change="handleFileUpload"
+                <input
+                  type="file"
+                  id="signature"
+                  @change="handleFileUpload"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  :required="!isEditing" />
+                  :required="!isEditing"
+                />
                 <p v-if="isEditing" class="mt-1 text-xs text-slate-500">
-                  {{ newFileSelected ? 'New file selected: ' + fileDetails : 'Leave empty to keep current signature' }}
+                  {{
+                    newFileSelected
+                      ? 'New file selected: ' + fileDetails
+                      : 'Leave empty to keep current signature'
+                  }}
                 </p>
               </div>
 
               <div>
                 <label for="status" class="block text-sm font-medium text-slate-700">Status</label>
                 <div class="flex items-center mt-1">
-                  <input type="checkbox" id="status" v-model="formData.status"
-                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded" />
+                  <input
+                    type="checkbox"
+                    id="status"
+                    v-model="formData.status"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
+                  />
                   <label for="status" class="ml-2 block text-sm text-slate-700">
                     {{ formData.status ? 'Active' : 'Inactive' }}
                   </label>
@@ -70,12 +96,18 @@
               </div>
 
               <div class="flex gap-3">
-                <button type="submit"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <button
+                  type="submit"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
                   {{ isEditing ? 'Update E-Signature' : 'Add E-Signature' }}
                 </button>
-                <button v-if="isEditing" type="button" @click="cancelEdit"
-                  class="py-2 px-4 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200">
+                <button
+                  v-if="isEditing"
+                  type="button"
+                  @click="cancelEdit"
+                  class="py-2 px-4 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200"
+                >
                   Cancel
                 </button>
               </div>
@@ -97,12 +129,24 @@
 
             <!-- Search Bar -->
             <div class="relative">
-              <input type="text" v-model="searchQuery" placeholder="Search E-Signatures..."
-                class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-              <svg class="absolute left-3 top-2.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <input
+                type="text"
+                v-model="searchQuery"
+                placeholder="Search E-Signatures..."
+                class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <svg
+                class="absolute left-3 top-2.5 h-5 w-5 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
           </div>
@@ -110,38 +154,66 @@
           <!-- E-Signatures Grid -->
           <div class="space-y-4 mb-6">
             <TransitionGroup name="list">
-              <div v-for="eSignature in paginatedESignatures" :key="eSignature.id"
-                class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200">
+              <div
+                v-for="eSignature in paginatedESignatures"
+                :key="eSignature.id"
+                class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200"
+              >
                 <div class="flex justify-between items-start gap-4">
                   <div class="flex gap-4">
                     <!-- Signature Thumbnail -->
                     <div
-                      class="w-16 h-16 border border-slate-200 rounded-lg overflow-hidden flex items-center justify-center bg-slate-50">
-                      <img :src="eSignature.signature" alt="Signature" class="max-w-full max-h-full object-contain" />
+                      class="w-16 h-16 border border-slate-200 rounded-lg overflow-hidden flex items-center justify-center bg-slate-50"
+                    >
+                      <img
+                        :src="eSignature.signature"
+                        alt="Signature"
+                        class="max-w-full max-h-full object-contain"
+                      />
                     </div>
                     <!-- Info -->
                     <div>
                       <h3 class="font-medium text-slate-900">{{ eSignature.name }}</h3>
                       <p class="text-sm text-slate-600 mt-1">{{ eSignature.designation }}</p>
                       <p class="text-sm mt-1">
-                        <span :class="eSignature.status ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-800'"
-                          class="px-2 py-0.5 rounded-full text-xs font-medium">
+                        <span
+                          :class="
+                            eSignature.status
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-slate-100 text-slate-800'
+                          "
+                          class="px-2 py-0.5 rounded-full text-xs font-medium"
+                        >
                           {{ eSignature.status ? 'Active' : 'Inactive' }}
                         </span>
                       </p>
                     </div>
                   </div>
                   <div class="flex gap-2">
-                    <button @click="startEdit(eSignature)" class="p-2 text-blue-600 hover:bg-blue-50 rounded-md">
+                    <button
+                      @click="startEdit(eSignature)"
+                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+                    >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
                       </svg>
                     </button>
-                    <button @click="openDeleteModal(eSignature)" class="p-2 text-red-600 hover:bg-red-50 rounded-md">
+                    <button
+                      @click="openDeleteModal(eSignature)"
+                      class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                    >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -157,15 +229,21 @@
 
           <!-- Pagination -->
           <div v-if="filteredESignatures.length > itemsPerPage" class="flex justify-center gap-2">
-            <button @click="currentPage--" :disabled="currentPage === 1"
-              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">
+            <button
+              @click="currentPage--"
+              :disabled="currentPage === 1"
+              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+            >
               Previous
             </button>
             <span class="px-3 py-1 text-sm text-slate-600">
               Page {{ currentPage }} of {{ totalPages }}
             </span>
-            <button @click="currentPage++" :disabled="currentPage === totalPages"
-              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">
+            <button
+              @click="currentPage++"
+              :disabled="currentPage === totalPages"
+              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+            >
               Next
             </button>
           </div>
@@ -175,7 +253,8 @@
       <!-- Confirmation modal -->
       <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
         <AlertDialogContent
-          class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50">
+          class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50"
+        >
           <AlertDialogTitle class="text-xl font-semibold text-slate-900 mb-2">
             Are you absolutely sure?
           </AlertDialogTitle>
@@ -185,12 +264,16 @@
             }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
-            <AlertDialogCancel class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
-              @click="closeDeleteModal">
+            <AlertDialogCancel
+              class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
+              @click="closeDeleteModal"
+            >
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
-              @click="confirmDelete">
+            <AlertDialogAction
+              class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+              @click="confirmDelete"
+            >
               Delete
             </AlertDialogAction>
           </div>
@@ -321,7 +404,7 @@ const startEdit = (eSignature) => {
   formData.value = {
     ...eSignature,
     signature: null,
-    signatureUrl: eSignature.signature // Store the URL of existing signature
+    signatureUrl: eSignature.signature, // Store the URL of existing signature
   }
   isEditing.value = true
   newFileSelected.value = false

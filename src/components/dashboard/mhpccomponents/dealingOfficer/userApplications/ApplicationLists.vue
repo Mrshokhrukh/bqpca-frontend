@@ -338,14 +338,15 @@ const getStatusClasses = (app) => {
 const formatDate = (date) => {
   if (!date) return 'N/A'
   try {
-    return new Date(date).toLocaleDateString('en-GB', { // Using en-GB for dd/mm/yyyy format
+    return new Date(date).toLocaleDateString('en-GB', {
+      // Using en-GB for dd/mm/yyyy format
       year: 'numeric',
       month: 'short',
       day: '2-digit',
     })
   } catch (e) {
-    console.error("Failed to format date:", date, e);
-    return 'Invalid Date';
+    console.error('Failed to format date:', date, e)
+    return 'Invalid Date'
   }
 }
 
@@ -374,45 +375,43 @@ const fetchApplications = async () => {
   } catch (error) {
     console.error('Error fetching applications:', error)
     applications.value = [] // Clear data on error
-
   }
 }
 
 const viewDetails = async (application) => {
-    selectedApplication.value = { ...application }; // Set basic details first
-    isModalOpen.value = true;
+  selectedApplication.value = { ...application } // Set basic details first
+  isModalOpen.value = true
 
-    // Asynchronously fetch user details if needed, can be done after modal opens
-    try {
-        const response = await apiServices.getAllUsers(); // Consider filtering API side if possible
-        const users = response.data?.results || [];
-        const matchingUser = users.find(user => user.cid === application.cid_no);
+  // Asynchronously fetch user details if needed, can be done after modal opens
+  try {
+    const response = await apiServices.getAllUsers() // Consider filtering API side if possible
+    const users = response.data?.results || []
+    const matchingUser = users.find((user) => user.cid === application.cid_no)
 
-        if (matchingUser) {
-            // Merge user details into the selected application object
-            selectedApplication.value = {
-                ...selectedApplication.value,
-                is_counselor: matchingUser.is_counselor || false,
-                userDetails: matchingUser,
-            };
-        } else {
-             selectedApplication.value = {
-                ...selectedApplication.value,
-                is_counselor: false, // Default if user not found
-                userDetails: null,
-            };
-        }
-    } catch (error) {
-        console.error('Error fetching user details:', error);
-         selectedApplication.value = {
-             ...selectedApplication.value, // Keep existing app data
-             is_counselor: false, // Default on error
-             userDetails: null,
-             fetchError: 'Could not load user details.' // Optionally add error info
-         };
+    if (matchingUser) {
+      // Merge user details into the selected application object
+      selectedApplication.value = {
+        ...selectedApplication.value,
+        is_counselor: matchingUser.is_counselor || false,
+        userDetails: matchingUser,
+      }
+    } else {
+      selectedApplication.value = {
+        ...selectedApplication.value,
+        is_counselor: false, // Default if user not found
+        userDetails: null,
+      }
     }
+  } catch (error) {
+    console.error('Error fetching user details:', error)
+    selectedApplication.value = {
+      ...selectedApplication.value, // Keep existing app data
+      is_counselor: false, // Default on error
+      userDetails: null,
+      fetchError: 'Could not load user details.', // Optionally add error info
+    }
+  }
 }
-
 
 const handleUpdate = async () => {
   await fetchApplications()
@@ -433,7 +432,6 @@ const nextPage = () => {
 }
 
 onMounted(async () => {
-  
   await Promise.all([fetchApplications(), fetchMasterData()])
 })
 </script>

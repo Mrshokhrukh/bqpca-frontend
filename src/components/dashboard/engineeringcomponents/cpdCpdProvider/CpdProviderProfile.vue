@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-50 min-h-screen">
-    <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 ">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Header -->
       <div class="text-center mb-12">
         <h2 class="text-4xl font-extrabold text-gray-900 sm:text-5xl mb-4">CPD Provider Profile</h2>
@@ -44,7 +44,9 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Gender</label>
-              <p class="mt-1 text-sm text-gray-900 capitalize">{{ profile.gender || 'Not Provided' }}</p>
+              <p class="mt-1 text-sm text-gray-900 capitalize">
+                {{ profile.gender || 'Not Provided' }}
+              </p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
@@ -52,7 +54,9 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Contact Number</label>
-              <p class="mt-1 text-sm text-gray-900">{{ profile.contact_number || 'Not Provided' }}</p>
+              <p class="mt-1 text-sm text-gray-900">
+                {{ profile.contact_number || 'Not Provided' }}
+              </p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Email</label>
@@ -60,19 +64,27 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Registration Number</label>
-              <p class="mt-1 text-sm text-gray-900">{{ profile.registration_number || 'Not Provided' }}</p>
+              <p class="mt-1 text-sm text-gray-900">
+                {{ profile.registration_number || 'Not Provided' }}
+              </p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">CID/Identity No.</label>
               <p class="mt-1 text-sm text-gray-900">{{ profile.cid_number || 'Not Provided' }}</p>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Agency/Training Location</label>
-              <p class="mt-1 text-sm text-gray-900">{{ profile.agency_location || 'Not Provided' }}</p>
+              <label class="block text-sm font-medium text-gray-700"
+                >Agency/Training Location</label
+              >
+              <p class="mt-1 text-sm text-gray-900">
+                {{ profile.agency_location || 'Not Provided' }}
+              </p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">CPD Activity Title</label>
-              <p class="mt-1 text-sm text-gray-900">{{ profile.cpd_activity_title || 'Not Provided' }}</p>
+              <p class="mt-1 text-sm text-gray-900">
+                {{ profile.cpd_activity_title || 'Not Provided' }}
+              </p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Venue</label>
@@ -92,7 +104,9 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Reason for Conducting</label>
-              <p class="mt-1 text-sm text-gray-900">{{ profile.reason_for_conducting || 'Not Provided' }}</p>
+              <p class="mt-1 text-sm text-gray-900">
+                {{ profile.reason_for_conducting || 'Not Provided' }}
+              </p>
             </div>
           </div>
           <form v-else @submit.prevent="saveProfile" class="space-y-6">
@@ -225,7 +239,9 @@
               </div>
             </fieldset>
             <fieldset>
-              <legend class="text-base font-medium text-gray-900 mb-2">Identification Details</legend>
+              <legend class="text-base font-medium text-gray-900 mb-2">
+                Identification Details
+              </legend>
               <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
                 <div>
                   <label for="registration_number" class="block text-sm font-medium text-gray-700"
@@ -525,7 +541,16 @@ const cancelEditing = () => {
 
 // Save profile changes
 const saveProfile = async () => {
-  if (!profile.first_name || !profile.last_name || !profile.gender || !profile.date_of_birth || !profile.contact_number || !profile.email || !profile.cpd_activity_title || !profile.venue) {
+  if (
+    !profile.first_name ||
+    !profile.last_name ||
+    !profile.gender ||
+    !profile.date_of_birth ||
+    !profile.contact_number ||
+    !profile.email ||
+    !profile.cpd_activity_title ||
+    !profile.venue
+  ) {
     toast.error('Please fill all required fields.')
     return
   }

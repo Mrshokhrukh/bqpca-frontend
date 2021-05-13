@@ -2,10 +2,7 @@
   <div class="w-full mx-auto px-2 sm:px-4 py-6 sm:py-8">
     <TrackerTabs :tabs="tabs" :currentTab="currentTab" @update:currentTab="handleTabChange" />
 
-    <PageHeader
-      :title="pageHeaderTitle"
-      :subtitle="pageHeaderSubtitle"
-    >
+    <PageHeader :title="pageHeaderTitle" :subtitle="pageHeaderSubtitle">
       <template #icon>
         <ClipboardList class="w-6 h-6 text-indigo-600" />
       </template>
@@ -82,12 +79,10 @@
           <div class="p-3 bg-red-100 rounded-full mb-3">
             <AlertTriangle class="w-6 h-6 text-red-500" />
           </div>
-          <h3 class="text-lg sm:text-xl font-semibold text-red-700 mb-2">
-            Error Loading Data
-          </h3>
+          <h3 class="text-lg sm:text-xl font-semibold text-red-700 mb-2">Error Loading Data</h3>
           <p class="text-red-600 max-w-md mx-auto text-sm px-4">
-            An error occurred while fetching your {{ loadingText }} data. Please try again later
-            or contact support if the problem persists.
+            An error occurred while fetching your {{ loadingText }} data. Please try again later or
+            contact support if the problem persists.
           </p>
         </div>
       </div>
@@ -109,299 +104,308 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import apiService from '@/services/services';
-import CertificateModal from './CertificateModal.vue'; // Assuming it's in the same directory or adjust path
-import PaymentModal from '@/components/common/PaymentModal.vue';
-import PageHeader from '@/components/common/MHPC/PageHeader.vue';
-import TrackerTabs from './TrackerTabs.vue';
-import NewApplicationsTracker from './NewApplicationsTracker.vue';
-import RenewalApplicationsTracker from './RenewalApplicationsTracker.vue';
-import AdditionalQualificationsTracker from './AdditionalQualificationsTracker.vue';
+import { ref, onMounted, computed } from 'vue'
+import apiService from '@/services/services'
+import CertificateModal from './CertificateModal.vue' // Assuming it's in the same directory or adjust path
+import PaymentModal from '@/components/common/PaymentModal.vue'
+import PageHeader from '@/components/common/MHPC/PageHeader.vue'
+import TrackerTabs from './TrackerTabs.vue'
+import NewApplicationsTracker from './NewApplicationsTracker.vue'
+import RenewalApplicationsTracker from './RenewalApplicationsTracker.vue'
+import AdditionalQualificationsTracker from './AdditionalQualificationsTracker.vue'
 
-import {
-  AlertTriangle,
-  SearchX,
-  ClipboardList,
-} from 'lucide-vue-next';
-import { useToast } from 'vue-toastification';
-import { useAuthStore } from '@/stores/authStore';
+import { AlertTriangle, SearchX, ClipboardList } from 'lucide-vue-next'
+import { useToast } from 'vue-toastification'
+import { useAuthStore } from '@/stores/authStore'
 
-const toast = useToast();
-const authStore = useAuthStore();
+const toast = useToast()
+const authStore = useAuthStore()
 
-const newApplications = ref([]);
-const renewalApplications = ref([]);
-const additionalApplications = ref([]);
-const isLoading = ref(false);
-const hasAttemptedFetch = ref(false);
-const apiError = ref(false);
-const showCertificateModal = ref(false);
-const selectedCertificateData = ref(null);
-const paymentModalRef = ref(null);
-const selectedQualificationForPayment = ref(null);
-const currentTab = ref('new');
+const newApplications = ref([])
+const renewalApplications = ref([])
+const additionalApplications = ref([])
+const isLoading = ref(false)
+const hasAttemptedFetch = ref(false)
+const apiError = ref(false)
+const showCertificateModal = ref(false)
+const selectedCertificateData = ref(null)
+const paymentModalRef = ref(null)
+const selectedQualificationForPayment = ref(null)
+const currentTab = ref('new')
 
 const tabs = [
   { name: 'new', label: 'New Applications' },
   { name: 'renewal', label: 'Renewals' },
   { name: 'additional', label: 'Additional Qualifications' },
-];
+]
 
-const userCid = computed(() => authStore.user?.cid);
+const userCid = computed(() => authStore.user?.cid)
 
 const pageHeaderTitle = computed(() => {
-  if (currentTab.value === 'new') return 'Track Your Application';
-  if (currentTab.value === 'renewal') return 'Track Your Renewal';
-  return 'Track Additional Qualifications';
-});
+  if (currentTab.value === 'new') return 'Track Your Application'
+  if (currentTab.value === 'renewal') return 'Track Your Renewal'
+  return 'Track Additional Qualifications'
+})
 
 const pageHeaderSubtitle = computed(() => {
-  if (currentTab.value === 'new') return 'Your application status is displayed below.';
-  if (currentTab.value === 'renewal') return 'Your renewal status is displayed below.';
-  return 'Your additional qualifications status is displayed below.';
-});
+  if (currentTab.value === 'new') return 'Your application status is displayed below.'
+  if (currentTab.value === 'renewal') return 'Your renewal status is displayed below.'
+  return 'Your additional qualifications status is displayed below.'
+})
 
 const loadingText = computed(() => {
-  if (currentTab.value === 'new') return 'application';
-  if (currentTab.value === 'renewal') return 'renewal';
-  return 'additional qualifications';
-});
+  if (currentTab.value === 'new') return 'application'
+  if (currentTab.value === 'renewal') return 'renewal'
+  return 'additional qualifications'
+})
 
 const noResultsText = computed(() => {
-  if (currentTab.value === 'new') return 'Applications';
-  if (currentTab.value === 'renewal') return 'Renewals';
-  return 'Additional Qualifications';
-});
+  if (currentTab.value === 'new') return 'Applications'
+  if (currentTab.value === 'renewal') return 'Renewals'
+  return 'Additional Qualifications'
+})
 
 const currentDataIsEmpty = computed(() => {
-  if (!hasAttemptedFetch.value) return false;
-  if (currentTab.value === 'new') return newApplications.value.length === 0;
-  if (currentTab.value === 'renewal') return renewalApplications.value.length === 0;
-  if (currentTab.value === 'additional') return additionalApplications.value.length === 0;
-  return true;
-});
+  if (!hasAttemptedFetch.value) return false
+  if (currentTab.value === 'new') return newApplications.value.length === 0
+  if (currentTab.value === 'renewal') return renewalApplications.value.length === 0
+  if (currentTab.value === 'additional') return additionalApplications.value.length === 0
+  return true
+})
 
 const handleTabChange = (tabName) => {
-  currentTab.value = tabName;
-};
+  currentTab.value = tabName
+}
 
 const fetchNewApplications = async () => {
-  if (!userCid.value) return;
-  isLoading.value = true;
-  apiError.value = false;
+  if (!userCid.value) return
+  isLoading.value = true
+  apiError.value = false
   try {
-    const response = await apiService.getMhpcFullApplicationListByCid(userCid.value);
+    const response = await apiService.getMhpcFullApplicationListByCid(userCid.value)
     if (response && response.data && response.data.results) {
-      newApplications.value = response.data.results.filter(app => !app.is_renewal && !app.is_additional);
+      newApplications.value = response.data.results.filter(
+        (app) => !app.is_renewal && !app.is_additional,
+      )
     } else {
-      newApplications.value = [];
+      newApplications.value = []
     }
   } catch (error) {
-    console.error('Error fetching new applications:', error);
-    newApplications.value = [];
-    apiError.value = true;
-    toast.error('Failed to load new application data.');
+    console.error('Error fetching new applications:', error)
+    newApplications.value = []
+    apiError.value = true
+    toast.error('Failed to load new application data.')
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const fetchRenewalApplications = async () => {
-  if (!userCid.value) return;
-  isLoading.value = true;
-  apiError.value = false;
+  if (!userCid.value) return
+  isLoading.value = true
+  apiError.value = false
   try {
-    const response = await apiService.getMhpcRenewals();
+    const response = await apiService.getMhpcRenewals()
     if (response && response.data && response.data.results) {
-      renewalApplications.value = response.data.results;
+      renewalApplications.value = response.data.results
     } else {
-      renewalApplications.value = [];
+      renewalApplications.value = []
     }
   } catch (error) {
-    console.error('Error fetching renewal applications:', error);
-    renewalApplications.value = [];
-    apiError.value = true;
-    toast.error('Failed to load renewal data.');
+    console.error('Error fetching renewal applications:', error)
+    renewalApplications.value = []
+    apiError.value = true
+    toast.error('Failed to load renewal data.')
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const fetchAdditionalApplications = async () => {
-  if (!userCid.value) return;
-  isLoading.value = true;
-  apiError.value = false;
+  if (!userCid.value) return
+  isLoading.value = true
+  apiError.value = false
   try {
-    const response = await apiService.getMhpcFullApplicationListByCid(userCid.value);
+    const response = await apiService.getMhpcFullApplicationListByCid(userCid.value)
     if (response && response.data && response.data.results) {
-      additionalApplications.value = response.data.results.filter(app => app.is_additional);
+      additionalApplications.value = response.data.results.filter((app) => app.is_additional)
     } else {
-      additionalApplications.value = [];
+      additionalApplications.value = []
     }
   } catch (error) {
-    console.error('Error fetching additional applications:', error);
-    additionalApplications.value = [];
-    apiError.value = true;
-    toast.error('Failed to load additional qualifications data.');
+    console.error('Error fetching additional applications:', error)
+    additionalApplications.value = []
+    apiError.value = true
+    toast.error('Failed to load additional qualifications data.')
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const openCertificateModal = (application) => {
-  selectedCertificateData.value = { results: [application] };
-  showCertificateModal.value = true;
-};
+  selectedCertificateData.value = { results: [application] }
+  showCertificateModal.value = true
+}
 
 const closeCertificateModal = () => {
-  showCertificateModal.value = false;
-  selectedCertificateData.value = null;
-};
+  showCertificateModal.value = false
+  selectedCertificateData.value = null
+}
 
 const handleInitiatePaymentEvent = ({ application, qualification }) => {
-  initiatePayment(application, qualification);
-};
+  initiatePayment(application, qualification)
+}
 
 const initiatePayment = (application, qualification) => {
   if (qualification) {
-    selectedQualificationForPayment.value = qualification;
+    selectedQualificationForPayment.value = qualification
     if (paymentModalRef.value) {
-      paymentModalRef.value.openModal();
+      paymentModalRef.value.openModal()
     } else {
-      console.error("Payment modal reference is not available.");
-      toast.error("Payment modal could not be opened.");
+      console.error('Payment modal reference is not available.')
+      toast.error('Payment modal could not be opened.')
     }
   } else {
-    toast.error('No specific qualification provided for payment.');
+    toast.error('No specific qualification provided for payment.')
   }
-};
+}
 
 const closePaymentModal = () => {
-  selectedQualificationForPayment.value = null;
-};
+  selectedQualificationForPayment.value = null
+}
 
 const handlePaymentCompleted = async (paymentData) => {
   if (!selectedQualificationForPayment.value) {
-    toast.error('No qualification selected for payment.');
-    return;
+    toast.error('No qualification selected for payment.')
+    return
   }
 
-  const qualificationId = selectedQualificationForPayment.value.id;
-  const paymentId = paymentData.paymentHash;
-  const user = authStore.user;
+  const qualificationId = selectedQualificationForPayment.value.id
+  const paymentId = paymentData.paymentHash
+  const user = authStore.user
 
   if (!user || !user.contact_number || !user.email || !user.cid || !user.id) {
-    toast.error('Missing user information. Please update your profile.');
-    return;
+    toast.error('Missing user information. Please update your profile.')
+    return
   }
 
-  isLoading.value = true;
-  const paymentProcessing = ref(false);
+  isLoading.value = true
+  const paymentProcessing = ref(false)
 
   try {
-    paymentProcessing.value = true;
+    paymentProcessing.value = true
 
-    const paymentInitiationFormData = new FormData();
-    paymentInitiationFormData.append('refNo', paymentId);
-    paymentInitiationFormData.append('serviceCode', '100196');
-    paymentInitiationFormData.append('taxPayerName', user.cid);
-    paymentInitiationFormData.append('taxPayerNo', user.cid);
-    paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);
-    paymentInitiationFormData.append('totalPayableAmount', 1000);
-    paymentInitiationFormData.append('description', 'MHPC Qualification Registration Fee');
-    paymentInitiationFormData.append('mobileNo', user.contact_number);
-    paymentInitiationFormData.append('payerEmail', user.email);
-    paymentInitiationFormData.append('user', user.id);
-    paymentInitiationFormData.append('payableAmount', 1000);
-    paymentInitiationFormData.append('application_no', selectedQualificationForPayment.value.id);
-    paymentInitiationFormData.append('app_type', 'specification_for_health_certification');
+    const paymentInitiationFormData = new FormData()
+    paymentInitiationFormData.append('refNo', paymentId)
+    paymentInitiationFormData.append('serviceCode', '100196')
+    paymentInitiationFormData.append('taxPayerName', user.cid)
+    paymentInitiationFormData.append('taxPayerNo', user.cid)
+    paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
+    paymentInitiationFormData.append('totalPayableAmount', 1000)
+    paymentInitiationFormData.append('description', 'MHPC Qualification Registration Fee')
+    paymentInitiationFormData.append('mobileNo', user.contact_number)
+    paymentInitiationFormData.append('payerEmail', user.email)
+    paymentInitiationFormData.append('user', user.id)
+    paymentInitiationFormData.append('payableAmount', 1000)
+    paymentInitiationFormData.append('application_no', selectedQualificationForPayment.value.id)
+    paymentInitiationFormData.append('app_type', 'specification_for_health_certification')
 
-    await apiService.makePayment(paymentInitiationFormData);
+    await apiService.makePayment(paymentInitiationFormData)
 
-    const updateFormData = new FormData();
-    updateFormData.append('payment_id', paymentId);
-    updateFormData.append('payment_status', 'processing_payment');
+    const updateFormData = new FormData()
+    updateFormData.append('payment_id', paymentId)
+    updateFormData.append('payment_status', 'processing_payment')
 
-    await apiService.patchMhpcNewQualification(qualificationId, updateFormData);
+    await apiService.patchMhpcNewQualification(qualificationId, updateFormData)
 
     const updateLocalQualificationState = (appList) => {
-      const app = appList.value.find(a => a.user_qualifications.some(q => q.id === qualificationId));
+      const app = appList.value.find((a) =>
+        a.user_qualifications.some((q) => q.id === qualificationId),
+      )
       if (app) {
-        const qualIndex = app.user_qualifications.findIndex(q => q.id === qualificationId);
+        const qualIndex = app.user_qualifications.findIndex((q) => q.id === qualificationId)
         if (qualIndex > -1) {
-          app.user_qualifications[qualIndex].payment_id = paymentId;
-          app.user_qualifications[qualIndex].payment_status = 'processing_payment';
+          app.user_qualifications[qualIndex].payment_id = paymentId
+          app.user_qualifications[qualIndex].payment_status = 'processing_payment'
         }
       }
-    };
+    }
 
-    if (newApplications.value.some(a => a.user_qualifications.some(q => q.id === qualificationId))) {
-        updateLocalQualificationState(newApplications);
-    } else if (renewalApplications.value.some(a => a.user_qualifications.some(q => q.id === qualificationId))) {
-        updateLocalQualificationState(renewalApplications);
-    } else if (additionalApplications.value.some(a => a.user_qualifications.some(q => q.id === qualificationId))) {
-        updateLocalQualificationState(additionalApplications);
+    if (
+      newApplications.value.some((a) => a.user_qualifications.some((q) => q.id === qualificationId))
+    ) {
+      updateLocalQualificationState(newApplications)
+    } else if (
+      renewalApplications.value.some((a) =>
+        a.user_qualifications.some((q) => q.id === qualificationId),
+      )
+    ) {
+      updateLocalQualificationState(renewalApplications)
+    } else if (
+      additionalApplications.value.some((a) =>
+        a.user_qualifications.some((q) => q.id === qualificationId),
+      )
+    ) {
+      updateLocalQualificationState(additionalApplications)
     }
 
     if (selectedQualificationForPayment.value) {
-        selectedQualificationForPayment.value.payment_id = paymentId;
-        selectedQualificationForPayment.value.payment_status = 'processing_payment';
+      selectedQualificationForPayment.value.payment_id = paymentId
+      selectedQualificationForPayment.value.payment_status = 'processing_payment'
     }
 
-    toast.success(`Payment initiated (Ref: ${paymentId.substring(0,8)}...). Status: Processing.`);
+    toast.success(`Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Status: Processing.`)
 
-    await fetchAllData();
-
+    await fetchAllData()
   } catch (error) {
-    console.error('Payment handling error:', error.response || error.request || error);
-    let errorMsg = 'An error occurred while processing the payment confirmation.';
+    console.error('Payment handling error:', error.response || error.request || error)
+    let errorMsg = 'An error occurred while processing the payment confirmation.'
     if (error.response?.data) {
-      const detail = error.response.data.detail || JSON.stringify(error.response.data);
-      errorMsg = `Payment API Error: ${detail}`;
+      const detail = error.response.data.detail || JSON.stringify(error.response.data)
+      errorMsg = `Payment API Error: ${detail}`
     } else if (error.request) {
-      errorMsg = 'Network Error: Could not reach the server to confirm payment.';
+      errorMsg = 'Network Error: Could not reach the server to confirm payment.'
     }
-    toast.error(`${errorMsg} Contact support with payment ref ${paymentId} if issue persists.`);
+    toast.error(`${errorMsg} Contact support with payment ref ${paymentId} if issue persists.`)
     if (selectedQualificationForPayment.value) {
-      selectedQualificationForPayment.value.payment_status = 'failed';
+      selectedQualificationForPayment.value.payment_status = 'failed'
     }
   } finally {
-    paymentProcessing.value = false;
-    isLoading.value = false;
+    paymentProcessing.value = false
+    isLoading.value = false
   }
-};
+}
 
 const fetchAllData = async () => {
-  isLoading.value = true;
-  apiError.value = false;
-  hasAttemptedFetch.value = false;
+  isLoading.value = true
+  apiError.value = false
+  hasAttemptedFetch.value = false
   try {
     await Promise.all([
       fetchNewApplications(),
       fetchRenewalApplications(),
-      fetchAdditionalApplications()
-    ]);
+      fetchAdditionalApplications(),
+    ])
   } catch (err) {
-    console.error("Error during initial data fetch:", err);
-    apiError.value = true;
+    console.error('Error during initial data fetch:', err)
+    apiError.value = true
   } finally {
-    isLoading.value = false;
-    hasAttemptedFetch.value = true;
+    isLoading.value = false
+    hasAttemptedFetch.value = true
   }
-};
+}
 
 onMounted(async () => {
   if (userCid.value) {
-    await fetchAllData();
+    await fetchAllData()
   } else {
-    console.warn('User CID not available.');
-    toast.warning('Please log in to view your application status.');
-    apiError.value = true;
-    hasAttemptedFetch.value = true;
-    isLoading.value = false;
+    console.warn('User CID not available.')
+    toast.warning('Please log in to view your application status.')
+    apiError.value = true
+    hasAttemptedFetch.value = true
+    isLoading.value = false
   }
-});
+})
 </script>
 
 <style scoped>
@@ -409,7 +413,7 @@ button {
   cursor: pointer;
 }
 
-[v-if="isLoading"] {
+[v-if='isLoading'] {
   min-height: 200px; /* Ensure loading indicator is visible */
   display: flex;
   align-items: center;

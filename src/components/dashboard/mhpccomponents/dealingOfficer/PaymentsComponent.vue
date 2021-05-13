@@ -311,13 +311,15 @@ const filteredPayments = computed(() => {
   if (transactionSearch.value) {
     const query = transactionSearch.value.toLowerCase()
     payments = payments.filter(
-      (p) => p.paymentAdviceNo && p.paymentAdviceNo.toLowerCase().includes(query)
+      (p) => p.paymentAdviceNo && p.paymentAdviceNo.toLowerCase().includes(query),
     )
   }
 
   if (paymentTypeFilter.value !== 'all') {
     const filterText = paymentTypeFilter.value.toLowerCase()
-    payments = payments.filter((p) => p.description && p.description.toLowerCase().includes(filterText))
+    payments = payments.filter(
+      (p) => p.description && p.description.toLowerCase().includes(filterText),
+    )
   }
 
   if (dateRange.start && dateRange.end) {

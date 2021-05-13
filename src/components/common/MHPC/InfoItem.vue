@@ -1,8 +1,6 @@
 <template>
   <div class="info-item flex flex-col sm:flex-row sm:items-center sm:justify-between">
-    <p class="text-xs font-medium text-gray-500 mb-0.5 sm:mb-0">
-      {{ label }}:
-    </p>
+    <p class="text-xs font-medium text-gray-500 mb-0.5 sm:mb-0">{{ label }}:</p>
     <div class="flex items-center space-x-2 text-xs sm:text-sm sm:text-right">
       <p :class="valueDynamicClass">
         {{ value }}
@@ -13,7 +11,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from 'vue'
 
 const props = defineProps({
   label: {
@@ -28,14 +26,14 @@ const props = defineProps({
     type: String,
     default: '',
   },
-});
+})
 
 const valueDynamicClass = computed(() => {
   if (props.valueClass) {
-    return props.valueClass;
+    return props.valueClass
   }
-  return 'text-gray-800 font-semibold';
-});
+  return 'text-gray-800 font-semibold'
+})
 </script>
 
 <style scoped>

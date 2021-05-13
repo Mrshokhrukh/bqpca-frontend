@@ -1,10 +1,33 @@
 <template>
   <div class="p-4 w-full space-y-6">
     <!-- Error Handling -->
-    <div v-if="error" class="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
+    <div
+      v-if="error"
+      :class="[
+        error.includes('no application')
+          ? 'bg-blue-50 border-l-4 border-blue-400 p-4 mb-4'
+          : 'bg-red-50 border-l-4 border-red-400 p-4 mb-4',
+      ]"
+    >
       <div class="flex items-center">
-        <XCircle class="h-5 w-5 text-red-400 mr-3 flex-shrink-0" />
-        <p class="text-sm text-red-700">{{ error }}</p>
+        <XCircle
+          class="h-5 w-5"
+          :class="[error.includes('no application') ? 'text-blue-400' : 'text-red-400']"
+        />
+        <div>
+          <p
+            class="text-sm"
+            :class="[error.includes('no application') ? 'text-blue-700' : 'text-red-700']"
+          >
+            {{ error }}
+          </p>
+          <router-link
+            v-if="error.includes('no application')"
+            to="/admin/user/roq/my_applications"
+            class="text-blue-700 underline mt-2 inline-block"
+            >Apply Now</router-link
+          >
+        </div>
       </div>
     </div>
 
@@ -15,43 +38,39 @@
 
     <div v-else>
       <!-- Stats Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
-          <StatsCard
-            title="Total Applications"
-            :count="stats.totalApplications"
-            :icon="FileText"
-            color="blue"
-            trend="Total applications submitted"
-            class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
-          />
-          <StatsCard
-            title="Success Rate"
-            :count="`${successRate}%`"
-            :icon="TrendingUp"
-            color="emerald"
-            trend="Based on processed applications"
-            class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
-          />
-        </div>
-        <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
-          <StatsCard
-            title="Avg. Processing Time"
-            :count="`${avgProcessingTime.days}d ${avgProcessingTime.hours}h`"
-            :icon="Clock"
-            color="purple"
-            trend="Average processing duration"
-            class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
-          />
-          <StatsCard
-            title="Total Processing"
-            :count="stats.totalProcessing"
-            :icon="Pencil"
-            color="amber"
-            trend="Applications in process"
-            class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
-          />
-        </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard
+          title="Total Applications"
+          :count="stats.totalApplications"
+          :icon="FileText"
+          color="blue"
+          trend="Total applications submitted"
+          class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 h-full"
+        />
+        <StatsCard
+          title="Success Rate"
+          :count="`${successRate}%`"
+          :icon="TrendingUp"
+          color="emerald"
+          trend="Based on processed applications"
+          class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 h-full"
+        />
+        <StatsCard
+          title="Avg. Processing Time"
+          :count="`${avgProcessingTime.days}d ${avgProcessingTime.hours}h`"
+          :icon="Clock"
+          color="purple"
+          trend="Average processing duration"
+          class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 h-full"
+        />
+        <StatsCard
+          title="Total Processing"
+          :count="stats.totalProcessing"
+          :icon="Pencil"
+          color="amber"
+          trend="Applications in process"
+          class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 h-full"
+        />
       </div>
 
       <!-- Status Cards -->
@@ -150,7 +169,7 @@ const stats = computed(() => {
 // Calculate average processing time
 const avgProcessingTime = computed(() => {
   const processedApplications = filteredApplications.value.filter(
-    (app) => app.created_at && app.updated_at,
+    (app) => app.created_at && app.updated_at
   )
 
   if (processedApplications.length === 0) {
@@ -174,7 +193,7 @@ const avgProcessingTime = computed(() => {
 // Calculate success rate
 const successRate = computed(() => {
   const totalProcessed = filteredApplications.value.filter((app) =>
-    ['approved', 'regretted'].includes(app.status),
+    ['approved', 'regretted'].includes(app.status)
   ).length
 
   const approved = filteredApplications.value.filter((app) => app.status === 'approved').length
@@ -296,11 +315,19 @@ const loadApplications = async () => {
   try {
     const response = await apiService.getRecognitionOfQualification(user.cid)
     applications.value = response.data.sort(
-      (a, b) => new Date(b.created_at) - new Date(a.created_at),
+      (a, b) => new Date(b.created_at) - new Date(a.created_at)
     )
   } catch (err) {
     console.error('Error loading applications:', err)
-    error.value = 'Failed to load application data. Please try again later.'
+    if (
+      err.response?.status === 404 &&
+      err.response?.data?.detail === 'No record found with the given ID or CID.'
+    ) {
+      error.value =
+        'There seems to be no application under your user name. Please proceed and apply for a new application.'
+    } else {
+      error.value = 'Failed to load application data. Please try again later.'
+    }
   } finally {
     isLoading.value = false
   }

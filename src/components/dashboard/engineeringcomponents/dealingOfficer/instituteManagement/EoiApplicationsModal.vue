@@ -295,9 +295,13 @@
 
                     <div class="fixed inset-0 overflow-y-auto">
                       <div class="flex min-h-full items-center justify-center p-4">
-                        <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
+                        <DialogPanel
+                          class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
+                        >
                           <div class="mb-5 text-center">
-                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                            <div
+                              class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100"
+                            >
                               <CheckCircle class="h-6 w-6 text-green-600" />
                             </div>
                             <DialogTitle as="h3" class="text-lg font-medium text-gray-900 mt-4">
@@ -306,7 +310,10 @@
                           </div>
 
                           <div class="mt-3">
-                            <label for="approval-notes" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label
+                              for="approval-notes"
+                              class="block text-sm font-medium text-gray-700 mb-2"
+                            >
                               Approval Notes
                             </label>
                             <textarea
@@ -331,7 +338,9 @@
                               :disabled="!approvalNotes.trim()"
                               :class="[
                                 'inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2',
-                                approvalNotes.trim() ? 'bg-green-600 hover:bg-green-700' : 'bg-green-300 cursor-not-allowed'
+                                approvalNotes.trim()
+                                  ? 'bg-green-600 hover:bg-green-700'
+                                  : 'bg-green-300 cursor-not-allowed',
                               ]"
                               @click="confirmApproval"
                             >
@@ -351,9 +360,13 @@
 
                     <div class="fixed inset-0 overflow-y-auto">
                       <div class="flex min-h-full items-center justify-center p-4">
-                        <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
+                        <DialogPanel
+                          class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
+                        >
                           <div class="mb-5 text-center">
-                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                            <div
+                              class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100"
+                            >
                               <ThumbsDown class="h-6 w-6 text-red-600" />
                             </div>
                             <DialogTitle as="h3" class="text-lg font-medium text-gray-900 mt-4">
@@ -362,7 +375,10 @@
                           </div>
 
                           <div class="mt-3">
-                            <label for="rejection-reason" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label
+                              for="rejection-reason"
+                              class="block text-sm font-medium text-gray-700 mb-2"
+                            >
                               Reason for Rejection
                             </label>
                             <textarea
@@ -387,7 +403,9 @@
                               :disabled="!rejectionReason.trim()"
                               :class="[
                                 'inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2',
-                                rejectionReason.trim() ? 'bg-red-600 hover:bg-red-700' : 'bg-red-300 cursor-not-allowed'
+                                rejectionReason.trim()
+                                  ? 'bg-red-600 hover:bg-red-700'
+                                  : 'bg-red-300 cursor-not-allowed',
                               ]"
                               @click="confirmRejection"
                             >
@@ -413,16 +431,21 @@
                     v-if="showSuccess"
                     class="fixed bottom-6 right-6 flex items-center p-4 mb-4 shadow-lg rounded-lg"
                     :class="[
-                      successType === 'approve' ? 'bg-green-100 text-green-800 border-l-4 border-green-500' :
-                      successType === 'reject' ? 'bg-red-100 text-red-800 border-l-4 border-red-500' :
-                      'bg-blue-100 text-blue-800 border-l-4 border-blue-500'
+                      successType === 'approve'
+                        ? 'bg-green-100 text-green-800 border-l-4 border-green-500'
+                        : successType === 'reject'
+                          ? 'bg-red-100 text-red-800 border-l-4 border-red-500'
+                          : 'bg-blue-100 text-blue-800 border-l-4 border-blue-500',
                     ]"
                   >
-                    <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg mr-3"
+                    <div
+                      class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg mr-3"
                       :class="[
-                        successType === 'approve' ? 'bg-green-200 text-green-600' :
-                        successType === 'reject' ? 'bg-red-200 text-red-600' :
-                        'bg-blue-200 text-blue-600'
+                        successType === 'approve'
+                          ? 'bg-green-200 text-green-600'
+                          : successType === 'reject'
+                            ? 'bg-red-200 text-red-600'
+                            : 'bg-blue-200 text-blue-600',
                       ]"
                     >
                       <CheckCircle v-if="successType === 'approve'" class="w-5 h-5" />
@@ -434,9 +457,11 @@
                       type="button"
                       class="ml-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 p-1.5 inline-flex h-8 w-8 items-center justify-center"
                       :class="[
-                        successType === 'approve' ? 'bg-green-200 text-green-600 hover:bg-green-300 focus:ring-green-400' :
-                        successType === 'reject' ? 'bg-red-200 text-red-600 hover:bg-red-300 focus:ring-red-400' :
-                        'bg-blue-200 text-blue-600 hover:bg-blue-300 focus:ring-blue-400'
+                        successType === 'approve'
+                          ? 'bg-green-200 text-green-600 hover:bg-green-300 focus:ring-green-400'
+                          : successType === 'reject'
+                            ? 'bg-red-200 text-red-600 hover:bg-red-300 focus:ring-red-400'
+                            : 'bg-blue-200 text-blue-600 hover:bg-blue-300 focus:ring-blue-400',
                       ]"
                       @click="closeSuccessNotification"
                     >
@@ -457,7 +482,9 @@
 
                   <div class="fixed inset-0 overflow-y-auto">
                     <div class="flex min-h-full items-center justify-center p-4">
-                      <DialogPanel class="w-full max-w-3xl transform overflow-hidden rounded-xl bg-white p-6 shadow-xl transition-all">
+                      <DialogPanel
+                        class="w-full max-w-3xl transform overflow-hidden rounded-xl bg-white p-6 shadow-xl transition-all"
+                      >
                         <div class="flex items-center justify-between mb-4 pb-4 border-b">
                           <DialogTitle as="h3" class="text-lg font-medium text-gray-900">
                             Edit Application
@@ -475,7 +502,11 @@
                           <div class="space-y-4">
                             <!-- Institute Name Field -->
                             <div>
-                              <label for="edit_name_of_institution" class="block text-sm font-medium text-gray-700">Institute Name</label>
+                              <label
+                                for="edit_name_of_institution"
+                                class="block text-sm font-medium text-gray-700"
+                                >Institute Name</label
+                              >
                               <input
                                 id="edit_name_of_institution"
                                 type="text"
@@ -487,7 +518,11 @@
 
                             <!-- Address Field -->
                             <div>
-                              <label for="edit_address" class="block text-sm font-medium text-gray-700">Address</label>
+                              <label
+                                for="edit_address"
+                                class="block text-sm font-medium text-gray-700"
+                                >Address</label
+                              >
                               <input
                                 id="edit_address"
                                 type="text"
@@ -499,7 +534,11 @@
 
                             <!-- Email Field -->
                             <div>
-                              <label for="edit_email_address" class="block text-sm font-medium text-gray-700">Email Address</label>
+                              <label
+                                for="edit_email_address"
+                                class="block text-sm font-medium text-gray-700"
+                                >Email Address</label
+                              >
                               <input
                                 id="edit_email_address"
                                 type="email"
@@ -511,7 +550,11 @@
 
                             <!-- Contact Number Field -->
                             <div>
-                              <label for="edit_contact_no" class="block text-sm font-medium text-gray-700">Contact Number</label>
+                              <label
+                                for="edit_contact_no"
+                                class="block text-sm font-medium text-gray-700"
+                                >Contact Number</label
+                              >
                               <input
                                 id="edit_contact_no"
                                 type="tel"
@@ -523,7 +566,11 @@
 
                             <!-- Course Title Field -->
                             <div>
-                              <label for="edit_title_of_course" class="block text-sm font-medium text-gray-700">Course Title</label>
+                              <label
+                                for="edit_title_of_course"
+                                class="block text-sm font-medium text-gray-700"
+                                >Course Title</label
+                              >
                               <input
                                 id="edit_title_of_course"
                                 type="text"
@@ -535,7 +582,11 @@
 
                             <!-- Program Type Field -->
                             <div>
-                              <label for="edit_type_of_programme" class="block text-sm font-medium text-gray-700">Program Type</label>
+                              <label
+                                for="edit_type_of_programme"
+                                class="block text-sm font-medium text-gray-700"
+                                >Program Type</label
+                              >
                               <select
                                 id="edit_type_of_programme"
                                 v-model="editedApplication.type_of_programme"
@@ -553,7 +604,11 @@
 
                             <!-- Commencement Date Field -->
                             <div>
-                              <label for="edit_commencement_date" class="block text-sm font-medium text-gray-700">Commencement Date</label>
+                              <label
+                                for="edit_commencement_date"
+                                class="block text-sm font-medium text-gray-700"
+                                >Commencement Date</label
+                              >
                               <input
                                 id="edit_commencement_date"
                                 type="date"
@@ -565,7 +620,11 @@
 
                             <!-- Course Duration Field -->
                             <div>
-                              <label for="edit_course_duration" class="block text-sm font-medium text-gray-700">Course Duration</label>
+                              <label
+                                for="edit_course_duration"
+                                class="block text-sm font-medium text-gray-700"
+                                >Course Duration</label
+                              >
                               <input
                                 id="edit_course_duration"
                                 type="text"
@@ -606,7 +665,7 @@
 </template>
 
 <script setup>
-import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild,  } from '@headlessui/vue';
+import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
 import {
   User,
   UserCircle,
@@ -625,12 +684,12 @@ import {
   Pencil,
   CheckCircle,
   ThumbsDown,
-} from 'lucide-vue-next';
-import { computed, ref } from 'vue';
-import apiService from '@/services/services';
-import { useToast } from 'vue-toastification';
+} from 'lucide-vue-next'
+import { computed, ref } from 'vue'
+import apiService from '@/services/services'
+import { useToast } from 'vue-toastification'
 
-const toast = useToast();
+const toast = useToast()
 
 const props = defineProps({
   isOpen: Boolean,
@@ -639,27 +698,27 @@ const props = defineProps({
     required: true,
     default: () => ({}), // Add a default empty object to prevent errors if undefined
   },
-});
+})
 
-const emit = defineEmits(['close', 'application-updated']);
+const emit = defineEmits(['close', 'application-updated'])
 
-const errorMessage = ref('');
-const isEditModalOpen = ref(false);
-const editedApplication = ref({});
+const errorMessage = ref('')
+const isEditModalOpen = ref(false)
+const editedApplication = ref({})
 
 // New dialog states
-const isApproveDialogOpen = ref(false);
-const isRejectDialogOpen = ref(false);
-const approvalNotes = ref('');
-const rejectionReason = ref('');
+const isApproveDialogOpen = ref(false)
+const isRejectDialogOpen = ref(false)
+const approvalNotes = ref('')
+const rejectionReason = ref('')
 
 // Success notification state
-const showSuccess = ref(false);
-const successMessage = ref('');
-const successType = ref('');
-const successTimeoutId = ref(null);
+const showSuccess = ref(false)
+const successMessage = ref('')
+const successType = ref('')
+const successTimeoutId = ref(null)
 
-console.log('Modal received application:', props.application); // Debug
+console.log('Modal received application:', props.application) // Debug
 
 // Mapping for program type codes to full names
 const programTypeMap = {
@@ -671,253 +730,264 @@ const programTypeMap = {
   b: 'Bachelor',
   m: 'Master',
   p: 'PhD',
-};
+}
 
 // Computed property to get the full program type name for display
 const displayProgramType = computed(() => {
-  const code = props.application?.type_of_programme; // Use optional chaining
-  if (!code) return 'N/A';
-  return programTypeMap[code] || code; // Return mapped name or the code itself as fallback
-});
+  const code = props.application?.type_of_programme // Use optional chaining
+  if (!code) return 'N/A'
+  return programTypeMap[code] || code // Return mapped name or the code itself as fallback
+})
 
 // Computed property for the overall status
 const overallStatus = computed(() => {
-  return props.application?.review_decision || 'Pending'; // Use optional chaining
-});
+  return props.application?.review_decision || 'Pending' // Use optional chaining
+})
 
 // Function to format dates safely
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A';
+  if (!dateString) return 'N/A'
   try {
     // Check if the date needs formatting from YYYY-MM-DD (common from input type="date")
     if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        const [year, month, day] = dateString.split('-');
-        // JavaScript Date month is 0-indexed
-        return new Date(year, month - 1, day).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        });
+      const [year, month, day] = dateString.split('-')
+      // JavaScript Date month is 0-indexed
+      return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
     }
     // Otherwise, assume it's a format Date constructor can handle (like ISO string)
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-    });
+    })
   } catch (error) {
-    console.error('Error formatting date:', dateString, error);
-    return 'Invalid Date';
+    console.error('Error formatting date:', dateString, error)
+    return 'Invalid Date'
   }
-};
+}
 
 const editApplication = () => {
-  if (!props.application) return; // Guard against null application
+  if (!props.application) return // Guard against null application
   // Deep clone the application object to avoid modifying the prop directly
-  editedApplication.value = JSON.parse(JSON.stringify(props.application));
+  editedApplication.value = JSON.parse(JSON.stringify(props.application))
 
   // Ensure the date is in YYYY-MM-DD format for the date input
   if (editedApplication.value.commencement_date) {
     try {
-        const date = new Date(editedApplication.value.commencement_date);
-        // Format date to YYYY-MM-DD
-        editedApplication.value.commencement_date = date.toISOString().split('T')[0];
+      const date = new Date(editedApplication.value.commencement_date)
+      // Format date to YYYY-MM-DD
+      editedApplication.value.commencement_date = date.toISOString().split('T')[0]
     } catch (error) {
-        console.error("Error parsing commencement_date for editing:", editedApplication.value.commencement_date, error);
-        editedApplication.value.commencement_date = ''; // Or set to a default/null value
+      console.error(
+        'Error parsing commencement_date for editing:',
+        editedApplication.value.commencement_date,
+        error,
+      )
+      editedApplication.value.commencement_date = '' // Or set to a default/null value
     }
   }
 
   // Ensure type_of_programme is uppercase for matching <option> values if needed
   if (editedApplication.value.type_of_programme) {
-     editedApplication.value.type_of_programme = editedApplication.value.type_of_programme.toUpperCase();
+    editedApplication.value.type_of_programme =
+      editedApplication.value.type_of_programme.toUpperCase()
   }
 
-  isEditModalOpen.value = true;
-};
+  isEditModalOpen.value = true
+}
 
 const closeEditModal = () => {
-  isEditModalOpen.value = false;
-  editedApplication.value = {}; // Clear the edit object
-};
+  isEditModalOpen.value = false
+  editedApplication.value = {} // Clear the edit object
+}
 
 // Helper function to show success notification
 const showSuccessNotification = (message, type) => {
-  successMessage.value = message;
-  successType.value = type;
-  showSuccess.value = true;
+  successMessage.value = message
+  successType.value = type
+  showSuccess.value = true
 
   // Auto-hide the notification after 5 seconds
   if (successTimeoutId.value) {
-    clearTimeout(successTimeoutId.value);
+    clearTimeout(successTimeoutId.value)
   }
   successTimeoutId.value = setTimeout(() => {
-    showSuccess.value = false;
-  }, 5000);
-};
+    showSuccess.value = false
+  }, 5000)
+}
 
 // Function to close success notification
 const closeSuccessNotification = () => {
-  showSuccess.value = false;
+  showSuccess.value = false
   if (successTimeoutId.value) {
-    clearTimeout(successTimeoutId.value);
+    clearTimeout(successTimeoutId.value)
   }
-};
+}
 
 const saveApplicationChanges = async () => {
   if (!props.application?.id) {
-    errorMessage.value = 'Application ID is missing.';
-    toast.error('Cannot save: Application ID is missing.');
-    return;
+    errorMessage.value = 'Application ID is missing.'
+    toast.error('Cannot save: Application ID is missing.')
+    return
   }
 
   if (!editedApplication.value.type_of_programme) {
-    errorMessage.value = 'Program type is required.';
-    toast.error('Please select a program type.');
-    return;
+    errorMessage.value = 'Program type is required.'
+    toast.error('Please select a program type.')
+    return
   }
 
-  const validProgramTypes = ['D', 'B', 'M', 'P'];
+  const validProgramTypes = ['D', 'B', 'M', 'P']
   if (!validProgramTypes.includes(editedApplication.value.type_of_programme)) {
-    errorMessage.value = 'Invalid program type selected.';
-    toast.error('Please select a valid program type.');
-    return;
+    errorMessage.value = 'Invalid program type selected.'
+    toast.error('Please select a valid program type.')
+    return
   }
 
   try {
-    const payloadToSend = { ...editedApplication.value };
+    const payloadToSend = { ...editedApplication.value }
 
     // Remove fields that shouldn't be sent
-    delete payloadToSend.supporting_documents;
-    delete payloadToSend.institute_eoi_supporting_documents;
-    delete payloadToSend.do_dpr_report;
-    delete payloadToSend.created_at;
-    delete payloadToSend.updated_at;
+    delete payloadToSend.supporting_documents
+    delete payloadToSend.institute_eoi_supporting_documents
+    delete payloadToSend.do_dpr_report
+    delete payloadToSend.created_at
+    delete payloadToSend.updated_at
 
-    console.log('Sending update for application ID:', props.application.id);
-    console.log('Update data:', JSON.stringify(payloadToSend, null, 2));
+    console.log('Sending update for application ID:', props.application.id)
+    console.log('Update data:', JSON.stringify(payloadToSend, null, 2))
 
-    const response = await apiService.patchEpcInstitute(props.application.id, payloadToSend);
+    const response = await apiService.patchEpcInstitute(props.application.id, payloadToSend)
 
     if (response && response.status === 200 && response.data) {
-      emit('application-updated', response.data);
-      closeEditModal();
-      showSuccessNotification('Application updated successfully!', 'edit');
+      emit('application-updated', response.data)
+      closeEditModal()
+      showSuccessNotification('Application updated successfully!', 'edit')
     } else {
-      const errorMsg = response?.data?.message || 'Failed to update application.';
-      errorMessage.value = errorMsg;
-      toast.error(errorMsg);
+      const errorMsg = response?.data?.message || 'Failed to update application.'
+      errorMessage.value = errorMsg
+      toast.error(errorMsg)
     }
   } catch (error) {
-    console.error('Error updating application:', error);
-    const errorMsg = error.response?.data?.message || error.message || 'Unknown error';
-    errorMessage.value = `Failed to update application: ${errorMsg}`;
-    toast.error(`Failed to update: ${errorMsg}`);
+    console.error('Error updating application:', error)
+    const errorMsg = error.response?.data?.message || error.message || 'Unknown error'
+    errorMessage.value = `Failed to update application: ${errorMsg}`
+    toast.error(`Failed to update: ${errorMsg}`)
   }
-};
+}
 
 const closeModal = () => {
-  errorMessage.value = ''; // Clear any previous error message
-  emit('close');
-};
+  errorMessage.value = '' // Clear any previous error message
+  emit('close')
+}
 
 const closeModalHandler = () => {
   // This handler is called when clicking outside the dialog or pressing Esc
-  closeModal(); // Reuse the main close logic
-};
+  closeModal() // Reuse the main close logic
+}
 
 // New functions for custom approval/rejection dialogs
 const openApproveDialog = () => {
-  approvalNotes.value = '';
-  isApproveDialogOpen.value = true;
-};
+  approvalNotes.value = ''
+  isApproveDialogOpen.value = true
+}
 
 const openRejectDialog = () => {
-  rejectionReason.value = '';
-  isRejectDialogOpen.value = true;
-};
+  rejectionReason.value = ''
+  isRejectDialogOpen.value = true
+}
 
 const cancelApproval = () => {
-  isApproveDialogOpen.value = false;
-  approvalNotes.value = '';
-};
+  isApproveDialogOpen.value = false
+  approvalNotes.value = ''
+}
 
 const cancelRejection = () => {
-  isRejectDialogOpen.value = false;
-  rejectionReason.value = '';
-};
+  isRejectDialogOpen.value = false
+  rejectionReason.value = ''
+}
 
 const confirmApproval = async () => {
   if (!approvalNotes.value.trim()) {
-    return; // Button should be disabled, but just in case
+    return // Button should be disabled, but just in case
   }
 
-  const success = await updateApplicationStatus('Approved', approvalNotes.value);
+  const success = await updateApplicationStatus('Approved', approvalNotes.value)
   if (success) {
-    isApproveDialogOpen.value = false;
+    isApproveDialogOpen.value = false
     // Show custom success notification
-    showSuccessNotification(`Application successfully approved. Notification sent to ${props.application.name_of_institution}.`, 'approve');
+    showSuccessNotification(
+      `Application successfully approved. Notification sent to ${props.application.name_of_institution}.`,
+      'approve',
+    )
   }
-};
+}
 
 const confirmRejection = async () => {
   if (!rejectionReason.value.trim()) {
-    return; // Button should be disabled, but just in case
+    return // Button should be disabled, but just in case
   }
 
-  const success = await updateApplicationStatus('Regretted', rejectionReason.value);
+  const success = await updateApplicationStatus('Regretted', rejectionReason.value)
   if (success) {
-    isRejectDialogOpen.value = false;
+    isRejectDialogOpen.value = false
     // Show custom success notification
-    showSuccessNotification(`Application has been regretted. Notification sent to ${props.application.name_of_institution}.`, 'reject');
+    showSuccessNotification(
+      `Application has been regretted. Notification sent to ${props.application.name_of_institution}.`,
+      'reject',
+    )
   }
-};
+}
 
 // Updated function that no longer uses simple browser alerts
 const updateApplicationStatus = async (decision, notesOrReason) => {
   if (!props.application?.id) {
-    errorMessage.value = 'Application ID is missing.';
-    toast.error(`Cannot ${decision.toLowerCase()}: Application ID is missing.`);
-    return false;
+    errorMessage.value = 'Application ID is missing.'
+    toast.error(`Cannot ${decision.toLowerCase()}: Application ID is missing.`)
+    return false
   }
 
   if (!notesOrReason) {
-    errorMessage.value = `${decision === 'Approved' ? 'Approval notes' : 'Rejection reason'} are required.`;
-    return false;
+    errorMessage.value = `${decision === 'Approved' ? 'Approval notes' : 'Rejection reason'} are required.`
+    return false
   }
 
-  errorMessage.value = ''; // Clear previous errors
+  errorMessage.value = '' // Clear previous errors
 
   const payload = {
     review_decision: decision,
-  };
+  }
 
   if (decision === 'Approved') {
-    payload.approvalNotes = notesOrReason;
+    payload.approvalNotes = notesOrReason
   } else if (decision === 'Regretted') {
-    payload.reason_if_rejected = notesOrReason;
+    payload.reason_if_rejected = notesOrReason
   }
 
   try {
-    const response = await apiService.patchEpcInstitute(props.application.id, payload);
+    const response = await apiService.patchEpcInstitute(props.application.id, payload)
 
     if (response && response.status === 200 && response.data) {
-      emit('application-updated', response.data);
-      return true; // Indicate success
+      emit('application-updated', response.data)
+      return true // Indicate success
     } else {
-      const errorMsg = response?.data?.message || `Failed to ${decision.toLowerCase()} application.`;
-      errorMessage.value = errorMsg;
-      toast.error(errorMsg);
-      return false;
+      const errorMsg = response?.data?.message || `Failed to ${decision.toLowerCase()} application.`
+      errorMessage.value = errorMsg
+      toast.error(errorMsg)
+      return false
     }
   } catch (error) {
-    console.error(`Error ${decision.toLowerCase()}ing application:`, error);
-    const errorMsg = error.response?.data?.message || error.message || 'Unknown error';
-    errorMessage.value = `Failed to ${decision.toLowerCase()} application: ${errorMsg}.`;
-    toast.error(`Failed to ${decision.toLowerCase()}: ${errorMsg}`);
-    return false;
+    console.error(`Error ${decision.toLowerCase()}ing application:`, error)
+    const errorMsg = error.response?.data?.message || error.message || 'Unknown error'
+    errorMessage.value = `Failed to ${decision.toLowerCase()} application: ${errorMsg}.`
+    toast.error(`Failed to ${decision.toLowerCase()}: ${errorMsg}`)
+    return false
   }
-};
+}
 </script>
 
 <style scoped>

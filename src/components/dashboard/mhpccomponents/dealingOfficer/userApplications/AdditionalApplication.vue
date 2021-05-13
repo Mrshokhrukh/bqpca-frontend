@@ -164,7 +164,7 @@
       v-if="totalPages > 1"
       class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100"
     >
-       <div class="flex-1 flex justify-between sm:hidden">
+      <div class="flex-1 flex justify-between sm:hidden">
         <button
           @click="prevPage"
           :disabled="currentPage === 1"
@@ -364,30 +364,34 @@ watch([filterStatus, searchQuery], () => {
 
 // Determines the overall status of the application based on its *additional* qualifications
 const getStatus = (app) => {
-  const additionalQualifications = app.user_qualifications?.filter((q) => !q.is_primary_qualification) || [];
+  const additionalQualifications =
+    app.user_qualifications?.filter((q) => !q.is_primary_qualification) || []
 
   if (additionalQualifications.length === 0) {
     // This case should ideally not happen due to the initial filter, but good to handle
-    console.warn(`Application ID ${app.id} has no additional qualifications despite filtering.`);
-    return 'Pending'; // Or perhaps 'Error'?
+    console.warn(`Application ID ${app.id} has no additional qualifications despite filtering.`)
+    return 'Pending' // Or perhaps 'Error'?
   }
 
   // Check if ANY additional qualification is Regretted
-  const isRegretted = additionalQualifications.some(q => getIndividualQualificationStatus(q) === 'Regretted');
+  const isRegretted = additionalQualifications.some(
+    (q) => getIndividualQualificationStatus(q) === 'Regretted',
+  )
   if (isRegretted) {
-    return 'Regretted';
+    return 'Regretted'
   }
 
   // Check if ALL additional qualifications are Approved
-  const allApproved = additionalQualifications.every(q => getIndividualQualificationStatus(q) === 'Approved');
+  const allApproved = additionalQualifications.every(
+    (q) => getIndividualQualificationStatus(q) === 'Approved',
+  )
   if (allApproved) {
-    return 'Approved';
+    return 'Approved'
   }
 
   // Otherwise, at least one is Pending (and none are Regretted)
-  return 'Pending';
+  return 'Pending'
 }
-
 
 // Determines the status of a SINGLE qualification object
 const getIndividualQualificationStatus = (qualification) => {
@@ -470,7 +474,6 @@ const fetchMasterData = async () => {
     personnelSubcategories.value =
       subcategoriesRes.status === 'fulfilled' ? subcategoriesRes.value?.data?.results || [] : []
     sectors.value = sectorsRes.status === 'fulfilled' ? sectorsRes.value?.data?.results || [] : []
-
   } catch (error) {
     console.error('Error fetching master data:', error)
     toast.error('Failed to load master data.')

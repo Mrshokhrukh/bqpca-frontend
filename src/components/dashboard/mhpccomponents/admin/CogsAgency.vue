@@ -22,19 +22,34 @@
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
-                <label for="agencyName" class="block text-sm font-medium text-slate-700">Agency Name</label>
-                <input type="text" id="agencyName" v-model="formData.name"
+                <label for="agencyName" class="block text-sm font-medium text-slate-700"
+                  >Agency Name</label
+                >
+                <input
+                  type="text"
+                  id="agencyName"
+                  v-model="formData.name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter agency name" required />
+                  placeholder="Enter agency name"
+                  required
+                />
               </div>
 
               <div class="flex gap-3">
-                <button type="submit" :disabled="isLoading"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                <button
+                  type="submit"
+                  :disabled="isLoading"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   {{ isLoading ? 'Processing...' : isEditing ? 'Update Agency' : 'Add Agency' }}
                 </button>
-                <button v-if="isEditing" type="button" @click="cancelEdit"
-                  class="py-2 px-4 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200" :disabled="isLoading">
+                <button
+                  v-if="isEditing"
+                  type="button"
+                  @click="cancelEdit"
+                  class="py-2 px-4 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200"
+                  :disabled="isLoading"
+                >
                   Cancel
                 </button>
               </div>
@@ -54,12 +69,24 @@
 
             <!-- Search Bar -->
             <div class="relative">
-              <input type="text" v-model="searchQuery" placeholder="Search Agencies..."
-                class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-              <svg class="absolute left-3 top-2.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <input
+                type="text"
+                v-model="searchQuery"
+                placeholder="Search Agencies..."
+                class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <svg
+                class="absolute left-3 top-2.5 h-5 w-5 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
           </div>
@@ -72,25 +99,43 @@
           <!-- Agencies Grid -->
           <div v-else class="space-y-4 mb-6">
             <TransitionGroup name="list">
-              <div v-for="agency in paginatedAgencies" :key="agency.id"
-                class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200">
+              <div
+                v-for="agency in paginatedAgencies"
+                :key="agency.id"
+                class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200"
+              >
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">{{ agency.name }}</h3>
                   </div>
                   <div class="flex gap-2">
-                    <button @click="startEdit(agency)" class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
-                      :disabled="isLoading">
+                    <button
+                      @click="startEdit(agency)"
+                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+                      :disabled="isLoading"
+                    >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
                       </svg>
                     </button>
-                    <button @click="openDeleteModal(agency)" class="p-2 text-red-600 hover:bg-red-50 rounded-md"
-                      :disabled="isLoading">
+                    <button
+                      @click="openDeleteModal(agency)"
+                      class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                      :disabled="isLoading"
+                    >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path 是是 stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <path
+                          是是
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -106,15 +151,21 @@
 
           <!-- Pagination -->
           <div v-if="filteredAgencies.length > itemsPerPage" class="flex justify-center gap-2">
-            <button @click="currentPage--" :disabled="currentPage === 1 || isLoading"
-              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">
+            <button
+              @click="currentPage--"
+              :disabled="currentPage === 1 || isLoading"
+              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+            >
               Previous
             </button>
             <span class="px-3 py-1 text-sm text-slate-600">
               Page {{ currentPage }} of {{ totalPages }}
             </span>
-            <button @click="currentPage++" :disabled="currentPage === totalPages || isLoading"
-              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">
+            <button
+              @click="currentPage++"
+              :disabled="currentPage === totalPages || isLoading"
+              class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+            >
               Next
             </button>
           </div>
@@ -124,7 +175,8 @@
       <!-- Confirmation modal -->
       <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
         <AlertDialogContent
-          class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50">
+          class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50"
+        >
           <AlertDialogTitle class="text-xl font-semibold text-slate-900 mb-2">
             Are you absolutely sure?
           </AlertDialogTitle>
@@ -134,12 +186,18 @@
             }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
-            <AlertDialogCancel class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
-              @click="closeDeleteModal" :disabled="isLoading">
+            <AlertDialogCancel
+              class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
+              @click="closeDeleteModal"
+              :disabled="isLoading"
+            >
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
-              @click="confirmDelete" :disabled="isLoading">
+            <AlertDialogAction
+              class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+              @click="confirmDelete"
+              :disabled="isLoading"
+            >
               {{ isLoading ? 'Deleting...' : 'Delete' }}
             </AlertDialogAction>
           </div>

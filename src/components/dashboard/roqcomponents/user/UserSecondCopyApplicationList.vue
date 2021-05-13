@@ -1,88 +1,81 @@
 <template>
-    <div class="p-4 w-full">
-        <!-- Header Section -->
-        <div
-            class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6"
-        >
-            <h2 class="text-3xl font-serif font-bold text-slate-900">
-                My Second Copy Applications
-            </h2>
-            <button
-                class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-                @click="showModal = true"
-            >
-                <span class="mr-2">+</span>
-                Apply For Second Copy
-            </button>
-        </div>
-
-        <!-- Modal for New Application Form -->
-        <TransitionRoot appear :show="showModal" as="template">
-            <Dialog as="div" @close="showModal = false" class="relative z-50">
-                <TransitionChild
-                    as="template"
-                    enter="duration-300 ease-out"
-                    enter-from="opacity-0"
-                    enter-to="opacity-100"
-                    leave="duration-200 ease-in"
-                    leave-from="opacity-100"
-                    leave-to="opacity-0"
-                >
-                    <div class="fixed inset-0 bg-black bg-opacity-25" />
-                </TransitionChild>
-
-                <div class="fixed inset-0 overflow-y-auto">
-                    <div class="flex min-h-full items-center justify-center p-4">
-                        <TransitionChild
-                            as="template"
-                            enter="duration-300 ease-out"
-                            enter-from="opacity-0 scale-95"
-                            enter-to="opacity-100 scale-100"
-                            leave="duration-200 ease-in"
-                            leave-from="opacity-100 scale-100"
-                            leave-to="opacity-0 scale-95"
-                        >
-                            <DialogPanel class="bg-white rounded-lg p-8 shadow-xl max-w-7xl relative">
-                                <button
-                                    @click="showModal = false"
-                                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 focus:outline-none"
-                                >
-                                    <span class="sr-only">Close</span>
-                                    <XMarkIcon class="h-6 w-6" />
-                                </button>
-                                <SecondCopyApplicationForm
-                                    @application-submitted="handleApplicationSubmitted"
-                                    @close-modal="showModal = false"
-                                />
-                            </DialogPanel>
-                        </TransitionChild>
-                    </div>
-                </div>
-            </Dialog>
-        </TransitionRoot>
-
-        <!-- Application Table with Loading State -->
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div v-if="loading" class="flex justify-center items-center py-12">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            </div>
-            <div
-                v-else-if="filteredApplications.length === 0"
-                class="py-12 text-center text-gray-500"
-            >
-                No applications found
-            </div>
-            <div v-else class="w-full overflow-x-auto">
-                <ApplicationTable
-                    :applications="paginatedApplications"
-                    :current-page="currentPage"
-                    :total-results="filteredTotal"
-                    :per-page="perPage"
-                    @page-change="handlePageChange"
-                />
-            </div>
-        </div>
+  <div class="p-4 w-full">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <h2 class="text-3xl font-serif font-bold text-slate-900">My Second Copy Applications</h2>
+      <button
+        class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+        @click="showModal = true"
+      >
+        <span class="mr-2">+</span>
+        Apply For Second Copy
+      </button>
     </div>
+
+    <!-- Modal for New Application Form -->
+    <TransitionRoot appear :show="showModal" as="template">
+      <Dialog as="div" @close="showModal = false" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black bg-opacity-25" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel class="bg-white rounded-lg p-8 shadow-xl max-w-7xl relative">
+                <button
+                  @click="showModal = false"
+                  class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 focus:outline-none"
+                >
+                  <span class="sr-only">Close</span>
+                  <XMarkIcon class="h-6 w-6" />
+                </button>
+                <SecondCopyApplicationForm
+                  @application-submitted="handleApplicationSubmitted"
+                  @close-modal="showModal = false"
+                />
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Application Table with Loading State -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div v-if="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+      <div v-else-if="filteredApplications.length === 0" class="py-12 text-center text-gray-500">
+        No applications found
+      </div>
+      <div v-else class="w-full overflow-x-auto">
+        <ApplicationTable
+          :applications="paginatedApplications"
+          :current-page="currentPage"
+          :total-results="filteredTotal"
+          :per-page="perPage"
+          @page-change="handlePageChange"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -106,18 +99,18 @@ const selectedType = ref('')
 
 // Computed Property for filtered Applications
 const filteredApplications = computed(() => {
-    return applications.value.filter((app) => {
-        const matchesStatus = selectedStatus.value ? app.status === selectedStatus.value : true
-        const matchesType = selectedType.value ? app.type_of_course === selectedType.value : true
-        const matchesSearch = searchQuery.value
-            ? Object.values(app).some((value) =>
-                  String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
-              )
-            : true
-        const isNotSecondCopy = app.is_second_copy // Exclude if is_second_copy is true
+  return applications.value.filter((app) => {
+    const matchesStatus = selectedStatus.value ? app.status === selectedStatus.value : true
+    const matchesType = selectedType.value ? app.type_of_course === selectedType.value : true
+    const matchesSearch = searchQuery.value
+      ? Object.values(app).some((value) =>
+          String(value).toLowerCase().includes(searchQuery.value.toLowerCase()),
+        )
+      : true
+    const isNotSecondCopy = app.is_second_copy // Exclude if is_second_copy is true
 
-        return matchesStatus && matchesType && matchesSearch && isNotSecondCopy
-    })
+    return matchesStatus && matchesType && matchesSearch && isNotSecondCopy
+  })
 })
 
 // Compute total for pagination
@@ -125,51 +118,51 @@ const filteredTotal = computed(() => filteredApplications.value.length)
 
 // Get paginated data
 const paginatedApplications = computed(() => {
-    const start = (currentPage.value - 1) * perPage.value
-    const end = start + perPage.value
+  const start = (currentPage.value - 1) * perPage.value
+  const end = start + perPage.value
 
-    return filteredApplications.value.slice(start, end)
+  return filteredApplications.value.slice(start, end)
 })
 
 // Reset pagination when filters change
 watch([selectedStatus, selectedType, searchQuery], () => {
-    currentPage.value = 1
+  currentPage.value = 1
 })
 
 // Method for closing the modal and refreshing data
 const handleApplicationSubmitted = async () => {
-    showModal.value = false
-    loading.value = true // Indicate loading again
-    try {
-        await loadData()
-        await nextTick() // Still keep nextTick for DOM updates
-        console.log('Applications updated:', applications.value) // Verification
-    } finally {
-        loading.value = false // Ensure loading is turned off
-    }
+  showModal.value = false
+  loading.value = true // Indicate loading again
+  try {
+    await loadData()
+    await nextTick() // Still keep nextTick for DOM updates
+    console.log('Applications updated:', applications.value) // Verification
+  } finally {
+    loading.value = false // Ensure loading is turned off
+  }
 }
 
 // Load Data Function
 const loadData = async () => {
-    loading.value = true
-    try {
-        const response = await apiService.getRecognitionOfQualifications({
-            user_id: userId.value, // Use user ID instead of email
-        })
-        applications.value = response.data.results
-    } catch (error) {
-        console.error('Error loading data:', error)
-    } finally {
-        loading.value = false
-    }
+  loading.value = true
+  try {
+    const response = await apiService.getRecognitionOfQualifications({
+      user_id: userId.value, // Use user ID instead of email
+    })
+    applications.value = response.data.results
+  } catch (error) {
+    console.error('Error loading data:', error)
+  } finally {
+    loading.value = false
+  }
 }
 
 // Page Change Handler
 const handlePageChange = (newPage) => {
-    currentPage.value = newPage
+  currentPage.value = newPage
 }
 
 onMounted(() => {
-    loadData()
+  loadData()
 })
 </script>

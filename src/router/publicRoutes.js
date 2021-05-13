@@ -128,7 +128,7 @@ const publicRoutes = [
     redirect: (to) => {
       return {
         path: '/404',
-        query: { attempted: to.fullPath }
+        query: { attempted: to.fullPath },
       }
     },
   },

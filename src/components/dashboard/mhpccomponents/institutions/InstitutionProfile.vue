@@ -4,7 +4,11 @@
       <!-- Header Section -->
       <InstituteHeader
         :title="institute?.name_of_institution || 'Institute Profile'"
-        :subtitle="institute ? `Headed by ${institute.head_of_institution_name}` : 'Loading institute details...'"
+        :subtitle="
+          institute
+            ? `Headed by ${institute.head_of_institution_name}`
+            : 'Loading institute details...'
+        "
       />
 
       <!-- Main Content -->
@@ -15,7 +19,12 @@
             <div>
               <h2 class="text-3xl font-bold text-gray-900">{{ institute.name_of_institution }}</h2>
               <p v-if="institute.website" class="mt-2 text-indigo-600 hover:underline">
-                <a :href="institute.website" target="_blank" rel="noopener noreferrer" class="flex items-center">
+                <a
+                  :href="institute.website"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center"
+                >
                   <GlobeAltIcon class="w-5 h-5 mr-2" />
                   {{ institute.website }}
                 </a>
@@ -26,7 +35,9 @@
                 :class="{
                   'bg-green-100 text-green-800': institute.review_decision === 'Approved',
                   'bg-yellow-100 text-yellow-800': institute.review_decision === 'Pending',
-                  'bg-red-100 text-red-800': institute.review_decision !== 'Approved' && institute.review_decision !== 'Pending',
+                  'bg-red-100 text-red-800':
+                    institute.review_decision !== 'Approved' &&
+                    institute.review_decision !== 'Pending',
                 }"
                 class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
               >
@@ -88,7 +99,13 @@
               <div>
                 <dt class="text-sm font-medium text-gray-600">Program Type</dt>
                 <dd class="text-gray-800">
-                  {{ institute.type_of_programme === 'D' ? 'Diploma' : institute.type_of_programme === 'B' ? 'Bachelor' : 'Other' }}
+                  {{
+                    institute.type_of_programme === 'D'
+                      ? 'Diploma'
+                      : institute.type_of_programme === 'B'
+                        ? 'Bachelor'
+                        : 'Other'
+                  }}
                 </dd>
               </div>
             </dl>
@@ -162,7 +179,9 @@
                   :class="{
                     'bg-green-100 text-green-800': center.tc_review_decision === 'Approved',
                     'bg-yellow-100 text-yellow-800': center.tc_review_decision === 'Pending',
-                    'bg-red-100 text-red-800': center.tc_review_decision !== 'Approved' && center.tc_review_decision !== 'Pending',
+                    'bg-red-100 text-red-800':
+                      center.tc_review_decision !== 'Approved' &&
+                      center.tc_review_decision !== 'Pending',
                   }"
                   class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
                 >
@@ -177,7 +196,14 @@
         <!-- Supporting Documents Section -->
         <div class="bg-white rounded-2xl shadow-lg p-6 transition-all duration-300">
           <h3 class="text-xl font-semibold text-gray-900 mb-4">Supporting Documents</h3>
-          <div v-if="institute.supporting_documents || institute.institute_eoi_supporting_documents || institute.do_dpr_report" class="space-y-2">
+          <div
+            v-if="
+              institute.supporting_documents ||
+              institute.institute_eoi_supporting_documents ||
+              institute.do_dpr_report
+            "
+            class="space-y-2"
+          >
             <a
               v-if="institute.supporting_documents"
               :href="institute.supporting_documents"
@@ -248,9 +274,7 @@ const toast = useToast()
 
 // Computed properties for formatted dates
 const formattedCommencementDate = computed(() => {
-  return institute.value?.commencement_date
-    ? formatDate(institute.value.commencement_date)
-    : 'N/A'
+  return institute.value?.commencement_date ? formatDate(institute.value.commencement_date) : 'N/A'
 })
 
 const formattedValidSince = computed(() => {
@@ -267,13 +291,12 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-
 // Fetch institute data
 const fetchInstitute = async () => {
   try {
     const cid = user.value?.cid
     const response = await apiServices.getMhpcInstitute(cid)
-    if (!response || !response.data ) {
+    if (!response || !response.data) {
       throw new Error("Invalid API response. Expected 'results' array.")
     }
 

@@ -19,9 +19,7 @@
           </button>
         </div>
 
-        <div
-          class="p-4 sm:p-6 flex flex-col sm:flex-row items-center sm:items-start gap-4"
-        >
+        <div class="p-4 sm:p-6 flex flex-col sm:flex-row items-center sm:items-start gap-4">
           <div class="relative">
             <div
               class="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-indigo-600/20 rounded-xl blur-md"
@@ -50,11 +48,7 @@
               >
                 <span
                   class="w-2 h-2 rounded-full mr-1.5"
-                  :class="
-                    isApplicationActive(application)
-                      ? 'bg-green-500'
-                      : 'bg-red-500'
-                  "
+                  :class="isApplicationActive(application) ? 'bg-green-500' : 'bg-red-500'"
                 ></span>
                 {{ isApplicationActive(application) ? 'Active' : 'Inactive' }}
               </span>
@@ -131,9 +125,7 @@
       </div>
 
       <div class="p-4 sm:p-6">
-        <h4
-          class="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center"
-        >
+        <h4 class="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
           <div class="p-1.5 bg-blue-100 rounded-lg mr-2">
             <GraduationCap class="w-4 h-4 text-blue-600" />
           </div>
@@ -158,42 +150,30 @@
                 </p>
               </div>
 
-              <div
-                class="flex items-center justify-center lg:justify-end w-full lg:w-auto"
-              >
+              <div class="flex items-center justify-center lg:justify-end w-full lg:w-auto">
                 <div class="flex flex-col sm:flex-row items-center">
                   <div class="flex flex-col items-center mb-2 sm:mb-0">
                     <span
                       class="w-8 h-8 rounded-full flex items-center justify-center shadow-md"
                       :class="[
-                        qualification.application_review_status ===
-                        'Approved'
+                        qualification.application_review_status === 'Approved'
                           ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
-                          : qualification.application_review_status ===
-                            'Rejected'
-                          ? 'bg-red-100 text-red-700 ring-1 ring-red-200'
-                          : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200',
+                          : qualification.application_review_status === 'Rejected'
+                            ? 'bg-red-100 text-red-700 ring-1 ring-red-200'
+                            : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200',
                       ]"
                     >
                       <CheckCircle
-                        v-if="
-                          qualification.application_review_status ===
-                          'Approved'
-                        "
+                        v-if="qualification.application_review_status === 'Approved'"
                         class="w-4 h-4"
                       />
                       <XCircle
-                        v-else-if="
-                          qualification.application_review_status ===
-                          'Rejected'
-                        "
+                        v-else-if="qualification.application_review_status === 'Rejected'"
                         class="w-4 h-4"
                       />
                       <Clock v-else class="w-4 h-4" />
                     </span>
-                    <span class="text-xs font-medium mt-1 text-gray-700"
-                      >Review</span
-                    >
+                    <span class="text-xs font-medium mt-1 text-gray-700">Review</span>
                   </div>
 
                   <div class="hidden sm:block w-6 h-0.5 bg-gray-200"></div>
@@ -203,34 +183,24 @@
                     <span
                       class="w-8 h-8 rounded-full flex items-center justify-center shadow-md"
                       :class="[
-                        qualification.physical_review_status ===
-                        'Approved'
+                        qualification.physical_review_status === 'Approved'
                           ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
-                          : qualification.physical_review_status ===
-                            'Rejected'
-                          ? 'bg-red-100 text-red-700 ring-1 ring-red-200'
-                          : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200',
+                          : qualification.physical_review_status === 'Rejected'
+                            ? 'bg-red-100 text-red-700 ring-1 ring-red-200'
+                            : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200',
                       ]"
                     >
                       <CheckCircle
-                        v-if="
-                          qualification.physical_review_status ===
-                          'Approved'
-                        "
+                        v-if="qualification.physical_review_status === 'Approved'"
                         class="w-4 h-4"
                       />
                       <XCircle
-                        v-else-if="
-                          qualification.physical_review_status ===
-                          'Rejected'
-                        "
+                        v-else-if="qualification.physical_review_status === 'Rejected'"
                         class="w-4 h-4"
                       />
                       <Clock v-else class="w-4 h-4" />
                     </span>
-                    <span class="text-xs font-medium mt-1 text-gray-700"
-                      >Verify</span
-                    >
+                    <span class="text-xs font-medium mt-1 text-gray-700">Verify</span>
                   </div>
 
                   <div class="hidden sm:block w-6 h-0.5 bg-gray-200"></div>
@@ -241,11 +211,9 @@
                       class="w-8 h-8 rounded-full flex items-center justify-center shadow-md"
                       :class="{
                         'bg-green-100 text-green-700 ring-1 ring-green-200':
-                          qualification.payment_status ===
-                          'completed',
+                          qualification.payment_status === 'completed',
                         'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200':
-                          qualification.payment_status ===
-                          'processing_payment',
+                          qualification.payment_status === 'processing_payment',
                         'bg-red-100 text-red-700 ring-1 ring-red-200':
                           qualification.payment_status === 'failed',
                         'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200':
@@ -253,22 +221,16 @@
                       }"
                     >
                       <CheckCircle
-                        v-if="
-                          qualification.payment_status === 'completed'
-                        "
+                        v-if="qualification.payment_status === 'completed'"
                         class="w-4 h-4"
                       />
                       <XCircle
-                        v-else-if="
-                          qualification.payment_status === 'failed'
-                        "
+                        v-else-if="qualification.payment_status === 'failed'"
                         class="w-4 h-4"
                       />
                       <Clock v-else class="w-4 h-4" />
                     </span>
-                    <span class="text-xs font-medium mt-1 text-gray-700"
-                      >Payment</span
-                    >
+                    <span class="text-xs font-medium mt-1 text-gray-700">Payment</span>
                   </div>
 
                   <div class="hidden sm:block w-6 h-0.5 bg-gray-200"></div>
@@ -278,34 +240,24 @@
                     <span
                       class="w-8 h-8 rounded-full flex items-center justify-center shadow-md"
                       :class="[
-                        qualification.endorsement_decision ===
-                        'Approved'
+                        qualification.endorsement_decision === 'Approved'
                           ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
-                          : qualification.endorsement_decision ===
-                            'Rejected'
-                          ? 'bg-red-100 text-red-700 ring-1 ring-red-200'
-                          : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200',
+                          : qualification.endorsement_decision === 'Rejected'
+                            ? 'bg-red-100 text-red-700 ring-1 ring-red-200'
+                            : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200',
                       ]"
                     >
                       <CheckCircle
-                        v-if="
-                          qualification.endorsement_decision ===
-                          'Approved'
-                        "
+                        v-if="qualification.endorsement_decision === 'Approved'"
                         class="w-4 h-4"
                       />
                       <XCircle
-                        v-else-if="
-                          qualification.endorsement_decision ===
-                          'Rejected'
-                        "
+                        v-else-if="qualification.endorsement_decision === 'Rejected'"
                         class="w-4 h-4"
                       />
                       <Clock v-else class="w-4 h-4" />
                     </span>
-                    <span class="text-xs font-medium mt-1 text-gray-700"
-                      >Endorse</span
-                    >
+                    <span class="text-xs font-medium mt-1 text-gray-700">Endorse</span>
                   </div>
                 </div>
               </div>
@@ -320,12 +272,8 @@
                     <Building2 class="w-4 h-4 text-blue-600" />
                   </div>
                   <div>
-                    <p class="text-xs font-medium text-blue-700">
-                      Institute
-                    </p>
-                    <p
-                      class="text-xs font-semibold text-gray-900 mt-1 line-clamp-2"
-                    >
+                    <p class="text-xs font-medium text-blue-700">Institute</p>
+                    <p class="text-xs font-semibold text-gray-900 mt-1 line-clamp-2">
                       {{ qualification.institute_university_display }}
                     </p>
                   </div>
@@ -340,12 +288,8 @@
                     <GraduationCap class="w-4 h-4 text-indigo-600" />
                   </div>
                   <div>
-                    <p class="text-xs font-medium text-indigo-700">
-                      Qualification
-                    </p>
-                    <p
-                      class="text-xs font-semibold text-gray-900 mt-1 line-clamp-2"
-                    >
+                    <p class="text-xs font-medium text-indigo-700">Qualification</p>
+                    <p class="text-xs font-semibold text-gray-900 mt-1 line-clamp-2">
                       {{ qualification.qualification_type_display }}
                     </p>
                   </div>
@@ -360,9 +304,7 @@
                     <CalendarCheck class="w-4 h-4 text-purple-600" />
                   </div>
                   <div>
-                    <p class="text-xs font-medium text-purple-700">
-                      Completion
-                    </p>
+                    <p class="text-xs font-medium text-purple-700">Completion</p>
                     <p class="text-xs font-semibold text-gray-900 mt-1">
                       {{ qualification.completion_year }}
                     </p>
@@ -384,35 +326,26 @@
                         class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium shadow-sm"
                         :class="{
                           'bg-green-100 text-green-800 border border-green-200':
-                            qualification.payment_status ===
-                            'completed',
+                            qualification.payment_status === 'completed',
                           'bg-red-100 text-red-800 border border-red-200':
-                            qualification.payment_status ===
-                            'failed',
+                            qualification.payment_status === 'failed',
                           'bg-yellow-100 text-yellow-800 border border-yellow-200':
-                            qualification.payment_status ===
-                            'processing_payment',
+                            qualification.payment_status === 'processing_payment',
                           'bg-yellow-100 text-yellow-800 border border-yellow-200':
-                            qualification.payment_status ===
-                            'pending',
+                            qualification.payment_status === 'pending',
                         }"
                       >
                         {{
                           qualification.payment_status === 'completed'
                             ? 'Paid'
-                            : qualification.payment_status ===
-                              'processing_payment'
-                            ? 'Processing'
-                            : qualification.payment_status ===
-                              'failed'
-                            ? 'Failed'
-                            : 'Pending'
+                            : qualification.payment_status === 'processing_payment'
+                              ? 'Processing'
+                              : qualification.payment_status === 'failed'
+                                ? 'Failed'
+                                : 'Pending'
                         }}
                       </span>
-                      <span
-                        v-if="qualification.payment_id"
-                        class="text-xs text-gray-500 truncate"
-                      >
+                      <span v-if="qualification.payment_id" class="text-xs text-gray-500 truncate">
                         #{{ qualification.payment_id.substring(0, 8) }}
                       </span>
                     </div>
@@ -462,36 +395,40 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-} from 'lucide-vue-next';
+} from 'lucide-vue-next'
 
 defineProps({
   applications: {
     type: Array,
     required: true,
   },
-});
+})
 
-defineEmits(['open-certificate', 'initiate-payment']);
+defineEmits(['open-certificate', 'initiate-payment'])
 
 const isApplicationActive = (application) => {
-  return application.user_qualifications?.some(
-    (qualification) => qualification.endorsement_decision === 'Approved'
-  ) ?? false;
-};
+  return (
+    application.user_qualifications?.some(
+      (qualification) => qualification.endorsement_decision === 'Approved',
+    ) ?? false
+  )
+}
 
 const shouldShowViewCertificateButton = (application) => {
-  return application.user_qualifications?.some(
-    (q) => q.is_primary_qualification && q.endorsement_decision === 'Approved'
-  ) ?? false;
-};
+  return (
+    application.user_qualifications?.some(
+      (q) => q.is_primary_qualification && q.endorsement_decision === 'Approved',
+    ) ?? false
+  )
+}
 
 const getPaymentButtonText = (application, qualification) => {
   if (qualification && qualification.payment_status === 'failed') {
-    return 'Re-process Payment';
+    return 'Re-process Payment'
   } else {
-    return 'Proceed to Payment';
+    return 'Proceed to Payment'
   }
-};
+}
 </script>
 
 <style scoped>

@@ -81,7 +81,11 @@
                     >
                       <option value="" disabled>Select Facility</option>
                       <option v-if="isLoadingFacilities" disabled>Loading...</option>
-                      <option v-for="center in filteredTeachingCenters" :key="center.id" :value="center.id">
+                      <option
+                        v-for="center in filteredTeachingCenters"
+                        :key="center.id"
+                        :value="center.id"
+                      >
                         {{ center.center_name }}
                       </option>
                     </select>
@@ -128,7 +132,10 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div class="space-y-2">
-                    <label for="inspection_from_date" class="block text-sm font-medium text-gray-700">
+                    <label
+                      for="inspection_from_date"
+                      class="block text-sm font-medium text-gray-700"
+                    >
                       Inspection From Date <span class="text-red-500">*</span>
                     </label>
                     <input
@@ -160,7 +167,10 @@
               <div class="pt-2 border-t border-gray-200 space-y-6">
                 <h4 class="text-sm font-medium text-gray-700">Observation Details</h4>
                 <div class="space-y-2">
-                  <label for="observation_description" class="block text-sm font-medium text-gray-700">
+                  <label
+                    for="observation_description"
+                    class="block text-sm font-medium text-gray-700"
+                  >
                     Observation Description <span class="text-red-500">*</span>
                   </label>
                   <textarea
@@ -196,7 +206,10 @@
                   ></textarea>
                 </div>
                 <div class="space-y-2">
-                  <label for="implementation_timeline" class="block text-sm font-medium text-gray-700">
+                  <label
+                    for="implementation_timeline"
+                    class="block text-sm font-medium text-gray-700"
+                  >
                     Implementation Timeline <span class="text-red-500">*</span>
                   </label>
                   <input
@@ -291,7 +304,7 @@
 </template>
 
 <script setup>
-import { ref, watch,  nextTick } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import { XIcon } from 'lucide-vue-next'
 // Import the service layer, NOT the raw apiClient instance
 // Assuming your service file is named 'services.js' or 'apiService.js'
@@ -342,7 +355,7 @@ const fetchInstitutes = async () => {
     console.log('Institutes API response:', response)
     console.log('Institutes raw data:', response.data)
     const data = response.data.results || response.data || []
-    institutes.value = data.map(item => ({
+    institutes.value = data.map((item) => ({
       id: item.id || item.institute_id,
       name_of_institution: item.name_of_institution || item.name || item.institute_name,
     }))
@@ -359,10 +372,12 @@ const fetchInstitutes = async () => {
       stack: error.stack,
     })
     instituteError.value = 'Failed to load institutes. Please try again or contact support.'
-     // Check if the error indicates the method still doesn't exist
+    // Check if the error indicates the method still doesn't exist
     if (error instanceof TypeError && error.message.includes('is not a function')) {
-       console.error(`*** The method 'getEpcInstitutes' might be missing or named differently in your service file ('@/services/services.js') ***`);
-       instituteError.value = 'Configuration error: Cannot find function to load institutes.';
+      console.error(
+        `*** The method 'getEpcInstitutes' might be missing or named differently in your service file ('@/services/services.js') ***`,
+      )
+      instituteError.value = 'Configuration error: Cannot find function to load institutes.'
     }
   } finally {
     isLoadingInstitutes.value = false
@@ -370,78 +385,84 @@ const fetchInstitutes = async () => {
 }
 
 const fetchTeachingCenters = async () => {
-  isLoadingFacilities.value = true;
+  isLoadingFacilities.value = true
   try {
-    console.log('Fetching teaching centers from /epc/epc-teaching-centers/ using apiService.getEpcTeachingCenters');
+    console.log(
+      'Fetching teaching centers from /epc/epc-teaching-centers/ using apiService.getEpcTeachingCenters',
+    )
     // Assuming apiService.getEpcTeachingCenters correctly fetches the payload you provided
-    const response = await apiService.getEpcTeachingCenters();
-    console.log('Teaching Centers API response:', response);
-    console.log('Teaching Centers raw data:', response.data);
+    const response = await apiService.getEpcTeachingCenters()
+    console.log('Teaching Centers API response:', response)
+    console.log('Teaching Centers raw data:', response.data)
 
     // Ensure response.data and response.data.results exist
-    const data = response?.data?.results || response?.data || [];
-    console.log('Data to be mapped:', data);
+    const data = response?.data?.results || response?.data || []
+    console.log('Data to be mapped:', data)
 
-    teachingCenters.value = data.map(item => {
+    teachingCenters.value = data
+      .map((item) => {
         // --- CORRECTIONS START ---
         // Extract institute ID safely
-        const instituteId = item.institute?.id || item.institute_id || null; // Get ID from object or fallback
+        const instituteId = item.institute?.id || item.institute_id || null // Get ID from object or fallback
 
         // Use correct field names from payload
-        const dzongkhag = item.state_dzongkhag || 'N/A';
-        const city = item.city_gewog || 'N/A';
-        const address = item.center_location || 'N/A';
-
+        const dzongkhag = item.state_dzongkhag || 'N/A'
+        const city = item.city_gewog || 'N/A'
+        const address = item.center_location || 'N/A'
 
         // Log each mapped item for debugging
         const mappedItem = {
-            id: item.id, // Prefer direct 'id' if available
-            center_name: item.center_name || 'Unnamed Center', // Prefer direct 'center_name'
-            institute: instituteId, // Assign the extracted ID
-            dzongkhag: dzongkhag,
-            city: city,
-            address: address,
-        };
-        console.log('Mapped Teaching Center Item:', mappedItem);
-        return mappedItem;
-    }).filter(center => center.id != null); // Ensure items have an ID
+          id: item.id, // Prefer direct 'id' if available
+          center_name: item.center_name || 'Unnamed Center', // Prefer direct 'center_name'
+          institute: instituteId, // Assign the extracted ID
+          dzongkhag: dzongkhag,
+          city: city,
+          address: address,
+        }
+        console.log('Mapped Teaching Center Item:', mappedItem)
+        return mappedItem
+      })
+      .filter((center) => center.id != null) // Ensure items have an ID
 
-    facilityError.value = teachingCenters.value.length ? '' : 'No facilities registered in the system';
-    console.log('Processed teaching centers:', teachingCenters.value);
+    facilityError.value = teachingCenters.value.length
+      ? ''
+      : 'No facilities registered in the system'
+    console.log('Processed teaching centers:', teachingCenters.value)
 
     // Trigger UI update AFTER processing is complete
     nextTick(() => {
-      updateFilteredTeachingCenters(); // This should now work correctly
-    });
-
+      updateFilteredTeachingCenters() // This should now work correctly
+    })
   } catch (error) {
     console.error('Error fetching or processing teaching centers:', {
       message: error.message,
       status: error.response?.status,
       data: error.response?.data,
       stack: error.stack,
-    });
-    facilityError.value = 'Failed to load facilities. Please check console or contact support.';
+    })
+    facilityError.value = 'Failed to load facilities. Please check console or contact support.'
     if (error instanceof TypeError && error.message.includes('is not a function')) {
-       console.error(`*** The method 'getEpcTeachingCenters' might be missing or named differently in your service file ('@/services/services.js') ***`);
-       facilityError.value = 'Configuration error: Cannot find function to load facilities.';
+      console.error(
+        `*** The method 'getEpcTeachingCenters' might be missing or named differently in your service file ('@/services/services.js') ***`,
+      )
+      facilityError.value = 'Configuration error: Cannot find function to load facilities.'
     }
-    teachingCenters.value = []; // Clear array on error
+    teachingCenters.value = [] // Clear array on error
   } finally {
-    isLoadingFacilities.value = false;
+    isLoadingFacilities.value = false
   }
-};
+}
 const updateFilteredTeachingCenters = () => {
   console.log('Updating filtered teaching centers. Selected institute:', capaForm.value.institute)
   if (capaForm.value.institute) {
     // Ensure comparison works even if IDs are numbers or strings
-    const selectedInstituteId = String(capaForm.value.institute);
+    const selectedInstituteId = String(capaForm.value.institute)
     filteredTeachingCenters.value = teachingCenters.value.filter(
-      (center) => String(center.institute) === selectedInstituteId
+      (center) => String(center.institute) === selectedInstituteId,
     )
   } else {
     // Show all teaching centers if no institute is selected (or filter based on user role/permissions if needed)
-     filteredTeachingCenters.value = []; // Or teachingCenters.value if you want to show all initially
+    filteredTeachingCenters.value = [] // Or teachingCenters.value if you want to show all initially
   }
   facilityError.value = filteredTeachingCenters.value.length
     ? ''
@@ -450,60 +471,67 @@ const updateFilteredTeachingCenters = () => {
       : 'Please select an institute to view facilities' // Updated message
   console.log('Filtered teaching centers:', filteredTeachingCenters.value)
   // If the previously selected teaching center is no longer valid, reset it
-  if (capaForm.value.teaching_center && !filteredTeachingCenters.value.some(tc => tc.id === capaForm.value.teaching_center)) {
-    capaForm.value.teaching_center = '';
-    updateAutoFields(); // Reset dependent fields
+  if (
+    capaForm.value.teaching_center &&
+    !filteredTeachingCenters.value.some((tc) => tc.id === capaForm.value.teaching_center)
+  ) {
+    capaForm.value.teaching_center = ''
+    updateAutoFields() // Reset dependent fields
   }
 }
 
 const updateAutoFields = () => {
-  console.log('--- updateAutoFields triggered ---');
-  const selectedId = capaForm.value.teaching_center;
-  console.log('Searching for teaching_center ID:', selectedId, `(Type: ${typeof selectedId})`);
+  console.log('--- updateAutoFields triggered ---')
+  const selectedId = capaForm.value.teaching_center
+  console.log('Searching for teaching_center ID:', selectedId, `(Type: ${typeof selectedId})`)
   // Log the entire array structure to verify keys just before searching
-  console.log('Current teachingCenters array:', JSON.parse(JSON.stringify(teachingCenters.value)));
+  console.log('Current teachingCenters array:', JSON.parse(JSON.stringify(teachingCenters.value)))
 
   if (selectedId === null || selectedId === undefined || selectedId === '') {
-      console.log('No valid teaching_center ID selected. Clearing fields.');
-      capaForm.value.dzongkhag = '';
-      capaForm.value.city = '';
-      capaForm.value.address = '';
-      return; // Exit early
+    console.log('No valid teaching_center ID selected. Clearing fields.')
+    capaForm.value.dzongkhag = ''
+    capaForm.value.city = ''
+    capaForm.value.address = ''
+    return // Exit early
   }
 
   const selectedCenter = teachingCenters.value.find(
     // Use == for type flexibility unless strict comparison is needed and types are guaranteed
-    (center) => center.id == selectedId
-  );
+    (center) => center.id == selectedId,
+  )
 
-  console.log('Result of find:', selectedCenter ? JSON.parse(JSON.stringify(selectedCenter)) : '<<< CENTER NOT FOUND >>>');
+  console.log(
+    'Result of find:',
+    selectedCenter ? JSON.parse(JSON.stringify(selectedCenter)) : '<<< CENTER NOT FOUND >>>',
+  )
 
   if (selectedCenter) {
     // *** CRITICAL STEP: Check if selectedCenter HAS the properties you expect ***
-    console.log('Found center. Checking properties:');
-    console.log(` - selectedCenter.dzongkhag:`, selectedCenter.dzongkhag);
-    console.log(` - selectedCenter.city:`, selectedCenter.city);
-    console.log(` - selectedCenter.address:`, selectedCenter.address);
+    console.log('Found center. Checking properties:')
+    console.log(` - selectedCenter.dzongkhag:`, selectedCenter.dzongkhag)
+    console.log(` - selectedCenter.city:`, selectedCenter.city)
+    console.log(` - selectedCenter.address:`, selectedCenter.address)
 
     // Assign values, ensuring fallback if property is missing or nullish
-    capaForm.value.dzongkhag = selectedCenter.dzongkhag ?? 'N/A'; // Use ?? (nullish coalescing)
-    capaForm.value.city = selectedCenter.city ?? 'N/A';
-    capaForm.value.address = selectedCenter.address ?? 'N/A';
+    capaForm.value.dzongkhag = selectedCenter.dzongkhag ?? 'N/A' // Use ?? (nullish coalescing)
+    capaForm.value.city = selectedCenter.city ?? 'N/A'
+    capaForm.value.address = selectedCenter.address ?? 'N/A'
 
-    console.log('Assigned Dzongkhag:', capaForm.value.dzongkhag);
-    console.log('Assigned City:', capaForm.value.city);
-    console.log('Assigned Address:', capaForm.value.address);
+    console.log('Assigned Dzongkhag:', capaForm.value.dzongkhag)
+    console.log('Assigned City:', capaForm.value.city)
+    console.log('Assigned Address:', capaForm.value.address)
   } else {
-    console.log('No center found matching ID. Clearing fields.');
-    capaForm.value.dzongkhag = '';
-    capaForm.value.city = '';
-    capaForm.value.address = '';
+    console.log('No center found matching ID. Clearing fields.')
+    capaForm.value.dzongkhag = ''
+    capaForm.value.city = ''
+    capaForm.value.address = ''
   }
-  console.log('--- updateAutoFields finished ---');
-};
+  console.log('--- updateAutoFields finished ---')
+}
 
-const resetForm = (keepInstitute = false) => { // Added option to keep institute
-  const instituteToKeep = keepInstitute ? capaForm.value.institute : (props.instituteId || '');
+const resetForm = (keepInstitute = false) => {
+  // Added option to keep institute
+  const instituteToKeep = keepInstitute ? capaForm.value.institute : props.instituteId || ''
   capaForm.value = {
     institute: instituteToKeep, // Keep institute if needed (e.g., for 'Add Another')
     teaching_center: '',
@@ -523,7 +551,7 @@ const resetForm = (keepInstitute = false) => { // Added option to keep institute
   nextTick(() => {
     updateFilteredTeachingCenters() // This will filter based on instituteToKeep
     updateAutoFields()
-    updateImplementationTimeline(); // Reset timeline too
+    updateImplementationTimeline() // Reset timeline too
   })
 }
 
@@ -548,32 +576,33 @@ const prefillForm = () => {
       status: props.capa.status || '',
     }
     nextTick(() => {
-       // Crucial: Ensure teaching centers for the prefilled institute are loaded and filtered *before* setting teaching_center
-       updateFilteredTeachingCenters();
-       // Find the center again to populate dzongkhag/city/address accurately if possible
-       const selectedCenter = teachingCenters.value.find(
-          (center) => center.id === capaForm.value.teaching_center
-       );
-       if (selectedCenter) {
-           capaForm.value.dzongkhag = selectedCenter.dzongkhag || 'N/A';
-           capaForm.value.city = selectedCenter.city || 'N/A';
-           capaForm.value.address = selectedCenter.address || 'N/A';
-       } else if (capaForm.value.teaching_center) {
-           // If center ID exists but not found in list (maybe inactive?), keep props data but log warning
-           console.warn(`Prefilled teaching center ID ${capaForm.value.teaching_center} not found in current list.`);
-       } else {
-           // If no teaching_center was in props.capa, reset derived fields
-           capaForm.value.dzongkhag = '';
-           capaForm.value.city = '';
-           capaForm.value.address = '';
-       }
-       updateImplementationTimeline(); // Update timeline based on prefilled dates
+      // Crucial: Ensure teaching centers for the prefilled institute are loaded and filtered *before* setting teaching_center
+      updateFilteredTeachingCenters()
+      // Find the center again to populate dzongkhag/city/address accurately if possible
+      const selectedCenter = teachingCenters.value.find(
+        (center) => center.id === capaForm.value.teaching_center,
+      )
+      if (selectedCenter) {
+        capaForm.value.dzongkhag = selectedCenter.dzongkhag || 'N/A'
+        capaForm.value.city = selectedCenter.city || 'N/A'
+        capaForm.value.address = selectedCenter.address || 'N/A'
+      } else if (capaForm.value.teaching_center) {
+        // If center ID exists but not found in list (maybe inactive?), keep props data but log warning
+        console.warn(
+          `Prefilled teaching center ID ${capaForm.value.teaching_center} not found in current list.`,
+        )
+      } else {
+        // If no teaching_center was in props.capa, reset derived fields
+        capaForm.value.dzongkhag = ''
+        capaForm.value.city = ''
+        capaForm.value.address = ''
+      }
+      updateImplementationTimeline() // Update timeline based on prefilled dates
     })
   } else {
-      resetForm(); // Ensure form is reset if props are invalid
+    resetForm() // Ensure form is reset if props are invalid
   }
 }
-
 
 watch(
   () => props.show,
@@ -584,48 +613,49 @@ watch(
       // OR fetch only if data is not already loaded (more efficient)
       // Let's fetch every time for simplicity here, but consider caching/checking length
       Promise.all([fetchInstitutes(), fetchTeachingCenters()]).then(() => {
-          // Now that data is fetched, prefill or reset
-          if (props.capaId && props.capa) {
-             prefillForm()
-          } else {
-             resetForm()
-          }
-      });
+        // Now that data is fetched, prefill or reset
+        if (props.capaId && props.capa) {
+          prefillForm()
+        } else {
+          resetForm()
+        }
+      })
     }
-  }
+  },
 )
 
 watch(
   () => props.instituteId,
   (newValue, oldValue) => {
-      if (newValue !== oldValue && props.show) { // Update only if modal is shown and ID actually changes
-          console.log('instituteId prop changed:', newValue);
-          capaForm.value.institute = newValue || '';
-          // No need to reset the whole form, just update filters and dependent fields
-          nextTick(() => {
-              updateFilteredTeachingCenters();
-              // Reset teaching center if the institute changed
-              capaForm.value.teaching_center = '';
-              updateAutoFields();
-          });
-      }
-  }
+    if (newValue !== oldValue && props.show) {
+      // Update only if modal is shown and ID actually changes
+      console.log('instituteId prop changed:', newValue)
+      capaForm.value.institute = newValue || ''
+      // No need to reset the whole form, just update filters and dependent fields
+      nextTick(() => {
+        updateFilteredTeachingCenters()
+        // Reset teaching center if the institute changed
+        capaForm.value.teaching_center = ''
+        updateAutoFields()
+      })
+    }
+  },
 )
 
 watch(
   () => capaForm.value.institute,
   (newValue, oldValue) => {
-     // Avoid infinite loops or unnecessary resets if the change was triggered by the prop watch
+    // Avoid infinite loops or unnecessary resets if the change was triggered by the prop watch
     if (newValue !== oldValue && newValue !== props.instituteId) {
-        console.log('Selected institute changed via dropdown:', newValue)
-        // When user manually changes institute dropdown, reset facility selection
-        capaForm.value.teaching_center = ''
-        nextTick(() => {
-          updateFilteredTeachingCenters()
-          updateAutoFields()
-        })
+      console.log('Selected institute changed via dropdown:', newValue)
+      // When user manually changes institute dropdown, reset facility selection
+      capaForm.value.teaching_center = ''
+      nextTick(() => {
+        updateFilteredTeachingCenters()
+        updateAutoFields()
+      })
     }
-  }
+  },
 )
 
 // Fetch initial data on mount *only if needed* (e.g., if modal could be shown initially without user action)
@@ -644,13 +674,13 @@ const updateImplementationTimeline = () => {
 
     // Basic date validation
     if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
-        capaForm.value.implementation_timeline = 'Invalid date(s)';
-        return;
+      capaForm.value.implementation_timeline = 'Invalid date(s)'
+      return
     }
-     if (toDate < fromDate) {
-        capaForm.value.implementation_timeline = 'End date before start date';
-        return;
-     }
+    if (toDate < fromDate) {
+      capaForm.value.implementation_timeline = 'End date before start date'
+      return
+    }
 
     const timeDiff = toDate.getTime() - fromDate.getTime()
     // Calculate difference in days (inclusive of start and end date)
@@ -665,16 +695,22 @@ const submitForm = () => {
   // Add basic form validation here if needed before emitting
   // e.g., check required fields
   const requiredFields = [
-      'institute', 'teaching_center', 'inspection_from_date', 'inspection_to_date',
-      'observation_description', 'root_cause', 'capa', 'status'
-  ];
-  const missingFields = requiredFields.filter(field => !capaForm.value[field]);
+    'institute',
+    'teaching_center',
+    'inspection_from_date',
+    'inspection_to_date',
+    'observation_description',
+    'root_cause',
+    'capa',
+    'status',
+  ]
+  const missingFields = requiredFields.filter((field) => !capaForm.value[field])
 
   if (missingFields.length > 0) {
-      // Optionally, use a toast notification or highlight fields
-      console.error('Form validation failed. Missing fields:', missingFields);
-      alert(`Please fill in all required fields marked with *: ${missingFields.join(', ')}`);
-      return; // Stop submission
+    // Optionally, use a toast notification or highlight fields
+    console.error('Form validation failed. Missing fields:', missingFields)
+    alert(`Please fill in all required fields marked with *: ${missingFields.join(', ')}`)
+    return // Stop submission
   }
 
   console.log('Submitting form:', capaForm.value)
@@ -688,22 +724,28 @@ const submitForm = () => {
 }
 
 const addAnother = () => {
-   // Add basic form validation here too before saving
+  // Add basic form validation here too before saving
   const requiredFields = [
-      'institute', 'teaching_center', 'inspection_from_date', 'inspection_to_date',
-      'observation_description', 'root_cause', 'capa', 'status'
-  ];
-  const missingFields = requiredFields.filter(field => !capaForm.value[field]);
+    'institute',
+    'teaching_center',
+    'inspection_from_date',
+    'inspection_to_date',
+    'observation_description',
+    'root_cause',
+    'capa',
+    'status',
+  ]
+  const missingFields = requiredFields.filter((field) => !capaForm.value[field])
 
   if (missingFields.length > 0) {
-      console.error('Form validation failed. Missing fields:', missingFields);
-      alert(`Please fill in all required fields marked with *: ${missingFields.join(', ')}`);
-      return; // Stop submission
+    console.error('Form validation failed. Missing fields:', missingFields)
+    alert(`Please fill in all required fields marked with *: ${missingFields.join(', ')}`)
+    return // Stop submission
   }
 
   console.log('Saving current CAPA and preparing for another:', capaForm.value)
   emit('save', capaForm.value)
   // Reset form, but keep the selected institute
-  resetForm(true);
+  resetForm(true)
 }
 </script>

@@ -10,8 +10,8 @@
           notification.type === 'success'
             ? 'bg-green-50 border-l-4 border-green-500'
             : notification.type === 'error'
-            ? 'bg-red-50 border-l-4 border-red-500'
-            : 'bg-blue-50 border-l-4 border-blue-500',
+              ? 'bg-red-50 border-l-4 border-red-500'
+              : 'bg-blue-50 border-l-4 border-blue-500',
         ]"
       >
         <div
@@ -442,8 +442,8 @@
                   modalMode === 'add'
                     ? 'Add New Staff'
                     : modalMode === 'edit'
-                    ? 'Edit Staff'
-                    : 'Staff Details'
+                      ? 'Edit Staff'
+                      : 'Staff Details'
                 }}
               </h2>
               <p class="text-sm text-gray-500">
@@ -451,8 +451,8 @@
                   modalMode === 'add'
                     ? 'Create a new staff record'
                     : modalMode === 'edit'
-                    ? 'Update staff information'
-                    : 'View staff information'
+                      ? 'Update staff information'
+                      : 'View staff information'
                 }}
               </p>
             </div>
@@ -599,66 +599,71 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import apiServices from '@/services/services';
+import { ref, computed, onMounted, watch } from 'vue'
+import apiServices from '@/services/services'
 
 // State
-const staffList = ref([]);
-const isLoading = ref(false);
-const searchQuery = ref('');
-const sortColumn = ref('staff_name');
-const sortDirection = ref('asc');
-const currentPage = ref(1);
-const nextPageUrl = ref(null);
-const previousPageUrl = ref(null);
-const totalStaff = ref(0);
-const pageSize = ref(10);
+const staffList = ref([])
+const isLoading = ref(false)
+const searchQuery = ref('')
+const sortColumn = ref('staff_name')
+const sortDirection = ref('asc')
+const currentPage = ref(1)
+const nextPageUrl = ref(null)
+const previousPageUrl = ref(null)
+const totalStaff = ref(0)
+const pageSize = ref(10)
 
 // Modal state
-const isModalVisible = ref(false);
-const modalMode = ref(null); // 'add', 'edit', 'view'
+const isModalVisible = ref(false)
+const modalMode = ref(null) // 'add', 'edit', 'view'
 const form = ref({
   id: null,
   staff_name: '',
   designation: '',
   date_of_joining: '',
   department_id: '',
-});
+})
 
 // Delete modal state
-const showDeleteModal = ref(false);
-const staffToDelete = ref(null);
+const showDeleteModal = ref(false)
+const staffToDelete = ref(null)
 
 // Departments
-const departments = ref([]);
+const departments = ref([])
 
 const fetchDepartments = async () => {
   try {
-    const response = await apiServices.getEpcInstituteDepartments();
-    console.log('fetchDepartments response:', response.data); // Debug
-    let departmentData = response.data;
+    const response = await apiServices.getEpcInstituteDepartments()
+    console.log('fetchDepartments response:', response.data) // Debug
+    let departmentData = response.data
     if (response.data?.results) {
-      departmentData = response.data.results;
+      departmentData = response.data.results
     } else if (!Array.isArray(response.data)) {
-      console.warn('Unexpected departments API response:', response.data);
-      showNotification('warning', 'Data Format', 'Received departments in unexpected format', 0);
-      departments.value = [];
-      return;
+      console.warn('Unexpected departments API response:', response.data)
+      showNotification('warning', 'Data Format', 'Received departments in unexpected format', 0)
+      departments.value = []
+      return
     }
     departments.value = departmentData.map((dept) => ({
       id: dept.id,
       name: dept.department_name || 'Unknown',
-    }));
-    console.log('departments.value:', departments.value); // Debug
+    }))
+    console.log('departments.value:', departments.value) // Debug
     if (departments.value.length === 0) {
-      showNotification('error', 'No Departments', 'No departments available. Please contact support.', 0);
+      showNotification(
+        'error',
+        'No Departments',
+        'No departments available. Please contact support.',
+        0,
+      )
     }
   } catch (error) {
-    console.error('Error fetching departments:', error);
-    showNotification('error', 'Error Loading Departments', 'Failed to load department data', 0);
-    departments.value = [];
+    console.error('Error fetching departments:', error)
+    showNotification('error', 'Error Loading Departments', 'Failed to load department data', 0)
+    departments.value = []
   }
-};
+}
 
 // Notification state
 const notification = ref({
@@ -667,136 +672,136 @@ const notification = ref({
   title: '',
   message: '',
   timeout: null,
-});
+})
 
 // Computed properties
 const filteredStaff = computed(() => {
-  if (!searchQuery.value) return staffList.value;
-  const query = searchQuery.value.toLowerCase();
+  if (!searchQuery.value) return staffList.value
+  const query = searchQuery.value.toLowerCase()
   return staffList.value.filter((staff) => {
-    const deptName = getDepartmentName(staff.department).toLowerCase();
+    const deptName = getDepartmentName(staff.department).toLowerCase()
     return (
       staff.staff_name?.toLowerCase().includes(query) ||
       staff.designation?.toLowerCase().includes(query) ||
       deptName.includes(query)
-    );
-  });
-});
+    )
+  })
+})
 
-const hasNextPage = computed(() => !!nextPageUrl.value);
-const hasPreviousPage = computed(() => !!previousPageUrl.value);
+const hasNextPage = computed(() => !!nextPageUrl.value)
+const hasPreviousPage = computed(() => !!previousPageUrl.value)
 
-const paginationStart = computed(() => (currentPage.value - 1) * pageSize.value);
+const paginationStart = computed(() => (currentPage.value - 1) * pageSize.value)
 const paginationEnd = computed(() =>
-  Math.min(paginationStart.value + pageSize.value, totalStaff.value)
-);
+  Math.min(paginationStart.value + pageSize.value, totalStaff.value),
+)
 
 // Methods
 const fetchStaff = async (page = 1) => {
-  isLoading.value = true;
+  isLoading.value = true
   try {
-    const response = await apiServices.getEpcInstituteStaff(page);
-    console.log('fetchStaff response:', response.data); // Debug
+    const response = await apiServices.getEpcInstituteStaff(page)
+    console.log('fetchStaff response:', response.data) // Debug
     if (response?.data?.results) {
-      staffList.value = response.data.results;
-      totalStaff.value = response.data.count || 0;
-      nextPageUrl.value = response.data.next;
-      previousPageUrl.value = response.data.previous;
-      currentPage.value = page;
-      pageSize.value = response.data.results.length || 10;
-      console.log('staffList.value:', staffList.value); // Debug
+      staffList.value = response.data.results
+      totalStaff.value = response.data.count || 0
+      nextPageUrl.value = response.data.next
+      previousPageUrl.value = response.data.previous
+      currentPage.value = page
+      pageSize.value = response.data.results.length || 10
+      console.log('staffList.value:', staffList.value) // Debug
     } else {
-      console.warn('No results in API response:', response);
-      showNotification('error', 'Error Loading Data', 'Failed to load staff data');
-      staffList.value = [];
-      totalStaff.value = 0;
+      console.warn('No results in API response:', response)
+      showNotification('error', 'Error Loading Data', 'Failed to load staff data')
+      staffList.value = []
+      totalStaff.value = 0
     }
   } catch (error) {
-    console.error('Error fetching staff:', error);
-    showNotification('error', 'Error Loading Data', 'Failed to connect to the server');
-    staffList.value = [];
-    totalStaff.value = 0;
+    console.error('Error fetching staff:', error)
+    showNotification('error', 'Error Loading Data', 'Failed to connect to the server')
+    staffList.value = []
+    totalStaff.value = 0
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const fetchNextPage = async () => {
-  if (!nextPageUrl.value) return;
-  const url = new URL(nextPageUrl.value);
-  const page = parseInt(url.searchParams.get('page')) || currentPage.value + 1;
-  await fetchStaff(page);
-};
+  if (!nextPageUrl.value) return
+  const url = new URL(nextPageUrl.value)
+  const page = parseInt(url.searchParams.get('page')) || currentPage.value + 1
+  await fetchStaff(page)
+}
 
 const fetchPreviousPage = async () => {
-  if (!previousPageUrl.value) return;
-  const url = new URL(previousPageUrl.value);
-  const page = parseInt(url.searchParams.get('page')) || currentPage.value - 1;
-  if (page > 0) await fetchStaff(page);
-};
+  if (!previousPageUrl.value) return
+  const url = new URL(previousPageUrl.value)
+  const page = parseInt(url.searchParams.get('page')) || currentPage.value - 1
+  if (page > 0) await fetchStaff(page)
+}
 
 const sortBy = (column) => {
   if (sortColumn.value === column) {
-    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
   } else {
-    sortColumn.value = column;
-    sortDirection.value = 'asc';
+    sortColumn.value = column
+    sortDirection.value = 'asc'
   }
   staffList.value.sort((a, b) => {
-    let valueA = column === 'department' ? getDepartmentName(a.department) : a[column];
-    let valueB = column === 'department' ? getDepartmentName(b.department) : b[column];
+    let valueA = column === 'department' ? getDepartmentName(a.department) : a[column]
+    let valueB = column === 'department' ? getDepartmentName(b.department) : b[column]
     return sortDirection.value === 'asc'
       ? valueA?.localeCompare(valueB)
-      : valueB?.localeCompare(valueA);
-  });
-};
+      : valueB?.localeCompare(valueA)
+  })
+}
 
 const getDepartmentName = (department) => {
-  if (!department) return 'N/A';
+  if (!department) return 'N/A'
   // Handle department as object (API returns { id, department_name })
   if (typeof department === 'object' && department.id) {
     // Prefer department_name from API if available
-    if (department.department_name) return department.department_name;
+    if (department.department_name) return department.department_name
     // Fallback to departments.value lookup
-    const dept = departments.value.find((d) => d.id === department.id);
-    return dept ? dept.name : 'N/A';
+    const dept = departments.value.find((d) => d.id === department.id)
+    return dept ? dept.name : 'N/A'
   }
   // Handle department as ID (for compatibility)
-  const dept = departments.value.find((d) => d.id === department);
-  return dept ? dept.name : 'N/A';
-};
+  const dept = departments.value.find((d) => d.id === department)
+  return dept ? dept.name : 'N/A'
+}
 
 const getDesignationColor = (designation) => {
-  if (!designation) return 'bg-gray-100 text-gray-800';
-  const d = designation.toLowerCase();
-  if (d.includes('admin')) return 'bg-red-100 text-red-800';
-  if (d.includes('professor')) return 'bg-green-100 text-green-800';
-  if (d.includes('lecturer')) return 'bg-blue-100 text-blue-800';
-  if (d.includes('assistant')) return 'bg-purple-100 text-purple-800';
-  if (d.includes('associate')) return 'bg-yellow-100 text-yellow-800';
-  return 'bg-gray-100 text-gray-800';
-};
+  if (!designation) return 'bg-gray-100 text-gray-800'
+  const d = designation.toLowerCase()
+  if (d.includes('admin')) return 'bg-red-100 text-red-800'
+  if (d.includes('professor')) return 'bg-green-100 text-green-800'
+  if (d.includes('lecturer')) return 'bg-blue-100 text-blue-800'
+  if (d.includes('assistant')) return 'bg-purple-100 text-purple-800'
+  if (d.includes('associate')) return 'bg-yellow-100 text-yellow-800'
+  return 'bg-gray-100 text-gray-800'
+}
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A';
+  if (!dateString) return 'N/A'
   try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return 'Invalid Date';
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return 'Invalid Date'
     return date.toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-    });
+    })
   } catch (e) {
-    console.error('Error formatting date:', dateString, e);
-    return 'Invalid Date';
+    console.error('Error formatting date:', dateString, e)
+    return 'Invalid Date'
   }
-};
+}
 
 const openAddStaffModal = () => {
   if (departments.value.length === 0) {
-    showNotification('error', 'No Departments', 'Cannot add staff without departments.', 5000);
-    return;
+    showNotification('error', 'No Departments', 'Cannot add staff without departments.', 5000)
+    return
   }
   form.value = {
     id: null,
@@ -804,10 +809,10 @@ const openAddStaffModal = () => {
     designation: '',
     date_of_joining: new Date().toISOString().split('T')[0],
     department_id: '',
-  };
-  modalMode.value = 'add';
-  isModalVisible.value = true;
-};
+  }
+  modalMode.value = 'add'
+  isModalVisible.value = true
+}
 
 const openEditStaffModal = (staff) => {
   form.value = {
@@ -816,10 +821,10 @@ const openEditStaffModal = (staff) => {
     designation: staff.designation,
     date_of_joining: staff.date_of_joining,
     department_id: staff.department?.id || '',
-  };
-  modalMode.value = 'edit';
-  isModalVisible.value = true;
-};
+  }
+  modalMode.value = 'edit'
+  isModalVisible.value = true
+}
 
 const openViewStaffModal = (staff) => {
   form.value = {
@@ -828,13 +833,13 @@ const openViewStaffModal = (staff) => {
     designation: staff.designation,
     date_of_joining: staff.date_of_joining,
     department_id: staff.department?.id || '',
-  };
-  modalMode.value = 'view';
-  isModalVisible.value = true;
-};
+  }
+  modalMode.value = 'view'
+  isModalVisible.value = true
+}
 
 const closeModal = () => {
-  isModalVisible.value = false;
+  isModalVisible.value = false
   setTimeout(() => {
     form.value = {
       id: null,
@@ -842,10 +847,10 @@ const closeModal = () => {
       designation: '',
       date_of_joining: '',
       department_id: '',
-    };
-    modalMode.value = null;
-  }, 300);
-};
+    }
+    modalMode.value = null
+  }, 300)
+}
 
 const saveStaff = async () => {
   if (
@@ -854,110 +859,110 @@ const saveStaff = async () => {
     !form.value.date_of_joining ||
     !form.value.department_id
   ) {
-    showNotification('error', 'Validation Error', 'Please fill out all required fields.');
-    return;
+    showNotification('error', 'Validation Error', 'Please fill out all required fields.')
+    return
   }
   // Validate department_id
-  const deptExists = departments.value.some((d) => d.id === form.value.department_id);
+  const deptExists = departments.value.some((d) => d.id === form.value.department_id)
   if (!deptExists) {
-    showNotification('error', 'Invalid Department', 'Selected department is not valid.');
-    return;
+    showNotification('error', 'Invalid Department', 'Selected department is not valid.')
+    return
   }
 
-  const payload = { ...form.value };
-  if (modalMode.value === 'add') delete payload.id;
+  const payload = { ...form.value }
+  if (modalMode.value === 'add') delete payload.id
 
-  isLoading.value = true;
+  isLoading.value = true
   try {
     if (modalMode.value === 'add') {
-      await apiServices.createEpcInstituteStaff(payload);
+      await apiServices.createEpcInstituteStaff(payload)
       showNotification(
         'success',
         'Staff Added',
-        `${payload.staff_name} has been added successfully.`
-      );
+        `${payload.staff_name} has been added successfully.`,
+      )
     } else if (modalMode.value === 'edit') {
-      await apiServices.updateEpcInstituteStaffMember(form.value.id, payload);
+      await apiServices.updateEpcInstituteStaffMember(form.value.id, payload)
       showNotification(
         'success',
         'Staff Updated',
-        `${payload.staff_name}'s information has been updated.`
-      );
+        `${payload.staff_name}'s information has been updated.`,
+      )
     }
-    searchQuery.value = '';
-    await fetchStaff(1);
-    closeModal();
+    searchQuery.value = ''
+    await fetchStaff(1)
+    closeModal()
   } catch (error) {
-    console.error('Error saving staff:', error);
-    let errorMessage = 'There was an error processing your request.';
+    console.error('Error saving staff:', error)
+    let errorMessage = 'There was an error processing your request.'
     if (error.response?.data) {
-      const errors = error.response.data;
+      const errors = error.response.data
       const messages = Object.entries(errors).map(
-        ([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`
-      );
-      errorMessage = messages.length > 0 ? messages.join('; ') : errorMessage;
+        ([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`,
+      )
+      errorMessage = messages.length > 0 ? messages.join('; ') : errorMessage
     }
-    showNotification('error', 'Save Failed', errorMessage);
+    showNotification('error', 'Save Failed', errorMessage)
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const confirmDelete = (staff) => {
-  staffToDelete.value = staff;
-  showDeleteModal.value = true;
-};
+  staffToDelete.value = staff
+  showDeleteModal.value = true
+}
 
 const deleteStaff = async () => {
-  if (!staffToDelete.value) return;
-  isLoading.value = true;
+  if (!staffToDelete.value) return
+  isLoading.value = true
   try {
-    await apiServices.deleteEpcInstituteStaffMember(staffToDelete.value.id);
+    await apiServices.deleteEpcInstituteStaffMember(staffToDelete.value.id)
     showNotification(
       'success',
       'Staff Deleted',
-      `${staffToDelete.value.staff_name} has been deleted.`
-    );
-    const remainingOnPage = staffList.value.length - 1;
+      `${staffToDelete.value.staff_name} has been deleted.`,
+    )
+    const remainingOnPage = staffList.value.length - 1
     if (remainingOnPage === 0 && currentPage.value > 1) {
-      await fetchStaff(currentPage.value - 1);
+      await fetchStaff(currentPage.value - 1)
     } else {
-      await fetchStaff(currentPage.value);
+      await fetchStaff(currentPage.value)
     }
-    showDeleteModal.value = false;
-    staffToDelete.value = null;
+    showDeleteModal.value = false
+    staffToDelete.value = null
   } catch (error) {
-    console.error('Error deleting staff:', error);
-    showNotification('error', 'Delete Failed', 'There was an error deleting the staff member.');
+    console.error('Error deleting staff:', error)
+    showNotification('error', 'Delete Failed', 'There was an error deleting the staff member.')
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const showNotification = (type, title, message, duration = 5000) => {
-  if (notification.value.timeout) clearTimeout(notification.value.timeout);
-  notification.value = { show: true, type, title, message, timeout: null };
+  if (notification.value.timeout) clearTimeout(notification.value.timeout)
+  notification.value = { show: true, type, title, message, timeout: null }
   if (duration > 0) {
-    notification.value.timeout = setTimeout(closeNotification, duration);
+    notification.value.timeout = setTimeout(closeNotification, duration)
   }
-};
+}
 
 const closeNotification = () => {
-  notification.value.show = false;
+  notification.value.show = false
   if (notification.value.timeout) {
-    clearTimeout(notification.value.timeout);
-    notification.value.timeout = null;
+    clearTimeout(notification.value.timeout)
+    notification.value.timeout = null
   }
-};
+}
 
 watch(searchQuery, () => {
-  currentPage.value = 1;
-});
+  currentPage.value = 1
+})
 
 onMounted(() => {
-  fetchStaff(1);
-  fetchDepartments();
-});
+  fetchStaff(1)
+  fetchDepartments()
+})
 </script>
 
 <style scoped>

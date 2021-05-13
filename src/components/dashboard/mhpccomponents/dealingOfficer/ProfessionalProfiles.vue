@@ -82,7 +82,7 @@
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                    aria-hidden="true"
+                  aria-hidden="true"
                 >
                   <path
                     fill-rule="evenodd"
@@ -109,10 +109,20 @@
             >
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <!-- Gender Icon -->
-                 <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                   <path fill-rule="evenodd" d="M3.5 8a.5.5 0 01.5-.5h12a.5.5 0 010 1H4a.5.5 0 01-.5-.5zM8 3a.5.5 0 01.5.5v13a.5.5 0 01-1 0V3.5A.5.5 0 018 3zm4 14a.5.5 0 01-.5-.5V3.5a.5.5 0 011 0v13a.5.5 0 01-.5.5z" clip-rule="evenodd" />
-                 </svg>
+                <!-- Gender Icon -->
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M3.5 8a.5.5 0 01.5-.5h12a.5.5 0 010 1H4a.5.5 0 01-.5-.5zM8 3a.5.5 0 01.5.5v13a.5.5 0 01-1 0V3.5A.5.5 0 018 3zm4 14a.5.5 0 01-.5-.5V3.5a.5.5 0 011 0v13a.5.5 0 01-.5.5z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
               </div>
               <select
                 id="gender-filter"
@@ -149,10 +159,18 @@
             >
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <!-- Category Icon -->
-                 <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                   <path d="M2 4a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H3a1 1 0 01-1-1V4zM8 4a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1V4zM14 4a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1h-2a1 1 0 01-1-1V4zM3 9a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1V9zM8 9a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1V9zM14 9a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1h-2a1 1 0 01-1-1V9zM3 14a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-1zM8 14a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1v-1zM14 14a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1h-2a1 1 0 01-1-1v-1z"/>
-                 </svg>
+                <!-- Category Icon -->
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M2 4a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H3a1 1 0 01-1-1V4zM8 4a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1V4zM14 4a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1h-2a1 1 0 01-1-1V4zM3 9a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1V9zM8 9a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1V9zM14 9a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1h-2a1 1 0 01-1-1V9zM3 14a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-1zM8 14a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1v-1zM14 14a1 1 0 011-1h2a1 1 0 011 1v1a1 1 0 01-1 1h-2a1 1 0 01-1-1v-1z"
+                  />
+                </svg>
               </div>
               <select
                 id="category-filter"
@@ -160,7 +178,7 @@
                 class="pl-10 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-lg appearance-none bg-white"
               >
                 <option value="">All Categories</option>
-                 <!-- Populate dynamically if possible -->
+                <!-- Populate dynamically if possible -->
                 <option value="health_certification">Health Certification</option>
                 <option value="other_category">Other Category</option>
               </select>
@@ -189,10 +207,18 @@
             >
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <!-- Sub Category Icon -->
-                  <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
-                  </svg>
+                <!-- Sub Category Icon -->
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                  />
+                </svg>
               </div>
               <select
                 id="sub-category-filter"
@@ -208,7 +234,7 @@
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                   aria-hidden="true"
+                  aria-hidden="true"
                 >
                   <path
                     fill-rule="evenodd"
@@ -227,10 +253,18 @@
             >
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <!-- Facility/Service Icon -->
-                  <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                  </svg>
+                <!-- Facility/Service Icon -->
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
+                  />
+                </svg>
               </div>
               <select
                 id="health-facility-filter"
@@ -248,7 +282,7 @@
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                   aria-hidden="true"
+                  aria-hidden="true"
                 >
                   <path
                     fill-rule="evenodd"
@@ -344,10 +378,10 @@
                   {{ record.gender || 'N/A' }}
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 capitalize">
-                   {{ (record.category || 'N/A').replace('_', ' ') }}
+                  {{ (record.category || 'N/A').replace('_', ' ') }}
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 truncate capitalize">
-                   {{ (record.service_type || 'N/A').replace('_', ' ') }}
+                  {{ (record.service_type || 'N/A').replace('_', ' ') }}
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
                   <span
@@ -360,10 +394,16 @@
                   <button
                     @click="viewRecord(record)"
                     class="inline-flex items-center p-1.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition-colors duration-200"
-                     title="View Record"
-                     aria-label="View record details"
+                    title="View Record"
+                    aria-label="View record details"
                   >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -381,10 +421,16 @@
                   <button
                     @click="editRecord(record)"
                     class="inline-flex items-center p-1.5 rounded-full bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-800 transition-colors duration-200"
-                     title="Edit Record"
-                     aria-label="Edit record details"
+                    title="Edit Record"
+                    aria-label="Edit record details"
                   >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -396,10 +442,16 @@
                   <button
                     @click="deleteRecord(record.id)"
                     class="inline-flex items-center p-1.5 rounded-full bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
-                     title="Delete Record"
-                     aria-label="Delete this record"
+                    title="Delete Record"
+                    aria-label="Delete this record"
                   >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -490,9 +542,7 @@ const fetchUsers = async () => {
 
     // *** ADD THIS LINE TO FILTER BY service_type ***
     // Filter the users to include only those with service_type 'health_certification'
-    records.value = allUsers.filter(
-      (user) => user.service_type === 'health_certification'
-    )
+    records.value = allUsers.filter((user) => user.service_type === 'health_certification')
     // The commented-out example below was a good starting point,
     // but we only need to filter by service_type for this specific request.
     // records.value = (response?.data?.results || response?.data || []).filter(
@@ -517,26 +567,45 @@ const filteredRecords = computed(() => {
   // The existing filters will apply on top of this pre-filtered list.
   return records.value.filter((record) => {
     // Date filtering (remains the same)
-    const regDate = record.registration_date ? new Date(record.registration_date) : null; // Ensure field exists
-    const from = filters.value.regFrom ? new Date(filters.value.regFrom) : null;
-    const to = filters.value.regTo ? new Date(filters.value.regTo) : null;
-    const isDateMatch = (!from || (regDate && regDate >= from)) && (!to || (regDate && regDate <= to));
+    const regDate = record.registration_date ? new Date(record.registration_date) : null // Ensure field exists
+    const from = filters.value.regFrom ? new Date(filters.value.regFrom) : null
+    const to = filters.value.regTo ? new Date(filters.value.regTo) : null
+    const isDateMatch =
+      (!from || (regDate && regDate >= from)) && (!to || (regDate && regDate <= to))
 
     // Search Query filtering (uses new searchQuery ref)
-    const query = searchQuery.value.trim().toLowerCase();
-    const isSearchMatch = !query ||
-        (record.username && record.username.toLowerCase().includes(query)) ||
-        (record.cid && record.cid.toLowerCase().includes(query)) ||
-        (record.permit_no && record.permit_no.toLowerCase().includes(query)) || // Example: Add other relevant fields
-        (record.passport_no && record.passport_no.toLowerCase().includes(query));
+    const query = searchQuery.value.trim().toLowerCase()
+    const isSearchMatch =
+      !query ||
+      (record.username && record.username.toLowerCase().includes(query)) ||
+      (record.cid && record.cid.toLowerCase().includes(query)) ||
+      (record.permit_no && record.permit_no.toLowerCase().includes(query)) || // Example: Add other relevant fields
+      (record.passport_no && record.passport_no.toLowerCase().includes(query))
 
     // Specific field filters (remain the same)
-    const isGenderMatch = !filters.value.gender || (record.gender && record.gender.toLowerCase() === filters.value.gender.toLowerCase());
-    const isCategoryMatch = !filters.value.category || (record.category && record.category.toLowerCase() === filters.value.category.toLowerCase());
-    const isSubCategoryMatch = !filters.value.subCategory || (record.sub_category && record.sub_category.toLowerCase() === filters.value.subCategory.toLowerCase()); // Check field name
-    const isServiceTypeMatch = !filters.value.serviceType || (record.service_type && record.service_type.toLowerCase() === filters.value.serviceType.toLowerCase());
+    const isGenderMatch =
+      !filters.value.gender ||
+      (record.gender && record.gender.toLowerCase() === filters.value.gender.toLowerCase())
+    const isCategoryMatch =
+      !filters.value.category ||
+      (record.category && record.category.toLowerCase() === filters.value.category.toLowerCase())
+    const isSubCategoryMatch =
+      !filters.value.subCategory ||
+      (record.sub_category &&
+        record.sub_category.toLowerCase() === filters.value.subCategory.toLowerCase()) // Check field name
+    const isServiceTypeMatch =
+      !filters.value.serviceType ||
+      (record.service_type &&
+        record.service_type.toLowerCase() === filters.value.serviceType.toLowerCase())
 
-    return isDateMatch && isSearchMatch && isGenderMatch && isCategoryMatch && isSubCategoryMatch && isServiceTypeMatch;
+    return (
+      isDateMatch &&
+      isSearchMatch &&
+      isGenderMatch &&
+      isCategoryMatch &&
+      isSubCategoryMatch &&
+      isServiceTypeMatch
+    )
   })
 })
 
@@ -568,23 +637,22 @@ const editRecord = (record) => {
 }
 
 const deleteRecord = async (id) => {
-    if (!id) {
-        console.error("Delete failed: Record ID is missing.");
-        // Show error toast notification
-        return;
+  if (!id) {
+    console.error('Delete failed: Record ID is missing.')
+    // Show error toast notification
+    return
+  }
+  if (confirm(`Are you sure you want to delete record ID ${id}? This action cannot be undone.`)) {
+    try {
+      await apiServices.deleteUser(id) // Ensure this matches your API service method
+      // Optionally show success toast
+      await fetchUsers() // Refresh the list after successful deletion
+    } catch (error) {
+      console.error('Error deleting user:', error)
+      // Optionally show error toast
     }
-    if (confirm(`Are you sure you want to delete record ID ${id}? This action cannot be undone.`)) {
-        try {
-            await apiServices.deleteUser(id); // Ensure this matches your API service method
-            // Optionally show success toast
-            await fetchUsers(); // Refresh the list after successful deletion
-        } catch (error) {
-            console.error('Error deleting user:', error);
-            // Optionally show error toast
-        }
-    }
+  }
 }
-
 
 const closeModal = () => {
   showModal.value = false

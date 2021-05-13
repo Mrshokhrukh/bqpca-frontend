@@ -80,25 +80,24 @@ const formatDate = (date) => {
 
 // --- MODIFIED FUNCTION ---
 const handleImageError = (event) => {
-  const placeholderSrc = '/placeholder-avatar.png';
-  const imageElement = event.target;
+  const placeholderSrc = '/placeholder-avatar.png'
+  const imageElement = event.target
 
   // IMPORTANT CHECK: If the source that failed is ALREADY the placeholder,
   // stop to prevent infinite loops. We use endsWith because the browser
   // might resolve the 'src' to a full URL (e.g., http://localhost:5173/placeholder-avatar.png)
   if (imageElement.src && imageElement.src.endsWith(placeholderSrc)) {
-    console.error("Placeholder image failed to load or caused recursive error:", imageElement.src);
+    console.error('Placeholder image failed to load or caused recursive error:', imageElement.src)
     // Optional: Remove the error handler now to be absolutely sure
     // imageElement.onerror = null;
-    return; // Do nothing more
+    return // Do nothing more
   }
 
   // Otherwise, the original image source failed, so set the placeholder
-  console.warn("Original image failed, setting placeholder:", imageElement.src);
-  imageElement.src = placeholderSrc;
+  console.warn('Original image failed, setting placeholder:', imageElement.src)
+  imageElement.src = placeholderSrc
 }
 // --- END MODIFIED FUNCTION ---
-
 
 const overallStatus = computed(() => {
   // ... (keep your existing computed property)

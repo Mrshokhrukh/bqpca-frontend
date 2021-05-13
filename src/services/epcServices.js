@@ -75,24 +75,24 @@ export default {
     return apiClient.get('/epc/epc-course-details/')
   },
   createEpcCourseDetail(data) {
-     // Assuming Course Details might have attachments, use FormData
+    // Assuming Course Details might have attachments, use FormData
     return apiClient.post('/epc/epc-course-details/', data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   getEpcCourseDetail(id) {
     return apiClient.get(`/epc/epc-course-details/${id}/`)
   },
   updateEpcCourseDetail(id, data) {
-     // Assuming Course Details might have attachments, use FormData
+    // Assuming Course Details might have attachments, use FormData
     return apiClient.put(`/epc/epc-course-details/${id}/`, data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   patchEpcCourseDetail(id, data) {
     // Assuming Course Details might have attachments, use FormData
     return apiClient.patch(`/epc/epc-course-details/${id}/`, data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   deleteEpcCourseDetail(id) {
@@ -153,7 +153,7 @@ export default {
     return apiClient.get(`/epc/epc-cpd-records/${id}/`)
   },
   updateEpcCpdRecord(id, data) {
-     // CPD Records have attachments, use FormData
+    // CPD Records have attachments, use FormData
     return apiClient.put(`/epc/epc-cpd-records/${id}/`, data, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
@@ -258,9 +258,9 @@ export default {
     return apiClient.get('/epc/epc-cpd-tasks/')
   },
   createEpcCpdTask(data) {
-     // CPD Tasks have attachments, use FormData
+    // CPD Tasks have attachments, use FormData
     return apiClient.post('/epc/epc-cpd-tasks/', data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   getEpcCpdTask(id) {
@@ -326,7 +326,7 @@ export default {
     return apiClient.get('/epc/epc-institutes/')
   },
   createEpcInstitute(data) {
-     // Institutes have attachments, use FormData
+    // Institutes have attachments, use FormData
     return apiClient.post('/epc/epc-institutes/', data, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
@@ -335,9 +335,9 @@ export default {
     return apiClient.get(`/epc/epc-institutes/${id}/`)
   },
   updateEpcInstitute(id, data) {
-     // Institutes have attachments, use FormData
+    // Institutes have attachments, use FormData
     return apiClient.put(`/epc/epc-institutes/${id}/`, data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   patchEpcInstitute(id, data) {
@@ -357,16 +357,16 @@ export default {
   createEpcNewApplication(data) {
     // New Applications have attachments, use FormData
     return apiClient.post('/epc/epc-new-application/', data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   getEpcNewApplication(id) {
     return apiClient.get(`/epc/epc-new-application/${id}/`)
   },
   updateEpcNewApplication(id, data) {
-     // New Applications have attachments, use FormData
+    // New Applications have attachments, use FormData
     return apiClient.put(`/epc/epc-new-application/${id}/`, data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   patchEpcNewApplication(id, data) {
@@ -401,13 +401,13 @@ export default {
   updateEpcNewQualification(id, data) {
     // New Qualifications have attachments, use FormData
     return apiClient.put(`/epc/epc-new-qualification/${id}/`, data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   patchEpcNewQualification(id, data) {
-     // New Qualifications have attachments, use FormData
+    // New Qualifications have attachments, use FormData
     return apiClient.patch(`/epc/epc-new-qualification/${id}/`, data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   deleteEpcNewQualification(id) {
@@ -432,17 +432,17 @@ export default {
   updateEpcNewEducationProgram(id, data) {
     // Has file uploads, use FormData
     return apiClient.put(`/epc/epc-new-education-programs/${id}/`, data, {
-       headers: {
-         'Content-Type': 'multipart/form-data',
-       },
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     })
   },
   patchEpcNewEducationProgram(id, data) {
     // Has file uploads, use FormData
-     return apiClient.patch(`/epc/epc-new-education-programs/${id}/`, data, {
-       headers: {
-         'Content-Type': 'multipart/form-data',
-       },
+    return apiClient.patch(`/epc/epc-new-education-programs/${id}/`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     })
   },
   deleteEpcNewEducationProgram(id) {
@@ -477,22 +477,22 @@ export default {
   createEpcTeachingCenter(data) {
     // Teaching Centers have attachments, use FormData
     return apiClient.post('/epc/epc-teaching-centers/', data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   getEpcTeachingCenter(id) {
     return apiClient.get(`/epc/epc-teaching-centers/${id}/`)
   },
   updateEpcTeachingCenter(id, data) {
-     // Teaching Centers have attachments, use FormData
+    // Teaching Centers have attachments, use FormData
     return apiClient.put(`/epc/epc-teaching-centers/${id}/`, data, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   patchEpcTeachingCenter(id, data) {
-     // Teaching Centers have attachments, use FormData
+    // Teaching Centers have attachments, use FormData
     return apiClient.patch(`/epc/epc-teaching-centers/${id}/`, data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   deleteEpcTeachingCenter(id) {
@@ -514,7 +514,7 @@ export default {
 
     // *** Choose the correct endpoint based on your backend API structure ***
     // For example, let's assume it's part of the Teaching Center detail view:
-    return apiClient.get(`/epc/epc-teaching-centers/${applicationId}/`);
+    return apiClient.get(`/epc/epc-teaching-centers/${applicationId}/`)
     // You will need to adjust the Vue component to extract the 'status' field
     // from the response object (e.g., response.data.status) if you use this approach.
   },
@@ -669,7 +669,7 @@ export default {
   createEpcMastersESignature(data) {
     // E-Signatures have attachments, use FormData
     return apiClient.post('/epc/masters-e-signatures/', data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   getEpcMastersESignature(id) {
@@ -678,13 +678,13 @@ export default {
   updateEpcMastersESignature(id, data) {
     // E-Signatures have attachments, use FormData
     return apiClient.put(`/epc/masters-e-signatures/${id}/`, data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   patchEpcMastersESignature(id, data) {
     // E-Signatures have attachments, use FormData
     return apiClient.patch(`/epc/masters-e-signatures/${id}/`, data, {
-       headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   deleteEpcMastersESignature(id) {
@@ -952,7 +952,7 @@ export default {
       case 'universities':
         endpoint = '/epc/masters-university/'
         break
-       // Add other master data types as needed
+      // Add other master data types as needed
       case 'institutes': // Example for fetching institutes
         endpoint = '/epc/epc-institutes/'
         break

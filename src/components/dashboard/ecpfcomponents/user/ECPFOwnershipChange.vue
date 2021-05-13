@@ -86,14 +86,19 @@
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700">CID No. <span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700"
+                >CID No. <span class="text-red-500">*</span></label
+              >
               <div class="flex">
                 <input
                   type="text"
                   v-model="formData.personalInfo.cidNo"
                   :disabled="isLoadingDCRC"
                   class="mt-1 block w-full px-3 py-2 border rounded-l-md shadow-sm"
-                  :class="{ 'border-red-500': highlightErrors && (!formData.personalInfo.cidNo || !isCIDValid) }"
+                  :class="{
+                    'border-red-500':
+                      highlightErrors && (!formData.personalInfo.cidNo || !isCIDValid),
+                  }"
                   placeholder="Enter 11-digit CID Number"
                   @input="validateCID"
                 />
@@ -107,7 +112,8 @@
                 </button>
               </div>
               <p class="text-xs text-gray-500 mt-1">
-                Enter an 11-digit CID to fetch data from DCRC. Manual entry supported if API is unavailable.
+                Enter an 11-digit CID to fetch data from DCRC. Manual entry supported if API is
+                unavailable.
               </p>
               <span v-if="errors.cidNo" class="text-xs text-red-500 mt-1">{{ errors.cidNo }}</span>
             </div>
@@ -354,27 +360,39 @@
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Name of the Proposed Firm <span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700"
+                >Name of the Proposed Firm <span class="text-red-500">*</span></label
+              >
               <input
                 type="text"
                 v-model="formData.proposal.firmName"
                 :readonly="!isEditing"
                 class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm"
-                :class="{ 'border-red-500': highlightErrors && !formData.proposal.firmName, 'bg-gray-100': !isEditing }"
+                :class="{
+                  'border-red-500': highlightErrors && !formData.proposal.firmName,
+                  'bg-gray-100': !isEditing,
+                }"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Address of the Proposed Firm <span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700"
+                >Address of the Proposed Firm <span class="text-red-500">*</span></label
+              >
               <input
                 type="text"
                 v-model="formData.proposal.firmAddress"
                 :readonly="!isEditing"
                 class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm"
-                :class="{ 'border-red-500': highlightErrors && !formData.proposal.firmAddress, 'bg-gray-100': !isEditing }"
+                :class="{
+                  'border-red-500': highlightErrors && !formData.proposal.firmAddress,
+                  'bg-gray-100': !isEditing,
+                }"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Location of the Proposed Firm</label>
+              <label class="block text-sm font-medium text-gray-700"
+                >Location of the Proposed Firm</label
+              >
               <input
                 type="text"
                 v-model="formData.proposal.firmLocation"
@@ -396,9 +414,11 @@
             :key="index"
             class="p-4 border border-gray-200 rounded-md mb-4"
           >
-            <div class=" atrocity__grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="atrocity__grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label class="block text-sm font-medium text-gray-700">Name of Colleges/University/Institute</label>
+                <label class="block text-sm font-medium text-gray-700"
+                  >Name of Colleges/University/Institute</label
+                >
                 <input
                   type="text"
                   v-model="linkage.name"
@@ -431,7 +451,9 @@
                 <p class="text-xs text-gray-500 mt-1">Auto (Provision to edit)</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Recognition/Accreditation</label>
+                <label class="block text-sm font-medium text-gray-700"
+                  >Recognition/Accreditation</label
+                >
                 <div class="flex items-center space-x-2">
                   <input
                     type="text"
@@ -455,7 +477,9 @@
                 <p class="text-xs text-gray-500 mt-1">Auto (File upload, Provision to edit)</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Approval from University</label>
+                <label class="block text-sm font-medium text-gray-700"
+                  >Approval from University</label
+                >
                 <div class="flex items-center space-x-2">
                   <input
                     type="text"
@@ -509,7 +533,9 @@
           <h2 class="text-lg font-medium mb-2 text-gray-700">Supporting Documents</h2>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700">CV of the Applicant <span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700"
+                >CV of the Applicant <span class="text-red-500">*</span></label
+              >
               <div class="flex items-center space-x-2">
                 <input
                   type="text"
@@ -533,14 +559,18 @@
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">CV & Certificate of Counsellors <span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700"
+                >CV & Certificate of Counsellors <span class="text-red-500">*</span></label
+              >
               <div class="flex items-center space-x-2">
                 <input
                   type="text"
                   v-model="formData.documents.cvCounsellors"
                   readonly
                   class="mt-1 block w-full px-3 py-2 bg-gray-100 border rounded-md shadow-sm"
-                  :class="{ 'border-red-500': highlightErrors && !formData.documents.cvCounsellors }"
+                  :class="{
+                    'border-red-500': highlightErrors && !formData.documents.cvCounsellors,
+                  }"
                 />
                 <label
                   class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
@@ -557,7 +587,9 @@
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">CID of Guarantor <span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700"
+                >CID of Guarantor <span class="text-red-500">*</span></label
+              >
               <div class="flex items-center space-x-2">
                 <input
                   type="text"
@@ -581,14 +613,18 @@
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Proposal Details <span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700"
+                >Proposal Details <span class="text-red-500">*</span></label
+              >
               <div class="flex items-center space-x-2">
                 <input
                   type="text"
                   v-model="formData.documents.proposalDetails"
                   readonly
                   class="mt-1 block w-full px-3 py-2 bg-gray-100 border rounded-md shadow-sm"
-                  :class="{ 'border-red-500': highlightErrors && !formData.documents.proposalDetails }"
+                  :class="{
+                    'border-red-500': highlightErrors && !formData.documents.proposalDetails,
+                  }"
                 />
                 <label
                   class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
@@ -621,11 +657,14 @@
                   type="checkbox"
                   v-model="formData.documents.declarationAgreed"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                  :class="{ 'border-red-500': highlightErrors && !formData.documents.declarationAgreed }"
+                  :class="{
+                    'border-red-500': highlightErrors && !formData.documents.declarationAgreed,
+                  }"
                   :disabled="!isEditing"
                 />
                 <span class="ml-2 text-sm text-gray-700">
-                  I hereby declare that the information provided in this application is true and correct to the best of my knowledge. <span class="text-red-500">*</span>
+                  I hereby declare that the information provided in this application is true and
+                  correct to the best of my knowledge. <span class="text-red-500">*</span>
                 </span>
               </label>
             </div>
@@ -841,7 +880,7 @@ const isCIDValid = computed(() => {
 })
 
 const canSubmit = computed(() => {
-  const isValid = (
+  const isValid =
     formData.personalInfo.cidNo &&
     isCIDValid.value &&
     formData.proposal.firmName &&
@@ -852,7 +891,6 @@ const canSubmit = computed(() => {
     formData.documents.proposalDetails &&
     formData.documents.declarationAgreed &&
     ecpfProfileId
-  )
   console.log('canSubmit:', isValid, {
     cidNo: formData.personalInfo.cidNo,
     isCIDValid: isCIDValid.value,
@@ -983,8 +1021,9 @@ const loadDraftFromLocalStorage = () => {
       Object.assign(formData.permanentAddress, draft.formData.permanentAddress || {})
       Object.assign(formData.education, draft.formData.education || {})
       Object.assign(formData.proposal, draft.formData.proposal || {})
-      formData.linkages =
-        draft.formData.linkages || [{ name: '', location: '', country: '', recognition: null, approval: null }]
+      formData.linkages = draft.formData.linkages || [
+        { name: '', location: '', country: '', recognition: null, approval: null },
+      ]
       Object.assign(formData.documents, draft.formData.documents || {})
       if (draft.ecpfProfileId) {
         ecpfProfileId = draft.ecpfProfileId
@@ -1034,12 +1073,18 @@ onMounted(async () => {
     if (!localStorage.getItem('ecpf_ownership_draft') || fetchedEcpfData) {
       formData.currentEcpf.licenseNo = fetchedEcpfData?.license_no || 'N/A'
       formData.currentEcpf.name =
-        fetchedEcpfData?.institute_name || fetchedEcpfData?.name || fetchedEcpfData?.firm_name || 'N/A'
-      formData.currentEcpf.proprietor = fetchedEcpfData?.proprietor_name || authStore.fullName || 'N/A'
+        fetchedEcpfData?.institute_name ||
+        fetchedEcpfData?.name ||
+        fetchedEcpfData?.firm_name ||
+        'N/A'
+      formData.currentEcpf.proprietor =
+        fetchedEcpfData?.proprietor_name || authStore.fullName || 'N/A'
       formData.currentEcpf.location =
         [fetchedEcpfData?.dzongkhag, fetchedEcpfData?.gewog, fetchedEcpfData?.village]
           .filter(Boolean)
-          .join(', ') || fetchedEcpfData?.location || 'N/A'
+          .join(', ') ||
+        fetchedEcpfData?.location ||
+        'N/A'
     }
   } catch (error) {
     console.error('Error during onMounted initialization:', error)
@@ -1240,7 +1285,11 @@ const handlePaymentCompleted = async (paymentData) => {
 
   const documentsToSubmit = { ...submitData.documents }
   for (let key in documentsToSubmit) {
-    if (documentsToSubmit[key] === null && key !== 'declarationRemarks' && key !== 'declarationAgreed') {
+    if (
+      documentsToSubmit[key] === null &&
+      key !== 'declarationRemarks' &&
+      key !== 'declarationAgreed'
+    ) {
       delete documentsToSubmit[key]
     }
   }
@@ -1262,7 +1311,8 @@ const handlePaymentCompleted = async (paymentData) => {
       const errors = error.response.data
       if (typeof errors === 'object' && errors !== null) {
         for (const [field, messages] of Object.entries(errors)) {
-          const messagePrefix = field === 'detail' || field === 'non_field_errors' ? '' : `${field}: `
+          const messagePrefix =
+            field === 'detail' || field === 'non_field_errors' ? '' : `${field}: `
           if (Array.isArray(messages)) {
             messages.forEach((msg) => validationErrors.value.push(`${messagePrefix}${msg}`))
           } else {

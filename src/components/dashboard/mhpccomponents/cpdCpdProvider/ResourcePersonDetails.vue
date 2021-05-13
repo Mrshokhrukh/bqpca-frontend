@@ -124,7 +124,7 @@ const fetchPersonDetails = async (person) => {
     loading.value = true
 
     // Try to fetch person details from API
-    const response = await apiServicess.getMhpcApplicationsByCid('')
+    const response = await apiServices.getMhpcApplicationsByCid('')
 
     if (response.data && Array.isArray(response.data)) {
       // Try to find a matching registration

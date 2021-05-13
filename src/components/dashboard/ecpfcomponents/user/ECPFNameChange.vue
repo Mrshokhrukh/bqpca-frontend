@@ -119,7 +119,8 @@
               placeholder="Enter the new ECPF name"
             />
           </div>
-          <div class="mt-4"> <!-- Adjusted margin-top -->
+          <div class="mt-4">
+            <!-- Adjusted margin-top -->
             <label for="nameChangeDeclaration" class="block text-sm font-medium text-gray-700"
               >Declaration <span class="text-red-500">*</span></label
             >
@@ -129,11 +130,13 @@
               class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             >
               <option value="">Please select</option>
-              <option value="agree">I hereby declare that the information provided is true and correct.</option>
+              <option value="agree">
+                I hereby declare that the information provided is true and correct.
+              </option>
               <!-- <option value="disagree">Disagree</option> -->
             </select>
           </div>
-           <div class="mt-4">
+          <div class="mt-4">
             <label for="nameChangeRemarks" class="block text-sm font-medium text-gray-700"
               >Remarks (Optional)</label
             >
@@ -196,7 +199,7 @@
         </button> -->
       </div>
     </div>
-     <!-- Payment Modal (Assuming you have one or will create one) -->
+    <!-- Payment Modal (Assuming you have one or will create one) -->
     <!-- <PaymentModal
         ref="paymentModalRef"
         :amount="NAME_CHANGE_FEE" // Define this constant
@@ -248,7 +251,6 @@ const proposedName = ref('')
 const nameChangeDeclaration = ref('') // For the "Agree" select
 const nameChangeRemarks = ref('') // For the optional remarks textarea
 
-
 const emit = defineEmits(['submit-success', 'save-draft-success', 'payment-initiated']) // Adjusted emit names
 
 // Fetch current ECPF details on component mount
@@ -270,7 +272,9 @@ onMounted(async () => {
       currentDetails.cid = 'N/A'
       currentDetails.contactNo = authStore.contactNumber || 'N/A'
       currentDetails.emailAddress = authStore.email || 'N/A'
-      const locationParts = [authStore.dzongkhag, authStore.gewog, authStore.village].filter(Boolean)
+      const locationParts = [authStore.dzongkhag, authStore.gewog, authStore.village].filter(
+        Boolean,
+      )
       currentDetails.location = locationParts.length > 0 ? locationParts.join(', ') : 'N/A'
       return
     }
@@ -282,15 +286,21 @@ onMounted(async () => {
     if (fetchedEcpfData) {
       ecpfProfileId = fetchedEcpfData.id // Store the ECPF profile ID
 
-      currentDetails.ecpfName = fetchedEcpfData.institute_name || fetchedEcpfData.name || fetchedEcpfData.firm_name || 'N/A'
-      currentDetails.licenseNo = fetchedEcpfData.license_no || fetchedEcpfData.registration_no || authStore.user?.license_no || 'N/A'
+      currentDetails.ecpfName =
+        fetchedEcpfData.institute_name || fetchedEcpfData.name || fetchedEcpfData.firm_name || 'N/A'
+      currentDetails.licenseNo =
+        fetchedEcpfData.license_no ||
+        fetchedEcpfData.registration_no ||
+        authStore.user?.license_no ||
+        'N/A'
 
       const locationParts = [
         fetchedEcpfData.dzongkhag || authStore.dzongkhag,
         fetchedEcpfData.gewog || authStore.gewog,
         fetchedEcpfData.village || authStore.village,
       ].filter(Boolean)
-      currentDetails.location = locationParts.length > 0 ? locationParts.join(', ') : fetchedEcpfData.location || 'N/A'
+      currentDetails.location =
+        locationParts.length > 0 ? locationParts.join(', ') : fetchedEcpfData.location || 'N/A'
 
       currentDetails.proprietorName = fetchedEcpfData.proprietor_name || authStore.fullName || 'N/A'
       currentDetails.cid = fetchedEcpfData.cid || authStore.user.cid || 'N/A'
@@ -299,18 +309,18 @@ onMounted(async () => {
     } else {
       toast.error('Could not fetch ECPF details.')
       // Populate with N/A or fallbacks
-       Object.keys(currentDetails).forEach(key => currentDetails[key] = 'N/A (Error)');
-       currentDetails.cid = authStore.user.cid || 'N/A (Error)';
+      Object.keys(currentDetails).forEach((key) => (currentDetails[key] = 'N/A (Error)'))
+      currentDetails.cid = authStore.user.cid || 'N/A (Error)'
     }
   } catch (error) {
     console.error('Error fetching ECPF details:', error)
     toast.error('Failed to load ECPF details. Please try again.')
     // Populate with N/A or fallbacks in case of error
-    Object.keys(currentDetails).forEach(key => currentDetails[key] = 'N/A (Error)');
+    Object.keys(currentDetails).forEach((key) => (currentDetails[key] = 'N/A (Error)'))
     if (authStore.user) {
-        currentDetails.cid = authStore.user.cid || 'N/A (Error)';
-        currentDetails.proprietorName = authStore.fullName || 'N/A (Error)';
-        // ... other fallbacks from authStore if desired
+      currentDetails.cid = authStore.user.cid || 'N/A (Error)'
+      currentDetails.proprietorName = authStore.fullName || 'N/A (Error)'
+      // ... other fallbacks from authStore if desired
     }
   } finally {
     loading.value = false
@@ -322,11 +332,16 @@ watch(
   () => props.initialData,
   (newData) => {
     if (newData && Object.keys(newData).length > 0) {
-        proposedName.value = newData.proposed_name || newData.proposedName || '' // Check for both possible backend field names
-        nameChangeDeclaration.value = newData.declaration === true ? 'agree' : (newData.declaration === false ? '' : (newData.nameChangeDeclaration || ''))
-        nameChangeRemarks.value = newData.remarks || newData.nameChangeRemarks || ''
-        // If initialData contains an ID for the draft, store it for updates
-        // e.g., draftId.value = newData.id;
+      proposedName.value = newData.proposed_name || newData.proposedName || '' // Check for both possible backend field names
+      nameChangeDeclaration.value =
+        newData.declaration === true
+          ? 'agree'
+          : newData.declaration === false
+            ? ''
+            : newData.nameChangeDeclaration || ''
+      nameChangeRemarks.value = newData.remarks || newData.nameChangeRemarks || ''
+      // If initialData contains an ID for the draft, store it for updates
+      // e.g., draftId.value = newData.id;
     }
   },
   { immediate: true, deep: true },
@@ -341,7 +356,7 @@ const validateForm = () => {
     validationErrors.value.push('You must agree to the declaration.')
   }
   if (!ecpfProfileId) {
-      validationErrors.value.push('ECPF Profile ID is missing. Cannot proceed.')
+    validationErrors.value.push('ECPF Profile ID is missing. Cannot proceed.')
   }
   return validationErrors.value.length === 0
 }
@@ -362,15 +377,24 @@ const submitApplication = async (paymentInfo) => {
     declaration: nameChangeDeclaration.value === 'agree',
     remarks: nameChangeRemarks.value.trim(),
     payment_info: paymentInfo, // Include payment details from payment modal
-    status: 'Submitted'
+    status: 'Submitted',
   }
 
   try {
     // const response = await apiServices.createEcpfNameChange(payload) // Or update if editing a draft
     // For now, let's assume create. If editing, you'd need a draftId and use patch/put.
     // Replace with actual API call to create/update ECPF Name Change request
-    console.log("Submitting payload:", payload)
-    const response = await new Promise(resolve => setTimeout(() => resolve({ status: 201, data: { ...payload, id: Date.now(), message: 'Application submitted successfully!' } }), 1000)); // Mock API call
+    console.log('Submitting payload:', payload)
+    const response = await new Promise((resolve) =>
+      setTimeout(
+        () =>
+          resolve({
+            status: 201,
+            data: { ...payload, id: Date.now(), message: 'Application submitted successfully!' },
+          }),
+        1000,
+      ),
+    ) // Mock API call
 
     if (response.status === 201 || response.status === 200) {
       toast.success(response.data.message || 'Name change application submitted successfully!')
@@ -384,27 +408,29 @@ const submitApplication = async (paymentInfo) => {
       // router.push('/dashboard/tracker');
     } else {
       toast.error(response.data?.detail || 'Failed to submit application. Please try again.')
-      if(response.data && typeof response.data === 'object'){
+      if (response.data && typeof response.data === 'object') {
         // Populate validationErrors.value from response.data if backend sends field errors
       }
     }
   } catch (error) {
     console.error('Error submitting application:', error)
-    toast.error('An error occurred while submitting the application. Please check console for details.')
-     if (error.response?.data) {
-        // Populate validationErrors.value
-     }
+    toast.error(
+      'An error occurred while submitting the application. Please check console for details.',
+    )
+    if (error.response?.data) {
+      // Populate validationErrors.value
+    }
   } finally {
     isSubmitting.value = false
   }
 }
 
 const saveAsDraft = async () => {
-  if (!proposedName.value.trim() && !nameChangeRemarks.value.trim()){
-      toast.info("Please enter a proposed name or remarks to save as draft.");
-      return;
+  if (!proposedName.value.trim() && !nameChangeRemarks.value.trim()) {
+    toast.info('Please enter a proposed name or remarks to save as draft.')
+    return
   }
-  isSubmitting.value = true; // Use same flag to disable buttons
+  isSubmitting.value = true // Use same flag to disable buttons
 
   const draftPayload = {
     ecpf_profile: ecpfProfileId,
@@ -422,31 +448,40 @@ const saveAsDraft = async () => {
     // const response = draftId.value
     //   ? await apiServices.updateEcpfNameChangeDraft(draftId.value, draftPayload)
     //   : await apiServices.createEcpfNameChangeDraft(draftPayload);
-    console.log("Saving draft:", draftPayload);
-    const response = await new Promise(resolve => setTimeout(() => resolve({ status: 200, data: { ...draftPayload, id: Date.now(), message: 'Application saved as draft!' } }), 1000)); // Mock API call
+    console.log('Saving draft:', draftPayload)
+    const response = await new Promise((resolve) =>
+      setTimeout(
+        () =>
+          resolve({
+            status: 200,
+            data: { ...draftPayload, id: Date.now(), message: 'Application saved as draft!' },
+          }),
+        1000,
+      ),
+    ) // Mock API call
 
-    toast.success(response.data.message || 'Application saved as draft!');
-    emit('save-draft-success', response.data);
+    toast.success(response.data.message || 'Application saved as draft!')
+    emit('save-draft-success', response.data)
     // draftId.value = response.data.id; // Store new/updated draft ID
   } catch (error) {
-    console.error('Error saving as draft:', error);
-    toast.error('Failed to save as draft. Please try again.');
+    console.error('Error saving as draft:', error)
+    toast.error('Failed to save as draft. Please try again.')
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
 }
 
 const initiatePayment = () => {
   if (!validateForm()) {
-    toast.error("Please fill all required fields correctly before proceeding to payment.");
-    return;
+    toast.error('Please fill all required fields correctly before proceeding to payment.')
+    return
   }
-  toast.info('Proceeding to payment... (Payment Integration Pending)');
+  toast.info('Proceeding to payment... (Payment Integration Pending)')
   emit('payment-initiated', {
     amount: 200, // NAME_CHANGE_FEE
     description: `Payment for ECPF Name Change to "${proposedName.value}"`,
     // ... other relevant data for payment modal/page
-  });
+  })
   // Here you would typically open a payment modal or redirect to a payment page
   // For example:
   // if (paymentModalRef.value) {
@@ -458,10 +493,10 @@ const initiatePayment = () => {
   // For now, let's simulate payment success and then submit
   // In a real scenario, submitApplication would be called by the payment modal's @payment-completed event
   setTimeout(async () => {
-    const mockPaymentData = { paymentHash: 'mock_payment_hash_' + Date.now(), status: 'Completed' };
-    toast.success("Mock payment successful!");
-    await submitApplication(mockPaymentData);
-  }, 1500);
+    const mockPaymentData = { paymentHash: 'mock_payment_hash_' + Date.now(), status: 'Completed' }
+    toast.success('Mock payment successful!')
+    await submitApplication(mockPaymentData)
+  }, 1500)
 }
 
 // const handlePaymentCompleted = (paymentData) => {
@@ -473,7 +508,6 @@ const initiatePayment = () => {
 //   toast.info("Payment process was cancelled or closed.");
 //   isSubmitting.value = false; // Re-enable submit button if needed
 // };
-
 
 // The "Edit" button functionality depends on your workflow.
 // If it's to load a draft, that should happen via props or a separate load mechanism.

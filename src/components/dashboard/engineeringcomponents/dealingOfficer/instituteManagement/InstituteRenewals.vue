@@ -272,7 +272,7 @@ const fetchInstitutes = async () => {
           const validTillDate = new Date(inst.valid_till)
           validTillDate.setHours(0, 0, 0, 0)
           isExpired = validTillDate < today
-        } catch  {
+        } catch {
           console.warn(`Invalid valid_till date for institute ${inst.id}:`, inst.valid_till)
           isExpired = false // Treat invalid dates as not expired to avoid false positives
         }

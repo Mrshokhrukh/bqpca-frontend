@@ -82,7 +82,6 @@
 </template>
 
 <script setup>
-
 const props = defineProps({
   participantDetails: Object,
   participationCategoryOptions: Array,
@@ -97,10 +96,9 @@ const onCategoryChange = (event) => {
   emit('update:participantDetails', {
     ...props.participantDetails,
     category: event.target.value,
-    subcategory: ''
+    subcategory: '',
   })
   // Call the parent's loadSubcategories function
   props.loadSubcategories()
-
 }
 </script>

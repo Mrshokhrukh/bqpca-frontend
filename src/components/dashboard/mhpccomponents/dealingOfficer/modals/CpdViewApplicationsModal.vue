@@ -384,7 +384,7 @@
                               <div class="flex justify-end space-x-3">
                                 <button
                                   @click="showRejectionForm = false"
-                                    rejectionError = ''
+                                  rejectionError=""
                                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
                                 >
                                   Cancel
@@ -406,7 +406,7 @@
                           >
                             <button
                               @click="showApprovalForm = true"
-                                showRejectionForm = false
+                              showRejectionForm="false"
                               class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors flex items-center space-x-2"
                             >
                               <CheckCircle class="h-4 w-4" />
@@ -414,7 +414,7 @@
                             </button>
                             <button
                               @click="showRejectionForm = true"
-                                showApprovalForm = false
+                              showApprovalForm="false"
                               class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors flex items-center space-x-2"
                             >
                               <XCircle class="h-4 w-4" />

@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'ReportsDashboard'
+  name: 'ReportsDashboard',
 }
 </script>
 
@@ -11,7 +11,11 @@ export default {
       <h1 class="text-2xl font-bold text-gray-800">ECP Applications & Reports</h1>
       <div class="flex gap-4">
         <!-- Modified Export Button for CSV -->
-        <button @click="exportToCSV" class="btn-primary" :disabled="isLoading || !reportData.length || isLoadingExport">
+        <button
+          @click="exportToCSV"
+          class="btn-primary"
+          :disabled="isLoading || !reportData.length || isLoadingExport"
+        >
           <span v-if="isLoadingExport" class="mr-2">
             <i class="fas fa-spinner fa-spin"></i>
           </span>
@@ -32,34 +36,46 @@ export default {
       >
         <option value="" disabled>-- Select a Report Type --</option>
         <optgroup label="Applications">
-            <option value="new_applications">New Applications</option>
-            {/* <option value="additional_applications">Additional Applications</option> API function missing */}
-            <option value="renewal_applications">Renewal Applications</option>
+          <option value="new_applications">New Applications</option>
+          {/*
+          <option value="additional_applications">Additional Applications</option>
+          API function missing */}
+          <option value="renewal_applications">Renewal Applications</option>
         </optgroup>
-         <optgroup label="CoGS">
-             <option value="cogs_management">CoGS Management</option>
-         </optgroup>
+        <optgroup label="CoGS">
+          <option value="cogs_management">CoGS Management</option>
+        </optgroup>
         <optgroup label="CPD Management">
-            <option value="cpd_review">CPD Applications Review</option>
-            {/* <option value="cpd_self_assessed">Self Assessed CPD Applications</option> API function missing */}
+          <option value="cpd_review">CPD Applications Review</option>
+          {/*
+          <option value="cpd_self_assessed">Self Assessed CPD Applications</option>
+          API function missing */}
         </optgroup>
         <optgroup label="Institute Management">
-            {/* <option value="eoi_applications">EOI Applications</option> API function missing */}
-            {/* <option value="dpr_applications">DPR Applications</option> API function missing */}
-            <option value="capa_management">CAPA Management</option>
-            {/* <option value="institute_renewals">Institute Renewals</option> API function missing */}
-            {/* <option value="teaching_institute_renewals">Teaching Institute Renewals</option> API function missing */}
+          {/*
+          <option value="eoi_applications">EOI Applications</option>
+          API function missing */} {/*
+          <option value="dpr_applications">DPR Applications</option>
+          API function missing */}
+          <option value="capa_management">CAPA Management</option>
+          {/*
+          <option value="institute_renewals">Institute Renewals</option>
+          API function missing */} {/*
+          <option value="teaching_institute_renewals">Teaching Institute Renewals</option>
+          API function missing */}
         </optgroup>
-         <optgroup label="Other Reports">
-             {/* <option value="generic_reports">Generic Reports</option> API function missing */}
-         </optgroup>
+        <optgroup label="Other Reports">
+          {/*
+          <option value="generic_reports">Generic Reports</option>
+          API function missing */}
+        </optgroup>
       </select>
     </div>
 
     <!-- Filters -->
     <div
-        v-if="activeReport"
-        class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200"
+      v-if="activeReport"
+      class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200"
     >
       <!-- Global Search -->
       <div>
@@ -139,10 +155,10 @@ export default {
       </button>
     </div>
 
-     <!-- Initial State (No Report Selected) -->
+    <!-- Initial State (No Report Selected) -->
     <div v-else-if="!activeReport" class="text-center py-16 text-gray-500">
-        <i class="fas fa-info-circle fa-2x mb-3"></i>
-        <p>Please select a report type above to get started.</p>
+      <i class="fas fa-info-circle fa-2x mb-3"></i>
+      <p>Please select a report type above to get started.</p>
     </div>
 
     <!-- Empty State -->
@@ -150,14 +166,29 @@ export default {
       v-else-if="!reportData.length && !isLoading"
       class="bg-white rounded-lg shadow p-12 text-center border border-gray-200"
     >
-      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2z" />
+      <svg
+        class="mx-auto h-12 w-12 text-gray-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          vector-effect="non-scaling-stroke"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2z"
+        />
       </svg>
       <h3 class="mt-2 text-lg font-medium text-gray-900">No Data Found</h3>
       <p class="mt-1 text-sm text-gray-500">
         No records match the current report type and selected filters.
       </p>
-      <p v-if="filters.search || filters.startDate || filters.endDate || filters.status" class="mt-2 text-sm text-gray-500">
+      <p
+        v-if="filters.search || filters.startDate || filters.endDate || filters.status"
+        class="mt-2 text-sm text-gray-500"
+      >
         Try adjusting or clearing your filters.
       </p>
     </div>
@@ -182,8 +213,11 @@ export default {
                     <i
                       :class="[
                         'fas',
-                        sortBy === header.key || (header.backendSortKey && sortBy === header.backendSortKey)
-                          ? sortOrder === 'asc' ? 'fa-sort-up text-gray-700' : 'fa-sort-down text-gray-700'
+                        sortBy === header.key ||
+                        (header.backendSortKey && sortBy === header.backendSortKey)
+                          ? sortOrder === 'asc'
+                            ? 'fa-sort-up text-gray-700'
+                            : 'fa-sort-down text-gray-700'
                           : 'fa-sort',
                       ]"
                     ></i>
@@ -201,28 +235,28 @@ export default {
             class="hover:bg-gray-50 transition duration-150"
           >
             <td v-for="header in activeHeaders" :key="header.key" class="table-cell">
-               <template v-if="header.isStatusColumn">
-                 <span :class="statusBadge(getNestedValue(item, header.key))">
+              <template v-if="header.isStatusColumn">
+                <span :class="statusBadge(getNestedValue(item, header.key))">
                   {{ getNestedValue(item, header.key) ?? 'N/A' }}
-                 </span>
-               </template>
-               <template v-else-if="header.type === 'date'">
-                 {{ formatDate(getNestedValue(item, header.key)) }}
-               </template>
-                <template v-else-if="header.type === 'datetime'">
-                 {{ formatDate(getNestedValue(item, header.key), 'datetime') }}
-               </template>
-               <template v-else-if="header.type === 'currency'">
-                 {{ formatCurrency(getNestedValue(item, header.key)) }}
-               </template>
-               <template v-else-if="header.linkTo && getNestedValue(item, header.key)">
-                   <router-link :to="header.linkTo(item)" class="text-blue-600 hover:underline">
-                       {{ getNestedValue(item, header.key) ?? 'N/A' }}
-                   </router-link>
-               </template>
-               <template v-else>
-                 {{ getNestedValue(item, header.key) ?? 'N/A' }}
-               </template>
+                </span>
+              </template>
+              <template v-else-if="header.type === 'date'">
+                {{ formatDate(getNestedValue(item, header.key)) }}
+              </template>
+              <template v-else-if="header.type === 'datetime'">
+                {{ formatDate(getNestedValue(item, header.key), 'datetime') }}
+              </template>
+              <template v-else-if="header.type === 'currency'">
+                {{ formatCurrency(getNestedValue(item, header.key)) }}
+              </template>
+              <template v-else-if="header.linkTo && getNestedValue(item, header.key)">
+                <router-link :to="header.linkTo(item)" class="text-blue-600 hover:underline">
+                  {{ getNestedValue(item, header.key) ?? 'N/A' }}
+                </router-link>
+              </template>
+              <template v-else>
+                {{ getNestedValue(item, header.key) ?? 'N/A' }}
+              </template>
             </td>
           </tr>
         </tbody>
@@ -234,11 +268,11 @@ export default {
       v-if="!isLoading && !error && reportData.length && activeReport"
       class="mt-6 flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200"
     >
-       <div class="text-sm text-gray-700 mb-2 sm:mb-0">
-         Showing <span class="font-medium">{{ totalItems > 0 ? startIndex + 1 : 0 }}</span> to
-         <span class="font-medium">{{ Math.min(endIndex + 1, totalItems) }}</span>
-         of <span class="font-medium">{{ totalItems }}</span> results
-       </div>
+      <div class="text-sm text-gray-700 mb-2 sm:mb-0">
+        Showing <span class="font-medium">{{ totalItems > 0 ? startIndex + 1 : 0 }}</span> to
+        <span class="font-medium">{{ Math.min(endIndex + 1, totalItems) }}</span>
+        of <span class="font-medium">{{ totalItems }}</span> results
+      </div>
       <div v-if="totalPages > 1" class="flex gap-2">
         <button @click="prevPage" :disabled="currentPage === 1 || isLoading" class="pagination-btn">
           <i class="fas fa-chevron-left mr-1 text-xs"></i> Previous
@@ -259,37 +293,37 @@ export default {
 </template>
 
 <script setup>
-import { ref, computed, reactive, onMounted } from 'vue';
-import { useToast } from 'vue-toastification';
-import debounce from 'lodash/debounce';
-import Papa from 'papaparse'; // Import papaparse
-import apiServices from '@/services/services';
+import { ref, computed, reactive, onMounted } from 'vue'
+import { useToast } from 'vue-toastification'
+import debounce from 'lodash/debounce'
+import Papa from 'papaparse' // Import papaparse
+import apiServices from '@/services/services'
 // import { useRouter } from 'vue-router';
 
 // Removed XLSX and jsPDF imports
 
-const toast = useToast();
+const toast = useToast()
 // const router = useRouter();
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 10
 
 // --- Headers, apiMethods, other refs like activeReport, reportData, isLoading etc. remain the same ---
-const activeReport = ref('');
-const reportData = ref([]);
-const isLoading = ref(false);
-const isLoadingExport = ref(false); // Changed to boolean for single export type
-const error = ref(null);
-const currentPage = ref(1);
-const totalItems = ref(0);
-const sortBy = ref('');
-const sortOrder = ref('asc');
+const activeReport = ref('')
+const reportData = ref([])
+const isLoading = ref(false)
+const isLoadingExport = ref(false) // Changed to boolean for single export type
+const error = ref(null)
+const currentPage = ref(1)
+const totalItems = ref(0)
+const sortBy = ref('')
+const sortOrder = ref('asc')
 
 const filters = reactive({
   search: '',
   startDate: '',
   endDate: '',
   status: '',
-});
+})
 
 // --- Keep the headers definition object ---
 const headers = {
@@ -311,20 +345,49 @@ const headers = {
   ],
   renewal_applications: [
     { key: 'renewal_id', label: 'Renewal ID', sortable: true, backendSortKey: 'id' },
-    { key: 'registration_no', label: 'Reg Number', sortable: true, backendSortKey: 'user_qualification.registration_no' },
+    {
+      key: 'registration_no',
+      label: 'Reg Number',
+      sortable: true,
+      backendSortKey: 'user_qualification.registration_no',
+    },
     { key: 'applicant_name', label: 'Applicant Name', sortable: true },
-    { key: 'renewal_status', label: 'Status', sortable: true, isStatusColumn: true, backendSortKey: 'renewal_review_status' },
+    {
+      key: 'renewal_status',
+      label: 'Status',
+      sortable: true,
+      isStatusColumn: true,
+      backendSortKey: 'renewal_review_status',
+    },
     { key: 'expiry_date', label: 'Current Expiry', type: 'date', sortable: true },
     { key: 'new_expiry_date', label: 'New Expiry', type: 'date', sortable: true },
-    { key: 'applied_date', label: 'Applied On', type: 'date', sortable: true, backendSortKey: 'created_at' },
+    {
+      key: 'applied_date',
+      label: 'Applied On',
+      type: 'date',
+      sortable: true,
+      backendSortKey: 'created_at',
+    },
   ],
-   cogs_management: [
+  cogs_management: [
     { key: 'cogs_number', label: 'CoGS Number', sortable: true, backendSortKey: 'registration_no' },
     { key: 'applicant_name', label: 'Applicant Name', sortable: true, backendSortKey: 'full_name' },
     { key: 'department_name', label: 'Department', sortable: true },
-    { key: 'issuance_date', label: 'Issued On', type: 'date', sortable: true, backendSortKey: 'created_at' },
+    {
+      key: 'issuance_date',
+      label: 'Issued On',
+      type: 'date',
+      sortable: true,
+      backendSortKey: 'created_at',
+    },
     { key: 'payment_status', label: 'Payment', sortable: true, isStatusColumn: true },
-    { key: 'endorsement_status', label: 'Status', sortable: true, isStatusColumn: true, backendSortKey: 'endorsement_decision'},
+    {
+      key: 'endorsement_status',
+      label: 'Status',
+      sortable: true,
+      isStatusColumn: true,
+      backendSortKey: 'endorsement_decision',
+    },
   ],
   cpd_review: [
     { key: 'cpd_title', label: 'Activity Name', sortable: true, backendSortKey: 'title' },
@@ -332,9 +395,15 @@ const headers = {
     { key: 'cpd_credits', label: 'Credits', sortable: true, backendSortKey: 'credit_value' },
     { key: 'start_date', label: 'Start Date', type: 'date', sortable: true },
     { key: 'end_date', label: 'End Date', type: 'date', sortable: true },
-    { key: 'review_status', label: 'Status', sortable: true, isStatusColumn: true, backendSortKey: 'is_approved' },
+    {
+      key: 'review_status',
+      label: 'Status',
+      sortable: true,
+      isStatusColumn: true,
+      backendSortKey: 'is_approved',
+    },
   ],
-   cpd_self_assessed: [
+  cpd_self_assessed: [
     { key: 'application_id', label: 'App ID', sortable: true },
     { key: 'applicant_reg_no', label: 'Applicant Reg #', sortable: true },
     { key: 'activity_title', label: 'Activity', sortable: true },
@@ -364,7 +433,7 @@ const headers = {
     { key: 'due_date', label: 'Due Date', type: 'date', sortable: true },
     { key: 'capa_status', label: 'Status', sortable: true, isStatusColumn: true },
   ],
-   institute_renewals: [
+  institute_renewals: [
     { key: 'renewal_id', label: 'Renewal ID', sortable: true },
     { key: 'institute_id', label: 'Institute ID', sortable: true },
     { key: 'institute_name', label: 'Institute Name', sortable: true },
@@ -380,45 +449,60 @@ const headers = {
     { key: 'applied_date', label: 'Applied On', type: 'date', sortable: true },
     { key: 'renewal_status', label: 'Status', sortable: true, isStatusColumn: true },
   ],
-   generic_reports: [
-      { key: 'report_name', label: 'Report Name', sortable: true },
-      { key: 'generated_date', label: 'Generated', type: 'datetime', sortable: true },
-      { key: 'generated_by', label: 'User', sortable: true },
-   ]
-};
+  generic_reports: [
+    { key: 'report_name', label: 'Report Name', sortable: true },
+    { key: 'generated_date', label: 'Generated', type: 'datetime', sortable: true },
+    { key: 'generated_by', label: 'User', sortable: true },
+  ],
+}
 
 // --- Keep the apiMethods definition object ---
 const apiMethods = {
   new_applications: {
     fetch: apiServices.getEpcNewApplications, // Corrected
     transform: (data) => ({
-        ...data, application_id: data.id ?? 'N/A', applicant_name: data.user?.full_name ?? data.applicant?.name ?? 'N/A',
-        application_type: data.type_name ?? 'N/A', submission_date: data.created_at ?? data.submitted_on ?? null,
-        status: data.review_status ?? data.current_step ?? 'N/A', assigned_officer: data.officer?.name ?? 'Unassigned',
+      ...data,
+      application_id: data.id ?? 'N/A',
+      applicant_name: data.user?.full_name ?? data.applicant?.name ?? 'N/A',
+      application_type: data.type_name ?? 'N/A',
+      submission_date: data.created_at ?? data.submitted_on ?? null,
+      status: data.review_status ?? data.current_step ?? 'N/A',
+      assigned_officer: data.officer?.name ?? 'Unassigned',
     }),
   },
-  additional_applications: { // No API function identified in services.js
+  additional_applications: {
+    // No API function identified in services.js
     fetch: null,
     transform: (data) => ({
-        ...data, application_id: data.id ?? 'N/A', original_reg_no: data.parent_application?.registration_no ?? 'N/A',
-        applicant_name: data.user?.full_name ?? 'N/A', request_type: data.additional_type ?? 'N/A',
-        submitted_date: data.created_at ?? null, status: data.workflow_status ?? 'N/A',
+      ...data,
+      application_id: data.id ?? 'N/A',
+      original_reg_no: data.parent_application?.registration_no ?? 'N/A',
+      applicant_name: data.user?.full_name ?? 'N/A',
+      request_type: data.additional_type ?? 'N/A',
+      submitted_date: data.created_at ?? null,
+      status: data.workflow_status ?? 'N/A',
     }),
   },
   renewal_applications: {
     fetch: apiServices.getEpcRenewals,
     transform: (data) => ({
-      ...data, renewal_id: data.id ?? 'N/A', registration_no: data.user_qualification?.registration_no ?? 'N/A',
-      applicant_name: data.user?.full_name ?? 'N/A', renewal_status: data.renewal_review_status ?? 'N/A',
-      expiry_date: data.user_qualification?.expiry_date ?? null, new_expiry_date: data.new_expiry_date ?? null,
+      ...data,
+      renewal_id: data.id ?? 'N/A',
+      registration_no: data.user_qualification?.registration_no ?? 'N/A',
+      applicant_name: data.user?.full_name ?? 'N/A',
+      renewal_status: data.renewal_review_status ?? 'N/A',
+      expiry_date: data.user_qualification?.expiry_date ?? null,
+      new_expiry_date: data.new_expiry_date ?? null,
       applied_date: data.created_at ?? null,
     }),
   },
   cogs_management: {
     fetch: apiServices.getEpcCogs,
     transform: (data) => ({
-      ...data, cogs_number: data.registration_no || (data.id ? `COGS-${data.id}` : 'N/A'),
-      applicant_name: data.full_name ?? data.applicant?.name ?? 'N/A', department_name: data.department?.name ?? 'N/A',
+      ...data,
+      cogs_number: data.registration_no || (data.id ? `COGS-${data.id}` : 'N/A'),
+      applicant_name: data.full_name ?? data.applicant?.name ?? 'N/A',
+      department_name: data.department?.name ?? 'N/A',
       issuance_date: data.cogs_approved_date ?? data.created_at ?? null,
       payment_status: data.payment_status ?? (data.is_payment_complete ? 'Paid' : 'Unpaid'),
       endorsement_status: data.endorsement_decision ?? data.review_status ?? 'N/A',
@@ -427,295 +511,462 @@ const apiMethods = {
   cpd_review: {
     fetch: apiServices.getEpcCpdTasks,
     transform: (data) => ({
-      ...data, cpd_title: data.title_of_cpd ?? data.title ?? 'N/A', provider_name: data.provider?.name ?? 'N/A',
-      cpd_credits: data.credit ?? data.credit_value ?? 0, start_date: data.from_date ?? data.start_date ?? null,
+      ...data,
+      cpd_title: data.title_of_cpd ?? data.title ?? 'N/A',
+      provider_name: data.provider?.name ?? 'N/A',
+      cpd_credits: data.credit ?? data.credit_value ?? 0,
+      start_date: data.from_date ?? data.start_date ?? null,
       end_date: data.to_date ?? data.end_date ?? null,
-      review_status: data.status ?? (data.is_approved === true ? 'Approved' : data.is_approved === false ? 'Rejected' : 'Pending'),
+      review_status:
+        data.status ??
+        (data.is_approved === true
+          ? 'Approved'
+          : data.is_approved === false
+            ? 'Rejected'
+            : 'Pending'),
     }),
   },
-  cpd_self_assessed: { // No API function identified in services.js
+  cpd_self_assessed: {
+    // No API function identified in services.js
     fetch: null,
     transform: (data) => ({
-        ...data, application_id: data.id ?? 'N/A', applicant_reg_no: data.user?.registration_no ?? 'N/A',
-        activity_title: data.activity_name ?? 'N/A', claimed_credits: data.credits_claimed ?? 0,
-        submission_date: data.submitted_at ?? data.created_at ?? null, assessment_status: data.status ?? 'N/A',
+      ...data,
+      application_id: data.id ?? 'N/A',
+      applicant_reg_no: data.user?.registration_no ?? 'N/A',
+      activity_title: data.activity_name ?? 'N/A',
+      claimed_credits: data.credits_claimed ?? 0,
+      submission_date: data.submitted_at ?? data.created_at ?? null,
+      assessment_status: data.status ?? 'N/A',
     }),
   },
-  eoi_applications: { // No API function identified in services.js
+  eoi_applications: {
+    // No API function identified in services.js
     fetch: null,
     transform: (data) => ({
-        ...data, eoi_id: data.id ?? 'N/A', institute_name: data.institute?.name ?? 'N/A',
-        program_name: data.program?.title ?? 'N/A', submission_date: data.submitted_on ?? data.created_at ?? null,
-        eoi_status: data.status ?? 'N/A',
+      ...data,
+      eoi_id: data.id ?? 'N/A',
+      institute_name: data.institute?.name ?? 'N/A',
+      program_name: data.program?.title ?? 'N/A',
+      submission_date: data.submitted_on ?? data.created_at ?? null,
+      eoi_status: data.status ?? 'N/A',
     }),
   },
-  dpr_applications: { // No API function identified in services.js
+  dpr_applications: {
+    // No API function identified in services.js
     fetch: null,
     transform: (data) => ({
-        ...data, dpr_id: data.id ?? 'N/A', institute_name: data.institute?.name ?? 'N/A',
-        project_title: data.project_name ?? 'N/A', submission_date: data.submitted_on ?? data.created_at ?? null,
-        dpr_status: data.status ?? 'N/A',
+      ...data,
+      dpr_id: data.id ?? 'N/A',
+      institute_name: data.institute?.name ?? 'N/A',
+      project_title: data.project_name ?? 'N/A',
+      submission_date: data.submitted_on ?? data.created_at ?? null,
+      dpr_status: data.status ?? 'N/A',
     }),
   },
-   capa_management: {
+  capa_management: {
     fetch: apiServices.getEpcCapas, // Corrected
     transform: (data) => ({
-        ...data, capa_id: data.id ?? 'N/A', related_entity: data.related_object?.name ?? data.related_object_id ?? 'N/A',
-        issue_description: data.description ?? 'N/A', assigned_date: data.date_assigned ?? null,
-        due_date: data.completion_due_date ?? null, capa_status: data.status ?? 'N/A',
+      ...data,
+      capa_id: data.id ?? 'N/A',
+      related_entity: data.related_object?.name ?? data.related_object_id ?? 'N/A',
+      issue_description: data.description ?? 'N/A',
+      assigned_date: data.date_assigned ?? null,
+      due_date: data.completion_due_date ?? null,
+      capa_status: data.status ?? 'N/A',
     }),
   },
-  institute_renewals: { // No API function identified in services.js
+  institute_renewals: {
+    // No API function identified in services.js
     fetch: null,
     transform: (data) => ({
-        ...data, renewal_id: data.id ?? 'N/A', institute_id: data.institute?.institute_code ?? data.institute_id ?? 'N/A',
-        institute_name: data.institute?.name ?? 'N/A', current_expiry: data.institute?.accreditation_expiry_date ?? null,
-        applied_date: data.application_date ?? data.created_at ?? null, renewal_status: data.status ?? 'N/A',
+      ...data,
+      renewal_id: data.id ?? 'N/A',
+      institute_id: data.institute?.institute_code ?? data.institute_id ?? 'N/A',
+      institute_name: data.institute?.name ?? 'N/A',
+      current_expiry: data.institute?.accreditation_expiry_date ?? null,
+      applied_date: data.application_date ?? data.created_at ?? null,
+      renewal_status: data.status ?? 'N/A',
     }),
   },
-  teaching_institute_renewals: { // No API function identified in services.js
+  teaching_institute_renewals: {
+    // No API function identified in services.js
     fetch: null,
-     transform: (data) => ({
-        ...data, renewal_id: data.id ?? 'N/A', institute_id: data.teaching_institute?.code ?? data.institute_id ?? 'N/A',
-        institute_name: data.teaching_institute?.name ?? 'N/A', current_expiry: data.teaching_institute?.expiry_date ?? null,
-        applied_date: data.application_date ?? data.created_at ?? null, renewal_status: data.status ?? 'N/A',
+    transform: (data) => ({
+      ...data,
+      renewal_id: data.id ?? 'N/A',
+      institute_id: data.teaching_institute?.code ?? data.institute_id ?? 'N/A',
+      institute_name: data.teaching_institute?.name ?? 'N/A',
+      current_expiry: data.teaching_institute?.expiry_date ?? null,
+      applied_date: data.application_date ?? data.created_at ?? null,
+      renewal_status: data.status ?? 'N/A',
     }),
   },
-  generic_reports: { // No API function identified in services.js
-      fetch: null,
-      transform: (data) => ({...data}),
-  }
-};
-
+  generic_reports: {
+    // No API function identified in services.js
+    fetch: null,
+    transform: (data) => ({ ...data }),
+  },
+}
 
 // --- Computed properties, getNestedValue, fetchData, debouncedFetchData, handleSort, handleReportTypeChange, clearFilters, prevPage, nextPage ---
 // --- These remain largely the same, ensuring isLoadingExport is treated as boolean ---
-const activeHeaders = computed(() => headers[activeReport.value] || []);
-const totalPages = computed(() => Math.ceil(totalItems.value / ITEMS_PER_PAGE));
-const startIndex = computed(() => (currentPage.value - 1) * ITEMS_PER_PAGE);
-const endIndex = computed(() => Math.min(startIndex.value + ITEMS_PER_PAGE - 1, totalItems.value - 1));
+const activeHeaders = computed(() => headers[activeReport.value] || [])
+const totalPages = computed(() => Math.ceil(totalItems.value / ITEMS_PER_PAGE))
+const startIndex = computed(() => (currentPage.value - 1) * ITEMS_PER_PAGE)
+const endIndex = computed(() =>
+  Math.min(startIndex.value + ITEMS_PER_PAGE - 1, totalItems.value - 1),
+)
 
 const statusOptions = computed(() => {
   const optionsMap = {
     new_applications: [
-        { value: 'Pending Review', label: 'Pending Review' }, { value: 'Under Review', label: 'Under Review' },
-        { value: 'Queried', label: 'Queried' }, { value: 'Approved', label: 'Approved' }, { value: 'Rejected', label: 'Rejected' },
+      { value: 'Pending Review', label: 'Pending Review' },
+      { value: 'Under Review', label: 'Under Review' },
+      { value: 'Queried', label: 'Queried' },
+      { value: 'Approved', label: 'Approved' },
+      { value: 'Rejected', label: 'Rejected' },
     ],
-    additional_applications: [ /* Define statuses */ ],
+    additional_applications: [
+      /* Define statuses */
+    ],
     renewal_applications: [
-        { value: 'Pending', label: 'Pending' }, { value: 'Processing', label: 'Processing' }, { value: 'Approved', label: 'Approved' },
-        { value: 'Rejected', label: 'Rejected' }, { value: 'Queried', label: 'Queried' },
+      { value: 'Pending', label: 'Pending' },
+      { value: 'Processing', label: 'Processing' },
+      { value: 'Approved', label: 'Approved' },
+      { value: 'Rejected', label: 'Rejected' },
+      { value: 'Queried', label: 'Queried' },
     ],
-     cogs_management: [
-        { value: 'Pending', label: 'Pending' }, { value: 'Endorsed', label: 'Endorsed' }, { value: 'Rejected', label: 'Rejected' },
-        { value: 'Issued', label: 'Issued' },
-     ],
+    cogs_management: [
+      { value: 'Pending', label: 'Pending' },
+      { value: 'Endorsed', label: 'Endorsed' },
+      { value: 'Rejected', label: 'Rejected' },
+      { value: 'Issued', label: 'Issued' },
+    ],
     cpd_review: [
-        { value: 'Pending', label: 'Pending' }, { value: 'Approved', label: 'Approved' }, { value: 'Rejected', label: 'Rejected' },
+      { value: 'Pending', label: 'Pending' },
+      { value: 'Approved', label: 'Approved' },
+      { value: 'Rejected', label: 'Rejected' },
     ],
-    cpd_self_assessed: [ /* Define statuses */ ],
-    eoi_applications: [ /* Define statuses */ ],
-    dpr_applications: [ /* Define statuses */ ],
+    cpd_self_assessed: [
+      /* Define statuses */
+    ],
+    eoi_applications: [
+      /* Define statuses */
+    ],
+    dpr_applications: [
+      /* Define statuses */
+    ],
     capa_management: [
-        { value: 'Open', label: 'Open' }, { value: 'In Progress', label: 'In Progress' },
-        { value: 'Pending Verification', label: 'Pending Verification' }, { value: 'Closed', label: 'Closed' }, { value: 'Overdue', label: 'Overdue' },
+      { value: 'Open', label: 'Open' },
+      { value: 'In Progress', label: 'In Progress' },
+      { value: 'Pending Verification', label: 'Pending Verification' },
+      { value: 'Closed', label: 'Closed' },
+      { value: 'Overdue', label: 'Overdue' },
     ],
-     institute_renewals: [ /* Define statuses */ ],
-      teaching_institute_renewals: [ /* Define statuses */ ],
-     generic_reports: [],
-  };
-  return optionsMap[activeReport.value] || [];
-});
+    institute_renewals: [
+      /* Define statuses */
+    ],
+    teaching_institute_renewals: [
+      /* Define statuses */
+    ],
+    generic_reports: [],
+  }
+  return optionsMap[activeReport.value] || []
+})
 
 const getNestedValue = (obj, path) => {
-  if (!path || typeof path !== 'string') return obj;
+  if (!path || typeof path !== 'string') return obj
   try {
-    if (!path.includes('.')) { return obj?.[path]; }
-    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    if (!path.includes('.')) {
+      return obj?.[path]
+    }
+    return path.split('.').reduce((acc, part) => acc && acc[part], obj)
   } catch (error) {
-    console.warn(`Could not get nested value for path "${path}" from object:`, obj, error);
-    return undefined;
+    console.warn(`Could not get nested value for path "${path}" from object:`, obj, error)
+    return undefined
   }
-};
+}
 
 const fetchData = async (isExport = false) => {
   if (!activeReport.value) {
-    reportData.value = []; totalItems.value = 0; error.value = null; isLoading.value = false; return;
+    reportData.value = []
+    totalItems.value = 0
+    error.value = null
+    isLoading.value = false
+    return
   }
   // Reset isLoadingExport only when it's a normal fetch, not during an export process
-  if (!isExport) { isLoading.value = true; isLoadingExport.value = false; }
-  error.value = null;
+  if (!isExport) {
+    isLoading.value = true
+    isLoadingExport.value = false
+  }
+  error.value = null
 
-  const currentApiMethod = apiMethods[activeReport.value];
+  const currentApiMethod = apiMethods[activeReport.value]
   if (!currentApiMethod || !currentApiMethod.fetch) {
-    const reportLabel = activeReport.value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    error.value = `Report type "${reportLabel}" is not configured correctly (API fetch function missing).`;
-    toast.error(error.value, { timeout: 6000 });
-    reportData.value = []; totalItems.value = 0; isLoading.value = false; isLoadingExport.value = false; return;
+    const reportLabel = activeReport.value
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (l) => l.toUpperCase())
+    error.value = `Report type "${reportLabel}" is not configured correctly (API fetch function missing).`
+    toast.error(error.value, { timeout: 6000 })
+    reportData.value = []
+    totalItems.value = 0
+    isLoading.value = false
+    isLoadingExport.value = false
+    return
   }
 
-  const sortHeader = activeHeaders.value.find((h) => h.key === sortBy.value);
-  const backendSortKey = sortHeader?.backendSortKey || sortBy.value;
+  const sortHeader = activeHeaders.value.find((h) => h.key === sortBy.value)
+  const backendSortKey = sortHeader?.backendSortKey || sortBy.value
 
   try {
     const params = {
-      page: currentPage.value, page_size: ITEMS_PER_PAGE,
-      ordering: backendSortKey ? `${sortOrder.value === 'desc' ? '-' : ''}${backendSortKey}` : undefined,
-      search: filters.search || undefined, start_date: filters.startDate || undefined,
-      end_date: filters.endDate || undefined, status: filters.status || undefined,
-    };
-    Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
+      page: currentPage.value,
+      page_size: ITEMS_PER_PAGE,
+      ordering: backendSortKey
+        ? `${sortOrder.value === 'desc' ? '-' : ''}${backendSortKey}`
+        : undefined,
+      search: filters.search || undefined,
+      start_date: filters.startDate || undefined,
+      end_date: filters.endDate || undefined,
+      status: filters.status || undefined,
+    }
+    Object.keys(params).forEach((key) => params[key] === undefined && delete params[key])
     // console.log(`Fetching ${activeReport.value} with params:`, params); // Keep for debugging if needed
 
-    const response = await currentApiMethod.fetch(params);
+    const response = await currentApiMethod.fetch(params)
     // console.log('Raw API Response:', response); // Keep for debugging if needed
 
     if (response.data && Array.isArray(response.data.results)) {
-       reportData.value = response.data.results.map((item, index) => {
-        try { return currentApiMethod.transform ? currentApiMethod.transform(item) : item; }
-        catch (transformError) {
-          console.error(`Transform Error (Item ${index}):`, transformError, 'Raw item:', item);
-          return { ...item, transformation_error: true, id: item?.id || `transform-error-${Date.now()}-${index}` };
+      reportData.value = response.data.results.map((item, index) => {
+        try {
+          return currentApiMethod.transform ? currentApiMethod.transform(item) : item
+        } catch (transformError) {
+          console.error(`Transform Error (Item ${index}):`, transformError, 'Raw item:', item)
+          return {
+            ...item,
+            transformation_error: true,
+            id: item?.id || `transform-error-${Date.now()}-${index}`,
+          }
         }
-      });
-      totalItems.value = response.data.count ?? 0;
+      })
+      totalItems.value = response.data.count ?? 0
     } else {
-      console.warn('API response error:', response.data); reportData.value = []; totalItems.value = 0;
+      console.warn('API response error:', response.data)
+      reportData.value = []
+      totalItems.value = 0
     }
   } catch (err) {
-    console.error(`Fetch Error ${activeReport.value}:`, err.response?.data || err.message || err);
-    const reportLabel = activeReport.value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    error.value = `Failed to load ${reportLabel} data. ${err.response?.data?.detail || err.message || 'Try again.'}`;
-    toast.error(error.value, { timeout: 5000 }); reportData.value = []; totalItems.value = 0;
+    console.error(`Fetch Error ${activeReport.value}:`, err.response?.data || err.message || err)
+    const reportLabel = activeReport.value
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (l) => l.toUpperCase())
+    error.value = `Failed to load ${reportLabel} data. ${err.response?.data?.detail || err.message || 'Try again.'}`
+    toast.error(error.value, { timeout: 5000 })
+    reportData.value = []
+    totalItems.value = 0
   } finally {
     // Only set isLoading to false if it's not part of an export fetch operation
-     if (!isExport) { isLoading.value = false; }
+    if (!isExport) {
+      isLoading.value = false
+    }
   }
-};
+}
 
-const debouncedFetchData = debounce(() => fetchData(false), 500);
+const debouncedFetchData = debounce(() => fetchData(false), 500)
 
 const handleSort = (key) => {
-  const header = activeHeaders.value.find((h) => h.key === key);
-  if (!header?.sortable) return;
-  if (sortBy.value === key) { sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'; }
-  else { sortBy.value = key; sortOrder.value = 'asc'; }
-  currentPage.value = 1; fetchData();
-};
+  const header = activeHeaders.value.find((h) => h.key === key)
+  if (!header?.sortable) return
+  if (sortBy.value === key) {
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortBy.value = key
+    sortOrder.value = 'asc'
+  }
+  currentPage.value = 1
+  fetchData()
+}
 
 const handleReportTypeChange = () => {
-  currentPage.value = 1; sortBy.value = ''; sortOrder.value = 'asc';
-  filters.search = ''; filters.startDate = ''; filters.endDate = ''; filters.status = '';
-  reportData.value = []; totalItems.value = 0; error.value = null;
-  isLoading.value = false; isLoadingExport.value = false; // Reset export loading state
-  fetchData();
-};
+  currentPage.value = 1
+  sortBy.value = ''
+  sortOrder.value = 'asc'
+  filters.search = ''
+  filters.startDate = ''
+  filters.endDate = ''
+  filters.status = ''
+  reportData.value = []
+  totalItems.value = 0
+  error.value = null
+  isLoading.value = false
+  isLoadingExport.value = false // Reset export loading state
+  fetchData()
+}
 
 const clearFilters = () => {
-  filters.search = ''; filters.startDate = ''; filters.endDate = ''; filters.status = '';
-  currentPage.value = 1; sortBy.value = ''; sortOrder.value = 'asc'; fetchData();
-};
+  filters.search = ''
+  filters.startDate = ''
+  filters.endDate = ''
+  filters.status = ''
+  currentPage.value = 1
+  sortBy.value = ''
+  sortOrder.value = 'asc'
+  fetchData()
+}
 
-const prevPage = () => { if (currentPage.value > 1) { currentPage.value--; fetchData(); } };
-const nextPage = () => { if (currentPage.value < totalPages.value) { currentPage.value++; fetchData(); } };
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--
+    fetchData()
+  }
+}
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++
+    fetchData()
+  }
+}
 
 // --- fetchAllData remains mostly the same, adapted for boolean isLoadingExport ---
 const fetchAllData = async () => {
-  if (!activeReport.value) return [];
-  const currentApiMethod = apiMethods[activeReport.value];
+  if (!activeReport.value) return []
+  const currentApiMethod = apiMethods[activeReport.value]
   if (!currentApiMethod || !currentApiMethod.fetch) {
-    const reportLabel = activeReport.value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    toast.error(`Export config error for ${reportLabel}.`, { timeout: 4000, id: 'export-toast' }); return [];
+    const reportLabel = activeReport.value
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (l) => l.toUpperCase())
+    toast.error(`Export config error for ${reportLabel}.`, { timeout: 4000, id: 'export-toast' })
+    return []
   }
 
-  const allData = []; let currentPageForExport = 1; let hasMore = true; const EXPORT_PAGE_SIZE = 100;
-  const reportLabel = activeReport.value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  const loadingToastId = toast.info(`Preparing export: ${reportLabel}...`, { timeout: false, closeButton: false, icon: 'fas fa-spinner fa-spin', id: 'export-toast' });
+  const allData = []
+  let currentPageForExport = 1
+  let hasMore = true
+  const EXPORT_PAGE_SIZE = 100
+  const reportLabel = activeReport.value.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+  const loadingToastId = toast.info(`Preparing export: ${reportLabel}...`, {
+    timeout: false,
+    closeButton: false,
+    icon: 'fas fa-spinner fa-spin',
+    id: 'export-toast',
+  })
   // isLoadingExport state is managed by the calling function (exportToCSV)
 
-  const sortHeader = activeHeaders.value.find((h) => h.key === sortBy.value);
-  const backendSortKey = sortHeader?.backendSortKey || sortBy.value;
+  const sortHeader = activeHeaders.value.find((h) => h.key === sortBy.value)
+  const backendSortKey = sortHeader?.backendSortKey || sortBy.value
 
   while (hasMore) {
     const params = {
-      page: currentPageForExport, page_size: EXPORT_PAGE_SIZE,
-      ordering: backendSortKey ? `${sortOrder.value === 'desc' ? '-' : ''}${backendSortKey}` : undefined,
-      search: filters.search || undefined, start_date: filters.startDate || undefined,
-      end_date: filters.endDate || undefined, status: filters.status || undefined,
-    };
-    Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
+      page: currentPageForExport,
+      page_size: EXPORT_PAGE_SIZE,
+      ordering: backendSortKey
+        ? `${sortOrder.value === 'desc' ? '-' : ''}${backendSortKey}`
+        : undefined,
+      search: filters.search || undefined,
+      start_date: filters.startDate || undefined,
+      end_date: filters.endDate || undefined,
+      status: filters.status || undefined,
+    }
+    Object.keys(params).forEach((key) => params[key] === undefined && delete params[key])
     try {
       // Pass true to indicate this fetch is part of an export
-      const response = await currentApiMethod.fetch(params); // No need for isExport=true here, API call is the same
+      const response = await currentApiMethod.fetch(params) // No need for isExport=true here, API call is the same
       if (response.data && Array.isArray(response.data.results)) {
         const transformedData = response.data.results.map((item, index) => {
-          try { return currentApiMethod.transform ? currentApiMethod.transform(item) : item; }
-          catch (transformError) {
-            console.error(`Export Transform Error (Item ${index}):`, transformError, 'Raw item:', item);
-            return { ...item, transformation_error: true, id: item?.id || `export-error-${allData.length + index}` };
+          try {
+            return currentApiMethod.transform ? currentApiMethod.transform(item) : item
+          } catch (transformError) {
+            console.error(
+              `Export Transform Error (Item ${index}):`,
+              transformError,
+              'Raw item:',
+              item,
+            )
+            return {
+              ...item,
+              transformation_error: true,
+              id: item?.id || `export-error-${allData.length + index}`,
+            }
           }
-        });
-        allData.push(...transformedData);
-        hasMore = !!response.data.next || (response.data.results.length === EXPORT_PAGE_SIZE && (response.data.count ? allData.length < response.data.count : true));
-        currentPageForExport++; toast.update(loadingToastId, { content: `Fetched ${allData.length} of approx ${response.data.count || 'many'} records...` }, true);
-      } else { console.warn('Export fetch error:', response.data); hasMore = false; }
+        })
+        allData.push(...transformedData)
+        hasMore =
+          !!response.data.next ||
+          (response.data.results.length === EXPORT_PAGE_SIZE &&
+            (response.data.count ? allData.length < response.data.count : true))
+        currentPageForExport++
+        toast.update(
+          loadingToastId,
+          {
+            content: `Fetched ${allData.length} of approx ${response.data.count || 'many'} records...`,
+          },
+          true,
+        )
+      } else {
+        console.warn('Export fetch error:', response.data)
+        hasMore = false
+      }
     } catch (err) {
-      console.error('Export fetchAllData error:', err.response?.data || err.message || err);
-      toast.dismiss(loadingToastId); toast.error('Error fetching data for export.', { timeout: 5000 });
-      throw err; // Re-throw to be caught by exportToCSV
+      console.error('Export fetchAllData error:', err.response?.data || err.message || err)
+      toast.dismiss(loadingToastId)
+      toast.error('Error fetching data for export.', { timeout: 5000 })
+      throw err // Re-throw to be caught by exportToCSV
     }
   }
-  toast.dismiss(loadingToastId);
-  if (allData.length === 0) { toast.warning('No data found to export.', { timeout: 3000 }); }
-  return allData;
-};
+  toast.dismiss(loadingToastId)
+  if (allData.length === 0) {
+    toast.warning('No data found to export.', { timeout: 3000 })
+  }
+  return allData
+}
 
 // --- REMOVED exportToExcel and exportToPDF ---
 
 // --- ADDED exportToCSV using PapaParse ---
 const exportToCSV = async () => {
-  if (isLoadingExport.value) return; // Prevent multiple clicks
-  isLoadingExport.value = true;
-  const reportLabel = activeReport.value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  if (isLoadingExport.value) return // Prevent multiple clicks
+  isLoadingExport.value = true
+  const reportLabel = activeReport.value.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
 
   try {
-    const allRawData = await fetchAllData();
+    const allRawData = await fetchAllData()
     // fetchAllData handles the "no data" warning, so just return if empty
     if (!allRawData || allRawData.length === 0) {
-      return;
+      return
     }
 
     // 1. Prepare Headers (Use labels from activeHeaders)
-    const csvHeader = activeHeaders.value.map(header => header.label);
+    const csvHeader = activeHeaders.value.map((header) => header.label)
 
     // 2. Prepare Body Data (Format based on type, handle nulls, use getNestedValue)
-    const csvBody = allRawData.map(item => {
-      return activeHeaders.value.map(header => {
-        const value = getNestedValue(item, header.key);
-        let csvValue = '';
+    const csvBody = allRawData.map((item) => {
+      return activeHeaders.value.map((header) => {
+        const value = getNestedValue(item, header.key)
+        let csvValue = ''
 
         if (value === null || value === undefined) {
-            csvValue = ''; // Represent null/undefined as empty string in CSV
+          csvValue = '' // Represent null/undefined as empty string in CSV
         } else if (header.type === 'date') {
-            // Use the same formatting as the table, handle '-' return value
-            const formatted = formatDate(value);
-            csvValue = formatted === '-' ? '' : formatted;
+          // Use the same formatting as the table, handle '-' return value
+          const formatted = formatDate(value)
+          csvValue = formatted === '-' ? '' : formatted
         } else if (header.type === 'datetime') {
-            const formatted = formatDate(value, 'datetime');
-            csvValue = formatted === '-' ? '' : formatted;
+          const formatted = formatDate(value, 'datetime')
+          csvValue = formatted === '-' ? '' : formatted
         } else if (header.type === 'currency') {
-            // Export currency as a plain number string for better compatibility
-            const num = Number(value);
-            csvValue = !isNaN(num) ? num.toString() : '';
-            // Alternatively, use formatted string without currency symbol:
-            // const formatted = formatCurrency(value);
-            // csvValue = formatted === '-' ? '' : formatted.replace(/^[^\d.,]+/, '').trim(); // Attempt to remove prefix like 'BTN '
+          // Export currency as a plain number string for better compatibility
+          const num = Number(value)
+          csvValue = !isNaN(num) ? num.toString() : ''
+          // Alternatively, use formatted string without currency symbol:
+          // const formatted = formatCurrency(value);
+          // csvValue = formatted === '-' ? '' : formatted.replace(/^[^\d.,]+/, '').trim(); // Attempt to remove prefix like 'BTN '
         } else if (typeof value === 'object') {
-            // Basic object stringification, might need refinement for complex objects
-            csvValue = JSON.stringify(value);
+          // Basic object stringification, might need refinement for complex objects
+          csvValue = JSON.stringify(value)
         } else {
-            // Default case: convert to string
-            csvValue = String(value);
+          // Default case: convert to string
+          csvValue = String(value)
         }
 
         // Basic CSV escaping (double quotes for fields containing comma, newline, or double quote)
@@ -724,118 +975,305 @@ const exportToCSV = async () => {
         // if (typeof csvValue === 'string' && /[",\n]/.test(csvValue)) {
         //    csvValue = `"${csvValue.replace(/"/g, '""')}"`;
         // }
-        return csvValue; // Return the processed value for this cell
-      });
-    });
+        return csvValue // Return the processed value for this cell
+      })
+    })
 
     // 3. Combine Header and Body
-    const csvData = [csvHeader, ...csvBody];
+    const csvData = [csvHeader, ...csvBody]
 
     // 4. Use PapaParse to generate CSV string (handles quoting/escaping automatically)
-    const csvString = Papa.unparse(csvData);
+    const csvString = Papa.unparse(csvData)
 
     // 5. Create Blob and Trigger Download
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    const fileName = `${reportLabel}_Report_${formatDate(new Date(), 'yyyy-mm-dd')}.csv`;
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    const fileName = `${reportLabel}_Report_${formatDate(new Date(), 'yyyy-mm-dd')}.csv`
 
-    link.setAttribute('href', url);
-    link.setAttribute('download', fileName);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click(); // Trigger download
-    document.body.removeChild(link); // Clean up
-    URL.revokeObjectURL(url); // Free up memory
+    link.setAttribute('href', url)
+    link.setAttribute('download', fileName)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click() // Trigger download
+    document.body.removeChild(link) // Clean up
+    URL.revokeObjectURL(url) // Free up memory
 
-    toast.success('CSV export successful!', { timeout: 3000 });
-
+    toast.success('CSV export successful!', { timeout: 3000 })
   } catch (err) {
     // Error handling is partially done in fetchAllData, catch any other issues here
-    console.error('CSV Export process failed:', err);
+    console.error('CSV Export process failed:', err)
     // Avoid duplicate toasts if fetchAllData already showed one
     if (!toast.isActive('export-toast')) {
-        toast.error('CSV export failed. Check console for details.', { timeout: 4000 });
+      toast.error('CSV export failed. Check console for details.', { timeout: 4000 })
     }
   } finally {
-    isLoadingExport.value = false; // Ensure loading state is always reset
+    isLoadingExport.value = false // Ensure loading state is always reset
   }
-};
-
+}
 
 // --- formatDate, formatCurrency, statusBadge remain the same ---
 const formatDate = (dateString, format = 'default') => {
-    if (!dateString) return '-'; try { const date = new Date(dateString); if (isNaN(date.getTime())) return '-';
-        if (format === 'yyyy-mm-dd') { const y = date.getFullYear(); const m = (date.getMonth() + 1).toString().padStart(2, '0'); const d = date.getDate().toString().padStart(2, '0'); return `${y}-${m}-${d}`; }
-        if (format === 'datetime') { return date.toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).replace(',', ''); }
-        // Default format (DD/MM/YYYY)
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    } catch (e) { console.error('Date format error:', e); return '-'; }
-};
+  if (!dateString) return '-'
+  try {
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return '-'
+    if (format === 'yyyy-mm-dd') {
+      const y = date.getFullYear()
+      const m = (date.getMonth() + 1).toString().padStart(2, '0')
+      const d = date.getDate().toString().padStart(2, '0')
+      return `${y}-${m}-${d}`
+    }
+    if (format === 'datetime') {
+      return date
+        .toLocaleString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        })
+        .replace(',', '')
+    }
+    // Default format (DD/MM/YYYY)
+    const day = date.getDate().toString().padStart(2, '0')
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const year = date.getFullYear()
+    return `${day}/${month}/${year}`
+  } catch (e) {
+    console.error('Date format error:', e)
+    return '-'
+  }
+}
 
 const formatCurrency = (value) => {
-    const num = Number(value); if (value === null || value === undefined || isNaN(num)) return '-'; try {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'BTN', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
-    } catch (e) { console.warn('Currency format warning:', e); return `BTN ${num.toFixed(2)}`; }
-};
+  const num = Number(value)
+  if (value === null || value === undefined || isNaN(num)) return '-'
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'BTN',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(num)
+  } catch (e) {
+    console.warn('Currency format warning:', e)
+    return `BTN ${num.toFixed(2)}`
+  }
+}
 
 const statusBadge = (status) => {
-    const lowerStatus = String(status ?? '').toLowerCase().trim().replace(/_/g, ' ');
-    let base = 'px-2.5 py-0.5 rounded-full text-xs font-medium inline-block whitespace-nowrap border';
-    if (lowerStatus.includes('approved') || lowerStatus === 'paid' || lowerStatus === 'active' || lowerStatus === 'completed' || lowerStatus === 'accepted' || lowerStatus === 'endorsed' || lowerStatus === 'issued' || lowerStatus === 'closed') return `${base} bg-green-100 text-green-800 border-green-200`;
-    if (lowerStatus.includes('pending') || lowerStatus.includes('processing') || lowerStatus === 'unpaid' || lowerStatus.includes('submitted') || lowerStatus.includes('review') || lowerStatus.includes('assessment') || lowerStatus === 'open' || lowerStatus === 'in progress') return `${base} bg-yellow-100 text-yellow-800 border-yellow-200`;
-    if (lowerStatus.includes('queried') || lowerStatus === 'pending verification') return `${base} bg-blue-100 text-blue-800 border-blue-200`;
-    if (lowerStatus.includes('rejected') || lowerStatus.includes('cancelled') || lowerStatus === 'declined') return `${base} bg-red-100 text-red-800 border-red-200`;
-    if (lowerStatus.includes('expired') || lowerStatus === 'inactive' || lowerStatus === 'overdue') return `${base} bg-gray-200 text-gray-800 border-gray-300`;
-    if (lowerStatus === 'n/a' || lowerStatus === 'draft' || lowerStatus === 'not applied') return `${base} bg-gray-100 text-gray-500 border-gray-200`;
-    return `${base} bg-gray-100 text-gray-700 border-gray-200`;
-};
+  const lowerStatus = String(status ?? '')
+    .toLowerCase()
+    .trim()
+    .replace(/_/g, ' ')
+  let base = 'px-2.5 py-0.5 rounded-full text-xs font-medium inline-block whitespace-nowrap border'
+  if (
+    lowerStatus.includes('approved') ||
+    lowerStatus === 'paid' ||
+    lowerStatus === 'active' ||
+    lowerStatus === 'completed' ||
+    lowerStatus === 'accepted' ||
+    lowerStatus === 'endorsed' ||
+    lowerStatus === 'issued' ||
+    lowerStatus === 'closed'
+  )
+    return `${base} bg-green-100 text-green-800 border-green-200`
+  if (
+    lowerStatus.includes('pending') ||
+    lowerStatus.includes('processing') ||
+    lowerStatus === 'unpaid' ||
+    lowerStatus.includes('submitted') ||
+    lowerStatus.includes('review') ||
+    lowerStatus.includes('assessment') ||
+    lowerStatus === 'open' ||
+    lowerStatus === 'in progress'
+  )
+    return `${base} bg-yellow-100 text-yellow-800 border-yellow-200`
+  if (lowerStatus.includes('queried') || lowerStatus === 'pending verification')
+    return `${base} bg-blue-100 text-blue-800 border-blue-200`
+  if (
+    lowerStatus.includes('rejected') ||
+    lowerStatus.includes('cancelled') ||
+    lowerStatus === 'declined'
+  )
+    return `${base} bg-red-100 text-red-800 border-red-200`
+  if (lowerStatus.includes('expired') || lowerStatus === 'inactive' || lowerStatus === 'overdue')
+    return `${base} bg-gray-200 text-gray-800 border-gray-300`
+  if (lowerStatus === 'n/a' || lowerStatus === 'draft' || lowerStatus === 'not applied')
+    return `${base} bg-gray-100 text-gray-500 border-gray-200`
+  return `${base} bg-gray-100 text-gray-700 border-gray-200`
+}
 
 onMounted(() => {
-  console.log('ECP Reports Dashboard Mounted. Please select a report type.');
-});
-
+  console.log('ECP Reports Dashboard Mounted. Please select a report type.')
+})
 </script>
 
 <style scoped>
 /* --- Keep existing styles --- */
-.filter-label{display:block;font-size:.875rem;font-weight:500;color:#4b5563;margin-bottom:.25rem}
-.filter-input,.report-type-selector{width:100%;padding:.625rem .75rem;border:1px solid #d1d5db;border-radius:.375rem;background-color:#fff;font-size:.875rem;color:#111827;transition:border-color .2s ease-in-out,box-shadow .2s ease-in-out}
-.filter-input:disabled,.report-type-selector:disabled{background-color:#f3f4f6;cursor:not-allowed}
-.filter-input::placeholder{color:#9ca3af}
-.filter-input:focus,.report-type-selector:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,.3)}
-.table-header{padding:.75rem 1.5rem;text-align:left;font-size:.75rem;font-weight:600;color:#4b5563;text-transform:uppercase;letter-spacing:.05em;background-color:#f9fafb;border-bottom:2px solid #e5e7eb;white-space:nowrap}
-.table-cell{padding:1rem 1.5rem;font-size:.875rem;color:#374151;border-bottom:1px solid #e5e7eb;vertical-align:middle}
-.table-cell a{text-decoration:none}
-.table-cell a:hover{text-decoration:underline}
-.btn{display:inline-flex;align-items:center;justify-content:center;padding:.625rem 1.25rem;border-radius:.5rem;font-weight:500;font-size:.875rem;transition:background-color .2s ease-in-out,opacity .2s ease-in-out,box-shadow .2s ease-in-out;border:none;cursor:pointer;white-space:nowrap}
-.btn:disabled{opacity:.6;cursor:not-allowed;box-shadow:none}
-.btn i.fas{margin-right:.5rem;font-size:.875em}
-.btn span.mr-2{display:inline-flex;align-items:center}
+.filter-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 0.25rem;
+}
+.filter-input,
+.report-type-selector {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: #fff;
+  font-size: 0.875rem;
+  color: #111827;
+  transition:
+    border-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+}
+.filter-input:disabled,
+.report-type-selector:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+.filter-input::placeholder {
+  color: #9ca3af;
+}
+.filter-input:focus,
+.report-type-selector:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+.table-header {
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+  white-space: nowrap;
+}
+.table-cell {
+  padding: 1rem 1.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: middle;
+}
+.table-cell a {
+  text-decoration: none;
+}
+.table-cell a:hover {
+  text-decoration: underline;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition:
+    background-color 0.2s ease-in-out,
+    opacity 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.btn i.fas {
+  margin-right: 0.5rem;
+  font-size: 0.875em;
+}
+.btn span.mr-2 {
+  display: inline-flex;
+  align-items: center;
+}
 
 /* --- Add or modify button styles as needed --- */
-.btn-primary { @apply btn bg-blue-500 text-white; }
-.btn-primary:hover:not(:disabled){ @apply bg-blue-600 shadow-md; }
-.btn-primary:disabled{ @apply bg-blue-500; }
+.btn-primary {
+  @apply btn bg-blue-500 text-white;
+}
+.btn-primary:hover:not(:disabled) {
+  @apply bg-blue-600 shadow-md;
+}
+.btn-primary:disabled {
+  @apply bg-blue-500;
+}
 
-.btn-success{ @apply btn bg-green-500 text-white; }
-.btn-success:hover:not(:disabled){ @apply bg-green-600 shadow-md; }
-.btn-success:disabled{ @apply bg-green-500; }
+.btn-success {
+  @apply btn bg-green-500 text-white;
+}
+.btn-success:hover:not(:disabled) {
+  @apply bg-green-600 shadow-md;
+}
+.btn-success:disabled {
+  @apply bg-green-500;
+}
 
-.btn-danger{ @apply btn bg-red-500 text-white; }
-.btn-danger:hover:not(:disabled){ @apply bg-red-600 shadow-md; }
-.btn-danger:disabled{ @apply bg-red-500; }
+.btn-danger {
+  @apply btn bg-red-500 text-white;
+}
+.btn-danger:hover:not(:disabled) {
+  @apply bg-red-600 shadow-md;
+}
+.btn-danger:disabled {
+  @apply bg-red-500;
+}
 
-.btn-secondary{ @apply btn bg-gray-500 text-white; }
-.btn-secondary:hover:not(:disabled){ @apply bg-gray-600 shadow-md; }
-.btn-secondary:disabled{ @apply bg-gray-500; }
+.btn-secondary {
+  @apply btn bg-gray-500 text-white;
+}
+.btn-secondary:hover:not(:disabled) {
+  @apply bg-gray-600 shadow-md;
+}
+.btn-secondary:disabled {
+  @apply bg-gray-500;
+}
 
-.pagination-btn{padding:.5rem 1rem;border:1px solid #d1d5db;border-radius:.375rem;background-color:#fff;color:#374151;font-size:.875rem;transition:background-color .2s,border-color .2s;display:inline-flex;align-items:center}
-.pagination-btn:hover:not(:disabled){background-color:#f9fafb;border-color:#9ca3af}
-.pagination-btn:disabled{opacity:.5;cursor:not-allowed;background-color:#f9fafb}
-.pagination-btn i{font-size:.75rem}
-optgroup{font-weight:700;font-style:italic;color:#1f2937;background-color:#f3f4f6;padding:4px 0}
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: #fff;
+  color: #374151;
+  font-size: 0.875rem;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+}
+.pagination-btn:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f9fafb;
+}
+.pagination-btn i {
+  font-size: 0.75rem;
+}
+optgroup {
+  font-weight: 700;
+  font-style: italic;
+  color: #1f2937;
+  background-color: #f3f4f6;
+  padding: 4px 0;
+}
 </style>

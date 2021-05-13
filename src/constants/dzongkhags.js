@@ -1,82 +1,251 @@
 export const bhutanDzongkhagsGewogs = [
   {
-    dzongkhag: "Bumthang",
-    gewogs: ["Chhokhor", "Chhumey", "Tang", "Ura"]
+    dzongkhag: 'Bumthang',
+    gewogs: ['Chhokhor', 'Chhumey', 'Tang', 'Ura'],
   },
   {
-    dzongkhag: "Chhukha",
-    gewogs: ["Bjachho", "Bongo", "Chapcha", "Darla", "Dungna", "Geling", "Getana", "Logchina", "Phuentshogling", "Sampheling"]
+    dzongkhag: 'Chhukha',
+    gewogs: [
+      'Bjachho',
+      'Bongo',
+      'Chapcha',
+      'Darla',
+      'Dungna',
+      'Geling',
+      'Getana',
+      'Logchina',
+      'Phuentshogling',
+      'Sampheling',
+    ],
   },
   {
-    dzongkhag: "Dagana",
-    gewogs: ["Drujegang", "Goshi", "Karmaling", "Khebisa", "Lhamoy Zingkha", "Nichula", "Tashiding", "Tsangkha", "Tsendagang"]
+    dzongkhag: 'Dagana',
+    gewogs: [
+      'Drujegang',
+      'Goshi',
+      'Karmaling',
+      'Khebisa',
+      'Lhamoy Zingkha',
+      'Nichula',
+      'Tashiding',
+      'Tsangkha',
+      'Tsendagang',
+    ],
   },
   {
-    dzongkhag: "Gasa",
-    gewogs: ["Khamaed", "Khatoed", "Laya", "Lunana"]
+    dzongkhag: 'Gasa',
+    gewogs: ['Khamaed', 'Khatoed', 'Laya', 'Lunana'],
   },
   {
-    dzongkhag: "Haa",
-    gewogs: ["Bji", "Katsho", "Gakiling", "Sama", "Sombaykha", "Uesu"]
+    dzongkhag: 'Haa',
+    gewogs: ['Bji', 'Katsho', 'Gakiling', 'Sama', 'Sombaykha', 'Uesu'],
   },
   {
-    dzongkhag: "Lhuentse",
-    gewogs: ["Gangzur", "Jaray", "Khoma", "Kurtoe", "Maenbi", "Maedtsho", "Minjey", "Tsaenkhar"]
+    dzongkhag: 'Lhuentse',
+    gewogs: ['Gangzur', 'Jaray', 'Khoma', 'Kurtoe', 'Maenbi', 'Maedtsho', 'Minjey', 'Tsaenkhar'],
   },
   {
-    dzongkhag: "Mongar",
-    gewogs: ["Balam", "Chaskhar", "Drametse", "Drepung", "Gongdue", "Kengkhar", "Mongar", "Narang", "Ngatshang", "Saling", "Sherimuhung", "Silambi", "Thangrong", "Tsakaling", "Tsamang"]
+    dzongkhag: 'Mongar',
+    gewogs: [
+      'Balam',
+      'Chaskhar',
+      'Drametse',
+      'Drepung',
+      'Gongdue',
+      'Kengkhar',
+      'Mongar',
+      'Narang',
+      'Ngatshang',
+      'Saling',
+      'Sherimuhung',
+      'Silambi',
+      'Thangrong',
+      'Tsakaling',
+      'Tsamang',
+    ],
   },
   {
-    dzongkhag: "Paro",
-    gewogs: ["Dokar", "Doteng", "Hungrel", "Lamgong", "Lungnyi", "Naja", "Shaba", "Tsento", "Wangchang"]
+    dzongkhag: 'Paro',
+    gewogs: [
+      'Dokar',
+      'Doteng',
+      'Hungrel',
+      'Lamgong',
+      'Lungnyi',
+      'Naja',
+      'Shaba',
+      'Tsento',
+      'Wangchang',
+    ],
   },
   {
-    dzongkhag: "Pemagatshel",
-    gewogs: ["Chimung", "Chongshing", "Dungmin", "Khar", "Nanong", "Norbugang", "Shumar", "Yurung", "Zobel"]
+    dzongkhag: 'Pemagatshel',
+    gewogs: [
+      'Chimung',
+      'Chongshing',
+      'Dungmin',
+      'Khar',
+      'Nanong',
+      'Norbugang',
+      'Shumar',
+      'Yurung',
+      'Zobel',
+    ],
   },
   {
-    dzongkhag: "Punakha",
-    gewogs: ["Barp", "Chhubu", "Dzomi", "Guma", "Kabjisa", "Lingmukha", "Shengana", "Talo", "Toepisa", "Toewang"]
+    dzongkhag: 'Punakha',
+    gewogs: [
+      'Barp',
+      'Chhubu',
+      'Dzomi',
+      'Guma',
+      'Kabjisa',
+      'Lingmukha',
+      'Shengana',
+      'Talo',
+      'Toepisa',
+      'Toewang',
+    ],
   },
   {
-    dzongkhag: "Samdrup Jongkhar",
-    gewogs: ["Dewathang", "Gomdar", "Langchenphu", "Lauri", "Martshala", "Orong", "Pemathang", "Phuntshothang", "Samrang", "Serthi", "Wangphu"]
+    dzongkhag: 'Samdrup Jongkhar',
+    gewogs: [
+      'Dewathang',
+      'Gomdar',
+      'Langchenphu',
+      'Lauri',
+      'Martshala',
+      'Orong',
+      'Pemathang',
+      'Phuntshothang',
+      'Samrang',
+      'Serthi',
+      'Wangphu',
+    ],
   },
   {
-    dzongkhag: "Samtse",
-    gewogs: ["Bara", "Biru", "Chengmari", "Denchukha", "Dorokha", "Dungtoe", "Namgaycholing", "Pagli", "Samtse", "Sangngagcholing", "Tading", "Tashicholing", "Tendruk", "Ugyentse", "Yoeseltse"]
+    dzongkhag: 'Samtse',
+    gewogs: [
+      'Bara',
+      'Biru',
+      'Chengmari',
+      'Denchukha',
+      'Dorokha',
+      'Dungtoe',
+      'Namgaycholing',
+      'Pagli',
+      'Samtse',
+      'Sangngagcholing',
+      'Tading',
+      'Tashicholing',
+      'Tendruk',
+      'Ugyentse',
+      'Yoeseltse',
+    ],
   },
   {
-    dzongkhag: "Sarpang",
-    gewogs: ["Chhudzom", "Dekiling", "Gelephu", "Gakidling", "Jigmecholing", "Lhamoyzhingkha", "Senggey", "Shompangkha", "Tareythang", "Umling"]
+    dzongkhag: 'Sarpang',
+    gewogs: [
+      'Chhudzom',
+      'Dekiling',
+      'Gelephu',
+      'Gakidling',
+      'Jigmecholing',
+      'Lhamoyzhingkha',
+      'Senggey',
+      'Shompangkha',
+      'Tareythang',
+      'Umling',
+    ],
   },
   {
-    dzongkhag: "Thimphu",
-    gewogs: ["Chang", "Dagala", "Genye", "Kawang", "Lingzhi", "Mewang", "Naro", "Soe"]
+    dzongkhag: 'Thimphu',
+    gewogs: ['Chang', 'Dagala', 'Genye', 'Kawang', 'Lingzhi', 'Mewang', 'Naro', 'Soe'],
   },
   {
-    dzongkhag: "Trashigang",
-    gewogs: ["Bartsham", "Bidung", "Kanglung", "Kangpara", "Khaling", "Lumang", "Merak", "Phongmey", "Radhi", "Sakten", "Samkhar", "Shongphu", "Thrimshing", "Udzorong", "Yangnyer"]
+    dzongkhag: 'Trashigang',
+    gewogs: [
+      'Bartsham',
+      'Bidung',
+      'Kanglung',
+      'Kangpara',
+      'Khaling',
+      'Lumang',
+      'Merak',
+      'Phongmey',
+      'Radhi',
+      'Sakten',
+      'Samkhar',
+      'Shongphu',
+      'Thrimshing',
+      'Udzorong',
+      'Yangnyer',
+    ],
   },
   {
-    dzongkhag: "Trashiyangtse",
-    gewogs: ["Bumdeling", "Jamkhar", "Khamdang", "Ramjar", "Toetsho", "Tomzhangsa", "Yalang", "Yangtse"]
+    dzongkhag: 'Trashiyangtse',
+    gewogs: [
+      'Bumdeling',
+      'Jamkhar',
+      'Khamdang',
+      'Ramjar',
+      'Toetsho',
+      'Tomzhangsa',
+      'Yalang',
+      'Yangtse',
+    ],
   },
   {
-    dzongkhag: "Trongsa",
-    gewogs: ["Dragteng", "Korphu", "Langthil", "Nubi", "Tangsbji"]
+    dzongkhag: 'Trongsa',
+    gewogs: ['Dragteng', 'Korphu', 'Langthil', 'Nubi', 'Tangsbji'],
   },
   {
-    dzongkhag: "Tsirang",
-    gewogs: ["Barshong", "Dunglagang", "Gosarling", "Kikhorthang", "Mendrelgang", "Patshaling", "Phuentenchu", "Rangthangling", "Semjong", "Sergithang", "Tsholingkhar", "Tsirangtoe"]
+    dzongkhag: 'Tsirang',
+    gewogs: [
+      'Barshong',
+      'Dunglagang',
+      'Gosarling',
+      'Kikhorthang',
+      'Mendrelgang',
+      'Patshaling',
+      'Phuentenchu',
+      'Rangthangling',
+      'Semjong',
+      'Sergithang',
+      'Tsholingkhar',
+      'Tsirangtoe',
+    ],
   },
   {
-    dzongkhag: "Wangdue Phodrang",
-    gewogs: ["Athang", "Bjena", "Dangchu", "Gangtey", "Gasetshogom", "Gasetshowom", "Kazhi", "Nahi", "Nyangay", "Phangyul", "Phobji", "Ruepisa", "Sephu", "Thedtsho"]
+    dzongkhag: 'Wangdue Phodrang',
+    gewogs: [
+      'Athang',
+      'Bjena',
+      'Dangchu',
+      'Gangtey',
+      'Gasetshogom',
+      'Gasetshowom',
+      'Kazhi',
+      'Nahi',
+      'Nyangay',
+      'Phangyul',
+      'Phobji',
+      'Ruepisa',
+      'Sephu',
+      'Thedtsho',
+    ],
   },
   {
-    dzongkhag: "Zhemgang",
-    gewogs: ["Bardho", "Bjoka", "Goshing", "Nangkor", "Phangkhar", "Shingkhar", "Trong", "Tshanglajong"]
-  }
-];
+    dzongkhag: 'Zhemgang',
+    gewogs: [
+      'Bardho',
+      'Bjoka',
+      'Goshing',
+      'Nangkor',
+      'Phangkhar',
+      'Shingkhar',
+      'Trong',
+      'Tshanglajong',
+    ],
+  },
+]

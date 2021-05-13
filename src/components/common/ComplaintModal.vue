@@ -48,13 +48,19 @@
                   <!-- Progress indicator -->
                   <div class="mb-8">
                     <div class="w-full bg-gray-100 rounded-full h-2.5">
-                      <div class="bg-red-500 h-2.5 rounded-full" :style="{ width: formProgress + '%' }"></div>
+                      <div
+                        class="bg-red-500 h-2.5 rounded-full"
+                        :style="{ width: formProgress + '%' }"
+                      ></div>
                     </div>
                   </div>
 
                   <!-- Professional Category -->
                   <div class="bg-gray-50 p-4 rounded-lg">
-                    <label for="professionalCategory" class="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      for="professionalCategory"
+                      class="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Professional Category <span class="text-red-500">*</span>
                     </label>
                     <select
@@ -65,11 +71,17 @@
                       :class="{ 'border-red-500 ring-1 ring-red-500': errors.professionalCategory }"
                     >
                       <option disabled value="">Select a category</option>
-                      <option v-for="category in professionalCategories" :key="category.id" :value="category.id">
+                      <option
+                        v-for="category in professionalCategories"
+                        :key="category.id"
+                        :value="category.id"
+                      >
                         {{ category.category_name }}
                       </option>
                     </select>
-                    <p v-if="errors.professionalCategory" class="mt-1 text-xs text-red-600">{{ errors.professionalCategory }}</p>
+                    <p v-if="errors.professionalCategory" class="mt-1 text-xs text-red-600">
+                      {{ errors.professionalCategory }}
+                    </p>
                   </div>
 
                   <!-- Professional Details -->
@@ -91,11 +103,16 @@
                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                           :class="{ 'border-red-500 ring-1 ring-red-500': errors.profName }"
                         />
-                        <p v-if="errors.profName" class="mt-1 text-xs text-red-600">{{ errors.profName }}</p>
+                        <p v-if="errors.profName" class="mt-1 text-xs text-red-600">
+                          {{ errors.profName }}
+                        </p>
                       </div>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label for="profDesignation" class="block text-sm font-medium text-gray-700 mb-1">
+                          <label
+                            for="profDesignation"
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                          >
                             Designation <span class="text-red-500">*</span>
                           </label>
                           <input
@@ -104,12 +121,19 @@
                             v-model="form.professionalDetails.designation"
                             required
                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                            :class="{ 'border-red-500 ring-1 ring-red-500': errors.profDesignation }"
+                            :class="{
+                              'border-red-500 ring-1 ring-red-500': errors.profDesignation,
+                            }"
                           />
-                          <p v-if="errors.profDesignation" class="mt-1 text-xs text-red-600">{{ errors.profDesignation }}</p>
+                          <p v-if="errors.profDesignation" class="mt-1 text-xs text-red-600">
+                            {{ errors.profDesignation }}
+                          </p>
                         </div>
                         <div>
-                          <label for="profWorkplace" class="block text-sm font-medium text-gray-700 mb-1">
+                          <label
+                            for="profWorkplace"
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                          >
                             Workplace <span class="text-red-500">*</span>
                           </label>
                           <input
@@ -120,7 +144,9 @@
                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                             :class="{ 'border-red-500 ring-1 ring-red-500': errors.profWorkplace }"
                           />
-                          <p v-if="errors.profWorkplace" class="mt-1 text-xs text-red-600">{{ errors.profWorkplace }}</p>
+                          <p v-if="errors.profWorkplace" class="mt-1 text-xs text-red-600">
+                            {{ errors.profWorkplace }}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -134,7 +160,10 @@
                     </h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label for="incidentDate" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label
+                          for="incidentDate"
+                          class="block text-sm font-medium text-gray-700 mb-1"
+                        >
                           Date of Incident <span class="text-red-500">*</span>
                         </label>
                         <input
@@ -145,10 +174,15 @@
                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                           :class="{ 'border-red-500 ring-1 ring-red-500': errors.incidentDate }"
                         />
-                        <p v-if="errors.incidentDate" class="mt-1 text-xs text-red-600">{{ errors.incidentDate }}</p>
+                        <p v-if="errors.incidentDate" class="mt-1 text-xs text-red-600">
+                          {{ errors.incidentDate }}
+                        </p>
                       </div>
                       <div>
-                        <label for="incidentTime" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label
+                          for="incidentTime"
+                          class="block text-sm font-medium text-gray-700 mb-1"
+                        >
                           Time of Incident <span class="text-red-500">*</span>
                         </label>
                         <input
@@ -159,7 +193,9 @@
                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                           :class="{ 'border-red-500 ring-1 ring-red-500': errors.incidentTime }"
                         />
-                        <p v-if="errors.incidentTime" class="mt-1 text-xs text-red-600">{{ errors.incidentTime }}</p>
+                        <p v-if="errors.incidentTime" class="mt-1 text-xs text-red-600">
+                          {{ errors.incidentTime }}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -171,8 +207,10 @@
                       Complaint Details
                     </h4>
                     <div>
-                      <label for="grievance" class="block text-sm font-medium text-gray- نداشته
-                      mb-1">
+                      <label
+                        for="grievance"
+                        class="block text-sm font-medium text-gray- نداشته mb-1"
+                      >
                         Grievance/Complaint Details <span class="text-red-500">*</span>
                       </label>
                       <textarea
@@ -183,7 +221,9 @@
                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                         :class="{ 'border-red-500 ring-1 ring-red-500': errors.grievance }"
                       ></textarea>
-                      <p v-if="errors.grievance" class="mt-1 text-xs text-red-600">{{ errors.grievance }}</p>
+                      <p v-if="errors.grievance" class="mt-1 text-xs text-red-600">
+                        {{ errors.grievance }}
+                      </p>
                     </div>
                   </div>
 
@@ -195,7 +235,10 @@
                     </h4>
                     <div class="space-y-4">
                       <div>
-                        <label for="aggrievedName" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label
+                          for="aggrievedName"
+                          class="block text-sm font-medium text-gray-700 mb-1"
+                        >
                           Name <span class="text-red-500">*</span>
                         </label>
                         <input
@@ -206,10 +249,15 @@
                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                           :class="{ 'border-red-500 ring-1 ring-red-500': errors.aggrievedName }"
                         />
-                        <p v-if="errors.aggrievedName" class="mt-1 text-xs text-red-600">{{ errors.aggrievedName }}</p>
+                        <p v-if="errors.aggrievedName" class="mt-1 text-xs text-red-600">
+                          {{ errors.aggrievedName }}
+                        </p>
                       </div>
                       <div>
-                        <label for="aggrievedAddress" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label
+                          for="aggrievedAddress"
+                          class="block text-sm font-medium text-gray-700 mb-1"
+                        >
                           Address <span class="text-red-500">*</span>
                         </label>
                         <textarea
@@ -220,7 +268,9 @@
                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                           :class="{ 'border-red-500 ring-1 ring-red-500': errors.aggrievedAddress }"
                         ></textarea>
-                        <p v-if="errors.aggrievedAddress" class="mt-1 text-xs text-red-600">{{ errors.aggrievedAddress }}</p>
+                        <p v-if="errors.aggrievedAddress" class="mt-1 text-xs text-red-600">
+                          {{ errors.aggrievedAddress }}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -243,7 +293,9 @@
                         accept=".pdf"
                         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
                       />
-                      <p v-if="errors.attachment" class="mt-1 text-xs text-red-600">{{ errors.attachment }}</p>
+                      <p v-if="errors.attachment" class="mt-1 text-xs text-red-600">
+                        {{ errors.attachment }}
+                      </p>
                       <p v-if="attachmentName" class="mt-2 text-sm text-gray-600">
                         Selected file: {{ attachmentName }}
                       </p>
@@ -258,7 +310,10 @@
                     </h4>
                     <div class="space-y-4">
                       <div>
-                        <label for="submitterName" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label
+                          for="submitterName"
+                          class="block text-sm font-medium text-gray-700 mb-1"
+                        >
                           Your Name <span class="text-red-500">*</span>
                         </label>
                         <input
@@ -269,15 +324,22 @@
                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                           :class="{ 'border-red-500 ring-1 ring-red-500': errors.submitterName }"
                         />
-                        <p v-if="errors.submitterName" class="mt-1 text-xs text-red-600">{{ errors.submitterName }}</p>
+                        <p v-if="errors.submitterName" class="mt-1 text-xs text-red-600">
+                          {{ errors.submitterName }}
+                        </p>
                       </div>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label for="submitterContact" class="block text-sm font-medium text-gray-700 mb-1">
+                          <label
+                            for="submitterContact"
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                          >
                             Contact Number <span class="text-red-500">*</span>
                           </label>
                           <div class="relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <div
+                              class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                            >
                               <Phone class="h-4 w-4 text-gray-400" />
                               <span class="ml-2 text-gray-500">+975</span>
                             </div>
@@ -290,17 +352,26 @@
                               pattern="\d{9}"
                               title="Please enter a 9-digit contact number"
                               class="block w-full pl-16 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                              :class="{ 'border-red-500 ring-1 ring-red-500': errors.submitterContact }"
+                              :class="{
+                                'border-red-500 ring-1 ring-red-500': errors.submitterContact,
+                              }"
                             />
                           </div>
-                          <p v-if="errors.submitterContact" class="mt-1 text-xs text-red-600">{{ errors.submitterContact }}</p>
+                          <p v-if="errors.submitterContact" class="mt-1 text-xs text-red-600">
+                            {{ errors.submitterContact }}
+                          </p>
                         </div>
                         <div>
-                          <label for="submitterEmail" class="block text-sm font-medium text-gray-700 mb-1">
+                          <label
+                            for="submitterEmail"
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                          >
                             Email Address <span class="text-red-500">*</span>
                           </label>
                           <div class="relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <div
+                              class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                            >
                               <Mail class="h-4 w-4 text-gray-400" />
                             </div>
                             <input
@@ -309,14 +380,21 @@
                               v-model="form.submittedBy.email"
                               required
                               class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                              :class="{ 'border-red-500 ring-1 ring-red-500': errors.submitterEmail }"
+                              :class="{
+                                'border-red-500 ring-1 ring-red-500': errors.submitterEmail,
+                              }"
                             />
                           </div>
-                          <p v-if="errors.submitterEmail" class="mt-1 text-xs text-red-600">{{ errors.submitterEmail }}</p>
+                          <p v-if="errors.submitterEmail" class="mt-1 text-xs text-red-600">
+                            {{ errors.submitterEmail }}
+                          </p>
                         </div>
                       </div>
                       <div>
-                        <label for="submitterAddress" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label
+                          for="submitterAddress"
+                          class="block text-sm font-medium text-gray-700 mb-1"
+                        >
                           Your Address <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
@@ -329,10 +407,14 @@
                             rows="2"
                             required
                             class="block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                            :class="{ 'border-red-500 ring-1 ring-red-500': errors.submitterAddress }"
+                            :class="{
+                              'border-red-500 ring-1 ring-red-500': errors.submitterAddress,
+                            }"
                           ></textarea>
                         </div>
-                        <p v-if="errors.submitterAddress" class="mt-1 text-xs text-red-600">{{ errors.submitterAddress }}</p>
+                        <p v-if="errors.submitterAddress" class="mt-1 text-xs text-red-600">
+                          {{ errors.submitterAddress }}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -346,7 +428,8 @@
                     <div class="flex items-center space-x-3">
                       <div class="flex-grow">
                         <label for="captcha" class="block text-sm font-medium text-gray-700 mb-1">
-                          Solve: {{ captcha.num1 }} + {{ captcha.num2 }} = ? <span class="text-red-500">*</span>
+                          Solve: {{ captcha.num1 }} + {{ captcha.num2 }} = ?
+                          <span class="text-red-500">*</span>
                         </label>
                         <input
                           type="number"
@@ -365,7 +448,9 @@
                         <RefreshCw class="w-5 h-5" />
                       </button>
                     </div>
-                    <p v-if="errors.captcha" class="mt-1 text-xs text-red-600">{{ errors.captcha }}</p>
+                    <p v-if="errors.captcha" class="mt-1 text-xs text-red-600">
+                      {{ errors.captcha }}
+                    </p>
                   </div>
 
                   <!-- Action Buttons -->
@@ -413,7 +498,7 @@ import {
   FileText,
   Paperclip,
   Calendar,
-  Shield
+  Shield,
 } from 'lucide-vue-next'
 import { useToast } from 'vue-toastification'
 import apiService from '@/services/services'
@@ -472,8 +557,16 @@ const formProgress = computed(() => {
   if (form.aggrievedParty.name.trim()) filledFields++
   if (form.aggrievedParty.address.trim()) filledFields++
   if (form.submittedBy.name.trim()) filledFields++
-  if (form.submittedBy.contactNumber.trim() && /^\d{9}$/.test(form.submittedBy.contactNumber.trim())) filledFields++
-  if (form.submittedBy.email.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.submittedBy.email.trim())) filledFields++
+  if (
+    form.submittedBy.contactNumber.trim() &&
+    /^\d{9}$/.test(form.submittedBy.contactNumber.trim())
+  )
+    filledFields++
+  if (
+    form.submittedBy.email.trim() &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.submittedBy.email.trim())
+  )
+    filledFields++
   if (form.submittedBy.address.trim()) filledFields++
   if (form.captchaAnswer !== '' && parseInt(form.captchaAnswer) === captcha.answer) filledFields++
 
@@ -499,7 +592,7 @@ const fetchProfessionalCategories = async () => {
 
 const resetForm = () => {
   Object.assign(form, initialFormState())
-  Object.keys(errors).forEach(key => delete errors[key])
+  Object.keys(errors).forEach((key) => delete errors[key])
   generateCaptcha()
   attachmentName.value = ''
   nextTick(() => {
@@ -514,15 +607,18 @@ const closeModal = () => {
   emit('close')
 }
 
-watch(() => props.isOpen, (newVal) => {
-  if (newVal) {
-    resetForm()
-    if (professionalCategories.value.length === 0) {
-      fetchProfessionalCategories()
+watch(
+  () => props.isOpen,
+  (newVal) => {
+    if (newVal) {
+      resetForm()
+      if (professionalCategories.value.length === 0) {
+        fetchProfessionalCategories()
+      }
+      generateCaptcha()
     }
-    generateCaptcha()
-  }
-})
+  },
+)
 
 const handleFileChange = (event) => {
   const files = event.target.files
@@ -558,7 +654,7 @@ const handleFileChange = (event) => {
 }
 
 const validateForm = () => {
-  Object.keys(errors).forEach(key => delete errors[key])
+  Object.keys(errors).forEach((key) => delete errors[key])
   let isValid = true
 
   if (!form.professionalCategory) {
@@ -566,15 +662,15 @@ const validateForm = () => {
     isValid = false
   }
   if (!form.professionalDetails.name.trim()) {
-    errors.profName = 'Professional\'s name is required.'
+    errors.profName = "Professional's name is required."
     isValid = false
   }
   if (!form.professionalDetails.designation.trim()) {
-    errors.profDesignation = 'Professional\'s designation is required.'
+    errors.profDesignation = "Professional's designation is required."
     isValid = false
   }
   if (!form.professionalDetails.workplace.trim()) {
-    errors.profWorkplace = 'Professional\'s workplace is required.'
+    errors.profWorkplace = "Professional's workplace is required."
     isValid = false
   }
   if (!form.incidentDate) {
@@ -690,7 +786,9 @@ onMounted(() => {
 
 <style scoped>
 /* Additional styling for improving the form appearance */
-:deep(input:focus), :deep(select:focus), :deep(textarea:focus) {
+:deep(input:focus),
+:deep(select:focus),
+:deep(textarea:focus) {
   border-color: rgb(239 68 68);
   --tw-ring-color: rgb(239 68 68);
   --tw-ring-offset-width: 1px;
@@ -729,8 +827,12 @@ onMounted(() => {
 
 /* Animate transitions */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .bg-gradient-to-r {

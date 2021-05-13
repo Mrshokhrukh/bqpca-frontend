@@ -103,14 +103,14 @@
     <div class="mx-auto">
       <!-- Use DOPageHeader Component -->
       <DOPageHeader
-          title="CPD Applications"
-          :description="headerDescription"
-          :search-query="searchQuery"
-          @update:searchQuery="searchQuery = $event"
-          search-placeholder="Search by name, CID, registration or title..."
-          :filter-value="statusFilter"
-          @update:filterValue="statusFilter = $event"
-          :filter-options="statusFilterOptions"
+        title="CPD Applications"
+        :description="headerDescription"
+        :search-query="searchQuery"
+        @update:searchQuery="searchQuery = $event"
+        search-placeholder="Search by name, CID, registration or title..."
+        :filter-value="statusFilter"
+        @update:filterValue="statusFilter = $event"
+        :filter-options="statusFilterOptions"
       />
 
       <!-- Removed old header card -->
@@ -207,7 +207,9 @@
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm text-gray-900 font-medium">{{ app.applicantName }}</div>
                   <div class="text-xs text-gray-500">CID: {{ app.cidNumber }}</div>
-                  <div class="text-xs text-gray-500">Reg: {{ app.registrationNumber || 'N/A' }}</div>
+                  <div class="text-xs text-gray-500">
+                    Reg: {{ app.registrationNumber || 'N/A' }}
+                  </div>
                 </td>
                 <td class="px-6 py-4">
                   <div class="text-sm text-gray-900">{{ app.title }}</div>
@@ -244,20 +246,20 @@
           class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
         >
           <div class="flex-1 flex justify-between sm:hidden">
-             <button
-                @click="prevPage"
-                :disabled="currentPage === 1"
-                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Previous
-              </button>
-              <button
-                @click="nextPage"
-                :disabled="currentPage === totalPages"
-                 class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Next
-              </button>
+            <button
+              @click="prevPage"
+              :disabled="currentPage === 1"
+              class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <button
+              @click="nextPage"
+              :disabled="currentPage === totalPages"
+              class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
           </div>
           <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
@@ -267,29 +269,55 @@
                 <span class="font-medium">{{ filteredApplications.length }}</span> results
               </p>
             </div>
-             <div>
-              <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <div>
+              <nav
+                class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                aria-label="Pagination"
+              >
                 <button
                   @click="prevPage"
                   :disabled="currentPage === 1"
-                   class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   <span class="sr-only">Previous</span>
-                  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  <svg
+                    class="h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    />
                   </svg>
                 </button>
-                 <span aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                   {{ currentPage }}
-                 </span>
+                <span
+                  aria-current="page"
+                  class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+                >
+                  {{ currentPage }}
+                </span>
                 <button
                   @click="nextPage"
                   :disabled="currentPage === totalPages"
                   class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   <span class="sr-only">Next</span>
-                  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                  <svg
+                    class="h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"
+                    />
                   </svg>
                 </button>
               </nav>
@@ -335,9 +363,9 @@ const notification = ref({
 })
 
 const totalApplicationsCount = computed(() => {
-    // Count only non-draft applications for the total shown in header
-    return applications.value.filter(app => app.status !== 'Draft').length;
-});
+  // Count only non-draft applications for the total shown in header
+  return applications.value.filter((app) => app.status !== 'Draft').length
+})
 
 const pendingCount = computed(() => {
   return applications.value.filter((app) => app.status === 'Pending').length
@@ -356,7 +384,6 @@ const statusFilterOptions = ref([
   { value: 'Rejected', text: 'Rejected' },
   // We exclude 'Draft' from the filter options as per table logic
 ])
-
 
 const filteredApplications = computed(() => {
   let filtered = applications.value
@@ -510,20 +537,22 @@ const approveApplication = async (applicationData) => {
     let patchData = {
       review_status: 'Approved',
       review_remarks: updatedApplication.remarks || '', // Include remarks if any
-    };
+    }
 
     if (updatedApplication.participants.length > 0) {
       const participantsToUpdate = updatedApplication.participants
-        .filter(p => p && typeof p === 'object' && p.review_status && p.review_status !== 'Pending')
-        .map(p => ({
+        .filter(
+          (p) => p && typeof p === 'object' && p.review_status && p.review_status !== 'Pending',
+        )
+        .map((p) => ({
           id: p.id,
           review_status: p.review_status,
           review_remarks: p.review_remarks || '',
           cpd_credits_for_participant: p.cpd_credits_for_participant || 0,
-        }));
+        }))
 
       if (participantsToUpdate.length > 0) {
-        patchData.participants = participantsToUpdate;
+        patchData.participants = participantsToUpdate
       }
     }
 
@@ -548,67 +577,66 @@ const approveApplication = async (applicationData) => {
   }
 }
 
-
 const rejectApplication = async (rejectionData) => {
   try {
     loading.value = true
     if (!rejectionData) {
       console.error('Rejection data is null or undefined.')
       showNotification('error', 'Rejection Failed', 'Invalid application data. Please try again.')
-      return;
+      return
     }
-    const updatedApplication = { ...rejectionData };
+    const updatedApplication = { ...rejectionData }
     if (!updatedApplication.participants || !Array.isArray(updatedApplication.participants)) {
-      updatedApplication.participants = [];
+      updatedApplication.participants = []
     }
 
     let patchData = {
       review_status: 'Rejected',
       review_remarks: updatedApplication.remarks || '',
-    };
+    }
 
     if (updatedApplication.participants.length > 0) {
       const participantsToUpdate = updatedApplication.participants
-        .filter(p => p && typeof p === 'object') // Reject all participants in this case
-        .map(p => ({
+        .filter((p) => p && typeof p === 'object') // Reject all participants in this case
+        .map((p) => ({
           id: p.id,
           review_status: 'Rejected', // Set participant status to Rejected
           review_remarks: p.review_remarks || updatedApplication.remarks || '', // Use specific or general remarks
           cpd_credits_for_participant: 0, // Set credits to 0 on rejection
-        }));
+        }))
 
       if (participantsToUpdate.length > 0) {
-         patchData.participants = participantsToUpdate;
+        patchData.participants = participantsToUpdate
       }
     }
 
-    await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData);
+    await apiServices.patchMhpcCpdTask(updatedApplication.id, patchData)
 
-    showNotification('success', 'Application Rejected', 'The CPD application has been rejected.');
-    closeViewModal();
-    await fetchApplications();
+    showNotification('success', 'Application Rejected', 'The CPD application has been rejected.')
+    closeViewModal()
+    await fetchApplications()
   } catch (err) {
-    console.error('Failed to reject application:', err);
+    console.error('Failed to reject application:', err)
     showNotification(
       'error',
       'Rejection Failed',
       'There was an error rejecting the application. Please try again.',
-    );
+    )
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
-
+}
 
 const fetchApplications = async () => {
   try {
     loading.value = true
     const response = await apiServices.getMhpcCpdTask()
-    let results = [];
+    let results = []
     if (response.data && response.data.results && Array.isArray(response.data.results)) {
-       results = response.data.results;
-    } else if (response.results && Array.isArray(response.results)) { // Handle direct results array
-        results = response.results;
+      results = response.data.results
+    } else if (response.results && Array.isArray(response.results)) {
+      // Handle direct results array
+      results = response.results
     }
     processApiResponse(results)
   } catch (err) {
@@ -626,7 +654,13 @@ const processApiResponse = (results) => {
     title: item.title_of_cpd || 'N/A',
     applicantName: item.full_name || 'Unknown',
     status: getTaskStatus(item),
-    date: item.created_at ? new Date(item.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric'}) : 'N/A',
+    date: item.created_at
+      ? new Date(item.created_at).toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        })
+      : 'N/A',
     registrationNumber: item.registration_no,
     cidNumber: item.cid_no || 'N/A',
     fullName: item.full_name || 'Unknown',
@@ -648,8 +682,20 @@ const processApiResponse = (results) => {
     isDraft: item.is_draft || false,
     expected_outcome: item.expected_outcome || '',
     venue: item.venue || '',
-    fromDate: item.from_date ? new Date(item.from_date).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric'}) : 'N/A',
-    toDate: item.to_date ? new Date(item.to_date).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric'}) : 'N/A',
+    fromDate: item.from_date
+      ? new Date(item.from_date).toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        })
+      : 'N/A',
+    toDate: item.to_date
+      ? new Date(item.to_date).toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        })
+      : 'N/A',
     createdAt: item.created_at,
     updatedAt: item.updated_at,
     participants: item.participants || [],

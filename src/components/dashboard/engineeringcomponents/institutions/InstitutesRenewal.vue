@@ -11,26 +11,26 @@
       </p>
     </div>
 
-        <!-- Loading State -->
-        <div v-if="isLoading" class="flex justify-center my-8">
-            <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
-            <p class="ml-2 text-gray-600">Loading institute data...</p>
-        </div>
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex justify-center my-8">
+      <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
+      <p class="ml-2 text-gray-600">Loading institute data...</p>
+    </div>
 
-        <!-- Error State -->
-        <div
-            v-else-if="apiError"
-            class="bg-gray-50 border border-gray-200 text-gray-700 p-6 rounded-lg mb-6"
-        >
-            <h3 class="text-lg font-medium mb-2">Error Loading Institute Data</h3>
-            <p>{{ errorMessage }}</p>
-            <button
-                @click="fetchInstituteData"
-                class="mt-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-                Try Again
-            </button>
-        </div>
+    <!-- Error State -->
+    <div
+      v-else-if="apiError"
+      class="bg-gray-50 border border-gray-200 text-gray-700 p-6 rounded-lg mb-6"
+    >
+      <h3 class="text-lg font-medium mb-2">Error Loading Institute Data</h3>
+      <p>{{ errorMessage }}</p>
+      <button
+        @click="fetchInstituteData"
+        class="mt-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+      >
+        Try Again
+      </button>
+    </div>
 
     <!-- No Expired Institute Found -->
     <div
@@ -137,42 +137,64 @@
 
         <!-- Renew Button -->
         <!-- Renew Button Section -->
-<div class="mt-8">
-  <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6">
-    <div class="flex items-start">
-      <div class="flex-shrink-0 mt-0.5">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-        </svg>
-      </div>
-      <div class="ml-3">
-        <h3 class="text-sm font-medium text-blue-800">Ready to Renew?</h3>
-        <p class="mt-1 text-sm text-gray-600">
-          Restore your engineering institute's active status by renewing your registration now. The renewal fee is Nu. 1,000.
-        </p>
-      </div>
-    </div>
-  </div>
+        <div class="mt-8">
+          <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 mt-0.5">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 text-blue-600"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800">Ready to Renew?</h3>
+                <p class="mt-1 text-sm text-gray-600">
+                  Restore your engineering institute's active status by renewing your registration
+                  now. The renewal fee is Nu. 1,000.
+                </p>
+              </div>
+            </div>
+          </div>
 
-  <div class="flex justify-center">
-    <button
-      @click="openRenewalDialog"
-      class="group relative bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
-    >
-      <div class="flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 group-hover:animate-spin" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-        </svg>
-        Renew Registration
-        <span class="absolute top-0 right-0 -mt-2 -mr-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">Expired</span>
-      </div>
-    </button>
-  </div>
+          <div class="flex justify-center">
+            <button
+              @click="openRenewalDialog"
+              class="group relative bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
+            >
+              <div class="flex items-center justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2 group-hover:animate-spin"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                Renew Registration
+                <span
+                  class="absolute top-0 right-0 -mt-2 -mr-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
+                  >Expired</span
+                >
+              </div>
+            </button>
+          </div>
 
-  <p class="text-center text-sm text-gray-500 mt-4">
-    Your renewal will be valid for one year from the date of approval
-  </p>
-</div>
+          <p class="text-center text-sm text-gray-500 mt-4">
+            Your renewal will be valid for one year from the date of approval
+          </p>
+        </div>
       </div>
     </div>
 
@@ -184,8 +206,8 @@
       <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-md w-full">
         <h3 class="text-xl font-bold text-gray-900 mb-4">Confirm Institute Renewal</h3>
         <p class="mb-6 text-gray-600">
-          Are you sure you want to renew your engineering institute registration? You will be prompted
-          to make a payment to complete the renewal process.
+          Are you sure you want to renew your engineering institute registration? You will be
+          prompted to make a payment to complete the renewal process.
         </p>
         <div v-if="isRenewing" class="flex items-center justify-center mb-4">
           <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
@@ -243,31 +265,31 @@ const toast = useToast()
 
 // Get user CID from auth store
 const userCid = computed(() => {
-    return authStore.user?.cid || ''
+  return authStore.user?.cid || ''
 })
 
 // Format dates
 const formattedActiveDate = computed(() => {
-    if (!instituteData.value?.valid_since) return 'N/A'
-    return new Date(instituteData.value.valid_since).toLocaleDateString()
+  if (!instituteData.value?.valid_since) return 'N/A'
+  return new Date(instituteData.value.valid_since).toLocaleDateString()
 })
 
 const formattedExpirationDate = computed(() => {
-    if (!instituteData.value?.valid_till) return 'N/A'
-    return new Date(instituteData.value.valid_till).toLocaleDateString()
+  if (!instituteData.value?.valid_till) return 'N/A'
+  return new Date(instituteData.value.valid_till).toLocaleDateString()
 })
 
 // Fetch institute data and filter for expired institutes
 const fetchInstituteData = async () => {
-    if (!userCid.value) {
-        errorMessage.value = 'User information not available. Please log in again.'
-        apiError.value = true
-        isLoading.value = false
-        return
-    }
+  if (!userCid.value) {
+    errorMessage.value = 'User information not available. Please log in again.'
+    apiError.value = true
+    isLoading.value = false
+    return
+  }
 
-    isLoading.value = true
-    apiError.value = false
+  isLoading.value = true
+  apiError.value = false
 
   try {
     const response = await apiServices.getEpcInstitutes()
@@ -275,7 +297,7 @@ const fetchInstituteData = async () => {
     if (response && response.data && response.data.results) {
       // Filter institutes to find one matching the user's CID and expired status
       const userInstitutes = response.data.results.filter(
-        (institute) => institute.CID.toLowerCase() === userCid.value.toLowerCase()
+        (institute) => institute.CID.toLowerCase() === userCid.value.toLowerCase(),
       )
 
       // Find the first expired institute
@@ -301,12 +323,12 @@ const fetchInstituteData = async () => {
 
 // Open renewal dialog
 const openRenewalDialog = () => {
-    showRenewalDialog.value = true
+  showRenewalDialog.value = true
 }
 
 // Close renewal dialog
 const closeRenewalDialog = () => {
-    showRenewalDialog.value = false
+  showRenewalDialog.value = false
 }
 
 // Initiate payment
@@ -377,7 +399,7 @@ const handlePaymentCompleted = async (paymentData) => {
       payment_id: paymentId,
       payment_status: 'processing_payment',
       valid_since: today.toISOString().split('T')[0],
-      valid_till: newValidTill.toISOString().split('T')[0]
+      valid_till: newValidTill.toISOString().split('T')[0],
     }
 
     await apiServices.patchEpcInstitute(instituteId, renewalData)
@@ -393,13 +415,13 @@ const handlePaymentCompleted = async (paymentData) => {
       toast.error(
         error.response.data?.detail ||
           JSON.stringify(error.response.data) ||
-          error.response.statusText
+          error.response.statusText,
       )
     } else if (error.request) {
       toast.error('Network Error: No response from server')
     } else {
       toast.error(
-        `Payment request generated successfully, but there was an error confirming the payment. Contact support with payment ID: ${paymentId}`
+        `Payment request generated successfully, but there was an error confirming the payment. Contact support with payment ID: ${paymentId}`,
       )
     }
   } finally {

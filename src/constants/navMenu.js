@@ -180,11 +180,11 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/admin/${serviceType}/type_of_courses`,
       },
-      {
-        name: 'Gender Types',
-        icon: getIconComponent('Users'),
-        route: (serviceType) => `/admin/admin/${serviceType}/genders`,
-      },
+      // {
+      //   name: 'Gender Types',
+      //   icon: getIconComponent('Users'),
+      //   route: (serviceType) => `/admin/admin/${serviceType}/genders`,
+      // },
       {
         name: 'Esignatures',
         icon: getIconComponent('Users'),
@@ -219,16 +219,16 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('CheckCircle'),
         route: (serviceType) => `/admin/chief/${serviceType}/second_copy_lists`,
       },
-      {
-        name: 'Reports',
-        icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/chief/${serviceType}/reports`,
-      },
-      {
-        name: 'Profile',
-        icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/chief/${serviceType}/profile`,
-      },
+      // {
+      //   name: 'Reports',
+      //   icon: getIconComponent('ClipboardCheck'),
+      //   route: (serviceType) => `/admin/chief/${serviceType}/reports`,
+      // },
+      // {
+      //   name: 'Profile',
+      //   icon: getIconComponent('ClipboardCheck'),
+      //   route: (serviceType) => `/admin/chief/${serviceType}/profile`,
+      // },
     ],
   },
   ecpf: {

@@ -144,11 +144,7 @@
                 required
               >
                 <option value="" disabled selected>Select activity type</option>
-                <option
-                  v-for="activity in cpdActivities"
-                  :key="activity.id"
-                  :value="activity.id"
-                >
+                <option v-for="activity in cpdActivities" :key="activity.id" :value="activity.id">
                   {{ activity.name }}
                 </option>
               </select>
@@ -219,21 +215,21 @@
 </template>
 
 <script setup>
-import { reactive, onMounted, ref, computed, watch } from 'vue';
-import { useToast } from 'vue-toastification';
-import { useAuthStore } from '@/stores/authStore';
-import apiServices from '@/services/services';
-import { useRouter } from 'vue-router';
+import { reactive, onMounted, ref, computed, watch } from 'vue'
+import { useToast } from 'vue-toastification'
+import { useAuthStore } from '@/stores/authStore'
+import apiServices from '@/services/services'
+import { useRouter } from 'vue-router'
 
-const toast = useToast();
-const authStore = useAuthStore();
-const router = useRouter();
+const toast = useToast()
+const authStore = useAuthStore()
+const router = useRouter()
 
-const participationCategories = ref([]);
-const participantSubCategories = ref([]);
-const cpdActivities = ref([]);
-const isSubmitting = ref(false);
-const applicationData = ref(null);
+const participationCategories = ref([])
+const participantSubCategories = ref([])
+const cpdActivities = ref([])
+const isSubmitting = ref(false)
+const applicationData = ref(null)
 
 const form = reactive({
   registration_no: '',
@@ -246,256 +242,249 @@ const form = reactive({
   participant_sub_category: '',
   type_of_cpd_activity: '',
   attachment: null,
-});
+})
 
-const errors = reactive({});
+const errors = reactive({})
 
 const validateForm = () => {
-  Object.keys(errors).forEach((key) => delete errors[key]);
-  let isValid = true;
+  Object.keys(errors).forEach((key) => delete errors[key])
+  let isValid = true
 
   if (!form.title) {
-    errors.title = 'CPD Title is required';
-    isValid = false;
+    errors.title = 'CPD Title is required'
+    isValid = false
   }
   if (!form.description) {
-    errors.description = 'Professional Relevance is required';
-    isValid = false;
+    errors.description = 'Professional Relevance is required'
+    isValid = false
   }
   if (!form.participation_category) {
-    errors.participation_category = 'Participation Category is required';
-    isValid = false;
+    errors.participation_category = 'Participation Category is required'
+    isValid = false
   }
   if (!form.participant_sub_category) {
-    errors.participant_sub_category = 'Participant Sub-category is required';
-    isValid = false;
+    errors.participant_sub_category = 'Participant Sub-category is required'
+    isValid = false
   }
   if (!form.type_of_cpd_activity) {
-    errors.type_of_cpd_activity = 'Type of CPD Activity is required';
-    isValid = false;
+    errors.type_of_cpd_activity = 'Type of CPD Activity is required'
+    isValid = false
   }
   if (!form.attachment) {
-    errors.attachment = 'Supporting document is required';
-    isValid = false;
+    errors.attachment = 'Supporting document is required'
+    isValid = false
   } else if (form.attachment && form.attachment.size > 2 * 1024 * 1024) {
-    errors.attachment = 'Attachment size should not exceed 2MB';
-    isValid = false;
+    errors.attachment = 'Attachment size should not exceed 2MB'
+    isValid = false
   }
-  return isValid;
-};
+  return isValid
+}
 
 const fetchRegistrationNumber = async (cid) => {
   if (!cid) {
-    console.warn('Cannot fetch registration number without CID.');
-    return null;
+    console.warn('Cannot fetch registration number without CID.')
+    return null
   }
   try {
-    const response = await apiServices.getEpcApplicationsByCid(cid);
+    const response = await apiServices.getEpcApplicationsByCid(cid)
     if (response?.data?.results?.length > 0) {
       const activeRegistration = response.data.results.find(
         (record) =>
           (record.cid_no === cid || record.application?.cid_no === cid) &&
-          (record.is_active || record.application?.is_active)
-      );
+          (record.is_active || record.application?.is_active),
+      )
       if (activeRegistration) {
-        const app = activeRegistration.application || activeRegistration;
-        applicationData.value = app;
-        console.log('Found active application:', app);
-        return app.id;
+        const app = activeRegistration.application || activeRegistration
+        applicationData.value = app
+        console.log('Found active application:', app)
+        return app.id
       }
-      const firstResultApp = response.data.results[0].application || response.data.results[0];
-      applicationData.value = firstResultApp;
-      console.log('Using first application result:', firstResultApp);
-      return firstResultApp.id;
+      const firstResultApp = response.data.results[0].application || response.data.results[0]
+      applicationData.value = firstResultApp
+      console.log('Using first application result:', firstResultApp)
+      return firstResultApp.id
     }
-    console.warn('No application found for CID:', cid);
-    toast.warn('No active engineering registration found for your CID.');
-    return null;
+    console.warn('No application found for CID:', cid)
+    toast.warn('No active engineering registration found for your CID.')
+    return null
   } catch (error) {
-    toast.error('Failed to fetch registration details.');
-    console.error('Error fetching registration number:', error);
-    return null;
+    toast.error('Failed to fetch registration details.')
+    console.error('Error fetching registration number:', error)
+    return null
   }
-};
+}
 
 const fetchSubCategories = async () => {
-  form.participant_sub_category = ''; // Reset sub-category when category changes
-  participantSubCategories.value = [];
+  form.participant_sub_category = '' // Reset sub-category when category changes
+  participantSubCategories.value = []
   try {
-    const response = await apiServices.getEpcMastersSubCategories();
+    const response = await apiServices.getEpcMastersSubCategories()
     if (response?.data?.results) {
       participantSubCategories.value = response.data.results.map((item) => ({
         id: item.id,
         name: item.name || `Sub-category ${item.id}`,
         category_id: item.category_id || null, // Assuming backend returns category_id
-      }));
+      }))
       if (participantSubCategories.value.length === 0) {
-        console.warn('API returned 0 participant sub-categories.');
+        console.warn('API returned 0 participant sub-categories.')
       }
     } else {
-      console.error('Invalid or empty data for Participant Sub-categories.', response?.data);
-      toast.error('Failed to load Participant Sub-categories options.');
+      console.error('Invalid or empty data for Participant Sub-categories.', response?.data)
+      toast.error('Failed to load Participant Sub-categories options.')
     }
   } catch (error) {
-    toast.error('Failed to fetch Participant Sub-categories: ' + error.message);
-    console.error('Error fetching sub-categories:', error);
+    toast.error('Failed to fetch Participant Sub-categories: ' + error.message)
+    console.error('Error fetching sub-categories:', error)
   }
-};
+}
 
 // Computed property to filter sub-categories based on selected category
 const filteredParticipantSubCategories = computed(() => {
   if (!form.participation_category) {
-    return participantSubCategories.value;
+    return participantSubCategories.value
   }
   return participantSubCategories.value.filter(
-    (subCategory) => subCategory.category_id === form.participation_category
-  );
-});
+    (subCategory) => subCategory.category_id === form.participation_category,
+  )
+})
 
 const handleSubmit = async () => {
   if (!validateForm()) {
-    toast.error('Please correct the errors in the form.');
-    return;
+    toast.error('Please correct the errors in the form.')
+    return
   }
   if (!form.registration_no) {
-    toast.error('Could not find associated Application ID. Cannot submit.');
-    console.error('Missing registration_no (Application ID)');
-    return;
+    toast.error('Could not find associated Application ID. Cannot submit.')
+    console.error('Missing registration_no (Application ID)')
+    return
   }
 
-  isSubmitting.value = true;
-  const formData = new FormData();
+  isSubmitting.value = true
+  const formData = new FormData()
 
   // Append fields expected by EnggCPDRecordSerializer
-  formData.append('registration_no', form.registration_no);
-  formData.append('cid_no', form.cid_no);
-  formData.append('full_name', form.full_name || '');
-  formData.append('gender', form.gender || 'Others');
-  formData.append('title_of_cpd', form.title);
-  formData.append('relevance_to_profession', form.description);
-  formData.append('participation_category', form.participation_category);
-  formData.append('participant_sub_category', form.participant_sub_category);
-  formData.append('type_of_cpd_activity', form.type_of_cpd_activity);
+  formData.append('registration_no', form.registration_no)
+  formData.append('cid_no', form.cid_no)
+  formData.append('full_name', form.full_name || '')
+  formData.append('gender', form.gender || 'Others')
+  formData.append('title_of_cpd', form.title)
+  formData.append('relevance_to_profession', form.description)
+  formData.append('participation_category', form.participation_category)
+  formData.append('participant_sub_category', form.participant_sub_category)
+  formData.append('type_of_cpd_activity', form.type_of_cpd_activity)
 
   if (form.attachment) {
-    formData.append('attachment', form.attachment);
+    formData.append('attachment', form.attachment)
   }
 
-  console.log('Submitting FormData:');
+  console.log('Submitting FormData:')
   for (let pair of formData.entries()) {
-    console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+    console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]))
   }
 
   try {
-    const response = await apiServices.createEpcCpdRecord(formData);
+    const response = await apiServices.createEpcCpdRecord(formData)
 
     if (response.status === 201 || response.status === 200) {
-      toast.success('CPD application submitted successfully!');
-      router.push('/admin/user/engineering_certification/dashboard');
+      toast.success('CPD application submitted successfully!')
+      router.push('/admin/user/engineering_certification/dashboard')
     } else {
-      toast.warning(`Submission completed with status: ${response.status}`);
-      console.warn('Server returned non-standard success status:', response);
-      router.push('/admin/user/engineering_certification/dashboard');
+      toast.warning(`Submission completed with status: ${response.status}`)
+      console.warn('Server returned non-standard success status:', response)
+      router.push('/admin/user/engineering_certification/dashboard')
     }
   } catch (error) {
-    console.error('Error submitting form:', error);
-    let errorMessage = 'Submission failed.';
+    console.error('Error submitting form:', error)
+    let errorMessage = 'Submission failed.'
     if (error.response) {
-      console.error('Backend Error Response:', error.response.data);
-      const backendErrors = error.response.data;
+      console.error('Backend Error Response:', error.response.data)
+      const backendErrors = error.response.data
       if (typeof backendErrors === 'object' && backendErrors !== null) {
-        let messages = [];
+        let messages = []
         for (const key in backendErrors) {
           if (Object.prototype.hasOwnProperty.call(backendErrors, key)) {
-            const errorValue = backendErrors[key];
+            const errorValue = backendErrors[key]
             messages.push(
-              `${key}: ${Array.isArray(errorValue) ? errorValue.join(', ') : errorValue}`
-            );
+              `${key}: ${Array.isArray(errorValue) ? errorValue.join(', ') : errorValue}`,
+            )
             if (
               Object.prototype.hasOwnProperty.call(form, key) ||
               Object.prototype.hasOwnProperty.call(errors, key)
             ) {
-              errors[key] = Array.isArray(errorValue) ? errorValue[0] : errorValue;
+              errors[key] = Array.isArray(errorValue) ? errorValue[0] : errorValue
             } else if (key === 'non_field_errors') {
-              messages.push(
-                Array.isArray(errorValue) ? errorValue.join(', ') : errorValue
-              );
+              messages.push(Array.isArray(errorValue) ? errorValue.join(', ') : errorValue)
             }
           }
         }
-        errorMessage = messages.join('; ') || errorMessage;
+        errorMessage = messages.join('; ') || errorMessage
       } else if (typeof backendErrors === 'string') {
-        errorMessage = backendErrors;
+        errorMessage = backendErrors
       }
     } else if (error.request) {
-      errorMessage = 'Network error. Please check your connection.';
+      errorMessage = 'Network error. Please check your connection.'
     } else {
-      errorMessage = error.message;
+      errorMessage = error.message
     }
-    toast.error(errorMessage);
+    toast.error(errorMessage)
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
-};
+}
 
 const handleCancel = () => {
-  form.title = '';
-  form.description = '';
-  form.participation_category = '';
-  form.participant_sub_category = '';
-  form.type_of_cpd_activity = '';
-  form.attachment = null;
-  Object.keys(errors).forEach((key) => delete errors[key]);
-  toast.info('Form cancelled.');
-};
+  form.title = ''
+  form.description = ''
+  form.participation_category = ''
+  form.participant_sub_category = ''
+  form.type_of_cpd_activity = ''
+  form.attachment = null
+  Object.keys(errors).forEach((key) => delete errors[key])
+  toast.info('Form cancelled.')
+}
 
 const handleFileUpload = (event) => {
-  const file = event.target.files[0];
-  delete errors.attachment;
-  form.attachment = null;
+  const file = event.target.files[0]
+  delete errors.attachment
+  form.attachment = null
 
   if (file) {
     if (file.size > 2 * 1024 * 1024) {
-      errors.attachment = 'Attachment size should not exceed 2MB';
-      event.target.value = '';
+      errors.attachment = 'Attachment size should not exceed 2MB'
+      event.target.value = ''
     } else {
-      form.attachment = file;
+      form.attachment = file
     }
   }
-};
+}
 
 const fetchMasterData = async () => {
-  participationCategories.value = [];
-  participantSubCategories.value = [];
-  cpdActivities.value = [];
+  participationCategories.value = []
+  participantSubCategories.value = []
+  cpdActivities.value = []
 
   try {
-    const [
-      participationCategoriesResponse,
-      participantSubCategoriesResponse,
-      activitiesResponse,
-    ] = await Promise.all([
-      apiServices.getEpcMastersParticipationCategories(),
-      apiServices.getEpcMastersSubCategories(),
-      apiServices.getEpcMastersCpdActivities(),
-    ]);
+    const [participationCategoriesResponse, participantSubCategoriesResponse, activitiesResponse] =
+      await Promise.all([
+        apiServices.getEpcMastersParticipationCategories(),
+        apiServices.getEpcMastersSubCategories(),
+        apiServices.getEpcMastersCpdActivities(),
+      ])
 
     // Process Participation Categories
     if (participationCategoriesResponse?.data?.results) {
-      participationCategories.value = participationCategoriesResponse.data.results.map(
-        (item) => ({
-          id: item.id,
-          name: item.name || `Category ${item.id}`,
-        })
-      );
+      participationCategories.value = participationCategoriesResponse.data.results.map((item) => ({
+        id: item.id,
+        name: item.name || `Category ${item.id}`,
+      }))
       if (participationCategories.value.length === 0)
-        console.warn('API returned 0 participation categories.');
+        console.warn('API returned 0 participation categories.')
     } else {
       console.error(
         'Invalid or empty data for Participation Categories.',
-        participationCategoriesResponse?.data
-      );
-      toast.error('Failed to load Participation Categories options.');
+        participationCategoriesResponse?.data,
+      )
+      toast.error('Failed to load Participation Categories options.')
     }
 
     // Process Participant Sub-categories
@@ -505,16 +494,16 @@ const fetchMasterData = async () => {
           id: item.id,
           name: item.name || `Sub-category ${item.id}`,
           category_id: item.category_id || null, // Assuming backend returns category_id
-        })
-      );
+        }),
+      )
       if (participantSubCategories.value.length === 0)
-        console.warn('API returned 0 participant sub-categories.');
+        console.warn('API returned 0 participant sub-categories.')
     } else {
       console.error(
         'Invalid or empty data for Participant Sub-categories.',
-        participantSubCategoriesResponse?.data
-      );
-      toast.error('Failed to load Participant Sub-categories options.');
+        participantSubCategoriesResponse?.data,
+      )
+      toast.error('Failed to load Participant Sub-categories options.')
     }
 
     // Process CPD Activities
@@ -522,44 +511,46 @@ const fetchMasterData = async () => {
       cpdActivities.value = activitiesResponse.data.results.map((item) => ({
         id: item.id,
         name: item.cpd_activity_name || `Activity ${item.id}`,
-      }));
-      if (cpdActivities.value.length === 0) console.warn('API returned 0 CPD activities.');
+      }))
+      if (cpdActivities.value.length === 0) console.warn('API returned 0 CPD activities.')
     } else {
-      console.error('Invalid or empty data for CPD Activities.', activitiesResponse?.data);
-      toast.error('Failed to load CPD Activities options.');
+      console.error('Invalid or empty data for CPD Activities.', activitiesResponse?.data)
+      toast.error('Failed to load CPD Activities options.')
     }
   } catch (error) {
-    toast.error('Failed to fetch master data options: ' + error.message);
-    console.error('Error fetching master data:', error);
+    toast.error('Failed to fetch master data options: ' + error.message)
+    console.error('Error fetching master data:', error)
   }
-};
+}
 
 onMounted(async () => {
-  let fetchedRegNo = null;
+  let fetchedRegNo = null
   if (authStore.user && authStore.user.cid) {
-    form.cid_no = authStore.user.cid;
-    form.full_name = authStore.fullName || `${authStore.user.first_name || ''} ${authStore.user.middle_name || ''} ${authStore.user.last_name || ''}`.trim();
-    form.gender = authStore.user.gender || '';
-    fetchedRegNo = await fetchRegistrationNumber(form.cid_no);
-    form.registration_no = fetchedRegNo ?? '';
+    form.cid_no = authStore.user.cid
+    form.full_name =
+      authStore.fullName ||
+      `${authStore.user.first_name || ''} ${authStore.user.middle_name || ''} ${authStore.user.last_name || ''}`.trim()
+    form.gender = authStore.user.gender || ''
+    fetchedRegNo = await fetchRegistrationNumber(form.cid_no)
+    form.registration_no = fetchedRegNo ?? ''
   } else {
-    console.warn('User or CID not found in auth store.');
-    toast.error('User information not found. Please log in again.');
-    form.registration_no = '';
+    console.warn('User or CID not found in auth store.')
+    toast.error('User information not found. Please log in again.')
+    form.registration_no = ''
   }
-  await fetchMasterData();
-  console.log('Form state after mount:', JSON.parse(JSON.stringify(form)));
-  console.log('Fetched Application ID:', fetchedRegNo);
-});
+  await fetchMasterData()
+  console.log('Form state after mount:', JSON.parse(JSON.stringify(form)))
+  console.log('Fetched Application ID:', fetchedRegNo)
+})
 
 // Watch for changes in participation_category to reset sub-category
 watch(
   () => form.participation_category,
   () => {
-    form.participant_sub_category = '';
-    fetchSubCategories();
-  }
-);
+    form.participant_sub_category = ''
+    fetchSubCategories()
+  },
+)
 </script>
 
 <style scoped>

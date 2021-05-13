@@ -203,9 +203,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <span v-if="institute.capaIssues && institute.capaIssues.length > 0">
-                    {{
-                      institute.capaIssues.filter((issue) => issue.status === 'Pending').length
-                    }}
+                    {{ institute.capaIssues.filter((issue) => issue.status === 'Pending').length }}
                     Pending
                   </span>
                   <span v-else>No Issues</span>
@@ -319,9 +317,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <span v-if="institute.capaIssues && institute.capaIssues.length > 0">
-                    {{
-                      institute.capaIssues.filter((issue) => issue.status === 'Pending').length
-                    }}
+                    {{ institute.capaIssues.filter((issue) => issue.status === 'Pending').length }}
                     Pending
                   </span>
                   <span v-else>No Issues</span>

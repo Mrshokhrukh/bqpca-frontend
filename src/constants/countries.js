@@ -52,7 +52,7 @@ export const countryData = [
   { code: 'CD', name: 'Congo, The Democratic Republic of the' },
   { code: 'CK', name: 'Cook Islands' },
   { code: 'CR', name: 'Costa Rica' },
-  { code: 'CI', name: 'Côte d\'Ivoire' },
+  { code: 'CI', name: "Côte d'Ivoire" },
   { code: 'HR', name: 'Croatia' },
   { code: 'CU', name: 'Cuba' },
   { code: 'CY', name: 'Cyprus' },
@@ -114,11 +114,11 @@ export const countryData = [
   { code: 'KZ', name: 'Kazakhstan' },
   { code: 'KE', name: 'Kenya' },
   { code: 'KI', name: 'Kiribati' },
-  { code: 'KP', name: 'Korea, Democratic People\'s Republic of' },
+  { code: 'KP', name: "Korea, Democratic People's Republic of" },
   { code: 'KR', name: 'Korea, Republic of' },
   { code: 'KW', name: 'Kuwait' },
   { code: 'KG', name: 'Kyrgyzstan' },
-  { code: 'LA', name: 'Lao People\'s Democratic Republic' },
+  { code: 'LA', name: "Lao People's Democratic Republic" },
   { code: 'LV', name: 'Latvia' },
   { code: 'LB', name: 'Lebanon' },
   { code: 'LS', name: 'Lesotho' },
@@ -243,5 +243,5 @@ export const countryData = [
   { code: 'EH', name: 'Western Sahara' },
   { code: 'YE', name: 'Yemen' },
   { code: 'ZM', name: 'Zambia' },
-  { code: 'ZW', name: 'Zimbabwe' }
-];
+  { code: 'ZW', name: 'Zimbabwe' },
+]

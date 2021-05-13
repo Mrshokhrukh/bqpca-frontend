@@ -413,7 +413,8 @@ const formatDate = (dateString) => {
     const date = new Date(dateString)
     // Check if the date is valid
     if (isNaN(date.getTime())) return 'N/A'
-    return date.toLocaleDateString('en-GB', { // Using en-GB for DD/MM/YYYY format
+    return date.toLocaleDateString('en-GB', {
+      // Using en-GB for DD/MM/YYYY format
       year: 'numeric',
       month: 'short',
       day: '2-digit',
@@ -426,9 +427,15 @@ const formatDate = (dateString) => {
 const fetchMasterData = async () => {
   try {
     const responses = await Promise.allSettled([
-      apiServices.getMhpcMastersPersonnelCategories ? apiServices.getMhpcMastersPersonnelCategories() : Promise.resolve({ data: null }),
-      apiServices.getMhpcMastersSubCategories ? apiServices.getMhpcMastersSubCategories() : Promise.resolve({ data: null }),
-      apiServices.getMhpcMastersSectors ? apiServices.getMhpcMastersSectors() : Promise.resolve({ data: null }),
+      apiServices.getMhpcMastersPersonnelCategories
+        ? apiServices.getMhpcMastersPersonnelCategories()
+        : Promise.resolve({ data: null }),
+      apiServices.getMhpcMastersSubCategories
+        ? apiServices.getMhpcMastersSubCategories()
+        : Promise.resolve({ data: null }),
+      apiServices.getMhpcMastersSectors
+        ? apiServices.getMhpcMastersSectors()
+        : Promise.resolve({ data: null }),
     ])
 
     const processResponse = (response, targetRef) => {
@@ -439,10 +446,9 @@ const fetchMasterData = async () => {
       }
     }
 
-    processResponse(responses[0], personnelCategories);
-    processResponse(responses[1], personnelSubcategories);
-    processResponse(responses[2], sectors);
-
+    processResponse(responses[0], personnelCategories)
+    processResponse(responses[1], personnelSubcategories)
+    processResponse(responses[2], sectors)
   } catch (error) {
     console.error('Error fetching master data container:', error)
     toast.error('Failed to load master data')
@@ -455,19 +461,19 @@ const fetchRenewals = async () => {
   try {
     const response = await apiServices.getMhpcRenewals()
     // Handle potential variations in API response structure
-    const results = response?.data?.results ?? response?.data ?? null;
+    const results = response?.data?.results ?? response?.data ?? null
     if (Array.isArray(results)) {
-        renewals.value = results;
+      renewals.value = results
     } else {
-        console.error('Unexpected API response structure for renewals:', response?.data);
-        toast.error('Received invalid renewal data structure.');
-        renewals.value = []; // Ensure it's an empty array on error
+      console.error('Unexpected API response structure for renewals:', response?.data)
+      toast.error('Received invalid renewal data structure.')
+      renewals.value = [] // Ensure it's an empty array on error
     }
   } catch (error) {
     console.error('Error fetching renewals:', error)
     const errorMsg = error.response?.data?.detail || error.message || 'Unknown error'
     toast.error(`Failed to load renewal data: ${errorMsg}`)
-    renewals.value = []; // Ensure it's an empty array on error
+    renewals.value = [] // Ensure it's an empty array on error
   } finally {
     isFetchingRenewals.value = false
   }
@@ -479,9 +485,9 @@ const fetchQualifications = async () => {
   try {
     // This endpoint should return the list needed to map renewal.user_qualification to details
     const response = await apiServices.getMhpcNewQualifications()
-     const results = response?.data?.results ?? response?.data ?? null;
+    const results = response?.data?.results ?? response?.data ?? null
     if (Array.isArray(results)) {
-       qualificationsData.value = results;
+      qualificationsData.value = results
     } else {
       console.error('Unexpected API response structure for qualifications:', response?.data)
       toast.error('Received invalid qualification data structure.')

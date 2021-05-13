@@ -37,8 +37,14 @@
       <ErrorState v-else-if="error" :message="error" @retry="retryFetch" />
 
       <!-- Empty State -->
-      <EmptyState v-else-if="!displayedCapas.length && !isLoading && !error && viewType === 'table'" message="No CAPA records found matching your criteria." />
-      <EmptyState v-else-if="!displayedInstitutes.length && !isLoading && !error && viewType === 'cards'" message="No Institutes found matching your criteria." />
+      <EmptyState
+        v-else-if="!displayedCapas.length && !isLoading && !error && viewType === 'table'"
+        message="No CAPA records found matching your criteria."
+      />
+      <EmptyState
+        v-else-if="!displayedInstitutes.length && !isLoading && !error && viewType === 'cards'"
+        message="No Institutes found matching your criteria."
+      />
 
       <!-- Table View -->
       <div v-else-if="viewType === 'table'" class="overflow-x-auto rounded-lg shadow-md">
@@ -190,21 +196,66 @@
                     title="View Details"
                     class="text-indigo-600 hover:text-indigo-900 transition duration-150 ease-in-out p-1 rounded hover:bg-indigo-100"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 inline"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
                   </button>
                   <button
                     @click="handleEditClick(capa)"
                     title="Edit CAPA"
                     class="text-yellow-600 hover:text-yellow-900 transition duration-150 ease-in-out p-1 rounded hover:bg-yellow-100"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 inline"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
+                    </svg>
                   </button>
                   <button
                     @click="deleteCapa(capa.id)"
                     title="Delete CAPA"
                     class="text-red-600 hover:text-red-900 transition duration-150 ease-in-out p-1 rounded hover:bg-red-100"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 inline"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
                   </button>
                 </td>
               </tr>
@@ -231,7 +282,13 @@
       />
 
       <!-- Pagination -->
-      <div class="mt-6" v-if="(viewType === 'table' && totalPages > 1) || (viewType === 'cards' && totalInstitutePages > 1)">
+      <div
+        class="mt-6"
+        v-if="
+          (viewType === 'table' && totalPages > 1) ||
+          (viewType === 'cards' && totalInstitutePages > 1)
+        "
+      >
         <Pagination
           :current-page="currentPage"
           :total-pages="viewType === 'table' ? totalPages : totalInstitutePages"
@@ -286,7 +343,7 @@ const searchQuery = ref('')
 const statusFilter = ref('')
 const currentPage = ref(1)
 const itemsPerPage = ref(9) // Adjust as needed for card view pagination
-const itemsPerPageTable = ref(10); // Separate items per page for table view if needed
+const itemsPerPageTable = ref(10) // Separate items per page for table view if needed
 const showCapaModal = ref(false)
 const selectedInstituteId = ref(null)
 const selectedInstituteName = ref('')
@@ -306,7 +363,9 @@ const filteredCapas = computed(() => {
     filtered = filtered.filter((capa) => {
       // Ensure capa has institute_id and teaching_center_id before searching them
       const instName = capa.institute_id ? getInstituteName(capa.institute_id)?.toLowerCase() : ''
-      const tcName = capa.teaching_center_id ? getTeachingCenterName(capa.teaching_center_id)?.toLowerCase() : ''
+      const tcName = capa.teaching_center_id
+        ? getTeachingCenterName(capa.teaching_center_id)?.toLowerCase()
+        : ''
       return (
         instName.includes(query) ||
         tcName.includes(query) ||
@@ -328,16 +387,17 @@ const filteredInstitutes = computed(() => {
     const query = searchQuery.value.toLowerCase()
     // Filter institutes if their name matches OR if any of their CAPAs match
     filtered = filtered.filter((institute) => {
-        const instituteNameMatch = institute.name_of_institution.toLowerCase().includes(query);
-        const capasForInstitute = instituteCapas.value[institute.id] || [];
-        const capaMatch = capasForInstitute.some(capa =>
-            getTeachingCenterName(capa.teaching_center_id)?.toLowerCase().includes(query) ||
-            capa.observation_description?.toLowerCase().includes(query) ||
-            capa.root_cause?.toLowerCase().includes(query) ||
-            capa.capa?.toLowerCase().includes(query)
-        );
-        return instituteNameMatch || capaMatch;
-    });
+      const instituteNameMatch = institute.name_of_institution.toLowerCase().includes(query)
+      const capasForInstitute = instituteCapas.value[institute.id] || []
+      const capaMatch = capasForInstitute.some(
+        (capa) =>
+          getTeachingCenterName(capa.teaching_center_id)?.toLowerCase().includes(query) ||
+          capa.observation_description?.toLowerCase().includes(query) ||
+          capa.root_cause?.toLowerCase().includes(query) ||
+          capa.capa?.toLowerCase().includes(query),
+      )
+      return instituteNameMatch || capaMatch
+    })
   }
   return filtered.sort((a, b) => a.name_of_institution.localeCompare(b.name_of_institution))
 })
@@ -367,7 +427,6 @@ const displayedInstitutes = computed(() => {
   return filteredInstitutes.value.slice(start, end)
 })
 
-
 // --- Helper Functions ---
 const getInstituteName = (instituteId) => {
   if (!instituteId) return 'N/A' // Changed from 'N/A (No Institute Linked)' for brevity
@@ -379,9 +438,10 @@ const getTeachingCenterName = (teachingCenterId) => {
   if (!teachingCenterId) return 'N/A' // Changed for brevity
   const center = teachingCenters.value.find((center) => center.id === teachingCenterId)
   // Ensure center_name exists
-  return center ? (center.center_name || `Center ID: ${teachingCenterId}`) : `Unknown (ID: ${teachingCenterId})`
+  return center
+    ? center.center_name || `Center ID: ${teachingCenterId}`
+    : `Unknown (ID: ${teachingCenterId})`
 }
-
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== 'string' || !text) return 'N/A' // Handle null/undefined/non-string
@@ -395,9 +455,9 @@ const getStatusClass = (status) => {
   return (
     {
       P: 'bg-yellow-100 text-yellow-800', // Pending
-      R: 'bg-green-100 text-green-800',   // Resolved
-      C: 'bg-red-100 text-red-800',     // Cancelled
-      A: 'bg-blue-100 text-blue-800',   // Approved (If applicable)
+      R: 'bg-green-100 text-green-800', // Resolved
+      C: 'bg-red-100 text-red-800', // Cancelled
+      A: 'bg-blue-100 text-blue-800', // Approved (If applicable)
       // Add other statuses as needed
     }[status] || 'bg-gray-100 text-gray-800' // Default/Unknown
   )
@@ -410,7 +470,7 @@ const getStatusText = (status) => {
       R: 'Resolved',
       C: 'Cancelled',
       A: 'Approved',
-       // Add other statuses as needed
+      // Add other statuses as needed
     }[status] || 'Unknown'
   )
 }
@@ -421,17 +481,16 @@ const formatDate = (dateString) => {
     const date = new Date(dateString)
     // Check if the date is valid after parsing
     if (isNaN(date.getTime())) {
-      console.warn("Invalid date string received:", dateString);
-      return 'Invalid Date';
+      console.warn('Invalid date string received:', dateString)
+      return 'Invalid Date'
     }
     // Format as YYYY-MM-DD
-    return date.toLocaleDateString('en-CA'); // en-CA gives YYYY-MM-DD format
+    return date.toLocaleDateString('en-CA') // en-CA gives YYYY-MM-DD format
   } catch (e) {
-    console.error("Error formatting date:", dateString, e)
+    console.error('Error formatting date:', dateString, e)
     return 'Invalid Date' // Return specific error message
   }
 }
-
 
 // --- API Functions ---
 const fetchInstitutes = async () => {
@@ -448,7 +507,7 @@ const fetchInstitutes = async () => {
 
 const fetchTeachingCenters = async () => {
   try {
-     // Ensure your service method matches the actual API endpoint
+    // Ensure your service method matches the actual API endpoint
     const response = await apiServices.getEpcTeachingCenters()
     // Make sure the transformation extracts IDs correctly
     teachingCenters.value = (response.data.results || []).map((item) => ({
@@ -465,7 +524,6 @@ const fetchTeachingCenters = async () => {
     error.value = (error.value ? error.value + ' ' : '') + 'Failed to load teaching centers.'
   }
 }
-
 
 const fetchCapas = async () => {
   isLoading.value = true
@@ -484,7 +542,7 @@ const fetchCapas = async () => {
       // THIS IS WHERE THE BACKEND RESPONSE STRUCTURE MATTERS MOST
       institute_id: capa.institute_id || capa.institute?.id || null,
       teaching_center_id: capa.teaching_center_id || capa.teaching_center?.id || null,
-    }));
+    }))
     // --- END CRITICAL PART ---
 
     processCapas() // Group CAPAs by institute ID
@@ -503,65 +561,62 @@ const processCapas = () => {
   const grouped = {}
   capas.value.forEach((capa) => {
     const instituteId = capa.institute_id // Use the potentially null ID
-    if (instituteId) { // Only group if an institute ID exists
+    if (instituteId) {
+      // Only group if an institute ID exists
       if (!grouped[instituteId]) {
         grouped[instituteId] = []
       }
       grouped[instituteId].push(capa)
     } else {
       // Log CAPAs that couldn't be grouped - indicates backend data issue
-      console.warn(`CAPA ID ${capa.id} has no valid institute_id and cannot be grouped.`);
+      console.warn(`CAPA ID ${capa.id} has no valid institute_id and cannot be grouped.`)
     }
   })
   instituteCapas.value = grouped
 }
 
-
 const retryFetch = () => {
   // Reset state before retrying
-  error.value = null;
-  institutes.value = [];
-  teachingCenters.value = [];
-  capas.value = [];
-  instituteCapas.value = {};
-  currentPage.value = 1;
+  error.value = null
+  institutes.value = []
+  teachingCenters.value = []
+  capas.value = []
+  instituteCapas.value = {}
+  currentPage.value = 1
 
   // Fetch all data again
-  fetchAllData();
+  fetchAllData()
 }
 
 // Helper to fetch all initial data
 const fetchAllData = async () => {
-  isLoading.value = true;
-  error.value = null; // Reset error
+  isLoading.value = true
+  error.value = null // Reset error
   try {
     // Use Promise.allSettled to fetch even if one fails, and report errors
-    const results = await Promise.allSettled([
-        fetchInstitutes(),
-        fetchTeachingCenters()
-    ]);
+    const results = await Promise.allSettled([fetchInstitutes(), fetchTeachingCenters()])
 
     // Check results for errors
-    results.forEach(result => {
-        if (result.status === 'rejected') {
-            console.error("Fetch error during initial load:", result.reason);
-            // Error state will be set within individual fetch functions
-        }
-    });
+    results.forEach((result) => {
+      if (result.status === 'rejected') {
+        console.error('Fetch error during initial load:', result.reason)
+        // Error state will be set within individual fetch functions
+      }
+    })
 
     // Only fetch CAPAs if institutes and TCs loaded (or handle partial data)
-    if (!error.value) { // Fetch CAPAs only if no critical errors so far
-       await fetchCapas();
+    if (!error.value) {
+      // Fetch CAPAs only if no critical errors so far
+      await fetchCapas()
     }
   } catch (err) {
-     // Catch any unexpected error during Promise.allSettled or subsequent calls
-     console.error("Unexpected error during fetchAllData:", err);
-     error.value = "An unexpected error occurred while loading data.";
+    // Catch any unexpected error during Promise.allSettled or subsequent calls
+    console.error('Unexpected error during fetchAllData:', err)
+    error.value = 'An unexpected error occurred while loading data.'
   } finally {
-     isLoading.value = false; // Ensure loading is turned off
+    isLoading.value = false // Ensure loading is turned off
   }
-};
-
+}
 
 // --- Modal Functions ---
 const openAddCapaModal = (instituteIdFromCard = null) => {
@@ -573,9 +628,9 @@ const openAddCapaModal = (instituteIdFromCard = null) => {
 
 const openEditCapaModal = (capa) => {
   // Pre-populate the modal with existing data
-  capaToEdit.value = { ...capa }; // Create a copy to avoid modifying original ref directly
-  selectedInstituteId.value = capa.institute_id; // Set institute ID for the modal
-  selectedInstituteName.value = getInstituteName(capa.institute_id); // Set institute name
+  capaToEdit.value = { ...capa } // Create a copy to avoid modifying original ref directly
+  selectedInstituteId.value = capa.institute_id // Set institute ID for the modal
+  selectedInstituteName.value = getInstituteName(capa.institute_id) // Set institute name
   showCapaModal.value = true
 }
 
@@ -598,9 +653,10 @@ const closeViewDetailsModal = () => {
 
 // --- CRUD Operations ---
 const handleSaveCapa = async (capaDataFromModal) => {
-   // Basic validation
-  if (!capaDataFromModal.institute_id) { // Check if institute ID is selected in modal
-    alert("Please select an Institute.")
+  // Basic validation
+  if (!capaDataFromModal.institute_id) {
+    // Check if institute ID is selected in modal
+    alert('Please select an Institute.')
     return
   }
   isLoading.value = true
@@ -613,10 +669,10 @@ const handleSaveCapa = async (capaDataFromModal) => {
       // Ensure institute_id and teaching_center_id are correctly set from modal data
       institute: capaDataFromModal.institute_id, // Send ID as 'institute' if API expects that
       teaching_center: capaDataFromModal.teaching_center_id || null, // Send ID or null
-    };
+    }
     // Clean up potentially unnecessary fields before sending
-    delete payload.institute_id;
-    delete payload.teaching_center_id;
+    delete payload.institute_id
+    delete payload.teaching_center_id
     // Add any other fields API might generate automatically (like status if default is 'P')
     // payload.status = payload.status || 'P';
 
@@ -625,7 +681,9 @@ const handleSaveCapa = async (capaDataFromModal) => {
     closeCapaModal()
   } catch (err) {
     console.error('Error saving CAPA:', err.response ? err.response.data : err.message)
-    const errorDetail = err.response?.data ? JSON.stringify(err.response.data) : (err.message || 'Unknown error')
+    const errorDetail = err.response?.data
+      ? JSON.stringify(err.response.data)
+      : err.message || 'Unknown error'
     error.value = `Failed to save CAPA: ${errorDetail}. Please check the details and try again.`
     // Keep modal open on error? Optional.
   } finally {
@@ -636,47 +694,52 @@ const handleSaveCapa = async (capaDataFromModal) => {
 const handleUpdateCapa = async (updatedCapaData) => {
   const idToUpdate = updatedCapaData.id
   if (!idToUpdate) {
-    error.value = "Cannot update CAPA: Missing ID."
-    console.error("CAPA object missing ID for update:", updatedCapaData);
+    error.value = 'Cannot update CAPA: Missing ID.'
+    console.error('CAPA object missing ID for update:', updatedCapaData)
     return
   }
-  if (!updatedCapaData.institute_id) { // Check if institute ID is selected in modal
-    alert("Please select an Institute.")
+  if (!updatedCapaData.institute_id) {
+    // Check if institute ID is selected in modal
+    alert('Please select an Institute.')
     return
   }
   isLoading.value = true
   error.value = null
   try {
     // Prepare payload, remove fields API generates (id, created_at, updated_at)
-    const payload = { ...updatedCapaData };
-    payload.institute = payload.institute_id; // Map to what API expects
-    payload.teaching_center = payload.teaching_center_id || null; // Map to what API expects
+    const payload = { ...updatedCapaData }
+    payload.institute = payload.institute_id // Map to what API expects
+    payload.teaching_center = payload.teaching_center_id || null // Map to what API expects
 
     // Remove fields API likely manages or doesn't expect on update
-    delete payload.id;
-    delete payload.created_at;
-    delete payload.updated_at;
-    delete payload.institute_id; // Remove frontend helper field
-    delete payload.teaching_center_id; // Remove frontend helper field
+    delete payload.id
+    delete payload.created_at
+    delete payload.updated_at
+    delete payload.institute_id // Remove frontend helper field
+    delete payload.teaching_center_id // Remove frontend helper field
 
     await apiServices.updateEpcCapa(idToUpdate, payload)
     await fetchCapas() // Refresh data
     closeCapaModal()
   } catch (err) {
-    console.error(`Error updating CAPA ID ${idToUpdate}:`, err.response ? err.response.data : err.message)
-    const errorDetail = err.response?.data ? JSON.stringify(err.response.data) : (err.message || 'Unknown error')
+    console.error(
+      `Error updating CAPA ID ${idToUpdate}:`,
+      err.response ? err.response.data : err.message,
+    )
+    const errorDetail = err.response?.data
+      ? JSON.stringify(err.response.data)
+      : err.message || 'Unknown error'
     error.value = `Failed to update CAPA: ${errorDetail}. Please check the details and try again.`
-     // Keep modal open on error? Optional.
+    // Keep modal open on error? Optional.
   } finally {
     isLoading.value = false
   }
 }
 
-
 const deleteCapa = async (id) => {
   // Add confirmation dialog
   if (!confirm('Are you sure you want to delete this CAPA record? This action cannot be undone.')) {
-    return; // Stop if user cancels
+    return // Stop if user cancels
   }
 
   isLoading.value = true
@@ -691,13 +754,14 @@ const deleteCapa = async (id) => {
     }
   } catch (err) {
     console.error('Error deleting CAPA:', err.response?.data || err.message || err)
-    const errorDetail = err.response?.data ? JSON.stringify(err.response.data) : (err.message || 'Unknown error')
+    const errorDetail = err.response?.data
+      ? JSON.stringify(err.response.data)
+      : err.message || 'Unknown error'
     error.value = `Failed to delete CAPA: ${errorDetail}`
   } finally {
     isLoading.value = false
   }
 }
-
 
 // --- Event Handlers ---
 const handleSearch = (query) => {
@@ -712,12 +776,11 @@ const handleStatusFilter = (status) => {
 
 const handlePageChange = (newPage) => {
   // Check if newPage is valid before updating
-  const maxPage = viewType.value === 'table' ? totalPages.value : totalInstitutePages.value;
+  const maxPage = viewType.value === 'table' ? totalPages.value : totalInstitutePages.value
   if (newPage >= 1 && newPage <= maxPage) {
-      currentPage.value = newPage
+    currentPage.value = newPage
   }
 }
-
 
 const handleEditClick = (capa) => {
   // If the view details modal is open for the same CAPA, close it first
@@ -727,7 +790,6 @@ const handleEditClick = (capa) => {
   // Open the edit modal
   openEditCapaModal(capa)
 }
-
 
 // --- Watchers ---
 watch([searchQuery, statusFilter], () => {
@@ -739,13 +801,12 @@ watch([searchQuery, statusFilter], () => {
 
 // Reset pagination when view type changes
 watch(viewType, () => {
-    currentPage.value = 1;
-});
-
+  currentPage.value = 1
+})
 
 // --- Lifecycle Hooks ---
 onMounted(() => {
-  fetchAllData(); // Fetch all necessary data when component mounts
+  fetchAllData() // Fetch all necessary data when component mounts
 })
 </script>
 

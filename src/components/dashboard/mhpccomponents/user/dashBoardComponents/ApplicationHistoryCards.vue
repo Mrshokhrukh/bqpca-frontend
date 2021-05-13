@@ -15,9 +15,17 @@
 
     <div v-if="totalQualifications > 0" class="space-y-3">
       <!-- Review Status Cards -->
-      <div v-for="(counts, reviewType) in reviewStatusCounts" :key="reviewType" class="border border-gray-100 rounded-md overflow-hidden">
-        <div class="bg-gray-50 px-3 py-1.5 border-b border-gray-100 flex justify-between items-center">
-          <span class="text-xs font-medium text-gray-600">{{ formatReviewTypeName(reviewType) }}</span>
+      <div
+        v-for="(counts, reviewType) in reviewStatusCounts"
+        :key="reviewType"
+        class="border border-gray-100 rounded-md overflow-hidden"
+      >
+        <div
+          class="bg-gray-50 px-3 py-1.5 border-b border-gray-100 flex justify-between items-center"
+        >
+          <span class="text-xs font-medium text-gray-600">{{
+            formatReviewTypeName(reviewType)
+          }}</span>
           <div class="flex items-center gap-1">
             <span class="inline-block w-2 h-2 rounded-full bg-green-400"></span>
             <span class="inline-block w-2 h-2 rounded-full bg-yellow-400"></span>
@@ -25,14 +33,19 @@
           </div>
         </div>
         <div class="grid grid-cols-3">
-          <div v-for="(count, status) in counts" :key="`${reviewType}-${status}`"
-               class="py-2 px-2 flex flex-col items-center justify-center"
-               :class="{'border-r border-gray-100': status !== 'Rejected'}">
+          <div
+            v-for="(count, status) in counts"
+            :key="`${reviewType}-${status}`"
+            class="py-2 px-2 flex flex-col items-center justify-center"
+            :class="{ 'border-r border-gray-100': status !== 'Rejected' }"
+          >
             <div class="w-full flex items-center justify-center mb-1">
               <span class="w-2 h-2 rounded-full mr-1.5" :class="getStatusDotClass(status)"></span>
               <span class="text-xs text-gray-600">{{ status }}</span>
             </div>
-            <div class="text-sm font-medium" :class="getStatusTextClass(status)">{{ count || 0 }}</div>
+            <div class="text-sm font-medium" :class="getStatusTextClass(status)">
+              {{ count || 0 }}
+            </div>
           </div>
         </div>
       </div>
@@ -48,7 +61,9 @@
               <span class="w-2 h-2 rounded-full bg-green-500 mr-1.5"></span>
               <span class="text-xs text-gray-600">Completed</span>
             </div>
-            <span class="text-sm font-medium text-green-700">{{ paymentStatusCounts.Yes || 0 }}</span>
+            <span class="text-sm font-medium text-green-700">{{
+              paymentStatusCounts.Yes || 0
+            }}</span>
           </div>
           <div class="py-2 px-3 flex items-center justify-between">
             <div class="flex items-center">
@@ -69,8 +84,10 @@
           </span>
         </div>
         <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-          <div class="h-full bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full"
-               :style="`width: ${(qualificationStatusCounts.Approved / totalQualifications) * 100}%`"></div>
+          <div
+            class="h-full bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full"
+            :style="`width: ${(qualificationStatusCounts.Approved / totalQualifications) * 100}%`"
+          ></div>
         </div>
       </div>
     </div>

@@ -238,15 +238,20 @@
                       'p-1 text-sm rounded-full hover:bg-gray-100 relative disabled:opacity-50 disabled:cursor-not-allowed',
                       date.isCurrentMonth ? 'text-gray-900' : 'text-gray-400',
                       isSelectedDate(date) ? 'bg-primary text-white hover:bg-primary/90' : '',
-                      isToday(date) && !isSelectedDate(date) ? 'font-bold border border-gray-300' : '',
+                      isToday(date) && !isSelectedDate(date)
+                        ? 'font-bold border border-gray-300'
+                        : '',
                     ]"
                   >
                     {{ date.day }}
                   </button>
                 </div>
-                 <button @click="showDatePicker = false" class="mt-4 text-sm text-gray-500 hover:text-gray-700 w-full text-center">
-                    Close
-                 </button>
+                <button
+                  @click="showDatePicker = false"
+                  class="mt-4 text-sm text-gray-500 hover:text-gray-700 w-full text-center"
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>
@@ -332,7 +337,6 @@
 
     <!-- NDI Login Modal -->
     <NdiModal v-if="isNdiModalOpen" @close="isNdiModalOpen = false" />
-
   </div>
 </template>
 
@@ -371,8 +375,18 @@ const datePickerYear = ref(new Date().getFullYear())
 const selectedDate = ref(null) // Stores the full Date object
 
 const months = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ]
 
 // Generate years (e.g., last 100 years from current)
@@ -405,11 +419,11 @@ const registerForm = reactive({
 
 // Helper function to format date as YYYY-MM-DD using local parts
 const formatLocalDate = (date) => {
-  if (!date) return '';
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
-  const day = date.getDate().toString().padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  if (!date) return ''
+  const year = date.getFullYear()
+  const month = (date.getMonth() + 1).toString().padStart(2, '0') // Months are 0-indexed
+  const day = date.getDate().toString().padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 const calendarDates = computed(() => {
@@ -423,48 +437,47 @@ const calendarDates = computed(() => {
   // Days from previous month
   const lastDayOfPrevMonth = new Date(datePickerYear.value, datePickerMonth.value, 0)
   for (let i = startDayOfWeek - 1; i >= 0; i--) {
-    const day = lastDayOfPrevMonth.getDate() - i;
-    const date = new Date(datePickerYear.value, datePickerMonth.value - 1, day);
-    dates.push({ date, day, isCurrentMonth: false });
+    const day = lastDayOfPrevMonth.getDate() - i
+    const date = new Date(datePickerYear.value, datePickerMonth.value - 1, day)
+    dates.push({ date, day, isCurrentMonth: false })
   }
 
   // Days of current month
   for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
-    const date = new Date(datePickerYear.value, datePickerMonth.value, day);
-    dates.push({ date, day, isCurrentMonth: true });
+    const date = new Date(datePickerYear.value, datePickerMonth.value, day)
+    dates.push({ date, day, isCurrentMonth: true })
   }
 
   // Days from next month to fill the grid (usually 42 cells = 6 rows * 7 days)
-   const gridCells = 42; // Or 35 if you prefer 5 rows sometimes
-   let nextMonthDay = 1;
-   while (dates.length < gridCells) {
-     const date = new Date(datePickerYear.value, datePickerMonth.value + 1, nextMonthDay);
-     dates.push({ date, day: nextMonthDay, isCurrentMonth: false });
-     nextMonthDay++;
-   }
+  const gridCells = 42 // Or 35 if you prefer 5 rows sometimes
+  let nextMonthDay = 1
+  while (dates.length < gridCells) {
+    const date = new Date(datePickerYear.value, datePickerMonth.value + 1, nextMonthDay)
+    dates.push({ date, day: nextMonthDay, isCurrentMonth: false })
+    nextMonthDay++
+  }
 
-
-  return dates.slice(0, gridCells); // Ensure we don't exceed the grid size needed
+  return dates.slice(0, gridCells) // Ensure we don't exceed the grid size needed
 })
 
 // Use the helper function for display
 const formattedDOB = computed(() => {
-  return formatLocalDate(selectedDate.value);
+  return formatLocalDate(selectedDate.value)
 })
 
 const adjustDate = (amount, unit) => {
   if (unit === 'month') {
-    const currentDate = new Date(datePickerYear.value, datePickerMonth.value, 1);
-    currentDate.setMonth(currentDate.getMonth() + amount);
-    datePickerMonth.value = currentDate.getMonth();
-    datePickerYear.value = currentDate.getFullYear();
+    const currentDate = new Date(datePickerYear.value, datePickerMonth.value, 1)
+    currentDate.setMonth(currentDate.getMonth() + amount)
+    datePickerMonth.value = currentDate.getMonth()
+    datePickerYear.value = currentDate.getFullYear()
   }
 }
 
 const selectDate = (dateObj) => {
-  if (!dateObj.isCurrentMonth) return; // Don't allow selecting dates from other months easily
+  if (!dateObj.isCurrentMonth) return // Don't allow selecting dates from other months easily
   selectedDate.value = dateObj.date // Store the full Date object
-  registerForm.date_of_birth = formatLocalDate(dateObj.date); // Store the correct YYYY-MM-DD string
+  registerForm.date_of_birth = formatLocalDate(dateObj.date) // Store the correct YYYY-MM-DD string
   showDatePicker.value = false
 }
 
@@ -490,27 +503,26 @@ const isToday = (dateObj) => {
 // Close date picker if clicking outside
 const handleClickOutside = (event) => {
   // Find the date picker input and the picker div itself
-  const inputElement = event.target.closest('input[readonly]');
-  const pickerElement = event.target.closest('.absolute.z-10');
+  const inputElement = event.target.closest('input[readonly]')
+  const pickerElement = event.target.closest('.absolute.z-10')
 
   // If the click is not on the input or inside the picker, close it
   if (!inputElement && !pickerElement && showDatePicker.value) {
-      showDatePicker.value = false;
+    showDatePicker.value = false
   }
-};
+}
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
-});
+  document.addEventListener('click', handleClickOutside)
+})
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
-});
-
+  document.removeEventListener('click', handleClickOutside)
+})
 
 // --- NDI Modal Logic ---
 const openNdiLoginModal = () => {
-  isNdiModalOpen.value = true;
+  isNdiModalOpen.value = true
 }
 
 // --- Form Handlers (Login/Register) ---
@@ -562,10 +574,10 @@ const handleRegister = async () => {
     return
   }
   // Add validation for date of birth if needed
-   if (!registerForm.date_of_birth) {
-     toast.error('Please select your Date of Birth.');
-     return;
-   }
+  if (!registerForm.date_of_birth) {
+    toast.error('Please select your Date of Birth.')
+    return
+  }
 
   try {
     // Payload already contains the formatted date_of_birth string
@@ -587,11 +599,11 @@ const handleRegister = async () => {
     toast.success('Registration successful! Please login.')
     activeTab.value = 'login'
     // Optionally clear the registration form
-    Object.keys(registerForm).forEach(key => {
-       if (key !== 'service_type') registerForm[key] = key === 'terms' ? false : key === 'date_of_birth' ? null : '';
-    });
-    selectedDate.value = null; // Clear selected date object too
-
+    Object.keys(registerForm).forEach((key) => {
+      if (key !== 'service_type')
+        registerForm[key] = key === 'terms' ? false : key === 'date_of_birth' ? null : ''
+    })
+    selectedDate.value = null // Clear selected date object too
   } catch (error) {
     console.error('Registration error:', error)
     const response = error.response || {}
@@ -599,36 +611,37 @@ const handleRegister = async () => {
     const status = response.status
 
     // Improved error message handling from backend
-    let errorMessage = 'Registration failed. Please check your details and try again.'; // Default message
+    let errorMessage = 'Registration failed. Please check your details and try again.' // Default message
 
     if (status === 400) {
-        // Concatenate all field errors for a more informative message
-        const fieldErrors = Object.entries(data)
-            .map(([field, messages]) => {
-                if (Array.isArray(messages) && messages.length > 0) {
-                    // Make field name more readable
-                    const readableField = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    return `${readableField}: ${messages[0]}`; // Show first error message per field
-                }
-                return null;
-            })
-            .filter(msg => msg !== null)
-            .join('. ');
+      // Concatenate all field errors for a more informative message
+      const fieldErrors = Object.entries(data)
+        .map(([field, messages]) => {
+          if (Array.isArray(messages) && messages.length > 0) {
+            // Make field name more readable
+            const readableField = field.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+            return `${readableField}: ${messages[0]}` // Show first error message per field
+          }
+          return null
+        })
+        .filter((msg) => msg !== null)
+        .join('. ')
 
-        if (fieldErrors) {
-            errorMessage = fieldErrors;
-        } else if (data.non_field_errors && data.non_field_errors.length > 0) {
-             errorMessage = data.non_field_errors[0];
-        }
-    } else if (status === 409) { // Conflict (e.g., email/CID exists)
-        errorMessage = 'An account with this email or CID already exists.';
+      if (fieldErrors) {
+        errorMessage = fieldErrors
+      } else if (data.non_field_errors && data.non_field_errors.length > 0) {
+        errorMessage = data.non_field_errors[0]
+      }
+    } else if (status === 409) {
+      // Conflict (e.g., email/CID exists)
+      errorMessage = 'An account with this email or CID already exists.'
     } else if (error.message && error.message.includes('Network Error')) {
-      errorMessage = 'Cannot connect to the server. Please check your internet connection.';
+      errorMessage = 'Cannot connect to the server. Please check your internet connection.'
     } else if (status >= 500) {
-        errorMessage = 'Server error during registration. Please try again later.';
+      errorMessage = 'Server error during registration. Please try again later.'
     }
 
-    toast.error(errorMessage);
+    toast.error(errorMessage)
   }
 }
 </script>
@@ -642,8 +655,7 @@ const handleRegister = async () => {
   background-size: 1.5em 1.5em;
   padding-right: 2.5rem;
   -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 </style>
-

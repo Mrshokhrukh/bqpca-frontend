@@ -120,9 +120,7 @@
                               class="flex items-center space-x-2 bg-gray-50 p-2 sm:p-3 rounded-lg"
                             >
                               <UserCircle class="h-4 w-4 text-gray-400 flex-shrink-0" />
-                              <span
-                                v-if="!isEditing"
-                                class="text-xs sm:text-sm text-gray-600"
+                              <span v-if="!isEditing" class="text-xs sm:text-sm text-gray-600"
                                 >Gender: {{ application.gender }}</span
                               >
                               <select
@@ -139,16 +137,16 @@
                               class="flex items-center space-x-2 bg-gray-50 p-2 sm:p-3 rounded-lg"
                             >
                               <Calendar class="h-4 w-4 text-gray-400 flex-shrink-0" />
-                              <span
-                                v-if="!isEditing"
-                                class="text-xs sm:text-sm text-gray-600"
-                                >{{ formatDate(application.commencement_date) }}</span
-                              >
+                              <span v-if="!isEditing" class="text-xs sm:text-sm text-gray-600">{{
+                                formatDate(application.commencement_date)
+                              }}</span>
                               <input
                                 v-else
                                 type="date"
                                 :value="formatDateForInput(editableApplication.commencement_date)"
-                                @input="e => editableApplication.commencement_date = e.target.value"
+                                @input="
+                                  (e) => (editableApplication.commencement_date = e.target.value)
+                                "
                                 class="w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                               />
                             </div>
@@ -160,9 +158,7 @@
                         <div class="flex flex-col space-y-4">
                           <h5 class="font-medium text-gray-900">Application Status</h5>
                           <div class="flex items-center justify-between">
-                            <span
-                              v-if="!isEditing"
-                              class="text-xs sm:text-sm text-gray-600"
+                            <span v-if="!isEditing" class="text-xs sm:text-sm text-gray-600"
                               >Status: {{ application.do_dpr_review_decision }}</span
                             >
                           </div>
@@ -182,13 +178,9 @@
                           <span>Application Information</span>
                         </h4>
                         <div class="space-y-4">
-                          <div
-                            class="flex items-center space-x-3 p-2 sm:p-3 bg-gray-50 rounded-lg"
-                          >
+                          <div class="flex items-center space-x-3 p-2 sm:p-3 bg-gray-50 rounded-lg">
                             <Mail class="h-4 w-4 text-gray-400 flex-shrink-0" />
-                            <span
-                              v-if="!isEditing"
-                              class="text-xs sm:text-sm text-gray-600"
+                            <span v-if="!isEditing" class="text-xs sm:text-sm text-gray-600"
                               >Proposed Name: {{ application.dpr_name }}</span
                             >
                             <input
@@ -199,13 +191,9 @@
                               placeholder="Proposed Name"
                             />
                           </div>
-                          <div
-                            class="flex items-center space-x-3 p-2 sm:p-3 bg-gray-50 rounded-lg"
-                          >
+                          <div class="flex items-center space-x-3 p-2 sm:p-3 bg-gray-50 rounded-lg">
                             <Phone class="h-4 w-4 text-gray-400 flex-shrink-0" />
-                            <span
-                              v-if="!isEditing"
-                              class="text-xs sm:text-sm text-gray-600"
+                            <span v-if="!isEditing" class="text-xs sm:text-sm text-gray-600"
                               >Land Area: {{ application.land_details }}</span
                             >
                             <input
@@ -216,13 +204,9 @@
                               placeholder="Land Area"
                             />
                           </div>
-                          <div
-                            class="flex items-center space-x-3 p-2 sm:p-3 bg-gray-50 rounded-lg"
-                          >
+                          <div class="flex items-center space-x-3 p-2 sm:p-3 bg-gray-50 rounded-lg">
                             <MapPin class="h-4 w-4 text-gray-400 flex-shrink-0" />
-                            <span
-                              v-if="!isEditing"
-                              class="text-xs sm:text-sm text-gray-600"
+                            <span v-if="!isEditing" class="text-xs sm:text-sm text-gray-600"
                               >Vision, Mission & Strategies:
                               {{ application.vision_mission_strategies }}</span
                             >
@@ -338,9 +322,7 @@
                             />
                           </div>
                           <div class="p-4 bg-gray-50 rounded-lg">
-                            <p class="text-sm font-medium text-gray-500">
-                              Research Policy Details
-                            </p>
+                            <p class="text-sm font-medium text-gray-500">Research Policy Details</p>
                             <p
                               v-if="!isEditing"
                               class="text-sm text-gray-900 mt-2 flex items-center space-x-2"
@@ -356,9 +338,7 @@
                             />
                           </div>
                           <div class="p-4 bg-gray-50 rounded-lg">
-                            <p class="text-sm font-medium text-gray-500">
-                              Human Resources Details
-                            </p>
+                            <p class="text-sm font-medium text-gray-500">Human Resources Details</p>
                             <p
                               v-if="!isEditing"
                               class="text-sm text-gray-900 mt-2 flex items-center space-x-2"
@@ -563,17 +543,15 @@
                                   <FileText class="h-4 w-4" />
                                   <span>View Do DPR Report</span>
                                 </a>
-                                <span v-else class="text-gray-500"
-                                  >No document uploaded</span
-                                >
+                                <span v-else class="text-gray-500">No document uploaded</span>
                               </p>
                             </template>
                             <template v-else>
                               <div class="mt-2">
                                 <input
                                   type="file"
-                                  :ref="el => (fileInputs['do_dpr_report'] = el)"
-                                  @change="event => handleFileChange(event, 'do_dpr_report')"
+                                  :ref="(el) => (fileInputs['do_dpr_report'] = el)"
+                                  @change="(event) => handleFileChange(event, 'do_dpr_report')"
                                   accept=".pdf"
                                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                 />
@@ -614,18 +592,18 @@
                                   <FileText class="h-4 w-4" />
                                   <span>View EOI Supporting Documents</span>
                                 </a>
-                                <span v-else class="text-gray-500"
-                                  >No document uploaded</span
-                                >
+                                <span v-else class="text-gray-500">No document uploaded</span>
                               </p>
                             </template>
                             <template v-else>
                               <div class="mt-2">
                                 <input
                                   type="file"
-                                  :ref="el => (fileInputs['institute_eoi_supporting_documents'] = el)"
+                                  :ref="
+                                    (el) => (fileInputs['institute_eoi_supporting_documents'] = el)
+                                  "
                                   @change="
-                                    event =>
+                                    (event) =>
                                       handleFileChange(event, 'institute_eoi_supporting_documents')
                                   "
                                   accept=".pdf"
@@ -1024,7 +1002,7 @@ const saveChanges = async () => {
     if (selectedFiles.value.institute_eoi_supporting_documents) {
       formData.append(
         'institute_eoi_supporting_documents',
-        selectedFiles.value.institute_eoi_supporting_documents
+        selectedFiles.value.institute_eoi_supporting_documents,
       )
     }
 
@@ -1091,7 +1069,7 @@ const confirmAction = async () => {
     if (response && response.status === 200 && response.data) {
       emit(confirmingAction.value === 'approve' ? 'approve' : 'Regretted', response.data)
       toast.success(
-        `Application ${confirmingAction.value === 'approve' ? 'Approved' : 'Regretted'} Successfully!`
+        `Application ${confirmingAction.value === 'approve' ? 'Approved' : 'Regretted'} Successfully!`,
       )
       closeModalHandler()
     } else {
@@ -1112,11 +1090,14 @@ const confirmAction = async () => {
   }
 }
 
-watch(() => props.isOpen, (newVal) => {
-  if (!newVal && isEditing.value) {
-    cancelEditing()
-  }
-})
+watch(
+  () => props.isOpen,
+  (newVal) => {
+    if (!newVal && isEditing.value) {
+      cancelEditing()
+    }
+  },
+)
 
 watch(
   () => props.application,
@@ -1125,7 +1106,7 @@ watch(
       cancelEditing()
     }
   },
-  { deep: true }
+  { deep: true },
 )
 </script>
 
@@ -1167,12 +1148,12 @@ watch(
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-input[type="url"],
-input[type="date"],
-input[type="number"],
+input[type='text'],
+input[type='email'],
+input[type='tel'],
+input[type='url'],
+input[type='date'],
+input[type='number'],
 select,
 textarea {
   @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
