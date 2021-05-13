@@ -117,8 +117,7 @@
         :filter-options="statusFilterOptions"
       />
 
-      <!-- Removed old header card -->
-      <!-- Removed old search and filter section -->
+
 
       <!-- Loading State -->
       <div

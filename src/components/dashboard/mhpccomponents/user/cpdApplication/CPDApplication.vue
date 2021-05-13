@@ -1,6 +1,5 @@
 <template>
   <div class="w-full mx-auto px-4 sm:px-6 py-8 pb-10">
-    <!-- Use the new PageHeader component -->
     <PageHeader
       title="CPD Application"
       subtitle="Complete required fields *. Ensure information is accurate."
@@ -8,35 +7,86 @@
       <template #icon>
         <ClipboardList class="w-6 h-6 text-indigo-600" />
       </template>
-      <!-- Override the subtitle slot to include the red asterisk styling -->
       <template #subtitle>
         Complete required fields <span class="text-red-600 font-semibold">*</span>. Ensure
         information is accurate.
       </template>
     </PageHeader>
 
-    <!-- Form Section - Adjusted shadow and rounding slightly -->
     <form
       @submit.prevent="handleSubmit"
       class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100"
     >
-      <!-- Hidden fields -->
-      <input type="hidden" v-model="form.registration_no" />
-      <input type="hidden" v-model="form.cid_no" />
-      <input type="hidden" v-model="form.full_name" />
-      <input type="hidden" v-model="form.gender" />
-      <input type="hidden" v-model="form.cpd_credit" />
+      <!-- Section for Displaying Auto-Populated Personal Information -->
+      <div class="bg-gray-50/70 p-6 border-b border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800">Personal Information</h3>
+        <p class="mt-1 text-gray-500 text-sm">
+          This information is automatically populated. Please verify its accuracy.
+        </p>
+      </div>
+      <div class="p-6 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6">
+          <div class="space-y-1.5">
+            <label
+              for="display_registration_no_str"
+              class="text-xs font-medium text-gray-700"
+              >Registration Number</label
+            >
+            <p
+              id="display_registration_no_str"
+              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+            >
+              {{ form.display_registration_no || (isLoadingRegistrationNo ? 'Fetching...' : 'N/A') }}
+            </p>
+          </div>
 
-      <!-- Form Header - Simplified background -->
+          <div class="space-y-1.5">
+            <label for="display_cid_no" class="text-xs font-medium text-gray-700"
+              >CID No./Identity/Work Permit No.</label
+            >
+            <p
+              id="display_cid_no"
+              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+            >
+              {{ form.cid_no || 'N/A' }}
+            </p>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="display_full_name" class="text-xs font-medium text-gray-700"
+              >Full Name</label
+            >
+            <p
+              id="display_full_name"
+              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+            >
+              {{ form.full_name || 'N/A' }}
+            </p>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="display_gender" class="text-xs font-medium text-gray-700"
+              >Gender</label
+            >
+            <p
+              id="display_gender"
+              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm capitalize min-h-[38px] flex items-center"
+            >
+              {{ form.gender || 'N/A' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Header - CPD Details -->
       <div class="bg-gray-50/70 p-6 border-b border-gray-100">
         <h3 class="text-lg font-semibold text-gray-800">CPD Details</h3>
         <p class="mt-1 text-gray-500 text-sm">Provide information about your CPD activity.</p>
       </div>
 
-      <!-- Form Body - Kept existing layout -->
+      <!-- Form Body - CPD Details -->
       <div class="p-6 space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6">
-          <!-- Input Fields -->
           <div class="space-y-1.5">
             <label for="title_of_cpd" class="text-xs font-medium text-gray-700 flex items-center">
               Title of CPD <span class="text-red-500 ml-1">*</span>
@@ -74,7 +124,6 @@
             }}</span>
           </div>
 
-          <!-- Select Fields -->
           <div class="space-y-1.5">
             <label
               for="participation_category"
@@ -161,7 +210,6 @@
             }}</span>
           </div>
 
-          <!-- File Input -->
           <div class="space-y-1.5">
             <label for="attachment" class="text-xs font-medium text-gray-700"
               >Supporting Documents</label
@@ -199,6 +247,19 @@
               errors.attachment
             }}</span>
           </div>
+
+           <div class="space-y-1.5">
+            <label for="display_cpd_credit" class="text-xs font-medium text-gray-700"
+              >CPD Credit (Default)</label
+            >
+            <p
+              id="display_cpd_credit"
+              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+            >
+              {{ form.cpd_credit }}
+            </p>
+          </div>
+
         </div>
       </div>
 
@@ -259,8 +320,8 @@ import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
 import apiService from '@/services/services'
 import { useRouter } from 'vue-router'
-import PageHeader from '@/components/common/MHPC/PageHeader.vue' // Import the common header
-import { ClipboardList } from 'lucide-vue-next' // Import the icon
+import PageHeader from '@/components/common/MHPC/PageHeader.vue'
+import { ClipboardList } from 'lucide-vue-next'
 
 const toast = useToast()
 const authStore = useAuthStore()
@@ -274,9 +335,11 @@ const cpdActivities = ref([])
 const participationCategories = ref([])
 const participationSubCategories = ref([])
 const isSubmitting = ref(false)
+const isLoadingRegistrationNo = ref(false)
 
 const form = reactive({
-  registration_no: '',
+  registration_record_id: null, // Stores the PK (integer ID) for the registration record
+  display_registration_no: '',  // Stores the human-readable registration string for display
   cid_no: '',
   full_name: '',
   gender: '',
@@ -310,15 +373,16 @@ const loadDraft = () => {
           form[key] = draftData[key]
         }
       })
+      // Ensure user-specific info from authStore takes precedence or initializes
       if (authStore.user) {
-        form.cid_no = authStore.user.cid || ''
+        form.cid_no = authStore.user.cid || draftData.cid_no || ''
         form.full_name =
-          `${authStore.user.first_name || ''} ${authStore.user.middle_name || ''} ${authStore.user.last_name || ''}`
-            .replace(/\s+/g, ' ')
-            .trim()
-        form.gender = authStore.user.gender || ''
+          (`${authStore.user.first_name || ''} ${authStore.user.middle_name || ''} ${authStore.user.last_name || ''}`
+            .replace(/\s+/g, ' ').trim()) || draftData.full_name || ''
+        form.gender = authStore.user.gender || draftData.gender || ''
       }
       attachmentFileName.value = draftData.attachmentName || ''
+
       if (attachmentFileName.value) {
         toast.info('Draft loaded. Re-select attachment if needed.', { timeout: 4000 })
       } else {
@@ -350,16 +414,16 @@ const clearDraft = () => {
 const validateForm = () => {
   Object.keys(errors).forEach((key) => delete errors[key])
   let isValid = true
-  if (!form.title_of_cpd) {
-    errors.title_of_cpd = 'Required'
+  if (!form.title_of_cpd.trim()) {
+    errors.title_of_cpd = 'Title of CPD is required.'
     isValid = false
   }
-  if (!form.relevance_to_profession) {
-    errors.relevance_to_profession = 'Required'
+  if (!form.relevance_to_profession.trim()) {
+    errors.relevance_to_profession = 'Professional relevance is required.'
     isValid = false
   }
   if (!form.participation_category) {
-    errors.participation_category = 'Required'
+    errors.participation_category = 'Participation category is required.'
     isValid = false
   }
   if (form.participation_category && !form.participant_sub_category) {
@@ -367,65 +431,84 @@ const validateForm = () => {
       (sub) => parseInt(sub.participation_category_name) === parseInt(form.participation_category),
     )
     if (potentialSubs.length > 0) {
-      errors.participant_sub_category = 'Required'
+      errors.participant_sub_category = 'Participant sub-category is required.'
       isValid = false
     }
   }
   if (!form.type_of_cpd_activity) {
-    errors.type_of_cpd_activity = 'Required'
+    errors.type_of_cpd_activity = 'CPD activity type is required.'
     isValid = false
   }
   if (form.attachment && form.attachment.size > 2 * 1024 * 1024) {
-    errors.attachment = 'Max 2MB'
+    errors.attachment = 'File size must not exceed 2MB.'
     isValid = false
+  }
+  if (!form.registration_record_id) {
+    console.warn("Validation: Registration record ID is missing.")
+    // Depending on policy, you might want to show an error to the user here
+    // errors.general = "Registration information is missing. Cannot submit."
+    // isValid = false;
   }
   return isValid
 }
 
-const fetchRegistrationNumber = async (cid) => {
-  if (!cid) return null
+const fetchRegistrationDetails = async (cid) => {
+  if (!cid) return null;
+  isLoadingRegistrationNo.value = true;
   try {
-    const response = await apiService.getMhpcApplicationsByCid(cid)
+    const response = await apiService.getMhpcApplicationsByCid(cid);
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
       const primaryApp = response.data.find(
-        (app) => app.registration_type_name === 'New Registration' || app.is_primary,
-      )
-      const recordId = primaryApp?.id || response.data[0]?.id
-      if (recordId) return recordId
+        (app) => (app.registration_type_name === 'New Registration' || app.is_primary) && app.id
+      );
+      const appToUse = primaryApp || response.data.find(app => app.id);
+
+      if (appToUse && appToUse.id) {
+        return {
+          recordId: appToUse.id, // The Primary Key
+          displayNo: appToUse.registration_no || `Record ID: ${appToUse.id}` // String for display
+        };
+      }
     }
-    console.warn(`No application record ID found for CID: ${cid}`)
-    return null
+    console.warn(`No suitable registration record found for CID: ${cid}.`);
+    toast.warning('Could not automatically fetch complete registration details.');
+    return null;
   } catch (error) {
-    console.error('Error fetching registration record ID:', error)
-    return null
+    console.error('Error fetching registration details:', error);
+    toast.warning('Failed to fetch registration details. Submission might be affected.');
+    return null;
+  } finally {
+    isLoadingRegistrationNo.value = false;
   }
-}
+};
 
 const handleSubmit = async () => {
   if (!validateForm()) {
-    toast.error('Please fix errors.')
+    toast.error('Please correct the errors in the form before submitting.')
     return
+  }
+  if (!form.registration_record_id) {
+    toast.error('Critical: Registration information is missing. Cannot submit application.');
+    return;
   }
 
   isSubmitting.value = true
   const formData = new FormData()
-  const genderToSend =
-    form.gender?.toLowerCase() === 'male'
-      ? 'male'
-      : form.gender?.toLowerCase() === 'female'
-        ? 'female'
-        : 'others'
 
-  formData.append('registration_no', form.registration_no || '')
+  const genderToSend = form.gender ? form.gender.toLowerCase() : 'others';
+
+  formData.append('registration_no', String(form.registration_record_id)) // Send the PK
   formData.append('cid_no', form.cid_no || '')
   formData.append('full_name', form.full_name || '')
   formData.append('gender', genderToSend)
   formData.append('title_of_cpd', form.title_of_cpd)
   formData.append('relevance_to_profession', form.relevance_to_profession)
   formData.append('participation_category', form.participation_category)
-  formData.append('participant_sub_category', form.participant_sub_category)
+  if (form.participant_sub_category) {
+    formData.append('participant_sub_category', form.participant_sub_category)
+  }
   formData.append('type_of_cpd_activity', form.type_of_cpd_activity)
-  formData.append('cpd_credit', form.cpd_credit)
+  formData.append('cpd_credit', String(form.cpd_credit))
   if (form.attachment) {
     formData.append('attachment', form.attachment, form.attachment.name)
   }
@@ -433,24 +516,57 @@ const handleSubmit = async () => {
   try {
     const response = await apiService.createMhpcCpdRecord(formData)
     if (response.status >= 200 && response.status < 300) {
-      toast.success('CPD submitted successfully!')
+      toast.success('CPD application submitted successfully!')
       clearDraft()
+      // Reset only user-editable CPD fields, keep personal info
+      form.title_of_cpd = ''
+      form.relevance_to_profession = ''
+      form.participation_category = ''
+      form.participant_sub_category = ''
+      form.type_of_cpd_activity = ''
+      form.attachment = null
+      attachmentFileName.value = ''
+      if (fileInputRef.value) fileInputRef.value.value = ''
+      Object.keys(errors).forEach(key => delete errors[key]);
+
       router.push('/admin/user/health_certification/dashboard')
     } else {
-      const errorData = response.data || { message: `Server error ${response.status}` }
-      const errorMessage =
-        typeof errorData === 'object' ? JSON.stringify(errorData) : errorData.toString()
+      const errorData = response.data || { message: `Server responded with status ${response.status}` }
+      let errorMessage = typeof errorData === 'object' ? (errorData.detail || JSON.stringify(errorData)) : String(errorData)
+
+      if (typeof errorData === 'object' && errorData.registration_no && Array.isArray(errorData.registration_no)) {
+          errorMessage = `Registration No: ${errorData.registration_no.join(' ')}`;
+      }
+
       toast.error(`Submission failed: ${errorMessage}`)
       if (typeof errorData === 'object' && errorData !== null) {
-        Object.assign(errors, errorData)
+        Object.keys(errorData).forEach(key => {
+          if (Object.hasOwn(errors, key)) {
+            errors[key] = Array.isArray(errorData[key]) ? errorData[key].join(', ') : errorData[key];
+          }
+        });
       }
     }
   } catch (error) {
-    const errorMsg = error.response?.data ? JSON.stringify(error.response.data) : error.message
-    toast.error(`Submission failed: ${errorMsg}`)
-    if (error.response && error.response.data && typeof error.response.data === 'object') {
-      Object.assign(errors, error.response.data)
+    let errorMsg = 'An unexpected error occurred during submission.'
+    if (error.response && error.response.data) {
+        const errorData = error.response.data;
+        errorMsg = errorData.detail || errorData.message || (typeof errorData === 'object' ? JSON.stringify(errorData) : String(errorData));
+        if (typeof errorData === 'object' && errorData.registration_no && Array.isArray(errorData.registration_no)) {
+            errorMsg = `Registration No: ${errorData.registration_no.join(' ')}`;
+        }
+        if (typeof errorData === 'object' && errorData !== null) {
+            Object.keys(errorData).forEach(key => {
+                if (Object.hasOwn(errors, key)) {
+                    errors[key] = Array.isArray(errorData[key]) ? errorData[key].join(', ') : errorData[key];
+                }
+            });
+        }
+    } else if (error.message) {
+        errorMsg = error.message;
     }
+    toast.error(`Submission failed: ${errorMsg}`)
+    console.error("Submission error object:", error.response || error);
   } finally {
     isSubmitting.value = false
   }
@@ -462,7 +578,6 @@ const handleCancel = () => {
   form.participation_category = ''
   form.participant_sub_category = ''
   form.type_of_cpd_activity = ''
-  form.cpd_credit = 1
   form.attachment = null
   attachmentFileName.value = ''
   Object.keys(errors).forEach((key) => delete errors[key])
@@ -480,8 +595,18 @@ const handleFileUpload = (event) => {
     delete errors.attachment
     return
   }
+  const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png'];
+  if (!allowedTypes.includes(file.type)) {
+    errors.attachment = 'Invalid file type. Allowed: PDF, DOC, DOCX, JPG, PNG.'
+    form.attachment = null
+    attachmentFileName.value = ''
+    event.target.value = ''
+    toast.error(errors.attachment);
+    return;
+  }
+
   if (file.size > 2 * 1024 * 1024) {
-    errors.attachment = 'Max 2MB'
+    errors.attachment = 'File size must not exceed 2MB.'
     form.attachment = null
     attachmentFileName.value = ''
     event.target.value = ''
@@ -507,65 +632,36 @@ const fetchMasterData = async () => {
         apiService.getMhpcMastersMhpcParticipationSubCategories(),
       ])
 
-    // Console logging for debugging
-    console.log('Activities response:', activitiesResponse)
-    console.log('Categories response:', categoriesResponse)
-    console.log('SubCategories response:', subCategoriesResponse)
-
-    // Updated data assignments to correctly access results directly from response
     if (activitiesResponse.status === 'fulfilled') {
-      if (activitiesResponse.value?.results) {
-        cpdActivities.value = activitiesResponse.value.results
-      } else if (activitiesResponse.value?.data?.results) {
-        cpdActivities.value = activitiesResponse.value.data.results
-      } else {
-        console.error('Unexpected activities response structure:', activitiesResponse.value)
-        cpdActivities.value = []
-      }
+      const data = activitiesResponse.value?.data?.results || activitiesResponse.value?.results
+      cpdActivities.value = data || []
     } else {
-      cpdActivities.value = []
+      console.error('Failed to fetch CPD Activities:', activitiesResponse.reason)
     }
 
     if (categoriesResponse.status === 'fulfilled') {
-      if (categoriesResponse.value?.results) {
-        participationCategories.value = categoriesResponse.value.results
-      } else if (categoriesResponse.value?.data?.results) {
-        participationCategories.value = categoriesResponse.value.data.results
-      } else {
-        console.error('Unexpected categories response structure:', categoriesResponse.value)
-        participationCategories.value = []
-      }
+      const data = categoriesResponse.value?.data?.results || categoriesResponse.value?.results
+      participationCategories.value = data || []
     } else {
-      participationCategories.value = []
+      console.error('Failed to fetch Participation Categories:', categoriesResponse.reason)
     }
 
     if (subCategoriesResponse.status === 'fulfilled') {
-      if (subCategoriesResponse.value?.results) {
-        participationSubCategories.value = subCategoriesResponse.value.results
-      } else if (subCategoriesResponse.value?.data?.results) {
-        participationSubCategories.value = subCategoriesResponse.value.data.results
-      } else {
-        console.error('Unexpected subcategories response structure:', subCategoriesResponse.value)
-        participationSubCategories.value = []
-      }
+      const data = subCategoriesResponse.value?.data?.results || subCategoriesResponse.value?.results
+      participationSubCategories.value = data || []
     } else {
-      participationSubCategories.value = []
+      console.error('Failed to fetch Participation SubCategories:', subCategoriesResponse.reason)
     }
-
-    // Log loaded data for verification
-    console.log('CPD Activities loaded:', cpdActivities.value)
-    console.log('Participation Categories loaded:', participationCategories.value)
-    console.log('Participation SubCategories loaded:', participationSubCategories.value)
 
     if (
       activitiesResponse.status === 'rejected' ||
       categoriesResponse.status === 'rejected' ||
       subCategoriesResponse.status === 'rejected'
     ) {
-      toast.warning('Could not fetch all dropdown data.')
+      toast.warning('Could not fetch all dropdown data. Some options may be unavailable.')
     }
   } catch (error) {
-    toast.error('Failed to fetch master data.')
+    toast.error('Failed to fetch essential master data for the form.')
     console.error('Error fetching master data:', error)
   }
 }
@@ -579,18 +675,21 @@ onMounted(async () => {
         .trim()
     form.gender = authStore.user.gender || ''
   } else {
-    toast.error('User data not found.')
+    toast.error('User data not found. Please log in again.')
     return
   }
 
-  loadDraft()
   await fetchMasterData()
+  loadDraft()
 
-  const registrationRecordId = await fetchRegistrationNumber(form.cid_no)
-  if (registrationRecordId) {
-    form.registration_no = registrationRecordId
-  } else {
-    toast.warning('Could not get registration ID. Contact support if submission fails.')
+  if (!form.registration_record_id && form.cid_no) {
+    const regDetails = await fetchRegistrationDetails(form.cid_no)
+    if (regDetails) {
+      form.registration_record_id = regDetails.recordId;
+      form.display_registration_no = regDetails.displayNo;
+    }
+  } else if (!form.cid_no) {
+    toast.warning('CID number not available, cannot fetch registration details.');
   }
 })
 </script>
@@ -598,27 +697,22 @@ onMounted(async () => {
 <style scoped>
 select:required:invalid {
   color: #9ca3af;
-  /* gray-400 */
 }
-
 option[value=''][disabled] {
   color: #9ca3af;
 }
-
 option {
   color: #1f2937;
-  /* gray-800 */
 }
-
 select:disabled {
   background-color: #f3f4f6;
-  /* gray-100 */
   cursor: not-allowed;
   opacity: 0.7;
 }
-
 input[type='file']:focus-within {
   outline: none;
-  /* Focus handled by ring utility */
+}
+.min-h-\[38px\] {
+  min-height: 38px;
 }
 </style>

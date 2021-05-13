@@ -1,3 +1,4 @@
+```vue
 <template>
   <TransitionRoot appear :show="application !== null" as="template">
     <Dialog as="div" @close="$emit('close')" class="relative z-50">
@@ -235,7 +236,9 @@
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Type of CPD Activity</p>
+                              <p class="text-sm font-medium text-gray-500">
+                                Type of CPD Activity
+                              </p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Activity class="h-4 w-4 text-gray-400" />
                                 <span>{{ application.activityType || 'Not provided' }}</span>
@@ -370,7 +373,7 @@
                                 <textarea
                                   v-model="rejectionMessage"
                                   rows="3"
-                                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                  class="mt-1 block w-full px-3 SELF py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                                   placeholder="Please provide a reason for rejection..."
                                 ></textarea>
                                 <p
@@ -480,12 +483,10 @@ import {
   Award,
   Badge,
   BookOpen,
-  // Calendar,
   Check,
   CheckCircle,
   Circle,
   ClipboardCheck,
-  // FileCheck,
   FileText,
   Hash,
   Link,
@@ -534,14 +535,36 @@ const rejectionMessage = ref('')
 const rejectionError = ref('')
 const approvalCredits = ref(props.application?.cpdCredits || 0)
 
+// Transform API response to match template expectations
+const transformApplication = (app) => {
+  return {
+    ...app,
+    registrationNumber: app.registration_no || '',
+    cidNumber: app.cid_no || '',
+    fullName: app.full_name || '',
+    gender: app.gender || '',
+    cpdTitle: app.title_of_cpd || '',
+    relevance: app.relevance_to_profession || '',
+    participationCategory: app.participation_category_display || '',
+    participantSubCategory: app.participant_sub_category_display || '',
+    activityType: app.type_of_cpd_activity_display || '',
+    attachment: app.attachment ? { url: app.attachment, name: 'Document' } : null,
+    cpdCredits: app.cpd_credit || 0,
+    status: app.review_status || 'Pending',
+    remarks: app.remark || '',
+    id: app.id,
+  }
+}
+
 watch(
   () => props.application,
   (newApplication) => {
     if (newApplication) {
-      editedApplication.value = { ...newApplication }
-      approvalCredits.value = newApplication.cpdCredits || 0
+      editedApplication.value = transformApplication(newApplication)
+      approvalCredits.value = newApplication.cpd_credit || 0
     }
   },
+  { immediate: true }
 )
 
 const startEditing = () => {
@@ -647,3 +670,4 @@ const rejectApplication = () => {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style>
+```
