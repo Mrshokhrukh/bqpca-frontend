@@ -43,8 +43,8 @@
                   <span
                     class="text-l font-bold font-dzongkha leading-tight text-gray-700 text-center"
                   >
-                    འབྲུག་ཤེས་་སྦྱོར་དབང་འཛིན། <br />
-                    འབྲུག་ཤེས་ཚད་དང་ག་ངོ་སྦྱོར་དབང་འཛིན། <br />
+                    དཔལ་ལྡན་འབྲུག་གཞུང་། <br />
+                    མཐོ་རིམ་ཤེས་ཡོན་སྤུས་ཚད་ཚོགས་སྡེ། <br />
                     འབྲུག་ཤེས་ཚད་དང་ཁྱད་རིག་ངོ་སྦྱོར་དབང་འཛིན།
                   </span>
                 </div>
@@ -62,10 +62,10 @@
               <div class="flex w-full justify-center items-center -mt-4">
                 <div class="text-center">
                   <p class="text-l uppercase font-bold font-serif text-gray-800">
-                    Bhutan Qualifications Council
+                    Higher Education Quality Council
                   </p>
                   <p class="text-xs uppercase font-semibold font-serif text-gray-700">
-                    Bhutan Qualifications and Professional Certification Authority
+                    Bhutan Qualifications and Professionals Certification Authority
                   </p>
                 </div>
               </div>
