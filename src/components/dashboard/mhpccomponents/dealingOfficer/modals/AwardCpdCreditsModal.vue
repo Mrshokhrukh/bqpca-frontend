@@ -7,7 +7,7 @@
 
       <!-- Modal -->
       <div
-        class="relative w-full max-w-4xl bg-white rounded-lg shadow-lg p-8 m-4 transform transition-all overflow-y-auto max-h-[90vh]"
+        class="relative w-full max-w-7xl bg-white rounded-lg shadow-lg p-8 m-4 transform transition-all overflow-y-auto max-h-[90vh]"
         role="dialog"
         aria-labelledby="modal-title"
         @click.stop
@@ -91,7 +91,8 @@
               <div class="space-y-3 text-sm">
                 <div class="grid grid-cols-3 gap-2">
                   <dt class="text-gray-500 font-medium col-span-1">Reg. Number</dt>
-                  <dd class="text-gray-800 col-span-2">{{ participant.registrationNumber }}</dd>
+
+                  <dd class="text-gray-800 col-span-2">{{ participant.registrationNoDisplay }}</dd>
                 </div>
                 <div class="grid grid-cols-3 gap-2">
                   <dt class="text-gray-500 font-medium col-span-1">CID/ID</dt>
@@ -303,7 +304,6 @@
                     class="text-lg font-semibold mb-2"
                     :class="confirmationState === 'approving' ? 'text-blue-800' : 'text-red-800'"
                   >
-                    <!-- CHANGED: Wording for Reject -> Regret -->
                     Confirm Action:
                     {{
                       confirmationState === 'approving'
@@ -311,7 +311,6 @@
                         : 'Regret Application'
                     }}
                   </h4>
-                  <!-- Display entered message -->
                   <div
                     v-if="reviewMessage"
                     class="bg-white/70 p-3 rounded border text-sm text-gray-700 mb-4"
@@ -327,7 +326,6 @@
                     class="text-sm italic mb-4"
                     :class="confirmationState === 'approving' ? 'text-blue-600' : 'text-red-600'"
                   >
-                    <!-- CHANGED: Wording for Reject -> Regret -->
                     {{
                       confirmationState === 'approving'
                         ? 'No message provided for approval.'
@@ -352,7 +350,6 @@
                         'px-4 py-2 text-white rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2',
                       ]"
                     >
-                      <!-- CHANGED: Wording for Reject -> Regret -->
                       Confirm {{ confirmationState === 'approving' ? 'Approval' : 'Regret' }}
                     </button>
                   </div>
@@ -470,7 +467,6 @@
               >
                 Cancel
               </button>
-              <!-- CHANGED: Button text and handler name (internally calls handleReject) -->
               <button
                 @click="handleReject"
                 :disabled="!participant || participant.id === undefined"
@@ -532,37 +528,34 @@ const props = defineProps({
 
 const emit = defineEmits([
   'update:modelValue',
-  'approve', // Emitted AFTER internal confirmation
-  'reject', // Emitted AFTER internal confirmation (name kept 'reject' for consistency, parent handles API value)
+  'approve',
+  'reject',
   'awardCredits',
 ])
 
 // --- Local State ---
 const creditScore = ref(0)
-const reviewMessage = ref('') // For the message/remarks textarea
+const reviewMessage = ref('')
 const creditError = ref('')
-const messageError = ref('') // Error specific to the message textarea
-// CHANGED: Confirmation state value
-const confirmationState = ref(null) // Tracks confirmation: null | 'approving' | 'rejecting' (internal state name)
-const isProcessingCredits = ref(false) // Loading state for award credits button
+const messageError = ref('')
+const confirmationState = ref(null) // null | 'approving' | 'rejecting'
+const isProcessingCredits = ref(false)
 
 // --- Computed Properties ---
 const isConfirming = computed(() => confirmationState.value !== null)
 
 // --- Watchers ---
-// Reset form state when participant changes or modal opens
 watch(
   () => props.participant,
   (newParticipant) => {
     if (newParticipant) {
       creditScore.value = newParticipant.cpdCredits ?? 0
-      reviewMessage.value = newParticipant.remarks || '' // Pre-fill remarks if available
+      reviewMessage.value = newParticipant.remarks || ''
       creditError.value = ''
       messageError.value = ''
-      confirmationState.value = null // Ensure not in confirmation state
+      confirmationState.value = null
       isProcessingCredits.value = false
     } else {
-      // Reset all state if participant becomes null (e.g., modal closes)
       creditScore.value = 0
       reviewMessage.value = ''
       creditError.value = ''
@@ -571,159 +564,114 @@ watch(
       isProcessingCredits.value = false
     }
   },
-  { immediate: true, deep: true }, // Use deep watch if participant object structure is complex
+  { immediate: true, deep: true },
 )
 
-// Reset confirmation state if modal is closed externally
 watch(
   () => props.modelValue,
   (newValue) => {
     if (!newValue) {
       confirmationState.value = null
-      messageError.value = '' // Clear errors when closing
+      messageError.value = ''
       creditError.value = ''
       isProcessingCredits.value = false
-      // Optionally reset reviewMessage here if desired when modal closes
-      // reviewMessage.value = '';
     }
   },
 )
 
 // --- Methods ---
-
-// Close the modal (triggered by backdrop click or cancel button)
 const closeModal = () => {
-  // Prevent closing via backdrop click when in confirmation step
   if (isConfirming.value) return
   emit('update:modelValue', false)
 }
 
-// Basic check if participant data is available
 const isParticipantValid = () => {
   if (!props.participant || props.participant.id === undefined) {
     console.error('Action attempted without a valid participant prop:', props.participant)
-    // Optionally show a user-facing error here via notification system
     return false
   }
   return true
 }
 
-// Handle Award Credits Button Click
 const handleAwardCredits = async () => {
-  creditError.value = '' // Clear previous error
+  creditError.value = ''
   if (!isParticipantValid()) return
 
-  // Validate credit score input
   if (typeof creditScore.value !== 'number' || creditScore.value < 0 || isNaN(creditScore.value)) {
     creditError.value = 'Please enter a valid non-negative number for credits.'
     return
   }
 
-  isProcessingCredits.value = true // Show loading spinner
-
-  // Emit event to parent component to handle the API call
+  isProcessingCredits.value = true
   emit('awardCredits', {
     participantId: props.participant.id,
     credits: creditScore.value,
   })
 
-  // Simulate processing feedback - Parent is responsible for actual data update
-  // In a real app, parent might signal back success/failure
-  // Setting a timeout just for visual feedback here, parent needs to update the actual participant data
   setTimeout(() => {
     isProcessingCredits.value = false
-    // NOTE: The credit score visual update now depends on the parent sending back the updated participant prop
-  }, 1500) // Adjust delay as needed
+  }, 1500)
 }
 
-// Initiate Approve Confirmation Step
 const handleApprove = () => {
-  messageError.value = '' // Clear previous errors
+  messageError.value = ''
   creditError.value = ''
   if (!isParticipantValid()) return
-
-  // Proceed to confirmation state
   confirmationState.value = 'approving'
 }
 
-// Initiate Reject/Regret Confirmation Step
 const handleReject = () => {
-  // Function name kept as 'handleReject' for clarity
-  messageError.value = '' // Clear previous errors
+  messageError.value = ''
   creditError.value = ''
   if (!isParticipantValid()) return
-
-  // Proceed to confirmation state ('rejecting' used internally for this state)
   confirmationState.value = 'rejecting'
 }
 
-// Cancel the Internal Confirmation Step
 const cancelConfirmation = () => {
-  confirmationState.value = null // Exit confirmation mode
-  messageError.value = '' // Clear any message errors shown during confirmation attempt
+  confirmationState.value = null
+  messageError.value = ''
 }
 
-// Execute the Confirmed Action (Approve or Reject/Regret)
 const executeConfirmation = () => {
   if (!isParticipantValid() || !confirmationState.value) return
 
-  const action = confirmationState.value // 'approving' or 'rejecting'
-  const message = reviewMessage.value.trim() // Get message from textarea
+  const action = confirmationState.value
+  const message = reviewMessage.value.trim()
 
-  // Optional: Enforce message for rejection/regret *at the point of confirmation*
-  if (action === 'rejecting' && !message) {
-    // This error won't be visible as the view changes, better to handle earlier
-    // or rely on the warning in the confirmation view.
-    console.warn('Attempting to regret without a message.')
-    // You could uncomment the below to *stop* execution if a message is mandatory
-    // messageError.value = "A reason (message) is required to regret the application.";
-    // return;
-  }
-
-  // Prepare payload for the parent
   const payload = {
     participantId: props.participant.id,
-    remarks: message || null, // Send message as remarks, use null if empty
+    remarks: message || null,
   }
 
-  // Emit the final event based on the action
   if (action === 'approving') {
     emit('approve', payload)
   } else if (action === 'rejecting') {
-    // Emit the 'reject' event. The parent (SelfCpdApplications.vue)
-    // is responsible for sending 'Regretted' to the API.
     emit('reject', payload)
   }
 
-  // Reset state and close the modal after emitting
   confirmationState.value = null
-  emit('update:modelValue', false) // Close the modal
+  emit('update:modelValue', false)
 }
 
-// Helper to get filename from URL
 const getFilename = (url) => {
-  if (!url) return 'Attachment' // Shorter fallback
+  if (!url) return 'Attachment'
   try {
     const decodedUrl = decodeURIComponent(url)
     const parts = decodedUrl.split('/')
-    const filename = parts.pop() || parts.pop() // Handle potential trailing slash
-    // Optional: Remove query parameters if they exist
+    const filename = parts.pop() || parts.pop()
     return filename ? filename.split('?')[0] : 'Attachment'
   } catch (e) {
     console.error('Error parsing filename from URL:', e)
-    // Fallback for malformed URLs or unexpected errors
     const parts = url.split('/')
     return parts[parts.length - 1] || 'Attachment'
   }
 }
 
-// UI Helper for Status Colors
 const getStatusClass = (status) => {
-  status = status || 'Pending' // Default to Pending
+  status = status || 'Pending'
   switch (status) {
     case 'Approved':
       return { badge: 'bg-green-100 text-green-800', dot: 'bg-green-500' }
-    // CHANGED: Status key and removed trailing space
     case 'Regretted':
       return { badge: 'bg-red-100 text-red-800', dot: 'bg-red-500' }
     case 'Pending':

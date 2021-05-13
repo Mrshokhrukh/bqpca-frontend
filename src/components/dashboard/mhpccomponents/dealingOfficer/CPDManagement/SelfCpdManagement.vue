@@ -212,7 +212,7 @@
                   <div class="text-xs text-gray-500">CID: {{ participant.cidNumber }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ participant.registrationNumber }}</div>
+                  <div class="text-sm text-gray-900">{{ participant.registrationNoDisplay }}</div>
                 </td>
                 <td class="px-6 py-4 max-w-xs">
                   <div class="text-sm text-gray-900 truncate" :title="participant.cpdTitle">
@@ -437,7 +437,7 @@ const filteredParticipants = computed(() => {
     filtered = filtered.filter(
       (p) =>
         p.fullName?.toLowerCase().includes(query) ||
-        p.registrationNumber?.toString().toLowerCase().includes(query) ||
+        p.registrationNoDisplay?.toString().toLowerCase().includes(query) ||
         p.cpdTitle?.toLowerCase().includes(query) ||
         p.activityTypeDisplay?.toLowerCase().includes(query) ||
         p.participationCategoryDisplay?.toLowerCase().includes(query) ||
@@ -641,7 +641,7 @@ const updateLocalParticipant = (updatedItem) => {
 const mapApiResponseToParticipant = (item) => ({
   id: item.id,
   fullName: item.full_name,
-  registrationNumber: item.registration_no,
+  registrationNoDisplay: item.registration_no_display,
   cpdTitle: item.title_of_cpd,
   cpdCredits: item.cpd_credit,
   cidNumber: item.cid_no,

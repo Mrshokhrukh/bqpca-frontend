@@ -384,7 +384,7 @@ const processApiResponse = (results) => {
       cpdTitle: item.title_of_cpd || 'N/A', // For modal consistency
       relevance: item.relevance_to_profession || item.relevance_to_topic || 'Not specified',
 
-      participationCategory: getNameById(item.participation_category, participationCategoriesMaster.value, 'id', 'participation_category_name'),
+      participationCategory: getNameById(item.participation_category_display, participationCategoriesMaster.value, 'id', 'participation_category_name'),
       participantSubCategory: getNameById(item.participant_sub_category, subCategoriesMaster.value, 'id', 'participation_sub_category_name'),
       activityType: getNameById(item.type_of_cpd_activity, cpdActivitiesMaster.value, 'id', 'cpd_activity_name'), // Adjust 'cpd_activity_name' if needed
 
