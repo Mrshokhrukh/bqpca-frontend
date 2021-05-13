@@ -139,6 +139,7 @@ export default {
       profile: ecpfDashboard,
       track_applications: ecpfDashboard,
       upload_trade_license: ecpfDashboard,
+      non_compliance_records: ecpfDashboard,
     },
     accreditation: {
       dashboard: accredDashboard,

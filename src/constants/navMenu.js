@@ -330,6 +330,11 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/upload_trade_license`,
       },
+      {
+        name: 'Non Compliance Records',
+        icon: getIconComponent('UserCircle'),
+        route: (serviceType) => `/admin/user/${serviceType}/non_compliance_records`,
+      },
     ],
     admin: [
       {

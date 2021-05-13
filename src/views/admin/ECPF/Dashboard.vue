@@ -24,13 +24,8 @@
     <!-- Default Section (fallback) -->
     <template v-else>
       <StatsGrid :stats="filteredStats" />
-      <ApplicationTable
-        :applications="paginatedApplications"
-        :current-page="currentPage"
-        :total-results="filteredTotal"
-        :per-page="perPage"
-        @page-change="handlePageChange"
-      />
+      <ApplicationTable :applications="paginatedApplications" :current-page="currentPage" :total-results="filteredTotal"
+        :per-page="perPage" @page-change="handlePageChange" />
     </template>
   </div>
 </template>
@@ -60,6 +55,7 @@ import StudentBiodata from '@/components/dashboard/ecpfcomponents/user/StudentBi
 import ECPFUserProfile from '@/components/dashboard/ecpfcomponents/user/ECPFUserProfile.vue'
 import ECPFTrackApplications from '@/components/dashboard/ecpfcomponents/user/ECPFTrackApplications.vue'
 import UploadTradeLicense from '@/components/dashboard/ecpfcomponents/user/UploadTradeLicense.vue'
+import ECPFnonComplience from '@/components/dashboard/ecpfcomponents/user/ECPFnonComplience.vue'
 // Dealing officer Components
 import ECPFDealingOfficerDashboard from '@/components/dashboard/ecpfcomponents/dealingOfficer/ECPFDealingOfficerDashboard.vue'
 import IndividualEcpfApplications from '@/components/dashboard/ecpfcomponents/dealingOfficer/IndividualEcpfApplications.vue'
@@ -164,6 +160,8 @@ const ecpfUserComponent = computed(() => {
       return ECPFTrackApplications
     case path.endsWith('/ecpf/upload_trade_license'):
       return UploadTradeLicense
+    case path.endsWith('/ecpf/non_compliance_records'):
+      return ECPFnonComplience
     default:
       return null
   }
