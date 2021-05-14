@@ -1,15 +1,19 @@
 <template>
   <div>
-    <!-- Debug info to verify what value is being received -->
-    <div class="text-xs text-gray-500 mb-2">Status: {{ isCounselor ? 'Counselor' : 'Not a Counselor' }}</div>
+    <!-- Debug info -->
+    <div class="text-xs text-gray-500 mb-2">
+      User ID: {{ getUserId() }} | Counselor: {{ application.is_counselor ? 'Yes' : 'No' }}
+    </div>
 
-    <div v-if="isCounselor" class="flex flex-col space-y-3">
-      <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700 w-fit">
+    <!-- Badge for verified counselors -->
+    <div v-if="application.is_counselor" class="flex flex-col space-y-3">
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
         <Check class="h-4 w-4 mr-1" />
         Verified Counselor
       </span>
 
-      <button @click="toggleCounselorStatus(false)"
+      <!-- Unregister button for counselors only -->
+      <button @click="unregisterCounselor"
         class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 w-fit"
         :disabled="isSubmitting">
         <span v-if="isSubmitting">Updating...</span>
@@ -17,8 +21,9 @@
       </button>
     </div>
 
-    <div v-else>
-      <button @click="toggleCounselorStatus(true)"
+    <!-- Register button for non-counselors -->
+    <div v-if="!application.is_counselor">
+      <button @click="registerAsCounselor"
         class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-100 text-blue-700 hover:bg-blue-200"
         :disabled="isSubmitting">
         <span v-if="isSubmitting">Updating...</span>
@@ -26,92 +31,162 @@
       </button>
     </div>
 
+    <!-- Error message display -->
     <div v-if="errorMessage" class="text-red-500 text-sm mt-2">{{ errorMessage }}</div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { Check } from 'lucide-vue-next'
-import apiServices from '@/services/services' // Assuming your services path
-import { useToast } from 'vue-toastification' // Import useToast
+import apiServices from '@/services/services'
+import { useToast } from 'vue-toastification'
 
 const props = defineProps({
   application: {
     type: Object,
     required: true,
   },
-})
-
-const emit = defineEmits(['update']) // Emits an event to notify parent component to refresh data
-
-const errorMessage = ref('')
-const isSubmitting = ref(false) // To disable button during API call
-const toast = useToast() // Initialize toast
-
-// Computed property to handle different value types of is_counselor
-const isCounselor = computed(() => {
-  // Handle if is_counselor is a string 'true' or boolean true
-  if (props.application?.is_counselor === true || props.application?.is_counselor === 'true') {
-    return true
+  userId: {
+    type: [Number, String],
+    default: null
   }
-  return false
 })
 
-// Combined function to handle both registering and unmarking
-const toggleCounselorStatus = async (isCounselor) => {
-  // Basic check for userDetails and its id
-  // The application prop itself is the userDetails object based on your previous form structure
-  if (!props.application?.id) {
-    console.error('User ID is missing from the application prop.')
-    errorMessage.value = 'User details are missing. Cannot update status.'
-    toast.error('User details are missing.') // Toast error
+const emit = defineEmits(['update'])
+const errorMessage = ref('')
+const isSubmitting = ref(false)
+const toast = useToast()
+
+// Helper function to get user ID from various possible locations
+const getUserId = () => {
+  // Try different paths to find the user ID
+  const possibleIds = [
+    props.userId,                 // Direct prop
+    props.application.user_id,    // Common field name
+    props.application.userId,     // Camel case variation
+    props.application.id          // Sometimes the application itself has the ID
+  ]
+
+  // Return the first non-null ID
+  for (const id of possibleIds) {
+    if (id) return id
+  }
+
+  // If we're here, we couldn't find an ID
+  console.error('Could not determine user ID', props.application)
+  return null
+}
+
+const registerAsCounselor = async () => {
+  const userId = getUserId()
+
+  if (!userId) {
+    const errorMsg = 'User ID is missing. Cannot register as counselor.'
+    console.error(errorMsg, props.application)
+    errorMessage.value = errorMsg
+    toast.error(errorMsg)
     return
   }
 
   isSubmitting.value = true
-  errorMessage.value = '' // Clear previous errors
+  errorMessage.value = ''
 
   try {
+    // Create form data
     const formData = new FormData()
-    // Ensure we're sending a string "true" or "false" to the API
-    formData.append('is_counselor', isCounselor.toString())
+    formData.append('is_counselor', 'true')
 
-    console.log(`Attempting to set is_counselor to: ${isCounselor}`)
+    console.log('Registering user as counselor. User ID:', userId, 'Form data:', {
+      is_counselor: true
+    })
 
-    // Make API call to update user details
-    const response = await apiServices.patchUser(props.application.id, formData)
-
+    // Make API call
+    const response = await apiServices.patchUser(userId, formData)
     console.log('API response:', response)
 
     // Show success toast
-    if (isCounselor) {
-      toast.success('Successfully registered as a counselor!')
-    } else {
-      toast.success('Successfully unregistered as a counselor.')
-    }
+    toast.success('Successfully registered as a counselor!')
 
-    // Notify parent to refresh application data
+    // Notify parent to refresh
     emit('update')
   } catch (error) {
-    console.error('Error updating counselor status:', error)
-    let apiErrorMessage = 'Failed to update counselor status.'
+    console.error('Error registering as counselor:', error)
+    let apiErrorMessage = 'Failed to register as counselor.'
+
     if (error.response && error.response.data) {
-      // Try to get a more specific error message from the API response
-      const errors = error.response.data;
+      const errors = error.response.data
+      console.log('API error details:', errors)
+
       if (typeof errors === 'string') {
-        apiErrorMessage = errors;
+        apiErrorMessage = errors
       } else if (typeof errors === 'object') {
-        // If errors is an object, try to extract messages
-        // This part might need adjustment based on your actual API error structure
-        const messages = Object.values(errors).flat();
+        const messages = Object.values(errors).flat()
         if (messages.length > 0) {
-          apiErrorMessage = messages.join(' ');
+          apiErrorMessage = messages.join(' ')
         }
       }
     }
+
     errorMessage.value = apiErrorMessage
-    toast.error(apiErrorMessage) // Toast error
+    toast.error(apiErrorMessage)
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+const unregisterCounselor = async () => {
+  const userId = getUserId()
+
+  if (!userId) {
+    const errorMsg = 'User ID is missing. Cannot unregister as counselor.'
+    console.error(errorMsg, props.application)
+    errorMessage.value = errorMsg
+    toast.error(errorMsg)
+    return
+  }
+
+  isSubmitting.value = true
+  errorMessage.value = ''
+
+  try {
+    // Create form data
+    const formData = new FormData()
+    formData.append('is_counselor', 'false')
+
+    console.log('Unregistering user as counselor. User ID:', userId, 'Form data:', {
+      is_counselor: false
+    })
+
+    // Make API call
+    const response = await apiServices.patchUser(userId, formData)
+    console.log('API response:', response)
+
+    // Show success toast
+    toast.success('Successfully unregistered as a counselor.')
+
+    // Notify parent to refresh
+    emit('update')
+  } catch (error) {
+    console.error('Error unregistering as counselor:', error)
+    let apiErrorMessage = 'Failed to unregister as counselor.'
+
+    if (error.response && error.response.data) {
+      const errors = error.response.data
+      console.log('API error details:', errors)
+
+      if (typeof errors === 'string') {
+        apiErrorMessage = errors
+      } else if (typeof errors === 'object') {
+        const messages = Object.values(errors).flat()
+        if (messages.length > 0) {
+          apiErrorMessage = messages.join(' ')
+        }
+      }
+    }
+
+    errorMessage.value = apiErrorMessage
+    toast.error(apiErrorMessage)
   } finally {
     isSubmitting.value = false
   }
