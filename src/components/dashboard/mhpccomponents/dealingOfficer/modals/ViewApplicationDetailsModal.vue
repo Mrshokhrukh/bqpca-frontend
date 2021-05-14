@@ -1,10 +1,4 @@
 <template>
-  <div
-    v-if="isLoading"
-    class="absolute inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center"
-  >
-    <p>Loading...</p>
-  </div>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModalHandler" class="relative z-50">
       <TransitionChild
@@ -33,7 +27,6 @@
             <DialogPanel
               class="relative w-full max-w-7xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all max-h-screen sm:max-h-[calc(100vh-80px)] overflow-y-auto"
             >
-              <!-- Loading Overlay -->
               <div
                 v-if="isLoading"
                 class="absolute inset-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm flex items-center justify-center z-30 rounded-2xl"
@@ -81,7 +74,6 @@
                       @set-loading="handleSetLoading"
                     />
                     <ContactInformation :application="application" />
-                    <!-- Counselor Status -->
                     <div
                       class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
                     >
@@ -121,7 +113,7 @@
                       :qualifications="application.user_qualifications"
                       :applicationId="application.id"
                       @update="refreshApplication"
-                      @set-loading="setLoading"
+                      @set-loading="handleSetLoading"
                     />
                   </div>
                 </div>
@@ -142,7 +134,6 @@
     </Dialog>
   </TransitionRoot>
 
-  <!-- Certificate modal teleported to body with fixed positioning -->
   <Teleport to="body">
     <div v-if="isCertificateModalOpen" class="certificate-modal-wrapper">
       <MHPCCertificateModal :application="application" @close="closeCertificateModal" />
@@ -194,17 +185,8 @@ const closeModalHandler = () => {
   emit('close')
 }
 
-const setLoading = (value) => {
-  isLoading.value = value
-}
-
-// New handler for the 'set-loading' event from child components
-const handleSetLoading = async (loadingState) => {
-  // Can be async
+const handleSetLoading = (loadingState) => {
   isLoading.value = loadingState
-  if (loadingState) {
-    await nextTick() // Ensure DOM update if loader is being turned ON
-  }
 }
 
 const overallStatus = computed(() => {
@@ -226,15 +208,12 @@ const overallStatus = computed(() => {
 const refreshApplication = async () => {
   if (!props.application?.id) return
   isLoading.value = true // Show loader
-  await nextTick() // Ensure loader is definitely visible before API call
-
   try {
     const response = await apiServices.getMhpcNewApplication(props.application.id)
     emit('update', response.data)
-    await nextTick() // Allow DOM to update with new data before loader might hide
+    await nextTick()
   } catch (error) {
     console.error('Error refreshing application:', error)
-    // Potentially set isLoading.value = false here if an error means no further loading
   } finally {
     isLoading.value = false // Hide loader
   }

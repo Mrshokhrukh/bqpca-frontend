@@ -1,5 +1,35 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden relative">
+    <!-- Component-specific Loading Overlay -->
+    <div
+      v-if="localLoading"
+      class="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl"
+    >
+      <div class="flex flex-col items-center">
+        <svg
+          class="animate-spin h-8 w-8 text-blue-600"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+        <p class="mt-3 text-sm font-medium text-gray-700">Saving changes...</p>
+      </div>
+    </div>
+
     <div class="p-6">
       <div class="flex items-center justify-between">
         <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
@@ -10,7 +40,7 @@
           v-if="!isEditing"
           @click="startEditing"
           class="text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
-          :disabled="props.isLoading"
+          :disabled="localLoading || props.isLoading"
         >
           <Pencil class="h-4 w-4" />
         </button>
@@ -18,14 +48,14 @@
           <button
             @click="saveChanges"
             class="text-green-600 hover:text-green-800 mr-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            :disabled="props.isLoading"
+            :disabled="localLoading || props.isLoading"
           >
             <Check class="h-4 w-4" />
           </button>
           <button
             @click="cancelEditing"
             class="text-gray-600 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-            :disabled="props.isLoading"
+            :disabled="localLoading || props.isLoading"
           >
             <X class="h-4 w-4" />
           </button>
@@ -137,7 +167,7 @@
             <select
               v-model="editableData.application_review_status"
               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              :disabled="props.isLoading"
+              :disabled="localLoading || props.isLoading"
             >
               <option value="Pending">Pending Review</option>
               <option value="Approved">Approve Documents</option>
@@ -149,7 +179,7 @@
               placeholder="Provide rejection reason..."
               class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               rows="3"
-              :disabled="props.isLoading"
+              :disabled="localLoading || props.isLoading"
             ></textarea>
           </div>
         </div>
@@ -161,7 +191,7 @@
             <select
               v-model="editableData.physical_review_status"
               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              :disabled="props.isLoading"
+              :disabled="localLoading || props.isLoading"
             >
               <option value="Pending">Pending Verification</option>
               <option value="Approved">Verify Documents</option>
@@ -173,7 +203,7 @@
               placeholder="Provide rejection reason..."
               class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               rows="3"
-              :disabled="props.isLoading"
+              :disabled="localLoading || props.isLoading"
             ></textarea>
           </div>
         </div>
@@ -195,12 +225,12 @@
             </h5>
             <select
               v-model="editableData.endorsement_decision"
-              :disabled="props.isLoading || currentPaymentStatus !== 'completed'"
+              :disabled="localLoading || props.isLoading || currentPaymentStatus !== 'completed'"
               :class="[
                 'w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
                 {
                   'opacity-50 cursor-not-allowed':
-                    props.isLoading || currentPaymentStatus !== 'completed',
+                    localLoading || props.isLoading || currentPaymentStatus !== 'completed',
                 },
               ]"
             >
@@ -211,13 +241,13 @@
             <textarea
               v-if="editableData.endorsement_decision === 'Regretted'"
               v-model="editableData.endorsement_remarks"
-              :disabled="props.isLoading || currentPaymentStatus !== 'completed'"
+              :disabled="localLoading || props.isLoading || currentPaymentStatus !== 'completed'"
               placeholder="Provide rejection reason..."
               :class="[
                 'mt-3 w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
                 {
                   'opacity-50 cursor-not-allowed':
-                    props.isLoading || currentPaymentStatus !== 'completed',
+                    localLoading || props.isLoading || currentPaymentStatus !== 'completed',
                 },
               ]"
               rows="3"
@@ -225,7 +255,7 @@
           </div>
         </div>
       </div>
-      <div v-if="errorMessage && !props.isLoading" class="text-red-500 text-sm mt-2">
+      <div v-if="errorMessage && !localLoading && !props.isLoading" class="text-red-500 text-sm mt-2">
         {{ errorMessage }}
       </div>
     </div>
@@ -233,7 +263,6 @@
 </template>
 
 <script setup>
-// Make sure nextTick is imported
 import { ref, watch, onMounted, computed } from 'vue'
 import { ClipboardCheck, Pencil, Check, X } from 'lucide-vue-next'
 import apiServices from '@/services/services'
@@ -254,14 +283,15 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update', 'set-loading'])
+const emit = defineEmits(['update'])
 
 const isEditing = ref(false)
 const editableData = ref({})
 const originalData = ref({})
 const errorMessage = ref('')
+// Add local loading state
+const localLoading = ref(false)
 
-// ... (rest of your computed properties, onMounted, watch, startEditing, cancelEditing) ...
 const currentPaymentStatus = computed(() => {
   return props.qualification.payment_status?.toLowerCase()
 })
@@ -283,38 +313,34 @@ watch(
 )
 
 const startEditing = () => {
-  if (props.isLoading) return
+  if (localLoading.value || props.isLoading) return
   isEditing.value = true
   editableData.value = JSON.parse(JSON.stringify(originalData.value))
   errorMessage.value = ''
 }
 
 const cancelEditing = () => {
-  if (props.isLoading) return
+  if (localLoading.value || props.isLoading) return
   isEditing.value = false
   editableData.value = JSON.parse(JSON.stringify(originalData.value))
   errorMessage.value = ''
 }
 
-
 const saveChanges = async () => {
   // Prevent multiple save attempts while loading
-  if (props.isLoading) return;
+  if (localLoading.value || props.isLoading) return;
 
   // Clear any previous error messages
   errorMessage.value = '';
 
-  // Signal the parent to show the loading overlay
-  emit('set-loading', true);
-
-  // Wait for the browser to repaint, ensuring the loading overlay is rendered
-  await new Promise(resolve => requestAnimationFrame(resolve));
+  // Set local loading state
+  localLoading.value = true;
 
   // Validate qualification ID
   if (!props.qualification.id) {
     console.error('Qualification ID is missing.');
     errorMessage.value = 'Qualification details are missing.';
-    emit('set-loading', false);
+    localLoading.value = false;
     return;
   }
 
@@ -329,7 +355,7 @@ const saveChanges = async () => {
   // If no changes, exit editing mode and hide loading
   if (Object.keys(changedFields).length === 0) {
     isEditing.value = false;
-    emit('set-loading', false);
+    localLoading.value = false;
     return;
   }
 
@@ -349,19 +375,20 @@ const saveChanges = async () => {
     // Update original data and exit editing mode
     originalData.value = JSON.parse(JSON.stringify(editableData.value));
     isEditing.value = false;
+
+    // Notify parent to refresh data
     emit('update');
   } catch (error) {
     // Handle any errors
     console.error('Error saving changes:', error);
     errorMessage.value = error.response?.data?.message || 'Failed to save changes.';
   } finally {
-    // Ensure loading overlay is hidden
-    emit('set-loading', false);
+    // Ensure loading state is reset
+    localLoading.value = false;
   }
 };
 
 const getStatusClass = (status) => {
-  // ... (your getStatusClass function)
   switch (status?.toLowerCase()) {
     case 'pending': return 'bg-yellow-400';
     case 'approved': return 'bg-green-400';
