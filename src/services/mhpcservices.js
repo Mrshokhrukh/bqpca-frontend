@@ -357,21 +357,21 @@ export default {
     return apiClient.delete(`/mhpc/masters-university/${id}/`)
   },
   // Generic function to fetch master data
-  getMasterData(masterDataType) {
+  getMhpcMasterData(masterDataType) {
     let endpoint = ''
     switch (masterDataType) {
       case 'personnel-categories':
         endpoint = '/mhpc/masters-personnel-categories/'
         break
-      case 'personnel-subcategories':
-        endpoint = '/mhpc/masters-sub-categories/'
-        break
+      case 'personnel-subcategories': // <<< ADD THIS CASE
+        endpoint = '/mhpc/masters-sub-categories/'; // Or the correct endpoint for sub-categories
+        break;
       case 'sectors':
         endpoint = '/mhpc/masters-sector/'
         break
       default:
         console.error(
-          `Master data type "${masterDataType}" is not supported in getMasterData function.`,
+          `Master data type "${masterDataType}" is not supported in getMhpcMasterData function.`,
         )
         return Promise.reject(`Master data type "${masterDataType}" is not supported.`)
     }

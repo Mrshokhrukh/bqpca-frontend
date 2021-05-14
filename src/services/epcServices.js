@@ -937,7 +937,7 @@ export default {
   },
 
   // Generic function to fetch master data
-  getMasterData(masterDataType) {
+  getEpcMasterData(masterDataType) {
     let endpoint = ''
     switch (masterDataType) {
       case 'personnel-categories':
@@ -958,7 +958,7 @@ export default {
         break
       default:
         console.error(
-          `Master data type "${masterDataType}" is not supported in getMasterData function.`,
+          `Master data type "${masterDataType}" is not supported in getEpcMasterData function.`,
         )
         return Promise.reject(`Master data type "${masterDataType}" is not supported.`)
     }
