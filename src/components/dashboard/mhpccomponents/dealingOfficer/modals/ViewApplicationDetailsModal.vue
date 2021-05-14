@@ -1,5 +1,10 @@
-<!-- Main Application Details Modal -->
 <template>
+  <div
+    v-if="isLoading"
+    class="absolute inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center"
+  >
+    <p>Loading...</p>
+  </div>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModalHandler" class="relative z-50">
       <TransitionChild
@@ -26,8 +31,40 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="w-full max-w-7xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all max-h-screen sm:max-h-[calc(100vh-80px)] overflow-y-auto"
+              class="relative w-full max-w-7xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all max-h-screen sm:max-h-[calc(100vh-80px)] overflow-y-auto"
             >
+              <!-- Loading Overlay -->
+              <div
+                v-if="isLoading"
+                class="absolute inset-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm flex items-center justify-center z-30 rounded-2xl"
+              >
+                <div class="flex flex-col items-center">
+                  <svg
+                    class="animate-spin h-10 w-10 text-blue-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  <p class="mt-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Processing...
+                  </p>
+                </div>
+              </div>
+
               <ApplicationStatus
                 v-if="application"
                 :overallStatus="overallStatus"
@@ -38,7 +75,11 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   <!-- Left Column -->
                   <div class="lg:col-span-1 space-y-6">
-                    <PersonalInformation :application="application" @update="refreshApplication" />
+                    <PersonalInformation
+                      :application="application"
+                      @update="refreshApplication"
+                      @set-loading="handleSetLoading"
+                    />
                     <ContactInformation :application="application" />
                     <!-- Counselor Status -->
                     <div
@@ -58,6 +99,7 @@
                             <CounselorStatus
                               :application="application"
                               @update="refreshApplication"
+                              @set-loading="handleSetLoading"
                             />
                           </div>
                         </div>
@@ -73,11 +115,13 @@
                       :personnelSubcategories="personnelSubcategories"
                       :sectors="sectors"
                       @update="refreshApplication"
+                      @set-loading="handleSetLoading"
                     />
                     <QualificationList
                       :qualifications="application.user_qualifications"
                       :applicationId="application.id"
                       @update="refreshApplication"
+                      @set-loading="setLoading"
                     />
                   </div>
                 </div>
@@ -89,6 +133,7 @@
                 @update="refreshApplication"
                 :is-loading="isLoading"
                 @close="closeModal"
+                @set-loading="handleSetLoading"
               />
             </DialogPanel>
           </TransitionChild>
@@ -140,13 +185,26 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'update'])
 const isLoading = ref(false)
-const isCertificateModalOpen = ref(false) // Use a single ref for modal visibility
+const isCertificateModalOpen = ref(false)
 
 const closeModal = () => {
   emit('close')
 }
 const closeModalHandler = () => {
   emit('close')
+}
+
+const setLoading = (value) => {
+  isLoading.value = value
+}
+
+// New handler for the 'set-loading' event from child components
+const handleSetLoading = async (loadingState) => {
+  // Can be async
+  isLoading.value = loadingState
+  if (loadingState) {
+    await nextTick() // Ensure DOM update if loader is being turned ON
+  }
 }
 
 const overallStatus = computed(() => {
@@ -166,18 +224,19 @@ const overallStatus = computed(() => {
 })
 
 const refreshApplication = async () => {
-  // Centralized refresh logic.  Called by child components after successful updates.
-  if (!props.application?.id) return // Ensure application ID exists
-  isLoading.value = true
+  if (!props.application?.id) return
+  isLoading.value = true // Show loader
+  await nextTick() // Ensure loader is definitely visible before API call
+
   try {
     const response = await apiServices.getMhpcNewApplication(props.application.id)
     emit('update', response.data)
-    await nextTick() // Ensure DOM updates
+    await nextTick() // Allow DOM to update with new data before loader might hide
   } catch (error) {
     console.error('Error refreshing application:', error)
-    // Handle error appropriately (e.g., show a global error message)
+    // Potentially set isLoading.value = false here if an error means no further loading
   } finally {
-    isLoading.value = false
+    isLoading.value = false // Hide loader
   }
 }
 
@@ -219,16 +278,12 @@ const closeCertificateModal = () => {
 
 /* Enhanced card hover effects */
 .rounded-xl {
-  transition:
-    transform 0.2s ease-in-out,
-    box-shadow 0.2s ease-in-out;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .rounded-xl:hover {
   transform: translateY(-2px);
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* Status indicator animations */

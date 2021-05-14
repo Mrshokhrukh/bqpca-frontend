@@ -2,15 +2,22 @@
 <template>
   <div class="px-8 py-4 bg-gray-50 border-t border-gray-200">
     <div class="flex justify-between items-center">
+      <!-- Error Message Display -->
       <div v-if="errorMessage" class="text-sm text-red-600 flex items-center space-x-2">
         <CircleAlert class="h-4 w-4" />
         <span>{{ errorMessage }}</span>
       </div>
+      <div v-else>
+        <!-- Placeholder for alignment if no error message -->
+      </div>
+
+      <!-- Buttons -->
       <div class="flex items-center space-x-4">
         <button
           type="button"
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center space-x-2"
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
           @click="$emit('close')"
+          :disabled="isLoading"
         >
           <X class="h-4 w-4" />
           <span>Close</span>
@@ -19,14 +26,16 @@
         <button
           v-if="overallStatus === 'Approved'"
           type="button"
-          class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 inline-flex items-center space-x-2"
+          class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 inline-flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
           @click="$emit('open-certificate-modal')"
+          :disabled="isLoading"
         >
           <FileText class="h-4 w-4" />
           <span>View Certificate</span>
         </button>
+        <!-- If you add more buttons here that trigger API calls, follow the pattern below -->
       </div>
-      <slot></slot>
+      <slot></slot> <!-- Slot for potentially other buttons from parent -->
     </div>
   </div>
 </template>
@@ -40,15 +49,15 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  isLoading: {
+  isLoading: { // This prop is received from the parent
     type: Boolean,
     default: false,
   },
 })
 
-defineEmits(['close', 'open-certificate-modal', 'update']) // Corrected emit
+defineEmits(['close', 'open-certificate-modal', 'update', 'set-loading'])
 
-const errorMessage = ref('')
+const errorMessage = ref('') // For displaying errors from actions within this component
 
 const overallStatus = computed(() => {
   if (!props.application?.user_qualifications?.[0]) return 'Pending'
@@ -65,4 +74,5 @@ const overallStatus = computed(() => {
     return 'Pending'
   }
 })
+
 </script>
