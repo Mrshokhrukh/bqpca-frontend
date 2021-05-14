@@ -363,8 +363,8 @@ export default {
       case 'personnel-categories':
         endpoint = '/mhpc/masters-personnel-categories/'
         break
-      case 'personnel-subcategories': // <<< ADD THIS CASE
-        endpoint = '/mhpc/masters-sub-categories/'; // Or the correct endpoint for sub-categories
+      case 'personnel-subcategories':
+        endpoint = '/mhpc/masters-sub-categories/'; 
         break;
       case 'sectors':
         endpoint = '/mhpc/masters-sector/'
