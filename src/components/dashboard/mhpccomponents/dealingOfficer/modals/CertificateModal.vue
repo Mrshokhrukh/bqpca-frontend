@@ -884,10 +884,10 @@ const viewCertificate = () => {
 onMounted(async () => {
   isLoading.value = true
   try {
-    // Assuming apiServices.getMasterData is a function to fetch master data
-    personnelCategories.value = await apiServices.getMasterData('personnel-categories') // Replace 'personnel-categories' with your actual endpoint
-    personnelSubcategories.value = await apiServices.getMasterData('personnel-subcategories') // Replace 'personnel-subcategories' with your actual endpoint
-    sectors.value = await apiServices.getMasterData('sectors') // Replace 'sectors' with your actual endpoint
+    // Assuming apiServices.getMhpcMasterData is a function to fetch master data
+    personnelCategories.value = await apiServices.getMhpcMasterData('personnel-categories') // Replace 'personnel-categories' with your actual endpoint
+    personnelSubcategories.value = await apiServices.getMhpcMasterData('personnel-subcategories') // Replace 'personnel-subcategories' with your actual endpoint
+    sectors.value = await apiServices.getMhpcMasterData('sectors') // Replace 'sectors' with your actual endpoint
   } catch (error) {
     console.error('Error fetching master data:', error)
     errorMessage.value = 'Failed to load dropdown options.'
