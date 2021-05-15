@@ -155,13 +155,13 @@
         >
           Save as Draft
         </button>
-        <button
+        <!-- <button
           @click="editApplication"
           :disabled="isSubmittingRenewal"
           class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50"
         >
           Edit
-        </button>
+        </button> -->
         <button
           @click="handleSubmitFlow"
           :disabled="!canSubmit() || isSubmittingRenewal"
@@ -601,10 +601,10 @@ const saveAsDraft = async () => {
   }
 }
 
-const editApplication = () => {
-  // The form is generally always editable. This button is more of a conceptual placeholder.
-  toast.info('The form is currently editable. Make your changes and save or submit.')
-}
+// const editApplication = () => {
+//   // The form is generally always editable. This button is more of a conceptual placeholder.
+//   toast.info('The form is currently editable. Make your changes and save or submit.')
+// }
 </script>
 
 <style scoped>

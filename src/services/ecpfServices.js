@@ -120,7 +120,6 @@ export default {
   deleteEcpfNameChange(id) {
     return apiClient.delete(`/ecpf/ecpf-name-changes/${id}/`)
   },
-
   // ECPF Non-Compliances
   getEcpfNonCompliances() {
     return apiClient.get('/ecpf/ecpf-non-compliances/')

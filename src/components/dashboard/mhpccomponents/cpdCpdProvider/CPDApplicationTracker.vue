@@ -56,7 +56,7 @@
 
     <!-- Empty State -->
     <div
-      v-if="!loading && !error && applications.length === 0"
+      v-if="!loading && !error && applications.length === 0 && filteredApplications.length === 0"
       class="bg-gray-50 rounded-xl p-8 text-center"
     >
       <svg
@@ -74,7 +74,9 @@
         />
       </svg>
       <h3 class="mt-2 text-lg font-medium text-gray-900">No applications found</h3>
-      <p class="mt-1 text-gray-500">You haven't submitted any CPD applications yet.</p>
+      <p class="mt-1 text-gray-500">
+        You haven't submitted any CPD applications yet, or no applications match your current filters.
+      </p>
       <button
         @click="createNewApplication"
         class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -82,6 +84,18 @@
         Create New Application
       </button>
     </div>
+     <!-- No applications match filter state -->
+    <div
+      v-if="!loading && !error && applications.length > 0 && filteredApplications.length === 0"
+      class="bg-gray-50 rounded-xl p-8 text-center"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 10l4 4m0-4l-4 4" />
+      </svg>
+      <h3 class="mt-2 text-lg font-medium text-gray-900">No applications match your search</h3>
+      <p class="mt-1 text-gray-500">Try adjusting your search term or status filter.</p>
+    </div>
+
 
     <!-- Search and Filter Controls -->
     <div
@@ -107,7 +121,7 @@
           class="block w-full sm:w-auto rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
         >
           <option value="">All Statuses</option>
-          <option value="Approved">Approved</option>
+          <option value="Approved">Approved (Overall)</option>
           <option value="Needs Participants">Needs Participants</option>
           <option value="Completed">Completed</option>
           <option value="Pending">Pending</option>
@@ -119,7 +133,7 @@
 
     <!-- Application Table -->
     <div
-      v-if="!loading && !error && applications.length > 0"
+      v-if="!loading && !error && filteredApplications.length > 0"
       class="bg-white border rounded-xl shadow-sm overflow-x-auto"
     >
       <table class="min-w-full divide-y divide-gray-200">
@@ -188,7 +202,7 @@
                   getStatusClass(application),
                 ]"
               >
-                {{ getStatusText(application) }}
+                {{ getComprehensiveStatus(application) }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
@@ -200,7 +214,7 @@
               </button>
 
               <button
-                v-if="getStatusText(application) === 'Draft'"
+                v-if="getComprehensiveStatus(application) === 'Draft'"
                 @click="editApplication(application)"
                 class="text-green-600 hover:text-green-900 focus:outline-none"
               >
@@ -302,7 +316,7 @@
                     getStatusClass(selectedApplication),
                   ]"
                 >
-                  {{ getStatusText(selectedApplication) }}
+                  {{ getComprehensiveStatus(selectedApplication) }}
                 </span>
               </div>
               <div>
@@ -470,7 +484,7 @@
               Close
             </button>
             <button
-              v-if="getStatusText(selectedApplication) === 'Draft'"
+              v-if="getComprehensiveStatus(selectedApplication) === 'Draft'"
               @click="editApplication(selectedApplication)"
               class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
             >
@@ -486,12 +500,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/authStore'
+// import { useAuthStore } from '@/stores/authStore' // Not used in this snippet, can be removed if not needed elsewhere
 import apiServices from '@/services/services'
 import { useToast } from 'vue-toastification'
 
 const router = useRouter()
-const authStore = useAuthStore()
+// const authStore = useAuthStore() // Not used in this snippet
 const toast = useToast()
 
 // Reactive state
@@ -503,45 +517,6 @@ const statusFilter = ref('')
 const showViewModal = ref(false)
 const selectedApplication = ref(null)
 
-// Computed properties for filtering applications
-const filteredApplications = computed(() => {
-  const term = searchTerm.value.toLowerCase().trim()
-  const statusTerm = statusFilter.value
-
-  return applications.value.filter((app) => {
-    // Title match
-    const titleMatch = app.title_of_cpd ? app.title_of_cpd.toLowerCase().includes(term) : false
-
-    // ID match
-    const idMatch = app.id ? app.id.toString().toLowerCase().includes(term) : false
-
-    // Status match
-    let statusMatch = true
-    if (statusTerm) {
-      if (statusTerm === 'Needs Participants') {
-        statusMatch = isApprovedWithoutParticipants(app)
-      } else if (statusTerm === 'Completed') {
-        statusMatch =
-          app.review_status === 'Approved' && app.participants && app.participants.length > 0
-      } else {
-        const appStatus = getStatusText(app)
-        statusMatch = appStatus === statusTerm
-      }
-    }
-
-    return (titleMatch || idMatch || term === '') && statusMatch
-  })
-})
-
-// Computed properties for approved applications
-const approvedApplicationsWithoutParticipants = computed(() => {
-  return applications.value.filter((app) => isApprovedWithoutParticipants(app))
-})
-
-const hasApprovedApplicationsWithoutParticipants = computed(() => {
-  return approvedApplicationsWithoutParticipants.value.length > 0
-})
-
 // Helper function to check if an application is approved but needs participants
 const isApprovedWithoutParticipants = (application) => {
   return (
@@ -550,25 +525,117 @@ const isApprovedWithoutParticipants = (application) => {
   )
 }
 
+// Centralized function to determine the comprehensive status of an application
+const getComprehensiveStatus = (application) => {
+  if (!application) return 'N/A'; // Guard against null application object
+
+  if (application.is_draft) {
+    return 'Draft';
+  }
+
+  // For submitted applications, review_status is key
+  if (application.review_status === 'Approved') {
+    if (isApprovedWithoutParticipants(application)) {
+      return 'Needs Participants';
+    } else {
+      return 'Completed'; // Approved and has participants
+    }
+  }
+
+  // Other review_statuses like 'Pending', 'Rejected'
+  if (application.review_status) {
+    // Capitalize first letter if backend might send lowercase, e.g. 'pending' -> 'Pending'
+    // For now, assume backend sends it in the desired format (e.g., 'Pending', 'Rejected')
+    return application.review_status;
+  }
+
+  // Fallback if review_status is missing for a non-draft application.
+  // This might indicate an old record or an interim state.
+  // console.warn(`Application ID ${application.id} is not a draft and has no review_status. Defaulting comprehensive status to 'Pending'.`);
+  return 'Pending';
+};
+
+
+// Computed properties for filtering applications
+const filteredApplications = computed(() => {
+  const term = searchTerm.value.toLowerCase().trim();
+  const statusTerm = statusFilter.value;
+
+  if (!applications.value) return [];
+
+  return applications.value.filter((app) => {
+    const appComprehensiveStatus = getComprehensiveStatus(app);
+
+    // Search term matching (title or ID)
+    const titleMatch = app.title_of_cpd ? app.title_of_cpd.toLowerCase().includes(term) : false;
+    const idMatch = app.id ? app.id.toString().toLowerCase().includes(term) : false;
+    const searchCriteriaMet = (term === '') || titleMatch || idMatch;
+
+    if (!searchCriteriaMet) {
+      return false;
+    }
+
+    // Status filter matching
+    let statusFilterMet = true;
+    if (statusTerm) {
+      if (statusTerm === 'Approved') {
+        // User wants to see all applications whose review_status is 'Approved',
+        // which covers both 'Needs Participants' and 'Completed'
+        statusFilterMet = app.review_status === 'Approved';
+      } else {
+        // Direct match with comprehensive status for 'Needs Participants', 'Completed', 'Pending', 'Rejected', 'Draft'
+        statusFilterMet = appComprehensiveStatus === statusTerm;
+      }
+    }
+
+    if (!statusFilterMet) {
+      return false;
+    }
+
+    // "Clean up" rule: Hide "empty" drafts (no title) in default view
+    // (i.e., when not specifically searching or filtering for "Draft")
+    if (appComprehensiveStatus === 'Draft' && !app.title_of_cpd) {
+      if (term === '' && statusTerm !== 'Draft') {
+        // If no search term, AND (filter is "All" (empty) OR filter is something other than "Draft")
+        // then hide this empty draft.
+        return false;
+      }
+    }
+
+    return true;
+  });
+});
+
+
+// Computed properties for approved applications notice
+const approvedApplicationsWithoutParticipants = computed(() => {
+  if (!applications.value) return [];
+  return applications.value.filter((app) => isApprovedWithoutParticipants(app))
+})
+
+const hasApprovedApplicationsWithoutParticipants = computed(() => {
+  return approvedApplicationsWithoutParticipants.value.length > 0
+})
+
+
 // Fetch all CPD applications
 const fetchApplications = async () => {
   try {
     loading.value = true
     error.value = null
-
-    // Fetch CPD applications from the backend - single API call
     const response = await apiServices.getMhpcCpdTask()
-
-    // Process the response
-    if (response.data && response.data.results) {
+    if (response.data && Array.isArray(response.data.results)) {
       applications.value = response.data.results
-      console.log('Applications loaded:', applications.value.length)
+      // console.log('Applications loaded:', applications.value.length)
     } else {
-      error.value = 'No data received from server'
+      applications.value = [] // Ensure it's an array
+      console.warn('No data.results array received from server, or format is unexpected:', response.data);
+      // error.value = 'No application data received from server or data is in unexpected format.';
     }
   } catch (err) {
     console.error('Error fetching applications:', err)
     error.value = err.message || 'Failed to load applications'
+    applications.value = [] // Clear applications on error
   } finally {
     loading.value = false
   }
@@ -577,7 +644,6 @@ const fetchApplications = async () => {
 // Helper functions
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
-
   try {
     const date = new Date(dateString)
     return date.toLocaleDateString(undefined, {
@@ -593,38 +659,33 @@ const formatDate = (dateString) => {
 
 const formatDateRange = (startDate, endDate) => {
   if (!startDate || !endDate) return 'N/A'
-
   return `${formatDate(startDate)} to ${formatDate(endDate)}`
 }
 
-const getStatusText = (application) => {
-  if (application.is_draft) {
-    return 'Draft'
-  }
-
-  // Check if the application is under review (pending)
-  if (!application.is_cpd_approved) {
-    return 'Pending'
-  }
-
-  // If review_status is present and not pending, use it
-  return 'Approved'
-}
-
-const getStatusClass = (application) => {
-  const status = getStatusText(application)
+const getStatusClass = (applicationOrStatusString) => {
+  const status = typeof applicationOrStatusString === 'string'
+    ? applicationOrStatusString
+    : getComprehensiveStatus(applicationOrStatusString);
 
   switch (status) {
+    case 'Completed':
+      return 'bg-green-100 text-green-800';
+    case 'Needs Participants': // Highlight that action is needed
+      return 'bg-yellow-100 text-yellow-800'; // Using yellow like 'Pending'
+    // The 'Approved' case here would be for applications where `review_status` is 'Approved'
+    // but they don't fall into 'Needs Participants' or 'Completed' by getComprehensiveStatus logic.
+    // However, getComprehensiveStatus always categorizes 'Approved' review_status.
+    // This case is more for the "Approved (Overall)" filter option.
     case 'Approved':
-      return 'bg-green-100 text-green-800'
+      return 'bg-green-100 text-green-800';
     case 'Rejected':
-      return 'bg-red-100 text-red-800'
+      return 'bg-red-100 text-red-800';
     case 'Pending':
-      return 'bg-yellow-100 text-yellow-800'
+      return 'bg-yellow-100 text-yellow-800';
     case 'Draft':
-      return 'bg-gray-100 text-gray-800'
+      return 'bg-gray-100 text-gray-800';
     default:
-      return 'bg-gray-100 text-gray-800'
+      return 'bg-gray-200 text-gray-700'; // Default for any other unhandled statuses
   }
 }
 
@@ -641,10 +702,7 @@ const closeViewModal = () => {
 
 // Edit application (navigate to edit page)
 const editApplication = (application) => {
-  // Hide modal if it's open
-  showViewModal.value = false
-
-  // Redirect to edit page with application ID
+  showViewModal.value = false // Close modal if open
   router.push(
     `/admin/cme_cpd_provider/health_certification/cpd_application_details?id=${application.id}`,
   )
@@ -652,20 +710,16 @@ const editApplication = (application) => {
 
 // Add participants to an approved application
 const addParticipants = (application) => {
-  // Close the modal if it's open
   if (showViewModal.value) {
-    showViewModal.value = false
+    showViewModal.value = false;
   }
-
-  // Check if the application is actually approved
+  // Check if the application is actually approved (review_status)
   if (application.review_status !== 'Approved') {
     toast.error(
-      'This application is not yet approved. Participants can only be added to approved applications.',
+      'Participants can only be added to applications with an "Approved" review status.',
     )
     return
   }
-
-  // Navigate to the participants page with the application ID
   router.push(
     `/admin/cme_cpd_provider/health_certification/cpd_application_details?id=${application.id}&add_participants=true`,
   )

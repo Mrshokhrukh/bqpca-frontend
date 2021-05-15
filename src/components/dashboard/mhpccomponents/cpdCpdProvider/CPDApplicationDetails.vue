@@ -43,7 +43,7 @@
         :participant-details="participantDetails"
         @update:participantDetails="handleParticipantDetailsUpdate"
         :participation-category-options="participationCategoryOptions"
-        :participant-subcategory-options="filteredSubcategories"
+        :participant-subcategory-options="participantSubcategoryOptions"
       />
       <ApprovedCpdForm
         :is-cpd-approved="isCpdApproved"
@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 import apiService from '@/services/services'
@@ -197,40 +197,12 @@ const methodologyOptions = ref([])
 const participationCategoryOptions = ref([])
 const participantSubcategoryOptions = ref([]) // This stores ALL subcategories
 
-// --- START: MODIFIED/ADDED FOR DEBUGGING ---
 const handleParticipantDetailsUpdate = (updatedDetails) => {
   console.log("PARENT: Received update:participantDetails event with:", JSON.parse(JSON.stringify(updatedDetails)));
   Object.assign(participantDetails, updatedDetails);
   console.log("PARENT: participantDetails.category after update:", participantDetails.category);
   console.log("PARENT: participantDetails.subcategory after update:", participantDetails.subcategory);
 };
-
-const filteredSubcategories = computed(() => {
-  console.log("%cPARENT: filteredSubcategories COMPUTED FIRING.", "color: blue; font-weight: bold;");
-  console.log("PARENT: current participantDetails.category:", participantDetails.category, "(type:", typeof participantDetails.category, ")");
-
-  if (!participantDetails.category) {
-    console.log("PARENT: No category selected, returning [].");
-    return [];
-  }
-
-  const categoryId = parseInt(participantDetails.category, 10);
-  console.log("PARENT: Parsed categoryId for filtering:", categoryId, "(type:", typeof categoryId, ")");
-
-  // console.log("PARENT: ALL participantSubcategoryOptions.value before filter:", JSON.parse(JSON.stringify(participantSubcategoryOptions.value)));
-
-  const result = participantSubcategoryOptions.value.filter((subcategory) => {
-    // Ensure subcategory.categoryId is treated as a number for comparison
-    const subCatParentId = parseInt(subcategory.categoryId, 10);
-    // console.log(`PARENT: Checking subcategory: Value=${subcategory.value}, Text='${subcategory.text}', SubCatParentID=${subCatParentId} (type: ${typeof subCatParentId}) vs SelectedCategoryID=${categoryId}`);
-    return subCatParentId === categoryId;
-  });
-
-  console.log("PARENT: Filtered result for subcategories:", JSON.parse(JSON.stringify(result)));
-  return result;
-});
-// --- END: MODIFIED/ADDED FOR DEBUGGING ---
-
 
 const toggleApprovedFields = () => {
   application.title = application.isApproved === 'true' ? '' : application.title
@@ -346,13 +318,6 @@ const removeTeachingMethod = (index) => {
   teachingMethods.value.splice(index, 1)
   calculateTotalHours()
 }
-
-// const loadSubcategories = async () => { // This function is not strictly needed if subcategories are pre-loaded and filtered
-//   if (!participantDetails.category) {
-//     return;
-//   }
-// }
-
 
 const addParticipant = () => {
   participants.value.push({ regNo: '', name: '' })
@@ -619,29 +584,64 @@ const loadDropdownOptions = async () => {
         value: method.id,
       })) || []
 
-    // --- START: CORRECTED MAPPING AND LOGGING ---
+    // --- START: MODIFIED SECTION FOR CATEGORIES AND SUBCATEGORIES ---
     const categoriesResponse = await apiService.getMhpcMasterData('personnel-categories')
-    participationCategoryOptions.value = categoriesResponse.data?.results.map((category) => ({
-        text: category.category_name,
-        value: category.id,
-      })) || []
-    console.log("PARENT: Loaded participationCategoryOptions.value:", JSON.parse(JSON.stringify(participationCategoryOptions.value)));
+    if (categoriesResponse && categoriesResponse.data && Array.isArray(categoriesResponse.data.results)) {
+        participationCategoryOptions.value = categoriesResponse.data.results.map((category) => ({
+            text: category.category_name,
+            value: category.id, // This is the main category's ID
+        }));
+    } else {
+        console.error("PARENT: No results found in categoriesResponse or data is not an array.");
+        participationCategoryOptions.value = [];
+    }
+    console.log("PARENT: Loaded participationCategoryOptions.value:", JSON.stringify(participationCategoryOptions.value, null, 2));
 
+    const subcategoriesResponse = await apiService.getMhpcMasterData('personnel-subcategories');
+    console.log("PARENT: RAW subcategories API response data:", JSON.stringify(subcategoriesResponse?.data, null, 2)); // Log raw response
 
-    const subcategoriesResponse = await apiService.getMhpcMasterData('personnel-subcategories')
-    participantSubcategoryOptions.value = subcategoriesResponse.data?.results.map((subcategory) => ({
-        text: subcategory.sub_category_name,
-        value: subcategory.id, // This is the subcategory's own ID
-        categoryId: subcategory.category_name, // This is the PARENT category's ID from the subcategory API
-      })) || []
-    console.log("PARENT: Loaded ALL participantSubcategoryOptions.value:", JSON.parse(JSON.stringify(participantSubcategoryOptions.value)));
-    // --- END: CORRECTED MAPPING AND LOGGING ---
+    if (subcategoriesResponse && subcategoriesResponse.data && Array.isArray(subcategoriesResponse.data.results)) {
+      participantSubcategoryOptions.value = subcategoriesResponse.data.results.map((subcategory) => {
+        // Log the raw subcategory object from the API
+        console.log("PARENT: Processing API subcategory object:", JSON.stringify(subcategory, null, 2));
+
+        // IMPORTANT: Replace 'subcategory.category' with the actual field name from your API
+        // that holds the PARENT category's ID. I am assuming it's 'subcategory.category'.
+        // If your API uses a different field name like 'category_id', 'parent_id', etc.,
+        // YOU MUST CHANGE IT HERE.
+        const parentCategoryIdFromApi = subcategory.category_name;
+
+        if (parentCategoryIdFromApi === undefined) {
+            console.warn(`PARENT WARN: Subcategory "${subcategory.sub_category_name}" (ID: ${subcategory.id}) is missing the parent category ID field (expected 'category'). Filtering might fail for this item.`);
+        } else {
+            console.log(`PARENT: Mapping subcategory "${subcategory.sub_category_name}" (ID: ${subcategory.id}) with parent category ID from API: ${parentCategoryIdFromApi} (Type: ${typeof parentCategoryIdFromApi})`);
+        }
+
+        return {
+          text: subcategory.sub_category_name,
+          value: subcategory.id, // This is the subcategory's own ID
+          categoryId: parentCategoryIdFromApi, // Assign the PARENT category's ID here
+        };
+      });
+    } else {
+      console.error("PARENT: No results found in subcategoriesResponse or data is not an array.");
+      participantSubcategoryOptions.value = []; // Default to empty if API data is bad
+    }
+    console.log("PARENT: MAPPED ALL participantSubcategoryOptions.value after loading:", JSON.stringify(participantSubcategoryOptions.value, null, 2));
+    // --- END: MODIFIED SECTION ---
 
   } catch (error) {
-    console.error('Error loading dropdown options:', error)
-    validationErrors.value = ['Error loading form data. Please refresh the page.']
+    console.error('PARENT: Error in loadDropdownOptions:', error);
+    validationErrors.value = ['Error loading form data. Please refresh the page.'];
+    // Ensure defaults are set on error for all dropdowns
+    agencyOptions.value = [];
+    reasonOptions.value = [];
+    cpdTypeOptions.value = [];
+    methodologyOptions.value = [];
+    participationCategoryOptions.value = [];
+    participantSubcategoryOptions.value = [];
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
@@ -655,7 +655,7 @@ onMounted(async () => {
         participantDetails.subcategory = ''; // Clear subcategory when category changes
         console.log("PARENT: Cleared participantDetails.subcategory due to category change.");
     }
-  });
+});
 
   await Promise.all([fetchUserRegistrations(), loadDropdownOptions()])
 

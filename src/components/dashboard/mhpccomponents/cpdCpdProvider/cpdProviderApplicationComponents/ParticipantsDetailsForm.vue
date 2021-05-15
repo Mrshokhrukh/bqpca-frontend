@@ -25,13 +25,13 @@
             <div class="relative">
               <select
                 id="participationCategory"
-                :value="participantDetails.category"
+                :value="props.participantDetails.category"
                 @change="handleCategoryChange($event.target.value)"
                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 pl-10 bg-white appearance-none pr-10"
               >
                 <option value="" disabled>Select Category</option>
                 <option
-                  v-for="categoryOption in participationCategoryOptions"
+                  v-for="categoryOption in props.participationCategoryOptions"
                   :key="categoryOption.value"
                   :value="categoryOption.value"
                 >
@@ -56,22 +56,42 @@
             <label for="participantSubcategory" class="block text-sm font-medium text-gray-700 mb-1">
               Participant sub-category <span class="text-red-500">*</span>
             </label>
+
+            <!-- DEBUGGING OUTPUT -->
+            <div style="padding: 10px; margin-bottom: 10px; background-color: #f0f8ff; border: 1px solid #add8e6;">
+              <p style="font-weight: bold; color: #333;">CHILD DEBUG: Subcategory Logic</p>
+              <p style="color: #555;">Selected Main Category ID (props.participantDetails.category): {{ props.participantDetails.category }} (Type: {{ typeof props.participantDetails.category }})</p>
+              <p style="font-weight: bold; color: #333; margin-top: 5px;">ALL Subcategories received via prop (props.participantSubCategoryOptions):</p>
+              <pre style="white-space: pre-wrap; word-wrap: break-word; color: #555; max-height: 150px; overflow-y: auto;">{{ JSON.stringify(props.participantSubCategoryOptions, null, 2) }}</pre>
+              <p style="color: #555;">Length of ALL Subcategories: {{ props.participantSubCategoryOptions ? props.participantSubCategoryOptions.length : 'N/A' }}</p>
+              <p style="font-weight: bold; color: #333; margin-top: 5px;">FILTERED Subcategories (availableSubcategories - from computed):</p>
+              <pre style="white-space: pre-wrap; word-wrap: break-word; color: #555; max-height: 150px; overflow-y: auto;">{{ JSON.stringify(availableSubcategories, null, 2) }}</pre>
+              <p style="color: #555;">Length of FILTERED Subcategories: {{ availableSubcategories.length }}</p>
+            </div>
+            <!-- END DEBUGGING OUTPUT -->
+
             <div class="relative">
               <select
                 id="participantSubcategory"
-                :value="participantDetails.subcategory"
+                :value="props.participantDetails.subcategory"
                 @change="handleFieldUpdate('subcategory', $event.target.value)"
                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 pl-10 bg-white appearance-none pr-10"
-                :disabled="!participantDetails.category || (filteredSubcategories && filteredSubcategories.length === 0)"
+                :disabled="!props.participantDetails.category || availableSubcategories.length === 0"
               >
-                <option value="" disabled>Select Sub-Category</option>
-                <option
-                  v-for="subcategoryOption in filteredSubcategories"
-                  :key="subcategoryOption.value"
-                  :value="subcategoryOption.value"
-                >
-                  {{ subcategoryOption.text }}
+                <option value="" disabled>
+                  {{ !props.participantDetails.category ? 'Select main category first' : (availableSubcategories.length === 0 ? 'No subcategories for this category' : 'Select Sub-Category') }}
+                  ({{ availableSubcategories.length }} available)
                 </option>
+                <!-- Iterate over the COMPUTED, FILTERED list -->
+                <template v-if="availableSubcategories.length > 0">
+                  <option
+                    v-for="(subcategoryOption) in availableSubcategories"
+                    :key="`subcat-opt-${subcategoryOption.value}`"
+                    :value="subcategoryOption.value"
+                  >
+                    {{ subcategoryOption.text }}
+                  </option>
+                </template>
               </select>
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -84,17 +104,14 @@
                 </svg>
               </div>
             </div>
-            <p v-if="!participantDetails.category" class="mt-1 text-xs text-gray-500 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Please select a category first
-            </p>
-             <p v-if="participantDetails.category && filteredSubcategories && filteredSubcategories.length === 0" class="mt-1 text-xs text-orange-500 flex items-center">
+            <p v-if="props.participantDetails.category && availableSubcategories.length === 0" class="mt-1 text-xs text-orange-500 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
-              No subcategories available for the selected category.
+              No subcategories available for the selected main category.
+            </p>
+             <p v-if="!props.participantDetails.category" class="mt-1 text-xs text-gray-500">
+              Please select a main participation category first to see available subcategories.
             </p>
           </div>
 
@@ -107,8 +124,8 @@
               <input
                 type="number"
                 id="numberParticipants"
-                :value="participantDetails.number"
-                @input="handleFieldUpdate('number', $event.target.value === '' ? null : (Number($event.target.value) >= 1 ? Number($event.target.value) : participantDetails.number))"
+                :value="props.participantDetails.number"
+                @input="handleFieldUpdate('number', $event.target.value === '' ? null : (Number($event.target.value) >= 1 ? Number($event.target.value) : props.participantDetails.number))"
                 placeholder="Enter total number of participants"
                 min="1"
                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 pl-10 bg-white"
@@ -129,7 +146,7 @@
             <div class="relative">
               <textarea
                 id="relevanceProfession"
-                :value="participantDetails.relevance"
+                :value="props.participantDetails.relevance"
                 @input="handleFieldUpdate('relevance', $event.target.value)"
                 placeholder="Explain how this CPD is relevant to your professional development and practice..."
                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 pl-10 bg-white"
@@ -155,7 +172,7 @@
 </template>
 
 <script setup>
-import { watch } from 'vue'; // Make sure watch is imported
+import { computed, defineProps, defineEmits, watch } from 'vue';
 
 const props = defineProps({
   participantDetails: {
@@ -172,8 +189,7 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  // loadSubcategories prop removed as it's handled by parent's computed property
-  filteredSubcategories: { // This prop receives the already filtered subcategories
+  participantSubCategoryOptions: { 
     type: Array,
     default: () => [],
   },
@@ -181,30 +197,46 @@ const props = defineProps({
 
 const emit = defineEmits(['update:participantDetails']);
 
-// --- START: MODIFIED/ADDED FOR DEBUGGING ---
+// Watcher for props.participantDetails (for debugging prop changes)
 watch(() => props.participantDetails, (newVal) => {
-  console.log("%cCHILD: props.participantDetails changed:", "color: green; font-weight: bold;", JSON.parse(JSON.stringify(newVal)));
-}, { deep: true, immediate: true }); // immediate: true to log initial value
+  console.log(
+    "%cCHILD: props.participantDetails changed (watcher):",
+    "color: #4CAF50; font-weight: bold;", // Green
+    JSON.parse(JSON.stringify(newVal)) // Safe cloning for complex objects
+  );
+}, { deep: true, immediate: true });
 
-watch(() => props.filteredSubcategories, (newVal) => {
-  console.log("%cCHILD: props.filteredSubcategories changed:", "color: green; font-weight: bold;", JSON.parse(JSON.stringify(newVal)));
-  if (newVal) { // Check if newVal is defined
-    const isDisabled = !props.participantDetails.category || newVal.length === 0;
-    console.log(`%cCHILD: Subcategory dropdown disabled? ${isDisabled}`, "color: green; font-weight: bold;");
-    console.log(`CHILD:   !props.participantDetails.category: ${!props.participantDetails.category}`);
-    console.log(`CHILD:   filteredSubcategories.length === 0: ${newVal.length === 0}`);
+// Watcher for props.participantSubCategoryOptions (for debugging prop changes)
+watch(() => props.participantSubCategoryOptions, (newVal, oldVal) => {
+  console.log(
+    "%cCHILD: props.participantSubCategoryOptions changed (watcher). New:",
+    "color: #9C27B0; font-weight: bold;", // Purple
+    JSON.parse(JSON.stringify(newVal)) // Safe cloning
+  );
+  if (oldVal !== undefined) {
+    console.log(
+      "%cCHILD: props.participantSubCategoryOptions changed (watcher). Old:",
+      "color: #9C27B0;",
+      JSON.parse(JSON.stringify(oldVal)) // Safe cloning
+    );
   } else {
-    console.log("%cCHILD: props.filteredSubcategories is undefined/null.", "color: red; font-weight: bold;");
+    console.log("%cCHILD: props.participantSubCategoryOptions changed (watcher). Old: undefined (primitive)", "color: #9C27B0;");
   }
-}, { deep: true, immediate: true }); // immediate: true to log initial value
-// --- END: MODIFIED/ADDED FOR DEBUGGING ---
+
+  if (newVal && Array.isArray(newVal)) {
+    console.log(`%cCHILD: Subcategory prop received (watcher). Length: ${newVal.length}. Options should update.`, "color: #9C27B0;");
+  } else {
+    console.log("%cCHILD: Subcategory prop is not an array or is null/undefined (watcher).", "color: #F44336;"); // Red
+  }
+}, { deep: true, immediate: true });
+
 
 const handleCategoryChange = (newCategoryId) => {
-  console.log("CHILD: handleCategoryChange called with newCategoryId:", newCategoryId);
+  console.log("CHILD: handleCategoryChange called with newCategoryId:", newCategoryId, "(type:", typeof newCategoryId, ")");
   emit('update:participantDetails', {
-    // ...props.participantDetails, // No need to spread if parent handles reset correctly
+    ...props.participantDetails,
     category: newCategoryId,
-    subcategory: '', // Explicitly reset subcategory here when category changes
+    subcategory: '', // IMPORTANT: Clear subcategory when main category changes
   });
 };
 
@@ -215,4 +247,32 @@ const handleFieldUpdate = (field, value) => {
     [field]: value,
   });
 };
+
+const availableSubcategories = computed(() => {
+  const selectedMainCategoryId = props.participantDetails.category;
+  const allSubcategories = props.participantSubCategoryOptions;
+
+  console.log("%cCHILD: `availableSubcategories` COMPUTED property running...", "color: blue; font-weight: bold;");
+  console.log("  CHILD computed: Selected Main Category ID (props.participantDetails.category):", selectedMainCategoryId, "(Type:", typeof selectedMainCategoryId, ")");
+  // console.log("  CHILD computed: All Subcategories from prop (props.participantSubCategoryOptions):", JSON.stringify(allSubcategories));
+
+
+  if (!selectedMainCategoryId || !Array.isArray(allSubcategories) || allSubcategories.length === 0) {
+    console.log("  CHILD computed: No main category selected or no subcategories available in prop. Returning [].");
+    return [];
+  }
+
+  const filtered = allSubcategories.filter(sub => {
+    // Ensure robust comparison, especially if IDs can be numbers or strings
+    // The 'categoryId' in your subcategory objects (from parent) should now be the correct ID.
+    // 'selectedMainCategoryId' (props.participantDetails.category) also comes as a string from select.
+    const match = String(sub.categoryId) === String(selectedMainCategoryId);
+    // console.log(`  CHILD computed: Comparing sub.categoryId: '${sub.categoryId}' (Type: ${typeof sub.categoryId}) WITH selectedMainCategoryId: '${selectedMainCategoryId}' (Type: ${typeof selectedMainCategoryId}) => Match: ${match}`);
+    return match;
+  });
+
+  console.log("  CHILD computed: Filtered subcategories list:", JSON.stringify(filtered));
+  return filtered;
+});
+
 </script>

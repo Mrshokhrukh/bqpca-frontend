@@ -294,8 +294,7 @@ const formatDate = (dateString) => {
 // Fetch institute data
 const fetchInstitute = async () => {
   try {
-    const cid = user.value?.cid
-    const response = await apiServices.getMhpcInstitute(cid)
+    const response = await apiServices.getMhpcInstitute('1')
     if (!response || !response.data) {
       throw new Error("Invalid API response. Expected 'results' array.")
     }

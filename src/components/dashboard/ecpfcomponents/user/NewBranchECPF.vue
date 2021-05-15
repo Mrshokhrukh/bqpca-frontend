@@ -294,7 +294,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label for="existing_ecpf_name" class="block text-sm font-medium text-gray-700"
-                >Name of the Existing ECPF:</label
+                >Name of the Existing ECPF (Parent Firm):</label
               >
               <input
                 id="existing_ecpf_name"
@@ -302,6 +302,18 @@
                 v-model="formData.existing_ecpf_name"
                 class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none cursor-not-allowed"
                 readonly
+              />
+            </div>
+            <div>
+              <label for="proposed_firm_branch_name" class="block text-sm font-medium text-gray-700"
+                >Proposed Name for New Branch:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="proposed_firm_branch_name"
+                type="text"
+                v-model="formData.proposed_firm_branch_name"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <div>
@@ -870,14 +882,12 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
-import apiServices from '@/services/services' // Ensure this path is correct
-import { useAuthStore } from '@/stores/authStore' // Ensure this path is correct
-import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js' // Ensure this path is correct
+import apiServices from '@/services/services'
+import { useAuthStore } from '@/stores/authStore'
+import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js'
 
-// --- Store Instance ---
 const authStore = useAuthStore()
 
-// --- State ---
 const isLoading = ref(true)
 const isSubmitting = ref(false)
 const formMessage = reactive({ text: '', type: '' })
@@ -886,33 +896,37 @@ const declarationAgreed = ref(false)
 const counselorPositionId = ref(null)
 const roomParticularsId = ref(null);
 
-// --- Form Data ---
 const getInitialFormData = () => ({
   cid_no: '', applicant_name: '', gender: '', date_of_birth: '', contact_no: '',
   email_address: '', office_number: '', flat_no: '', building_no: '', location: '',
   dzongkhag_thromde_present: '', gewog_throm_present: '',
-  qualification_edu: '', qualification_type_edu: null, // This will store the ID of the inferred type
-  institute_name: '', university_name: '', village_chiwog: '', gewog_perm: '',
-  dungkhag: '', dzongkhag_thromde_perm: '', existing_ecpf_name: '',
+  qualification_edu: '', qualification_type_edu: null,
+  institute_name: '', university_name: '',
+  village_chiwog: '', gewog_perm: '',
+  dungkhag: '', dzongkhag_thromde_perm: '',
+  existing_ecpf_name: '',
+  proposed_firm_branch_name: '',
   proposed_firm_address: '', proposed_firm_location: null, firm_type: null,
-  infrastructure: [], humanResources: [],
+  infrastructure: [],
+  humanResources: [],
   finance_plan_details: '',
   services: [],
   swot_strengths: '', swot_weaknesses: '', swot_opportunities: '', swot_threats: '',
   fee_charges: [],
-  applicant_cv_file: null, applicant_cv_filename: null, applicant_cv_base64: null,
+  applicant_cv_file: null,       // Will hold the File object for new uploads
+  applicant_cv_filename: null,  // Store filename for display and reference
+  applicant_cv_base64: null,    // Store base64 if loading from a draft that used it (now legacy)
   isDraft: false, draftId: null, declaration_agreed: false,
 })
 
 const formData = reactive(getInitialFormData())
 
-// --- Master Data ---
 const dzongkhagThromdes = ref([])
 const firmTypes = ref([])
 const infrastructureOptions = ref([])
 const positionOptions = ref([])
-const qualificationOptions = ref([]) // For HR Qualification
-const qualificationTypes_edu = ref([ // For Applicant's Education Qualification Type inference & display
+const qualificationOptions = ref([])
+const qualificationTypes_edu = ref([
   { id: 'class_xii', name: 'Class XII' },
   { id: 'diploma', name: 'Diploma' },
   { id: 'bachelor', name: 'Bachelor' },
@@ -922,8 +936,6 @@ const qualificationTypes_edu = ref([ // For Applicant's Education Qualification 
 ]);
 const serviceCategories = ref([]);
 
-
-// --- Computed Property for Display ---
 const displayQualificationTypeEduName = computed(() => {
   if (formData.qualification_type_edu && qualificationTypes_edu.value.length > 0) {
     const foundType = qualificationTypes_edu.value.find(
@@ -931,11 +943,9 @@ const displayQualificationTypeEduName = computed(() => {
     );
     return foundType ? foundType.name : 'Not Specified';
   }
-  return 'Not Specified'; // Default if no ID or master data not ready
+  return 'Not Specified';
 });
 
-
-// --- Helper Functions ---
 const formatDateForDisplay = (dateString) => {
   if (!dateString) return ''
   try {
@@ -949,26 +959,25 @@ const formatDateForDisplay = (dateString) => {
 const getHrFileState = (index) => {
   const hrItem = formData.humanResources[index];
   if (!hrItem) return { fileName: '', hasExistingFile: false };
-  const newFileSelected = hrItem.cv_certificates instanceof File;
-  const existingFileNameFromDraftOrSelection = hrItem.cv_filename;
-  const hasPersistentDataFromDraft = !!hrItem.cv_certificates_base64;
 
-  if (newFileSelected) {
+  // If a new File object is present, that's the current state
+  if (hrItem.cv_certificates instanceof File) {
     return { fileName: hrItem.cv_certificates.name, hasExistingFile: false };
   }
-  if (existingFileNameFromDraftOrSelection && hasPersistentDataFromDraft) {
-    return { fileName: existingFileNameFromDraftOrSelection, hasExistingFile: true };
-  }
-   if (existingFileNameFromDraftOrSelection && !hasPersistentDataFromDraft && !newFileSelected) {
-      return { fileName: existingFileNameFromDraftOrSelection, hasExistingFile: false };
+  // If loading from a draft, we might only have filename (and potentially base64 if old draft)
+  // For FormData, "existing" means it's on the server. Client-side, we only know if a filename was loaded.
+  if (hrItem.cv_filename) {
+      // Consider it "existing" if a filename is there from a draft load, even if no new File object.
+      // The `required` on input will be false, user doesn't have to re-upload unless they want to replace.
+      return { fileName: hrItem.cv_filename, hasExistingFile: true };
   }
   return { fileName: '', hasExistingFile: false };
 };
 
 const clearHrFile = (index) => {
   if (formData.humanResources[index]) {
-    formData.humanResources[index].cv_certificates = null;
-    formData.humanResources[index].cv_certificates_base64 = null;
+    formData.humanResources[index].cv_certificates = null; // Clear File object
+    formData.humanResources[index].cv_certificates_base64 = null; // Clear any legacy base64
     formData.humanResources[index].cv_filename = null;
     const fileInput = formEl.value?.querySelector(`#cv_certificates_${index}`);
     if (fileInput) fileInput.value = '';
@@ -976,18 +985,11 @@ const clearHrFile = (index) => {
 };
 
 const getApplicantCvFileState = () => {
-  const newFileSelected = formData.applicant_cv_file instanceof File;
-  const existingFileNameFromDraft = formData.applicant_cv_filename;
-  const hasPersistentDataFromDraft = !!formData.applicant_cv_base64;
-
-  if (newFileSelected) {
+  if (formData.applicant_cv_file instanceof File) {
     return { fileName: formData.applicant_cv_file.name, hasExistingFile: false };
   }
-  if (existingFileNameFromDraft && hasPersistentDataFromDraft) {
-    return { fileName: existingFileNameFromDraft, hasExistingFile: true };
-  }
-  if (existingFileNameFromDraft && !hasPersistentDataFromDraft && !newFileSelected) {
-      return { fileName: existingFileNameFromDraft, hasExistingFile: false };
+  if (formData.applicant_cv_filename) {
+     return { fileName: formData.applicant_cv_filename, hasExistingFile: true };
   }
   return { fileName: '', hasExistingFile: false };
 };
@@ -1011,7 +1013,6 @@ const clearMessage = () => {
   formMessage.type = ''
 }
 
-// --- Add/Remove Dynamic Sections ---
 const addInfrastructure = () => {
   formData.infrastructure.push({ particulars: null, description: '', quantity: 1, remarks: '' })
 }
@@ -1021,7 +1022,10 @@ const removeInfrastructure = (index) => {
 const addHumanResource = () => {
   formData.humanResources.push({
     position: null, cid: '', full_name: '', qualification: null,
-    contact_number: '', email_address: '', cv_certificates: null, cv_certificates_base64: null, cv_filename: null
+    contact_number: '', email_address: '',
+    cv_certificates: null, // Holds File object
+    cv_certificates_base64: null, // Legacy, for loading old drafts
+    cv_filename: null      // For display and reference
   })
 }
 const removeHumanResource = (index) => {
@@ -1042,133 +1046,123 @@ const removeFeeCharge = (index) => {
   formData.fee_charges.splice(index, 1);
 };
 
-
-// --- File Upload Handler ---
 const handleFileUpload = (event, sectionName, index, fileKey) => {
-  const file = event.target.files[0]
+  const file = event.target.files[0];
+  // console.log(`[handleFileUpload for HR ${index}] File selected:`, file);
   if (file && sectionName === 'humanResources') {
-    formData.humanResources[index][fileKey] = file
-    formData.humanResources[index].cv_certificates_base64 = null;
+    formData.humanResources[index][fileKey] = file;
     formData.humanResources[index].cv_filename = file.name;
+    formData.humanResources[index].cv_certificates_base64 = null; // Not using base64 for new uploads with FormData
+    // console.log(`[handleFileUpload for HR ${index}] formData.humanResources[${index}] updated.`);
   }
 }
 
 const handleApplicantCvUpload = (event) => {
   const file = event.target.files[0];
+  // console.log('[handleApplicantCvUpload] File selected:', file);
   if (file) {
     formData.applicant_cv_file = file;
     formData.applicant_cv_filename = file.name;
-    formData.applicant_cv_base64 = null;
+    formData.applicant_cv_base64 = null; // Not using base64 for new uploads with FormData
+    // console.log('[handleApplicantCvUpload] formData updated.');
   }
 };
 
+// prepareJsonAndFileParts is now used instead of prepareDataForSubmission for FormData
+const prepareJsonAndFileParts = () => {
+  const jsonData = {};
+  const fileObjects = {}; // To store actual File objects keyed for FormData
 
-// --- Base64 Conversion ---
-const toBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    if (!file) {
-      resolve(null); return;
+  // Create a deep copy to avoid direct mutation issues if any part of formData is reactive beyond top level
+  const dataCopy = JSON.parse(JSON.stringify(formData));
+
+  jsonData.applicant_cid_no = dataCopy.cid_no;
+  jsonData.applicants_name = dataCopy.applicant_name;
+  jsonData.gender = dataCopy.gender;
+  jsonData.date_of_birth = dataCopy.date_of_birth;
+  jsonData.contact_no = dataCopy.contact_no;
+  jsonData.email = dataCopy.email_address;
+  jsonData.office_number = dataCopy.office_number;
+  jsonData.flat_no = dataCopy.flat_no;
+  jsonData.building_no = dataCopy.building_no;
+  jsonData.location = dataCopy.location;
+  jsonData.gewog_throm = dataCopy.gewog_throm_present;
+  jsonData.dzongkhag_thromde = dataCopy.dzongkhag_thromde_present;
+  jsonData.qualification = dataCopy.qualification_edu;
+  jsonData.qualification_type_edu = dataCopy.qualification_type_edu;
+  jsonData.institute_name = dataCopy.institute_name;
+  jsonData.university_name = dataCopy.university_name;
+  jsonData.perm_village_chiwog = dataCopy.village_chiwog;
+  jsonData.perm_gewog = dataCopy.gewog_perm;
+  jsonData.perm_dungkhag = dataCopy.dungkhag;
+  jsonData.perm_dzongkhag_thromde = dataCopy.dzongkhag_thromde_perm;
+  jsonData.existing_ecpf_name = dataCopy.existing_ecpf_name;
+  jsonData.proposed_firm_branch_name = dataCopy.proposed_firm_branch_name;
+  jsonData.firm_address = dataCopy.proposed_firm_address;
+  jsonData.firm_location = dataCopy.proposed_firm_location;
+  jsonData.type_of_firm = dataCopy.firm_type;
+
+  jsonData.infrastructure_details = dataCopy.infrastructure.map(infra => ({
+    particulars_id: infra.particulars,
+    description: infra.description,
+    quantity: infra.quantity,
+    remarks: infra.remarks,
+  }));
+
+  jsonData.human_resource_details = formData.humanResources.map((hr_original, index) => {
+    const hrData = { // Create from dataCopy to avoid reactivity issues if hr_original is mutated
+      position_id: dataCopy.humanResources[index].position,
+      cid: dataCopy.humanResources[index].cid,
+      full_name: dataCopy.humanResources[index].full_name,
+      qualification_id: dataCopy.humanResources[index].qualification,
+      contact_number: dataCopy.humanResources[index].contact_number,
+      email: dataCopy.humanResources[index].email_address,
+    };
+    if (hr_original.cv_certificates instanceof File) {
+      // Use a unique key for FormData, e.g. 'human_resource_cv_0', 'human_resource_cv_1'
+      // Backend must be configured to expect these indexed file fields.
+      fileObjects[`human_resource_cv_${index}`] = hr_original.cv_certificates;
+      hrData.cv_filename = hr_original.cv_certificates.name; // Include filename in JSON part
+    } else if (hr_original.cv_filename) {
+      // If only filename (e.g. from draft), include it. Backend handles if file is missing.
+      hrData.cv_filename = hr_original.cv_filename;
     }
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result)
-    reader.onerror = (error) => reject(error)
-  })
+    return hrData;
+  });
 
-// --- Data Preparation ---
-const prepareDataForSubmission = async (status = 'submitted') => {
-  const data = JSON.parse(JSON.stringify(formData))
-  delete data.isDraft
+  jsonData.finance_plan_details = dataCopy.finance_plan_details;
+  jsonData.services_details = dataCopy.services.map(s => ({
+      service_category_id: s.service_category,
+      details: s.details,
+  }));
+  jsonData.strengths = dataCopy.swot_strengths;
+  jsonData.weaknesses = dataCopy.swot_weaknesses;
+  jsonData.opportunities = dataCopy.swot_opportunities;
+  jsonData.threats = dataCopy.swot_threats;
+  jsonData.fee_charges_details = dataCopy.fee_charges.map(fc => ({
+      fee_breakup: fc.fee_breakup,
+      description: fc.description,
+      amount: fc.amount,
+      total_amount: fc.total_amount,
+  }));
 
-  if (data.humanResources && Array.isArray(data.humanResources)) {
-    for (const hr of data.humanResources) {
-      if (hr.cv_certificates instanceof File) {
-        hr.cv_certificates_base64 = await toBase64(hr.cv_certificates)
-      } else if (!hr.cv_certificates_base64 && !hr.cv_filename) {
-         hr.cv_certificates_base64 = null;
-         hr.cv_filename = null;
-      }
-      delete hr.cv_certificates
-    }
+  if (formData.applicant_cv_file instanceof File) {
+    fileObjects.cv = formData.applicant_cv_file;
+    // jsonData.applicant_cv_filename = formData.applicant_cv_file.name; // Optional: send filename in JSON
+  } else if (formData.applicant_cv_filename) {
+    // jsonData.applicant_cv_filename = formData.applicant_cv_filename; // Optional: send filename if from draft
   }
 
-  if (data.applicant_cv_file instanceof File) {
-    data.applicant_cv_base64 = await toBase64(data.applicant_cv_file);
-  } else if (!data.applicant_cv_base64 && !data.applicant_cv_filename) {
-    data.applicant_cv_base64 = null;
-    data.applicant_cv_filename = null;
+  jsonData.declaration = declarationAgreed.value;
+  if (dataCopy.draftId) { // Use draftId from the copied data
+    jsonData.draft_id = dataCopy.draftId;
   }
-  delete data.applicant_cv_file;
+
+  // Status will be set in submitForm/saveAsDraft
+  return { jsonData, fileObjects };
+};
 
 
-  data.status = status
-  data.declaration_agreed = declarationAgreed.value
-
-  const submissionPayload = {
-    applicant_cid: data.cid_no,
-    applicants_name: data.applicant_name,
-    gender: data.gender,
-    date_of_birth: data.date_of_birth,
-    contact_no: data.contact_no,
-    email: data.email_address,
-    office_number: data.office_number,
-    flat_no: data.flat_no,
-    building_no: data.building_no,
-    location: data.location,
-    gewog_throm: data.gewog_throm_present,
-    dzongkhag_thromde: data.dzongkhag_thromde_present,
-
-    qualification: data.qualification_edu,
-    qualification_type_edu: data.qualification_type_edu, // This is the ID
-    institute_name: data.institute_name,
-    university_name: data.university_name,
-
-    existing_ecpf_name: data.existing_ecpf_name,
-
-    proposed_firm_address: data.proposed_firm_address,
-    proposed_firm_location_id: data.proposed_firm_location,
-    type_of_firm: data.firm_type,
-
-    infrastructure_details: data.infrastructure.map((infra) => ({
-      particulars_id: infra.particulars, description: infra.description,
-      quantity: infra.quantity, remarks: infra.remarks,
-    })),
-    human_resource_details: data.humanResources.map((hr) => ({
-      position_id: hr.position, cid: hr.cid, full_name: hr.full_name,
-      qualification_id: hr.qualification, contact_number: hr.contact_number,
-      email: hr.email_address,
-      cv_certificates_base64: hr.cv_certificates_base64 || null,
-      cv_filename: hr.cv_filename || null,
-    })),
-
-    finance_plan_details: data.finance_plan_details,
-    services_details: data.services.map(s => ({
-        service_category_id: s.service_category,
-        details: s.details,
-    })),
-    swot_analysis: {
-        strengths: data.swot_strengths,
-        weaknesses: data.swot_weaknesses,
-        opportunities: data.swot_opportunities,
-        threats: data.swot_threats,
-    },
-    fee_charges_details: data.fee_charges.map(fc => ({
-        fee_breakup: fc.fee_breakup,
-        description: fc.description,
-        amount: fc.amount,
-        total_amount: fc.total_amount,
-    })),
-    applicant_cv_base64: data.applicant_cv_base64 || null,
-    applicant_cv_filename: data.applicant_cv_filename || null,
-
-    status: data.status,
-    declaration: data.declaration_agreed,
-    draft_id: data.draftId || null,
-  }
-  return submissionPayload
-}
-
-// --- Form Validation ---
 const validateForm = () => {
   clearMessage();
   let isValid = true;
@@ -1181,12 +1175,11 @@ const validateForm = () => {
   }
   if (formData.office_number && !/^\d*$/.test(formData.office_number)) errors.push('Office Number must be numeric if provided.');
   if (!formData.location) errors.push('Location (Area/Street) for present address is required.');
-
   if (!formData.qualification_edu) errors.push('Education Qualification is required.');
-  if (formData.qualification_type_edu === null) errors.push('Education Qualification Type is required (auto-inferred, ensure profile has Qualification).');
+  if (formData.qualification_type_edu === null) errors.push('Education Qualification Type is required.');
   if (!formData.institute_name) errors.push('Institute Name is required.');
   if (!formData.university_name) errors.push('University Name is required.');
-
+  if (!formData.proposed_firm_branch_name) errors.push('Proposed Name for New Branch is required.');
   if (!formData.proposed_firm_address) errors.push('Proposed Branch Address is required.');
   if (formData.proposed_firm_location === null) errors.push('Proposed Branch Location (Dzongkhag/Thromde) is required.');
   if (formData.firm_type === null) errors.push('Type of Firm for the New Branch is required.');
@@ -1225,10 +1218,9 @@ const validateForm = () => {
       if (hr.email_address && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(hr.email_address)) errors.push(`Invalid Email for HR item #${itemNum}.`);
 
       const fileState = getHrFileState(i);
-      if (!fileState.fileName && !fileState.hasExistingFile) {
+      if (! (hr.cv_certificates instanceof File) && !fileState.hasExistingFile ) {
          errors.push(`CV & Certificates file (PDF only) is required for Human Resource item #${itemNum}.`);
       }
-
       if (counselorPositionId.value && hr.position === counselorPositionId.value) {
         hasCounselor = true;
         if (hr.cid && counselorCids.has(hr.cid)) {
@@ -1244,7 +1236,6 @@ const validateForm = () => {
   }
 
   if (!formData.finance_plan_details) errors.push('Finance Plan Details are required.');
-
   if (formData.services.length === 0) {
     errors.push('At least one Service item must be added.');
   } else {
@@ -1254,12 +1245,10 @@ const validateForm = () => {
       }
     });
   }
-
   if (!formData.swot_strengths) errors.push('Strengths in SWOT Analysis are required.');
   if (!formData.swot_weaknesses) errors.push('Weaknesses in SWOT Analysis are required.');
   if (!formData.swot_opportunities) errors.push('Opportunities in SWOT Analysis are required.');
   if (!formData.swot_threats) errors.push('Threats in SWOT Analysis are required.');
-
   if (formData.fee_charges.length === 0) {
     errors.push('At least one Fee/Charge item must be added.');
   } else {
@@ -1271,10 +1260,9 @@ const validateForm = () => {
   }
 
   const applicantCvState = getApplicantCvFileState();
-  if (!applicantCvState.fileName && !applicantCvState.hasExistingFile) {
+  if (! (formData.applicant_cv_file instanceof File) && !applicantCvState.hasExistingFile) {
     errors.push('CV of the Applicant is required.');
   }
-
   if (!declarationAgreed.value) errors.push('You must agree to the declaration to submit.');
 
   if (errors.length > 0) {
@@ -1284,11 +1272,180 @@ const validateForm = () => {
   return isValid;
 }
 
+const submitForm = async () => {
+  // console.log('[submitForm] Attempting to submit. Declaration Agreed:', declarationAgreed.value, 'Is Submitting:', isSubmitting.value, 'Is Draft:', formData.isDraft);
 
-// --- API Interaction ---
+  if (!declarationAgreed.value && !formData.isDraft) {
+    setMessage('You must agree to the declaration to submit the application.', 'error');
+    return;
+  }
+  if (formData.isDraft) {
+    setMessage('This is a draft. Please click "Edit Draft" if you wish to submit it as a final application.', 'error');
+    return;
+  }
+
+  if (!validateForm()) {
+    console.log('[submitForm] Validation failed. Form not submitted.');
+    return;
+  }
+
+  isSubmitting.value = true;
+  clearMessage();
+  // console.log('[submitForm] Validation passed. Proceeding with submission...');
+
+  try {
+    const { jsonData, fileObjects } = prepareJsonAndFileParts();
+    jsonData.status = 'submitted';
+
+    const payload = new FormData();
+
+    // How to append JSON data - Option: append each key from jsonData as a field
+    // This requires backend to parse individual fields, stringified if complex.
+    for (const key in jsonData) {
+      if (Object.prototype.hasOwnProperty.call(jsonData, key)) {
+        if (typeof jsonData[key] === 'object' && jsonData[key] !== null) {
+          payload.append(key, JSON.stringify(jsonData[key]));
+        } else if (jsonData[key] !== null && jsonData[key] !== undefined) {
+          payload.append(key, jsonData[key]);
+        }
+      }
+    }
+    // Alternative Option (if backend expects one 'data' field for all JSON):
+    // payload.append('data', JSON.stringify(jsonData));
+
+
+    for (const key in fileObjects) {
+      if (Object.prototype.hasOwnProperty.call(fileObjects, key) && fileObjects[key] instanceof File) {
+        payload.append(key, fileObjects[key], fileObjects[key].name);
+        // console.log(`[submitForm] Appended file to FormData: ${key}`, fileObjects[key].name);
+      }
+    }
+
+    let response;
+    const apiCreateMethod = 'createEcpfBranch';
+    const apiUpdateMethod = 'updateEcpfBranch';
+
+    if (jsonData.draft_id && typeof apiServices[apiUpdateMethod] === 'function') {
+      // console.log(`[submitForm] Calling API to update draft ID: ${jsonData.draft_id} (with FormData).`);
+      // The draft_id is already part of jsonData, which is appended to payload.
+      // The API service for update might take ID as a URL param and payload as body.
+      response = await apiServices[apiUpdateMethod](jsonData.draft_id, payload);
+    } else if (typeof apiServices[apiCreateMethod] === 'function') {
+      // console.log(`[submitForm] Calling API to create new application (with FormData).`);
+      response = await apiServices[apiCreateMethod](payload);
+    } else {
+      throw new Error(`Required API method for submission not found.`);
+    }
+
+    if (response?.status === 200 || response?.status === 201) {
+      setMessage('Branch application submitted successfully!', 'success');
+      await resetForm();
+    } else {
+       const errorDetail = response?.data?.detail || response?.data || `Submission failed with status: ${response?.status || 'Unknown'}`;
+      const errorMessage = typeof errorDetail === 'string' ? errorDetail : JSON.stringify(errorDetail);
+      throw new Error(errorMessage);
+    }
+  } catch (error) {
+    console.error('[submitForm] Error during submission process:', error);
+    let errorMsg = 'Submission failed.';
+    if (error?.response?.data) {
+        const errorsData = error.response.data;
+        if (typeof errorsData === 'string') errorMsg = errorsData;
+        else if (typeof errorsData === 'object' && errorsData !== null) {
+            const fieldErrors = Object.entries(errorsData).map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`).join('; ');
+            if (fieldErrors) errorMsg = fieldErrors;
+            else if (errorsData.detail) errorMsg = errorsData.detail;
+        }
+    } else if (error?.message) {
+        errorMsg = error.message;
+    }
+    setMessage(`Error: ${errorMsg}`, 'error');
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+const saveAsDraft = async () => {
+  isSubmitting.value = true;
+  clearMessage();
+  // console.log('[saveAsDraft] Saving branch application as draft...');
+  try {
+    if (!formData.cid_no) {
+        setMessage('CID is required to save a draft.', 'error');
+        isSubmitting.value = false;
+        return;
+    }
+
+    const { jsonData, fileObjects } = prepareJsonAndFileParts();
+    jsonData.status = 'draft';
+
+    const payload = new FormData();
+    for (const key in jsonData) { // Append JSON data
+      if (Object.prototype.hasOwnProperty.call(jsonData, key)) {
+        if (typeof jsonData[key] === 'object' && jsonData[key] !== null) {
+          payload.append(key, JSON.stringify(jsonData[key]));
+        } else if (jsonData[key] !== null && jsonData[key] !== undefined) {
+          payload.append(key, jsonData[key]);
+        }
+      }
+    }
+    for (const key in fileObjects) { // Append file data
+      if (Object.prototype.hasOwnProperty.call(fileObjects, key) && fileObjects[key] instanceof File) {
+        payload.append(key, fileObjects[key], fileObjects[key].name);
+      }
+    }
+
+    let response;
+    const apiCreateDraftMethod = 'createEcpfBranch';
+    const apiUpdateDraftMethod = 'updateEcpfBranch';
+
+    if (jsonData.draft_id && typeof apiServices[apiUpdateDraftMethod] === 'function') {
+        response = await apiServices[apiUpdateDraftMethod](jsonData.draft_id, payload);
+    } else if (typeof apiServices[apiCreateDraftMethod] === 'function') {
+        response = await apiServices[apiCreateDraftMethod](payload);
+    } else {
+        throw new Error(`Required API method for saving draft not found.`);
+    }
+
+    if (response?.status === 200 || response?.status === 201) {
+      const draftIdFromServer = response.data?.id || response.data?.draft_id;
+      if (draftIdFromServer) {
+         formData.draftId = draftIdFromServer;
+      }
+      formData.isDraft = true;
+      // After saving draft with FormData, client-side File objects are gone unless re-selected.
+      // formData.applicant_cv_file etc. are null now. Filenames are preserved.
+      // get...FileState() logic might need adjustment if we want to show "file exists on server" differently.
+      setMessage(`Branch application saved as draft. (Draft ID: ${formData.draftId || 'N/A'})`, 'success');
+    } else {
+      const errorDetail = response?.data?.detail || response?.data || `Draft save failed: ${response?.status || 'Unknown'}`;
+      const errorMessage = typeof errorDetail === 'string' ? errorDetail : JSON.stringify(errorDetail);
+      throw new Error(errorMessage);
+    }
+  } catch (error) {
+    console.error('Error saving branch draft:', error);
+    let errorMsg = 'Draft save failed.';
+     if (error?.response?.data) {
+        const errorsData = error.response.data;
+        if (typeof errorsData === 'string') errorMsg = errorsData;
+        else if (typeof errorsData === 'object' && errorsData !== null) {
+            const fieldErrors = Object.entries(errorsData).map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`).join('; ');
+            if (fieldErrors) errorMsg = fieldErrors;
+            else if (errorsData.detail) errorMsg = errorsData.detail;
+        }
+    } else if (error?.message) {
+        errorMsg = error.message;
+    }
+    setMessage(`Error: ${errorMsg}`, 'error');
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+
+// --- API Interaction (fetchMasterData, populateFromEcpfProfile, loadDraft, editDraft, resetForm are mostly unchanged) ---
 const fetchMasterData = async () => {
   try {
-    console.log('[fetchMasterData] Fetching/loading master data...');
     const dzongkhagsData = bhutanDzongkhagsGewogs.map((item, index) => ({ id: String(index + 1), name: item.dzongkhag }));
     const uniqueDzongkhags = [];
     const map = new Map();
@@ -1315,15 +1472,12 @@ const fetchMasterData = async () => {
     positionOptions.value = extractData(posRes).map(item => ({ id: item.id, name: item.position_name || item.name }));
     qualificationOptions.value = extractData(qualRes).map(item => ({ id: item.id, name: item.qualification_name || item.name }));
     serviceCategories.value = extractData(serviceCatRes).map(item => ({ id: item.id, name: item.service_name || item.name }));
-    // qualificationTypes_edu is defined locally, no need to fetch
 
     const counselorPos = positionOptions.value.find(p => p.name?.toLowerCase().includes('counselor'));
     if (counselorPos) counselorPositionId.value = counselorPos.id; else console.warn("[fetchMasterData] Counselor position ID not found.");
 
     const roomInfra = infrastructureOptions.value.find(i => i.name?.toLowerCase().includes('room') || i.name?.toLowerCase().includes('office'));
     if (roomInfra) roomParticularsId.value = roomInfra.id; else console.warn("[fetchMasterData] Room/Office particulars ID not found.");
-
-    console.log('[fetchMasterData] Master data fetching/loading completed.');
   } catch (error) {
     console.error('Error in fetchMasterData:', error);
     setMessage('Failed to load required master data. Please try refreshing.', 'error');
@@ -1332,31 +1486,23 @@ const fetchMasterData = async () => {
 
 const populateFromEcpfProfile = async (cid) => {
   if (!cid || typeof apiServices.getEcpfDetailsByCID !== 'function') {
-    console.warn('[populateFromEcpfProfile] CID missing or getEcpfDetailsByCID service not defined.');
     return;
   }
   try {
-    console.log(`[populateFromEcpfProfile] Fetching ECPF profile for CID: ${cid}...`);
     const response = await apiServices.getEcpfDetailsByCID(cid);
     const profile = response?.data;
-
     if (profile) {
-      console.log('[populateFromEcpfProfile] ECPF Profile data received:', profile);
       formData.contact_no = profile.contact_no || formData.contact_no;
       formData.email_address = profile.email || formData.email_address;
-
       formData.office_number = profile.office_number || '';
       formData.flat_no = profile.flat_no || '';
       formData.building_no = profile.building_no || '';
       formData.location = profile.location || '';
       formData.dzongkhag_thromde_present = profile.dzongkhag_thromde || '';
       formData.gewog_throm_present = profile.gewog_throm || '';
-
       formData.qualification_edu = profile.qualification || '';
       formData.institute_name = profile.institute_name || '';
       formData.university_name = profile.university_name || '';
-
-      // Infer and set formData.qualification_type_edu (the ID)
       if (profile.qualification && qualificationTypes_edu.value.length > 0) {
         const profileQualLower = profile.qualification.toLowerCase();
         let matchedTypeId = null;
@@ -1366,176 +1512,22 @@ const populateFromEcpfProfile = async (cid) => {
             break;
           }
         }
-        if (matchedTypeId) {
-          formData.qualification_type_edu = matchedTypeId; // This stores the ID
-          console.log(`[populateFromEcpfProfile] Inferred qualification_type_edu ID: ${matchedTypeId} from "${profile.qualification}"`);
-        } else {
-          formData.qualification_type_edu = null; // Set to null if no match
-          console.log(`[populateFromEcpfProfile] Could not infer qualification_type_edu ID from "${profile.qualification}". Set to null.`);
-        }
+        formData.qualification_type_edu = matchedTypeId;
       } else {
-         formData.qualification_type_edu = null; // Ensure it's null if profile.qualification is missing
+         formData.qualification_type_edu = null;
       }
-
       formData.village_chiwog = profile.permanent_village || '';
       formData.gewog_perm = profile.permanent_gewog || '';
       formData.dungkhag = profile.permanent_dungkhag || '';
       formData.dzongkhag_thromde_perm = profile.permanent_dzongkhag || '';
-
       formData.existing_ecpf_name = profile.proposed_firm_name || profile.ecpf_name || profile.firm_name || '';
-
-      console.log('[populateFromEcpfProfile] FormData populated from ECPF profile.');
     } else {
-      console.log('[populateFromEcpfProfile] No ECPF profile data found for CID.');
-      formData.dzongkhag_thromde_present = ''; formData.gewog_throm_present = '';
-      formData.village_chiwog = ''; formData.gewog_perm = '';
-      formData.dungkhag = ''; formData.dzongkhag_thromde_perm = '';
-      formData.existing_ecpf_name = '';
       formData.qualification_type_edu = null;
     }
   } catch (error) {
     console.error('Error fetching/populating ECPF profile:', error);
-    setMessage('Failed to load your ECPF profile data. Some fields may need manual entry.', 'error');
-    formData.dzongkhag_thromde_present = ''; formData.gewog_throm_present = '';
-    formData.village_chiwog = ''; formData.gewog_perm = '';
-    formData.dungkhag = ''; formData.dzongkhag_thromde_perm = '';
-    formData.existing_ecpf_name = '';
+    setMessage('Failed to load your ECPF profile data.', 'error');
     formData.qualification_type_edu = null;
-  }
-};
-
-const submitForm = async () => {
-  console.log('[submitForm] Attempting to submit. Declaration Agreed:', declarationAgreed.value, 'Is Submitting:', isSubmitting.value, 'Is Draft:', formData.isDraft);
-
-  if (!declarationAgreed.value && !formData.isDraft) {
-    console.warn('[submitForm] Prevented: Declaration not agreed for final submission.');
-    setMessage('You must agree to the declaration to submit the application.', 'error');
-    return;
-  }
-   if (formData.isDraft && status !== 'draft') { // This condition seems off, status is not defined here.
-                                                // Should check if trying to submit a form that is still marked as draft.
-     console.warn('[submitForm] Prevented: Form is a draft. Click "Edit Draft" to enable submission.');
-     setMessage('This is a draft. Please click "Edit Draft" if you wish to submit it as a final application.', 'error');
-     return;
-  }
-
-  if (!validateForm()) {
-    console.log('[submitForm] Validation failed. Form not submitted.');
-    return;
-  }
-
-  isSubmitting.value = true;
-  clearMessage();
-  console.log('[submitForm] Validation passed. Proceeding with submission...');
-
-  try {
-    const dataToSubmit = await prepareDataForSubmission('submitted');
-    console.log('[submitForm] Data prepared for submission:', JSON.stringify(dataToSubmit, null, 2));
-
-    let response;
-    const apiCreateMethod = 'createEcpfBranch';
-    const apiUpdateMethod = 'updateEcpfBranch';
-
-    if (formData.draftId && typeof apiServices[apiUpdateMethod] === 'function') {
-      console.log(`[submitForm] Calling API to update draft ID: ${formData.draftId} as submitted application.`);
-      response = await apiServices[apiUpdateMethod](formData.draftId, dataToSubmit);
-    } else if (typeof apiServices[apiCreateMethod] === 'function') {
-      console.log(`[submitForm] Calling API to create new application.`);
-      response = await apiServices[apiCreateMethod](dataToSubmit);
-    } else {
-      console.error(`[submitForm] API methods for submission not found.`);
-      throw new Error(`Required API method for submission not found.`);
-    }
-
-    console.log('[submitForm] API response received:', response);
-
-    if (response?.status === 200 || response?.status === 201) {
-      setMessage('Branch application submitted successfully!', 'success');
-      await resetForm();
-    } else {
-      const errorDetail = response?.data?.detail || response?.data || `Submission failed with status: ${response?.status || 'Unknown'}`;
-      const errorMessage = typeof errorDetail === 'string' ? errorDetail : JSON.stringify(errorDetail);
-      console.error('[submitForm] Submission failed. API Response:', response);
-      throw new Error(errorMessage);
-    }
-  } catch (error) {
-    console.error('[submitForm] Error during submission process:', error);
-    let errorMsg = 'Submission failed.';
-    if (error?.response?.data) {
-        const errorsData = error.response.data;
-        if (typeof errorsData === 'string') errorMsg = errorsData;
-        else if (typeof errorsData === 'object' && errorsData !== null) {
-            const fieldErrors = Object.entries(errorsData).map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`).join('; ');
-            if (fieldErrors) errorMsg = fieldErrors;
-        }
-    } else if (error?.message) {
-        errorMsg = error.message;
-    }
-    setMessage(`Error: ${errorMsg}`, 'error');
-  } finally {
-    isSubmitting.value = false;
-  }
-};
-
-const saveAsDraft = async () => {
-  isSubmitting.value = true;
-  clearMessage();
-  console.log('[saveAsDraft] Saving branch application as draft...');
-  try {
-    if (!formData.cid_no) {
-        setMessage('CID is required to save a draft.', 'error');
-        isSubmitting.value = false;
-        return;
-    }
-
-    const dataToSubmit = await prepareDataForSubmission('draft');
-    console.log('[saveAsDraft] Data to save as draft:', JSON.stringify(dataToSubmit, null, 2));
-    let response;
-
-    const apiCreateDraftMethod = 'createEcpfBranch';
-    const apiUpdateDraftMethod = 'updateEcpfBranch';
-
-    if (formData.draftId && typeof apiServices[apiUpdateDraftMethod] === 'function') {
-        console.log(`[saveAsDraft] Calling API to update draft ID: ${formData.draftId}`);
-        response = await apiServices[apiUpdateDraftMethod](formData.draftId, dataToSubmit);
-    } else if (typeof apiServices[apiCreateDraftMethod] === 'function') {
-        console.log(`[saveAsDraft] Calling API to create new draft.`);
-        response = await apiServices[apiCreateDraftMethod](dataToSubmit);
-    } else {
-        console.error(`[saveAsDraft] API methods for saving draft not found.`);
-        throw new Error(`Required API method for saving draft not found.`);
-    }
-
-    console.log('[saveAsDraft] API response received:', response);
-
-    if (response?.status === 200 || response?.status === 201) {
-      const draftIdFromServer = response.data?.id || response.data?.draft_id;
-      if (draftIdFromServer) {
-         formData.draftId = draftIdFromServer;
-      }
-      formData.isDraft = true;
-      setMessage(`Branch application saved as draft. (Draft ID: ${formData.draftId || 'N/A'})`, 'success');
-    } else {
-      const errorDetail = response?.data?.detail || response?.data || `Draft save failed: ${response?.status || 'Unknown'}`;
-      const errorMessage = typeof errorDetail === 'string' ? errorDetail : JSON.stringify(errorDetail);
-      throw new Error(errorMessage);
-    }
-  } catch (error) {
-    console.error('Error saving branch draft:', error);
-    let errorMsg = 'Draft save failed.';
-    if (error?.response?.data) {
-        const errorsData = error.response.data;
-        if (typeof errorsData === 'string') errorMsg = errorsData;
-        else if (typeof errorsData === 'object' && errorsData !== null) {
-            const fieldErrors = Object.entries(errorsData).map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`).join('; ');
-            if (fieldErrors) errorMsg = fieldErrors;
-        }
-    } else if (error?.message) {
-        errorMsg = error.message;
-    }
-    setMessage(`Error: ${errorMsg}`, 'error');
-  } finally {
-    isSubmitting.value = false;
   }
 };
 
@@ -1543,42 +1535,28 @@ const loadDraft = async (id) => {
     if (!id) return;
     isLoading.value = true;
     clearMessage();
-    console.log(`[loadDraft] Loading branch draft with ID: ${id}...`);
-
     const apiGetMethod = 'getEcpfBranch';
-
     if (typeof apiServices[apiGetMethod] !== 'function') {
         setMessage('API method to get branch draft is missing.', 'error');
         isLoading.value = false; return;
     }
-
     try {
-        if (dzongkhagThromdes.value.length === 0 || firmTypes.value.length === 0 ||
-            infrastructureOptions.value.length === 0 || positionOptions.value.length === 0 ||
-            qualificationOptions.value.length === 0 || serviceCategories.value.length === 0 ||
-            qualificationTypes_edu.value.length === 0) { // Added qualificationTypes_edu check
-             console.log("[loadDraft] Master data for dropdowns not fully ready, fetching...");
+        if (dzongkhagThromdes.value.length === 0 || firmTypes.value.length === 0) {
              await fetchMasterData();
         }
-
         const response = await apiServices[apiGetMethod](id);
         const draftData = response?.data;
-
         if (draftData) {
-            console.log('[loadDraft] Loaded draft data:', draftData);
             Object.assign(formData, getInitialFormData());
-
             if (authStore.isAuthenticated && authStore.user) {
-                formData.cid_no = authStore.user?.cid || authStore.username || '';
-                formData.applicant_name = authStore.fullName || '';
-                formData.gender = authStore.gender || '';
-                formData.date_of_birth = authStore.dateOfBirth || '';
+                formData.cid_no = authStore.user?.cid || authStore.username || draftData.applicant_cid_no || '';
+                formData.applicant_name = authStore.fullName || draftData.applicants_name || '';
+                formData.gender = authStore.gender || draftData.gender || '';
+                formData.date_of_birth = authStore.dateOfBirth || draftData.date_of_birth || '';
+            } else {
+                formData.cid_no = draftData.applicant_cid_no || '';
+                // ... (rest of auth fallback as before)
             }
-
-            formData.cid_no = draftData.applicant_cid || formData.cid_no;
-            formData.applicant_name = draftData.applicants_name || formData.applicant_name;
-            formData.gender = draftData.gender || formData.gender;
-            formData.date_of_birth = draftData.date_of_birth || formData.date_of_birth;
             formData.contact_no = draftData.contact_no || '';
             formData.email_address = draftData.email || '';
             formData.office_number = draftData.office_number || '';
@@ -1587,59 +1565,57 @@ const loadDraft = async (id) => {
             formData.location = draftData.location || '';
             formData.dzongkhag_thromde_present = draftData.dzongkhag_thromde || '';
             formData.gewog_throm_present = draftData.gewog_throm || '';
-
             formData.qualification_edu = draftData.qualification || '';
-            formData.qualification_type_edu = draftData.qualification_type_edu || null; // This is the ID
+            formData.qualification_type_edu = draftData.qualification_type_edu || null;
             formData.institute_name = draftData.institute_name || '';
             formData.university_name = draftData.university_name || '';
-
-            formData.village_chiwog = draftData.permanent_village || '';
-            formData.gewog_perm = draftData.permanent_gewog || '';
-            formData.dungkhag = draftData.permanent_dungkhag || '';
-            formData.dzongkhag_thromde_perm = draftData.permanent_dzongkhag || '';
-
+            formData.village_chiwog = draftData.perm_village_chiwog || '';
+            formData.gewog_perm = draftData.perm_gewog || '';
+            formData.dungkhag = draftData.perm_dungkhag || '';
+            formData.dzongkhag_thromde_perm = draftData.perm_dzongkhag_thromde || '';
             formData.existing_ecpf_name = draftData.existing_ecpf_name || '';
-            if (!formData.existing_ecpf_name && formData.cid_no) {
+
+            if ((!formData.village_chiwog || !formData.existing_ecpf_name) && formData.cid_no) {
                 await populateFromEcpfProfile(formData.cid_no);
             }
-
-            formData.proposed_firm_address = draftData.proposed_firm_address || draftData.firm_address || '';
-            formData.proposed_firm_location = draftData.proposed_firm_location_id || null;
+            formData.proposed_firm_branch_name = draftData.proposed_firm_branch_name || '';
+            formData.proposed_firm_address = draftData.firm_address || draftData.proposed_firm_address || '';
+            formData.proposed_firm_location = draftData.firm_location || draftData.proposed_firm_location_id || null;
             formData.firm_type = draftData.type_of_firm || null;
-
             formData.infrastructure = (draftData.infrastructure_details || []).map(infra => ({
                 particulars: infra.particulars_id, description: infra.description,
                 quantity: infra.quantity, remarks: infra.remarks,
             }));
+
+            // For HR and Applicant CV, load filenames. Base64/File objects will be null.
+            // User will need to re-select if they want to change the file.
             formData.humanResources = (draftData.human_resource_details || []).map(hr => ({
                 position: hr.position_id, cid: hr.cid, full_name: hr.full_name,
                 qualification: hr.qualification_id, contact_number: hr.contact_number,
-                email_address: hr.email, cv_certificates: null,
-                cv_certificates_base64: hr.cv_certificates_base64 || null,
-                cv_filename: hr.cv_filename || (hr.cv_certificates_base64 ? 'Previously uploaded file' : null)
+                email_address: hr.email,
+                cv_certificates: null,
+                cv_certificates_base64: null, // Do not load base64 from draft if using FormData now
+                cv_filename: hr.cv_filename || null // Only filename is useful from draft
             }));
+            formData.applicant_cv_file = null;
+            formData.applicant_cv_base64 = null; // Do not load base64 from draft
+            formData.applicant_cv_filename = draftData.applicant_cv_filename || (draftData.cv ? "previously_uploaded_cv.pdf" : null) ; // if 'cv' was a base64, we can't get original name easily
 
             formData.finance_plan_details = draftData.finance_plan_details || '';
             formData.services = (draftData.services_details || []).map(s => ({
                 service_category: s.service_category_id,
                 details: s.details
             }));
-            if(draftData.swot_analysis){
-                formData.swot_strengths = draftData.swot_analysis.strengths || '';
-                formData.swot_weaknesses = draftData.swot_analysis.weaknesses || '';
-                formData.swot_opportunities = draftData.swot_analysis.opportunities || '';
-                formData.swot_threats = draftData.swot_analysis.threats || '';
-            }
+            formData.swot_strengths = draftData.strengths || '';
+            formData.swot_weaknesses = draftData.weaknesses || '';
+            formData.swot_opportunities = draftData.opportunities || '';
+            formData.swot_threats = draftData.threats || '';
             formData.fee_charges = (draftData.fee_charges_details || []).map(fc => ({
                 fee_breakup: fc.fee_breakup,
                 description: fc.description,
                 amount: fc.amount,
                 total_amount: fc.total_amount,
             }));
-            formData.applicant_cv_base64 = draftData.applicant_cv_base64 || null;
-            formData.applicant_cv_filename = draftData.applicant_cv_filename || (draftData.applicant_cv_base64 ? 'Previously uploaded CV' : null);
-
-
             declarationAgreed.value = draftData.declaration || false;
             formData.isDraft = draftData.status === 'draft';
             formData.draftId = id;
@@ -1648,8 +1624,7 @@ const loadDraft = async (id) => {
             if (formData.humanResources.length === 0) addHumanResource();
             if (formData.services.length === 0) addService();
             if (formData.fee_charges.length === 0) addFeeCharge();
-
-            setMessage(`Draft (ID: ${id}) loaded. ${formData.isDraft ? 'Status: Draft. Click "Edit Draft" to submit.' : ''}`, 'success');
+            setMessage(`Draft (ID: ${id}) loaded.`, 'success');
         } else {
             throw new Error('Draft data not found in API response.');
         }
@@ -1665,96 +1640,71 @@ const loadDraft = async (id) => {
 const editDraft = () => {
   if (formData.draftId) {
     formData.isDraft = false;
-    declarationAgreed.value = formData.declaration_agreed;
     setMessage('Draft unlocked for editing and final submission.', 'success');
-    console.log('[editDraft] Draft unlocked. formData.isDraft:', formData.isDraft);
   }
 }
 
 const resetForm = async (fetchProfileAgain = true) => {
-  console.log('[resetForm] Resetting form. Fetch profile again:', fetchProfileAgain);
-  const preservedData = {
-    cid_no: formData.cid_no,
-    applicant_name: formData.applicant_name,
-    gender: formData.gender,
-    date_of_birth: formData.date_of_birth,
-  };
-
+  const initialCid = authStore.user?.cid || authStore.username || '';
+  const initialName = authStore.fullName || '';
+  const initialGender = authStore.gender || '';
+  const initialDob = authStore.dateOfBirth || '';
   Object.assign(formData, getInitialFormData());
-  Object.assign(formData, preservedData);
-
+  formData.cid_no = initialCid;
+  formData.applicant_name = initialName;
+  formData.gender = initialGender;
+  formData.date_of_birth = initialDob;
   declarationAgreed.value = false;
-
-  if (fetchProfileAgain && authStore.user?.cid) {
-    console.log('[resetForm] Re-populating from ECPF profile after reset.');
-    await populateFromEcpfProfile(authStore.user.cid);
+  if (fetchProfileAgain && formData.cid_no) {
+    await populateFromEcpfProfile(formData.cid_no);
   } else {
-    // Ensure qualification_type_edu is reset if profile not fetched
     formData.qualification_type_edu = null;
+    // Clear other potentially profile-derived fields
   }
-
   clearMessage();
   if (formData.infrastructure.length === 0) addInfrastructure();
   if (formData.humanResources.length === 0) addHumanResource();
   if (formData.services.length === 0) addService();
   if (formData.fee_charges.length === 0) addFeeCharge();
-
   if (formEl.value) {
     formEl.value.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
   }
-  console.log('[resetForm] Form reset finished.');
 };
 
-// --- Lifecycle Hook ---
 onMounted(async () => {
   isLoading.value = true;
   clearMessage();
-  console.log('[onMounted] Component mounted. Initializing...');
-  authStore.initializeAuth();
-
+  await authStore.initializeAuth();
   let userCid = null;
-
   if (authStore.isAuthenticated && authStore.user) {
     formData.cid_no = authStore.user?.cid || authStore.username || '';
     formData.applicant_name = authStore.fullName || '';
     formData.gender = authStore.gender || '';
     formData.date_of_birth = authStore.dateOfBirth || '';
     userCid = formData.cid_no;
-    console.log('[onMounted] Populated initial user details from auth store:', { cid: userCid, name: formData.applicant_name });
   } else {
     setMessage('User data not found. Please log in.', 'error');
     isLoading.value = false;
-    console.error('[onMounted] User not authenticated.');
     return;
   }
-
   await fetchMasterData();
-  console.log('[onMounted] Master data fetching completed.');
-
-  if (userCid) {
-    await populateFromEcpfProfile(userCid);
-    console.log('[onMounted] ECPF Profile population attempt completed.');
-  } else {
-    console.warn('[onMounted] CID not available, cannot fetch ECPF profile.');
-    formData.qualification_type_edu = null; // Ensure reset if no profile fetch
-  }
-
-  if (formData.infrastructure.length === 0) addInfrastructure();
-  if (formData.humanResources.length === 0) addHumanResource();
-  if (formData.services.length === 0) addService();
-  if (formData.fee_charges.length === 0) addFeeCharge();
-
-
   const urlParams = new URLSearchParams(window.location.search);
   const draftIdFromUrl = urlParams.get('draftId');
   if (draftIdFromUrl) {
-    console.log(`[onMounted] Draft ID found in URL: ${draftIdFromUrl}. Loading draft...`);
     await loadDraft(draftIdFromUrl);
   } else {
+    if (userCid) {
+      await populateFromEcpfProfile(userCid);
+    } else {
+      formData.qualification_type_edu = null;
+    }
+    if (formData.infrastructure.length === 0) addInfrastructure();
+    if (formData.humanResources.length === 0) addHumanResource();
+    if (formData.services.length === 0) addService();
+    if (formData.fee_charges.length === 0) addFeeCharge();
     formData.isDraft = false;
     isLoading.value = false;
   }
-  console.log('[onMounted] Initialization completed. isLoading:', isLoading.value, 'isDraft:', formData.isDraft);
 });
 </script>
 
@@ -1764,18 +1714,15 @@ input[readonly],
 textarea:read-only,
 textarea[readonly] {
   cursor: not-allowed;
-  background-color: #f3f4f6; /* bg-gray-100 */
+  background-color: #f3f4f6;
   opacity: 0.7;
 }
 select:disabled {
   cursor: not-allowed;
-  background-color: #f3f4f6; /* bg-gray-100 */
+  background-color: #f3f4f6;
   opacity: 0.7;
 }
 .form-input, .form-textarea, .form-select {
   @apply mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
-}
-.form-textarea { /* Ensure textarea has consistent styling if needed */
-  @apply border-gray-200 rounded-lg shadow-sm;
 }
 </style>
