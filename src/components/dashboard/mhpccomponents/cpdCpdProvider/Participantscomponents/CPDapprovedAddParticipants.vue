@@ -6,10 +6,10 @@
     </h1>
 
     <!-- Tab Navigation -->
-    <TabNavigation :activeTab="activeTab" @tab-change="activeTab = $event" />
+    <TabNavigation :activeTab="activeTab" @tab-change="activeTab = $event" :disabled="isBulkUploading || isSingleSubmitting || isPhotoUploading" />
 
     <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
-      <!-- Loading indicator -->
+      <!-- Loading indicator for initial data fetch -->
       <div v-if="isLoading" class="flex justify-center items-center py-8">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
         <span class="ml-2 text-gray-600">Loading data...</span>
@@ -20,7 +20,8 @@
         v-if="!isLoading && activeTab === 'single'"
         :cpdTasks="cpdTasks"
         :participants="participants"
-        :current-provider-cid="currentProviderCid" 
+        :current-provider-cid="currentProviderCid"
+        :is-submitting="isSingleSubmitting"
         @submit="handleSingleSubmit"
         @cancel="cancel"
       />
@@ -29,20 +30,34 @@
         v-if="!isLoading && activeTab === 'bulk'"
         :cpdTasks="cpdTasks"
         :current-provider-cid="currentProviderCid"
+        :is-processing-upload="isBulkUploading"
         @submit="handleBulkSubmit"
         @cancel="cancel"
+        ref="bulkUploadFormRef" 
       />
 
       <AttendancePhotoForm
         v-if="!isLoading && activeTab === 'photo'"
         :cpdTasks="cpdTasks"
         :current-provider-cid="currentProviderCid"
+        :is-submitting="isPhotoUploading"
         @submit="handlePhotoSubmit"
         @cancel="cancel"
       />
 
       <!-- Status Message -->
       <StatusMessage v-if="message" :message="message" :type="messageType" @close="message = ''" />
+
+      <!-- Detailed Bulk Upload Errors (Optional Advanced Display) -->
+      <div v-if="bulkUploadErrorList.length > 0 && activeTab === 'bulk'" class="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
+        <h4 class="text-md font-semibold text-red-700 mb-2">Bulk Upload Issues:</h4>
+        <ul class="list-disc list-inside text-sm text-red-600 space-y-1">
+          <li v-for="(err, index) in bulkUploadErrorList" :key="index">
+            Row {{ err.row }} (Reg No: {{ err.participant_reg_no || 'N/A' }}): {{ err.error }}
+          </li>
+        </ul>
+      </div>
+
     </div>
   </div>
 </template>
@@ -54,79 +69,60 @@ import apiService from '@/services/services' // Your API service
 
 // Import child components
 import TabNavigation from './TabNavigation.vue'
-import SingleEntryForm from './SingleEntryForm.vue' // This form expects currentProviderCid
+import SingleEntryForm from './SingleEntryForm.vue'
 import BulkUploadForm from './BulkUploadForm.vue'
 import AttendancePhotoForm from './AttendancePhotoForm.vue'
 import StatusMessage from './StatusMessage.vue'
 
 const router = useRouter()
-const cpdTasks = ref([]) // Will hold the raw list of CPD Provider Applications
-const participants = ref([]) // Will hold the list of potential participants
+const cpdTasks = ref([])
+const participants = ref([])
 const message = ref('')
 const messageType = ref('')
-const activeTab = ref('single') // Default tab
+const activeTab = ref('single')
 const isLoading = ref(true)
-const currentProviderCid = ref(null) // To store the CID of the logged-in provider
+const currentProviderCid = ref(null)
+
+// Submission loading states
+const isSingleSubmitting = ref(false);
+const isBulkUploading = ref(false); // Specific loading state for bulk uploads
+const isPhotoUploading = ref(false);
+
+const bulkUploadFormRef = ref(null); // Ref for BulkUploadForm child
+const bulkUploadErrorList = ref([]); // To store detailed errors from bulk upload
 
 onMounted(async () => {
-  // --- Determine currentProviderCid ---
-  // This is a PLACEHOLDER. Replace with your actual method of getting the logged-in provider's CID.
-  // This might come from a Pinia/Vuex store, a global user object, etc.
   try {
-    const userString = localStorage.getItem('user'); // Example: retrieving from localStorage
+    const userString = localStorage.getItem('user');
     if (userString) {
       const loggedInUser = JSON.parse(userString);
-      if (loggedInUser && loggedInUser.cid) { // Assuming your user object has a 'cid' property
+      if (loggedInUser && loggedInUser.cid) {
         currentProviderCid.value = loggedInUser.cid;
-        console.log('Provider CID found:', currentProviderCid.value);
       } else {
         console.warn("Logged in user data found, but 'cid' property is missing or null.");
-        // Handle if CID is strictly required for providers, e.g., show error or redirect.
       }
     } else {
       console.warn("No user data found in localStorage. Provider CID cannot be determined.");
-      // This might be okay for an admin user who sees all tasks,
-      // or an error if a provider CID is always expected.
     }
   } catch (error) {
     console.error("Error retrieving or parsing user data for provider CID:", error);
   }
-  // --- End determining currentProviderCid ---
-
-  await fetchData(); // Now fetch data, currentProviderCid might be used by child components
+  await fetchData();
 });
 
 async function fetchData() {
-  isLoading.value = true
+  isLoading.value = true;
   try {
-    // Use Promise.all to make parallel requests
     const [tasksResponse, participantsResponse] = await Promise.all([
-      // IMPORTANT: Ensure this API call (getMhpcCpdTask) returns the list of
-      // "CPD Provider Applications" as objects. Each object should ideally have:
-      // id, title_of_cpd, from_date, is_cpd_approved, cid_no (provider's CID)
-      // The SingleEntryForm will use this raw list and filter it using currentProviderCid.
       apiService.getMhpcCpdTask(),
-
-      // IMPORTANT: Ensure this API call (getMhpcCounsellors) returns the full list of users
-      // who can be participants. Each user object should have at least:
-      // reg_no, full_name (or name).
-      // If any registered user can be a participant (not just counsellors),
-      // an endpoint like `apiService.searchProfessionals('')` might be more appropriate,
-      // assuming it returns all users with an empty query.
       apiService.getMhpcCounsellors(),
-    ])
-
-    // Assuming the data is in response.data.results or response.data
+    ]);
     cpdTasks.value = tasksResponse.data.results || tasksResponse.data || [];
     participants.value = participantsResponse.data.results || participantsResponse.data || [];
-
-    console.log('Loaded CPD tasks/applications:', cpdTasks.value.length);
-    console.log('Loaded participants:', participants.value.length);
-
   } catch (error) {
     console.error('Error fetching initial data:', error);
     showMessage('Failed to load essential data. Please try refreshing the page.', 'error');
-    cpdTasks.value = []; // Ensure they are empty on error
+    cpdTasks.value = [];
     participants.value = [];
   } finally {
     isLoading.value = false;
@@ -134,77 +130,132 @@ async function fetchData() {
 }
 
 async function handleSingleSubmit(submissionData) {
-  // The submissionData here is the payload from SingleEntryForm,
-  // which should be { cpd_task: ..., participant_reg_no: ... }
+  isSingleSubmitting.value = true;
+  message.value = '';
+  bulkUploadErrorList.value = [];
   try {
+    // Assuming apiService.createMhpcCpdTaskParticipant handles the POST request
+    // to your standard participant creation endpoint (not bulk)
     await apiService.createMhpcCpdTaskParticipant(submissionData);
-    showMessage('Participant added successfully to the CPD task!', 'success');
-    // Optionally, you might want to refresh some data or navigate
-    // await fetchData(); // Re-fetch data if the list of participants for a task needs updating
+    showMessage('Participant added successfully!', 'success');
+    // Potentially reset form or navigate
   } catch (error) {
     console.error('Error submitting single participant:', error);
     let errorMessage = 'Failed to add participant.';
     if (error.response && error.response.data) {
-        // Try to get more specific error messages from the API response
-        const errors = error.response.data;
-        if (typeof errors === 'object') {
-            errorMessage += ' Details: ' + Object.values(errors).flat().join(' ');
-        } else if (typeof errors === 'string') {
-            errorMessage += ' Details: ' + errors;
-        }
+      const errors = error.response.data;
+      if (typeof errors === 'object' && !Array.isArray(errors)) { // Check if it's an object of errors
+          errorMessage += ' Details: ' + Object.entries(errors).map(([key, value]) => `${key}: ${value.join ? value.join(', ') : value}`).join('; ');
+      } else if (Array.isArray(errors)) { // If it's an array of error messages
+          errorMessage += ' Details: ' + errors.join('; ');
+      } else if (typeof errors === 'string') { // If it's a single error string
+          errorMessage += ' Details: ' + errors;
+      }
     }
     showMessage(errorMessage, 'error');
+  } finally {
+    isSingleSubmitting.value = false;
   }
 }
 
 async function handleBulkSubmit({ cpdTask, file }) {
-  // This function seems to expect a `cpdTask` (ID of the CPD Provider Application)
-  // and a `file` (CSV).
-  // Ensure the `cpdTask` selected in BulkUploadForm is the ID of a CpdProviderApplication.
-  try {
-    const formDataToSend = new FormData();
-    formDataToSend.append('cpd_task', cpdTask); // This should be the ID of the selected CPD Application
-    formDataToSend.append('participants_csv', file);
+  isBulkUploading.value = true;
+  message.value = ''; // Clear previous messages
+  bulkUploadErrorList.value = []; // Clear previous bulk errors
 
-    // Assuming you have an API endpoint for bulk creation like this:
-    await apiService.bulkCreateMhpcCpdTaskParticipants(formDataToSend);
-    showMessage('Participants uploaded successfully via CSV!', 'success');
-    // await fetchData(); // Optionally re-fetch
+  const formDataToSend = new FormData();
+  formDataToSend.append('cpd_task', cpdTask); // Key from backend `request.data.get('cpd_task')`
+  formDataToSend.append('file', file);       // Key from backend `request.FILES.get('file')`
+
+  try {
+    // Ensure apiService.bulkCreateMhpcCpdTaskParticipants POSTs to the `bulk-upload` action URL
+    // e.g., /api/your-prefix/cpd-task-participants/bulk-upload/
+    // and returns the response data directly.
+    const responseData = await apiService.bulkCreateMhpcCpdTaskParticipants(formDataToSend);
+
+    const { created_count = 0, failed_count = 0, errors = [] } = responseData;
+
+    let summaryMessage = `${created_count} participant(s) were successfully processed.`;
+    let currentMessageType = 'success';
+
+    if (failed_count > 0) {
+      summaryMessage += ` ${failed_count} participant(s) could not be processed.`;
+      currentMessageType = 'warning';
+    }
+
+    if (errors.length > 0) {
+      bulkUploadErrorList.value = errors; // Store for detailed display
+      if (currentMessageType === 'success') currentMessageType = 'warning';
+      summaryMessage += ` There were ${errors.length} issue(s) with specific rows.`;
+       // No need to add "see console" if displaying them directly
+    }
+
+    showMessage(summaryMessage, currentMessageType);
+
+    if (created_count > 0 && failed_count === 0 && errors.length === 0) {
+        // Full success, reset form
+        if (bulkUploadFormRef.value && typeof bulkUploadFormRef.value.resetForm === 'function') {
+            bulkUploadFormRef.value.resetForm();
+        }
+    }
+
   } catch (error) {
-    console.error('Error uploading bulk participants:', error);
-    showMessage('Failed to upload participants. Please check your CSV file format and try again.', 'error');
+    console.error('Critical error during bulk upload:', error);
+    let errorMessage = 'Bulk upload failed.';
+    if (error.response && error.response.data && error.response.data.error) {
+      // For specific error messages from backend like "CSV file is required."
+      errorMessage = error.response.data.error;
+    } else if (error.response && error.response.data) {
+      // For other structured errors from the backend (e.g. DRF validation on the request itself)
+       const errors = error.response.data;
+       if (typeof errors === 'object') {
+           errorMessage = Object.values(errors).flat().join(' ');
+       } else if (typeof errors === 'string') {
+           errorMessage = errors;
+       }
+    }
+    showMessage(errorMessage, 'error');
+    bulkUploadErrorList.value = []; // Clear any partial list on critical failure
+  } finally {
+    isBulkUploading.value = false;
   }
 }
 
+
 async function handlePhotoSubmit({ cpdTask, photo, description }) {
-  // Similar to bulk, cpdTask should be the ID of the CPD Provider Application.
+  isPhotoUploading.value = true;
+  message.value = '';
+  bulkUploadErrorList.value = [];
   try {
     const formDataToSend = new FormData();
-    formDataToSend.append('cpd_task', cpdTask); // ID of the selected CPD Application
+    formDataToSend.append('cpd_task', cpdTask);
     formDataToSend.append('attendance_photo', photo);
     if (description) {
       formDataToSend.append('photo_description', description);
     }
-
-    // Assuming you have an API endpoint for photo upload:
     await apiService.uploadCpdTaskAttendancePhoto(formDataToSend);
     showMessage('Attendance photo uploaded successfully!', 'success');
   } catch (error) {
     console.error('Error uploading attendance photo:', error);
     showMessage('Failed to upload attendance photo. Please try again.', 'error');
+  } finally {
+    isPhotoUploading.value = false;
   }
 }
 
 function cancel() {
-  router.go(-1); // Or navigate to a specific route: router.push('/dashboard');
+  router.go(-1);
 }
 
 function showMessage(text, type = 'info') {
   message.value = text;
   messageType.value = type;
+  // Auto-clear message after 7 seconds for better UX with potentially longer messages
   setTimeout(() => {
-    message.value = '';
-    messageType.value = '';
-  }, 5000); // Increased timeout for better readability
+    if (message.value === text) { // Only clear if it's still the same message
+        message.value = '';
+        messageType.value = '';
+    }
+  }, 7000);
 }
 </script>

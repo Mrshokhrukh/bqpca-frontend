@@ -364,7 +364,7 @@ export default {
         endpoint = '/mhpc/masters-personnel-categories/'
         break
       case 'personnel-subcategories':
-        endpoint = '/mhpc/masters-sub-categories/'; 
+        endpoint = '/mhpc/masters-sub-categories/';
         break;
       case 'sectors':
         endpoint = '/mhpc/masters-sector/'
@@ -751,7 +751,25 @@ export default {
   getComplaints(params = {}) {
     return apiClient.get('/mhpc/complaints/', { params })
   },
-
+ // ***** NEW METHOD FOR BULK UPLOAD *****
+  /**
+   * Bulk creates CPD Task Participants from a CSV file.
+   * @param {FormData} formData - The FormData object containing 'cpd_task' (ID) and 'file' (CSV file).
+   * @returns {Promise} - The promise from the API call.
+   */
+  bulkCreateMhpcCpdTaskParticipants(formData) {
+    // The URL should match the `url_path` defined in your ViewSet's @action
+    // e.g., if your router base is '/mhpc/mhpc-cpd-task-participants/' and url_path is 'bulk-upload'
+    // then the full path is '/mhpc/mhpc-cpd-task-participants/bulk-upload/'
+    return apiClient.post('/mhpc/mhpc-cpd-task-participants/bulk-upload/', formData, {
+      headers: {
+        // Axios (which apiClient likely uses) should automatically set
+        // 'Content-Type': 'multipart/form-data' when a FormData object is passed.
+        // If you encounter issues, you can explicitly set it, but it's often not needed.
+        // 'Content-Type': 'multipart/form-data',
+      }
+    })
+  },
   getComplaintDetails(complaintId) {
     return apiClient.get(`/mhpc/complaints/${complaintId}/`)
   },
