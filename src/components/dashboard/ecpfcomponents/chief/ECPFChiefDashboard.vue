@@ -251,7 +251,7 @@ const mobileMenuOpen = ref(false)
 const recentActivity = [
   {
     type: 'Application',
-    description: 'New Individual ECPF Application',
+    description: 'New Independant ECPF Application',
     status: 'Pending',
     date: 'Mar 18, 2025',
   },

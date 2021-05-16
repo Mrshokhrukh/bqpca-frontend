@@ -1,0 +1,55 @@
+Masters:
+- Proper categorization and organization of navigation menus
+- Rename Compliance > Non-Compliance (nav menu)
+- rename "Compliance Action Taken" > "Non Cmpliance Admin Action Taken"
+- service category no action/api call is initiated
+- rename individual ECPF as Independant
+
+
+Applicant:
+- University should not be mandatory
+- field CID rename with CID/Work Permit (HR Bio Data form)
+- Infracture, room is to have minimum 2 validation, other particulars doesnt require validation (New ECPF Establishment)
+- New ECPF (all forms) change Office Number > Office Ph Number
+- ECPF Establishment Proposal Details > Type of firm displays description instead of Name
+- both Approval from University and Recognition/Accreditation needs to be file upload (PDF)
+- section title "Institute/Colleges/University Linkages" rename > "Probable Institute/Colleges/University Linkages" and button text > "add institute"
+- Financial Capacity Details > Financial Plan
+- To have only one long input field
+- missing fields "service category and fields"
+- Proposed Location (for Collaboration, if applicable) > to be either auto (from existing) or new location, manual input (similar to CoGS)
+- Address and Location of new branch to be clubbed into single field (long text)
+- in Location change, user to be able to select the location change for specific establishment, (such as branch or head office etc)
+- In Ownership change form, the hidden dieatails such as vision, mission, SWOT etc needs to be dislayed and made editable
+- Family tree upload field (for original ownner)
+- CID of guarantor ? needs more validation on this!
+- Linkage Establishment: Program/Course Details section is removed in the application, need to bring it back
+- Fair Description and fair location needs to be removed (education fair form)
+- institute details and representative details sortning needs to change
+- Institute selection to be optional (In-House Event)
+- Event Location to be made Auto Filled from institute details (option to select from HQ or Branch offices)
+- In-house events to have multiple institute with one representative each
+- Rename Affiliation Letter > Passport copy or Identification Document
+- Mass Media Promotional Name and Promotional Channel (both fields can be removed)
+- Rename HEI Visit > HEI Representative Visit
+- HR Bio Data: Applicant to have CRUD functionality
+- Student Bio Data: Applicant to have CRUD functionality
+- Remove "Name of ECPF with linkage (if processed through B2B)"
+- 
+
+NaveBar Menu:
+- Rename Student Management > Student Enrolled
+
+Dealing officer:
+- Decision for Physical verification missing
+
+
+General:
+- Registration Number is needed
+> Format: BQPCA/HEQC/ECPF/08(79)
+> Format Exp: {Authority Name}/{Council Name}/{Service Name}/{XX - Service Code}({XXXX - serial number})
+
+> service code:
+>> 07 - ROQ
+>> 08 - General ECPF
+>> 05 - Institutional Accreditation

@@ -254,10 +254,10 @@
           </div>
         </section>
 
-        <!-- ECPF in Collaboration Proposal Details -->
+        <!-- Details of Existing Independant ECPF -->
         <section class="mb-8">
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">
-            ECPF in Collaboration Proposal Details
+            Details of Existing Independant ECPF
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -669,7 +669,7 @@ const generateId = (prefix, name) => {
 const dzongkhagHasGewogs = (dzongkhagGeneratedId) => {
   if (!dzongkhagGeneratedId) return false
   const selectedDzongkhagObj = bhutanDzongkhagsGewogs.find(
-    (dz) => generateId('dz', dz.dzongkhag) === dzongkhagGeneratedId,
+    (dz) => generateId('dz', dz.dzongkhag) === dzongkhagGeneratedId
   )
   return (
     selectedDzongkhagObj && selectedDzongkhagObj.gewogs && selectedDzongkhagObj.gewogs.length > 0
@@ -689,7 +689,7 @@ watch(
     gewogThroms.value = []
     if (newDzongkhagGeneratedId) {
       const selectedDzongkhagObj = bhutanDzongkhagsGewogs.find(
-        (dz) => generateId('dz', dz.dzongkhag) === newDzongkhagGeneratedId,
+        (dz) => generateId('dz', dz.dzongkhag) === newDzongkhagGeneratedId
       )
       if (
         selectedDzongkhagObj &&
@@ -704,7 +704,7 @@ watch(
         gewogThroms.value = []
       }
     }
-  },
+  }
 )
 
 const setMessage = (text, type = 'error') => {
@@ -904,7 +904,7 @@ const fetchExistingEcpfDetails = async (cid) => {
   }
   if (typeof apiServices.getEcpfDetailsByCID !== 'function') {
     console.error(
-      '[fetchExistingEcpfDetails] CRITICAL: apiServices.getEcpfDetailsByCID method is not defined.',
+      '[fetchExistingEcpfDetails] CRITICAL: apiServices.getEcpfDetailsByCID method is not defined.'
     )
     formData.existing_ecpf_name = 'N/A (Service Error)'
     formData.existing_license_number = 'N/A (Service Error)'
@@ -1075,7 +1075,7 @@ const loadDraft = async (id) => {
 
       if (formData.dzongkhag_thromde) {
         const selectedDzOriginal = bhutanDzongkhagsGewogs.find(
-          (dz) => generateId('dz', dz.dzongkhag) === formData.dzongkhag_thromde,
+          (dz) => generateId('dz', dz.dzongkhag) === formData.dzongkhag_thromde
         )
         if (selectedDzOriginal?.gewogs?.length > 0) {
           gewogThroms.value = selectedDzOriginal.gewogs.map((gewogName) => ({

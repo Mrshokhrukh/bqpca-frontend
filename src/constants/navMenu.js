@@ -243,7 +243,7 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('FilePlus'), // Icon for adding new things
         children: [
           {
-            name: 'Individual ECPF',
+            name: 'Independant ECPF',
             route: (serviceType) => `/admin/user/${serviceType}/individual_ecpf`,
           },
           {
@@ -414,7 +414,7 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('FileText'), // Using FileText for Applications
         children: [
           {
-            name: 'Individual ECPF Applications',
+            name: 'Independant ECPF Applications',
             icon: getIconComponent('UserCircle'), // User for Individual
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/individual_ecpf_applications`,
@@ -538,7 +538,7 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('Activity'), //Use activity
         children: [
           {
-            name: 'Individual ECPF Applications',
+            name: 'Independant ECPF Applications',
             route: (serviceType) => `/admin/chief/${serviceType}/individual_ecpf_applications`,
           },
           {
@@ -671,11 +671,11 @@ const serviceSpecificMenuItems = {
           }
 
           // if (store.visibleMenus.certificationSubMenus.renewal) {
-            items.push({
-              name: 'Registration Renewal',
-              route: (serviceType) => `/admin/user/${serviceType}/renewal`,
-              badge: store.visibleMenus.hasRenewalInProgress ? 'In Progress' : null,
-            })
+          items.push({
+            name: 'Registration Renewal',
+            route: (serviceType) => `/admin/user/${serviceType}/renewal`,
+            badge: store.visibleMenus.hasRenewalInProgress ? 'In Progress' : null,
+          })
           // }
 
           if (store.visibleMenus.certificationSubMenus.additionalQualification) {

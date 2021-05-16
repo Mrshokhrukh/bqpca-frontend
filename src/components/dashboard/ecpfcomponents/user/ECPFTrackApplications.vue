@@ -240,7 +240,7 @@ const applicationTypes = reactive([
     expandable: true,
     expanded: false,
     subItems: [
-      { id: 'individualECPF', label: 'Individual ECPF' },
+      { id: 'individualECPF', label: 'Independant ECPF' },
       { id: 'collaboratedECPF', label: 'Collaborated ECPF' },
       { id: 'newBranch', label: 'New Branch' },
     ],
