@@ -645,7 +645,7 @@ const serviceSpecificMenuItems = {
         },
       },
       {
-        name: 'Certification',
+        name: 'Registration Services',
         icon: getIconComponent('Certificate'),
         hidden: () => {
           const store = useHealthCertificationStore()
@@ -657,7 +657,7 @@ const serviceSpecificMenuItems = {
 
           if (store.visibleMenus.certificationSubMenus.applyForCertification) {
             items.push({
-              name: 'Apply for Certification',
+              name: 'Apply for Registration',
               route: (serviceType) => `/admin/user/${serviceType}/registration`,
             })
           }
@@ -665,22 +665,22 @@ const serviceSpecificMenuItems = {
           // Always show Track My Applications once application is submitted
           if (store.visibleMenus.certificationSubMenus.myApplications) {
             items.push({
-              name: 'Track My Applications',
+              name: 'Track My Registration',
               route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
             })
           }
 
-          if (store.visibleMenus.certificationSubMenus.renewal) {
+          // if (store.visibleMenus.certificationSubMenus.renewal) {
             items.push({
-              name: 'Renewal',
+              name: 'Registration Renewal',
               route: (serviceType) => `/admin/user/${serviceType}/renewal`,
               badge: store.visibleMenus.hasRenewalInProgress ? 'In Progress' : null,
             })
-          }
+          // }
 
           if (store.visibleMenus.certificationSubMenus.additionalQualification) {
             items.push({
-              name: 'Additional Qualification',
+              name: 'Additional Qualification Registration',
               route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
             })
           }
@@ -689,7 +689,7 @@ const serviceSpecificMenuItems = {
         },
       },
       {
-        name: 'CPD Management',
+        name: 'CPD Services',
         icon: getIconComponent('BookOpen'),
         hidden: () => {
           const store = useHealthCertificationStore()
@@ -707,7 +707,7 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'CoGS Management',
+        name: 'CoGS Services',
         icon: getIconComponent('Users'),
         hidden: () => {
           const store = useHealthCertificationStore()
@@ -725,7 +725,7 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Counselor Management',
+        name: 'Counselor Services',
         icon: getIconComponent('FileText'),
         // Assuming Counselor Management should follow same visibility as CPD/COGS
         hidden: () => {

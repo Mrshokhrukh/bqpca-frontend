@@ -41,7 +41,7 @@
               aria-label="CPD Task"
             >
               <option value="">Select an approved CPD task</option>
-              <option v-for="task in filteredCpdTasks" :key="task.id" :value="task.id">
+              <option v-for="task in cpdTasks" :key="task.id" :value="task.id">
                 {{ task.title_of_cpd }} ({{ task.from_date }} to {{ task.to_date }})
               </option>
             </select>
@@ -167,7 +167,7 @@ const filteredCpdTasks = computed(() => {
     return []
   }
   return props.cpdTasks.filter(task => {
-    const isApproved = task.is_cpd_approved === true || String(task.is_cpd_approved).toLowerCase() === 'true';
+    const isApproved = task.application_status === 'APPROVED' || String(task.application_status) === 'APPROVED';
     const belongsToProvider = task.cid_no === props.currentProviderCid;
     return isApproved && belongsToProvider;
   });
