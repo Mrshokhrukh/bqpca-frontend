@@ -247,9 +247,9 @@
             </div>
           </div>
           <div v-if="!displayRegistrationTypes.length && !isLoadingMasters" class="mt-2 text-sm text-yellow-600">
-            Could not load specific registration types. Defaulting to Full Registration.
+            Could not load registration types. Please ensure they are configured in the master list.
           </div>
-          <div v-if="isLoadingMasters" class="mt-2 text-sm text-gray-500">Loading registration types...</div>
+           <div v-if="isLoadingMasters && !allRegistrationTypesFromAPI.length" class="mt-2 text-sm text-gray-500">Loading registration types...</div> <!-- Show loading only if not yet fetched -->
           <span v-if="errors.registration_type" class="text-xs text-red-500 mt-1">{{
             errors.registration_type
           }}</span>
@@ -315,21 +315,37 @@
               }}</span>
             </div>
 
+            <!-- MODIFIED: Qualification Name Dropdown -->
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Qualification Name</label>
               <select v-model="localFormData.qualification_name"
+                @change="localFormData.qualification_name !== 'OTHERS' ? localFormData.other_qualification_name_specify = '' : ''"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
                 <option value="">Select Qualification Name</option>
                 <option v-for="qualification in qualifications" :key="qualification.id" :value="qualification.id">
                   {{ qualification.qualification }}
                 </option>
+                <option value="OTHERS">Others (Please specify)</option>
               </select>
-              <span v-if="errors.qualification_name" class="text-xs text-red-500 mt-1">{{
+              <span v-if="errors.qualification_name && localFormData.qualification_name !== 'OTHERS'" class="text-xs text-red-500 mt-1">{{
                 errors.qualification_name
               }}</span>
             </div>
 
-            <div class="col-span-1">
+            <!-- NEW: "Specify Qualification Name" Input Field -->
+            <div class="col-span-1" v-if="localFormData.qualification_name === 'OTHERS'">
+              <label class="block text-sm font-medium text-gray-700 required">Specify Qualification Name</label>
+              <input v-model="localFormData.other_qualification_name_specify" type="text"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+                placeholder="Enter your qualification name" />
+              <span v-if="errors.other_qualification_name_specify" class="text-xs text-red-500 mt-1">{{
+                errors.other_qualification_name_specify
+              }}</span>
+            </div>
+            <!-- END NEW -->
+
+
+            <div :class="localFormData.qualification_name === 'OTHERS' ? 'col-span-2 sm:col-span-1' : 'col-span-1'"> <!-- Adjust span if 'OTHERS' is selected to keep layout -->
               <label class="block text-sm font-medium text-gray-700 required">Institute/University</label>
               <select v-model="localFormData.institute"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
@@ -344,7 +360,7 @@
               }}</span>
             </div>
 
-            <div class="col-span-1">
+            <div :class="localFormData.qualification_name === 'OTHERS' ? 'col-span-2 sm:col-span-1' : 'col-span-1'"> <!-- Adjust span -->
               <label class="block text-sm font-medium text-gray-700 required">Year of Completion (YYYY-MM)</label>
               <input type="month" v-model="localFormData.year_of_completion"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
@@ -367,18 +383,16 @@
             Document types available are from the master list.
             (Allowed: .pdf, .doc, .docx, .jpg, .jpeg, .png; Max 2MB per file)
           </p>
-          <div v-if="currentRequiredDocNames.length > 0"
+          <!-- Message indicating required documents based on registration type -->
+          <div v-if="currentRequiredDocNames.length > 0 && localFormData.registration_type"
             class="mt-2 mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
-            <p class="text-sm font-medium text-blue-700">Mandatory documents for {{ localFormData.registration_type ===
-              FULL_REGISTRATION_ID ? 'Full Registration' : (localFormData.registration_type ===
-                PROVISIONAL_REGISTRATION_ID
-                ? 'Provisional Registration' : 'Temporary Registration') }}:</p>
+            <p class="text-sm font-medium text-blue-700">Mandatory documents for {{ getRegistrationTypeName(localFormData.registration_type) }}:</p>
             <ul class="list-disc list-inside text-xs text-blue-600 mt-1">
               <li v-for="docName in currentRequiredDocNames" :key="docName">{{ docName }}</li>
             </ul>
           </div>
-          <p v-else-if="!isLoadingMasters && fetchedDocumentTypes.length > 0" class="text-xs text-gray-500 mt-1 mb-3">No
-            specific mandatory documents are listed for this registration type. Please ensure all relevant documents are
+          <p v-else-if="localFormData.registration_type && !isLoadingMasters && fetchedDocumentTypes.length > 0" class="text-xs text-gray-500 mt-1 mb-3">No
+            specific mandatory documents are listed for {{getRegistrationTypeName(localFormData.registration_type)}}. Please ensure all relevant documents are
             uploaded.</p>
           <p v-else-if="!isLoadingMasters && fetchedDocumentTypes.length === 0"
             class="text-xs text-yellow-600 mt-1 mb-3">
@@ -486,16 +500,15 @@ import PageHeader from '@/components/common/MHPC/PageHeader.vue'
 import { UserPlus } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
-// const userId = authStore.userId // Not directly used, user.id is used
 const user = authStore.user
 const router = useRouter()
 
 const props = defineProps({
-  selectedType: { // 'cid' or 'non-cid'
+  selectedType: {
     type: String,
     required: true,
   },
-  modelValue: { // For v-model binding if this component is used with it
+  modelValue: {
     type: Object,
     required: true,
   },
@@ -503,35 +516,32 @@ const props = defineProps({
 
 const emit = defineEmits([
   'update:modelValue',
-  'submit', // Emitted on successful final submission
-  'back',   // Emitted when user clicks "Back to Selection" in stage 1
+  'submit',
+  'back',
 ])
 
-const stage = ref(1) // Controls which form stage is visible (1 or 2)
-const applicationId = ref(null) // Stores the ID of the application created in stage 1
-const isLoadingMasters = ref(true); // Tracks loading state for master data
+const stage = ref(1)
+const applicationId = ref(null)
+const isLoadingMasters = ref(true);
 
-const fetchedDocumentTypes = ref([]) // Master list of all possible document types {id, document_name}
-const supportingDocuments = ref([{ type: '', files: [] }]) // Array for user's document uploads. Removed 'description' as it's not used.
+const fetchedDocumentTypes = ref([])
+const supportingDocuments = ref([{ type: '', files: [] }])
 
-// Adds a new empty row for document upload
 const addDocument = () => {
-  supportingDocuments.value.push({ type: '', files: [] }) // Removed 'description'
+  supportingDocuments.value.push({ type: '', files: [] })
 }
 
-// Removes a document upload row by its index
 const removeDocument = (index) => {
   supportingDocuments.value.splice(index, 1)
-  updateFormDocuments() // Update localFormData.documents after removal
+  updateFormDocuments()
 }
 
-// Handles file selection for a specific document row
 const handleFileSelect = (event, index) => {
   const files = Array.from(event.target.files)
-  const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+  const MAX_SIZE = 2 * 1024 * 1024;
   const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'];
 
-  delete errors[`document_file_${index}`]; // Clear previous error for this file input
+  delete errors[`document_file_${index}`];
 
   for (const file of files) {
     if (file.size > MAX_SIZE) {
@@ -554,37 +564,76 @@ const handleFileSelect = (event, index) => {
   }
 
   supportingDocuments.value[index].files = files
-  updateFormDocuments() // Update localFormData.documents with the new files
+  updateFormDocuments()
 }
 
-// Prepares the `localFormData.documents` array for submission
 const updateFormDocuments = () => {
   localFormData.documents = supportingDocuments.value
     .filter(doc => doc.type && doc.files.length > 0)
     .map(doc => ({
-      type: doc.type, // This is the document_type_id
+      type: doc.type,
       files: doc.files,
     }));
 }
 
-// Static list of countries for dropdowns
-const countries = [
+const countries = [ /* Your long list of countries */
   'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'East Timor', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Ivory Coast', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Korea, North', 'Korea, South', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe',
-]
+];
 
-// Refs for master data dropdowns
+
 const qualificationTypes = ref([])
 const qualifications = ref([])
 const universities = ref([])
-const allRegistrationTypesFromAPI = ref([]) // Holds all registration types fetched from API
+const allRegistrationTypesFromAPI = ref([])
 
 // --- Registration Type IDs ---
+// IMPORTANT: VERIFY THESE IDs AGAINST YOUR API/DATABASE
 const FULL_REGISTRATION_ID = 2;
 const PROVISIONAL_REGISTRATION_ID = 3;
 const TEMPORARY_REGISTRATION_ID = 4;
+// Add other IDs if you want to include them, e.g.:
+// const RENEWAL_ID = 5;
+// const ADDITIONAL_CERT_ID = 6;
 
-// --- Configuration for Required Documents ---
-// IMPORTANT: Values in arrays MUST EXACTLY MATCH `document_name` from your `fetchedDocumentTypes` master list.
+const getRegistrationTypeName = (typeId) => {
+    const type = allRegistrationTypesFromAPI.value.find(rt => rt.id === typeId);
+    return type ? type.name : 'Selected Registration'; // Fallback name
+};
+
+
+const displayRegistrationTypes = computed(() => {
+  // console.log('allRegistrationTypesFromAPI in computed:', JSON.stringify(allRegistrationTypesFromAPI.value));
+  if (allRegistrationTypesFromAPI.value && allRegistrationTypesFromAPI.value.length > 0) {
+    const relevantTypeIds = [
+        FULL_REGISTRATION_ID,
+        PROVISIONAL_REGISTRATION_ID,
+        TEMPORARY_REGISTRATION_ID,
+        // Add other IDs here if you want them to be selectable by default
+        // RENEWAL_ID,
+        // ADDITIONAL_CERT_ID,
+    ];
+    const relevantTypes = allRegistrationTypesFromAPI.value.filter(rt => relevantTypeIds.includes(rt.id));
+    // console.log('Filtered relevantTypes for display:', JSON.stringify(relevantTypes));
+    if (relevantTypes.length === 0) {
+        // This means the desired IDs (2,3,4) are not in the API response, or API response is empty
+        // console.warn("Desired registration types (Full, Provisional, Temporary) not found in API response. Check IDs or API data.");
+        // To show *all* types from API if specific ones aren't found:
+        // return allRegistrationTypesFromAPI.value.map(rt => ({ id: rt.id, name: rt.name.toLowerCase() }));
+        // Or, if you want to show NOTHING if specific types are missing:
+        return [];
+    }
+    return relevantTypes.map(rt => ({ id: rt.id, name: rt.name.toLowerCase() }));
+  }
+  // Fallback if API data isn't loaded yet, or if you want hardcoded defaults if API fails
+  // console.log('Using fallback registration types (or API not loaded yet)');
+  return [
+    // { id: FULL_REGISTRATION_ID, name: 'full registration' },
+    // { id: PROVISIONAL_REGISTRATION_ID, name: 'provisional' },
+    // { id: TEMPORARY_REGISTRATION_ID, name: 'temporary registration' },
+  ]; // Return empty array if API not loaded to avoid showing defaults if API will provide
+});
+
+
 const REQUIRED_DOCS_CONFIG = {
   [FULL_REGISTRATION_ID]: [
     "Declaration of the Code of Professional Fidelity signed on Legal Stamp",
@@ -598,36 +647,25 @@ const REQUIRED_DOCS_CONFIG = {
     "Valid Security clearance",
     "Recognition of Qualification Certificate"
   ],
-  [PROVISIONAL_REGISTRATION_ID]: [ // Replace with actual document_names from your master
+  [PROVISIONAL_REGISTRATION_ID]: [
     "Graduation Certificate (Master/degree/diploma/certificate)",
     "Provisional or Course Completion Certificate",
     "Citizenship identity card",
-    // e.g., "Medical Fitness Certificate"
+    "Marksheet (Master/degree/diploma/certificate)",
+    "Class X and XII pass certificates",
+    // Add/Modify as per actual requirements for Provisional
   ],
-  [TEMPORARY_REGISTRATION_ID]: [ // Replace with actual document_names from your master
+  [TEMPORARY_REGISTRATION_ID]: [
     "Graduation Certificate (Master/degree/diploma/certificate)",
-    "Work Offer Letter", // This needs to be an exact match to a document_name in fetchedDocumentTypes
-    "Request Letter from Sponsoring Body", // This also needs to be an exact match
-    // e.g., "Passport Copy"
+    "Work Offer Letter",
+    "Request Letter from Sponsoring Body",
+    "Valid Passport Copy", // Example, ensure this name matches your master
+    "Valid Visa/Permit Copy", // Example, ensure this name matches your master
+    // Add/Modify as per actual requirements for Temporary
   ],
 };
 
-// Computed property to get the registration types to display in radio buttons
-const displayRegistrationTypes = computed(() => {
-  if (allRegistrationTypesFromAPI.value && allRegistrationTypesFromAPI.value.length > 0) {
-    const relevantTypeIds = [FULL_REGISTRATION_ID, PROVISIONAL_REGISTRATION_ID, TEMPORARY_REGISTRATION_ID];
-    const relevantTypes = allRegistrationTypesFromAPI.value.filter(rt => relevantTypeIds.includes(rt.id));
-    return relevantTypes.map(rt => ({ id: rt.id, name: rt.name.toLowerCase() }));
-  }
-  // Fallback if API data isn't as expected or not loaded
-  return [
-    { id: FULL_REGISTRATION_ID, name: 'full registration' },
-    { id: PROVISIONAL_REGISTRATION_ID, name: 'provisional' },
-    { id: TEMPORARY_REGISTRATION_ID, name: 'temporary registration' },
-  ];
-});
 
-// Fetch master data when component is mounted
 onMounted(async () => {
   isLoadingMasters.value = true;
   try {
@@ -635,7 +673,7 @@ onMounted(async () => {
       apiService.getMhpcMastersQualificationTypes(),
       apiService.getMhpcMastersQualifications(),
       apiService.getMhpcMastersUniversities(),
-      apiService.getMhpcMastersRegistrationTypes(), // Fetches ALL registration types
+      apiService.getMhpcMastersRegistrationTypes(),
       apiService.getMhpcMastersDocumentTypes()
     ]);
 
@@ -643,17 +681,18 @@ onMounted(async () => {
     qualifications.value = responses[1]?.data?.results || [];
     universities.value = responses[2]?.data?.results || [];
     allRegistrationTypesFromAPI.value = responses[3]?.data?.results || [];
+    // console.log('Fetched All Registration Types from API in onMounted:', JSON.stringify(allRegistrationTypesFromAPI.value));
     fetchedDocumentTypes.value = responses[4]?.data?.results || [];
 
-    // Ensure default registration_type is valid after fetching
-    const availableRegTypeIds = allRegistrationTypesFromAPI.value.map(rt => rt.id);
-    if (!availableRegTypeIds.includes(localFormData.registration_type)) { // If current default isn't in fetched list
-      if (availableRegTypeIds.includes(FULL_REGISTRATION_ID)) { // Prioritize Full Reg ID
-        localFormData.registration_type = FULL_REGISTRATION_ID;
-      } else if (displayRegistrationTypes.value.length > 0) { // Fallback to first relevant type
-        localFormData.registration_type = displayRegistrationTypes.value[0].id;
-      }
-      // If displayRegistrationTypes is also empty, it keeps the hardcoded FULL_REGISTRATION_ID
+    // Set a default registration_type if none is selected or if current selection is not in displayable types
+    const availableRegTypeIds = displayRegistrationTypes.value.map(rt => rt.id);
+    if (!localFormData.registration_type || !availableRegTypeIds.includes(localFormData.registration_type)) {
+        if (availableRegTypeIds.includes(FULL_REGISTRATION_ID)) {
+            localFormData.registration_type = FULL_REGISTRATION_ID;
+        } else if (availableRegTypeIds.length > 0) {
+            localFormData.registration_type = availableRegTypeIds[0];
+        }
+        // If displayRegistrationTypes is empty, registration_type remains as its initial value or ''
     }
 
   } catch (error) {
@@ -664,57 +703,52 @@ onMounted(async () => {
   }
 });
 
-// Reactive form data object
 const localFormData = reactive({
-  ...props.modelValue, // Spread initial values from prop
+  ...props.modelValue,
   cid_holder: props.selectedType === 'cid',
   nationality: props.selectedType === 'cid' ? 'Bhutanese' : '',
   email_address: user?.email || '',
   workPermitNo: '',
-  mobileNumber: '', // For non-CID holders
+  mobileNumber: '',
   full_name: '',
   gender: '',
   date_of_birth: '',
   city: '',
   state: '',
-  country: '', // For non-CID, country of residence
-  contact_no: '', // Main contact number for communication
+  country: '',
+  contact_no: '',
   passport_photo: null,
-  documents: [], // Stores { type: ID, files: [File, ...] } for submission
+  documents: [],
   remarks: '',
   declaration: false,
-  // Fields related to application status/details, usually set by backend
   payment_status: 'False',
   payment_id: null,
   registration_date: null,
   expiry_date: null,
-  // Qualification fields
   qualification_type: '',
-  qualification_name: '',
+  qualification_name: '', // Will hold ID or "OTHERS"
+  other_qualification_name_specify: '', // For "Specify" field text
   institute: '',
-  year_of_completion: null, // Expected format YYYY-MM
-  is_active: 'False', // Default status
-  application: null, // Will hold the application ID from stage 1
-  registration_type: FULL_REGISTRATION_ID, // Default to Full Registration ID
+  year_of_completion: null,
+  is_active: 'False',
+  application: null,
+  registration_type: '', // Initialize as empty, will be set in onMounted
 });
 
-const errors = reactive({}) // For storing form validation errors
-const isConfirmationModalOpen = ref(false) // Controls visibility of submission confirmation modal
-const isSubmitting = ref(false) // Tracks submission process state
-const toast = useToast() // For displaying notifications
-const isLoadingDCRC = ref(false) // Tracks DCRC data fetching state
+const errors = reactive({})
+const isConfirmationModalOpen = ref(false)
+const isSubmitting = ref(false)
+const toast = useToast()
+const isLoadingDCRC = ref(false)
 
-// Computed property for the list of mandatory document names for the current registration type
 const currentRequiredDocNames = computed(() => {
   return REQUIRED_DOCS_CONFIG[localFormData.registration_type] || [];
 });
 
-// Computed property to check if CID is valid (11 digits)
 const isCIDValid = computed(() => {
   return /^\d{11}$/.test(localFormData.cid_no)
 })
 
-// Watch for changes in localFormData to emit update to parent (if using v-model)
 watch(
   () => localFormData,
   (newData) => {
@@ -723,22 +757,18 @@ watch(
   { deep: true },
 )
 
-// Watch for changes in registration_type to clear document-related errors
 watch(() => localFormData.registration_type, () => {
   delete errors.mandatory_documents;
-  supportingDocuments.value.forEach((_, index) => { // Clear individual row errors
+  supportingDocuments.value.forEach((_, index) => {
     delete errors[`document_type_${index}`];
     delete errors[`document_file_${index}`];
   });
 });
 
-
-// Validates the first stage of the form
 const validateFormStageOne = () => {
-  // Clear previous non-document errors from stage 1
   Object.keys(errors).forEach((key) => {
     if (!key.startsWith('document_') && key !== 'mandatory_documents' && key !== 'declaration' &&
-      !['qualification_type', 'qualification_name', 'institute', 'year_of_completion'].includes(key)) {
+      !['qualification_type', 'qualification_name', 'other_qualification_name_specify', 'institute', 'year_of_completion'].includes(key)) {
       delete errors[key];
     }
   });
@@ -755,7 +785,18 @@ const validateFormStageOne = () => {
   }
 
   if (!localFormData.passport_photo) { errors.passport_photo = 'Passport photo is required.'; isValid = false; }
-  if (!localFormData.registration_type) { errors.registration_type = 'Registration type is required.'; isValid = false; }
+
+  // Check if a valid registration type is selected from the displayed options
+  if (!localFormData.registration_type) {
+      errors.registration_type = 'Registration type is required.'; isValid = false;
+  } else {
+      const availableDisplayedTypes = displayRegistrationTypes.value.map(rt => rt.id);
+      if (!availableDisplayedTypes.includes(localFormData.registration_type)) {
+          errors.registration_type = 'Please select a valid registration type.'; isValid = false;
+          // This case might happen if the default was somehow invalid or API changed after selection
+      }
+  }
+
 
   if (props.selectedType === 'cid') {
     if (!localFormData.cid_no) { errors.cid_no = 'CID is required.'; isValid = false; }
@@ -766,7 +807,7 @@ const validateFormStageOne = () => {
     if (!localFormData.village && isCIDValid.value) errors.village = 'Village should auto-fill; try re-entering CID.';
     if ((!localFormData.dzongkhag || !localFormData.gewog || !localFormData.village) && isCIDValid.value) isValid = false;
 
-  } else { // Non-CID Holder
+  } else {
     if (!localFormData.nationality) { errors.nationality = 'Nationality is required.'; isValid = false; }
     if (!localFormData.email_address) {
       errors.email_address = 'Email is required.'; isValid = false;
@@ -791,18 +832,17 @@ const validateFormStageOne = () => {
   return isValid;
 }
 
-// Validates the entire form (both stages)
 const validateForm = () => {
-  if (!validateFormStageOne()) return false; // Validate stage 1 first
+  if (!validateFormStageOne()) return false;
 
-  // Clear previous stage 2 specific errors
   delete errors.qualification_type;
   delete errors.qualification_name;
+  delete errors.other_qualification_name_specify; // Clear specify error
   delete errors.institute;
   delete errors.year_of_completion;
   delete errors.mandatory_documents;
   delete errors.declaration;
-  supportingDocuments.value.forEach((_, index) => { // Clear individual row errors
+  supportingDocuments.value.forEach((_, index) => {
     delete errors[`document_type_${index}`];
     delete errors[`document_file_${index}`];
   });
@@ -810,7 +850,22 @@ const validateForm = () => {
   let isValid = true;
 
   if (!localFormData.qualification_type) { errors.qualification_type = 'Qualification Type is required.'; isValid = false; }
-  if (!localFormData.qualification_name) { errors.qualification_name = 'Qualification Name is required.'; isValid = false; }
+
+  // MODIFIED: Qualification Name validation
+  if (!localFormData.qualification_name) {
+    errors.qualification_name = 'Qualification Name is required.';
+    isValid = false;
+  } else if (localFormData.qualification_name === 'OTHERS') {
+    if (!localFormData.other_qualification_name_specify || localFormData.other_qualification_name_specify.trim() === '') {
+      errors.other_qualification_name_specify = 'Please specify your qualification name.';
+      isValid = false;
+    } else {
+      delete errors.qualification_name; // Clear main dropdown error if specify is being used and filled
+    }
+  } else {
+     delete errors.other_qualification_name_specify; // Clear if not 'OTHERS'
+  }
+
   if (!localFormData.institute) { errors.institute = 'Institute/University is required.'; isValid = false; }
   if (!localFormData.year_of_completion) {
     errors.year_of_completion = 'Year of Completion is required (YYYY-MM format).'; isValid = false;
@@ -829,9 +884,8 @@ const validateForm = () => {
     }
   }
 
-  // Mandatory Document Validation
   const requiredDocNamesForCurrentRegType = REQUIRED_DOCS_CONFIG[localFormData.registration_type] || [];
-  if (fetchedDocumentTypes.value.length > 0) { // Only validate if master list is loaded
+  if (fetchedDocumentTypes.value.length > 0) {
     for (const requiredDocName of requiredDocNamesForCurrentRegType) {
       const docTypeFromMaster = fetchedDocumentTypes.value.find(dt => dt.document_name === requiredDocName);
       if (!docTypeFromMaster) {
@@ -839,7 +893,7 @@ const validateForm = () => {
         errors.mandatory_documents = `Configuration error for document: ${requiredDocName}. Please contact support.`;
         isValid = false; break;
       }
-      const isUploaded = localFormData.documents.some( // Check against processed localFormData.documents
+      const isUploaded = localFormData.documents.some(
         uploadedDoc => uploadedDoc.type === docTypeFromMaster.id && uploadedDoc.files.length > 0
       );
       if (!isUploaded) {
@@ -848,27 +902,22 @@ const validateForm = () => {
       }
     }
   } else if (requiredDocNamesForCurrentRegType.length > 0 && !isLoadingMasters.value) {
-    // If master list failed to load but mandatory docs are configured, flag an issue.
     errors.mandatory_documents = "Could not verify document list due to a loading error. Please refresh or contact support.";
     isValid = false;
   }
 
-
-  // Validate individual document rows (type selected if files are present, files present if type selected)
   supportingDocuments.value.forEach((doc, index) => {
     if (doc.files.length > 0 && !doc.type) {
       errors[`document_type_${index}`] = 'Please select a document type for the uploaded file(s).';
       isValid = false;
     }
-    // If a type is selected, a file should be present, especially if it's a mandatory one (covered above)
-    // For optional, if user adds a row and selects type, they should upload.
     if (doc.type && doc.files.length === 0) {
       const selectedDocName = fetchedDocumentTypes.value.find(fdt => fdt.id === doc.type)?.document_name;
       const isMandatory = currentRequiredDocNames.value.includes(selectedDocName);
-      if (isMandatory) { // Stricter for mandatory types if somehow missed by above check
+      if (isMandatory) {
         errors[`document_file_${index}`] = `File missing for mandatory document type: ${selectedDocName}.`;
         isValid = false;
-      } else { // For optional, if type is chosen, file is expected
+      } else {
         errors[`document_file_${index}`] = 'Please upload file(s) for the selected document type or remove the row.';
         isValid = false;
       }
@@ -877,24 +926,21 @@ const validateForm = () => {
 
   if (!localFormData.declaration) {
     errors.declaration = 'You must accept the declaration to proceed.';
-    // toast.error(errors.declaration); // Toast can be repetitive if also shown in form
     isValid = false;
   }
 
   return isValid;
 }
 
-// Formats date from DD/MM/YYYY (DCRC) to YYYY-MM-DD (input[type=date])
 const formatDateForInput = (dateString) => {
   if (!dateString) return '';
   const parts = dateString.split('/');
   if (parts.length === 3) {
     return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
   }
-  return dateString; // Return as is if not in expected format
+  return dateString;
 }
 
-// Fetches citizen details from DCRC API
 const fetchDCRCData = async () => {
   if (props.selectedType !== 'cid' || !isCIDValid.value) {
     localFormData.full_name = '';
@@ -944,10 +990,9 @@ const fetchDCRCData = async () => {
   }
 }
 
-// Handles passport photo selection and validation
 const handlePassportPhotoSelect = (event) => {
   const file = event.target.files[0];
-  delete errors.passport_photo; // Clear previous error
+  delete errors.passport_photo;
 
   if (file) {
     if (file.size > 2 * 1024 * 1024) {
@@ -964,11 +1009,10 @@ const handlePassportPhotoSelect = (event) => {
       localFormData.passport_photo = file;
     }
   } else {
-    localFormData.passport_photo = null; // No file selected or selection cancelled
+    localFormData.passport_photo = null;
   }
 }
 
-// Formats a Date object or parsable date string to YYYY-MM-DD for API
 const formatDateForAPI = (dateInput) => {
   let dateObj;
   if (dateInput instanceof Date && !isNaN(dateInput)) {
@@ -990,7 +1034,6 @@ const formatDateForAPI = (dateInput) => {
   return `${year}-${month}-${day}`;
 }
 
-// Handles submission of Stage 1 form
 const handleNext = async () => {
   if (validateFormStageOne()) {
     isSubmitting.value = true;
@@ -1004,20 +1047,18 @@ const handleNext = async () => {
 
       delete formDataStageOne.city;
       delete formDataStageOne.state;
-      // formDataStageOne.country is now dzongkhag
       delete formDataStageOne.workPermitNo;
-      delete formDataStageOne.mobileNumber; // Non-CID specific mobile
+      delete formDataStageOne.mobileNumber;
     }
 
-    // Fields not part of the MhpcNewApplication model
     const fieldsToRemove = [
       'documents', 'remarks', 'declaration', 'payment_status', 'payment_id',
-      'qualification_type', 'qualification_name', 'institute',
+      'qualification_type', 'qualification_name', 'other_qualification_name_specify', 'institute',
       'year_of_completion', 'is_active', 'application', 'cid_holder',
     ];
     if (props.selectedType === 'cid') {
-      delete formDataStageOne.mobileNumber; // Remove if CID holder
-      delete formDataStageOne.country; // Remove if CID holder (country of residence)
+      delete formDataStageOne.mobileNumber;
+      delete formDataStageOne.country;
     }
     fieldsToRemove.forEach(field => delete formDataStageOne[field]);
 
@@ -1063,20 +1104,18 @@ const handleNext = async () => {
   }
 }
 
-// Opens the confirmation modal after validating Stage 2
 const openConfirmationModal = () => {
-  updateFormDocuments(); // Ensure localFormData.documents is up-to-date
-  if (validateForm()) { // Validates both stages
+  updateFormDocuments();
+  if (validateForm()) {
     isConfirmationModalOpen.value = true;
   } else {
     toast.error('Please correct all errors and upload mandatory documents before submitting.');
   }
 }
 
-// Handles the actual final submission (Stage 2 data)
 const handleSubmitActual = async () => {
   isConfirmationModalOpen.value = false;
-  updateFormDocuments(); // Ensure documents are current and correctly structured in localFormData.documents
+  updateFormDocuments();
 
   if (!validateForm()) {
     toast.error('Submission cancelled due to validation errors. Please review the form.');
@@ -1093,9 +1132,19 @@ const handleSubmitActual = async () => {
   try {
     const qualificationFormData = new FormData();
 
-    // Append non-file fields for UserQualification model
     qualificationFormData.append('application', localFormData.application);
-    qualificationFormData.append('qualification_name', localFormData.qualification_name);
+
+    // Handle "Others" for qualification_name
+    if (localFormData.qualification_name === 'OTHERS') {
+      // Send the text value. Backend needs a field to store this text.
+      // Assuming backend has a field like `qualification_name_text` or similar.
+      qualificationFormData.append('qualification_name_text', localFormData.other_qualification_name_specify);
+      // If your backend `qualification_name` is a ForeignKey, you might send null for the ID.
+      // qualificationFormData.append('qualification_name', ''); // Or null, depending on backend
+    } else {
+      qualificationFormData.append('qualification_name', localFormData.qualification_name); // This is the ID
+    }
+
     qualificationFormData.append('qualification_type', localFormData.qualification_type);
     qualificationFormData.append('institute_university', localFormData.institute);
 
@@ -1110,31 +1159,19 @@ const handleSubmitActual = async () => {
     qualificationFormData.append('remarks', localFormData.remarks || '');
     qualificationFormData.append('is_primary_qualification', 'True');
 
-    // --- Handle Attachments (Supporting Documents) ---
-    console.log("Preparing attachments for submission. localFormData.documents:", JSON.stringify(localFormData.documents.map(d => ({ type: d.type, files: d.files.map(f => f.name) }))));
-
-    localFormData.documents.forEach((doc) => { // No docIndex needed for flat arrays if backend handles order
+    localFormData.documents.forEach((doc) => {
       if (doc.files && doc.files.length > 0 && doc.type) {
         doc.files.forEach((fileObject) => {
-          // MODIFIED: Using flat array naming convention
-          // The key 'user_qualification_attachment_files' will be sent multiple times, once for each file.
-          // The key 'user_qualification_attachment_file_types' will be sent multiple times, once for each corresponding type.
-          // The backend must be able to collect these into lists and associate them by order.
           qualificationFormData.append('user_qualification_attachment_files', fileObject, fileObject.name);
           qualificationFormData.append('user_qualification_attachment_file_types', doc.type);
-
-          console.log(`Appending to FormData: user_qualification_attachment_files = ${fileObject.name}, user_qualification_attachment_file_types = ${doc.type}`);
         });
-      } else {
-        console.warn(`Skipping document entry due to missing file or type. Type: ${doc.type}, Files: ${doc.files?.length}`);
       }
     });
 
-    // Log the entire FormData just before sending for thorough inspection
-    console.log("Final Qualification FormData to be sent:");
-    for (let pair of qualificationFormData.entries()) {
-      console.log(pair[0] + ': ' + (pair[1] instanceof File ? `File: ${pair[1].name}, Size: ${pair[1].size}` : pair[1]));
-    }
+    // console.log("Final Qualification FormData to be sent:");
+    // for (let pair of qualificationFormData.entries()) {
+    //   console.log(pair[0] + ': ' + (pair[1] instanceof File ? `File: ${pair[1].name}, Size: ${pair[1].size}` : pair[1]));
+    // }
 
     await apiService.createMhpcNewQualification(qualificationFormData);
 
@@ -1145,7 +1182,6 @@ const handleSubmitActual = async () => {
     console.error('Error submitting qualification and documents:', error.response?.data || error.message);
     const errorMessages = Object.entries(error.response?.data || { 'API Error': [error.message || 'Unknown error'] })
       .map(([key, value]) => {
-        // Attempt to flatten nested errors, especially for attachments
         if (typeof value === 'object' && value !== null) {
           return Object.entries(value).map(([nestedKey, nestedValue]) =>
             `${key}.${nestedKey}: ${Array.isArray(nestedValue) ? nestedValue.join(', ') : nestedValue}`
@@ -1165,26 +1201,20 @@ const handleSubmitActual = async () => {
 .required::after {
   content: ' *';
   color: #ef4444;
-  /* Tailwind's red-500 */
 }
 
-/* Make readonly fields visually distinct */
 .bg-gray-100[readonly] {
   background-color: #f3f4f6;
-  /* Tailwind's gray-100 */
   cursor: not-allowed;
 }
-
 
 @media (max-width: 640px) {
   .text-sm {
     font-size: 0.8125rem;
-    /* Slightly smaller than Tailwind's sm */
   }
 
   .text-xs {
     font-size: 0.75rem;
-    /* Tailwind's xs */
   }
 }
 </style>

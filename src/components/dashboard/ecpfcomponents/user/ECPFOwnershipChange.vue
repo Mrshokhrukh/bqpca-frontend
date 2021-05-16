@@ -1,5 +1,5 @@
-<template
-  ><div class="p-8 min-h-screen bg-gray-50">
+<template>
+  <div class="p-8 min-h-screen bg-gray-50">
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
       <h1 class="text-4xl font-bold text-gray-900 mb-3">Change in Ownership of ECPF</h1>
       <p class="text-gray-600">
@@ -93,12 +93,12 @@
                 <input
                   type="text"
                   v-model="formData.personalInfo.cidNo"
-                  :disabled="isLoadingDCRC || (isEditing && !!formData.personalInfo.cidNo)"
+                  :disabled="isLoadingDCRC || isEditing"
                   class="mt-1 block w-full px-3 py-2 border rounded-l-md shadow-sm"
                   :class="{
                     'border-red-500':
                       highlightErrors && (!formData.personalInfo.cidNo || !isCIDValid),
-                    'bg-gray-100': isEditing && !!formData.personalInfo.cidNo,
+                     'bg-gray-100': isEditing && !!formData.personalInfo.cidNo // Readonly look if editing and has value from initial search
                   }"
                   placeholder="Enter 11-digit CID Number"
                   @input="validateCID"
@@ -113,8 +113,7 @@
                 </button>
               </div>
               <p class="text-xs text-gray-500 mt-1">
-                Enter an 11-digit CID to fetch data from DCRC. Fields will be editable if data is
-                not found or if in edit mode.
+                Enter an 11-digit CID to fetch data from DCRC. Fields will be editable if data is not found.
               </p>
               <span v-if="errors.cidNo" class="text-xs text-red-500 mt-1">{{ errors.cidNo }}</span>
             </div>
@@ -235,9 +234,7 @@
                 v-model="formData.residentialAddress.dzongkhagThromde"
                 :readonly="!isEditing && !!formData.residentialAddress.dzongkhagThromde"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                :class="{
-                  'bg-gray-100': !isEditing && !!formData.residentialAddress.dzongkhagThromde,
-                }"
+                :class="{ 'bg-gray-100': !isEditing && !!formData.residentialAddress.dzongkhagThromde }"
               />
               <p class="text-xs text-gray-500 mt-1">Auto (Pull from DCRC if available)</p>
             </div>
@@ -288,9 +285,7 @@
                 v-model="formData.permanentAddress.dzongkhagThromde"
                 :readonly="!isEditing && !!formData.permanentAddress.dzongkhagThromde"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                :class="{
-                  'bg-gray-100': !isEditing && !!formData.permanentAddress.dzongkhagThromde,
-                }"
+                :class="{ 'bg-gray-100': !isEditing && !!formData.permanentAddress.dzongkhagThromde }"
               />
               <p class="text-xs text-gray-500 mt-1">Auto (Pull from DCRC if available)</p>
             </div>
@@ -310,7 +305,9 @@
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
                 :class="{ 'bg-gray-100': !isEditing }"
               />
-              <p class="text-xs text-gray-500 mt-1">Please enter manually.</p>
+              <p class="text-xs text-gray-500 mt-1">
+                Please enter manually.
+              </p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Name of Institute</label>
@@ -321,9 +318,11 @@
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
                 :class="{ 'bg-gray-100': !isEditing }"
               />
-              <p class="text-xs text-gray-500 mt-1">Please enter manually.</p>
+              <p class="text-xs text-gray-500 mt-1">
+                Please enter manually.
+              </p>
             </div>
-            <div class="md:col-span-2">
+            <div>
               <label class="block text-sm font-medium text-gray-700">Name of University</label>
               <input
                 type="text"
@@ -332,7 +331,9 @@
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
                 :class="{ 'bg-gray-100': !isEditing }"
               />
-              <p class="text-xs text-gray-500 mt-1">Please enter manually.</p>
+              <p class="text-xs text-gray-500 mt-1">
+                Please enter manually.
+              </p>
             </div>
           </div>
         </section>
@@ -373,21 +374,17 @@
                 }"
               />
             </div>
-            <div class="md:col-span-2">
+            <div>
               <label class="block text-sm font-medium text-gray-700"
                 >Location of the Proposed Firm</label
               >
               <input
                 type="text"
                 v-model="formData.proposal.firmLocation"
-                :readonly="!isEditing"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                :class="{ 'bg-gray-100': !isEditing }"
+                readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
               />
-              <p class="text-xs text-gray-500 mt-1">
-                Auto-filled from current ECPF location if available. Editable for new proposed
-                location.
-              </p>
+              <p class="text-xs text-gray-500 mt-1">Auto (Pull from source if available)</p>
             </div>
           </div>
         </section>
@@ -587,7 +584,7 @@
                   readonly
                   class="mt-1 block w-full px-3 py-2 bg-gray-100 border rounded-md shadow-sm"
                   :class="{ 'border-red-500': highlightErrors && !formData.documents.cidGuarantor }"
-                  placeholder="Filename will appear here"
+                   placeholder="Filename will appear here"
                 />
                 <label
                   class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
@@ -616,7 +613,7 @@
                   :class="{
                     'border-red-500': highlightErrors && !formData.documents.proposalDetails,
                   }"
-                  placeholder="Filename will appear here"
+                   placeholder="Filename will appear here"
                 />
                 <label
                   class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
@@ -789,14 +786,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed, } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
-import apiService from '@/services/services' // Ensure this path is correct
-import PaymentModal from '@/components/common/PaymentModal.vue' // Ensure this path is correct
+import apiService from '@/services/services'
+import PaymentModal from '@/components/common/PaymentModal.vue'
 import { useToast } from 'vue-toastification'
 
-const OWNERSHIP_CHANGE_FEE = 1000 // Example fee
+const OWNERSHIP_CHANGE_FEE = 1000 // Example fee for ownership change
 let ecpfProfileId = null
 
 const authStore = useAuthStore()
@@ -808,12 +805,14 @@ const pendingFormData = ref(null)
 const isSubmitting = ref(false)
 const loading = ref(true)
 const isLoadingDCRC = ref(false)
+// const rubApiQuery = ref('') // Removed for RUB API
+// const allowManualEntry = ref(false) // Removed for RUB API
 const validationErrors = ref([])
-const errors = reactive({}) // For individual field errors, e.g., CID format
-const highlightErrors = ref(false) // To trigger global error highlighting
+const errors = reactive({})
+const highlightErrors = ref(false)
 const showSubmissionErrorModal = ref(false)
-const submissionErrors = ref([]) // For the modal list
-const isEditing = ref(false) // Controls global edit mode
+const submissionErrors = ref([])
+const isEditing = ref(false)
 
 const formData = reactive({
   currentEcpf: {
@@ -856,15 +855,12 @@ const formData = reactive({
   },
   linkages: [{ name: '', location: '', country: '', recognition: null, approval: null }],
   documents: {
-    cvApplicant: null, // Will store filename for display
+    cvApplicant: null,
     cvCounsellors: null,
     cidGuarantor: null,
     proposalDetails: null,
     declarationRemarks: '',
     declarationAgreed: false,
-    // Actual file objects can be stored separately if needed for FormData submission
-    // cvApplicantFile: null,
-    // ...
   },
 })
 
@@ -876,7 +872,7 @@ const canSubmit = computed(() => {
   const isValid =
     formData.personalInfo.cidNo &&
     isCIDValid.value &&
-    formData.personalInfo.name && // Applicant's name must be present
+    formData.personalInfo.name && // Added check for applicant's name after DCRC search
     formData.proposal.firmName &&
     formData.proposal.firmAddress &&
     formData.documents.cvApplicant &&
@@ -885,27 +881,44 @@ const canSubmit = computed(() => {
     formData.documents.proposalDetails &&
     formData.documents.declarationAgreed &&
     ecpfProfileId
+  console.log('canSubmit:', isValid, {
+    cidNo: formData.personalInfo.cidNo,
+    isCIDValid: isCIDValid.value,
+    applicantName: formData.personalInfo.name,
+    firmName: formData.proposal.firmName,
+    firmAddress: formData.proposal.firmAddress,
+    cvApplicant: formData.documents.cvApplicant,
+    cvCounsellors: formData.documents.cvCounsellors,
+    cidGuarantor: formData.documents.cidGuarantor,
+    proposalDetails: formData.documents.proposalDetails,
+    declarationAgreed: formData.documents.declarationAgreed,
+    ecpfProfileId: ecpfProfileId,
+  })
   return isValid
 })
 
+watch(
+  () => formData.documents.declarationAgreed,
+  (newValue) => {
+    console.log('declarationAgreed changed:', newValue)
+  },
+)
+
 const formatDateForInput = (dateString) => {
   if (!dateString) return ''
+  // Assuming API might send YYYY-MM-DDTHH:MM:SS or DD/MM/YYYY
   if (dateString.includes('T')) {
-    const date = new Date(dateString)
-    const day = String(date.getDate()).padStart(2, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const year = date.getFullYear()
-    return `${day}/${month}/${year}`
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
   } else if (dateString.includes('/')) {
-    return dateString // Already in dd/mm/yyyy
+      return dateString; // Already in dd/mm/yyyy
   }
-  // Attempt to parse if it's YYYY-MM-DD
-  const parts = dateString.split('-')
-  if (parts.length === 3) {
-    return `${parts[2]}/${parts[1]}/${parts[0]}`
-  }
-  return '' // Fallback
+  return ''; // Fallback for unknown format
 }
+
 
 const validateCID = () => {
   if (!formData.personalInfo.cidNo) {
@@ -922,34 +935,28 @@ const searchByCID = async () => {
     toast.error('Please enter a valid 11-digit CID Number.')
     return
   }
+
   if (!authStore.user?.id) {
-    toast.error('User ID is not available. Please log in.')
+    toast.error('User ID is not available. Please ensure you are logged in.')
     return
   }
 
   isLoadingDCRC.value = true
-  // Clear previous DCRC-populated fields
-  Object.assign(formData.personalInfo, { name: '', gender: '', dob: '', contactNo: '', email: '' })
-  Object.assign(formData.residentialAddress, {
-    officeNumber: '',
-    flatNo: '',
-    buildingNo: '',
-    location: '',
-    gewogThrom: '',
-    dzongkhagThromde: '',
-  })
-  Object.assign(formData.permanentAddress, {
-    villageChiwog: '',
-    gewog: '',
-    dungkhag: '',
-    dzongkhagThromde: '',
-  })
+  // Clear previous DCRC data before new search
+  Object.assign(formData.personalInfo, { name: '', gender: '', dob: '', contactNo: '', email: '' });
+  Object.assign(formData.residentialAddress, { officeNumber: '', flatNo: '', buildingNo: '', location: '', gewogThrom: '', dzongkhagThromde: '' });
+  Object.assign(formData.permanentAddress, { villageChiwog: '', gewog: '', dungkhag: '', dzongkhagThromde: '' });
 
   try {
     const response = await apiService.fetchCitizenDetails(formData.personalInfo.cidNo, {
       params: { user_id: authStore.user.id },
     })
-    const genderMap = { F: 'Female', M: 'Male', O: 'Other' }
+
+    const genderMap = {
+      F: 'Female',
+      M: 'Male',
+      O: 'Other',
+    }
 
     Object.assign(formData.personalInfo, {
       name: response.data.applicants_name || '',
@@ -958,14 +965,16 @@ const searchByCID = async () => {
       contactNo: response.data.mobile_number || '',
       email: response.data.email || '',
     })
+
     Object.assign(formData.residentialAddress, {
       officeNumber: response.data.office_number || '',
       flatNo: response.data.flat_no || '',
       buildingNo: response.data.building_no || '',
       location: response.data.location || '',
-      gewogThrom: response.data.gewog || '',
-      dzongkhagThromde: response.data.dzongkhag || '',
+      gewogThrom: response.data.gewog || '', // DCRC provides 'gewog'
+      dzongkhagThromde: response.data.dzongkhag || '', // DCRC provides 'dzongkhag'
     })
+
     Object.assign(formData.permanentAddress, {
       villageChiwog: response.data.village || '',
       gewog: response.data.gewog || '',
@@ -973,17 +982,20 @@ const searchByCID = async () => {
       dzongkhagThromde: response.data.dzongkhag || '',
     })
 
-    if (response.data.applicants_name) {
-      toast.success('DCRC data fetched successfully.')
+    if(response.data.applicants_name) {
+        toast.success('DCRC data fetched successfully.')
     } else {
-      toast.info('DCRC data partially fetched or some fields missing. Please fill them manually.')
+        toast.info('DCRC data partially fetched or some fields missing. Please fill them manually.')
     }
+
   } catch (error) {
     console.error('Error fetching DCRC data:', error)
-    toast.error(
-      error.response?.data?.error ||
-        'Failed to fetch DCRC data. Please enter details manually if not auto-filled.',
-    )
+    if (error.response?.data?.error) {
+      toast.error(error.response.data.error)
+    } else {
+      toast.error('Failed to fetch DCRC data. Please enter details manually if not auto-filled.')
+    }
+    // Fields are already cleared or will remain empty, allowing manual input as per new :readonly logic
   } finally {
     isLoadingDCRC.value = false
   }
@@ -994,24 +1006,23 @@ const loadDraftFromLocalStorage = () => {
   if (savedDraft) {
     try {
       const draft = JSON.parse(savedDraft)
-      // Safely assign to ensure no undefined overwrites if draft structure changes
-      Object.keys(formData).forEach((sectionKey) => {
-        if (draft.formData && draft.formData[sectionKey]) {
-          if (sectionKey === 'linkages') {
-            formData.linkages = Array.isArray(draft.formData.linkages)
-              ? draft.formData.linkages
-              : [{ name: '', location: '', country: '', recognition: null, approval: null }]
-          } else {
-            Object.assign(formData[sectionKey], draft.formData[sectionKey])
-          }
-        }
-      })
-      if (draft.ecpfProfileId) ecpfProfileId = draft.ecpfProfileId
+      Object.assign(formData.currentEcpf, draft.formData.currentEcpf || {})
+      Object.assign(formData.personalInfo, draft.formData.personalInfo || {})
+      Object.assign(formData.residentialAddress, draft.formData.residentialAddress || {})
+      Object.assign(formData.permanentAddress, draft.formData.permanentAddress || {})
+      Object.assign(formData.education, draft.formData.education || {})
+      Object.assign(formData.proposal, draft.formData.proposal || {})
+      formData.linkages = draft.formData.linkages || [
+        { name: '', location: '', country: '', recognition: null, approval: null },
+      ]
+      Object.assign(formData.documents, draft.formData.documents || {})
+      if (draft.ecpfProfileId) {
+        ecpfProfileId = draft.ecpfProfileId
+      }
       toast.info('Loaded saved draft.')
-    } catch (e) {
-      console.error('Error parsing draft:', e)
-      toast.error('Failed to load corrupted draft.')
-      localStorage.removeItem('ecpf_ownership_draft') // Clear corrupted draft
+    } catch (error) {
+      console.error('Error parsing draft from localStorage:', error)
+      toast.error('Failed to load saved draft.')
     }
   }
 }
@@ -1020,273 +1031,380 @@ onMounted(async () => {
   loading.value = true
   try {
     if (!authStore.isAuthenticated || !authStore.user) {
-      toast.error('Please log in to access this form.')
-      router.push('/login') // Or your login route
-      return // Stop further execution
+      toast.error('Please log in to access the ECPF ownership change form.')
+      router.push('/login')
+      loading.value = false
+      return
     }
 
-    loadDraftFromLocalStorage() // Load draft first
+    loadDraftFromLocalStorage()
 
     let fetchedEcpfData = null
-    if (authStore.user.cid) {
+    if (!authStore.user.cid) {
+      toast.error('Unable to fetch ECPF profile: User CID not found.')
+      formData.currentEcpf.name = 'N/A'
+      validationErrors.value.push(
+        'Unable to fetch ECPF profile: CID not found in your user profile. Please contact support.',
+      )
+    } else {
       try {
         const response = await apiService.getEcpfDetailsByCID(authStore.user.cid)
         fetchedEcpfData = response.data
         ecpfProfileId = fetchedEcpfData.id
+        if (!ecpfProfileId) {
+          toast.warn('ECPF profile ID not found. Form submission might fail.')
+        }
       } catch (apiError) {
         console.error('Error fetching ECPF profile by CID:', apiError)
-        toast.error('Failed to fetch ECPF profile data.')
+        toast.error('Failed to fetch ECPF profile data. Please try again or contact support.')
+        formData.currentEcpf.name = 'N/A (Error fetching)'
       }
-    } else {
-      toast.error('User CID not found. Unable to fetch ECPF profile.')
     }
 
-    // Populate Current ECPF Details and other auto-fillable fields
-    // only if NOT loading from a draft that might have user-modified auto-filled data,
-    // OR if fetchedEcpfData is available (meaning a fresh load or refresh)
     if (!localStorage.getItem('ecpf_ownership_draft') || fetchedEcpfData) {
-      formData.currentEcpf.licenseNo = fetchedEcpfData?.license_number || 'N/A'
+      formData.currentEcpf.licenseNo = fetchedEcpfData?.license_number || 'N/A' // Corrected key
       formData.currentEcpf.name =
         fetchedEcpfData?.institute_name ||
         fetchedEcpfData?.name ||
         fetchedEcpfData?.firm_name ||
         'N/A'
       formData.currentEcpf.proprietor =
-        fetchedEcpfData?.applicants_name || // From ECPF profile itself
-        fetchedEcpfData?.proprietor_name || // If a specific field exists
-        authStore.fullName ||
-        'N/A'
+        fetchedEcpfData?.applicants_name || // Assuming proprietor is the applicant name from ECPF profile
+        fetchedEcpfData?.proprietor_name || // Fallback if specific proprietor_name exists
+        authStore.fullName || 'N/A'
 
-      const currentEcpfGeoParts = [
-        fetchedEcpfData?.location, // General location field
-        fetchedEcpfData?.gewog_throm,
-        fetchedEcpfData?.dzongkhag_thromde,
-      ].filter(Boolean)
-      formData.currentEcpf.location =
-        currentEcpfGeoParts.length > 0 ? currentEcpfGeoParts.join(', ') : 'N/A'
-
-      // Pre-fill proposed firm location with current ECPF location
-      formData.proposal.firmLocation = formData.currentEcpf.location // Or be more specific if needed
+      const ecpfLocParts = [
+        fetchedEcpfData?.location,
+        fetchedEcpfData?.gewog_throm, // Assuming 'gewog_throm' from API for ECPF
+        fetchedEcpfData?.dzongkhag_thromde // Assuming 'dzongkhag_thromde' from API for ECPF
+      ].filter(Boolean);
+      formData.currentEcpf.location = ecpfLocParts.length > 0 ? ecpfLocParts.join(', ') : (fetchedEcpfData?.location || 'N/A');
 
       // Auto-fill linkages if available in fetchedEcpfData
-      // IMPORTANT: Adjust 'fetchedEcpfData.your_linkages_array_key'
-      if (
-        fetchedEcpfData &&
-        fetchedEcpfData.linkages_info && // Assuming 'linkages_info' is the key
-        Array.isArray(fetchedEcpfData.linkages_info) &&
-        fetchedEcpfData.linkages_info.length > 0
-      ) {
-        formData.linkages = fetchedEcpfData.linkages_info.map((link) => ({
+      // IMPORTANT: Adjust 'fetchedEcpfData.existing_linkages_key' to the actual key in your API response
+      if (fetchedEcpfData && fetchedEcpfData.linkages_info && Array.isArray(fetchedEcpfData.linkages_info) && fetchedEcpfData.linkages_info.length > 0) {
+        formData.linkages = fetchedEcpfData.linkages_info.map(link => ({
           name: link.name || '',
           location: link.location || '',
           country: link.country || '',
-          recognition: link.recognition_document_name || null, // Assuming filename is stored
-          approval: link.approval_document_name || null, // Assuming filename is stored
-        }))
-      } else if (!localStorage.getItem('ecpf_ownership_draft')) {
-        // If not loading from draft and no linkages from API, ensure it's the default
-        formData.linkages = [
-          { name: '', location: '', country: '', recognition: null, approval: null },
-        ]
+          // Assuming file names are stored directly if pre-filled
+          recognition: link.recognition_document_name || null,
+          approval: link.approval_document_name || null,
+          // If you store actual file objects or IDs, adjust accordingly
+        }));
+      } else if (!localStorage.getItem('ecpf_ownership_draft')) { // Only reset if not loading from draft
+         formData.linkages = [{ name: '', location: '', country: '', recognition: null, approval: null }];
       }
     }
   } catch (error) {
-    console.error('Error during onMounted:', error)
-    toast.error('Failed to initialize form. Please refresh.')
+    console.error('Error during onMounted initialization:', error)
+    toast.error('Failed to initialize form. Please try refreshing the page.')
   } finally {
     loading.value = false
   }
 })
+
+// RUB API search function removed
+// const searchRUB = async () => { ... }
 
 const addLinkage = () => {
   formData.linkages.push({ name: '', location: '', country: '', recognition: null, approval: null })
 }
 
 const removeLinkage = (index) => {
-  if (formData.linkages.length > 1) {
+  if (formData.linkages.length > 1) { // Prevent removing the last one
     formData.linkages.splice(index, 1)
   } else {
-    toast.info('At least one linkage entry is required. You can clear the fields if needed.')
+    toast.info("At least one linkage entry is required. You can clear the fields if needed.");
   }
 }
 
-const handleFileUploadEvent = (event, targetArray, index, fieldName) => {
+
+const handleRecognitionUpload = (event, index) => {
   const file = event.target.files[0]
   if (file) {
-    if (targetArray) { // For linkages
-      targetArray[index][fieldName] = file.name
-      // targetArray[index][`${fieldName}File`] = file; // Store actual file
-    } else { // For documents
-      formData.documents[fieldName] = file.name
-      // formData.documents[`${fieldName}File`] = file; // Store actual file
-    }
+    formData.linkages[index].recognition = file.name // Store filename for display
+    // You might want to store the actual file object if you're uploading it directly without a separate submit step
+    // formData.linkages[index].recognitionFile = file;
   } else {
-     if (targetArray) {
-      targetArray[index][fieldName] = null
-      // targetArray[index][`${fieldName}File`] = null;
-    } else {
-      formData.documents[fieldName] = null
-      // formData.documents[`${fieldName}File`] = null;
-    }
+    formData.linkages[index].recognition = null
+    // formData.linkages[index].recognitionFile = null;
   }
-  event.target.value = '' // Clear file input for re-selection
+  event.target.value = ''; // Clear the file input
 }
 
-const handleRecognitionUpload = (event, index) => handleFileUploadEvent(event, formData.linkages, index, 'recognition');
-const handleApprovalUpload = (event, index) => handleFileUploadEvent(event, formData.linkages, index, 'approval');
-const handleCvApplicantUpload = (event) => handleFileUploadEvent(event, null, null, 'cvApplicant');
-const handleCvCounsellorsUpload = (event) => handleFileUploadEvent(event, null, null, 'cvCounsellors');
-const handleCidGuarantorUpload = (event) => handleFileUploadEvent(event, null, null, 'cidGuarantor');
-const handleProposalDetailsUpload = (event) => handleFileUploadEvent(event, null, null, 'proposalDetails');
+const handleApprovalUpload = (event, index) => {
+  const file = event.target.files[0]
+  if (file) {
+    formData.linkages[index].approval = file.name // Store filename for display
+    // formData.linkages[index].approvalFile = file;
+  } else {
+    formData.linkages[index].approval = null
+    // formData.linkages[index].approvalFile = null;
+  }
+  event.target.value = ''; // Clear the file input
+}
+
+const handleCvApplicantUpload = (event) => {
+  handleFileUpload(event, 'cvApplicant')
+}
+
+const handleCvCounsellorsUpload = (event) => {
+  handleFileUpload(event, 'cvCounsellors')
+}
+
+const handleCidGuarantorUpload = (event) => {
+  handleFileUpload(event, 'cidGuarantor')
+}
+
+const handleProposalDetailsUpload = (event) => {
+  handleFileUpload(event, 'proposalDetails')
+}
+
+const handleFileUpload = (event, field) => {
+  const file = event.target.files[0]
+  if (file) {
+    formData.documents[field] = file.name // Store filename for display
+    // formData.documents[`${field}File`] = file; // Store actual file object if needed for submission
+  } else {
+    formData.documents[field] = null
+    // formData.documents[`${field}File`] = null;
+  }
+  event.target.value = ''; // Clear the file input
+}
 
 
 const validateForm = () => {
   validationErrors.value = []
-  if (!formData.personalInfo.cidNo || !isCIDValid.value)
-    validationErrors.value.push('Valid 11-digit CID Number is required.')
-  if (!formData.personalInfo.name)
-    validationErrors.value.push(
-      "Applicant's Name is required. Search by CID or enter manually.",
-    )
-  if (!formData.proposal.firmName)
+  if (!formData.personalInfo.cidNo) {
+    validationErrors.value.push('CID Number is required.')
+  } else if (!isCIDValid.value) {
+    validationErrors.value.push('CID Number must be an 11-digit number.')
+  }
+  if (!formData.personalInfo.name) { // Check if applicant's name is filled (after DCRC attempt)
+      validationErrors.value.push("Applicant's Name is required. Please search by CID or enter manually if not found.");
+  }
+  if (!formData.proposal.firmName) {
     validationErrors.value.push('Name of the Proposed Firm is required.')
-  if (!formData.proposal.firmAddress)
+  }
+  if (!formData.proposal.firmAddress) {
     validationErrors.value.push('Address of the Proposed Firm is required.')
-  if (!formData.documents.cvApplicant)
+  }
+  if (!formData.documents.cvApplicant) {
     validationErrors.value.push('CV of the Applicant is required.')
-  if (!formData.documents.cvCounsellors)
+  }
+  if (!formData.documents.cvCounsellors) {
     validationErrors.value.push('CV & Certificate of Counsellors is required.')
-  if (!formData.documents.cidGuarantor)
+  }
+  if (!formData.documents.cidGuarantor) {
     validationErrors.value.push('CID of Guarantor is required.')
-  if (!formData.documents.proposalDetails)
+  }
+  if (!formData.documents.proposalDetails) {
     validationErrors.value.push('Proposal Details document is required.')
-  if (!formData.documents.declarationAgreed)
+  }
+  if (!formData.documents.declarationAgreed) {
     validationErrors.value.push('You must agree to the declaration.')
-  if (!ecpfProfileId) validationErrors.value.push('ECPF profile ID is missing.')
+  }
+  if (!ecpfProfileId) {
+    validationErrors.value.push('ECPF profile ID is missing. Cannot submit form.')
+  }
   return validationErrors.value.length === 0
 }
 
 const checkMissingFields = () => {
-  submissionErrors.value = [] // Clear previous
-  if (!formData.personalInfo.cidNo || !isCIDValid.value)
+  submissionErrors.value = []
+  if (!formData.personalInfo.cidNo || !isCIDValid.value) {
     submissionErrors.value.push('Valid 11-digit CID Number')
-  if (!formData.personalInfo.name)
-    submissionErrors.value.push("Applicant's Name (search by CID or enter manually)")
-  if (!formData.proposal.firmName) submissionErrors.value.push('Name of the Proposed Firm')
-  if (!formData.proposal.firmAddress) submissionErrors.value.push('Address of the Proposed Firm')
-  if (!formData.documents.cvApplicant) submissionErrors.value.push('CV of the Applicant')
-  if (!formData.documents.cvCounsellors)
+  }
+  if (!formData.personalInfo.name) {
+      submissionErrors.value.push("Applicant's Name (search by CID or enter manually)");
+  }
+  if (!formData.proposal.firmName) {
+    submissionErrors.value.push('Name of the Proposed Firm')
+  }
+  if (!formData.proposal.firmAddress) {
+    submissionErrors.value.push('Address of the Proposed Firm')
+  }
+  if (!formData.documents.cvApplicant) {
+    submissionErrors.value.push('CV of the Applicant')
+  }
+  if (!formData.documents.cvCounsellors) {
     submissionErrors.value.push('CV & Certificate of Counsellors')
-  if (!formData.documents.cidGuarantor) submissionErrors.value.push('CID of Guarantor')
-  if (!formData.documents.proposalDetails) submissionErrors.value.push('Proposal Details')
-  if (!formData.documents.declarationAgreed) submissionErrors.value.push('Declaration Agreement')
-  if (!ecpfProfileId) submissionErrors.value.push('ECPF Profile ID (contact support)')
+  }
+  if (!formData.documents.cidGuarantor) {
+    submissionErrors.value.push('CID of Guarantor')
+  }
+  if (!formData.documents.proposalDetails) {
+    submissionErrors.value.push('Proposal Details')
+  }
+  if (!formData.documents.declarationAgreed) {
+    submissionErrors.value.push('Declaration Agreement')
+  }
+  if (!ecpfProfileId) {
+    submissionErrors.value.push('ECPF Profile ID (contact support if this persists)')
+  }
 }
 
 const handleSubmitFlow = () => {
   highlightErrors.value = false
+  submissionErrors.value = []
   if (!validateForm()) {
-    toast.error('Please correct the errors in the form.')
-    checkMissingFields() // Populate submissionErrors for the modal
+    toast.error('Please correct the errors in the form before submitting.')
+    checkMissingFields()
     highlightErrors.value = true
     showSubmissionErrorModal.value = true
     return
   }
-  // canSubmit is already checked by validateForm implicitly
+  if (!canSubmit.value) {
+    checkMissingFields()
+    highlightErrors.value = true
+    showSubmissionErrorModal.value = true
+    return
+  }
   pendingFormData.value = JSON.parse(JSON.stringify(formData)) // Deep copy
-  paymentModalRef.value?.openModal()
+  if (paymentModalRef.value) {
+    paymentModalRef.value.openModal()
+  } else {
+    toast.error('Payment module is not available. Please try again later.')
+    console.error('PaymentModal ref is not available.')
+  }
 }
 
 const handlePaymentCompleted = async (paymentData) => {
   if (!pendingFormData.value) {
-    toast.error('No form data to submit.')
+    toast.error('No form data found to submit. Please try again.')
+    isSubmitting.value = false
     return
   }
   isSubmitting.value = true
-  validationErrors.value = [] // Clear previous submission errors
+  validationErrors.value = []
 
-  // Prepare payload - this assumes filenames are sent.
-  // If actual files need to be sent, you'd build FormData here.
-  const cleanedLinkages = pendingFormData.value.linkages
-    .map(linkage => {
-      const cleanLinkage = { ...linkage };
-      // Remove null or empty string file names before sending
-      if (!cleanLinkage.recognition) delete cleanLinkage.recognition;
-      if (!cleanLinkage.approval) delete cleanLinkage.approval;
-      return cleanLinkage;
-    })
-    .filter(linkage => linkage.name); // Only send linkages that have a name
+  // Prepare submitData, potentially including actual file objects if stored
+  // For now, assuming filenames are sent as strings and backend handles file association via other means or separate uploads later.
+  // If you need to send FormData with files, this part would need significant changes.
 
-  const documentsToSubmit = { ...pendingFormData.value.documents };
-  Object.keys(documentsToSubmit).forEach(key => {
-    if (documentsToSubmit[key] === null && key !== 'declarationRemarks' && key !== 'declarationAgreed') {
-      delete documentsToSubmit[key];
-    }
-  });
-  documentsToSubmit.declarationRemarks = documentsToSubmit.declarationRemarks || '';
-
+  const cleanedLinkages = pendingFormData.value.linkages.map((linkage) => {
+    const cleanLinkage = { ...linkage }
+    // If you stored actual files, you'd handle them here for FormData
+    // e.g., delete cleanLinkage.recognitionFile;
+    if (cleanLinkage.recognition === null || cleanLinkage.recognition === '') delete cleanLinkage.recognition
+    if (cleanLinkage.approval === null || cleanLinkage.approval === '') delete cleanLinkage.approval
+    return cleanLinkage
+  }).filter(linkage => linkage.name); // Filter out empty linkages
 
   const submitData = {
-    ...pendingFormData.value, // Includes all sections
+    ...pendingFormData.value,
     linkages: cleanedLinkages,
-    documents: documentsToSubmit,
-    ecpf_profile: ecpfProfileId,
+    ecpf_profile: ecpfProfileId, // Should be just the ID
     payment_info: {
       reference_hash: paymentData.paymentHash,
       amount: OWNERSHIP_CHANGE_FEE,
       status: 'Completed',
     },
   }
-  // Remove file helper props if they exist (e.g., cvApplicantFile) before sending JSON
-  // delete submitData.documents.cvApplicantFile; // etc.
+
+  // Clean up document names (send only if a file was "uploaded")
+  const documentsToSubmit = { ...submitData.documents }
+  for (let key in documentsToSubmit) {
+    if (
+      documentsToSubmit[key] === null &&
+      key !== 'declarationRemarks' && // Keep remarks even if empty
+      key !== 'declarationAgreed'
+    ) {
+      delete documentsToSubmit[key]
+    }
+  }
+  documentsToSubmit.declarationRemarks = documentsToSubmit.declarationRemarks || ''
+  submitData.documents = documentsToSubmit
 
   try {
-    await apiService.submitOwnershipChange(submitData)
+    // If submitting files, you'd construct FormData here and append files.
+    // const finalPayload = new FormData();
+    // Object.keys(submitData).forEach(key => {
+    //   if (key === 'linkages' || key === 'documents') {
+    //     // Special handling for files within these structures
+    //   } else if (typeof submitData[key] === 'object' && submitData[key] !== null) {
+    //     finalPayload.append(key, JSON.stringify(submitData[key]));
+    //   } else {
+    //     finalPayload.append(key, submitData[key]);
+    //   }
+    // });
+    // Add actual file objects to FormData:
+    // e.g. if (pendingFormData.value.documents.cvApplicantFile) finalPayload.append('cv_applicant_file', pendingFormData.value.documents.cvApplicantFile)
+
+    const response = await apiService.submitOwnershipChange(submitData) // Or finalPayload if using FormData
+    console.log('Ownership change submitted successfully:', response.data)
     toast.success(
-      `Ownership change submitted! Ref: ${paymentData.paymentHash.substring(0, 8)}...`,
+      `Ownership change submitted successfully! Payment Reference: ${paymentData.paymentHash.substring(0, 8)}...`,
     )
     pendingFormData.value = null
     localStorage.removeItem('ecpf_ownership_draft')
-    // router.push('/dashboard'); // Or success page
+    // router.push('/success-page') // Consider redirecting
   } catch (error) {
     console.error('Error submitting ownership change:', error.response || error)
-    const errData = error.response?.data
-    if (errData && typeof errData === 'object') {
-      Object.entries(errData).forEach(([field, messages]) => {
-        const prefix = field === 'detail' || field === 'non_field_errors' ? '' : `${field}: `
-        ;(Array.isArray(messages) ? messages : [messages]).forEach((msg) =>
-          validationErrors.value.push(`${prefix}${msg}`),
-        )
-      })
-    } else if (typeof errData === 'string') {
-      validationErrors.value.push(errData)
+    if (error.response?.data) {
+      const errors = error.response.data
+      if (typeof errors === 'object' && errors !== null) {
+        for (const [field, messages] of Object.entries(errors)) {
+          const messagePrefix =
+            field === 'detail' || field === 'non_field_errors' ? '' : `${field}: `
+          if (Array.isArray(messages)) {
+            messages.forEach((msg) => validationErrors.value.push(`${messagePrefix}${msg}`))
+          } else {
+            validationErrors.value.push(`${messagePrefix}${messages}`)
+          }
+        }
+      } else if (typeof errors === 'string') {
+        validationErrors.value.push(errors)
+      } else {
+        validationErrors.value.push('An unknown error occurred during submission.')
+      }
+      toast.error('Failed to submit: ' + (validationErrors.value[0] || 'Please check errors.'))
     } else {
-      validationErrors.value.push('An unknown submission error occurred.')
+      toast.error('Failed to submit. An unexpected error occurred.')
+      validationErrors.value.push('An unexpected network or server error occurred.')
     }
-    toast.error('Submission failed: ' + (validationErrors.value[0] || 'Please check errors.'))
   } finally {
     isSubmitting.value = false
   }
 }
 
+
 const handlePaymentModalClose = () => {
-  isSubmitting.value = false // Reset if payment is cancelled
+  console.log('Payment modal closed by user.')
+  isSubmitting.value = false // Ensure submission flag is reset
 }
 
-const saveAsDraft = async () => {
-  isSubmitting.value = true // Visual feedback
-  try {
-    const draft = { formData: JSON.parse(JSON.stringify(formData)), ecpfProfileId }
-    localStorage.setItem('ecpf_ownership_draft', JSON.stringify(draft))
 
-    if (ecpfProfileId && apiService.saveOwnershipChangeDraft) {
-      // Optional: Save to backend
-      await apiService.saveOwnershipChangeDraft({ ...draft.formData, ecpf_profile: ecpfProfileId, is_draft_user: true })
+const saveAsDraft = async () => {
+  isSubmitting.value = true
+  try {
+    const draftDataToStore = {
+      formData: JSON.parse(JSON.stringify(formData)), // Deep copy
+      ecpfProfileId: ecpfProfileId,
     }
-    toast.success('Draft saved locally.')
-  } catch (e) {
-    console.error('Error saving draft:', e)
-    toast.error('Failed to save draft.')
+    localStorage.setItem('ecpf_ownership_draft', JSON.stringify(draftDataToStore))
+
+    // Also send to backend if API supports it
+    if (ecpfProfileId && apiService.saveOwnershipChangeDraft) { // Check if service method exists
+      const draftPayload = {
+        ...draftDataToStore.formData,
+        ecpf_profile: ecpfProfileId,
+        is_draft_user: true, // Or similar flag your backend expects
+      }
+      try {
+        const response = await apiService.saveOwnershipChangeDraft(draftPayload)
+        console.log('Saved as draft to server:', response.data)
+      } catch (error) {
+        console.error('Error saving draft to server:', error.response || error)
+        // Don't let server save failure prevent local save toast
+      }
+    }
+
+    toast.success('Draft saved successfully (locally).')
+  } catch (error) {
+    console.error('Error saving draft:', error)
+    toast.error('Failed to save draft. Please try again.')
   } finally {
     isSubmitting.value = false
   }
@@ -1294,17 +1412,39 @@ const saveAsDraft = async () => {
 
 const editApplication = () => {
   isEditing.value = true
-  toast.info('Form is now editable.')
+  toast.info('Form is now editable. Make your changes and save.')
 }
 
-const saveChanges = async () => { // Similar to saveAsDraft
-  await saveAsDraft(); // Reuse draft saving logic
-  // isEditing.value = false; // Optionally exit edit mode
-}
+const saveChanges = async () => { // Essentially same as saveAsDraft but called when already editing
+  isSubmitting.value = true
+  try {
+    const draftDataToStore = {
+      formData: JSON.parse(JSON.stringify(formData)),
+      ecpfProfileId: ecpfProfileId,
+    }
+    localStorage.setItem('ecpf_ownership_draft', JSON.stringify(draftDataToStore))
 
-// Watch for changes to auto-save or provide feedback (optional)
-// watch(formData, (newData) => {
-// console.log('Form data changed:', newData);
-// Consider debouncing if auto-saving to backend
-// }, { deep: true });
+    if (ecpfProfileId && apiService.saveOwnershipChangeDraft) {
+      const draftPayload = {
+        ...draftDataToStore.formData,
+        ecpf_profile: ecpfProfileId,
+        is_draft_user: true,
+      }
+      try {
+        const response = await apiService.saveOwnershipChangeDraft(draftPayload)
+        console.log('Changes saved to server:', response.data)
+      } catch (error) {
+        console.error('Error saving changes to server:', error.response || error)
+      }
+    }
+
+    toast.success('Changes saved successfully (locally).')
+    // isEditing.value = false; // Optionally exit edit mode
+  } catch (error) {
+    console.error('Error saving changes:', error)
+    toast.error('Failed to save changes. Please try again.')
+  } finally {
+    isSubmitting.value = false
+  }
+}
 </script>

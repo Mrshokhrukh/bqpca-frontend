@@ -6,28 +6,29 @@
         <p class="text-sm font-medium text-gray-500">Qualification</p>
         <p class="text-sm font-semibold text-gray-900 mt-2 flex items-center space-x-2">
           <GraduationCap class="h-4 w-4 text-indigo-500" />
-          <span>{{ qualification.qualification_name_display }}</span>
+          <!-- MODIFIED: Use the computed property here -->
+          <span>{{ displayedQualificationName }}</span>
         </p>
       </div>
       <div class="bg-gray-50 rounded-lg p-4">
         <p class="text-sm font-medium text-gray-500">Qualification Type</p>
         <p class="text-sm font-semibold text-gray-900 mt-2 flex items-center space-x-2">
           <ClipboardCheck class="h-4 w-4 text-indigo-500" />
-          <span>{{ qualification.qualification_type_display }}</span>
+          <span>{{ qualification.qualification_type_display || 'N/A' }}</span>
         </p>
       </div>
       <div class="bg-gray-50 rounded-lg p-4">
         <p class="text-sm font-medium text-gray-500">Institute/University</p>
         <p class="text-sm font-semibold text-gray-900 mt-2 flex items-center space-x-2">
           <MapPin class="h-4 w-4 text-indigo-500" />
-          <span>{{ qualification.institute_university_display }}</span>
+          <span>{{ qualification.institute_university_display || 'N/A' }}</span>
         </p>
       </div>
       <div class="bg-gray-50 rounded-lg p-4">
         <p class="text-sm font-medium text-gray-500">Completion Year</p>
         <p class="text-sm font-semibold text-gray-900 mt-2 flex items-center space-x-2">
           <Calendar class="h-4 w-4 text-indigo-500" />
-          <span>{{ qualification.completion_year }}</span>
+          <span>{{ qualification.completion_year || 'N/A' }}</span>
         </p>
       </div>
     </div>
@@ -59,7 +60,7 @@
             <div class="w-12 h-12 flex items-center justify-center">
               <!-- PDF -->
               <svg
-                v-if="attachment.file.endsWith('.pdf')"
+                v-if="attachment.file && attachment.file.endsWith('.pdf')"
                 xmlns="http://www.w3.org/2000/svg"
                 class="w-10 h-10 text-red-500"
                 viewBox="0 0 24 24"
@@ -73,9 +74,10 @@
               <!-- Image -->
               <svg
                 v-else-if="
-                  attachment.file.endsWith('.jpg') ||
+                  attachment.file &&
+                  (attachment.file.endsWith('.jpg') ||
                   attachment.file.endsWith('.jpeg') ||
-                  attachment.file.endsWith('.png')
+                  attachment.file.endsWith('.png'))
                 "
                 xmlns="http://www.w3.org/2000/svg"
                 class="w-10 h-10 text-blue-500"
@@ -106,17 +108,18 @@
           <div class="p-4">
             <h4
               class="text-sm font-medium text-gray-800 truncate"
-              :title="attachment.file_type_name"
+              :title="attachment.file_type_name || 'Attachment'"
             >
-              {{ attachment.file_type_name }}
+              {{ attachment.file_type_name || 'Attachment' }}
             </h4>
             <p class="text-xs text-gray-500 mt-1">
-              <span v-if="attachment.file.endsWith('.pdf')">PDF Document</span>
+              <span v-if="attachment.file && attachment.file.endsWith('.pdf')">PDF Document</span>
               <span
                 v-else-if="
-                  attachment.file.endsWith('.jpg') ||
+                  attachment.file &&
+                  (attachment.file.endsWith('.jpg') ||
                   attachment.file.endsWith('.jpeg') ||
-                  attachment.file.endsWith('.png')
+                  attachment.file.endsWith('.png'))
                 "
                 >Image File</span
               >
@@ -127,13 +130,14 @@
           <!-- Actions -->
           <div class="px-4 py-3 bg-gray-50 border-t flex justify-between items-center">
             <span class="text-xs text-gray-500">
-              {{ formatFileSize(getRandomFileSize()) }}
+              {{ formatFileSize(getRandomFileSize()) }} <!-- File size is random, consider if actual size is available -->
             </span>
             <a
               :href="attachment.file"
               target="_blank"
               rel="noopener noreferrer"
               class="text-xs font-medium text-indigo-600 hover:text-indigo-800 flex items-center"
+              v-if="attachment.file"
             >
               <span>View</span>
               <svg
@@ -154,6 +158,7 @@
                 />
               </svg>
             </a>
+            <span v-else class="text-xs text-gray-400">No file link</span>
           </div>
         </div>
       </div>
@@ -182,24 +187,45 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'; // ADDED: Import computed
 import { GraduationCap, ClipboardCheck, MapPin, Calendar } from 'lucide-vue-next'
 
-defineProps({
+const props = defineProps({ // CHANGED: props defined using const
   qualification: {
     type: Object,
     required: true,
   },
 })
 
+// ADDED: Computed property to safely get the qualification name
+const displayedQualificationName = computed(() => {
+  if (props.qualification) {
+    // Prioritize 'actual_qualification_name_display' as it seems to be the consolidated field
+    // Fallback to 'qualification_name_text' for custom entries
+    // Then to 'qualification_name_display' for standard list entries
+    return props.qualification.actual_qualification_name_display ||
+           props.qualification.qualification_name_text ||
+           props.qualification.qualification_name_display ||
+           'Not Specified';
+  }
+  return 'Not Specified';
+});
+
 // Helper function to format file sizes
 function formatFileSize(bytes) {
+  if (bytes === undefined || bytes === null || isNaN(bytes)) return 'N/A'; // Add check for valid bytes
   if (bytes < 1024) return bytes + ' B'
   else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB'
   else return (bytes / 1048576).toFixed(1) + ' MB'
 }
 
 // Since we don't have actual file sizes, this generates random ones for display
+// Consider if you can get the actual file size from your API (e.g., attachment.file_size)
 function getRandomFileSize() {
+  // If your attachment object has a 'file_size' property, use that instead:
+  // if (attachment && typeof attachment.file_size === 'number') {
+  //   return attachment.file_size;
+  // }
   return Math.floor(Math.random() * 5000000) + 100000 // Random size between 100KB and 5MB
 }
 </script>

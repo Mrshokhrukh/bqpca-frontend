@@ -222,6 +222,34 @@ export default {
   deleteEcpfPromotionalMassMedia(id) {
     return apiClient.delete(`/ecpf/ecpf-promotional-mass-media/${id}/`)
   },
+  getEcpfOwnershipChanges() {
+    return apiClient.get('/ecpf/ecpf-ownership-changes/')
+  },
+  getEcpfOwnershipChange(id) {
+    return apiClient.get(`/ecpf/ecpf-ownership-changes/${id}/`)
+  },
+  updateEcpfOwnershipChange(id, data) { // Standard update for an existing ownership change record
+    return apiClient.put(`/ecpf/ecpf-ownership-changes/${id}/`, data)
+  },
+  patchEcpfOwnershipChange(id, data) { // Standard partial update
+    return apiClient.patch(`/ecpf/ecpf-ownership-changes/${id}/`, data)
+  },
+  deleteEcpfOwnershipChange(id) { // Standard delete, e.g., for a draft or erroneous submission
+    return apiClient.delete(`/ecpf/ecpf-ownership-changes/${id}/`)
+  },
+  // --- Methods specifically for the Ownership Change Form component ---
+  // Called for final submission. This is effectively creating a new ownership change record.
+  submitOwnershipChange(data) {
+    // Corresponds to: const response = await apiService.submitOwnershipChange(submitData) in the component
+    return apiClient.post('/ecpf/ecpf-ownership-changes/', data)
+  },
+  // Called for saving as draft.
+  saveOwnershipChangeDraft(data) {
+    // Corresponds to: const response = await apiService.saveOwnershipChangeDraft(draftPayload) in the component
+    // Assumes backend differentiates draft by a flag in 'data' (e.g., is_draft_user: true, or a specific status).
+    // This typically POSTs to the same collection endpoint.
+    return apiClient.post('/ecpf/ecpf-ownership-changes/', data)
+  },
 
   // ECPF Renewals
   getEcpfRenewals() {
