@@ -11,6 +11,12 @@
           <h2 class="text-xl font-semibold text-slate-900 mb-4">
             {{ isEditing ? 'Edit Engineering COGS Agency' : 'Add New Engineering COGS Agency' }}
           </h2>
+          
+          <!-- Show error messages if any -->
+          <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p class="text-red-700 text-sm">{{ errorMessage }}</p>
+          </div>
+          
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
@@ -30,9 +36,10 @@
               <div class="flex gap-3">
                 <button
                   type="submit"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  :disabled="isSubmitting"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {{ isEditing ? `Update Agency` : `Add Agency` }}
+                  {{ isSubmitting ? 'Saving...' : (isEditing ? 'Update Agency' : 'Add Agency') }}
                 </button>
                 <button
                   v-if="isEditing"
@@ -92,6 +99,9 @@
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">{{ agency.name }}</h3>
+                    <p class="text-sm text-slate-500 mt-1">
+                      Created: {{ formatDate(agency.created_at) }}
+                    </p>
                   </div>
                   <div class="flex gap-2">
                     <button
@@ -208,6 +218,8 @@ const formData = ref({
   name: '',
 })
 const isEditing = ref(false)
+const isSubmitting = ref(false)
+const errorMessage = ref('')
 const searchQuery = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 5
@@ -215,23 +227,38 @@ const itemsPerPage = 5
 const isDeleteModalOpen = ref(false)
 const agencyToDelete = ref(null)
 
-// Fetch agencies on component mount
-onMounted(async () => {
+// Utility function to format date
+const formatDate = (dateString) => {
   try {
-    const response = await apiServices.getEpcMastersCogsAgencies()
-    console.log('API Response:', response.data) // DEBUG: Inspect the data
+    return new Date(dateString).toLocaleDateString()
+  } catch {
+    return 'Invalid Date'
+  }
+}
+
+// Fetch agencies on component mount
+const fetchAgencies = async () => {
+  try {
+    errorMessage.value = ''
+    const response = await apiServices.getEpcCogsAgencies()
 
     // Check if response.data.results exists and is an array
     if (Array.isArray(response.data.results)) {
       agencies.value = response.data.results
+    } else if (Array.isArray(response.data)) {
+      agencies.value = response.data
     } else {
-      console.error('API did not return an array of results.')
       agencies.value = [] // Initialize to an empty array to prevent further errors
     }
   } catch (error) {
     console.error('Error fetching agencies:', error)
+    errorMessage.value = `Failed to fetch agencies: ${error.message}`
     agencies.value = [] // Initialize to an empty array in case of error
   }
+}
+
+onMounted(() => {
+  fetchAgencies()
 })
 
 // Computed
@@ -254,29 +281,45 @@ const paginatedAgencies = computed(() => {
 
 // Methods
 const handleSubmit = async () => {
+  if (isSubmitting.value) return
+
+  isSubmitting.value = true
+  errorMessage.value = ''
+
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateEpcMastersCogsAgency(
-        formData.value.id,
-        formData.value,
-      )
-      const index = agencies.value.findIndex((dt) => dt.id === formData.value.id)
+      const response = await apiServices.updateEpcCogsAgency(formData.value.id, formData.value)
+      const index = agencies.value.findIndex((agency) => agency.id === formData.value.id)
       if (index !== -1) {
         agencies.value[index] = response.data
       }
     } else {
-      const response = await apiServices.createEpcMastersCogsAgency(formData.value)
+      const response = await apiServices.createEpcCogsAgency(formData.value)
       agencies.value.push(response.data)
     }
     resetForm()
   } catch (error) {
     console.error('Error saving agency:', error)
+    if (error.response?.data) {
+      // Handle specific field errors from the backend
+      if (typeof error.response.data === 'object') {
+        const errors = Object.values(error.response.data).flat()
+        errorMessage.value = errors.join(', ')
+      } else {
+        errorMessage.value = error.response.data || 'Failed to save agency'
+      }
+    } else {
+      errorMessage.value = error.message || 'Failed to save agency'
+    }
+  } finally {
+    isSubmitting.value = false
   }
 }
 
 const startEdit = (agency) => {
   formData.value = { ...agency }
   isEditing.value = true
+  errorMessage.value = ''
 }
 
 const cancelEdit = () => {
@@ -297,14 +340,15 @@ const confirmDelete = async () => {
   if (!agencyToDelete.value) return
 
   try {
-    await apiServices.deleteEpcMastersCogsAgency(agencyToDelete.value.id)
-    const index = agencies.value.findIndex((dt) => dt.id === agencyToDelete.value.id)
+    await apiServices.deleteEpcCogsAgency(agencyToDelete.value.id)
+    const index = agencies.value.findIndex((agency) => agency.id === agencyToDelete.value.id)
     if (index !== -1) {
       agencies.value.splice(index, 1)
     }
     closeDeleteModal()
   } catch (error) {
     console.error('Error deleting agency:', error)
+    errorMessage.value = 'Failed to delete agency'
   }
 }
 
@@ -314,6 +358,7 @@ const resetForm = () => {
     name: '',
   }
   isEditing.value = false
+  errorMessage.value = ''
 }
 
 // Watch for search query changes to reset pagination
