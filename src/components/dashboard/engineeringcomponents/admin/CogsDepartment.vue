@@ -13,6 +13,12 @@
               isEditing ? 'Edit Engineering COGS Department' : 'Add New Engineering COGS Department'
             }}
           </h2>
+          
+          <!-- Show error messages if any -->
+          <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p class="text-red-700 text-sm">{{ errorMessage }}</p>
+          </div>
+          
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
@@ -32,9 +38,10 @@
               <div class="flex gap-3">
                 <button
                   type="submit"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  :disabled="isSubmitting"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {{ isEditing ? `Update Department` : `Add Department` }}
+                  {{ isSubmitting ? 'Saving...' : (isEditing ? 'Update Department' : 'Add Department') }}
                 </button>
                 <button
                   v-if="isEditing"
@@ -98,6 +105,9 @@
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">{{ department.name }}</h3>
+                    <p class="text-sm text-slate-500 mt-1">
+                      Created: {{ formatDate(department.created_at) }}
+                    </p>
                   </div>
                   <div class="flex gap-2">
                     <button
@@ -214,6 +224,8 @@ const formData = ref({
   name: '',
 })
 const isEditing = ref(false)
+const isSubmitting = ref(false)
+const errorMessage = ref('')
 const searchQuery = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 5
@@ -221,22 +233,38 @@ const itemsPerPage = 5
 const isDeleteModalOpen = ref(false)
 const departmentToDelete = ref(null)
 
-// Fetch departments on component mount
-onMounted(async () => {
+// Utility function to format date
+const formatDate = (dateString) => {
   try {
-    const response = await apiServices.getEpcMastersCogsDepartments()
-    console.log('API Response:', response.data)
+    return new Date(dateString).toLocaleDateString()
+  } catch {
+    return 'Invalid Date'
+  }
+}
 
+// Fetch departments on component mount
+const fetchDepartments = async () => {
+  try {
+    errorMessage.value = ''
+    const response = await apiServices.getEpcCogsDepartments()
+
+    // Check if response.data.results exists and is an array
     if (Array.isArray(response.data.results)) {
       departments.value = response.data.results
+    } else if (Array.isArray(response.data)) {
+      departments.value = response.data
     } else {
-      console.error('API did not return an array of results.')
       departments.value = [] // Initialize to an empty array to prevent further errors
     }
   } catch (error) {
     console.error('Error fetching departments:', error)
-    departments.value = []
+    errorMessage.value = `Failed to fetch departments: ${error.message}`
+    departments.value = [] // Initialize to an empty array in case of error
   }
+}
+
+onMounted(() => {
+  fetchDepartments()
 })
 
 // Computed
@@ -259,29 +287,45 @@ const paginatedDepartments = computed(() => {
 
 // Methods
 const handleSubmit = async () => {
+  if (isSubmitting.value) return
+
+  isSubmitting.value = true
+  errorMessage.value = ''
+
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateEpcMastersCogsDepartment(
-        formData.value.id,
-        formData.value,
-      )
-      const index = departments.value.findIndex((dt) => dt.id === formData.value.id)
+      const response = await apiServices.updateEpcCogsDepartment(formData.value.id, formData.value)
+      const index = departments.value.findIndex((dept) => dept.id === formData.value.id)
       if (index !== -1) {
         departments.value[index] = response.data
       }
     } else {
-      const response = await apiServices.createEpcMastersCogsDepartment(formData.value)
+      const response = await apiServices.createEpcCogsDepartment(formData.value)
       departments.value.push(response.data)
     }
     resetForm()
   } catch (error) {
     console.error('Error saving department:', error)
+    if (error.response?.data) {
+      // Handle specific field errors from the backend
+      if (typeof error.response.data === 'object') {
+        const errors = Object.values(error.response.data).flat()
+        errorMessage.value = errors.join(', ')
+      } else {
+        errorMessage.value = error.response.data || 'Failed to save department'
+      }
+    } else {
+      errorMessage.value = error.message || 'Failed to save department'
+    }
+  } finally {
+    isSubmitting.value = false
   }
 }
 
 const startEdit = (department) => {
   formData.value = { ...department }
   isEditing.value = true
+  errorMessage.value = ''
 }
 
 const cancelEdit = () => {
@@ -302,14 +346,15 @@ const confirmDelete = async () => {
   if (!departmentToDelete.value) return
 
   try {
-    await apiServices.deleteEpcMastersCogsDepartment(departmentToDelete.value.id)
-    const index = departments.value.findIndex((dt) => dt.id === departmentToDelete.value.id)
+    await apiServices.deleteEpcCogsDepartment(departmentToDelete.value.id)
+    const index = departments.value.findIndex((dept) => dept.id === departmentToDelete.value.id)
     if (index !== -1) {
       departments.value.splice(index, 1)
     }
     closeDeleteModal()
   } catch (error) {
     console.error('Error deleting department:', error)
+    errorMessage.value = 'Failed to delete department'
   }
 }
 
@@ -319,6 +364,7 @@ const resetForm = () => {
     name: '',
   }
   isEditing.value = false
+  errorMessage.value = ''
 }
 
 // Watch for search query changes to reset pagination
