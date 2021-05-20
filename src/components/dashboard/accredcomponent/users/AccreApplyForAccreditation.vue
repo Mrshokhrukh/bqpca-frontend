@@ -1,1697 +1,927 @@
 <template>
   <div class="mx-auto px-4 py-8 w-full">
-    <!-- Form Header -->
-    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
-        Accreditation Application Form
+        New Accreditation Application (Annexure IV)
       </h2>
       <p class="text-gray-600 text-center max-w-2xl mx-auto">
-        Please provide all required information accurately. A draft can be saved locally in your
-        browser.
+        Please provide all required information accurately. Fields marked with <span class="text-red-500">*</span> are mandatory.
       </p>
+      <div v-if="loadingInitialData" class="text-center mt-4">
+        <p class="text-indigo-600">Loading application details...</p>
+        <div class="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-indigo-500 mt-2"></div>
+      </div>
+      <div v-else>
+        <p v-if="activeSchedule" class="text-sm text-green-700 mt-3 text-center bg-green-100 p-2 rounded-md">
+          Current Application Cycle: <strong>{{ activeSchedule.schedule_name }}</strong>
+          (Open from {{ formatDate(activeSchedule.from_date) }} to {{ formatDate(activeSchedule.end_date) }})
+        </p>
+        <p v-else-if="!currentApplicationId" class="text-sm text-red-700 mt-3 text-center bg-red-100 p-2 rounded-md">
+          No active accreditation application cycle. You can save a draft but cannot submit a new application at this time.
+        </p>
+         <p v-else-if="currentApplicationId && formData.status !== 'draft'" class="text-sm text-yellow-700 mt-3 text-center bg-yellow-100 p-2 rounded-md">
+          You are editing an existing application. Schedule restrictions for new submissions may not apply.
+        </p>
+      </div>
     </div>
 
     <!-- Payment Modal -->
     <PaymentModal
-      ref="paymentModal"
-      :amount="1000"
-      @payment-completed="onPaymentCompleted"
-      @close="onPaymentModalClose"
+      ref="paymentModalRef"
+      :amount="applicationFeeAmount"
+      :serviceCode="PAYMENT_SERVICE_CODE_ACCREDITATION"
+      @payment-completed="handlePaymentCompleted"
+      @close="handlePaymentModalClose"
     />
 
-    <!-- Main Form Card -->
-    <div class="bg-white border rounded-xl shadow-sm p-6">
-      <form @submit.prevent="handleSubmit">
-        <!-- 1. Institution Profile -->
-        <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl mb-6 -mx-6">
-          <h3 class="text-lg font-semibold text-gray-900">1. Institution Profile</h3>
-          <p class="mt-1 text-sm text-gray-500">Provide details about your institution.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
-          <div class="col-span-2">
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Name of Institution</label
-            >
-            <input
-              type="text"
-              v-model="application.institutionName"
-              required
-              name="institutionName"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div class="col-span-2">
-            <label class="block text-sm font-medium text-gray-700 required">Address/Location</label>
-            <textarea
-              v-model="application.address"
-              rows="3"
-              required
-              name="address"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            ></textarea>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required">Dzongkhag/Throm</label>
-            <input
-              type="text"
-              v-model="application.dzongkhag"
-              required
-              name="dzongkhag"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-            <p class="mt-1 text-sm text-gray-500">Please type the Dzongkhag or Throm name.</p>
-            <!-- Optional: List of Dzongkhags for reference -->
-            <details class="mt-2">
-              <summary class="text-blue-500 text-sm cursor-pointer hover:underline">
-                List of Dzongkhags
-              </summary>
-              <ul class="list-disc pl-5 mt-1 text-sm">
-                <li v-for="dzongkhag in dzongkhagList" :key="dzongkhag">{{ dzongkhag }}</li>
-              </ul>
-            </details>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required">Contact Number</label>
-            <input
-              type="text"
-              v-model="application.contactNumber"
-              required
-              name="contactNumber"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required">Email Address</label>
-            <input
-              type="email"
-              v-model="application.emailAddress"
-              required
-              name="emailAddress"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Telephone Number</label>
-            <input
-              type="text"
-              v-model="application.telephoneNumber"
-              name="telephoneNumber"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Year of Establishment</label
-            >
-            <input
-              type="text"
-              v-model="application.yearEstablished"
-              required
-              pattern="\d{4}"
-              title="Please enter a 4-digit year"
-              name="yearEstablished"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Type of Institution</label
-            >
-            <select
-              v-model="application.institutionType"
-              required
-              name="institutionType"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            >
-              <option :value="null" disabled>Select Institution Type</option>
-              <option v-for="item in filteredInstitutionTypes" :key="item.id" :value="item.id">
-                {{ item.name_of_institute }}
-              </option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >Affiliated to, if relevant</label
-            >
-            <input
-              type="text"
-              v-model="application.affiliatedTo"
-              name="affiliatedTo"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >Level of Autonomy (if affiliated)</label
-            >
-            <input
-              type="text"
-              v-model="application.levelOfAutonomy"
-              name="levelOfAutonomy"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Source of Funding</label
-            >
-            <select
-              v-model="application.fundingSource"
-              required
-              name="fundingSource"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            >
-              <option :value="null" disabled>Select Funding Source</option>
-              <option v-for="item in filteredFundingSources" :key="item?.id" :value="item?.id">
-                {{ item?.name }}
-              </option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Total area (in acres)</label>
-            <input
-              type="number"
-              min="0"
-              step="any"
-              v-model.number="application.totalArea"
-              name="totalArea"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Website</label>
-            <input
-              type="url"
-              v-model="application.website"
-              placeholder="https://example.com"
-              name="website"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-        </div>
-
-        <!-- 2. Past Accreditation Details -->
-        <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl mb-6 -mx-6">
-          <h3 class="text-lg font-semibold text-gray-900">2. Past Accreditation Details</h3>
-          <p class="mt-1 text-sm text-gray-500">
-            Information about previous accreditation (if applicable).
+    <!-- Main Form -->
+    <div v-if="!loadingInitialData && authStore.isAuthenticated && instituteProfile" class="bg-white border border-gray-200 rounded-xl shadow-lg p-6 sm:p-8">
+      <form @submit.prevent="validateAndPromptPayment">
+        <!-- Section 0: Institute Details -->
+        <div class="form-section">
+          <h3 class="form-section-title">Institute Details</h3>
+          <p class="form-section-subtitle">
+            These details are from your institute's main profile.
+            <router-link v-if="authStore.user?.user_type === 'institute_user'" :to="{ name: 'user-accreditation-profile' }" class="text-indigo-600 hover:underline">Edit Main Institute Profile</router-link>
+            <span v-else class="text-gray-500">(View only for non-institute users)</span>
+            if changes are needed.
           </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Accreditation Rating</label>
-            <input
-              type="text"
-              v-model="application.accreditationRating"
-              name="accreditationRating"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Accreditation Validity</label>
-            <input
-              type="date"
-              v-model="application.accreditationValidity"
-              name="accreditationValidity"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mt-4">
+            <!-- Name of HEI: Displayed as read-only, pre-filled from profile -->
+            <FormField label="Name of HEI" :value="instituteProfile.name_of_institution" :isReadonly="true" />
+            <FormField label="Email Address" :value="instituteProfile.email_address" :isReadonly="true" />
+            <FormField label="Contact Number" :value="instituteProfile.contact_number" :isReadonly="true" />
+            <FormField label="Dzongkhag/Thromde City" :value="instituteProfile.dzongkhag_thromde_city" :isReadonly="true" />
           </div>
         </div>
 
-        <!-- 3. Details of the Head of the Institute -->
-        <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl mb-6 -mx-6">
-          <h3 class="text-lg font-semibold text-gray-900">
-            3. Details of the Head of the Institute
-          </h3>
-          <p class="mt-1 text-sm text-gray-500">
-            Provide information about the head of the institute.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required">Name</label>
-            <input
-              type="text"
-              v-model="application.headName"
-              required
-              name="headName"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required">Contact Number</label>
-            <input
-              type="text"
-              v-model="application.headContactNumber"
-              required
-              name="headContactNumber"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required">Email Address</label>
-            <input
-              type="email"
-              v-model="application.headEmailAddress"
-              required
-              name="headEmailAddress"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-        </div>
-
-        <!-- 4. Name of the IQA Focal -->
-        <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl mb-6 -mx-6">
-          <h3 class="text-lg font-semibold text-gray-900">4. Name of the IQA Focal</h3>
-          <p class="mt-1 text-sm text-gray-500">Provide information about the IQA Focal.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Name of IQA Focal</label
-            >
-            <input
-              type="text"
-              v-model="application.iqaFocalName"
-              required
-              name="iqaFocalName"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required">Contact Number</label>
-            <input
-              type="text"
-              v-model="application.iqaFocalContactNumber"
-              required
-              name="iqaFocalContactNumber"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required">Email Address</label>
-            <input
-              type="email"
-              v-model="application.iqaFocalEmailAddress"
-              required
-              name="iqaFocalEmailAddress"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-        </div>
-
-        <!-- 5. Current Academic Activities (in numbers) -->
-        <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl mb-6 -mx-6">
-          <h3 class="text-lg font-semibold text-gray-900">
-            5. Current Academic Activities (in numbers)
-          </h3>
-          <p class="mt-1 text-sm text-gray-500">
-            Provide details about current academic activities.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Number of Departments</label
-            >
-            <input
-              type="number"
-              min="0"
-              required
-              v-model.number="application.numberOfDepartments"
-              name="numberOfDepartments"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Qualification Category</label
-            >
-            <select
-              v-model="application.qualificationCategory"
-              required
-              name="qualificationCategory"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            >
-              <option :value="null" disabled>Select Qualification Category</option>
-              <option v-for="item in qualificationCategories" :key="item" :value="item">
-                {{ item }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Programmes List -->
-          <div class="col-span-2">
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Programmes Offered</label
-            >
-            <p class="mt-1 text-xs text-gray-500 mb-2">
-              List all programmes and the number of students enrolled in each.
-            </p>
-            <div
-              v-for="(program, index) in application.programmes"
-              :key="index"
-              class="mb-4 border p-4 rounded-md bg-gray-50"
-            >
-              <div class="flex flex-wrap md:flex-nowrap gap-4 items-end">
-                <div class="flex-grow">
-                  <label class="block text-xs font-medium text-gray-600 required"
-                    >Programme Name</label
-                  >
-                  <input
-                    type="text"
-                    v-model="program.name"
-                    placeholder="e.g., Bachelor of Science in IT"
-                    required
-                    :name="`programName_${index}`"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                  />
-                </div>
-                <div class="w-full md:w-1/4">
-                  <label class="block text-xs font-medium text-gray-600 required"
-                    >Number of Students</label
-                  >
-                  <input
-                    type="number"
-                    min="0"
-                    v-model.number="program.number"
-                    placeholder="Students"
-                    required
-                    :name="`programNumber_${index}`"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                  />
-                </div>
-                <button
-                  v-if="application.programmes.length > 1"
-                  @click="removeProgramme(index)"
-                  type="button"
-                  class="bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm px-4 py-2 h-10 transition-colors"
-                  aria-label="Remove Programme"
-                >
-                  Remove
-                </button>
-              </div>
+        <!-- Section 1: Accreditation Cycle -->
+        <div class="form-section">
+          <h3 class="form-section-title required">1. Accreditation Cycle</h3>
+          <p class="form-section-subtitle">Select the applicable accreditation cycle(s).</p>
+          <div class="mt-4 space-y-3">
+            <div class="flex items-start">
+              <input type="checkbox" id="first_cycle" value="first" v-model="formData.accreditation_cycles" class="form-checkbox mt-1" :disabled="isSubmitting" />
+              <label for="first_cycle" class="ml-3 text-sm text-gray-700">First Cycle</label>
             </div>
-            <button
-              @click="addProgramme"
-              type="button"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-4 py-2 mt-2 transition-colors"
-            >
-              Add Programme
-            </button>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >Number of Programmes with elective (specify)</label
-            >
-            <input
-              type="number"
-              min="0"
-              v-model.number="application.numberOfProgrammesWithElective"
-              name="numberOfProgrammesWithElective"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >Number of Programme through Mixed mode (if any)</label
-            >
-            <input
-              type="number"
-              min="0"
-              v-model.number="application.numberOfProgrammesThroughMixedMode"
-              name="numberOfProgrammesThroughMixedMode"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-        </div>
-
-        <!-- 6. Teaching Staff (in numbers) -->
-        <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl mb-6 -mx-6">
-          <h3 class="text-lg font-semibold text-gray-900">6. Teaching Staff (in numbers)</h3>
-          <p class="mt-1 text-sm text-gray-500">Provide details about teaching staff.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
-          <div class="col-span-2 pt-2">
-            <h4 class="text-md font-semibold text-gray-800 mb-2">Total Faculty</h4>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Number of Faculty (F)</label
-            >
-            <input
-              type="number"
-              min="0"
-              required
-              v-model.number="application.facultyF"
-              name="facultyF"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Number of Faculty (M)</label
-            >
-            <input
-              type="number"
-              min="0"
-              required
-              v-model.number="application.facultyM"
-              name="facultyM"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-          <div class="col-span-2">
-            <label class="block text-sm font-medium text-gray-700">Total Faculty</label>
-            <input
-              type="text"
-              :value="totalFaculty"
-              readonly
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-100 cursor-not-allowed"
-            />
-          </div>
-          <div class="col-span-2 pt-2">
-            <h4 class="text-md font-semibold text-gray-800 mb-2">Regular Faculty</h4>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >Number of Regular Faculty (F)</label
-            >
-            <input
-              type="number"
-              min="0"
-              v-model.number="application.regularFacultyF"
-              name="regularFacultyF"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >Number of Regular Faculty (M)</label
-            >
-            <input
-              type="number"
-              min="0"
-              v-model.number="application.regularFacultyM"
-              name="regularFacultyM"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-          <div class="col-span-2">
-            <label class="block text-sm font-medium text-gray-700">Total Regular Faculty</label>
-            <input
-              type="text"
-              :value="totalRegularFaculty"
-              readonly
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-100 cursor-not-allowed"
-            />
-          </div>
-          <div class="col-span-2 pt-2">
-            <h4 class="text-md font-semibold text-gray-800 mb-2">Contract Faculty</h4>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >Number of Contract Faculty (F)</label
-            >
-            <input
-              type="number"
-              min="0"
-              v-model.number="application.contractFacultyF"
-              name="contractFacultyF"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >Number of Contract Faculty (M)</label
-            >
-            <input
-              type="number"
-              min="0"
-              v-model.number="application.contractFacultyM"
-              name="contractFacultyM"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-          <div class="col-span-2">
-            <label class="block text-sm font-medium text-gray-700">Total Contract Faculty</label>
-            <input
-              type="text"
-              :value="totalContractFaculty"
-              readonly
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-100 cursor-not-allowed"
-            />
-          </div>
-          <div class="col-span-2 pt-2">
-            <h4 class="text-md font-semibold text-gray-800 mb-2">Visiting Faculty</h4>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >Number of Visiting Faculty (F)</label
-            >
-            <input
-              type="number"
-              min="0"
-              v-model.number="application.visitingFacultyF"
-              name="visitingFacultyF"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >Number of Visiting Faculty (M)</label
-            >
-            <input
-              type="number"
-              min="0"
-              v-model.number="application.visitingFacultyM"
-              name="visitingFacultyM"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-          <div class="col-span-2">
-            <label class="block text-sm font-medium text-gray-700">Total Visiting Faculty</label>
-            <input
-              type="text"
-              :value="totalVisitingFaculty"
-              readonly
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-100 cursor-not-allowed"
-            />
-          </div>
-          <div class="col-span-2 pt-2">
-            <h4 class="text-md font-semibold text-gray-800 mb-2">Faculty by Qualification</h4>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Total PhD Faculty</label
-            >
-            <input
-              type="number"
-              min="0"
-              required
-              v-model.number="application.totalPhdFaculty"
-              name="totalPhdFaculty"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Total Masters Faculty</label
-            >
-            <input
-              type="number"
-              min="0"
-              required
-              v-model.number="application.totalMastersFaculty"
-              name="totalMastersFaculty"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required"
-              >Total Bachelors Faculty</label
-            >
-            <input
-              type="number"
-              min="0"
-              required
-              v-model.number="application.totalBachelorsFaculty"
-              name="totalBachelorsFaculty"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-        </div>
-
-        <!-- 7. Non-Teaching Staff (in numbers) -->
-        <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl mb-6 -mx-6">
-          <h3 class="text-lg font-semibold text-gray-900">7. Non-Teaching Staff (in numbers)</h3>
-          <p class="mt-1 text-sm text-gray-500">Provide details about non-teaching staff.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
-          <div class="col-span-2 pt-2">
-            <h4 class="text-md font-semibold text-gray-800 mb-2">Technical Staff</h4>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Gender</label>
-            <select
-              v-model="application.technicalStaffGender"
-              name="technicalStaffGender"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            >
-              <option :value="null" disabled>Select Gender</option>
-              <option v-for="item in genderOptions" :key="item" :value="item">{{ item }}</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Total Technical Staff</label>
-            <input
-              type="number"
-              min="0"
-              v-model.number="application.technicalStaffTotal"
-              name="technicalStaffTotal"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div class="col-span-2 pt-4">
-            <h4 class="text-md font-semibold text-gray-800 mb-2">Administrative Staff</h4>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Gender</label>
-            <select
-              v-model="application.administrativeStaffGender"
-              name="administrativeStaffGender"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            >
-              <option :value="null" disabled>Select Gender</option>
-              <option v-for="item in genderOptions" :key="item" :value="item">{{ item }}</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >Total Administrative Staff</label
-            >
-            <input
-              type="number"
-              min="0"
-              v-model.number="application.administrativeStaffTotal"
-              name="administrativeStaffTotal"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div class="col-span-2 pt-4">
-            <h4 class="text-md font-semibold text-gray-800 mb-2">Support Staff</h4>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Gender</label>
-            <select
-              v-model="application.supportStaffGender"
-              name="supportStaffGender"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            >
-              <option :value="null" disabled>Select Gender</option>
-              <option v-for="item in genderOptions" :key="item" :value="item">{{ item }}</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Total Support Staff</label>
-            <input
-              type="number"
-              min="0"
-              v-model.number="application.supportStaffTotal"
-              name="supportStaffTotal"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
-          </div>
-
-          <div class="col-span-2 pt-4">
-            <label class="block text-sm font-medium text-gray-700">Total Non-Teaching Staff</label>
-            <input
-              type="text"
-              :value="totalNonTeachingStaff"
-              readonly
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-100 cursor-not-allowed"
-            />
-          </div>
-        </div>
-
-        <!-- 8. Standards -->
-        <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl mb-6 -mx-6">
-          <h3 class="text-lg font-semibold text-gray-900">8. Standards</h3>
-          <p class="mt-1 text-sm text-gray-500">Provide details about the standards.</p>
-        </div>
-
-        <div class="pb-8">
-          <p class="text-sm text-gray-600 mb-4">
-            For each standard, select the standard, key aspect, and indicator, then provide the
-            report.
-          </p>
-          <div
-            v-for="(standard, index) in application.standards"
-            :key="index"
-            class="mb-4 border rounded-md p-4 bg-gray-50"
-          >
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 required"
-                  >Standard Name</label
-                >
-                <select
-                  v-model="standard.standard_id"
-                  required
-                  :name="`standardId_${index}`"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                >
-                  <option :value="null" disabled>Select Standard Name</option>
-                  <option v-for="item in standardsOptions" :key="item.id" :value="item.id">
-                    {{ item.standard_name || item.title }}
-                  </option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 required"
-                  >Key Aspect Name</label
-                >
-                <select
-                  v-model="standard.key_aspect_id"
-                  required
-                  :name="`keyAspectId_${index}`"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                >
-                  <option :value="null" disabled>Select Key Aspect Name</option>
-                  <option v-for="item in keyAspectsOptions" :key="item.id" :value="item.id">
-                    {{ item.key_aspect_name || item.title }}
-                  </option>
-                </select>
-              </div>
-              <div class="col-span-1 md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 required">Indicator</label>
-                <select
-                  v-model="standard.indicator_id"
-                  required
-                  :name="`indicatorId_${index}`"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                >
-                  <option :value="null" disabled>Select Indicator</option>
-                  <option v-for="item in indicatorsOptions" :key="item.id" :value="item.id">
-                    {{ item.indicator_name || item.name || item.title }}
-                  </option>
-                </select>
-              </div>
+            <div class="flex items-start">
+              <input type="checkbox" id="second_cycle" value="second" v-model="formData.accreditation_cycles" class="form-checkbox mt-1" :disabled="isSubmitting" />
+              <label for="second_cycle" class="ml-3 text-sm text-gray-700">Second Cycle</label>
             </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Report by Institute</label
-              >
-              <textarea
-                v-model="standard.reportByInstitute"
-                rows="3"
-                required
-                placeholder="Provide a detailed report for this standard/aspect/indicator."
-                :name="`standardReport_${index}`"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              ></textarea>
+            <div class="flex items-start">
+              <input type="checkbox" id="third_cycle" value="third" v-model="formData.accreditation_cycles" class="form-checkbox mt-1" :disabled="isSubmitting" />
+              <label for="third_cycle" class="ml-3 text-sm text-gray-700">Third Cycle</label>
             </div>
-            <button
-              v-if="application.standards.length > 1"
-              @click="removeStandard(index)"
-              type="button"
-              class="bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm px-4 py-2 transition-colors"
-            >
-              Remove
-            </button>
-          </div>
-          <button
-            @click="addStandard"
-            type="button"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-4 py-2 mt-2 transition-colors"
-          >
-            Add Standard
-          </button>
-        </div>
-
-        <!-- 9. Supporting Documents -->
-        <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl mb-6 -mx-6">
-          <h3 class="text-lg font-semibold text-gray-900">9. Supporting Documents</h3>
-          <p class="mt-1 text-sm text-gray-500">
-            Upload supporting documents (Max 5MB per file). Note: Files are not saved in drafts and
-            must be re-selected before final submission.
-          </p>
-        </div>
-
-        <div class="pb-8">
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Upload Documents</label>
-            <input
-              type="file"
-              multiple
-              ref="fileInput"
-              @change="onFileChange"
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-              class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
-            />
-            <p class="mt-1 text-xs text-gray-500">
-              Allowed types: PDF, DOC, DOCX, JPG, PNG. Max 5MB per file.
+            <p v-if="formSubmittedAttempt && formData.accreditation_cycles.length === 0" class="text-red-500 text-xs mt-1">
+              Please select at least one accreditation cycle.
             </p>
           </div>
-          <div v-if="selectedFilesDisplay.length > 0" class="mt-4">
-            <h4 class="text-sm font-medium text-gray-700 mb-2">Selected Files:</h4>
-            <ul class="list-disc pl-5 space-y-1">
-              <li
-                v-for="(doc, index) in selectedFilesDisplay"
-                :key="index"
-                class="text-sm text-gray-600 flex justify-between items-center"
+        </div>
+
+        <!-- Section 2: Prerequisite for Accreditation -->
+        <div class="form-section">
+          <h3 class="form-section-title required">2. Prerequisite for Accreditation</h3>
+          <p class="form-section-subtitle">Confirm that your institute meets these prerequisites by checking the boxes. These align with the documents required in Part I.</p>
+          <div class="mt-4 space-y-3">
+            <div v-for="prereq in availablePrerequisites" :key="prereq.key" class="flex items-start">
+              <input type="checkbox" :id="`prereq_${prereq.key}`" :value="prereq.key" v-model="formData.prerequisites_confirmed" class="form-checkbox mt-1" :disabled="isSubmitting" />
+              <label :for="`prereq_${prereq.key}`" class="ml-3 text-sm text-gray-700">{{ prereq.label }}</label>
+            </div>
+            <p v-if="formSubmittedAttempt && (!formData.prerequisites_confirmed || formData.prerequisites_confirmed.length !== availablePrerequisites.length) && availablePrerequisites.length > 0" class="text-red-500 text-xs mt-1">
+              Please confirm all prerequisites.
+            </p>
+          </div>
+        </div>
+
+        <!-- Section 3: Part I - Checklist of Documents -->
+        <div class="form-section">
+          <h3 class="form-section-title">3. Part I: Document Uploads</h3>
+          <p class="form-section-subtitle">
+            Upload the required documents. (PDF, DOC, DOCX, JPG, PNG, ZIP - Max 5MB each).
+            <br /><strong>Note:</strong> The list of documents to upload here is fetched from the system. If you don't see the expected upload fields, ensure your institute profile is complete or contact support.
+            The "Receipt of Accreditation Fee" is NOT required at this stage; it's handled after payment.
+          </p>
+          <div class="mt-4 space-y-6">
+            <div v-if="requiredApplicationDocTypes.length > 0">
+              <div v-for="docType in requiredApplicationDocTypes" :key="docType.id">
+                <label :for="`file_${docType.id}`" class="form-label required">{{ docType.name }}</label>
+                <input :id="`file_${docType.id}`" type="file" @change="handleDocumentUpload($event, docType.id)" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip" class="form-file-input" :disabled="isSubmitting" />
+                <div v-if="getUploadedDocumentName(docType.id)" class="text-sm text-green-700 mt-1">
+                  <span class="font-medium">File:</span> {{ getUploadedDocumentName(docType.id) }}
+                  <button @click="removeDocumentUpload(docType.id)" type="button" class="text-red-500 hover:text-red-700 text-xs ml-2 font-semibold" :disabled="isSubmitting">× Remove</button>
+                </div>
+                <p v-else-if="formSubmittedAttempt && !isDocumentUploadedOrExisting(docType.id)" class="text-red-500 text-xs mt-1">
+                  This document is required.
+                </p>
+              </div>
+            </div>
+            <!-- Informative message if no document types are loaded -->
+            <div v-else-if="!loadingInitialData && requiredApplicationDocTypes.length === 0">
+              <p class="text-orange-600 bg-orange-50 p-3 rounded-md text-sm">
+                No specific document upload fields are currently listed. This might be because they are not required for this application type,
+                are managed elsewhere, or the list of required documents could not be loaded. If you believe documents are missing, please contact support.
+              </p>
+            </div>
+             <div v-else-if="loadingInitialData">
+                <p class="text-gray-500">Loading document requirements...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Part II - Course/Programme Details -->
+        <div class="form-section">
+          <h3 class="form-section-title required">4. Part II: Course/Programme Details</h3>
+          <p class="form-section-subtitle">List all courses/programmes offered for which accreditation is sought.</p>
+          <div class="mt-4">
+            <div v-for="(course, index) in formData.application_courses" :key="course.temp_id || course.id || index" class="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50 relative shadow-sm">
+              <h4 class="text-sm font-semibold text-gray-700 mb-3">Programme #{{ index + 1 }}</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                  <label :for="`course_title_${index}`" class="form-label-sm required">Course/Programme Title</label>
+                  <input :id="`course_title_${index}`" type="text" v-model.trim="course.course_programme_title" required class="form-input" :disabled="isSubmitting" placeholder="e.g., BSc in Computer Science" />
+                </div>
+                <div>
+                  <label :for="`awarding_body_${index}`" class="form-label-sm">Awarding Body</label>
+                  <input :id="`awarding_body_${index}`" type="text" v-model.trim="course.awarding_body" class="form-input" :disabled="isSubmitting" placeholder="e.g., Royal University of Bhutan" />
+                </div>
+                <div>
+                  <label :for="`level_bqf_${index}`" class="form-label-sm required">Level(s) as per BQF</label>
+                  <input :id="`level_bqf_${index}`" type="text" v-model.trim="course.level_as_per_bqf" required placeholder="e.g., BQF Level 7, Masters" class="form-input" :disabled="isSubmitting" />
+                </div>
+                <div>
+                  <label :for="`student_no_${index}`" class="form-label-sm required">Current Student Number</label>
+                  <input :id="`student_no_${index}`" type="number" min="0" v-model.number="course.current_student_number" required class="form-input" :disabled="isSubmitting" placeholder="e.g., 150" />
+                </div>
+              </div>
+              <button
+                v-if="formData.application_courses.length > 1"
+                @click="removeCourse(index)"
+                type="button"
+                class="absolute top-3 right-3 text-red-500 hover:text-red-700 transition-colors disabled:opacity-50"
+                aria-label="Remove Programme"
+                :disabled="isSubmitting"
               >
-                <span>{{ doc.name }} ({{ formatFileSize(doc.size) }})</span>
-                <button
-                  @click="removeFile(index)"
-                  type="button"
-                  class="text-red-500 hover:text-red-700 text-xs ml-2 font-semibold"
-                >
-                  Remove
-                </button>
-              </li>
-            </ul>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
+            <button @click="addCourse" type="button" class="btn-secondary text-sm py-2 px-4 mt-2" :disabled="isSubmitting">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1 -ml-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+              </svg>
+              Add Another Programme
+            </button>
+            <p v-if="formSubmittedAttempt && formData.application_courses.some(c => !c.course_programme_title || !c.level_as_per_bqf || c.current_student_number === null || c.current_student_number < 0)" class="text-red-500 text-xs mt-1">
+              Please complete all required fields for each course/programme with valid student numbers (must be 0 or greater).
+            </p>
+             <p v-if="formSubmittedAttempt && formData.application_courses.length === 0" class="text-red-500 text-xs mt-1">
+              At least one course/programme must be added.
+            </p>
           </div>
         </div>
 
         <!-- Declaration -->
-        <div class="flex items-start pb-8 pt-6 border-t border-gray-200 -mx-6 px-6">
-          <div class="flex items-center h-5">
-            <input
-              type="checkbox"
-              id="declaration"
-              v-model="application.declaration"
-              required
-              class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
+        <div class="form-section border-t border-gray-200 pt-6">
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <input id="declaration" type="checkbox" v-model="declarationAccepted" required class="form-checkbox" :disabled="isSubmitting" />
+            </div>
+            <div class="ml-3 text-sm">
+              <label for="declaration" class="font-medium text-gray-700 required">Declaration</label>
+              <p class="text-gray-500">
+                I, on behalf of the institute, declare that all information and documents provided in this application are true, correct, and complete to the best of my knowledge and belief.
+                I understand that any false or misleading information may lead to rejection of this application or revocation of accreditation.
+              </p>
+            </div>
           </div>
-          <div class="ml-3 text-sm">
-            <label for="declaration" class="font-medium text-gray-700 required">Declaration</label>
-            <p class="text-gray-500">
-              I declare that all the information provided is true and accurate to the best of my
-              knowledge. I understand that submission requires payment.
-            </p>
-            <p
-              v-if="!application.declaration && formSubmittedAttempt"
-              class="text-red-500 text-xs mt-1"
-            >
-              You must accept the declaration to submit the form.
-            </p>
-          </div>
+          <p v-if="formSubmittedAttempt && !declarationAccepted" class="text-red-500 text-xs mt-1 ml-8">You must accept the declaration to proceed.</p>
         </div>
 
         <!-- Action Buttons -->
-        <div
-          class="mt-8 flex justify-end space-x-4 pt-6 -mx-6 -mb-6 px-6 pb-6 bg-gray-50 rounded-b-xl"
-        >
-          <button
-            @click="saveDraft"
-            type="button"
-            :disabled="isSubmitting"
-            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors disabled:opacity-50"
-          >
+        <div class="mt-10 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-100">
+          <button @click="saveApplicationDraft" type="button" :disabled="isSubmitting || paymentProcessing" class="btn-secondary w-full sm:w-auto">
             Save as Draft
           </button>
           <button
             type="submit"
-            :disabled="!application.declaration || isSubmitting"
-            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            :disabled="!canEffectivelySubmit || isSubmitting || paymentProcessing"
+            class="btn-primary w-full sm:w-auto"
+            :class="{ 'opacity-50 cursor-not-allowed': !canEffectivelySubmit || isSubmitting || paymentProcessing }"
           >
-            {{ isSubmitting ? 'Processing...' : 'Proceed to Payment & Submit' }}
+            <span v-if="isSubmitting" class="flex items-center justify-center">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ paymentProcessing ? 'Processing Payment...' : 'Submitting...' }}
+            </span>
+            <span v-else>
+              {{ (currentApplicationId && formData.id) ? 'Update & Proceed' : 'Proceed to Payment & Submit' }}
+            </span>
           </button>
         </div>
+        <p v-if="!canEffectivelySubmit && !currentApplicationId && !loadingInitialData" class="text-sm text-red-600 mt-4 text-right">
+            Cannot submit a new application: No active accreditation cycle or user not authenticated. You can save a draft.
+        </p>
       </form>
+    </div>
+    <div v-else-if="!loadingInitialData && authStore.isAuthenticated && !instituteProfile" class="text-center py-10 bg-white border rounded-xl shadow p-6">
+      <p class="text-red-600 text-lg font-semibold">Institute Profile Not Found or Not Loaded</p>
+      <p class="text-gray-600 mt-2">We could not load your institute's profile. This is required to submit an accreditation application.</p>
+      <p class="mt-1 text-gray-600">Please ensure your profile is set up correctly or contact support if this issue persists.</p>
+      <router-link v-if="authStore.user?.user_type === 'institute_user'" :to="{ name: 'user-accreditation-profile' }" class="mt-4 inline-block btn-primary text-sm">
+        Setup Institute Profile
+      </router-link>
+    </div>
+    <div v-else-if="!loadingInitialData && !authStore.isAuthenticated" class="text-center py-10 bg-white border rounded-xl shadow p-6">
+      <p class="text-orange-600 text-lg font-semibold">Authentication Required</p>
+      <p class="text-gray-600 mt-2">You need to be logged in to submit an accreditation application.</p>
+      <router-link :to="{ name: 'Login' }" class="mt-4 inline-block btn-primary text-sm">
+        Login
+      </router-link>
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted } from 'vue'
-import apiService from '@/services/services' // Adjust path as needed
-import { useToast } from 'vue-toastification'
-import PaymentModal from '@/components/common/PaymentModal.vue' // Adjust path as needed
-import { useAuthStore } from '@/stores/authStore' // Adjust path as needed
+import { ref, reactive, onMounted, computed } from 'vue';
+// Assuming apiService, PaymentModal, authStore, etc., are correctly imported as in your original code
+import apiService from '@/services/services'; // Replace with your actual path
+import PaymentModal from '@/components/common/PaymentModal.vue'; // Replace with your actual path
+import { useAuthStore } from '@/stores/authStore'; // Replace with your actual path
+import { useToast } from 'vue-toastification';
+import { useRouter, useRoute } from 'vue-router';
 
-const DRAFT_STORAGE_KEY = 'accreditationDraft'
-const ACCREDITATION_FEE = 1000 // Define the fee amount
-const PAYMENT_SERVICE_CODE = '100194' // Service code for accreditation payment
+// --- Configuration & Constants ---
+const DRAFT_ACCREDITATION_APP_KEY = 'newAccreditationApplicationDraft_v5';
+const PAYMENT_SERVICE_CODE_ACCREDITATION = 'BQPCA_ACCR_FEE_INITIAL';
+const ACCREDITATION_FEE_CATEGORY_NAME = 'ACCREDITATION_INITIAL_APP';
 
-// Initialize application state with defaults
-const getInitialApplicationState = () => ({
-  institutionName: '',
-  address: '',
-  dzongkhag: '',
-  contactNumber: '',
-  emailAddress: '',
-  telephoneNumber: '',
-  yearEstablished: '',
-  institutionType: null,
-  affiliatedTo: '',
-  levelOfAutonomy: '',
-  fundingSource: null,
-  totalArea: '',
-  website: '',
-  accreditationRating: '',
-  accreditationValidity: '',
-  headName: '',
-  headContactNumber: '',
-  headEmailAddress: '',
-  iqaFocalName: '',
-  iqaFocalContactNumber: '',
-  iqaFocalEmailAddress: '',
-  numberOfDepartments: '',
-  qualificationCategory: null,
-  programmes: [{ name: '', number: null }],
-  numberOfProgrammesWithElective: '',
-  numberOfProgrammesThroughMixedMode: '',
-  facultyF: '',
-  facultyM: '',
-  regularFacultyF: '',
-  regularFacultyM: '',
-  contractFacultyF: '',
-  contractFacultyM: '',
-  visitingFacultyF: '',
-  visitingFacultyM: '',
-  totalPhdFaculty: '',
-  totalMastersFaculty: '',
-  totalBachelorsFaculty: '',
-  technicalStaffGender: null,
-  technicalStaffTotal: '',
-  administrativeStaffGender: null,
-  administrativeStaffTotal: '',
-  supportStaffGender: null,
-  supportStaffTotal: '',
-  standards: [
-    { standard_id: null, key_aspect_id: null, indicator_id: null, reportByInstitute: '' },
-  ],
-  supportingDocuments: [], // Holds File objects - WILL NOT BE SAVED IN DRAFT
-  declaration: false,
-  is_payment_complete: false, // Renamed for clarity
-  payment_id: null, // Stores the payment transaction hash/ID
-  status: 'draft', // Initial status before submission attempt
-})
+// --- Reactive State & Refs ---
+const toast = useToast();
+const authStore = useAuthStore();
+const router = useRouter();
+const route = useRoute();
 
-const application = reactive(getInitialApplicationState())
-// Separate ref for actual files to handle draft limitations
-const selectedFiles = ref([])
+const paymentModalRef = ref(null);
+const isSubmitting = ref(false);
+const paymentProcessing = ref(false);
+const formSubmittedAttempt = ref(false);
+const declarationAccepted = ref(false);
+const loadingInitialData = ref(true);
 
-const toast = useToast()
-const isSubmitting = ref(false)
-const formSubmittedAttempt = ref(false)
-const authStore = useAuthStore()
-const paymentModal = ref(null)
-const fileInput = ref(null)
+const instituteProfile = ref(null);
+const activeSchedule = ref(null);
+const applicationFeeAmount = ref(0);
+const feeDetails = ref(null);
+const requiredApplicationDocTypes = ref([]); // This will be populated by API
+const currentApplicationId = ref(route.params.id || null);
 
-// --- Master Data Refs ---
-const institutionTypesOptions = ref([])
-const fundingSourcesOptions = ref([])
-const qualificationCategories = ref(['Bachelor', 'Master', 'PhD']) // Static
-const genderOptions = ref(['Male', 'Female', 'Other']) // Static
-const standardsOptions = ref([])
-const keyAspectsOptions = ref([])
-const indicatorsOptions = ref([])
+// Prerequisite labels should match the documents expected in Part I for consistency
+const availablePrerequisites = ref([
+  { key: 'legal_status_docs_available', label: 'Documents authenticating the legal status of the institute (including list of directors, partners and/or legal owners) are available and correct.' },
+  { key: 'lease_agreement_available', label: 'A valid lease agreement is in place, if premises are leased and applicable.' },
+  { key: 'audited_accounts_3yrs_available', label: 'Copies of the last three years audited annual accounts are prepared and available.' },
+  { key: 'student_admission_data_3yrs_available', label: 'Data on the number of students admitted during the last three years, categorized by gender, is compiled and available.' },
+]);
 
-// Static list of Dzongkhags for reference
-const dzongkhagList = ref([
-  'Bumthang',
-  'Chukha',
-  'Dagana',
-  'Gasa',
-  'Haa',
-  'Lhuntse',
-  'Mongar',
-  'Paro',
-  'Pema Gatshel',
-  'Punakha',
-  'Samdrup Jongkhar',
-  'Samtse',
-  'Sarpang',
-  'Thimphu',
-  'Trashigang',
-  'Trashiyangtse',
-  'Trongsa',
-  'Tsirang',
-  'Wangdue Phodrang',
-  'Zhemgang',
-  'Thimphu Thromde',
-  'Phuentsholing Thromde',
-  'Gelephu Thromde',
-  'Samdrup Jongkhar Thromde',
-])
+let courseTempIdCounter = 0;
+const getInitialFormData = () => ({
+  institute_profile: null,
+  application_schedule: null,
+  application_fee_category: null,
+  accreditation_cycles: [],
+  prerequisites_confirmed: [], // Stores keys from availablePrerequisites
+  application_documents: [], // Stores { document_type: docTypeId (PK from API), file: File, file_name: String, id: existing_doc_id (optional) }
+  application_courses: [{ temp_id: courseTempIdCounter++, id: null, course_programme_title: '', awarding_body: '', level_as_per_bqf: '', current_student_number: null }],
+  is_payment_complete: false,
+  payment_id_gateway: '',
+  payment_status: 'not_initiated',
+  status: 'draft',
+  id: null, // Application ID if editing
+});
+
+const formData = reactive(getInitialFormData());
 
 // --- Computed Properties ---
-const totalFaculty = computed(
-  () => (Number(application.facultyF) || 0) + (Number(application.facultyM) || 0),
-)
-const totalRegularFaculty = computed(
-  () => (Number(application.regularFacultyF) || 0) + (Number(application.regularFacultyM) || 0),
-)
-const totalContractFaculty = computed(
-  () => (Number(application.contractFacultyF) || 0) + (Number(application.contractFacultyM) || 0),
-)
-const totalVisitingFaculty = computed(
-  () => (Number(application.visitingFacultyF) || 0) + (Number(application.visitingFacultyM) || 0),
-)
-const totalNonTeachingStaff = computed(
-  () =>
-    (Number(application.technicalStaffTotal) || 0) +
-    (Number(application.administrativeStaffTotal) || 0) +
-    (Number(application.supportStaffTotal) || 0),
-)
-
-const filteredInstitutionTypes = computed(() => {
-  return institutionTypesOptions.value.filter((item) => item && item.id && item.name_of_institute)
-})
-
-const filteredFundingSources = computed(() => {
-  return fundingSourcesOptions.value.filter((item) => item && item.id && item.name)
-})
-
-// Computed property for displaying selected files (doesn't rely on application.supportingDocuments)
-const selectedFilesDisplay = computed(() => {
-  return selectedFiles.value.map((file) => ({ name: file.name, size: file.size }))
-})
+const canEffectivelySubmit = computed(() => {
+  // Allow submission if editing an existing application OR if there's an active schedule for new ones
+  return (!!activeSchedule.value || !!currentApplicationId.value) && authStore.isAuthenticated;
+});
 
 // --- Methods ---
-
-// Load Draft from localStorage
-const loadDraft = () => {
-  const draftData = localStorage.getItem(DRAFT_STORAGE_KEY)
-  if (draftData) {
-    try {
-      const parsedData = JSON.parse(draftData)
-      // IMPORTANT: Update the reactive object key by key to maintain reactivity
-      Object.keys(parsedData).forEach((key) => {
-        // Exclude files and payment status from draft loading
-        if (
-          key !== 'supportingDocuments' &&
-          key !== 'is_payment_complete' &&
-          key !== 'payment_id' &&
-          key !== 'status' &&
-          key in application
-        ) {
-          application[key] = parsedData[key]
-        }
-      })
-      // Ensure programmes and standards have at least one item if loaded draft is empty/corrupted
-      if (!application.programmes || application.programmes.length === 0) {
-        application.programmes = [{ name: '', number: null }]
-      }
-      if (!application.standards || application.standards.length === 0) {
-        application.standards = [
-          { standard_id: null, key_aspect_id: null, indicator_id: null, reportByInstitute: '' },
-        ]
-      }
-
-      selectedFiles.value = [] // Clear file list on draft load
-      if (fileInput.value) fileInput.value.value = '' // Reset file input UI
-      application.status = 'draft' // Reset status when loading draft
-      toast.info('Draft loaded successfully. Please re-select any supporting documents.')
-      console.log('Draft loaded from localStorage')
-    } catch (error) {
-      console.error('Error parsing draft data from localStorage:', error)
-      toast.error('Could not load draft due to invalid data.')
-      localStorage.removeItem(DRAFT_STORAGE_KEY) // Clear corrupted data
-    }
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  try {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  } catch (e) {
+    console.error("Error formatting date:", dateString, e);
+    return dateString;
   }
-}
+};
 
-// Save Draft to localStorage
-const saveDraft = () => {
-  if (!application.institutionName) {
-    toast.warn('Please enter the Institution Name before saving a draft.')
-    return
+const handleDocumentUpload = (event, docTypeId) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { // 5MB limit
+    toast.error(`${file.name} exceeds 5MB file size limit.`);
+    event.target.value = ''; // Reset file input
+    return;
+  }
+  // Ensure docTypeId is valid (e.g., comes from requiredApplicationDocTypes)
+  if (!requiredApplicationDocTypes.value.find(dt => dt.id === docTypeId)) {
+      toast.error("Invalid document type for upload.");
+      return;
+  }
+
+  const existingDocIndex = formData.application_documents.findIndex(d => d.document_type === docTypeId);
+  const newDocEntry = { document_type: docTypeId, file: file, file_name: file.name, id: null };
+
+  if (existingDocIndex > -1) {
+    newDocEntry.id = formData.application_documents[existingDocIndex].id; // Preserve ID if replacing existing uploaded doc
+    formData.application_documents.splice(existingDocIndex, 1, newDocEntry);
+  } else {
+    formData.application_documents.push(newDocEntry);
+  }
+  event.target.value = ''; // Reset file input to allow re-uploading the same file
+};
+
+const removeDocumentUpload = (docTypeId) => {
+  const docIndex = formData.application_documents.findIndex(d => d.document_type === docTypeId);
+  if (docIndex > -1) {
+    formData.application_documents.splice(docIndex, 1);
+    toast.info(`File for ${requiredApplicationDocTypes.value.find(dt => dt.id === docTypeId)?.name || 'document'} removed.`);
+  }
+};
+
+const getUploadedDocumentName = (docTypeId) => {
+  const doc = formData.application_documents.find(d => d.document_type === docTypeId);
+  return doc ? doc.file_name : null;
+};
+
+const isDocumentUploadedOrExisting = (docTypeId) => {
+  const doc = formData.application_documents.find(d => d.document_type === docTypeId);
+  // True if a new file is selected OR if editing an app and this doc type had a file previously (even if not re-selected now)
+  return !!doc?.file || (!!currentApplicationId.value && !!doc?.id && !doc?.file && doc?.file_name?.toLowerCase() !== 'previously uploaded');
+};
+
+
+const addCourse = () => {
+  formData.application_courses.push({ temp_id: courseTempIdCounter++, id: null, course_programme_title: '', awarding_body: '', level_as_per_bqf: '', current_student_number: null });
+};
+
+const removeCourse = (index) => {
+  if (formData.application_courses.length > 1) {
+    formData.application_courses.splice(index, 1);
+  } else {
+    toast.info('At least one course/programme entry is required.');
+  }
+};
+
+const saveApplicationDraft = () => {
+  if (!instituteProfile.value?.id) {
+    toast.warn("Institute profile not loaded. Cannot save draft effectively.");
+    return;
   }
   try {
-    // Create a copy of the application data, excluding sensitive/non-persistent fields
-    const draftToSave = { ...application }
-    delete draftToSave.supportingDocuments // Remove the file array before saving
-    delete draftToSave.is_payment_complete
-    delete draftToSave.payment_id
-    delete draftToSave.status
+    // Create a deep copy for saving, excluding actual File objects from local storage
+    const draftToSave = JSON.parse(JSON.stringify(formData));
+    draftToSave.application_documents = formData.application_documents.map(d => ({
+      document_type: d.document_type,
+      file_name: d.file_name, // Keep file_name to indicate a file was there
+      // file: null, // Don't store actual File object
+      id: d.id
+    }));
 
-    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftToSave))
-    toast.success('Draft saved successfully.')
-  } catch (error) {
-    console.error('Error saving draft to localStorage:', error)
-    if (error.name === 'QuotaExceededError') {
-      toast.error('Could not save draft: Local storage quota exceeded.')
-    } else {
-      toast.error('An error occurred while saving the draft.')
-    }
+    localStorage.setItem(DRAFT_ACCREDITATION_APP_KEY, JSON.stringify(draftToSave));
+    toast.success('Draft saved locally. Remember to re-select document files if you refresh or leave the page.');
+  } catch (e) {
+    toast.error('Error saving draft to local storage.');
+    console.error("Error saving draft:", e);
   }
-}
+};
 
-// Clear Draft from localStorage
-const clearDraft = () => {
-  localStorage.removeItem(DRAFT_STORAGE_KEY)
-  console.log('Draft cleared from localStorage')
-}
+const loadApplicationDraft = () => {
+  const draftJson = localStorage.getItem(DRAFT_ACCREDITATION_APP_KEY);
+  if (draftJson) {
+    try {
+      const parsedDraft = JSON.parse(draftJson);
+      const defaultForm = getInitialFormData();
 
-// Reset Form function
-const resetForm = () => {
-  Object.assign(application, getInitialApplicationState())
-  selectedFiles.value = [] // Clear file list
-  if (fileInput.value) fileInput.value.value = '' // Reset file input UI
-  formSubmittedAttempt.value = false
-  toast.info('Form has been reset.')
-}
+      // Merge draft into formData carefully
+      for (const key in defaultForm) {
+        if (Object.hasOwn(parsedDraft, key)) {
+          // Handle arrays: if draft has non-array for an array field, use default
+          if (Array.isArray(defaultForm[key]) && !Array.isArray(parsedDraft[key])) {
+            formData[key] = Array.isArray(defaultForm[key]) ? [...defaultForm[key]] : defaultForm[key];
+          } else {
+            formData[key] = parsedDraft[key];
+          }
+        } else {
+          // If key not in draft, use default
+          formData[key] = defaultForm[key];
+        }
+      }
+      // Restore application_documents structure, files will need re-selection
+      formData.application_documents = (parsedDraft.application_documents || []).map(d => ({ ...d, file: null })); // file must be null initially
 
-// Programme List Management
-const addProgramme = () => {
-  application.programmes.push({ name: '', number: null })
-}
-const removeProgramme = (index) => {
-  if (application.programmes.length > 1) {
-    application.programmes.splice(index, 1)
-  } else {
-    toast.info('At least one programme is required.')
-  }
-}
-
-// Standards Management
-const addStandard = () => {
-  application.standards.push({
-    standard_id: null,
-    key_aspect_id: null,
-    indicator_id: null,
-    reportByInstitute: '',
-  })
-}
-const removeStandard = (index) => {
-  if (application.standards.length > 1) {
-    application.standards.splice(index, 1)
-  } else {
-    toast.info('At least one standard is required.')
-  }
-}
-
-// File Handling
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-
-const onFileChange = (event) => {
-  const files = event.target.files
-  if (!files) return
-
-  const newFiles = Array.from(files)
-  let oversizedFiles = []
-  let duplicateFiles = []
-
-  newFiles.forEach((file) => {
-    if (file.size > MAX_FILE_SIZE) {
-      oversizedFiles.push(file.name)
-    } else {
-      // Check for duplicates in the *currently selected* files (selectedFiles ref)
-      if (
-        !selectedFiles.value.some(
-          (existingFile) => existingFile.name === file.name && existingFile.size === file.size,
-        )
-      ) {
-        selectedFiles.value.push(file) // Add to the separate file ref
+      if (!formData.application_courses || formData.application_courses.length === 0) {
+        formData.application_courses = [{ temp_id: courseTempIdCounter++, id: null, course_programme_title: '', awarding_body: '', level_as_per_bqf: '', current_student_number: null }];
       } else {
-        duplicateFiles.push(file.name)
+        // Ensure temp_id is present for reactivity keys
+        formData.application_courses = formData.application_courses.map(c => ({ ...c, temp_id: c.temp_id || courseTempIdCounter++ }));
       }
+
+      if (parsedDraft.id) { // If draft was from a saved application
+        currentApplicationId.value = parsedDraft.id;
+        formData.id = parsedDraft.id;
+      }
+      // Do not automatically accept declaration from draft
+      declarationAccepted.value = false;
+
+      toast.info('Draft loaded from local storage. Please review all fields and re-select all document files.');
+    } catch (e) {
+      toast.error('Could not parse or load draft from local storage. Starting fresh.');
+      console.error("Error loading draft:", e);
+      localStorage.removeItem(DRAFT_ACCREDITATION_APP_KEY);
+      Object.assign(formData, getInitialFormData()); // Reset to initial state
     }
-  })
-
-  if (oversizedFiles.length > 0) {
-    toast.error(`The following files exceed the 5MB limit: ${oversizedFiles.join(', ')}`)
   }
-  if (duplicateFiles.length > 0) {
-    toast.warning(`The following files were already selected: ${duplicateFiles.join(', ')}`)
+};
+
+
+const clearApplicationDraft = () => {
+  localStorage.removeItem(DRAFT_ACCREDITATION_APP_KEY);
+  Object.assign(formData, getInitialFormData()); // Reset form data
+  declarationAccepted.value = false;
+  formSubmittedAttempt.value = false;
+  // Reset file inputs visually if possible (not directly easy without component refs for each)
+  // requiredApplicationDocTypes.value.forEach(docType => {
+  //   const inputEl = document.getElementById(`file_${docType.id}`);
+  //   if (inputEl) inputEl.value = '';
+  // });
+  toast.info("Local draft cleared and form reset.");
+};
+
+
+const validateForm = () => {
+  formSubmittedAttempt.value = true; // Mark that a submission attempt was made
+
+  if (!authStore.isAuthenticated) {
+    toast.error('You must be logged in to submit an application.');
+    router.push({ name: 'Login' });
+    return false;
   }
 
-  // Reset the file input visually so the same file can be selected again if removed
-  if (fileInput.value) {
-    fileInput.value.value = ''
+  if (!declarationAccepted.value) {
+    toast.error('You must accept the declaration to proceed.');
+    return false;
   }
-}
 
-const removeFile = (index) => {
-  selectedFiles.value.splice(index, 1)
-}
+  if (formData.accreditation_cycles.length === 0) {
+    toast.error('Please select at least one Accreditation Cycle.');
+    return false;
+  }
 
-const formatFileSize = (bytes) => {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
+  // Validate prerequisites
+  if (availablePrerequisites.value.length > 0 && formData.prerequisites_confirmed.length !== availablePrerequisites.value.length) {
+    toast.error('Please confirm all prerequisites for accreditation.');
+    return false;
+  }
 
-// Payment Modal Handling
-const openPaymentModal = () => {
-  if (paymentModal.value) {
-    paymentModal.value.openModal()
+  // Validate document uploads based on requiredApplicationDocTypes from API
+  for (const docType of requiredApplicationDocTypes.value) {
+    // Assuming all docTypes returned by API for 'application' category are required
+    if (!isDocumentUploadedOrExisting(docType.id)) {
+      toast.error(`The document "${docType.name}" is required.`);
+      return false;
+    }
+  }
+
+  if (!formData.application_courses || formData.application_courses.length === 0) {
+    toast.error('At least one course/programme must be added.');
+    return false;
+  }
+
+  if (formData.application_courses.some(c => !c.course_programme_title?.trim() || !c.level_as_per_bqf?.trim() || c.current_student_number === null || c.current_student_number < 0)) {
+    toast.error('Please complete all required fields for each course/programme with valid student numbers (0 or greater).');
+    return false;
+  }
+
+  return true;
+};
+
+const validateAndPromptPayment = async () => {
+  if (!validateForm()) {
+    isSubmitting.value = false; // Ensure isSubmitting is false if validation fails
+    return;
+  }
+
+  if (!canEffectivelySubmit.value && !currentApplicationId.value) {
+     toast.error("Cannot submit new application: No active accreditation cycle or user not authorized. You can save a draft.");
+     isSubmitting.value = false;
+     return;
+  }
+  isSubmitting.value = true; // Set submitting true before async operations
+
+  if (formData.is_payment_complete) {
+    // If payment already marked complete (e.g., editing a previously paid app), proceed to submit data
+    await prepareAndSubmitApplicationData();
+  } else if (applicationFeeAmount.value > 0 && paymentModalRef.value) {
+    // If fee is applicable and modal exists, open payment modal
+    paymentModalRef.value.openModal();
+  } else if (applicationFeeAmount.value <= 0) {
+    // If no fee or fee is zero, mark payment as complete (or not applicable) and proceed
+    toast.info("No application fee is applicable or fee is zero. Proceeding with submission.");
+    formData.is_payment_complete = true; // Or a specific status like 'not_applicable'
+    formData.payment_status = applicationFeeAmount.value === 0 ? 'not_applicable_zero_fee' : 'not_applicable';
+    await prepareAndSubmitApplicationData();
   } else {
-    console.error('Payment modal reference is not available.')
-    toast.error('Could not open payment modal. Please try again.')
-    isSubmitting.value = false // Ensure submitting state is reset if modal fails
+    toast.error('Payment modal could not be opened or fee details are missing.');
+    isSubmitting.value = false; // Reset submitting state
   }
-}
+};
 
-const onPaymentModalClose = () => {
-  console.log('Payment modal closed')
-  // If payment wasn't completed, stop the submission process
-  if (!application.is_payment_complete) {
-    isSubmitting.value = false
-    application.status = 'draft' // Reset status if payment cancelled
-    toast.info('Payment was cancelled or closed.')
-  }
-}
+const handlePaymentCompleted = async (paymentData) => {
+  // This function is called AFTER the payment gateway interaction is successful (from PaymentModal emit)
+  paymentProcessing.value = true; // Indicate payment processing is happening
+  formData.payment_status = 'processing_gateway_confirmation';
 
-// *** UPDATED: This function is called when the PaymentModal emits 'payment-completed' ***
-const onPaymentCompleted = (paymentData) => {
-  console.log('Payment completed data received from modal:', paymentData)
-  if (!paymentData || !paymentData.paymentHash) {
-    toast.error('Payment confirmation data is missing. Cannot proceed.')
-    isSubmitting.value = false // Stop submission
-    application.status = 'payment_failed' // Mark payment as failed
-    return
-  }
-  // Update application state with payment details
-  application.is_payment_complete = true
-  application.payment_id = paymentData.paymentHash // Store the unique payment identifier
-  application.status = 'payment_complete' // Update status
-
-  toast.info('Payment confirmed. Proceeding with application submission...')
-
-  // *** CRITICAL: Now call the actual backend submission function ***
-  handleSubmitActual()
-}
-
-// Form Submission Logic - Step 1: Validation and Payment Trigger
-const handleSubmit = () => {
-  formSubmittedAttempt.value = true // Mark that submission was attempted
-  isSubmitting.value = true // Set submitting state immediately
-  application.status = 'validating' // Update status
-
-  // --- Basic Validation Checks ---
-  if (!application.declaration) {
-    toast.error('Please accept the declaration before submitting.')
-    isSubmitting.value = false
-    application.status = 'draft' // Reset status
-    document.getElementById('declaration')?.focus()
-    return
+  // Save application as 'pending_payment' if it's a new one, to get an ID
+  // This ensures we have an application ID to link the payment to.
+  if (!currentApplicationId.value && !formData.id) {
+    const success = await prepareAndSubmitApplicationData(true); // Pass true for isPendingPayment
+    if (!success) {
+      toast.error("Failed to create initial application record before confirming payment.");
+      paymentProcessing.value = false;
+      isSubmitting.value = false; // Reset main submission flag
+      if (paymentModalRef.value) paymentModalRef.value.closeModal();
+      return;
+    }
   }
 
-  // Enhanced Required Field Check
-  const requiredFields = [
-    'institutionName',
-    'address',
-    'dzongkhag',
-    'contactNumber',
-    'emailAddress',
-    'yearEstablished',
-    'institutionType',
-    'fundingSource',
-    'headName',
-    'headContactNumber',
-    'headEmailAddress',
-    'iqaFocalName',
-    'iqaFocalContactNumber',
-    'iqaFocalEmailAddress',
-    'numberOfDepartments',
-    'qualificationCategory',
-    'facultyF',
-    'facultyM',
-    'totalPhdFaculty',
-    'totalMastersFaculty',
-    'totalBachelorsFaculty',
-  ]
-  const firstMissingField = requiredFields.find(
-    (field) => !application[field] && application[field] !== 0,
-  ) // Check for empty or null/undefined, allow 0
+  const paymentId = paymentData.paymentHash; // Assuming paymentData contains this
+  const user = authStore.user;
 
-  if (firstMissingField) {
-    toast.error(`Please fill in the required field: ${firstMissingField}`)
-    isSubmitting.value = false
-    application.status = 'draft' // Reset status
-    // Attempt to focus the first missing field
-    const fieldElement = document.querySelector(`[name="${firstMissingField}"]`)
-    fieldElement?.focus()
-    // Scroll into view if possible
-    fieldElement?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    return
+  if (!user || !user.contact_number || !user.email || !user.cid || !user.id) {
+    toast.error('Missing user information for payment processing. Please update your profile.');
+    formData.payment_status = 'failed_missing_user_info';
+    paymentProcessing.value = false;
+    isSubmitting.value = false;
+    if (paymentModalRef.value) paymentModalRef.value.closeModal();
+    return;
   }
-
-  // Check programmes structure
-  const invalidProgram = application.programmes.find(
-    (p) => !p.name || typeof p.number !== 'number' || p.number < 0,
-  )
-  if (application.programmes.length === 0 || invalidProgram) {
-    toast.error(
-      'Please provide a valid name and a non-negative number of students for all programmes.',
-    )
-    isSubmitting.value = false
-    application.status = 'draft' // Reset status
-    const programIndex = application.programmes.findIndex((p) => p === invalidProgram)
-    const invalidElement =
-      document.querySelector(`[name="programName_${programIndex}"]`) ||
-      document.querySelector(`[name="programNumber_${programIndex}"]`)
-    invalidElement?.focus()
-    invalidElement?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    return
-  }
-  // Check standards structure
-  const invalidStandard = application.standards.find(
-    (s) => !s.standard_id || !s.key_aspect_id || !s.indicator_id || !s.reportByInstitute,
-  )
-  if (application.standards.length === 0 || invalidStandard) {
-    toast.error(
-      'Please complete all fields (Standard, Key Aspect, Indicator, Report) for all standard entries.',
-    )
-    isSubmitting.value = false
-    application.status = 'draft' // Reset status
-    const standardIndex = application.standards.findIndex((s) => s === invalidStandard)
-    const invalidElement =
-      document.querySelector(`[name="standardId_${standardIndex}"]`) ||
-      document.querySelector(`[name="keyAspectId_${standardIndex}"]`) ||
-      document.querySelector(`[name="indicatorId_${standardIndex}"]`) ||
-      document.querySelector(`[name="standardReport_${standardIndex}"]`)
-    invalidElement?.focus()
-    invalidElement?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-
-    return
-  }
-
-  // --- Validation Passed ---
-  console.log('Form validation passed. Opening payment modal...')
-  application.status = 'pending_payment' // Update status
-  openPaymentModal()
-  // The process continues in onPaymentCompleted() if payment is successful
-}
-
-// Form Submission Logic - Step 2: Actual data submission to backend (Called AFTER successful payment confirmation)
-const handleSubmitActual = async () => {
-  // Double-check payment status before proceeding
-  if (!application.is_payment_complete || !application.payment_id) {
-    toast.error('Payment is not complete or payment ID is missing. Cannot submit application.')
-    console.error('Attempted handleSubmitActual without payment completion.', application)
-    isSubmitting.value = false
-    application.status = 'submission_failed' // Indicate failure reason
-    return
-  }
-
-  console.log('Proceeding with actual backend submission (Payment & Application Data)...')
-  application.status = 'submitting' // Update status
 
   try {
-    // --- 1. Payment Registration API Call ---
-    // Prepare data for the makePayment API endpoint
-    const paymentRegData = {
-      platform: 'BQPCA e-Zhapto', // Platform identifier
-      refNo: application.payment_id, // Use the unique hash from payment modal
-      taxPayerNo: application.contactNumber, // Using contact number as an identifier (confirm if correct)
-      taxPayerDocumentNo: application.contactNumber, // Example, confirm requirement
-      payerEmail: application.emailAddress,
-      mobileNo: application.contactNumber,
-      totalPayableAmount: ACCREDITATION_FEE,
-      serviceCode: PAYMENT_SERVICE_CODE, // ** VERIFY THIS CODE IS CORRECT FOR ACCREDITATION **
-      description: `Accreditation Application Fee - ${application.institutionName}`,
-      payableAmount: ACCREDITATION_FEE,
-      taxPayerName: application.institutionName,
-      application_no: application.payment_id, // Using payment ID as a reference, confirm if another ID is needed
-      app_type: 'Accreditation', // Type of application
-      user_id: authStore.userId,
+    const paymentConfirmationPayload = new FormData();
+    paymentConfirmationPayload.append('refNo', paymentId);
+    paymentConfirmationPayload.append('serviceCode', PAYMENT_SERVICE_CODE_ACCREDITATION);
+    paymentConfirmationPayload.append('taxPayerName', user.cid); // Or institute name if more appropriate
+    paymentConfirmationPayload.append('taxPayerNo', user.cid);
+    paymentConfirmationPayload.append('taxPayerDocumentNo', user.cid);
+    paymentConfirmationPayload.append('totalPayableAmount', applicationFeeAmount.value.toString());
+    paymentConfirmationPayload.append('description', `Accreditation Application Fee - App ID: ${formData.id || 'NEW'}`);
+    paymentConfirmationPayload.append('mobileNo', user.contact_number);
+    paymentConfirmationPayload.append('payerEmail', user.email);
+    paymentConfirmationPayload.append('user', user.id.toString());
+    paymentConfirmationPayload.append('payableAmount', applicationFeeAmount.value.toString());
+    paymentConfirmationPayload.append('application_no', formData.id ? formData.id.toString() : (currentApplicationId.value ? currentApplicationId.value.toString() : 'NEW_APP_PAYMENT'));
+    paymentConfirmationPayload.append('app_type', 'accreditation_application');
+
+    // This API call should ideally confirm the payment with your backend
+    // and associate it with the application.
+    await apiService.makeAccreditationPayment(paymentConfirmationPayload); // Or a more specific confirmPayment API
+
+    formData.is_payment_complete = true;
+    formData.payment_id_gateway = paymentId;
+    formData.payment_status = 'completed';
+    toast.success(`Payment confirmed (Ref: ${paymentId.substring(0, 8)}...). Finalizing application submission.`);
+
+    // Now submit the application data with payment marked as complete
+    await prepareAndSubmitApplicationData();
+
+  } catch (error) {
+    console.error('Payment confirmation/handling error:', error.response?.data || error.request || error.message || error);
+    let errorMsg = 'An error occurred while confirming the payment with our system.';
+    if (error.response?.data) {
+      const detail = error.response.data.detail || JSON.stringify(error.response.data);
+      errorMsg = `Payment Confirmation Error: ${detail}`;
+    } else if (error.request) {
+      errorMsg = 'Network Error: Could not reach the server to confirm payment.';
     }
+    toast.error(`${errorMsg} Contact support with payment ref ${paymentId} if issue persists. Your application might be in a pending state.`);
+    formData.payment_status = 'failed_confirmation_error';
+    // Decide if form status should change or if user should retry
+  } finally {
+    paymentProcessing.value = false;
+    // isSubmitting.value will be set to false by prepareAndSubmitApplicationData
+    if (paymentModalRef.value) {
+      paymentModalRef.value.closeModal();
+    }
+  }
+};
 
-    try {
-      console.log('Sending payment registration data:', paymentRegData)
-      // NOTE: The tracking component used FormData for makePayment. Adjust if needed.
-      // If makePayment expects FormData, convert paymentRegData:
-      // const paymentFormData = new FormData();
-      // Object.entries(paymentRegData).forEach(([key, value]) => {
-      //   paymentFormData.append(key, value);
-      // });
-      // const paymentResponse = await apiService.makePayment(paymentFormData);
 
-      // Assuming makePayment accepts JSON:
-      const paymentResponse = await apiService.makePayment(paymentRegData)
+const handlePaymentModalClose = () => {
+  if (!formData.is_payment_complete) {
+    toast.info('Payment process was cancelled or closed.');
+    isSubmitting.value = false; // Reset submission flag if payment was aborted
+    paymentProcessing.value = false;
+  }
+};
 
-      console.log('Payment Registration Response:', paymentResponse)
-      // Simple status check (adjust based on actual successful response structure)
-      if (paymentResponse.status < 200 || paymentResponse.status >= 300) {
-        const errorDetail =
-          paymentResponse.data?.message ||
-          paymentResponse.data?.detail ||
-          JSON.stringify(paymentResponse.data)
-        throw new Error(
-          `Payment registration failed with status: ${paymentResponse.status}. Details: ${errorDetail}`,
-        )
+const prepareAndSubmitApplicationData = async (isPrePaymentSave = false) => {
+  // isSubmitting should already be true if called from validateAndPromptPayment
+  // If called directly (e.g., fee is 0), ensure isSubmitting is true
+  if (!isSubmitting.value && !isPrePaymentSave) isSubmitting.value = true;
+
+
+  const payload = new FormData();
+
+  if (!instituteProfile.value?.id) {
+    toast.error("Institute profile is not loaded. Cannot submit.");
+    if (!isPrePaymentSave) isSubmitting.value = false;
+    return false; // Indicate failure
+  }
+  payload.append('institute_profile', instituteProfile.value.id.toString());
+
+  // Use active schedule if available and it's a new app, otherwise use form's stored schedule (for edits)
+  if (activeSchedule.value?.id && (!currentApplicationId.value || !formData.id) ) {
+    payload.append('application_schedule', activeSchedule.value.id.toString());
+  } else if (formData.application_schedule) { // For edits or if activeSchedule somehow null but was loaded
+    payload.append('application_schedule', formData.application_schedule.toString());
+  }
+
+  if (feeDetails.value?.id) {
+    payload.append('application_fee_category', feeDetails.value.id.toString());
+  } else if (formData.application_fee_category) { // For edits
+     payload.append('application_fee_category', formData.application_fee_category.toString());
+  }
+
+  payload.append('accreditation_cycles', JSON.stringify(formData.accreditation_cycles));
+  payload.append('prerequisites_confirmed', JSON.stringify(formData.prerequisites_confirmed));
+  payload.append('is_payment_complete', formData.is_payment_complete.toString());
+  payload.append('payment_status', formData.payment_status);
+  if (formData.payment_id_gateway) {
+    payload.append('payment_id_gateway', formData.payment_id_gateway);
+  }
+
+  // Append course details
+  payload.append('application_courses_json', JSON.stringify(formData.application_courses.map(c => ({
+    id: c.id || null, // Send null if it's a new course for an existing app
+    course_programme_title: c.course_programme_title.trim(),
+    awarding_body: c.awarding_body?.trim() || '',
+    level_as_per_bqf: c.level_as_per_bqf.trim(),
+    current_student_number: c.current_student_number
+  }))));
+
+  // Append document files
+  formData.application_documents.forEach(doc => {
+    if (doc.file) { // Only append if a new file is actually selected
+      payload.append(`document_file_type_${doc.document_type}`, doc.file, doc.file_name);
+      // If doc.id exists, it means this file replaces an existing one with that document_type for this app.
+      // Backend logic will handle update or create for ApplicationDocument.
+    }
+    // If editing and doc.file is null but doc.id exists, it means user hasn't changed an existing file.
+    // The backend should not delete existing files unless explicitly told (e.g., by a separate 'deleted_docs' array).
+  });
+
+  // Determine submission status
+  let submissionStatus = formData.status || 'draft'; // Default to draft
+  if (isPrePaymentSave) {
+    submissionStatus = 'pending_payment';
+  } else if (formData.is_payment_complete) {
+    // If payment is complete, and current status is draft or pending, move to submitted
+    if (submissionStatus === 'draft' || submissionStatus === 'pending_payment' || submissionStatus === 'not_initiated') {
+        submissionStatus = 'submitted_awaits_isar'; // Or your initial post-submission status
+    }
+    // If already submitted_awaits_isar or further, it's an update, keep current status or let backend decide.
+    // For simplicity here, we just ensure it's at least 'submitted_awaits_isar'.
+    // A more complex state machine might be needed on the backend.
+  }
+  payload.append('status', submissionStatus);
+
+  if (authStore.userId) {
+    payload.append('user', authStore.userId.toString());
+  }
+
+  try {
+    let response;
+    if (currentApplicationId.value && formData.id) { // Existing application being updated
+      response = await apiService.updateAccreditationApplication(formData.id, payload);
+      toast.success(`Application ${isPrePaymentSave ? 'draft saved' : 'updated successfully'}!`);
+    } else { // New application
+      response = await apiService.createAccreditationApplication(payload);
+      toast.success(`Application ${isPrePaymentSave ? 'draft created' : 'submitted successfully'}!`);
+      if (response.data && response.data.id) {
+        // Update local state with the new application ID
+        currentApplicationId.value = response.data.id;
+        formData.id = response.data.id;
+        // If it was a pre-payment save, we now have an ID.
       }
-      toast.info('Payment details successfully registered.')
-      application.status = 'payment_registered' // Update status
-    } catch (paymentError) {
-      console.error('Error during payment registration API call:', paymentError)
-      const specificError =
-        paymentError.response?.data?.message ||
-        paymentError.response?.data?.detail ||
-        paymentError.message ||
-        'Unknown error during payment registration.'
-      toast.error(
-        `Payment registration failed: ${specificError}. Please contact support if the payment was deducted, providing Payment ID: ${application.payment_id}`,
-      )
-      // Stop the submission process if payment registration fails
-      isSubmitting.value = false
-      application.status = 'submission_failed' // Indicate failure reason
-      return // Exit handleSubmitActual
     }
 
-    // --- 2. Main Application Data Submission ---
-    console.log('Submitting main application form data...')
-    application.status = 'submitting_form_data' // Update status
+    if (!isPrePaymentSave) {
+      clearApplicationDraft(); // Clear draft only on final successful submission
+      // Navigate to a confirmation/dashboard page
+      router.push({ name: 'user-accreditation-dashboard', query: { highlight: formData.id } }); // Example route
+    }
+    return true; // Indicate success
 
-    const formData = new FormData()
-
-    // Append all standard fields from the application object
-    for (const key in application) {
-      if (Object.prototype.hasOwnProperty.call(application, key)) {
-        const value = application[key]
-
-        if (key === 'programmes' || key === 'standards') {
-          formData.append(key, JSON.stringify(value)) // Send arrays/objects as JSON strings
-        } else if (key === 'supportingDocuments') {
-          continue // Files handled separately from selectedFiles ref
-        } else if (typeof value === 'boolean') {
-          formData.append(key, value.toString()) // Convert boolean to string 'true'/'false'
-        } else if (value !== null && value !== undefined && value !== '') {
-          // Append other non-empty values
-          formData.append(key, value)
+  } catch (error) {
+    console.error('Error submitting application:', error.response?.data || error.message || error);
+    let errorMessage = `Failed to ${currentApplicationId.value && formData.id ? 'update' : 'submit'} application. Please try again.`;
+    if (error.response?.data) {
+      const messages = [];
+      if (typeof error.response.data === 'object') {
+        for (const key in error.response.data) {
+          if (Array.isArray(error.response.data[key])) {
+            messages.push(`${key}: ${error.response.data[key].join(', ')}`);
+          } else {
+            messages.push(`${key}: ${String(error.response.data[key])}`);
+          }
         }
+        if (messages.length > 0) errorMessage = messages.join('; ');
+      } else if (typeof error.response.data === 'string') {
+        errorMessage = error.response.data;
       }
     }
-
-    // Append files from the selectedFiles ref
-    selectedFiles.value.forEach((file) => {
-      // Use a consistent key, potentially indexed if the backend expects multiple files under the same key name array
-      formData.append('supportingDocuments', file, file.name)
-      // Or if backend expects unique keys: formData.append(`supportingDocuments[${index}]`, file, file.name);
-    })
-
-    // Append user ID (ensure it's present)
-    if (authStore.userId) {
-      formData.append('user_id', authStore.userId)
-    } else {
-      console.error('User ID is missing. Cannot submit application.')
-      toast.error('Authentication error: User ID not found. Please log in again.')
-      isSubmitting.value = false
-      application.status = 'submission_failed'
-      return // Stop submission
-    }
-
-    // Add payment ID and status explicitly to the form data being sent
-    formData.append('payment_id', application.payment_id)
-    formData.append('is_payment_complete', 'true') // Send as string
-    formData.append('status', 'submitted') // Final submitted status for the record
-
-    // Log FormData for debugging (optional)
-    // for (let [key, value] of formData.entries()) {
-    //     console.log(`${key}:`, value instanceof File ? `${value.name} (${value.size} bytes)` : value);
-    // }
-
-    const response = await apiService.createInstitutionProfile(formData)
-
-    console.log('Application submission response:', response)
-
-    // Check response status from createInstitutionProfile
-    if (response.status < 200 || response.status >= 300) {
-      const errorDetail =
-        response.data?.message || response.data?.detail || JSON.stringify(response.data)
-      throw new Error(
-        `Application submission failed with status: ${response.status}. Details: ${errorDetail}`,
-      )
-    }
-
-    // --- Success ---
-    application.status = 'submitted_successfully' // Final success status
-    toast.success('Application submitted successfully! Payment details recorded.')
-    clearDraft() // Clear the draft from localStorage on successful submission
-    resetForm() // Reset the form fields
-  } catch (error) {
-    console.error('Error submitting application (handleSubmitActual):', error)
-    application.status = 'submission_failed' // Update status on error
-    const errorMessage =
-      error.response?.data?.message ||
-      error.response?.data?.detail || // Check for 'detail' which DRF sometimes uses
-      (error.response?.data ? JSON.stringify(error.response.data) : '') ||
-      error.message ||
-      'An unknown error occurred during submission.'
-    toast.error(
-      `Error submitting application: ${errorMessage}. Please review the form or contact support.`,
-    )
-    // Do not reset form or clear draft on error, allow user to retry or save draft
+    toast.error(errorMessage);
+    return false; // Indicate failure
   } finally {
-    // This runs regardless of success or error in the try block
-    isSubmitting.value = false // Ensure isSubmitting is reset
+    if (!isPrePaymentSave) { // Only reset main submission flag on final attempt
+        isSubmitting.value = false;
+    }
+    // paymentProcessing is handled in handlePaymentCompleted
   }
-}
+};
 
-// Fetch Master Data on Component Mount
+
+// --- Lifecycle Hooks ---
 onMounted(async () => {
-  console.log('Accreditation Form Component Mounted. Fetching master data...')
-  // Use a separate loading state for master data if needed, or keep isSubmitting
-  // isSubmitting.value = true;
-  try {
-    const [
-      typesResponse,
-      fundingResponse,
-      standardsResponse,
-      keyAspectsResponse,
-      indicatorsResponse,
-    ] = await Promise.all([
-      apiService.getMastersInstitutes(),
-      apiService.getMastersSourceOfFundings(),
-      apiService.getMastersStandards(),
-      apiService.getMastersKeyAspects(),
-      apiService.getMastersIndicators(),
-    ])
-
-    // Process results carefully, checking for data presence
-    institutionTypesOptions.value = typesResponse?.data?.results?.filter(Boolean) || []
-    fundingSourcesOptions.value = fundingResponse?.data?.results?.filter(Boolean) || []
-    standardsOptions.value = standardsResponse?.data?.results?.filter(Boolean) || []
-    keyAspectsOptions.value = keyAspectsResponse?.data?.results?.filter(Boolean) || []
-    indicatorsOptions.value = indicatorsResponse?.data?.results?.filter(Boolean) || []
-
-    console.log('Master data loaded:')
-    console.log(' - Institution Types:', institutionTypesOptions.value.length)
-    console.log(' - Funding Sources:', fundingSourcesOptions.value.length)
-    console.log(' - Standards:', standardsOptions.value.length)
-    console.log(' - Key Aspects:', keyAspectsOptions.value.length)
-    console.log(' - Indicators:', indicatorsOptions.value.length)
-
-    // Check if any data failed to load and show specific errors
-    if (!institutionTypesOptions.value.length) toast.warning('Could not load Institution Types.')
-    if (!fundingSourcesOptions.value.length) toast.warning('Could not load Funding Sources.')
-    if (!standardsOptions.value.length) toast.warning('Could not load Standards.')
-    if (!keyAspectsOptions.value.length) toast.warning('Could not load Key Aspects.')
-    if (!indicatorsOptions.value.length) toast.warning('Could not load Indicators.')
-
-    // Attempt to load draft *after* master data is loaded
-    loadDraft()
-  } catch (error) {
-    console.error('Error fetching master data:', error)
-    toast.error('Failed to load required dropdown options. Please try refreshing the page.')
-    // Ensure options are empty arrays on error
-    institutionTypesOptions.value = []
-    fundingSourcesOptions.value = []
-    standardsOptions.value = []
-    keyAspectsOptions.value = []
-    indicatorsOptions.value = []
-  } finally {
-    // isSubmitting.value = false; // End loading state if used
+  loadingInitialData.value = true;
+  if (!authStore.isAuthenticated) {
+    toast.error("You need to be logged in to access this page.");
+    router.push({ name: 'Login' }); // Make sure 'Login' is your login route name
+    loadingInitialData.value = false;
+    return;
   }
-})
+
+  try {
+    // Fetch institute profile first
+    const profileRes = await apiService.getMyInstituteProfile();
+    if (profileRes.data) {
+      instituteProfile.value = profileRes.data;
+      formData.institute_profile = instituteProfile.value.id; // Store ID in formData
+    } else {
+      toast.error("Could not load your institute's profile. Please ensure it's set up or contact support.");
+      loadingInitialData.value = false;
+      // Optionally, redirect to profile setup if critical and not just informational
+      // if (authStore.user?.user_type === 'institute_user') router.push({ name: 'user-accreditation-profile' });
+      return;
+    }
+
+    // Fetch other necessary data in parallel
+    const [scheduleRes, feeRes, docTypesRes] = await Promise.all([
+      apiService.getActiveApplicationSchedule(),
+      apiService.getFeeDetailsByName(ACCREDITATION_FEE_CATEGORY_NAME),
+      apiService.getDocumentTypesByCategory('application') // CRITICAL: This populates upload fields
+    ]);
+
+    if (scheduleRes.data) {
+      activeSchedule.value = scheduleRes.data;
+      formData.application_schedule = activeSchedule.value.id; // Store ID
+    } else if (!currentApplicationId.value) { // Only warn for new applications
+      toast.warn("No active accreditation application cycle found. You can save a draft but may not be able to submit a new application.");
+    }
+
+    if (feeRes.data) {
+      feeDetails.value = feeRes.data;
+      applicationFeeAmount.value = parseFloat(feeRes.data.fee_amount);
+      formData.application_fee_category = feeDetails.value.id; // Store ID
+    } else {
+      toast.warn('Could not load accreditation fee details. Fee might be 0 or not applicable for this application.');
+      applicationFeeAmount.value = 0; // Default to 0 if not found
+    }
+
+    if (docTypesRes.data && Array.isArray(docTypesRes.data.results) && docTypesRes.data.results.length > 0) {
+      requiredApplicationDocTypes.value = docTypesRes.data.results;
+    } else {
+      // This means "no place to upload files" might occur.
+      // The message in the template will handle informing the user.
+      console.warn('No document types returned for category "application" or API error.');
+      requiredApplicationDocTypes.value = []; // Ensure it's an empty array
+    }
+
+    // If editing an existing application (ID in route params)
+    if (currentApplicationId.value) {
+      const appDataRes = await apiService.getAccreditationApplication(currentApplicationId.value);
+      const appData = appDataRes.data;
+
+      // Populate formData with existing application data
+      const initialKeys = Object.keys(getInitialFormData());
+      initialKeys.forEach(key => {
+        if (Object.hasOwn(appData, key)) {
+          if (key === 'application_documents') {
+            // Map existing documents. 'file' will be null, 'file_name' shows original.
+            formData.application_documents = (appData.application_documents_display || []).map(d => ({
+              document_type: d.document_type, // This should be the ID of the DocumentType model
+              file_name: d.document_file ? d.document_file.substring(d.document_file.lastIndexOf('/') + 1) : 'Previously Uploaded',
+              file: null, // File object is null until user re-selects
+              id: d.id // ID of the ApplicationDocument instance
+            }));
+          } else if (key === 'application_courses') {
+            formData.application_courses = (appData.application_courses_display && appData.application_courses_display.length > 0
+              ? appData.application_courses_display.map(c => ({ ...c, temp_id: courseTempIdCounter++ })) // Add temp_id for keys
+              : getInitialFormData().application_courses); // Default if empty
+          } else if (key === 'accreditation_cycles' || key === 'prerequisites_confirmed') {
+             // Ensure these are arrays, even if API returns null or malformed
+            formData[key] = Array.isArray(appData[key]) ? appData[key] : [];
+          } else if (key === 'institute_profile' && appData.institute_profile && typeof appData.institute_profile === 'object') {
+            formData.institute_profile = appData.institute_profile.id; // Store ID
+          } else if (key === 'application_schedule' && appData.application_schedule && typeof appData.application_schedule === 'object') {
+            formData.application_schedule = appData.application_schedule.id; // Store ID
+          } else if (key === 'application_fee_category' && appData.application_fee_category && typeof appData.application_fee_category === 'object') {
+            formData.application_fee_category = appData.application_fee_category.id; // Store ID
+          } else {
+            formData[key] = appData[key];
+          }
+        }
+      });
+      formData.id = appData.id; // Ensure main application ID is set
+      declarationAccepted.value = true; // Assume declaration was accepted if editing a submitted/paid app
+      // If app is already submitted and paid, reflect that
+      if (appData.is_payment_complete) formData.is_payment_complete = true;
+      if (appData.payment_id_gateway) formData.payment_id_gateway = appData.payment_id_gateway;
+      if (appData.payment_status) formData.payment_status = appData.payment_status;
+
+
+      toast.info(`Editing Application: ${appData.application_uid?.hex?.substring(0, 8) || appData.id}. Review all fields. Re-upload files if changes are needed.`);
+    } else {
+      // Not editing, try to load from local draft
+      loadApplicationDraft();
+    }
+
+  } catch (error) {
+    toast.error('Failed to load initial data for the application form. Please try refreshing the page.');
+    console.error('Error in onMounted:', error.response?.data || error.message || error);
+    // Potentially set a global error state or redirect
+  } finally {
+    loadingInitialData.value = false;
+  }
+});
+
+// --- Simple Reusable FormField Component (inline for brevity, consider moving to own file) ---
+// This component is already defined in your script, so it's fine as is.
+// Make sure it's correctly registered if it were in a separate file.
+const FormField = {
+  props: ['label', 'value', 'isReadonly'],
+  template: `
+    <div>
+      <label class="form-label">{{ label }}</label>
+      <input type="text" :value="value || 'N/A'" :readonly="isReadonly"
+             class="form-input" :class="{ 'bg-gray-100 cursor-not-allowed': isReadonly }"/>
+    </div>
+  `
+};
 </script>
 
 <style scoped>
-/* Add required indicator */
-label.required::after {
-  content: ' *';
-  color: theme('colors.red.500');
+.form-section { @apply mb-10; }
+.form-section-title { @apply text-xl font-semibold text-gray-800 border-b border-gray-300 pb-3 mb-6; }
+.form-section-subtitle { @apply mt-1 text-sm text-gray-600 mb-4; }
+.form-label { @apply block text-sm font-medium text-gray-700 mb-1; }
+.form-label.required::after { content: ' *'; color: theme('colors.red.500'); }
+.form-label-sm { @apply block text-xs font-medium text-gray-600 mb-1; }
+.form-label-sm.required::after { content: ' *'; color: theme('colors.red.500'); }
+
+.form-input, .form-select, .form-textarea {
+  @apply block w-full rounded-md border-gray-300 shadow-sm sm:text-sm p-2.5;
+  @apply focus:ring-indigo-500 focus:border-indigo-500;
+  @apply disabled:bg-gray-100 disabled:cursor-not-allowed; /* Added disabled styles */
+}
+.form-checkbox {
+  @apply h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500;
+  @apply disabled:bg-gray-200 disabled:border-gray-300 disabled:cursor-not-allowed; /* Added disabled styles */
+}
+.form-file-input {
+  @apply mt-1 block w-full text-sm text-gray-500 border border-gray-300 p-2 rounded-md cursor-pointer;
+  @apply file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold;
+  @apply file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed; /* Added disabled styles */
 }
 
-/* Improve focus visibility */
-input:focus,
-select:focus,
-textarea:focus {
-  --tw-ring-color: theme('colors.blue.500');
-  --tw-ring-offset-width: 1px;
-  --tw-ring-offset-color: #fff;
-  box-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width))
-    var(--tw-ring-color);
-  border-color: theme('colors.blue.500');
-  outline: none; /* Remove default outline */
+.btn-primary {
+  @apply inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 transition-colors;
+  @apply hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed; /* Added disabled styles */
 }
-
-/* Consistent padding for form elements */
-input[type='text'],
-input[type='email'],
-input[type='number'],
-input[type='url'],
-input[type='date'],
-select,
-textarea {
-  padding-top: 0.625rem; /* 10px */
-  padding-bottom: 0.625rem; /* 10px */
-  padding-left: 0.75rem; /* 12px */
-  padding-right: 0.75rem; /* 12px */
-}
-
-/* Readonly input styling */
-input[readonly] {
-  background-color: theme('colors.gray.100');
-  cursor: not-allowed;
-  /* border-color: theme('colors.gray.300'); */ /* Optional: make border consistent */
-}
-
-/* Style for file input button */
-input[type='file']::file-selector-button {
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-}
-
-/* Section headers */
-.bg-gray-50 {
-  margin-left: -1.5rem; /* -p-6 */
-  margin-right: -1.5rem; /* -p-6 */
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-.rounded-t-xl {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-.rounded-b-xl {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
-/* Style details/summary */
-details > summary {
-  list-style: none;
-}
-details > summary::-webkit-details-marker {
-  display: none;
-}
-details > summary::before {
-  content: '+ '; /* Indicate collapsible */
-  font-weight: bold;
-  margin-right: 4px;
-}
-details[open] > summary::before {
-  content: '- '; /* Indicate expanded */
+.btn-secondary {
+  @apply inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white transition-colors;
+  @apply hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed; /* Added disabled styles */
 }
 </style>

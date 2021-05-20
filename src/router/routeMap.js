@@ -3,6 +3,7 @@ const ecpfDashboard = () => import('@/views/admin/ECPF/Dashboard.vue')
 const mhpcDashboard = () => import('@/views/admin/MHPC/Dashboard.vue')
 const accredDashboard = () => import('@/views/admin/ACCRED/Dashboard.vue')
 const engineeringDashboard = () => import('@/views/admin/Engineering/Dashboard.vue')
+
 export default {
   super_admin: {
     dashboard: () => import('@/views/admin/SuperAdmin/Dashboard.vue'),

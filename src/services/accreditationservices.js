@@ -1,463 +1,209 @@
-import apiClient from './apiClient'
+import apiClient from './apiClient';
+
+const ACCREDITATIONS_BASE_URL = '/accreditations';
+
+// Helper for adding headers for FormData
+const getFormDataHeaders = () => ({
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+});
 
 export default {
-  // Institution Profiles
-  getInstitutionProfiles() {
-    return apiClient.get('/accrediations/institution-profiles/')
+  // === Institute Profile ===
+  getMyInstituteProfile() {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/institute-profiles/my-profile/`);
   },
-  createInstitutionProfile(data) {
-    return apiClient.post('/accrediations/institution-profiles/', data)
+  getInstituteProfiles() {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/institute-profiles/`);
   },
-  getInstitutionProfile(id) {
-    return apiClient.get(`/accrediations/institution-profiles/${id}/`)
+  getInstituteProfile(id) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/institute-profiles/${id}/`);
   },
-  updateInstitutionProfile(id, data) {
-    return apiClient.put(`/accrediations/institution-profiles/${id}/`, data)
+  createInstituteProfile(data) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/institute-profiles/`, data);
   },
-  patchInstitutionProfile(id, data) {
-    return apiClient.patch(`/accrediations/institution-profiles/${id}/`, data)
+  updateInstituteProfile(id, data) {
+    return apiClient.patch(`${ACCREDITATIONS_BASE_URL}/institute-profiles/${id}/`, data);
   },
-  deleteInstitutionProfile(id) {
-    return apiClient.delete(`/accrediations/institution-profiles/${id}/`)
-  },
-
-  // Masters Appeal Reason
-  getMastersAppealReasons() {
-    return apiClient.get('/accrediations/masters-appeal-reason/')
-  },
-  createMastersAppealReason(data) {
-    return apiClient.post('/accrediations/masters-appeal-reason/', data)
-  },
-  getMastersAppealReason(id) {
-    return apiClient.get(`/accrediations/masters-appeal-reason/${id}/`)
-  },
-  updateMastersAppealReason(id, data) {
-    return apiClient.put(`/accrediations/masters-appeal-reason/${id}/`, data)
-  },
-  patchMastersAppealReason(id, data) {
-    return apiClient.patch(`/accrediations/masters-appeal-reason/${id}/`, data)
-  },
-  deleteMastersAppealReason(id) {
-    return apiClient.delete(`/accrediations/masters-appeal-reason/${id}/`)
+  deleteInstituteProfile(id) {
+    return apiClient.delete(`${ACCREDITATIONS_BASE_URL}/institute-profiles/${id}/`);
   },
 
-  // Masters Application Duration Management
-  getMastersApplicationDurationManagements() {
-    return apiClient.get('/accrediations/masters-application-duration-management/')
+  // === Past Accreditations (registered as 'past-accreditations') ===
+  getInstitutePastAccreditations(instituteProfileId) {
+    // Filtering by institute_profile should work if your ViewSet filterset_fields includes it
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/past-accreditations/?institute_profile=${instituteProfileId}`);
   },
-  createMastersApplicationDurationManagement(data) {
-    return apiClient.post('/accrediations/masters-application-duration-management/', data)
-  },
-  getMastersApplicationDurationManagement(id) {
-    return apiClient.get(`/accrediations/masters-application-duration-management/${id}/`)
-  },
-  updateMastersApplicationDurationManagement(id, data) {
-    return apiClient.put(`/accrediations/masters-application-duration-management/${id}/`, data)
-  },
-  patchMastersApplicationDurationManagement(id, data) {
-    return apiClient.patch(`/accrediations/masters-application-duration-management/${id}/`, data)
-  },
-  deleteMastersApplicationDurationManagement(id) {
-    return apiClient.delete(`/accrediations/masters-application-duration-management/${id}/`)
+  createInstitutePastAccreditation(data) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/past-accreditations/`, data);
   },
 
-  // Masters Decision
-  getMastersDecisions() {
-    return apiClient.get('/accrediations/masters-decision/')
+  // === Accreditation Application ===
+  getAccreditationApplications(params = {}) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/accreditation-applications/`, { params });
   },
-  createMastersDecision(data) {
-    return apiClient.post('/accrediations/masters-decision/', data)
+  createAccreditationApplication(formData) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/accreditation-applications/`, formData, getFormDataHeaders());
   },
-  getMastersDecision(id) {
-    return apiClient.get(`/accrediations/masters-decision/${id}/`)
+  getAccreditationApplication(id) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/accreditation-applications/${id}/`);
   },
-  updateMastersDecision(id, data) {
-    return apiClient.put(`/accrediations/masters-decision/${id}/`, data)
+  updateAccreditationApplication(id, formData) {
+    return apiClient.patch(`${ACCREDITATIONS_BASE_URL}/accreditation-applications/${id}/`, formData, getFormDataHeaders());
   },
-  patchMastersDecision(id, data) {
-    return apiClient.patch(`/accrediations/masters-decision/${id}/`, data)
+  deleteAccreditationApplication(id) {
+    return apiClient.delete(`${ACCREDITATIONS_BASE_URL}/accreditation-applications/${id}/`);
   },
-  deleteMastersDecision(id) {
-    return apiClient.delete(`/accrediations/masters-decision/${id}/`)
+  // submitInitialApplication action path in view is 'submit-initial-application', NOT 'submit-initial'
+  submitInitialApplication(id, paymentData) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/accreditation-applications/${id}/submit-initial-application/`, paymentData);
   },
-
-  // Masters E-Signature
-  getMastersESignatures() {
-    return apiClient.get('/accrediations/masters-e-signature/')
-  },
-  createMastersESignature(data) {
-    return apiClient.post('/accrediations/masters-e-signature/', data)
-  },
-  getMastersESignature(id) {
-    return apiClient.get(`/accrediations/masters-e-signature/${id}/`)
-  },
-  updateMastersESignature(id, data) {
-    return apiClient.put(`/accrediations/masters-e-signature/${id}/`, data)
-  },
-  patchMastersESignature(id, data) {
-    return apiClient.patch(`/accrediations/masters-e-signature/${id}/`, data)
-  },
-  deleteMastersESignature(id) {
-    return apiClient.delete(`/accrediations/masters-e-signature/${id}/`)
+  // assignAssessorsToApplication action path in view could be 'assign-assessors'
+  assignAssessorsToApplication(applicationId, assessorIdsPayload) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/accreditation-applications/${applicationId}/assign-assessors/`, assessorIdsPayload); // CHECK url_path in ViewSet
   },
 
-  // Masters Employee Category
-  getMastersEmployeeCategories() {
-    return apiClient.get('/accrediations/masters-employee-category/')
+  // === Application Documents & Courses ===
+  getApplicationDocuments(applicationId) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/application-documents/?application=${applicationId}`); // Filter field is 'application'
   },
-  createMastersEmployeeCategory(data) {
-    return apiClient.post('/accrediations/masters-employee-category/', data)
+  createApplicationDocument(formData) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/application-documents/`, formData, getFormDataHeaders());
   },
-  getMastersEmployeeCategory(id) {
-    return apiClient.get(`/accrediations/masters-employee-category/${id}/`)
-  },
-  updateMastersEmployeeCategory(id, data) {
-    return apiClient.put(`/accrediations/masters-employee-category/${id}/`, data)
-  },
-  patchMastersEmployeeCategory(id, data) {
-    return apiClient.patch(`/accrediations/masters-employee-category/${id}/`, data)
-  },
-  deleteMastersEmployeeCategory(id) {
-    return apiClient.delete(`/accrediations/masters-employee-category/${id}/`)
+  deleteApplicationDocument(id){
+    return apiClient.delete(`${ACCREDITATIONS_BASE_URL}/application-documents/${id}/`);
   },
 
-  // Masters Source of Funding Endpoints
-  getMastersSourceOfFundings() {
-    return apiClient.get('/accrediations/masters-source-of-funding/')
+  // === API Calls for "New Accreditation Application Form" ===
+  getActiveApplicationSchedule() {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-application-duration/active-schedule/`);
   },
-  createMastersSourceOfFunding(data) {
-    return apiClient.post('/accrediations/masters-source-of-funding/', data)
+  getFeeDetailsByName(feeCategoryName) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-fee/?fee_category=${encodeURIComponent(feeCategoryName)}`);
   },
-  getMastersSourceOfFunding(id) {
-    return apiClient.get(`/accrediations/masters-source-of-funding/${id}/`)
-  },
-  updateMastersSourceOfFunding(id, data) {
-    return apiClient.put(`/accrediations/masters-source-of-funding/${id}/`, data)
-  },
-  patchMastersSourceOfFunding(id, data) {
-    return apiClient.patch(`/accrediations/masters-source-of-funding/${id}/`, data)
-  },
-  deleteMastersSourceOfFunding(id) {
-    // Added delete function
-    return apiClient.delete(`/accrediations/masters-source-of-funding/${id}/`)
+  getDocumentTypesByCategory(categoryName) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/document-types/?category=${encodeURIComponent(categoryName)}`); // This was correct
   },
 
-  // Masters Employee Type
-  getMastersEmployeeTypes() {
-    return apiClient.get('/accrediations/masters-employee-type/')
+  // === Master Data CRUD Endpoints (Corrected) ===
+  getMastersFees() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-fee/`); },
+  createMastersFee(data) { return apiClient.post(`${ACCREDITATIONS_BASE_URL}/masters-fee/`, data); },
+  getMastersFee(id) { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-fee/${id}/`); },
+  updateMastersFee(id, data) { return apiClient.patch(`${ACCREDITATIONS_BASE_URL}/masters-fee/${id}/`, data); },
+  deleteMastersFee(id) { return apiClient.delete(`${ACCREDITATIONS_BASE_URL}/masters-fee/${id}/`); },
+
+  getMastersInstituteTypes() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-institute/`); },
+  createMastersInstituteType(data) { return apiClient.post(`${ACCREDITATIONS_BASE_URL}/masters-institute/`, data); },
+  getMastersInstituteType(id) { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-institute/${id}/`); },
+  updateMastersInstituteType(id, data) { return apiClient.patch(`${ACCREDITATIONS_BASE_URL}/masters-institute/${id}/`, data); },
+  deleteMastersInstituteType(id) { return apiClient.delete(`${ACCREDITATIONS_BASE_URL}/masters-institute/${id}/`); },
+
+  getMastersAppealReasons() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-appeal-reason/`); },
+  createMastersAppealReason(data) { return apiClient.post(`${ACCREDITATIONS_BASE_URL}/masters-appeal-reason/`, data); },
+
+  getMastersRatingCategories() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-rating-category/`); },
+
+  getMastersApplicationDurationManagements() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-application-duration/`); },
+
+  getMastersStandards() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-standard/`); },
+
+  getMastersKeyAspects() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-key-aspect/`); },
+
+  getMastersIndicators() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-indicators/`); },
+
+  getMastersQualifications() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-qualification/`); },
+
+  getMastersEmployeeTypes() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-employee-type/`); },
+
+  getMastersStaffTypes() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-staff-type/`); },
+
+  getMastersEmployeeCategories() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-employee-category/`); },
+
+  getMastersDecisions() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/masters-decision/`); },
+
+  getMastersESignatures() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/e-signatures/`); }, // Correct
+  createMastersESignature(formData) { return apiClient.post(`${ACCREDITATIONS_BASE_URL}/e-signatures/`, formData, getFormDataHeaders()); },
+
+  getMastersSourceOfFundings() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/sources-of-funding/`); }, // Correct
+
+  getMastersDocumentTypes() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/document-types/`); }, // Correct
+
+  getMastersAssessorPools() { return apiClient.get(`${ACCREDITATIONS_BASE_URL}/assessor-pools/`); }, // Correct
+  createMastersAssessor(data) { return apiClient.post(`${ACCREDITATIONS_BASE_URL}/assessor-pools/`, data); },
+
+  // === ISAR Report ===
+  getIsarReportForApplication(applicationId) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/isar-reports/?application=${applicationId}`);
   },
-  createMastersEmployeeType(data) {
-    return apiClient.post('/accrediations/masters-employee-type/', data)
+  createIsarReport(formData) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/isar-reports/`, formData, getFormDataHeaders());
   },
-  getMastersEmployeeType(id) {
-    return apiClient.get(`/accrediations/masters-employee-type/${id}/`)
+  getIsarReport(id) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/isar-reports/${id}/`);
   },
-  updateMastersEmployeeType(id, data) {
-    return apiClient.put(`/accrediations/masters-employee-type/${id}/`, data)
+  updateIsarReport(id, formData) {
+    return apiClient.patch(`${ACCREDITATIONS_BASE_URL}/isar-reports/${id}/`, formData, getFormDataHeaders());
   },
-  patchMastersEmployeeType(id, data) {
-    return apiClient.patch(`/accrediations/masters-employee-type/${id}/`, data)
+  // submitIsarReport action path in view is 'submit-isar'
+  submitIsarReport(id) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/isar-reports/${id}/submit-isar/`);
   },
-  deleteMastersEmployeeType(id) {
-    return apiClient.delete(`/accrediations/masters-employee-type/${id}/`)
+  getIsarStandardDocuments(isarReportId) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/isar-standard-documents/?isar_report=${isarReportId}`);
+  },
+  createIsarStandardDocument(formData) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/isar-standard-documents/`, formData, getFormDataHeaders());
+  },
+  deleteIsarStandardDocument(id) {
+    return apiClient.delete(`${ACCREDITATIONS_BASE_URL}/isar-standard-documents/${id}/`);
   },
 
-  // Masters Fee
-  getMastersFees() {
-    return apiClient.get('/accrediations/masters-fee/')
+  // === HEQC Process & Appeal ===
+  getApplicationAssessorCOIs(applicationId) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/application-assessor-cois/?application=${applicationId}`);
   },
-  createMastersFee(data) {
-    return apiClient.post('/accrediations/masters-fee/', data)
-  },
-  getMastersFee(id) {
-    return apiClient.get(`/accrediations/masters-fee/${id}/`)
-  },
-  updateMastersFee(id, data) {
-    return apiClient.put(`/accrediations/masters-fee/${id}/`, data)
-  },
-  patchMastersFee(id, data) {
-    return apiClient.patch(`/accrediations/masters-fee/${id}/`, data)
-  },
-  deleteMastersFee(id) {
-    return apiClient.delete(`/accrediations/masters-fee/${id}/`)
+  updateApplicationAssessorCOI(id, data) {
+    return apiClient.patch(`${ACCREDITATIONS_BASE_URL}/application-assessor-cois/${id}/`, data);
   },
 
-  // Masters Indicators
-  getMastersIndicators() {
-    return apiClient.get('/accrediations/masters-indicators/')
+  getApplicationSiteVisits(applicationId) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/application-site-visits/?application=${applicationId}`);
   },
-  createMastersIndicator(data) {
-    return apiClient.post('/accrediations/masters-indicators/', data)
+  createApplicationSiteVisit(data) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/application-site-visits/`, data);
   },
-  getMastersIndicator(id) {
-    return apiClient.get(`/accrediations/masters-indicators/${id}/`)
+  updateApplicationSiteVisit(id, data) {
+    return apiClient.patch(`${ACCREDITATIONS_BASE_URL}/application-site-visits/${id}/`, data);
   },
-  updateMastersIndicator(id, data) {
-    return apiClient.put(`/accrediations/masters-indicators/${id}/`, data)
-  },
-  patchMastersIndicator(id, data) {
-    return apiClient.patch(`/accrediations/masters-indicators/${id}/`, data)
-  },
-  deleteMastersIndicator(id) {
-    return apiClient.delete(`/accrediations/masters-indicators/${id}/`)
+  // confirmApplicationSiteVisit action path in view is 'confirm-visit'
+  confirmApplicationSiteVisit(id, confirmationData) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/application-site-visits/${id}/confirm-visit/`, confirmationData);
   },
 
-  // Masters Institute
-  getMastersInstitutes() {
-    return apiClient.get('/accrediations/masters-institute/')
+  getApplicationAppealForApplication(applicationId) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/application-appeals/?application=${applicationId}`);
   },
-  createMastersInstitute(data) {
-    return apiClient.post('/accrediations/masters-institute/', data)
+  createApplicationAppeal(formData) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/application-appeals/`, formData, getFormDataHeaders());
   },
-  getMastersInstitute(id) {
-    return apiClient.get(`/accrediations/masters-institute/${id}/`)
+  getApplicationAppeal(id) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/application-appeals/${id}/`);
   },
-  updateMastersInstitute(id, data) {
-    return apiClient.put(`/accrediations/masters-institute/${id}/`, data)
+  updateApplicationAppeal(id, formData) {
+    return apiClient.patch(`${ACCREDITATIONS_BASE_URL}/application-appeals/${id}/`, formData, getFormDataHeaders());
   },
-  patchMastersInstitute(id, data) {
-    return apiClient.patch(`/accrediations/masters-institute/${id}/`, data)
+  // submitApplicationAppeal action path in view might be 'submit-appeal'
+  submitApplicationAppeal(id, paymentData) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/application-appeals/${id}/submit-appeal/`, paymentData); // CHECK url_path in ViewSet
   },
-  deleteMastersInstitute(id) {
-    return apiClient.delete(`/accrediations/masters-institute/${id}/`)
+  getAppealDocuments(appealId) {
+    return apiClient.get(`${ACCREDITATIONS_BASE_URL}/appeal-documents/?appeal=${appealId}`);
   },
-
-  // Masters Key Aspect
-  getMastersKeyAspects() {
-    return apiClient.get('/accrediations/masters-key-aspect/')
+  createAppealDocument(formData) {
+    return apiClient.post(`${ACCREDITATIONS_BASE_URL}/appeal-documents/`, formData, getFormDataHeaders());
   },
-  createMastersKeyAspect(data) {
-    return apiClient.post('/accrediations/masters-key-aspect/', data)
+  deleteAppealDocument(id) {
+    return apiClient.delete(`${ACCREDITATIONS_BASE_URL}/appeal-documents/${id}/`);
   },
-  getMastersKeyAspect(id) {
-    return apiClient.get(`/accrediations/masters-key-aspect/${id}/`)
-  },
-  updateMastersKeyAspect(id, data) {
-    return apiClient.put(`/accrediations/masters-key-aspect/${id}/`, data)
-  },
-  patchMastersKeyAspect(id, data) {
-    return apiClient.patch(`/accrediations/masters-key-aspect/${id}/`, data)
-  },
-  deleteMastersKeyAspect(id) {
-    return apiClient.delete(`/accrediations/masters-key-aspect/${id}/`)
-  },
-
-  // Masters Qualification
-  getMastersQualifications() {
-    return apiClient.get('/accrediations/masters-qualification/')
-  },
-  createMastersQualification(data) {
-    return apiClient.post('/accrediations/masters-qualification/', data)
-  },
-  getMastersQualification(id) {
-    return apiClient.get(`/accrediations/masters-qualification/${id}/`)
-  },
-  updateMastersQualification(id, data) {
-    return apiClient.put(`/accrediations/masters-qualification/${id}/`, data)
-  },
-  patchMastersQualification(id, data) {
-    return apiClient.patch(`/accrediations/masters-qualification/${id}/`, data)
-  },
-  deleteMastersQualification(id) {
-    return apiClient.delete(`/accrediations/masters-qualification/${id}/`)
-  },
-
-  // Masters Rating Category
-  getMastersRatingCategories() {
-    return apiClient.get('/accrediations/masters-rating-category/')
-  },
-  createMastersRatingCategory(data) {
-    return apiClient.post('/accrediations/masters-rating-category/', data)
-  },
-  getMastersRatingCategory(id) {
-    return apiClient.get(`/accrediations/masters-rating-category/${id}/`)
-  },
-  updateMastersRatingCategory(id, data) {
-    return apiClient.put(`/accrediations/masters-rating-category/${id}/`, data)
-  },
-  patchMastersRatingCategory(id, data) {
-    return apiClient.patch(`/accrediations/masters-rating-category/${id}/`, data)
-  },
-  deleteMastersRatingCategory(id) {
-    return apiClient.delete(`/accrediations/masters-rating-category/${id}/`)
-  },
-
-  // Masters Staff Type
-  getMastersStaffTypes() {
-    return apiClient.get('/accrediations/masters-staff-type/')
-  },
-  createMastersStaffType(data) {
-    return apiClient.post('/accrediations/masters-staff-type/', data)
-  },
-  getMastersStaffType(id) {
-    return apiClient.get(`/accrediations/masters-staff-type/${id}/`)
-  },
-  updateMastersStaffType(id, data) {
-    return apiClient.put(`/accrediations/masters-staff-type/${id}/`, data)
-  },
-  patchMastersStaffType(id, data) {
-    return apiClient.patch(`/accrediations/masters-staff-type/${id}/`, data)
-  },
-  deleteMastersStaffType(id) {
-    return apiClient.delete(`/accrediations/masters-staff-type/${id}/`)
-  },
-
-  // Masters Standard
-  getMastersStandards() {
-    return apiClient.get('/accrediations/masters-standard/')
-  },
-  createMastersStandard(data) {
-    return apiClient.post('/accrediations/masters-standard/', data)
-  },
-  getMastersStandard(id) {
-    return apiClient.get(`/accrediations/masters-standard/${id}/`)
-  },
-  updateMastersStandard(id, data) {
-    return apiClient.put(`/accrediations/masters-standard/${id}/`, data)
-  },
-  patchMastersStandard(id, data) {
-    return apiClient.patch(`/accrediations/masters-standard/${id}/`, data)
-  },
-  deleteMastersStandard(id) {
-    return apiClient.delete(`/accrediations/masters-standard/${id}/`)
-  },
-  // Masters Document Type
-  getMastersDocumentTypes() {
-    return apiClient.get('/accrediations/masters-document-type/')
-  },
-  createMastersDocumentType(data) {
-    return apiClient.post('/accrediations/masters-document-type/', data)
-  },
-  getMastersDocumentType(id) {
-    return apiClient.get(`/accrediations/masters-document-type/${id}/`)
-  },
-  updateMastersDocumentType(id, data) {
-    return apiClient.put(`/accrediations/masters-document-type/${id}/`, data)
-  },
-  patchMastersDocumentType(id, data) {
-    return apiClient.patch(`/accrediations/masters-document-type/${id}/`, data)
-  },
-  deleteMastersDocumentType(id) {
-    return apiClient.delete(`/accrediations/masters-document-type/${id}/`)
-  },
-
-  // Past Accreditations
-  getPastAccreditations() {
-    return apiClient.get('/accrediations/past-accreditations/')
-  },
-  createPastAccreditation(data) {
-    return apiClient.post('/accrediations/past-accreditations/', data)
-  },
-  getPastAccreditation(id) {
-    return apiClient.get(`/accrediations/past-accreditations/${id}/`)
-  },
-  updatePastAccreditation(id, data) {
-    return apiClient.put(`/accrediations/past-accreditations/${id}/`, data)
-  },
-  patchPastAccreditation(id, data) {
-    return apiClient.patch(`/accrediations/past-accreditations/${id}/`, data)
-  },
-  deletePastAccreditation(id) {
-    return apiClient.delete(`/accrediations/past-accreditations/${id}/`)
-  },
-
-  // Profile Appeals
-  getProfileAppeals() {
-    return apiClient.get('/accrediations/profile-appeals/')
-  },
-  createProfileAppeal(data) {
-    return apiClient.post('/accrediations/profile-appeals/', data)
-  },
-  getProfileAppeal(id) {
-    return apiClient.get(`/accrediations/profile-appeals/${id}/`)
-  },
-  updateProfileAppeal(id, data) {
-    return apiClient.put(`/accrediations/profile-appeals/${id}/`, data)
-  },
-  patchProfileAppeal(id, data) {
-    return apiClient.patch(`/accrediations/profile-appeals/${id}/`, data)
-  },
-  deleteProfileAppeal(id) {
-    return apiClient.delete(`/accrediations/profile-appeals/${id}/`)
-  },
-
-  // Profile Assessors
-  getProfileAssessors() {
-    return apiClient.get('/accrediations/profile-assessors/')
-  },
-  createProfileAssessor(data) {
-    return apiClient.post('/accrediations/profile-assessors/', data)
-  },
-  getProfileAssessor(id) {
-    return apiClient.get(`/accrediations/profile-assessors/${id}/`)
-  },
-  updateProfileAssessor(id, data) {
-    return apiClient.put(`/accrediations/profile-assessors/${id}/`, data)
-  },
-  patchProfileAssessor(id, data) {
-    return apiClient.patch(`/accrediations/profile-assessors/${id}/`, data)
-  },
-  deleteProfileAssessor(id) {
-    return apiClient.delete(`/accrediations/profile-assessors/${id}/`)
-  },
-
-  // Profile Documents
-  getProfileDocuments() {
-    return apiClient.get('/accrediations/profile-documents/')
-  },
-  createProfileDocument(data) {
-    return apiClient.post('/accrediations/profile-documents/', data)
-  },
-  getProfileDocument(id) {
-    return apiClient.get(`/accrediations/profile-documents/${id}/`)
-  },
-  updateProfileDocument(id, data) {
-    return apiClient.put(`/accrediations/profile-documents/${id}/`, data)
-  },
-  patchProfileDocument(id, data) {
-    return apiClient.patch(`/accrediations/profile-documents/${id}/`, data)
-  },
-  deleteProfileDocument(id) {
-    return apiClient.delete(`/accrediations/profile-documents/${id}/`)
-  },
-
-  // Profile Standards
-  getProfileStandards() {
-    return apiClient.get('/accrediations/profile-standards/')
-  },
-  createProfileStandard(data) {
-    return apiClient.post('/accrediations/profile-standards/', data)
-  },
-  getProfileStandard(id) {
-    return apiClient.get(`/accrediations/profile-standards/${id}/`)
-  },
-  updateProfileStandard(id, data) {
-    return apiClient.put(`/accrediations/profile-standards/${id}/`, data)
-  },
-  patchProfileStandard(id, data) {
-    return apiClient.patch(`/accrediations/profile-standards/${id}/`, data)
-  },
-  deleteProfileStandard(id) {
-    return apiClient.delete(`/accrediations/profile-standards/${id}/`)
-  },
-
-  // Site Visit Schedules
-  getSiteVisitSchedules() {
-    return apiClient.get('/accrediations/site-visit-schedules/')
-  },
-  createSiteVisitSchedule(data) {
-    return apiClient.post('/accrediations/site-visit-schedules/', data)
-  },
-  getSiteVisitSchedule(id) {
-    return apiClient.get(`/accrediations/site-visit-schedules/${id}/`)
-  },
-  updateSiteVisitSchedule(id, data) {
-    return apiClient.put(`/accrediations/site-visit-schedules/${id}/`, data)
-  },
-  patchSiteVisitSchedule(id, data) {
-    return apiClient.patch(`/accrediations/site-visit-schedules/${id}/`, data)
-  },
-  deleteSiteVisitSchedule(id) {
-    return apiClient.delete(`/accrediations/site-visit-schedules/${id}/`)
-  },
-}
+};

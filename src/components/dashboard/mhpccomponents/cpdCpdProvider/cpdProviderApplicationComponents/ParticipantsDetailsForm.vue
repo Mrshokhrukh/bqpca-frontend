@@ -32,7 +32,7 @@
                 <option value="" disabled>Select Category</option>
                 <option
                   v-for="categoryOption in props.participationCategoryOptions"
-                  :key="categoryOption.value"
+                  :key="`maincat-opt-${categoryOption.value}`"
                   :value="categoryOption.value"
                 >
                   {{ categoryOption.text }}
@@ -51,41 +51,26 @@
             </div>
           </div>
 
-          <!-- Participant sub-category -->
+          <!-- Participant sub-category (INDEPENDENT) -->
           <div class="col-span-1">
             <label for="participantSubcategory" class="block text-sm font-medium text-gray-700 mb-1">
               Participant sub-category <span class="text-red-500">*</span>
             </label>
-
-            <!-- DEBUGGING OUTPUT -->
-            <div style="padding: 10px; margin-bottom: 10px; background-color: #f0f8ff; border: 1px solid #add8e6;">
-              <p style="font-weight: bold; color: #333;">CHILD DEBUG: Subcategory Logic</p>
-              <p style="color: #555;">Selected Main Category ID (props.participantDetails.category): {{ props.participantDetails.category }} (Type: {{ typeof props.participantDetails.category }})</p>
-              <p style="font-weight: bold; color: #333; margin-top: 5px;">ALL Subcategories received via prop (props.participantSubCategoryOptions):</p>
-              <pre style="white-space: pre-wrap; word-wrap: break-word; color: #555; max-height: 150px; overflow-y: auto;">{{ JSON.stringify(props.participantSubCategoryOptions, null, 2) }}</pre>
-              <p style="color: #555;">Length of ALL Subcategories: {{ props.participantSubCategoryOptions ? props.participantSubCategoryOptions.length : 'N/A' }}</p>
-              <p style="font-weight: bold; color: #333; margin-top: 5px;">FILTERED Subcategories (availableSubcategories - from computed):</p>
-              <pre style="white-space: pre-wrap; word-wrap: break-word; color: #555; max-height: 150px; overflow-y: auto;">{{ JSON.stringify(availableSubcategories, null, 2) }}</pre>
-              <p style="color: #555;">Length of FILTERED Subcategories: {{ availableSubcategories.length }}</p>
-            </div>
-            <!-- END DEBUGGING OUTPUT -->
-
             <div class="relative">
               <select
                 id="participantSubcategory"
                 :value="props.participantDetails.subcategory"
                 @change="handleFieldUpdate('subcategory', $event.target.value)"
                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 pl-10 bg-white appearance-none pr-10"
-                :disabled="!props.participantDetails.category || availableSubcategories.length === 0"
+                :disabled="!props.participantSubCategoryOptions || props.participantSubCategoryOptions.length === 0"
               >
                 <option value="" disabled>
-                  {{ !props.participantDetails.category ? 'Select main category first' : (availableSubcategories.length === 0 ? 'No subcategories for this category' : 'Select Sub-Category') }}
-                  ({{ availableSubcategories.length }} available)
+                  {{ (!props.participantSubCategoryOptions || props.participantSubCategoryOptions.length === 0) ? 'No subcategories available' : 'Select Sub-Category' }}
+                  (All: {{ props.participantSubCategoryOptions ? props.participantSubCategoryOptions.length : 0 }} available)
                 </option>
-                <!-- Iterate over the COMPUTED, FILTERED list -->
-                <template v-if="availableSubcategories.length > 0">
+                <template v-if="props.participantSubCategoryOptions && props.participantSubCategoryOptions.length > 0">
                   <option
-                    v-for="(subcategoryOption) in availableSubcategories"
+                    v-for="(subcategoryOption) in props.participantSubCategoryOptions"
                     :key="`subcat-opt-${subcategoryOption.value}`"
                     :value="subcategoryOption.value"
                   >
@@ -104,18 +89,14 @@
                 </svg>
               </div>
             </div>
-            <p v-if="props.participantDetails.category && availableSubcategories.length === 0" class="mt-1 text-xs text-orange-500 flex items-center">
+            <p v-if="!props.participantSubCategoryOptions || props.participantSubCategoryOptions.length === 0" class="mt-1 text-xs text-orange-500 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
-              No subcategories available for the selected main category.
-            </p>
-             <p v-if="!props.participantDetails.category" class="mt-1 text-xs text-gray-500">
-              Please select a main participation category first to see available subcategories.
+              No subcategories available to select.
             </p>
           </div>
 
-          <!-- Number of Participants -->
           <div class="col-span-1">
             <label for="numberParticipants" class="block text-sm font-medium text-gray-700 mb-1">
               Number of Participants <span class="text-red-500">*</span>
@@ -138,7 +119,6 @@
             </div>
           </div>
 
-          <!-- Relevance to your profession -->
           <div class="col-span-1 md:col-span-2">
             <label for="relevanceProfession" class="block text-sm font-medium text-gray-700 mb-1">
               Relevance to profession <span class="text-red-500">*</span>
@@ -172,7 +152,7 @@
 </template>
 
 <script setup>
-import { computed, defineProps, defineEmits, watch } from 'vue';
+import { watch, toRaw, onMounted, onUpdated } from 'vue'; // defineProps/Emits are auto-imported
 
 const props = defineProps({
   participantDetails: {
@@ -189,7 +169,7 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  participantSubCategoryOptions: { 
+  participantSubCategoryOptions: {
     type: Array,
     default: () => [],
   },
@@ -197,36 +177,74 @@ const props = defineProps({
 
 const emit = defineEmits(['update:participantDetails']);
 
-// Watcher for props.participantDetails (for debugging prop changes)
-watch(() => props.participantDetails, (newVal) => {
+// Helper function for safe logging
+const safeLogValue = (value) => {
+  try {
+    // If value is undefined, stringify will produce "undefined", which parse fails on.
+    // So, we can either check for undefined or pass null to stringify if it's undefined.
+    return JSON.parse(JSON.stringify(value === undefined ? null : toRaw(value)));
+  } catch (e) {
+    console.error("Error during safeLogValue:", e, "Original value:", toRaw(value));
+    return toRaw(value); // Fallback to raw value if JSON processing fails
+  }
+};
+
+
+onMounted(() => {
+  console.log(
+    "%cCHILD: onMounted. Initial props.participantSubCategoryOptions:",
+    "color: green; font-weight: bold;",
+    safeLogValue(props.participantSubCategoryOptions)
+  );
+  console.log(
+    "%cCHILD: onMounted. Initial props.participantDetails:",
+    "color: green; font-weight: bold;",
+    safeLogValue(props.participantDetails)
+  );
+});
+
+onUpdated(() => {
+  console.log(
+    "%cCHILD: onUpdated. props.participantSubCategoryOptions:",
+    "color: purple; font-weight: bold;",
+    safeLogValue(props.participantSubCategoryOptions)
+  );
+   console.log(
+    "%cCHILD: onUpdated. props.participantDetails:",
+    "color: purple; font-weight: bold;",
+    safeLogValue(props.participantDetails)
+  );
+});
+
+watch(() => props.participantDetails, (newVal, oldVal) => {
   console.log(
     "%cCHILD: props.participantDetails changed (watcher):",
-    "color: #4CAF50; font-weight: bold;", // Green
-    JSON.parse(JSON.stringify(newVal)) // Safe cloning for complex objects
+    "color: #4CAF50; font-weight: bold;"
   );
+  console.log("%c  New Value (Details):", "color: #4CAF50;", safeLogValue(newVal));
+  console.log("%c  Old Value (Details):", "color: #FFA000;", safeLogValue(oldVal));
 }, { deep: true, immediate: true });
 
-// Watcher for props.participantSubCategoryOptions (for debugging prop changes)
+
 watch(() => props.participantSubCategoryOptions, (newVal, oldVal) => {
   console.log(
-    "%cCHILD: props.participantSubCategoryOptions changed (watcher). New:",
-    "color: #9C27B0; font-weight: bold;", // Purple
-    JSON.parse(JSON.stringify(newVal)) // Safe cloning
+    "%cCHILD: props.participantSubCategoryOptions WATCHER TRIGGERED.",
+    "color: magenta; font-weight: bold;"
   );
-  if (oldVal !== undefined) {
-    console.log(
-      "%cCHILD: props.participantSubCategoryOptions changed (watcher). Old:",
-      "color: #9C27B0;",
-      JSON.parse(JSON.stringify(oldVal)) // Safe cloning
-    );
+  console.log(
+    "%c  CHILD Watcher New Value (SubCategoryOptions):",
+    "color: #9C27B0;",
+    safeLogValue(newVal) // USE HELPER
+  );
+  console.log(
+    "%c  CHILD Watcher Old Value (SubCategoryOptions):",
+    "color: #FF9800;",
+    safeLogValue(oldVal) // USE HELPER
+  );
+   if (newVal && Array.isArray(newVal)) {
+    console.log(`%c  CHILD Watcher: New SubCategoryOptions array received. Length: ${newVal.length}.`, "color: #9C27B0;");
   } else {
-    console.log("%cCHILD: props.participantSubCategoryOptions changed (watcher). Old: undefined (primitive)", "color: #9C27B0;");
-  }
-
-  if (newVal && Array.isArray(newVal)) {
-    console.log(`%cCHILD: Subcategory prop received (watcher). Length: ${newVal.length}. Options should update.`, "color: #9C27B0;");
-  } else {
-    console.log("%cCHILD: Subcategory prop is not an array or is null/undefined (watcher).", "color: #F44336;"); // Red
+    console.log("%c  CHILD Watcher: New SubCategoryOptions value is not an array or is null/undefined (newVal is: " + typeof newVal + ")", "color: #F44336;");
   }
 }, { deep: true, immediate: true });
 
@@ -236,7 +254,7 @@ const handleCategoryChange = (newCategoryId) => {
   emit('update:participantDetails', {
     ...props.participantDetails,
     category: newCategoryId,
-    subcategory: '', // IMPORTANT: Clear subcategory when main category changes
+    subcategory: '',
   });
 };
 
@@ -247,32 +265,4 @@ const handleFieldUpdate = (field, value) => {
     [field]: value,
   });
 };
-
-const availableSubcategories = computed(() => {
-  const selectedMainCategoryId = props.participantDetails.category;
-  const allSubcategories = props.participantSubCategoryOptions;
-
-  console.log("%cCHILD: `availableSubcategories` COMPUTED property running...", "color: blue; font-weight: bold;");
-  console.log("  CHILD computed: Selected Main Category ID (props.participantDetails.category):", selectedMainCategoryId, "(Type:", typeof selectedMainCategoryId, ")");
-  // console.log("  CHILD computed: All Subcategories from prop (props.participantSubCategoryOptions):", JSON.stringify(allSubcategories));
-
-
-  if (!selectedMainCategoryId || !Array.isArray(allSubcategories) || allSubcategories.length === 0) {
-    console.log("  CHILD computed: No main category selected or no subcategories available in prop. Returning [].");
-    return [];
-  }
-
-  const filtered = allSubcategories.filter(sub => {
-    // Ensure robust comparison, especially if IDs can be numbers or strings
-    // The 'categoryId' in your subcategory objects (from parent) should now be the correct ID.
-    // 'selectedMainCategoryId' (props.participantDetails.category) also comes as a string from select.
-    const match = String(sub.categoryId) === String(selectedMainCategoryId);
-    // console.log(`  CHILD computed: Comparing sub.categoryId: '${sub.categoryId}' (Type: ${typeof sub.categoryId}) WITH selectedMainCategoryId: '${selectedMainCategoryId}' (Type: ${typeof selectedMainCategoryId}) => Match: ${match}`);
-    return match;
-  });
-
-  console.log("  CHILD computed: Filtered subcategories list:", JSON.stringify(filtered));
-  return filtered;
-});
-
 </script>
