@@ -246,7 +246,7 @@
           </div>
 
           <!-- Registration Type Field -->
-          <div class="col-span-1">
+          <!-- <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Registration Type</label>
             <select v-model="localFormData.registration_type"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm">
@@ -258,7 +258,7 @@
             <span v-if="errors.registration_type" class="text-sm text-red-500 mt-1">{{
               errors.registration_type
             }}</span>
-          </div>
+          </div> -->
         </div>
 
         <!-- Passport Photo Section -->
@@ -779,6 +779,19 @@ onMounted(async () => {
     fetchedDocumentTypes.value = docTypesResponse.data.results || []
 
     console.log('Master data fetched successfully')
+
+    // Auto-select "new registration" by finding the correct ID case-insensitively
+    const newRegistration = registrationTypes.value.find(
+      type => type.name.toLowerCase() === 'new registration'
+    )
+
+    if (newRegistration) {
+      localFormData.registration_type = newRegistration.id
+      console.log('Auto-selected registration type:', newRegistration.name, newRegistration.id)
+    } else {
+      console.error('Could not find "New Registration" type in the fetched registration types')
+    }
+
   } catch (error) {
     console.error('Error fetching master data:', error)
     toast.error('Failed to fetch essential master data. Please refresh or contact support.')
