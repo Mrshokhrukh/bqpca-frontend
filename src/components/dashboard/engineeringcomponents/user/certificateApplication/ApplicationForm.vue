@@ -327,15 +327,17 @@
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Qualification Name</label>
               <select v-model="localFormData.qualification_name"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm">
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
+                :disabled="!localFormData.qualification_type">
                 <option value="">Select Qualification Name</option>
-                <option v-for="qualification in qualifications" :key="qualification.id" :value="qualification.id">
+                <option v-for="qualification in filteredQualifications" :key="qualification.id"
+                  :value="qualification.id">
                   {{ qualification.qualification }}
                 </option>
               </select>
               <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
                 errors.qualification_name
-              }}</span>
+                }}</span>
             </div>
 
             <div class="col-span-1">
@@ -851,7 +853,17 @@ const isLoadingDCRC = ref(false)
 const isCIDValid = computed(() => {
   return /^\d{11}$/.test(localFormData.cid_no)
 })
+const filteredQualifications = computed(() => {
+  if (!localFormData.qualification_type) {
+    // If no qualification type is selected, return an empty array
+    return []
+  }
 
+  // Filter qualifications where qualification_type matches the selected type
+  return qualifications.value.filter(
+    qual => qual.qualification_type === Number(localFormData.qualification_type)
+  )
+})
 // Watch for changes in localFormData to emit update
 watch(
   () => localFormData,
@@ -860,7 +872,22 @@ watch(
   },
   { deep: true },
 )
+watch(() => localFormData.qualification_type, (newType) => {
+  // When qualification type changes, check if current selection is still valid
+  if (newType) {
+    const currentQualStillValid = filteredQualifications.value.some(
+      qual => qual.id === localFormData.qualification_name
+    )
 
+    // If current selection is no longer valid with the new type, reset it
+    if (!currentQualStillValid) {
+      localFormData.qualification_name = ''
+    }
+  } else {
+    // If qualification type is cleared, also clear the qualification name
+    localFormData.qualification_name = ''
+  }
+})
 // --- Validation Functions ---
 
 const clearErrors = () => {
