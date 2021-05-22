@@ -89,8 +89,9 @@
               </p>
             </div>
 
-            <!-- Title of CPD -->
-            <div v-if="formData.isApproved !== 'true'">
+            <!-- Title of CPD - Always Visible -->
+            <div class="mb-5">
+              
               <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
                 Title of CPD <span class="text-red-500">*</span>
               </label>
@@ -124,8 +125,8 @@
           </div>
         </div>
 
-        <!-- Second Section: Location & Dates -->
-        <div v-if="formData.isApproved !== 'true'" class="mb-8">
+        <!-- Second Section: Location & Dates - Always Visible -->
+        <div class="mb-8">
           <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -273,7 +274,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
-                    <div class="flex text-sm text-gray-600">
+                    <div class="flex text-sm text-gray-600 justify-center">
                       <span v-if="formData.approvalLetterFile" class="text-blue-600 font-medium">
                         {{ formData.approvalLetterFile.name }}
                       </span>
@@ -329,96 +330,150 @@ const errors = ref({
   title: false,
   venue: false,
   fromDate: false,
-  toDate: false,
-  approvalLetterFile: false,
+  toDate: '',
+  approvalLetterFile: '',
 });
 
 const today = computed(() => {
   const date = new Date();
-  return date.toISOString().split('T')[0];
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - (offset*60*1000));
+  return localDate.toISOString().split('T')[0];
 });
 
 // Validate all fields
 const validateInput = () => {
-  errors.value.isApproved = formData.value.isApproved === null;
-  errors.value.title = formData.value.isApproved !== 'true' && !formData.value.title.trim();
-  errors.value.venue = formData.value.isApproved !== 'true' && !formData.value.venue.trim();
-  errors.value.fromDate = formData.value.isApproved !== 'true' && !formData.value.fromDate;
-  errors.value.toDate =
-    formData.value.isApproved !== 'true' &&
-    (!formData.value.toDate ||
-      (formData.value.fromDate && new Date(formData.value.toDate) < new Date(formData.value.fromDate)));
-  errors.value.approvalLetterFile = formData.value.isApproved === 'true' && !formData.value.approvalLetterFile;
+  let hasError = false;
 
-  const isValid = !Object.values(errors.value).some((error) => error);
-  emit('update:valid', isValid);
-  return isValid;
+  // Section 1: Basic Information
+  errors.value.isApproved = formData.value.isApproved === null;
+  if (errors.value.isApproved) hasError = true;
+
+  // Title of CPD (Always required)
+  errors.value.title = !formData.value.title.trim();
+  if (errors.value.title) hasError = true;
+
+  // Venue (Always required)
+  errors.value.venue = !formData.value.venue.trim();
+  if (errors.value.venue) hasError = true;
+
+  // From Date (Always required)
+  errors.value.fromDate = !formData.value.fromDate;
+  if (errors.value.fromDate) hasError = true;
+
+  // To Date (Always required, and must be after fromDate)
+  if (!formData.value.toDate) {
+    errors.value.toDate = 'To Date is required';
+  } else if (formData.value.fromDate && new Date(formData.value.toDate) < new Date(formData.value.fromDate)) {
+    errors.value.toDate = 'To Date cannot be before From Date';
+  } else {
+    errors.value.toDate = ''; // No error
+  }
+  if (errors.value.toDate) hasError = true;
+
+
+  // Section 3: Documentation (Approval Letter - conditionally required)
+  if (formData.value.isApproved === 'true') {
+    if (!formData.value.approvalLetterFile && !errors.value.approvalLetterFile) { // check if no file AND no existing file-specific error
+      errors.value.approvalLetterFile = 'Approval Letter is required';
+    } else if (formData.value.approvalLetterFile && errors.value.approvalLetterFile === 'Approval Letter is required') {
+      // If file is present and only error was 'required', clear it. Other errors (type/size) persist.
+      errors.value.approvalLetterFile = '';
+    }
+    if (errors.value.approvalLetterFile) hasError = true;
+  } else {
+    // If isApproved is not 'true', approval letter is not required, so clear its error.
+    errors.value.approvalLetterFile = '';
+  }
+
+  emit('update:valid', !hasError);
+  return !hasError;
 };
 
 // Handle text input with sanitization
 const handleInput = (field) => {
-  formData.value[field] = formData.value[field].trimStart();
+  if (typeof formData.value[field] === 'string') {
+    formData.value[field] = formData.value[field].trimStart();
+  }
   validateInput();
-  emitUpdate();
+  // emitUpdate(); // Consider if you want to emit on every keystroke for text fields
 };
 
 // Handle file input
 const handleFileInput = (event) => {
   const file = event.target.files?.[0];
+  const inputElement = event.target;
+
   if (file) {
     if (file.type !== 'application/pdf') {
-      errors.value.approvalLetterFile = 'Please upload a PDF file';
+      errors.value.approvalLetterFile = 'Please upload a PDF file.';
       formData.value.approvalLetterFile = null;
-    } else if (file.size > 5 * 1024 * 1024) {
-      errors.value.approvalLetterFile = 'File size must be less than 5MB';
+      if (inputElement) inputElement.value = null;
+    } else if (file.size > 5 * 1024 * 1024) { // 5MB
+      errors.value.approvalLetterFile = 'File size must be less than 5MB.';
       formData.value.approvalLetterFile = null;
+      if (inputElement) inputElement.value = null;
     } else {
       formData.value.approvalLetterFile = file;
-      errors.value.approvalLetterFile = false;
+      errors.value.approvalLetterFile = ''; // Clear previous errors like "required" or "PDF only"
       props.handleApprovalLetterUpload(event);
     }
   } else {
-    errors.value.approvalLetterFile = 'Approval Letter is required';
     formData.value.approvalLetterFile = null;
+    // If file is deselected, validateInput will determine if "required" error should be set.
   }
-  validateInput();
+  validateInput(); // Re-validate to update overall form validity and error state for file input
   emitUpdate();
 };
 
 // Emit updated form data
 const emitUpdate = () => {
-  emit('update:modelValue', {
+  const dataToEmit = {
     isApproved: formData.value.isApproved,
     title: formData.value.title.trim(),
     venue: formData.value.venue.trim(),
     fromDate: formData.value.fromDate,
     toDate: formData.value.toDate,
-    approvalLetterFile: formData.value.approvalLetterFile,
-  });
+    // approvalLetterFile is handled by its own mechanism (handleApprovalLetterUpload prop)
+  };
+  emit('update:modelValue', dataToEmit);
 };
 
-// Watch for prop changes
+// Watch for prop changes to re-initialize form data
 watch(
   () => props.application,
   (newValue) => {
-    formData.value = {
-      isApproved: newValue.isApproved || null,
-      title: newValue.title || '',
-      venue: newValue.venue || '',
-      fromDate: newValue.fromDate || '',
-      toDate: newValue.toDate || '',
-      approvalLetterFile: formData.value.approvalLetterFile, // Preserve local file state
-    };
+    formData.value.isApproved = newValue.isApproved !== undefined ? newValue.isApproved : null;
+    formData.value.title = newValue.title || '';
+    formData.value.venue = newValue.venue || '';
+    formData.value.fromDate = newValue.fromDate || '';
+    formData.value.toDate = newValue.toDate || '';
+    // formData.value.approvalLetterFile is managed locally
     validateInput();
   },
   { immediate: true, deep: true }
 );
 
-// Watch for isApproved changes to emit approval-change
+// Watch for isApproved changes
 watch(
   () => formData.value.isApproved,
-  (newValue) => {
+  (newValue, oldValue) => {
+    if (newValue === oldValue && (oldValue !== undefined && oldValue !== null) ) return; // Avoid redundant runs if value truly hasn't changed
+
     emit('approval-change', newValue);
+
+    if (newValue !== 'true') {
+      // If "No" is selected or it's unselected, clear the approval letter file and reset the input
+      formData.value.approvalLetterFile = null;
+      // The error for approvalLetterFile will be cleared by validateInput if it's no longer required
+      const fileInput = document.getElementById('approvalLetter');
+      if (fileInput) {
+        fileInput.value = null;
+      }
+    }
+    // No need to clear title, venue, dates as they are always visible and potentially filled.
+    // Their validation status will be updated by validateInput.
+
     validateInput();
     emitUpdate();
   }

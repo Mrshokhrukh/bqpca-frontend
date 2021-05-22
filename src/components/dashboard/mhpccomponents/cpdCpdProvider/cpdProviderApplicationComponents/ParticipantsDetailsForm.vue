@@ -62,15 +62,15 @@
                 :value="props.participantDetails.subcategory"
                 @change="handleFieldUpdate('subcategory', $event.target.value)"
                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 pl-10 bg-white appearance-none pr-10"
-                :disabled="!props.participantSubCategoryOptions || props.participantSubCategoryOptions.length === 0"
+                :disabled="!props.participantSubcategoryOptions || props.participantSubcategoryOptions.length === 0"
               >
                 <option value="" disabled>
-                  {{ (!props.participantSubCategoryOptions || props.participantSubCategoryOptions.length === 0) ? 'No subcategories available' : 'Select Sub-Category' }}
-                  (All: {{ props.participantSubCategoryOptions ? props.participantSubCategoryOptions.length : 0 }} available)
+                  {{ (!props.participantSubcategoryOptions || props.participantSubcategoryOptions.length === 0) ? 'No subcategories available' : 'Select Sub-Category' }}
+                  (All: {{ props.participantSubcategoryOptions ? props.participantSubcategoryOptions.length : 0 }} available)
                 </option>
-                <template v-if="props.participantSubCategoryOptions && props.participantSubCategoryOptions.length > 0">
+                <template v-if="props.participantSubcategoryOptions && props.participantSubcategoryOptions.length > 0">
                   <option
-                    v-for="(subcategoryOption) in props.participantSubCategoryOptions"
+                    v-for="(subcategoryOption) in props.participantSubcategoryOptions"
                     :key="`subcat-opt-${subcategoryOption.value}`"
                     :value="subcategoryOption.value"
                   >
@@ -89,7 +89,7 @@
                 </svg>
               </div>
             </div>
-            <p v-if="!props.participantSubCategoryOptions || props.participantSubCategoryOptions.length === 0" class="mt-1 text-xs text-orange-500 flex items-center">
+            <p v-if="!props.participantSubcategoryOptions || props.participantSubcategoryOptions.length === 0" class="mt-1 text-xs text-orange-500 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
@@ -169,7 +169,7 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  participantSubCategoryOptions: {
+  participantSubcategoryOptions: {
     type: Array,
     default: () => [],
   },
@@ -192,9 +192,9 @@ const safeLogValue = (value) => {
 
 onMounted(() => {
   console.log(
-    "%cCHILD: onMounted. Initial props.participantSubCategoryOptions:",
+    "%cCHILD: onMounted. Initial props.participantSubcategoryOptions:",
     "color: green; font-weight: bold;",
-    safeLogValue(props.participantSubCategoryOptions)
+    safeLogValue(props.participantSubcategoryOptions)
   );
   console.log(
     "%cCHILD: onMounted. Initial props.participantDetails:",
@@ -205,9 +205,9 @@ onMounted(() => {
 
 onUpdated(() => {
   console.log(
-    "%cCHILD: onUpdated. props.participantSubCategoryOptions:",
+    "%cCHILD: onUpdated. props.participantSubcategoryOptions:",
     "color: purple; font-weight: bold;",
-    safeLogValue(props.participantSubCategoryOptions)
+    safeLogValue(props.participantSubcategoryOptions)
   );
    console.log(
     "%cCHILD: onUpdated. props.participantDetails:",
@@ -226,9 +226,9 @@ watch(() => props.participantDetails, (newVal, oldVal) => {
 }, { deep: true, immediate: true });
 
 
-watch(() => props.participantSubCategoryOptions, (newVal, oldVal) => {
+watch(() => props.participantSubcategoryOptions, (newVal, oldVal) => {
   console.log(
-    "%cCHILD: props.participantSubCategoryOptions WATCHER TRIGGERED.",
+    "%cCHILD: props.participantSubcategoryOptions WATCHER TRIGGERED.",
     "color: magenta; font-weight: bold;"
   );
   console.log(
