@@ -8,9 +8,7 @@
         @click="closeModal"
       ></div>
 
-      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"
-        >&#8203;</span
-      >
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
 
       <div
         class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full"
@@ -18,7 +16,7 @@
         aria-modal="true"
         aria-labelledby="modal-headline"
       >
-        <div class="px-6 py-4 bg-gray-50 border-b border-gray-100">
+        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-900" id="modal-headline">
               Renewal Application
@@ -158,7 +156,7 @@
                   v-if="getPrimaryQualification(application)?.endorsement_decision"
                   :class="
                     getQualificationStatusClasses(
-                      getPrimaryQualification(application).endorsement_decision,
+                      getPrimaryQualification(application).endorsement_decision
                     )
                   "
                   class="inline-flex px-2 py-1 rounded text-xs"
@@ -221,6 +219,94 @@
             </div>
           </div>
 
+          <!-- CPD/CME Credits Section -->
+          <div class="mb-8 p-6 bg-white rounded-lg border border-gray-200">
+            <h4 class="text-lg font-medium text-gray-900 mb-4">CPD/CME Credits</h4>
+            <div v-if="isCpdLoading" class="text-center py-4">
+              <div
+                class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"
+              ></div>
+              <p class="mt-2 text-sm text-gray-600">Loading CPD records...</p>
+            </div>
+            <div v-else-if="cpdLoadError" class="text-red-500 text-sm">{{ cpdLoadError }}</div>
+            <div v-else>
+              <p class="text-sm text-gray-700">
+                Total Approved CPD Points: {{ getTotalCpdPoints }} (Minimum 60 recommended)
+              </p>
+              <ul v-if="cpdRecords.length > 0" class="mt-2 list-disc list-inside">
+                <li
+                  v-for="record in cpdRecords.slice(0, 5)"
+                  :key="record.id"
+                  class="text-sm text-gray-700"
+                >
+                  {{ record.title_of_cpd || 'Untitled' }} - {{ record.cpd_credit || 0 }} points ({{
+                    formatDate(record.created_at)
+                  }})
+                </li>
+              </ul>
+              <p v-else class="text-sm text-gray-700">No approved CPD records found.</p>
+            </div>
+          </div>
+
+          <!-- Complaints Section -->
+          <div class="mb-8 p-6 bg-white rounded-lg border border-gray-200">
+            <h4 class="text-lg font-medium text-gray-900 mb-4">Complaints</h4>
+            <div v-if="isComplaintsLoading" class="text-center py-4">
+              <div
+                class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"
+              ></div>
+              <p class="mt-2 text-sm text-gray-600">Loading complaints...</p>
+            </div>
+            <div v-else-if="complaintsLoadError" class="text-red-500 text-sm">
+              {{ complaintsLoadError }}
+            </div>
+            <div v-else>
+              <p v-if="complaints.length === 0" class="text-sm text-gray-700">
+                No complaints found.
+              </p>
+              <ul v-else class="list-disc list-inside">
+                <li
+                  v-for="complaint in complaints"
+                  :key="complaint.id"
+                  class="text-sm text-gray-700"
+                >
+                  {{ complaint.description }} - {{ formatDate(complaint.date) }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Counseling Records Section (Conditional) -->
+          <div
+            v-if="application.is_counselor"
+            class="mb-8 p-6 bg-white rounded-lg border border-gray-200"
+          >
+            <h4 class="text-lg font-medium text-gray-900 mb-4">Counseling Records</h4>
+            <div v-if="isCounselingLoading" class="text-center py-4">
+              <div
+                class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"
+              ></div>
+              <p class="mt-2 text-sm text-gray-600">Loading counseling records...</p>
+            </div>
+            <div v-else-if="counselingLoadError" class="text-red-500 text-sm">
+              {{ counselingLoadError }}
+            </div>
+            <div v-else>
+              <p v-if="counselingRecords.length === 0" class="text-sm text-gray-700">
+                No counseling records found.
+              </p>
+              <ul v-else class="list-disc list-inside">
+                <li
+                  v-for="record in counselingRecords"
+                  :key="record.id"
+                  class="text-sm text-gray-700"
+                >
+                  {{ record.description }} - {{ formatDate(record.date) }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
           <div
             v-if="application.renewal_status && application.renewal_status !== 'Pending'"
             class="mb-8 p-6 bg-white rounded-lg border border-gray-200"
@@ -265,7 +351,6 @@
             v-if="application.renewal_status === 'Pending'"
           >
             <h4 class="text-lg font-medium text-gray-900 mb-4">Process Renewal</h4>
-
             <div class="mb-6">
               <label
                 for="renewal_review_status"
@@ -396,11 +481,10 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import apiServices from '@/services/services' // Adjust path if needed
+import { ref, watch, computed } from 'vue'
+import apiServices from '@/services/services'
 import { useToast } from 'vue-toastification'
 
-// Props definition - Expects 'application' which is the combined object
 const props = defineProps({
   isOpen: {
     type: Boolean,
@@ -428,7 +512,17 @@ const emit = defineEmits(['close', 'update'])
 const toast = useToast()
 const isSubmitting = ref(false)
 
-// Initialize review form with default values
+// New state for additional fields
+const cpdRecords = ref([])
+const isCpdLoading = ref(false)
+const cpdLoadError = ref('')
+const complaints = ref([])
+const isComplaintsLoading = ref(false)
+const complaintsLoadError = ref('')
+const counselingRecords = ref([])
+const isCounselingLoading = ref(false)
+const counselingLoadError = ref('')
+
 const reviewForm = ref({
   renewal_review_status: 'Pending',
   renewal_review_remarks: '',
@@ -437,22 +531,78 @@ const reviewForm = ref({
   endorsement_remarks: '',
 })
 
-// Helper function to get primary qualification
 const getPrimaryQualification = (app) => {
   if (app && Array.isArray(app.user_qualifications) && app.user_qualifications.length > 0) {
-    // Ensure the find method doesn't crash if items are malformed
     return app.user_qualifications.find((q) => q && q.is_primary_qualification)
   }
   return null
 }
 
-// Watch the incoming application data to reset/prefill the form
+// Fetch CPD Records
+const fetchCpdRecords = async (cid) => {
+  if (!cid) return
+  isCpdLoading.value = true
+  cpdLoadError.value = ''
+  try {
+    const response = await apiServices.getMhpcCpdRecordsByCid(cid)
+    cpdRecords.value = response.data.filter((record) => record.review_status === 'Approved') || []
+  } catch (error) {
+    console.error('Error fetching CPD records:', error)
+    cpdLoadError.value = 'Failed to load CPD records.'
+  } finally {
+    isCpdLoading.value = false
+  }
+}
+
+// Fetch Complaints
+const fetchComplaints = async (cid) => {
+  if (!cid) return
+  isComplaintsLoading.value = true
+  complaintsLoadError.value = ''
+  try {
+    const response = await apiServices.getComplaintsByCid(cid) // Adjust API call as per your backend
+    complaints.value = response.data || []
+  } catch (error) {
+    console.error('Error fetching complaints:', error)
+    complaintsLoadError.value = 'Failed to load complaints.'
+  } finally {
+    isComplaintsLoading.value = false
+  }
+}
+
+// Fetch Counseling Records
+const fetchCounselingRecords = async (cid) => {
+  if (!cid || !props.application.is_counselor) return
+  isCounselingLoading.value = true
+  counselingLoadError.value = ''
+  try {
+    const response = await apiServices.getCounselingRecordsByCid(cid) // Adjust API call as per your backend
+    counselingRecords.value = response.data || []
+  } catch (error) {
+    console.error('Error fetching counseling records:', error)
+    counselingLoadError.value = 'Failed to load counseling records.'
+  } finally {
+    isCounselingLoading.value = false
+  }
+}
+
+// Computed property for total CPD points
+const getTotalCpdPoints = computed(() => {
+  return cpdRecords.value.reduce((total, record) => total + (record.cpd_credit || 0), 0)
+})
+
+// Watch application prop to fetch data
 watch(
   () => props.application,
   (newApplication) => {
     if (newApplication) {
-      // Pre-fill form based on existing renewal data if available (though typically this form is only shown for 'Pending')
-      // Calculate a default expiry date (3 years from current expiry)
+      const cid = newApplication.cid_no
+      fetchCpdRecords(cid)
+      fetchComplaints(cid)
+      if (newApplication.is_counselor) {
+        fetchCounselingRecords(cid)
+      }
+
       let defaultNewExpiryDate = null
       if (newApplication.expiry_date) {
         try {
@@ -466,22 +616,19 @@ watch(
         }
       }
       if (!defaultNewExpiryDate) {
-        // Fallback
         const today = new Date()
         today.setFullYear(today.getFullYear() + 3)
         defaultNewExpiryDate = today.toISOString().split('T')[0]
       }
 
-      // Reset form values, potentially pre-filling if needed (but usually not needed as form is for 'Pending' status)
       reviewForm.value = {
-        renewal_review_status: newApplication.renewal_review_status || 'Pending', // Use existing if available? Or always default? Defaulting seems safer for processing workflow.
+        renewal_review_status: newApplication.renewal_review_status || 'Pending',
         renewal_review_remarks: newApplication.renewal_review_remarks || '',
-        new_expiry_date: newApplication.new_expiry_date || defaultNewExpiryDate, // Use existing new date if set, else default
-        renewal_endorsement_decision: newApplication.renewal_status || 'Pending', // Use existing if available? Defaulting seems safer.
+        new_expiry_date: newApplication.new_expiry_date || defaultNewExpiryDate,
+        renewal_endorsement_decision: newApplication.renewal_status || 'Pending',
         endorsement_remarks: newApplication.endorsement_remarks || '',
       }
     } else {
-      // Clear form if no application is passed
       reviewForm.value = {
         renewal_review_status: 'Pending',
         renewal_review_remarks: '',
@@ -491,10 +638,9 @@ watch(
       }
     }
   },
-  { immediate: true, deep: true },
+  { immediate: true, deep: true }
 )
 
-// Format date for display
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   try {
@@ -511,7 +657,6 @@ const formatDate = (dateString) => {
   }
 }
 
-// Get CSS classes for qualification status display
 const getQualificationStatusClasses = (status) => {
   return {
     'bg-yellow-100 text-yellow-800': status === 'Pending',
@@ -521,7 +666,6 @@ const getQualificationStatusClasses = (status) => {
   }
 }
 
-// Get CSS classes for renewal status display
 const getRenewalStatusClasses = (status) => {
   return {
     'bg-yellow-100 text-yellow-800': status === 'Pending',
@@ -531,30 +675,23 @@ const getRenewalStatusClasses = (status) => {
   }
 }
 
-// Get CSS classes for status tag (can be reused)
 const getStatusTagClass = (status) => {
-  return getRenewalStatusClasses(status) // Reuse the logic
+  return getRenewalStatusClasses(status)
 }
 
-// Close the modal
 const closeModal = () => {
   if (!isSubmitting.value) {
     emit('close')
   }
 }
 
-// ***** MODIFIED FUNCTION *****
-// Submit the renewal UPDATE
 const submitRenewalUpdate = async () => {
-  // Use props.application which holds the combined data
   if (!props.application || props.application.renewal_id == null) {
-    // Check for renewal_id
     toast.error('Renewal data is missing or invalid')
     console.error('Missing application or renewal_id in props:', props.application)
     return
   }
 
-  // Validate form inputs
   if (reviewForm.value.renewal_review_status === 'Approved' && !reviewForm.value.new_expiry_date) {
     toast.error('New expiry date is required when approving the renewal')
     return
@@ -567,7 +704,6 @@ const submitRenewalUpdate = async () => {
   try {
     isSubmitting.value = true
 
-    // Prepare data ONLY with fields to be updated (for PATCH)
     const patchData = {
       renewal_review_status: reviewForm.value.renewal_review_status,
       renewal_review_remarks: reviewForm.value.renewal_review_remarks || '',
@@ -575,26 +711,17 @@ const submitRenewalUpdate = async () => {
       endorsement_remarks: reviewForm.value.endorsement_remarks || '',
     }
 
-    // Only include new_expiry_date if status is Approved and date is set
     if (reviewForm.value.renewal_review_status === 'Approved' && reviewForm.value.new_expiry_date) {
       patchData.new_expiry_date = reviewForm.value.new_expiry_date
-    } else {
-      // Explicitly set to null if not approved or not provided?
-      // Depending on backend logic, you might need this if the backend
-      // doesn't automatically ignore it or handle null correctly.
-      // patchData.new_expiry_date = null;
     }
 
-    const renewalId = props.application.renewal_id // Get the ID of the renewal to update
+    const renewalId = props.application.renewal_id
 
     console.log(`Submitting Renewal Update for ID: ${renewalId}`, patchData)
-
-    // Call the API service to PATCH the existing renewal record
-    // Ensure you have 'patchMhpcRenewal' defined in your apiServices
     await apiServices.patchMhpcRenewal(renewalId, patchData)
 
     toast.success('Renewal application updated successfully')
-    emit('update') // Signal parent to refetch data
+    emit('update')
   } catch (error) {
     console.error('Error updating renewal:', error)
     const errorMsg = error.response?.data

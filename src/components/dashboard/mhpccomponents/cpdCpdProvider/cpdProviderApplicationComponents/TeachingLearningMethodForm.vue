@@ -219,20 +219,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Action Buttons -->
-      <div class="flex justify-end space-x-3 pt-4">
-        <button
-          class="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200 font-medium"
-        >
-          Cancel
-        </button>
-        <button
-          class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
-        >
-          Save Changes
-        </button>
-      </div>
     </div>
   </div>
 </template>

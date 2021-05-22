@@ -1,6 +1,5 @@
 <template>
   <div class="space-y-6">
-    <!-- ... (instructions and CPD Task select are the same) ... -->
     <div class="bg-green-50 rounded-lg p-4 border border-green-200 mb-6">
       <h3 class="font-medium text-green-700 flex items-center mb-2">
         <InformationCircleIcon class="h-5 w-5 mr-2" />
@@ -8,15 +7,27 @@
       </h3>
       <p class="text-sm text-green-600">
         Upload a CSV file with participant details. The file should include columns for:
-        <strong>participant_reg_no, cpd_credits</strong>.
+        <strong>participant_reg_no</strong>.
       </p>
       <ul class="list-disc list-inside text-sm text-green-600 mt-1 pl-2">
-          <li><code>participant_reg_no</code>: The registration number of the participant (from Application model).</li>
-          <li><code>cpd_credits</code>: Whole number for credits awarded.</li>
-          <li><code>review_status</code>: Optional. Can be 'Approved', 'Regretted', or 'Pending'. Defaults to 'Pending'.</li>
-          <li><code>endorsement_decision</code>: Optional. Can be 'Approved', 'Regretted', or 'Pending'. Defaults to 'Pending'.</li>
+        <li>
+          <code>participant_reg_no</code>: The registration number of the participant (from
+          Application model).
+        </li>
+        <li>
+          <code>review_status</code>: Optional. Can be 'Approved', 'Regretted', or 'Pending'.
+          Defaults to 'Pending'.
+        </li>
+        <li>
+          <code>endorsement_decision</code>: Optional. Can be 'Approved', 'Regretted', or 'Pending'.
+          Defaults to 'Pending'.
+        </li>
       </ul>
-      <a href="#" @click.prevent="downloadTemplate" class="text-sm text-green-700 underline mt-2 inline-block">
+      <a
+        href="#"
+        @click.prevent="downloadTemplate"
+        class="text-sm text-green-700 underline mt-2 inline-block"
+      >
         Download CSV template
       </a>
     </div>
@@ -36,20 +47,26 @@
               id="bulkCpdTask"
               v-model="formData.cpdTask"
               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none pr-10"
-              :disabled="props.isProcessingUpload"
+              :disabled="props.isProcessingUpload || loading"
               aria-required="true"
               aria-label="CPD Task"
             >
               <option value="">Select an approved CPD task</option>
+              <option v-if="filteredCpdTasks.length === 0 && !loading" disabled>
+                No approved CPD tasks available
+              </option>
               <option v-for="task in filteredCpdTasks" :key="task.id" :value="task.id">
-                {{ task.title_of_cpd }} ({{ task.from_date }} to {{ task.to_date }})
+                {{ task.title_of_cpd }} ({{ formatDateRange(task.from_date, task.to_date) }})
               </option>
             </select>
             <MagnifyingGlassIcon
               class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none"
             />
           </div>
-          <!-- ... (CPD task messages are the same) ... -->
+          <div v-if="loading" class="mt-2 text-sm text-gray-600">Loading CPD tasks...</div>
+          <div v-if="taskError" class="mt-2 text-sm text-red-600">
+            {{ taskError }}
+          </div>
         </div>
 
         <div>
@@ -61,7 +78,7 @@
             :class="{
               'border-green-400 bg-green-50': csvFile && !props.isProcessingUpload,
               'border-blue-400': isDragging && !props.isProcessingUpload,
-              'bg-gray-100 cursor-not-allowed': props.isProcessingUpload
+              'bg-gray-100 cursor-not-allowed': props.isProcessingUpload,
             }"
             @dragover.prevent="handleDragOver"
             @dragleave.prevent="handleDragLeave"
@@ -76,7 +93,7 @@
                 <label
                   for="csv-upload"
                   class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500"
-                  :class="{'!text-gray-400 !cursor-not-allowed': props.isProcessingUpload}"
+                  :class="{ '!text-gray-400 !cursor-not-allowed': props.isProcessingUpload }"
                 >
                   <span v-if="!csvFile">Upload a CSV file</span>
                   <span v-else class="text-green-700">{{ csvFile.name }}</span>
@@ -113,7 +130,6 @@
       </div>
     </div>
 
-    <!-- Form Actions -->
     <FormActions
       submitLabel="Upload Participants"
       :disabled="!isFormValid || props.isProcessingUpload"
@@ -126,7 +142,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import {
   MagnifyingGlassIcon,
   DocumentIcon,
@@ -134,6 +150,10 @@ import {
   InformationCircleIcon,
 } from '@heroicons/vue/24/outline'
 import FormActions from './FormActions.vue'
+import apiServices from '@/services/services'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 
 const props = defineProps({
   cpdTasks: {
@@ -144,10 +164,14 @@ const props = defineProps({
     type: String,
     default: null,
   },
-  isProcessingUpload: { // New prop from parent
+  isProcessingUpload: {
     type: Boolean,
     default: false,
-  }
+  },
+  preselectedTaskId: {
+    type: [String, Number],
+    default: null,
+  },
 })
 
 const emit = defineEmits(['submit', 'cancel'])
@@ -160,79 +184,127 @@ const csvFile = ref(null)
 const csvFileInput = ref(null)
 const fileError = ref('')
 const isDragging = ref(false)
-// const isSubmitting = ref(false) // This local state is no longer directly driving the button
+const localCpdTasks = ref([])
+const loading = ref(false)
+const taskError = ref('')
 
 const filteredCpdTasks = computed(() => {
-  if (!props.currentProviderCid || !props.cpdTasks || props.cpdTasks.length === 0) {
+  const tasks = localCpdTasks.value.length > 0 ? localCpdTasks.value : props.cpdTasks
+  if (!props.currentProviderCid || !tasks || tasks.length === 0) {
     return []
   }
-  return props.cpdTasks.filter(task => {
-    const isApproved = task.application_status === 'APPROVED' || String(task.application_status) === 'APPROVED';
-    const belongsToProvider = task.cid_no === props.currentProviderCid;
-    return isApproved && belongsToProvider;
-  });
+  return tasks.filter((task) => {
+    const isApproved =
+      task.application_status === 'APPROVED' ||
+      String(task.application_status).toUpperCase() === 'APPROVED'
+    const belongsToProvider = String(task.cid_no).trim() === String(props.currentProviderCid).trim()
+    return isApproved && belongsToProvider
+  })
 })
 
 const isFormValid = computed(() => {
-  // The button's disabled state in FormActions will also consider props.isProcessingUpload
-  return formData.cpdTask && csvFile.value && !fileError.value;
+  return formData.cpdTask && csvFile.value && !fileError.value
 })
 
+const formatDateRange = (startDate, endDate) => {
+  if (!startDate || !endDate) return 'N/A'
+  try {
+    const start = new Date(startDate).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    })
+    const end = new Date(endDate).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    })
+    return `${start} to ${end}`
+  } catch (err) {
+    console.error('Error formatting date range:', err)
+    return `${startDate} to ${endDate}`
+  }
+}
+
+const fetchCpdTasks = async () => {
+  try {
+    loading.value = true
+    taskError.value = ''
+    const response = await apiServices.getMhpcCpdTask()
+    if (response.data && Array.isArray(response.data.results)) {
+      localCpdTasks.value = response.data.results
+      if (localCpdTasks.value.length === 0) {
+        taskError.value = 'No approved CPD tasks found for your account.'
+      }
+    } else {
+      localCpdTasks.value = []
+      taskError.value = 'No CPD tasks data received from server.'
+    }
+  } catch (err) {
+    console.error('Error fetching CPD tasks:', err)
+    localCpdTasks.value = []
+    taskError.value = err.message || 'Failed to load CPD tasks. Please try again.'
+    toast.error(taskError.value)
+  } finally {
+    loading.value = false
+  }
+}
+
 function processFile(file) {
-  if (props.isProcessingUpload) return; // Don't process if parent is busy
+  if (props.isProcessingUpload) return
   fileError.value = ''
   if (file) {
     if (file.type === 'text/csv' || file.name.toLowerCase().endsWith('.csv')) {
-      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      if (file.size > 10 * 1024 * 1024) {
         fileError.value = 'File size exceeds 10MB limit.'
-        csvFile.value = null;
-        if (csvFileInput.value) csvFileInput.value.value = '';
+        csvFile.value = null
+        if (csvFileInput.value) csvFileInput.value.value = ''
       } else {
         csvFile.value = file
       }
     } else {
       fileError.value = 'Invalid file type. Please upload a CSV file.'
-      csvFile.value = null;
-      if (csvFileInput.value) csvFileInput.value.value = '';
+      csvFile.value = null
+      if (csvFileInput.value) csvFileInput.value.value = ''
     }
   }
 }
 
 function handleCSVInputChange(event) {
-  if (props.isProcessingUpload) return;
+  if (props.isProcessingUpload) return
   const file = event.target.files[0]
   processFile(file)
 }
 
 function handleDragOver(event) {
-  if (props.isProcessingUpload) return;
-  event.preventDefault();
-  isDragging.value = true;
+  if (props.isProcessingUpload) return
+  event.preventDefault()
+  isDragging.value = true
 }
 
 function handleDragLeave(event) {
-  if (props.isProcessingUpload) return;
-  event.preventDefault();
-  isDragging.value = false;
+  if (props.isProcessingUpload) return
+  event.preventDefault()
+  isDragging.value = false
 }
 
 function handleDrop(event) {
-  if (props.isProcessingUpload) return;
-  event.preventDefault();
-  isDragging.value = false;
-  const file = event.dataTransfer.files[0];
-  processFile(file);
+  if (props.isProcessingUpload) return
+  event.preventDefault()
+  isDragging.value = false
+  const file = event.dataTransfer.files[0]
+  processFile(file)
   if (csvFileInput.value && file) {
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(file);
-      csvFileInput.value.files = dataTransfer.files;
+    const dataTransfer = new DataTransfer()
+    dataTransfer.items.add(file)
+    csvFileInput.value.files = dataTransfer.files
   } else if (csvFileInput.value) {
-      csvFileInput.value.value = '';
+    csvFileInput.value.value = ''
   }
 }
 
 function removeCsvFile() {
-  if (props.isProcessingUpload) return;
+  if (props.isProcessingUpload) return
   csvFile.value = null
   fileError.value = ''
   if (csvFileInput.value) {
@@ -241,45 +313,71 @@ function removeCsvFile() {
 }
 
 function submitForm() {
-  // Basic validation check, actual disabling is handled by FormActions
   if (!isFormValid.value || props.isProcessingUpload) return
-
-  fileError.value = ''; // Clear previous errors
-
+  fileError.value = ''
   emit('submit', {
     cpdTask: formData.cpdTask,
     file: csvFile.value,
   })
-  // Parent now controls the loading state (isProcessingUpload)
+  toast.success('Participants CSV submitted successfully.')
 }
 
 function resetForm() {
-  formData.cpdTask = ''
+  formData.cpdTask = props.preselectedTaskId || ''
   removeCsvFile()
   fileError.value = ''
-  // Parent will set isProcessingUpload to false
 }
 
 function downloadTemplate() {
-  const csvHeader = "participant_reg_no,cpd_credits,review_status,endorsement_decision";
-  const csvExampleRow1 = "REG12345,10,Pending,Pending";
-  const csvExampleRow2 = "REG67890,5,Approved,Approved";
-  const csvContent = `${csvHeader}\n${csvExampleRow1}\n${csvExampleRow2}`;
+  try {
+    const csvContent = [
+      '# Note: Ensure participant_reg_no values are unique for the selected CPD task',
+      'participant_reg_no,review_status(optional),endorsement_decision(optional)',
+      'MM/Orth-000005,Pending(optional),Pending(optional)',
+      'MM/Orth-000006,Approved(optional),Approved(optional)',
+    ].join('\n');
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement("a");
-  if (link.download !== undefined) {
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", "participant_bulk_upload_template.csv");
-    link.style.visibility = 'hidden';
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'participant_bulk_upload_template.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    window.URL.revokeObjectURL(url);
+    toast.success('CSV template downloaded successfully.');
+  } catch (err) {
+    console.error('Error downloading CSV template:', err);
+    toast.error('Failed to download CSV template. Please try again.');
   }
 }
 
-// Expose resetForm if parent needs to call it (e.g., after successful submission)
-defineExpose({ resetForm });
+onMounted(() => {
+  console.log('Props received:', {
+    cpdTasks: props.cpdTasks,
+    currentProviderCid: props.currentProviderCid,
+    preselectedTaskId: props.preselectedTaskId,
+  })
+  if (!props.cpdTasks || props.cpdTasks.length === 0) {
+    fetchCpdTasks()
+  }
+  if (
+    props.preselectedTaskId &&
+    filteredCpdTasks.value.some((task) => String(task.id) === String(props.preselectedTaskId))
+  ) {
+    formData.cpdTask = props.preselectedTaskId
+  }
+})
+
+watch(
+  () => props.preselectedTaskId,
+  (newId) => {
+    if (newId && filteredCpdTasks.value.some((task) => String(task.id) === String(newId))) {
+      formData.cpdTask = newId
+    }
+  }
+)
+
+defineExpose({ resetForm })
 </script>

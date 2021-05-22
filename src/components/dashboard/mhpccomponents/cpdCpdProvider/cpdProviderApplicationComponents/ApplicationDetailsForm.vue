@@ -19,7 +19,7 @@
 
     <!-- Form Content -->
     <div class="p-6 space-y-8">
-      <form>
+      <form @submit.prevent>
         <!-- First Section: Basic Information -->
         <div class="mb-8">
           <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4 flex items-center">
@@ -44,15 +44,20 @@
                     name="isApproved"
                     v-model="formData.isApproved"
                     class="sr-only peer"
+                    @change="validateInput"
+                    aria-describedby="isApproved-error"
                   />
-                  <label for="approvedYes" class="flex items-center px-5 py-3 bg-white border border-gray-300 rounded-lg cursor-pointer transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-blue-300">
+                  <label
+                    for="approvedYes"
+                    class="flex items-center px-5 py-3 bg-white border rounded-lg cursor-pointer transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-blue-300"
+                    :class="{ 'border-red-500': errors.isApproved }"
+                  >
                     <div class="h-4 w-4 rounded-full border border-gray-400 flex-shrink-0 flex items-center justify-center peer-checked:bg-blue-500 peer-checked:border-blue-500 mr-2">
                       <div v-if="formData.isApproved === 'true'" class="w-2 h-2 bg-white rounded-full"></div>
                     </div>
                     <span class="text-sm font-medium text-gray-700">Yes</span>
                   </label>
                 </div>
-
                 <div class="relative">
                   <input
                     type="radio"
@@ -61,8 +66,14 @@
                     name="isApproved"
                     v-model="formData.isApproved"
                     class="sr-only peer"
+                    @change="validateInput"
+                    aria-describedby="isApproved-error"
                   />
-                  <label for="approvedNo" class="flex items-center px-5 py-3 bg-white border border-gray-300 rounded-lg cursor-pointer transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-blue-300">
+                  <label
+                    for="approvedNo"
+                    class="flex items-center px-5 py-3 bg-white border rounded-lg cursor-pointer transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-blue-300"
+                    :class="{ 'border-red-500': errors.isApproved }"
+                  >
                     <div class="h-4 w-4 rounded-full border border-gray-400 flex-shrink-0 flex items-center justify-center peer-checked:bg-blue-500 peer-checked:border-blue-500 mr-2">
                       <div v-if="formData.isApproved === 'false'" class="w-2 h-2 bg-white rounded-full"></div>
                     </div>
@@ -70,10 +81,16 @@
                   </label>
                 </div>
               </div>
+              <p v-if="errors.isApproved" id="isApproved-error" class="mt-1 text-xs text-red-500 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Please select whether the CPD is validated
+              </p>
             </div>
 
             <!-- Title of CPD -->
-            <div>
+            <div v-if="formData.isApproved !== 'true'">
               <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
                 Title of CPD <span class="text-red-500">*</span>
               </label>
@@ -87,16 +104,28 @@
                   type="text"
                   id="title"
                   v-model="formData.title"
-                  placeholder="Enter the title of your CPD"
-                  class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 pl-10 p-2.5"
+                  placeholder="Enter the title of your CPD (e.g., Advanced Cardiac Life Support Training)"
+                  :class="[
+                    'w-full rounded-lg border shadow-sm pl-10 p-2.5',
+                    errors.title ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  ]"
+                  @input="handleInput('title')"
+                  @blur="validateInput"
+                  aria-describedby="title-error"
                 />
               </div>
+              <p v-if="errors.title" id="title-error" class="mt-1 text-xs text-red-500 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Title of CPD is required
+              </p>
             </div>
           </div>
         </div>
 
         <!-- Second Section: Location & Dates -->
-        <div class="mb-8">
+        <div v-if="formData.isApproved !== 'true'" class="mb-8">
           <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -122,10 +151,22 @@
                   type="text"
                   id="venue"
                   v-model="formData.venue"
-                  placeholder="Enter venue location"
-                  class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 pl-10 p-2.5"
+                  placeholder="Enter venue location (e.g., Thimphu Conference Center)"
+                  :class="[
+                    'w-full rounded-lg border shadow-sm pl-10 p-2.5',
+                    errors.venue ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  ]"
+                  @input="handleInput('venue')"
+                  @blur="validateInput"
+                  aria-describedby="venue-error"
                 />
               </div>
+              <p v-if="errors.venue" id="venue-error" class="mt-1 text-xs text-red-500 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Venue is required
+              </p>
             </div>
 
             <!-- Date Range -->
@@ -145,9 +186,21 @@
                     type="date"
                     id="fromDate"
                     v-model="formData.fromDate"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 pl-10 p-2.5"
+                    :min="today"
+                    :class="[
+                      'w-full rounded-lg border shadow-sm pl-10 p-2.5',
+                      errors.fromDate ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                    ]"
+                    @change="validateInput"
+                    aria-describedby="fromDate-error"
                   />
                 </div>
+                <p v-if="errors.fromDate" id="fromDate-error" class="mt-1 text-xs text-red-500 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  From Date is required
+                </p>
               </div>
 
               <!-- To Date -->
@@ -165,9 +218,21 @@
                     type="date"
                     id="toDate"
                     v-model="formData.toDate"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 pl-10 p-2.5"
+                    :min="formData.fromDate || today"
+                    :class="[
+                      'w-full rounded-lg border shadow-sm pl-10 p-2.5',
+                      errors.toDate ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                    ]"
+                    @change="validateInput"
+                    aria-describedby="toDate-error"
                   />
                 </div>
+                <p v-if="errors.toDate" id="toDate-error" class="mt-1 text-xs text-red-500 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {{ errors.toDate }}
+                </p>
               </div>
             </div>
           </div>
@@ -192,13 +257,17 @@
                 <input
                   type="file"
                   id="approvalLetter"
-                  @change="handleApprovalLetterUpload"
+                  @change="handleFileInput"
                   accept=".pdf"
                   class="hidden"
+                  aria-describedby="approvalLetter-error"
                 />
                 <label
                   for="approvalLetter"
-                  class="flex items-center justify-center w-full py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-white hover:bg-gray-50 transition-colors duration-200"
+                  :class="[
+                    'flex items-center justify-center w-full py-3 px-4 border-2 border-dashed rounded-lg cursor-pointer bg-white hover:bg-gray-50 transition-colors duration-200',
+                    errors.approvalLetterFile ? 'border-red-500' : 'border-gray-300'
+                  ]"
                 >
                   <div class="space-y-1 text-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -216,25 +285,35 @@
                   </div>
                 </label>
               </div>
+              <p v-if="errors.approvalLetterFile" id="approvalLetter-error" class="mt-1 text-xs text-red-500 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {{ errors.approvalLetterFile }}
+              </p>
             </div>
           </div>
         </div>
-
-        <!-- No footer buttons as requested -->
       </form>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue';
 
 const props = defineProps({
-  application: Object,
-  handleApprovalLetterUpload: Function,
-})
+  application: {
+    type: Object,
+    required: true,
+  },
+  handleApprovalLetterUpload: {
+    type: Function,
+    required: true,
+  },
+});
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:valid', 'approval-change']);
 
 const formData = ref({
   isApproved: props.application?.isApproved || null,
@@ -243,22 +322,105 @@ const formData = ref({
   fromDate: props.application?.fromDate || '',
   toDate: props.application?.toDate || '',
   approvalLetterFile: null,
-  ...props.application,
-})
+});
 
-watch(
-  formData,
-  (newValue) => {
-    emit('update:modelValue', newValue)
-  },
-  { deep: true },
-)
+const errors = ref({
+  isApproved: false,
+  title: false,
+  venue: false,
+  fromDate: false,
+  toDate: false,
+  approvalLetterFile: false,
+});
 
+const today = computed(() => {
+  const date = new Date();
+  return date.toISOString().split('T')[0];
+});
+
+// Validate all fields
+const validateInput = () => {
+  errors.value.isApproved = formData.value.isApproved === null;
+  errors.value.title = formData.value.isApproved !== 'true' && !formData.value.title.trim();
+  errors.value.venue = formData.value.isApproved !== 'true' && !formData.value.venue.trim();
+  errors.value.fromDate = formData.value.isApproved !== 'true' && !formData.value.fromDate;
+  errors.value.toDate =
+    formData.value.isApproved !== 'true' &&
+    (!formData.value.toDate ||
+      (formData.value.fromDate && new Date(formData.value.toDate) < new Date(formData.value.fromDate)));
+  errors.value.approvalLetterFile = formData.value.isApproved === 'true' && !formData.value.approvalLetterFile;
+
+  const isValid = !Object.values(errors.value).some((error) => error);
+  emit('update:valid', isValid);
+  return isValid;
+};
+
+// Handle text input with sanitization
+const handleInput = (field) => {
+  formData.value[field] = formData.value[field].trimStart();
+  validateInput();
+  emitUpdate();
+};
+
+// Handle file input
+const handleFileInput = (event) => {
+  const file = event.target.files?.[0];
+  if (file) {
+    if (file.type !== 'application/pdf') {
+      errors.value.approvalLetterFile = 'Please upload a PDF file';
+      formData.value.approvalLetterFile = null;
+    } else if (file.size > 5 * 1024 * 1024) {
+      errors.value.approvalLetterFile = 'File size must be less than 5MB';
+      formData.value.approvalLetterFile = null;
+    } else {
+      formData.value.approvalLetterFile = file;
+      errors.value.approvalLetterFile = false;
+      props.handleApprovalLetterUpload(event);
+    }
+  } else {
+    errors.value.approvalLetterFile = 'Approval Letter is required';
+    formData.value.approvalLetterFile = null;
+  }
+  validateInput();
+  emitUpdate();
+};
+
+// Emit updated form data
+const emitUpdate = () => {
+  emit('update:modelValue', {
+    isApproved: formData.value.isApproved,
+    title: formData.value.title.trim(),
+    venue: formData.value.venue.trim(),
+    fromDate: formData.value.fromDate,
+    toDate: formData.value.toDate,
+    approvalLetterFile: formData.value.approvalLetterFile,
+  });
+};
+
+// Watch for prop changes
 watch(
   () => props.application,
   (newValue) => {
-    formData.value = { ...formData.value, ...newValue }
+    formData.value = {
+      isApproved: newValue.isApproved || null,
+      title: newValue.title || '',
+      venue: newValue.venue || '',
+      fromDate: newValue.fromDate || '',
+      toDate: newValue.toDate || '',
+      approvalLetterFile: formData.value.approvalLetterFile, // Preserve local file state
+    };
+    validateInput();
   },
-  { deep: true },
-)
+  { immediate: true, deep: true }
+);
+
+// Watch for isApproved changes to emit approval-change
+watch(
+  () => formData.value.isApproved,
+  (newValue) => {
+    emit('approval-change', newValue);
+    validateInput();
+    emitUpdate();
+  }
+);
 </script>

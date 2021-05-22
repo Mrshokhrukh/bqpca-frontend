@@ -57,11 +57,11 @@
     <!-- Empty State -->
     <div
       v-if="!loading && !error && applications.length === 0 && filteredApplications.length === 0"
-      class="bg-gray-50 rounded-xl p-8 text-center"
+      class="bg-blue-50 border border-blue-200 text-blue-800 px-6 py-4 rounded-lg text-center"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-12 w-12 mx-auto text-gray-400"
+        class="h-12 w-12 mx-auto text-blue-400"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -73,18 +73,19 @@
           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
         />
       </svg>
-      <h3 class="mt-2 text-lg font-medium text-gray-900">No applications found</h3>
-      <p class="mt-1 text-gray-500">
-        You haven't submitted any CPD applications yet, or no applications match your current filters.
+      <h3 class="mt-2 text-lg font-medium text-blue-900">No applications found</h3>
+      <p class="mt-1 text-blue-600">
+        There seems to be no application under your user name. Please proceed and apply for a new application.
       </p>
       <button
         @click="createNewApplication"
         class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
       >
-        Create New Application
+        Apply Now
       </button>
     </div>
-     <!-- No applications match filter state -->
+
+    <!-- No applications match filter state -->
     <div
       v-if="!loading && !error && applications.length > 0 && filteredApplications.length === 0"
       class="bg-gray-50 rounded-xl p-8 text-center"
@@ -95,7 +96,6 @@
       <h3 class="mt-2 text-lg font-medium text-gray-900">No applications match your search</h3>
       <p class="mt-1 text-gray-500">Try adjusting your search term or status filter.</p>
     </div>
-
 
     <!-- Search and Filter Controls -->
     <div
@@ -190,7 +190,7 @@
               {{ application.title_of_cpd || 'N/A' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ formatDate(application.created_at) }}
+              {{ formatDate(application.created_at || application.status_last_updated) }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
               {{ application.is_cpd_approved ? 'Approved CPD' : 'New CPD' }}
@@ -212,7 +212,6 @@
               >
                 View
               </button>
-
               <button
                 v-if="getComprehensiveStatus(application) === 'Draft'"
                 @click="editApplication(application)"
@@ -220,7 +219,6 @@
               >
                 Edit
               </button>
-
               <button
                 v-if="isApprovedWithoutParticipants(application)"
                 @click="addParticipants(application)"
@@ -321,9 +319,7 @@
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-500">Title of CPD</p>
-                <p class="text-sm">
-                  {{ selectedApplication.title_of_cpd || 'N/A' }}
-                </p>
+                <p class="text-sm">{{ selectedApplication.title_of_cpd || 'N/A' }}</p>
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-500">Type</p>
@@ -341,6 +337,14 @@
                   {{ formatDateRange(selectedApplication.from_date, selectedApplication.to_date) }}
                 </p>
               </div>
+              <div>
+                <p class="text-sm font-medium text-gray-500">Reason for Conducting</p>
+                <p class="text-sm">{{ selectedApplication.reason_for_conducting || 'N/A' }}</p>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-500">Type of CPD</p>
+                <p class="text-sm">{{ selectedApplication.type_of_cpd || 'N/A' }}</p>
+              </div>
             </div>
           </div>
 
@@ -350,9 +354,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p class="text-sm font-medium text-gray-500">Registration Number</p>
-                <p class="text-sm">
-                  {{ selectedApplication.registration_no || 'N/A' }}
-                </p>
+                <p class="text-sm">{{ selectedApplication.registration_no || 'N/A' }}</p>
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-500">Full Name</p>
@@ -364,9 +366,7 @@
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-500">Agency/Training Location</p>
-                <p class="text-sm">
-                  {{ selectedApplication.proposed_training_location || 'N/A' }}
-                </p>
+                <p class="text-sm">{{ selectedApplication.proposed_training_location || 'N/A' }}</p>
               </div>
             </div>
           </div>
@@ -381,21 +381,19 @@
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-500">Number of Participants</p>
-                <p class="text-sm">
-                  {{ selectedApplication.number_of_participants || '0' }}
-                </p>
+                <p class="text-sm">{{ selectedApplication.number_of_participants || '0' }}</p>
               </div>
               <div class="col-span-2">
                 <p class="text-sm font-medium text-gray-500">Objective/Expected Outcome</p>
-                <p class="text-sm">
-                  {{ selectedApplication.expected_outcome || 'N/A' }}
-                </p>
+                <p class="text-sm">{{ selectedApplication.expected_outcome || 'N/A' }}</p>
               </div>
               <div class="col-span-2">
                 <p class="text-sm font-medium text-gray-500">Relevance to Profession</p>
-                <p class="text-sm">
-                  {{ selectedApplication.relevance_to_topic || 'N/A' }}
-                </p>
+                <p class="text-sm">{{ selectedApplication.relevance_to_topic || 'N/A' }}</p>
+              </div>
+              <div class="col-span-2">
+                <p class="text-sm font-medium text-gray-500">Reason for Details</p>
+                <p class="text-sm">{{ selectedApplication.reason_for_details || 'N/A' }}</p>
               </div>
             </div>
           </div>
@@ -470,9 +468,9 @@
           </div>
 
           <!-- If there are any comments from reviewers -->
-          <div v-if="selectedApplication.feedback" class="bg-gray-50 p-4 rounded-lg">
+          <div v-if="selectedApplication.status_remarks" class="bg-gray-50 p-4 rounded-lg">
             <h3 class="text-lg font-semibold mb-3">Reviewer Comments</h3>
-            <p class="text-sm">{{ selectedApplication.feedback }}</p>
+            <p class="text-sm">{{ selectedApplication.status_remarks }}</p>
           </div>
 
           <!-- Buttons -->
@@ -498,63 +496,57 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-// import { useAuthStore } from '@/stores/authStore' // Not used in this snippet, can be removed if not needed elsewhere
-import apiServices from '@/services/services'
-import { useToast } from 'vue-toastification'
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import apiServices from '@/services/services';
+import { useToast } from 'vue-toastification';
 
-const router = useRouter()
-// const authStore = useAuthStore() // Not used in this snippet
-const toast = useToast()
+const router = useRouter();
+const toast = useToast();
 
 // Reactive state
-const applications = ref([])
-const loading = ref(false)
-const error = ref(null)
-const searchTerm = ref('')
-const statusFilter = ref('')
-const showViewModal = ref(false)
-const selectedApplication = ref(null)
+const applications = ref([]);
+const loading = ref(false);
+const error = ref(null);
+const searchTerm = ref('');
+const statusFilter = ref('');
+const showViewModal = ref(false);
+const selectedApplication = ref(null);
 
 // Helper function to check if an application is approved but needs participants
 const isApprovedWithoutParticipants = (application) => {
   return (
-    application.review_status === 'Approved' &&
+    application.application_status === 'APPROVED' &&
     (!application.participants || application.participants.length === 0)
-  )
-}
+  );
+};
 
 // Centralized function to determine the comprehensive status of an application
 const getComprehensiveStatus = (application) => {
-  if (!application) return 'N/A'; // Guard against null application object
+  if (!application) return 'N/A';
 
   if (application.is_draft) {
     return 'Draft';
   }
 
-  // For submitted applications, review_status is key
-  if (application.review_status === 'Approved') {
+  const status = application.application_status
+    ? application.application_status.charAt(0).toUpperCase() + application.application_status.slice(1).toLowerCase()
+    : null;
+
+  if (status === 'Approved') {
     if (isApprovedWithoutParticipants(application)) {
       return 'Needs Participants';
     } else {
-      return 'Completed'; // Approved and has participants
+      return 'Completed';
     }
   }
 
-  // Other review_statuses like 'Pending', 'Rejected'
-  if (application.review_status) {
-    // Capitalize first letter if backend might send lowercase, e.g. 'pending' -> 'Pending'
-    // For now, assume backend sends it in the desired format (e.g., 'Pending', 'Rejected')
-    return application.review_status;
+  if (status) {
+    return status;
   }
 
-  // Fallback if review_status is missing for a non-draft application.
-  // This might indicate an old record or an interim state.
-  // console.warn(`Application ID ${application.id} is not a draft and has no review_status. Defaulting comprehensive status to 'Pending'.`);
   return 'Pending';
 };
-
 
 // Computed properties for filtering applications
 const filteredApplications = computed(() => {
@@ -569,7 +561,7 @@ const filteredApplications = computed(() => {
     // Search term matching (title or ID)
     const titleMatch = app.title_of_cpd ? app.title_of_cpd.toLowerCase().includes(term) : false;
     const idMatch = app.id ? app.id.toString().toLowerCase().includes(term) : false;
-    const searchCriteriaMet = (term === '') || titleMatch || idMatch;
+    const searchCriteriaMet = term === '' || titleMatch || idMatch;
 
     if (!searchCriteriaMet) {
       return false;
@@ -579,11 +571,8 @@ const filteredApplications = computed(() => {
     let statusFilterMet = true;
     if (statusTerm) {
       if (statusTerm === 'Approved') {
-        // User wants to see all applications whose review_status is 'Approved',
-        // which covers both 'Needs Participants' and 'Completed'
-        statusFilterMet = app.review_status === 'Approved';
+        statusFilterMet = app.application_status === 'APPROVED';
       } else {
-        // Direct match with comprehensive status for 'Needs Participants', 'Completed', 'Pending', 'Rejected', 'Draft'
         statusFilterMet = appComprehensiveStatus === statusTerm;
       }
     }
@@ -592,12 +581,9 @@ const filteredApplications = computed(() => {
       return false;
     }
 
-    // "Clean up" rule: Hide "empty" drafts (no title) in default view
-    // (i.e., when not specifically searching or filtering for "Draft")
+    // Hide empty drafts in default view
     if (appComprehensiveStatus === 'Draft' && !app.title_of_cpd) {
       if (term === '' && statusTerm !== 'Draft') {
-        // If no search term, AND (filter is "All" (empty) OR filter is something other than "Draft")
-        // then hide this empty draft.
         return false;
       }
     }
@@ -606,61 +592,61 @@ const filteredApplications = computed(() => {
   });
 });
 
-
 // Computed properties for approved applications notice
 const approvedApplicationsWithoutParticipants = computed(() => {
   if (!applications.value) return [];
-  return applications.value.filter((app) => isApprovedWithoutParticipants(app))
-})
+  return applications.value.filter((app) => isApprovedWithoutParticipants(app));
+});
 
 const hasApprovedApplicationsWithoutParticipants = computed(() => {
-  return approvedApplicationsWithoutParticipants.value.length > 0
-})
-
+  return approvedApplicationsWithoutParticipants.value.length > 0;
+});
 
 // Fetch all CPD applications
 const fetchApplications = async () => {
   try {
-    loading.value = true
-    error.value = null
-    const response = await apiServices.getMhpcCpdTask()
+    loading.value = true;
+    error.value = null;
+    const response = await apiServices.getMhpcCpdTask();
     if (response.data && Array.isArray(response.data.results)) {
-      applications.value = response.data.results
-      // console.log('Applications loaded:', applications.value.length)
+      applications.value = response.data.results;
     } else {
-      applications.value = [] // Ensure it's an array
-      console.warn('No data.results array received from server, or format is unexpected:', response.data);
-      // error.value = 'No application data received from server or data is in unexpected format.';
+      applications.value = [];
+      error.value = 'There seems to be no application under your user name. Please proceed and apply for a new application.';
     }
   } catch (err) {
-    console.error('Error fetching applications:', err)
-    error.value = err.message || 'Failed to load applications'
-    applications.value = [] // Clear applications on error
+    console.error('Error fetching applications:', err);
+    applications.value = [];
+    if (err.response && err.response.status === 404) {
+      error.value = 'There seems to be no application under your user name. Please proceed and apply for a new application.';
+    } else {
+      error.value = err.message || 'Failed to load applications';
+    }
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // Helper functions
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
+  if (!dateString) return 'N/A';
   try {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return date.toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-    })
+    });
   } catch (err) {
-    console.error('Error formatting date:', err)
-    return dateString
+    console.error('Error formatting date:', err);
+    return dateString;
   }
-}
+};
 
 const formatDateRange = (startDate, endDate) => {
-  if (!startDate || !endDate) return 'N/A'
-  return `${formatDate(startDate)} to ${formatDate(endDate)}`
-}
+  if (!startDate || !endDate) return 'N/A';
+  return `${formatDate(startDate)} to ${formatDate(endDate)}`;
+};
 
 const getStatusClass = (applicationOrStatusString) => {
   const status = typeof applicationOrStatusString === 'string'
@@ -670,12 +656,8 @@ const getStatusClass = (applicationOrStatusString) => {
   switch (status) {
     case 'Completed':
       return 'bg-green-100 text-green-800';
-    case 'Needs Participants': // Highlight that action is needed
-      return 'bg-yellow-100 text-yellow-800'; // Using yellow like 'Pending'
-    // The 'Approved' case here would be for applications where `review_status` is 'Approved'
-    // but they don't fall into 'Needs Participants' or 'Completed' by getComprehensiveStatus logic.
-    // However, getComprehensiveStatus always categorizes 'Approved' review_status.
-    // This case is more for the "Approved (Overall)" filter option.
+    case 'Needs Participants':
+      return 'bg-yellow-100 text-yellow-800';
     case 'Approved':
       return 'bg-green-100 text-green-800';
     case 'Rejected':
@@ -685,53 +667,53 @@ const getStatusClass = (applicationOrStatusString) => {
     case 'Draft':
       return 'bg-gray-100 text-gray-800';
     default:
-      return 'bg-gray-200 text-gray-700'; // Default for any other unhandled statuses
+      return 'bg-gray-200 text-gray-700';
   }
-}
+};
 
 // View application details
 const viewApplication = (application) => {
-  selectedApplication.value = application
-  showViewModal.value = true
-}
+  selectedApplication.value = application;
+  showViewModal.value = true;
+};
 
 const closeViewModal = () => {
-  showViewModal.value = false
-  selectedApplication.value = null
-}
+  showViewModal.value = false;
+  selectedApplication.value = null;
+};
 
 // Edit application (navigate to edit page)
 const editApplication = (application) => {
-  showViewModal.value = false // Close modal if open
+  showViewModal.value = false;
+  toast.info('Navigating to edit application...');
   router.push(
     `/admin/cme_cpd_provider/health_certification/cpd_application_details?id=${application.id}`,
-  )
-}
+  );
+};
 
 // Add participants to an approved application
 const addParticipants = (application) => {
   if (showViewModal.value) {
     showViewModal.value = false;
   }
-  // Check if the application is actually approved (review_status)
-  if (application.review_status !== 'Approved') {
-    toast.error(
-      'Participants can only be added to applications with an "Approved" review status.',
-    )
-    return
+  if (application.application_status !== 'APPROVED') {
+    toast.error('Participants can only be added to applications with an "Approved" status.');
+    return;
   }
+  toast.info('Navigating to add participants...');
   router.push(
-    `/admin/cme_cpd_provider/health_certification/cpd_application_details?id=${application.id}&add_participants=true`,
-  )
-}
+    `/admin/cme_cpd_provider/health_certification/cpd_approved_add_participants`,
+  );
+};
 
 // Create new application (navigate to CPD provider form)
 const createNewApplication = () => {
-  router.push('/admin/cme_cpd_provider/health_certification/cpd_application_details')
-}
+  toast.info('Navigating to create a new application...');
+  router.push('/admin/cme_cpd_provider/health_certification/cpd_application_details');
+};
 
 // Fetch applications when component mounts
 onMounted(() => {
-  fetchApplications()
-})
+  fetchApplications();
+});
 </script>

@@ -1,4 +1,3 @@
-// CpdProviderForm.vue
 <template>
   <div class="rounded-xl border border-gray-200 shadow-sm bg-white overflow-hidden">
     <!-- Header -->
@@ -37,6 +36,7 @@
               <select
                 id="providingAgency"
                 :value="cpdProvider.agency"
+                @change="handleAgencyChange"
                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 pl-10 bg-white appearance-none pr-10"
               >
                 <option value="" disabled>Select Agency</option>
@@ -56,27 +56,10 @@
                 </svg>
               </div>
             </div>
-
-            <div v-if="agencyOptions.length === 0" class="mt-2 text-sm text-red-600 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              No agencies found. Please try refreshing the page.
-            </div>
-
-            <div
-              v-if="cpdProvider.agency && cpdProvider.agency !== 'other'"
-              class="mt-2 text-xs text-gray-500 flex items-center bg-blue-50 p-2 rounded"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Selected agency ID: {{ cpdProvider.agency }}
-            </div>
           </div>
 
           <!-- If Others (Specify) - Conditional Field -->
-          <div v-if="cpdProvider.agency === 'other'" class="col-span-1">
+          <div v-if="isOtherAgency" class="col-span-1">
             <label for="otherAgency" class="block text-sm font-medium text-gray-700 mb-1">
               Specify Other Agency <span class="text-red-500">*</span>
             </label>
@@ -85,6 +68,7 @@
                 type="text"
                 id="otherAgency"
                 :value="cpdProvider.otherAgency"
+                @input="handleOtherAgencyInput"
                 placeholder="Enter agency name"
                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 pl-10"
               />
@@ -119,6 +103,7 @@
               <select
                 id="reasonConducting"
                 :value="cpdProvider.reason"
+                @change="handleReasonChange"
                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 pl-10 bg-white appearance-none pr-10"
               >
                 <option value="" disabled>Select Reason</option>
@@ -148,6 +133,7 @@
               <textarea
                 id="reasonDetails"
                 :value="cpdProvider.reasonDetails"
+                @input="handleReasonDetailsInput"
                 placeholder="Provide detailed information about the reason for conducting this CPD..."
                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 pl-10"
                 rows="4"
@@ -166,9 +152,38 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   cpdProvider: Object,
   agencyOptions: Array,
   reasonOptions: Array,
+})
+
+const emit = defineEmits(['update:cpdProvider'])
+
+const handleAgencyChange = (event) => {
+  const newValue = event.target.value
+  emit('update:cpdProvider', { ...props.cpdProvider, agency: newValue })
+}
+
+const handleOtherAgencyInput = (event) => {
+  const newValue = event.target.value
+  emit('update:cpdProvider', { ...props.cpdProvider, otherAgency: newValue })
+}
+
+const handleReasonChange = (event) => {
+  const newValue = event.target.value
+  emit('update:cpdProvider', { ...props.cpdProvider, reason: newValue })
+}
+
+const handleReasonDetailsInput = (event) => {
+  const newValue = event.target.value
+  emit('update:cpdProvider', { ...props.cpdProvider, reasonDetails: newValue })
+}
+
+const isOtherAgency = computed(() => {
+  const agency = props.cpdProvider.agency
+  return agency && typeof agency === 'string' && agency.toLowerCase() === 'other'
 })
 </script>

@@ -20,86 +20,546 @@
       />
 
       <!-- Applicant Details Section -->
-      <ApplicantDetailsForm :applicant="applicant" class="mb-8" />
+      <FormSection title="Applicant Details" description="Verify your personal information.">
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700"
+            >CID No./Identity/Work Permit No.</label
+          >
+          <input
+            type="text"
+            v-model="applicant.cidNumber"
+            readonly
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+          />
+        </div>
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700">Full Name</label>
+          <input
+            type="text"
+            v-model="applicant.fullName"
+            readonly
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+          />
+        </div>
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700"
+            >Agency/Training Location <span class="text-red-500">*</span></label
+          >
+          <input
+            type="text"
+            v-model="applicant.agencyTrainingLocation"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+          />
+        </div>
+      </FormSection>
 
       <!-- Application Details Section -->
-      <ApplicationDetailsForm
-        :application="application"
-        :handle-approval-letter-upload="handleApprovalLetterUpload"
-        @approval-change="toggleApprovedFields"
-        class="mb-8"
-      />
+      <FormSection
+        title="Application Details"
+        description="Provide information about your CPD application."
+      >
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700"
+            >Is CPD approved? <span class="text-red-500">*</span></label
+          >
+          <div class="mt-1 flex items-center">
+            <div class="mr-4">
+              <input
+                type="radio"
+                id="approvedYes"
+                value="true"
+                v-model="application.isApproved"
+                class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+              />
+              <label for="approvedYes" class="ml-2 block text-sm text-gray-700">Yes</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="approvedNo"
+                value="false"
+                v-model="application.isApproved"
+                class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+              />
+              <label for="approvedNo" class="ml-2 block text-sm text-gray-700">No</label>
+            </div>
+          </div>
+        </div>
+        <div v-if="application.isApproved === 'true'" class="col-span-1">
+          <label for="approvalLetter" class="block text-sm font-medium text-gray-700"
+            >Attach Approval Letter <span class="text-red-500">*</span></label
+          >
+          <input
+            type="file"
+            id="approvalLetter"
+            @change="handleFileUpload($event, approvalLetter)"
+            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+          <p class="text-xs text-gray-500 mt-1">Accepted file format: PDF (max 5MB)</p>
+        </div>
+        <template v-if="application.isApproved === 'false'">
+          <div class="col-span-1">
+            <label for="title" class="block text-sm font-medium text-gray-700"
+              >Title of CPD <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="title"
+              v-model="application.title"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+            />
+          </div>
+          <div class="col-span-1">
+            <label for="venue" class="block text-sm font-medium text-gray-700"
+              >Venue <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="venue"
+              v-model="application.venue"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+            />
+          </div>
+          <div class="col-span-1">
+            <label for="fromDate" class="block text-sm font-medium text-gray-700"
+              >From Date <span class="text-red-500">*</span></label
+            >
+            <input
+              type="date"
+              id="fromDate"
+              v-model="application.fromDate"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+            />
+          </div>
+          <div class="col-span-1">
+            <label for="toDate" class="block text-sm font-medium text-gray-700"
+              >To Date <span class="text-red-500">*</span></label
+            >
+            <input
+              type="date"
+              id="toDate"
+              v-model="application.toDate"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+            />
+          </div>
+        </template>
+      </FormSection>
 
-      <!-- CPD Provider Form Section -->
-      <CpdProviderForm
-        v-model:cpdProvider="cpdProvider"
-        :agency-options="agencyOptions"
-        :reason-options="reasonOptions"
-        :loading="loading"
-        class="mb-8"
-      />
+      <!-- CPD Providers Details Section -->
+      <FormSection
+        title="CPD Providers Details (Host)"
+        description="Information about the CPD provider."
+      >
+        <div class="col-span-1">
+          <label for="providingAgency" class="block text-sm font-medium text-gray-700"
+            >CPD Providing Agency <span class="text-red-500">*</span></label
+          >
+          <select
+            id="providingAgency"
+            v-model.number="cpdProvider.agency"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+          >
+            <option value="">Select Agency</option>
+            <option v-for="agency in agencyOptions" :key="agency.value" :value="agency.value">
+              {{ agency.text }} (ID: {{ agency.value }})
+            </option>
+            <option value="other">Other</option>
+          </select>
+          <p v-if="agencyOptions.length === 0" class="mt-1 text-sm text-red-600">
+            No agencies found. Please try refreshing the page.
+          </p>
+        </div>
+        <div v-if="cpdProvider.agency === 'other'" class="col-span-1">
+          <label for="otherAgency" class="block text-sm font-medium text-gray-700"
+            >Specify Other Agency <span class="text-red-500">*</span></label
+          >
+          <input
+            type="text"
+            id="otherAgency"
+            v-model="cpdProvider.otherAgency"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+          />
+        </div>
+        <div class="col-span-1">
+          <label for="reasonConducting" class="block text-sm font-medium text-gray-700"
+            >Reason for Conducting <span class="text-red-500">*</span></label
+          >
+          <select
+            id="reasonConducting"
+            v-model.number="cpdProvider.reason"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+          >
+            <option value="">Select Reason</option>
+            <option v-for="reason in reasonOptions" :key="reason.value" :value="reason.value">
+              {{ reason.text }}
+            </option>
+          </select>
+        </div>
+        <div class="col-span-1">
+          <label for="reasonDetails" class="block text-sm font-medium text-gray-700"
+            >Reason Details <span class="text-red-500">*</span></label
+          >
+          <textarea
+            id="reasonDetails"
+            v-model="cpdProvider.reasonDetails"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+            rows="4"
+          ></textarea>
+        </div>
+      </FormSection>
 
-      <!-- Resource Persons Section -->
-      <ResourcePersonsForm
-        :resource-persons="resourcePersons"
-        :resource-person-certificate="resourcePersonCertificate"
-        :fetch-resource-person-details="fetchResourcePersonDetails"
-        :handle-certificate-upload="handleCertificateUpload"
-        :add-resource-person="addResourcePerson"
-        :remove-resource-person="removeResourcePerson"
-        :user-registrations="userRegistrations"
-        class="mb-8"
-      />
+      <!-- Resource Persons Details Section -->
+      <FormSection
+        title="Resource Persons Details"
+        description="Details about the resource persons."
+      >
+        <div class="col-span-2">
+          <div
+            v-for="(person, personIndex) in resourcePersons"
+            :key="personIndex"
+            class="mb-6 p-4 border rounded-lg"
+          >
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="col-span-1">
+                <label class="block text-sm font-medium text-gray-700"
+                  >Registration Number <span class="text-red-500">*</span></label
+                >
+                <select
+                  v-model="person.regNo"
+                  @change="fetchResourcePersonDetails(person)"
+                  class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                >
+                  <option value="">Select Registration Number</option>
+                  <option
+                    v-for="reg in userRegistrations"
+                    :key="reg.registration_no"
+                    :value="reg.registration_no"
+                  >
+                    {{ reg.registration_no }} - {{ reg.full_name }}
+                  </option>
+                </select>
+                <p v-if="userRegistrations.length === 0" class="mt-1 text-sm text-red-600">
+                  No users found. Please ensure there are registered users in the system.
+                </p>
+              </div>
+              <div class="col-span-1">
+                <label class="block text-sm font-medium text-gray-700">Name</label>
+                <input
+                  type="text"
+                  v-model="person.name"
+                  readonly
+                  class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+                />
+              </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+              <button
+                v-if="personIndex > 0"
+                @click="removeResourcePerson(personIndex)"
+                class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+          <div class="flex justify-start mb-6">
+            <button
+              @click="addResourcePerson"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            >
+              Add Resource Person
+            </button>
+          </div>
+          <div class="col-span-1">
+            <label for="certificates" class="block text-sm font-medium text-gray-700"
+              >Document supporting expertise of CPD <span class="text-red-500">*</span></label
+            >
+            <input
+              type="file"
+              id="certificates"
+              @change="handleFileUpload($event, resourcePersonCertificate)"
+              class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+            <p class="text-xs text-gray-500 mt-1">Accepted file format: PDF (max 5MB)</p>
+          </div>
+        </div>
+      </FormSection>
 
-      <!-- Teaching & Learning Method Section -->
-      <TeachingLearningMethodForm
-        :teaching-method="teachingMethod"
-        v-model:selected-methodologies="selectedMethodologies"
-        v-model:teaching-methods="teachingMethods"
-        :cpd-type-options="cpdTypeOptions"
-        :methodology-options="methodologyOptions"
-        :total-hours="totalHours"
-        :calculated-credits="calculatedCredits"
-        :course-document="courseDocument"
-        :handle-course-document-upload="handleCourseDocumentUpload"
-        @add="teachingMethods.push({ activity: '', duration: null })"
-        :remove-teaching-method="removeTeachingMethod"
-        :calculate-total-hours="calculateTotalHours"
-        class="mb-8"
-      />
+      <!-- Teaching Learning Method Section -->
+      <FormSection
+        title="Teaching Learning Method"
+        description="Details about the teaching and learning method."
+      >
+        <div class="col-span-1">
+          <label for="typeCPD" class="block text-sm font-medium text-gray-700"
+            >Type of CPD <span class="text-red-500">*</span></label
+          >
+          <select
+            id="typeCPD"
+            v-model.number="teachingMethod.type"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+          >
+            <option value="">Select Type</option>
+            <option v-for="type in cpdTypeOptions" :key="type.value" :value="type.value">
+              {{ type.text }}
+            </option>
+          </select>
+        </div>
+        <div class="col-span-1">
+          <label class="block text-sm font-medium text-gray-700"
+            >Methodologies <span class="text-red-500">*</span></label
+          >
+          <div class="mt-2">
+            <div
+              v-for="method in methodologyOptions"
+              :key="method.value"
+              class="flex items-center mb-2"
+            >
+              <input
+                type="checkbox"
+                :id="'method-' + method.value"
+                v-model="selectedMethodologies"
+                :value="method.value"
+                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label :for="'method-' + method.value" class="ml-2 block text-sm text-gray-700">{{
+                method.text
+              }}</label>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-1">
+          <label for="expectedOutcome" class="block text-sm font-medium text-gray-700"
+            >Objective/Expected Outcome <span class="text-red-500">*</span></label
+          >
+          <textarea
+            id="expectedOutcome"
+            v-model="teachingMethod.expectedOutcome"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+            rows="4"
+          ></textarea>
+        </div>
+        <div class="col-span-2">
+          <h4 class="text-md font-medium mb-2">Learning Activities and Duration</h4>
+          <div v-for="(method, index) in teachingMethods" :key="index" class="flex space-x-4 mb-4">
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700"
+                >Activity <span class="text-red-500">*</span></label
+              >
+              <input
+                type="text"
+                v-model="method.activity"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+              />
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700"
+                >Duration in Hours <span class="text-red-500">*</span></label
+              >
+              <input
+                type="number"
+                v-model.number="method.duration"
+                @input="calculateTotalHours"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+              />
+            </div>
+            <button
+              @click="removeTeachingMethod(index)"
+              class="mt-6 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+            >
+              Remove
+            </button>
+          </div>
+          <button
+            @click="teachingMethods.push({ activity: '', duration: null })"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+          >
+            Add New Row
+          </button>
+          <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+            <p class="font-medium">Total Hours: {{ totalHours }}</p>
+            <p>Calculated CPD Credits: {{ calculatedCredits }}</p>
+          </div>
+        </div>
+        <div class="col-span-1">
+          <label for="courseDocument" class="block text-sm font-medium text-gray-700">
+            Resource Materials/Presentations (Please upload the documents within the permissible
+            file size limit and email any remaining files to cpd@bqpca.gov.bt)
+            <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="file"
+            id="courseDocument"
+            @change="handleFileUpload($event, courseDocument)"
+            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+          <p class="text-xs text-gray-500 mt-1">Accepted file format: PDF (max 5MB)</p>
+        </div>
+      </FormSection>
 
-      <!-- Participant Details Section -->
-      <ParticipantsDetailsForm
-        v-model:participant-details="participantDetails"
-        :participation-category-options="participationCategoryOptions"
-        :participant-subcategory-options="participantSubcategoryOptions"
-        :load-subcategories="loadSubcategories"
-        :filtered-subcategories="filteredSubcategories"
-        class="mb-8"
-      />
+      <!-- Participants Details Section -->
+      <FormSection title="Participants Details" description="Details about the participants.">
+        <div class="col-span-1">
+          <label for="participationCategory" class="block text-sm font-medium text-gray-700"
+            >Participation Category <span class="text-red-500">*</span></label
+          >
+          <select
+            id="participationCategory"
+            v-model.number="participantDetails.category"
+            @change="loadSubcategories"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+          >
+            <option value="">Select Category</option>
+            <option
+              v-for="category in participationCategoryOptions"
+              :key="category.value"
+              :value="category.value"
+            >
+              {{ category.text }}
+            </option>
+          </select>
+        </div>
+        <div class="col-span-1">
+          <label for="participantSubcategory" class="block text-sm font-medium text-gray-700"
+            >Participant sub-category <span class="text-red-500">*</span></label
+          >
+          <select
+            id="participantSubcategory"
+            v-model.number="participantDetails.subcategory"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+          >
+            <option value="">Select Sub-Category</option>
+            <option
+              v-for="subcategory in filteredSubcategories"
+              :key="subcategory.value"
+              :value="subcategory.value"
+            >
+              {{ subcategory.text }}
+            </option>
+          </select>
+        </div>
+        <div class="col-span-1">
+          <label for="numberParticipants" class="block text-sm font-medium text-gray-700"
+            >Number of Participants <span class="text-red-500">*</span></label
+          >
+          <input
+            type="number"
+            id="numberParticipants"
+            v-model.number="participantDetails.number"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+          />
+        </div>
+        <div class="col-span-1">
+          <label for="relevanceProfession" class="block text-sm font-medium text-gray-700"
+            >Relevance to profession <span class="text-red-500">*</span></label
+          >
+          <textarea
+            id="relevanceProfession"
+            v-model="participantDetails.relevance"
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+            rows="4"
+          ></textarea>
+        </div>
+      </FormSection>
 
-      <!-- Approved CPD Section (Conditional) -->
-      <ApprovedCpdForm
-        :is-cpd-approved="isCpdApproved"
-        v-model:participants="participants"
-        :attendance-sheet="attendanceSheet"
-        :handleAttendanceSheetUpload="handleAttendanceSheetUpload"
-        :add-participant="addParticipant"
-        :remove-participant="removeParticipant"
-        :fetch-participant-name="fetchParticipantName"
-        :attachment="attachment"
-        :handle-attachment-upload="handleAttachmentUpload"
-        :application="application"
-        class="mb-8"
-      />
+      <!-- Approved CPD Section -->
+      <FormSection
+        v-if="isCpdApproved"
+        title="Add Participants (After Approval)"
+        description="Add participants after CPD approval."
+      >
+        <div class="col-span-2">
+          <div
+            v-for="(participant, index) in participants"
+            :key="index"
+            class="mb-6 p-4 border rounded-xl"
+          >
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">RegNo</label>
+                <input
+                  type="text"
+                  v-model="participant.regNo"
+                  @blur="fetchParticipantName(participant)"
+                  class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Name</label>
+                <input
+                  type="text"
+                  v-model="participant.name"
+                  readonly
+                  class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-gray-50"
+                />
+              </div>
+            </div>
+            <div class="mt-2 flex justify-end">
+              <button
+                @click="removeParticipant(index)"
+                class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+          <button
+            @click="addParticipant"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+          >
+            Add More
+          </button>
+          <div class="mt-6">
+            <label for="attendanceSheet" class="block text-sm font-medium text-gray-700"
+              >Attendance Sheet <span class="text-red-500">*</span></label
+            >
+            <input
+              type="file"
+              id="attendanceSheet"
+              @change="handleFileUpload($event, attendanceSheet)"
+              class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+            <p class="text-xs text-gray-500 mt-1">Accepted file format: PDF (max 5MB)</p>
+          </div>
+          <div class="mt-6">
+            <label for="attachment" class="block text-sm font-medium text-gray-700"
+              >Attachment <span class="text-red-500">*</span></label
+            >
+            <input
+              type="file"
+              id="attachment"
+              @change="handleFileUpload($event, attachment)"
+              class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+            <p class="text-xs text-gray-500 mt-1">Accepted file format: PDF (max 5MB)</p>
+          </div>
+        </div>
+      </FormSection>
 
-      <!-- Form Actions Section -->
-      <FormActions
-        :loading="loading"
-        :save-draft="saveDraft"
-        :handle-submit="handleSubmit"
-        :cancel-form="cancelForm"
-      />
+      <!-- Form Actions -->
+      <div class="mt-12 flex justify-end space-x-4 p-8">
+        <button
+          @click="saveDraft"
+          :disabled="loading"
+          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Save as Draft
+        </button>
+        <button
+          @click="handleSubmit"
+          :disabled="loading"
+          class="px-6 py-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Submit
+        </button>
+        <button
+          @click="cancelForm"
+          :disabled="loading"
+          class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
 
     <!-- Confirmation Modal -->
@@ -115,26 +575,16 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
-import { useRouter } from 'vue-router'
-import apiService from '@/services/services'
 import { useToast } from 'vue-toastification'
 
-// Import child components
+// Import utility components
 import FormHeader from './cpdProviderApplicationComponents/FormHeader.vue'
 import LoadingOverlay from './cpdProviderApplicationComponents/LoadingOverlay.vue'
 import AlertMessage from './cpdProviderApplicationComponents/AlertMessage.vue'
-import ApplicantDetailsForm from './cpdProviderApplicationComponents/ApplicantDetailsForm.vue'
-import ApplicationDetailsForm from './cpdProviderApplicationComponents/ApplicationDetailsForm.vue'
-import CpdProviderForm from './cpdProviderApplicationComponents/CpdProviderForm.vue'
-import ResourcePersonsForm from './cpdProviderApplicationComponents/ResourcePersonsForm.vue'
-import TeachingLearningMethodForm from './cpdProviderApplicationComponents/TeachingLearningMethodForm.vue'
-import ParticipantsDetailsForm from './cpdProviderApplicationComponents/ParticipantsDetailsForm.vue'
-import ApprovedCpdForm from './cpdProviderApplicationComponents/ApprovedCpdForm.vue'
-import FormActions from './cpdProviderApplicationComponents/FormActions.vue'
 import ConfirmationModal from './cpdProviderApplicationComponents/ConfirmationModal.vue'
+import FormSection from './cpdProviderApplicationComponents/FormSection.vue'
 
 const authStore = useAuthStore()
-const router = useRouter()
 const toast = useToast()
 
 // --- Reactive States ---
@@ -142,7 +592,7 @@ const loading = ref(false)
 const showConfirmation = ref(false)
 const validationErrors = ref([])
 const successMessage = ref('')
-const userRegistrations = ref([]) // Stores { registration_no, full_name }
+const userRegistrations = ref([])
 
 // --- Form Data Sections ---
 const applicant = reactive({
@@ -169,7 +619,7 @@ const calculatedCredits = ref(0)
 const courseDocument = ref(null)
 const participantDetails = reactive({ category: '', subcategory: '', number: null, relevance: '' })
 const participants = ref([])
-const isCpdApproved = ref(false) // Derived from application.isApproved
+const isCpdApproved = ref(false)
 const approvalLetter = ref(null)
 const attendanceSheet = ref(null)
 const attachment = ref(null)
@@ -180,51 +630,33 @@ const reasonOptions = ref([])
 const cpdTypeOptions = ref([])
 const methodologyOptions = ref([])
 const participationCategoryOptions = ref([])
-const participantSubcategoryOptions = ref([]) // Holds ALL subcategories with parent ID
+const participantSubcategoryOptions = ref([])
 
 // --- Computed Property for Filtered Subcategories ---
 const filteredSubcategories = computed(() => {
-  if (!participantDetails.category) {
-    console.log('No parent category selected, returning empty subcategories list')
-    return []
-  }
-
-  // Parse the category ID as an integer for consistent comparison
+  if (!participantDetails.category) return []
   const selectedParentCategoryId = parseInt(participantDetails.category, 10)
-
-  if (isNaN(selectedParentCategoryId)) {
-    console.error('Selected parent category ID is not a number:', participantDetails.category)
-    return []
-  }
-
-  // Filter subcategories where categoryId matches the selected category ID
-  const filtered = participantSubcategoryOptions.value.filter((subcategory) => {
-    // Ensure consistent type comparison by parsing both as numbers
+  if (isNaN(selectedParentCategoryId)) return []
+  return participantSubcategoryOptions.value.filter((subcategory) => {
     const subcategoryParentId = parseInt(subcategory.categoryId, 10)
     return subcategoryParentId === selectedParentCategoryId
   })
-
-  console.log(`Found ${filtered.length} subcategories for category ID ${selectedParentCategoryId}`)
-  return filtered
 })
 
 // --- Methods ---
-
 const toggleApprovedFields = () => {
   const approved = application.isApproved === 'true'
   isCpdApproved.value = approved
-  console.log('Toggled isCpdApproved flag to:', approved)
-
-  // Clear fields based on the *new* state
   if (approved) {
     application.title = ''
     application.venue = ''
     application.fromDate = ''
     application.toDate = ''
+    courseDocument.value = null
   } else {
     participants.value = []
-    attendanceSheet.value = null
     approvalLetter.value = null
+    attendanceSheet.value = null
     attachment.value = null
   }
 }
@@ -232,28 +664,18 @@ const toggleApprovedFields = () => {
 const handleFileUpload = (event, targetRef, maxSizeMB = 5, allowedType = 'application/pdf') => {
   const file = event.target.files[0]
   const maxSize = maxSizeMB * 1024 * 1024
-
   if (file) {
     if (file.type === allowedType && file.size <= maxSize) {
       targetRef.value = file
-      console.log(`File ${file.name} assigned to target ref.`)
     } else {
-      toast.error(
-        `Invalid file. Please upload a ${allowedType === 'application/pdf' ? 'PDF' : 'file'} no larger than ${maxSizeMB}MB.`,
-      )
+      toast.error(`Invalid file. Please upload a PDF no larger than ${maxSizeMB}MB.`)
       targetRef.value = null
-      event.target.value = '' // Reset file input
+      event.target.value = ''
     }
   } else {
-    targetRef.value = null // Clear if selection is cancelled
+    targetRef.value = null
   }
 }
-
-const handleApprovalLetterUpload = (event) => handleFileUpload(event, approvalLetter)
-const handleCertificateUpload = (event) => handleFileUpload(event, resourcePersonCertificate)
-const handleCourseDocumentUpload = (event) => handleFileUpload(event, courseDocument)
-const handleAttendanceSheetUpload = (event) => handleFileUpload(event, attendanceSheet)
-const handleAttachmentUpload = (event) => handleFileUpload(event, attachment)
 
 const fetchDetailsByRegNo = (item) => {
   if (!item.regNo) {
@@ -265,7 +687,6 @@ const fetchDetailsByRegNo = (item) => {
     item.name = foundUser.full_name
   } else {
     item.name = 'Reg# not found'
-    console.warn(`Registration number ${item.regNo} not found in fetched list.`)
     toast.warning(`Name for Reg# ${item.regNo} not found. Please verify the number.`, {
       timeout: 5000,
     })
@@ -281,7 +702,7 @@ const removeResourcePerson = (index) => {
     resourcePersons.value.splice(index, 1)
   } else {
     toast.info('At least one resource person is usually required.')
-    resourcePersons.value[0] = { regNo: '', name: '' } // Clear instead of removing last
+    resourcePersons.value[0] = { regNo: '', name: '' }
   }
 }
 
@@ -290,7 +711,7 @@ const removeTeachingMethod = (index) => {
     teachingMethods.value.splice(index, 1)
   } else {
     toast.info('At least one teaching method/activity is required.')
-    teachingMethods.value[0] = { activity: '', duration: null } // Clear instead of removing last
+    teachingMethods.value[0] = { activity: '', duration: null }
   }
   calculateTotalHours()
 }
@@ -303,373 +724,19 @@ const calculateTotalHours = () => {
     const duration = Number(method.duration)
     return sum + (isNaN(duration) || duration < 0 ? 0 : duration)
   }, 0)
-  calculatedCredits.value = totalHours.value // Adjust calculation rule if needed
+  calculatedCredits.value = totalHours.value
 }
 
 const loadSubcategories = () => {
-  // Reset subcategory when category changes
   participantDetails.subcategory = ''
-
-  const categoryId = participantDetails.category
-  console.log(`Loading subcategories for category ID: ${categoryId}`)
-
-  // No need to do anything else here as filteredSubcategories computed
-  // property will automatically update based on participantDetails.category
-}
-
-const validateForm = () => {
-  const errors = []
-  const approved = application.isApproved === 'true'
-
-  // --- Validation Logic (Simplified for brevity, keep your detailed checks) ---
-  if (!applicant.agencyTrainingLocation?.trim())
-    errors.push('Applicant: Agency/Training Location is required.')
-
-  if (!approved) {
-    if (!application.title?.trim()) errors.push('Application: Title of CPD is required.')
-    if (!application.venue?.trim()) errors.push('Application: Venue is required.')
-    if (!application.fromDate) errors.push('Application: From Date is required.')
-    if (!application.toDate) errors.push('Application: To Date is required.')
-    if (
-      application.fromDate &&
-      application.toDate &&
-      new Date(application.fromDate) > new Date(application.toDate)
-    )
-      errors.push('Application: From Date cannot be later than To Date.')
-    if (!courseDocument.value)
-      errors.push('Teaching Method: Course Document (PDF) is required for new CPD.')
-  } else {
-    // Approved
-    if (!approvalLetter.value)
-      errors.push('Application: Approval Letter (PDF) is required when CPD is pre-approved.')
-    if (!attachment.value) errors.push('Approved CPD: Attachment (PDF) is required.')
-    if (!attendanceSheet.value) errors.push('Approved CPD: Attendance Sheet (PDF) is required.')
-    if (participants.value.length === 0)
-      errors.push('Approved CPD: At least one participant must be added.')
-    else if (participants.value.some((p) => !p.regNo || !p.name || p.name === 'Reg# not found'))
-      errors.push('Approved CPD: Reg# and valid Name are required for all Participants.')
-  }
-
-  if (!cpdProvider.agency) errors.push('CPD Provider: Agency selection is required.')
-  if (cpdProvider.agency === 'other' && !cpdProvider.otherAgency?.trim())
-    errors.push('CPD Provider: Specify the Other Agency name.')
-  if (!cpdProvider.reason) errors.push('CPD Provider: Reason for Conducting selection is required.')
-  if (!cpdProvider.reasonDetails?.trim()) errors.push('CPD Provider: Reason Details are required.')
-
-  if (resourcePersons.value.length === 0)
-    errors.push('Resource Persons: At least one resource person must be added.')
-  else if (resourcePersons.value.some((p) => !p.regNo || !p.name || p.name === 'Reg# not found'))
-    errors.push('Resource Persons: Reg# and valid Name are required for all Resource Persons.')
-  if (!resourcePersonCertificate.value)
-    errors.push('Resource Persons: Document supporting expertise (PDF) is required.')
-
-  if (!teachingMethod.type) errors.push('Teaching Method: Type of CPD selection is required.')
-  if (selectedMethodologies.value.length === 0)
-    errors.push('Teaching Method: At least one Methodology must be selected.')
-  if (!teachingMethod.expectedOutcome?.trim())
-    errors.push('Teaching Method: Expected Outcome is required.')
-  if (teachingMethods.value.length === 0)
-    errors.push('Teaching Method: At least one Activity must be added.')
-  else if (teachingMethods.value.some((m) => !m.activity?.trim() || !m.duration || m.duration <= 0))
-    errors.push('Teaching Method: Activities require a description and positive duration.')
-  if (totalHours.value <= 0) errors.push('Teaching Method: Total Duration must be greater than 0.')
-
-  if (!participantDetails.category)
-    errors.push('Participants Summary: Category selection is required.')
-  if (
-    participantDetails.category &&
-    filteredSubcategories.value.length > 0 &&
-    !participantDetails.subcategory
-  )
-    errors.push('Participants Summary: Sub-category selection is required for the chosen Category.')
-  if (!participantDetails.number || participantDetails.number <= 0)
-    errors.push('Participants Summary: Expected Number of Participants must be greater than 0.')
-  if (!participantDetails.relevance?.trim())
-    errors.push('Participants Summary: Relevance description is required.')
-
-  validationErrors.value = errors
-  return errors.length === 0
-}
-
-const prepareFormData = (isDraft = false) => {
-  const formData = new FormData()
-  const isCpdApprovedFlag = application.isApproved === 'true'
-
-  console.log(`Preparing FormData (Draft: ${isDraft}, Approved: ${isCpdApprovedFlag})`)
-
-  // Append basic details
-  formData.append('cid_no', applicant.cidNumber)
-  formData.append('registration_no', applicant.registrationNumber)
-  formData.append('full_name', applicant.fullName)
-  formData.append('proposed_training_location', applicant.agencyTrainingLocation)
-  formData.append('is_cpd_approved', isCpdApprovedFlag)
-  formData.append('is_draft', isDraft)
-
-  // Append conditional details
-  if (!isCpdApprovedFlag) {
-    formData.append('title_of_cpd', application.title || '')
-    formData.append('venue', application.venue || '')
-    formData.append('from_date', application.fromDate || '')
-    formData.append('to_date', application.toDate || '')
-  }
-
-  // Provider Details
-  formData.append(
-    'cpd_providing_agency',
-    cpdProvider.agency === 'other' ? '' : parseInt(cpdProvider.agency, 10) || '',
-  )
-  formData.append(
-    'if_others_specify',
-    cpdProvider.agency === 'other' ? cpdProvider.otherAgency || '' : '',
-  )
-  formData.append('reason_for_conducting', parseInt(cpdProvider.reason, 10) || '')
-  formData.append('reason_for_details', cpdProvider.reasonDetails || '')
-
-  // Resource Persons (JSON)
-  const validResourcePersons = resourcePersons.value
-    .filter((p) => p.regNo && p.name && p.name !== 'Reg# not found')
-    .map((p) => ({ resource_person_reg_no: p.regNo, resource_person_name: p.name }))
-  formData.append('resources', JSON.stringify(validResourcePersons))
-
-  // Teaching Method
-  formData.append('type_of_cpd', teachingMethod.type || '')
-  formData.append('expected_outcome', teachingMethod.expectedOutcome || '')
-
-  // Methodologies (JSON array of objects with methodology_name: ID)
-  const validMethodologies = selectedMethodologies.value.map((id) => ({ methodology_name: id }))
-  formData.append('methodologies', JSON.stringify(validMethodologies))
-
-  // Learning Methods (JSON array of objects)
-  const validLearningMethods = teachingMethods.value
-    .filter((m) => m.activity?.trim() && m.duration > 0)
-    .map((m) => ({ activities: m.activity, duration: m.duration }))
-  formData.append('learning_methods', JSON.stringify(validLearningMethods))
-
-  // Participant Summary
-  formData.append('number_of_participants', participantDetails.number || 0)
-  formData.append('relevance_to_topic', participantDetails.relevance || '')
-  formData.append('participation_category', participantDetails.category || '')
-  formData.append('participant_sub_category', participantDetails.subcategory || '')
-
-  // Participant List (JSON)
-  const validParticipants = participants.value
-    .filter((p) => p.regNo && p.name && p.name !== 'Reg# not found')
-    .map((p) => ({
-      participant_reg_no: p.regNo,
-      cpd_credits: calculatedCredits.value,
-    }))
-  formData.append('participants', JSON.stringify(validParticipants))
-
-  // Files
-  if (isCpdApprovedFlag) {
-    if (approvalLetter.value) formData.append('approval_letter_attachment', approvalLetter.value)
-    if (attachment.value) formData.append('approved_cpd_main_attachment', attachment.value)
-    if (attendanceSheet.value) formData.append('attendance_sheet_attachment', attendanceSheet.value)
-  } else {
-    if (courseDocument.value) formData.append('course_document', courseDocument.value)
-  }
-  // Common File
-  if (resourcePersonCertificate.value)
-    formData.append('document_supporting_expertise', resourcePersonCertificate.value)
-
-  return formData
-}
-
-const getErrorMessages = (error) => {
-  const messages = []
-  if (error.response && error.response.data) {
-    const errorData = error.response.data
-    const extractErrors = (obj, prefix = '') => {
-      if (typeof obj === 'string') messages.push(`${prefix ? prefix + ': ' : ''}${obj}`)
-      else if (Array.isArray(obj)) obj.forEach((item) => extractErrors(item, prefix))
-      else if (typeof obj === 'object' && obj !== null) {
-        Object.keys(obj).forEach((key) => extractErrors(obj[key], key))
-      }
-    }
-    extractErrors(errorData)
-  }
-  if (messages.length === 0) messages.push(error.message || 'An unknown error occurred.')
-  return [...new Set(messages)] // Remove duplicates
-}
-
-const saveDraft = async () => {
-  loading.value = true
-  validationErrors.value = []
-  successMessage.value = ''
-  try {
-    const formData = prepareFormData(true)
-    await apiService.createEpcCpdTask(formData)
-    successMessage.value = 'Draft saved successfully!'
-    toast.success(successMessage.value)
-    setTimeout(() => {
-      successMessage.value = ''
-    }, 4000)
-  } catch (error) {
-    console.error('Error saving draft:', error)
-    validationErrors.value = getErrorMessages(error)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    toast.error('Failed to save draft.')
-  } finally {
-    loading.value = false
-  }
-}
-
-const handleSubmit = () => {
-  validationErrors.value = []
-  successMessage.value = ''
-  if (validateForm()) {
-    showConfirmation.value = true
-  } else {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    toast.error('Please fix the validation errors before submitting.')
-    console.log('Validation Failed:', validationErrors.value)
-  }
-}
-
-const confirmSubmit = async () => {
-  showConfirmation.value = false
-  if (!validateForm()) {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    toast.error('Validation failed. Please review the form.')
-    return
-  }
-  loading.value = true
-  validationErrors.value = []
-  successMessage.value = ''
-  try {
-    const formData = prepareFormData(false)
-    const response = await apiService.createEpcCpdTask(formData)
-    console.log('Form submitted successfully:', response.data)
-    successMessage.value = 'CPD application submitted successfully! Redirecting...'
-    toast.success(successMessage.value)
-    setTimeout(() => {
-      // Navigate to tracking or dashboard page
-      router.push({ name: 'TrackCpdApplications' })
-    }, 2500)
-  } catch (error) {
-    console.error('Error submitting form:', error)
-    validationErrors.value = getErrorMessages(error)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    toast.error('Failed to submit application.')
-  } finally {
-    loading.value = false
-  }
-}
-
-const cancelForm = () => {
-  if (confirm('Are you sure you want to cancel and discard changes?')) {
-    // Navigate away, e.g., to a dashboard
-    router.push({ name: 'CpdProviderDashboard' })
-  }
-}
-
-// Fetch list of registered users for lookups
-const fetchUserRegistrations = async () => {
-  console.log('Fetching user registrations...')
-  try {
-    const response = await apiService.getEpcNewApplications({ params: { page_size: 1000 } })
-
-    if (response.data?.results && Array.isArray(response.data.results)) {
-      userRegistrations.value = response.data.results
-        .filter((app) => app.registration_no && app.full_name)
-        .map((app) => ({ registration_no: app.registration_no, full_name: app.full_name }))
-        .sort((a, b) => a.full_name.localeCompare(b.full_name))
-      console.log(`Fetched ${userRegistrations.value.length} User Registrations.`)
-    } else {
-      console.warn('No user registrations found or API response format unexpected.')
-      userRegistrations.value = []
-    }
-  } catch (error) {
-    console.error('Error fetching user registrations:', error)
-    validationErrors.value.push('Error fetching data for lookups.')
-  }
-}
-
-// Fetch options for all dropdowns
-const loadDropdownOptions = async () => {
-  console.log('Loading dropdown options...')
-  try {
-    const [agencyRes, reasonRes, cpdTypeRes, methodologyRes, categoriesRes, subcategoriesRes] =
-      await Promise.all([
-        apiService.getEpcCpdProvidingAgencies(),
-        apiService.getEpcCpdReasonsForConducting(),
-        apiService.getEpcMastersCpdActivities(),
-        apiService.getEpcMastersCpdMethodologies(),
-        apiService.getEpcMastersParticipationCategories(),
-        apiService.getEpcMastersParticipationSubCategories(),
-      ])
-
-    // Process main categories and options
-    agencyOptions.value =
-      agencyRes.data?.results?.map((item) => ({
-        text: item.name || `Unnamed (ID: ${item.id})`,
-        value: item.id,
-      })) || []
-
-    reasonOptions.value =
-      reasonRes.data?.results?.map((item) => ({
-        text: item.name || `Unnamed (ID: ${item.id})`,
-        value: item.id,
-      })) || []
-
-    cpdTypeOptions.value =
-      cpdTypeRes.data?.results?.map((item) => ({
-        text: item.cpd_activity_name || `Unnamed (ID: ${item.id})`,
-        value: item.id,
-      })) || []
-
-    methodologyOptions.value =
-      methodologyRes.data?.results?.map((item) => ({
-        text: item.methodology_name || `Unnamed (ID: ${item.id})`,
-        value: item.id,
-      })) || []
-
-    participationCategoryOptions.value =
-      categoriesRes.data?.results?.map((item) => ({
-        text: item.participation_category_name || `Unnamed (ID: ${item.id})`,
-        value: item.id,
-      })) || []
-
-    // Process subcategories with special attention to the parent ID
-    participantSubcategoryOptions.value =
-      subcategoriesRes.data?.results?.map((item) => ({
-        text: item.participation_sub_category_name || `Unnamed (ID: ${item.id})`,
-        value: item.id,
-        // Store parent category ID for filtering
-        categoryId: item.participation_category_name, // This field stores the parent category ID
-      })) || []
-
-    console.log('Processed subcategories:', participantSubcategoryOptions.value)
-
-    // Log the options count for debugging
-    console.log(
-      `Loaded Options: Agencies(${agencyOptions.value.length}), Reasons(${reasonOptions.value.length}), Types(${cpdTypeOptions.value.length}), Methods(${methodologyOptions.value.length}), Cats(${participationCategoryOptions.value.length}), SubCats(${participantSubcategoryOptions.value.length})`,
-    )
-
-    // Add warnings if critical options are missing
-    if (agencyOptions.value.length === 0) console.warn('Agency options list is empty!')
-    if (reasonOptions.value.length === 0) console.warn('Reason options list is empty!')
-    if (cpdTypeOptions.value.length === 0) console.warn('CPD Type options list is empty!')
-    if (methodologyOptions.value.length === 0) console.warn('Methodology options list is empty!')
-    if (participationCategoryOptions.value.length === 0)
-      console.warn('Participation Category options list is empty!')
-  } catch (error) {
-    console.error('Error loading one or more dropdown options:', error)
-    validationErrors.value.push(
-      'Critical error loading form selection options. Please try refreshing the page.',
-    )
-    toast.error('Failed to load essential form data. Please refresh.')
-  }
 }
 
 // --- Lifecycle Hooks ---
-
 onMounted(async () => {
   loading.value = true
   validationErrors.value = []
   successMessage.value = ''
 
-  // Populate applicant details from store
   applicant.cidNumber = authStore.user?.cid || ''
   applicant.fullName =
     [authStore.user?.first_name, authStore.user?.middle_name, authStore.user?.last_name]
@@ -677,12 +744,11 @@ onMounted(async () => {
       .join(' ') || 'N/A'
   applicant.registrationNumber = authStore.user?.registration_number || ''
   if (!applicant.registrationNumber) {
-    console.warn('Registration number missing from auth store. Fetching might be needed.')
+    console.warn('Registration number missing from auth store.')
   }
 
   await Promise.all([fetchUserRegistrations(), loadDropdownOptions()])
 
-  // Set initial derived state & calculations
   isCpdApproved.value = application.isApproved === 'true'
   calculateTotalHours()
 
@@ -691,23 +757,20 @@ onMounted(async () => {
 })
 
 // --- Watchers ---
-
 watch(
   () => application.isApproved,
-  (newVal) => {
-    console.log('Watcher: application.isApproved changed to', newVal)
+  () => {
+    console.log('Watcher: application.isApproved changed to', application.isApproved)
     toggleApprovedFields()
-  },
+  }
 )
 
 watch(
   () => participantDetails.category,
-  (newCategory, oldCategory) => {
-    if (newCategory !== oldCategory) {
-      console.log('Watcher: participantDetails.category changed to', newCategory)
-      participantDetails.subcategory = '' // Reset subcategory selection
-    }
-  },
+  (newCategory) => {
+    console.log('Watcher: participantDetails.category changed to', newCategory)
+    participantDetails.subcategory = ''
+  }
 )
 
 watch(
@@ -715,6 +778,21 @@ watch(
   () => {
     calculateTotalHours()
   },
-  { deep: true },
+  { deep: true }
 )
+
+// --- Stubbed Methods ---
+async function fetchUserRegistrations() {
+  // TODO: Implement actual API call
+  userRegistrations.value = []
+}
+async function loadDropdownOptions() {
+  // TODO: Implement actual API call
+  agencyOptions.value = []
+  reasonOptions.value = []
+  cpdTypeOptions.value = []
+  methodologyOptions.value = []
+  participationCategoryOptions.value = []
+  participantSubcategoryOptions.value = []
+}
 </script>

@@ -20,7 +20,6 @@
       </div>
 
       <!-- Tab Content -->
-      <!-- Using v-show to keep component instances alive for easier ref access and state preservation -->
       <SingleEntryForm
         v-show="!isLoading && activeTab === 'single'"
         ref="singleEntryFormRef"
@@ -38,6 +37,7 @@
         :cpdTasks="cpdTasksForSelection"
         :current-provider-cid="currentProviderCid"
         :is-processing-upload="isBulkUploading"
+        :preselected-task-id="preselectedTaskId"
         @submit="handleBulkSubmit"
         @cancel="cancel"
       />
@@ -78,81 +78,90 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import apiService from '@/services/services'
+import { ref, onMounted, watch, computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import apiService from '@/services/services';
+import { useToast } from 'vue-toastification';
+import TabNavigation from './TabNavigation.vue';
+import SingleEntryForm from './SingleEntryForm.vue';
+import BulkUploadForm from './BulkUploadForm.vue';
+import AttendancePhotoForm from './AttendancePhotoForm.vue';
+import StatusMessage from './StatusMessage.vue';
 
-// Import child components
-import TabNavigation from './TabNavigation.vue'
-import SingleEntryForm from './SingleEntryForm.vue'
-import BulkUploadForm from './BulkUploadForm.vue'
-import AttendancePhotoForm from './AttendancePhotoForm.vue'
-import StatusMessage from './StatusMessage.vue'
+const router = useRouter();
+const route = useRoute();
+const toast = useToast();
 
-const router = useRouter()
+const allCpdTasks = ref([]);
+const participants = ref([]);
+const currentProviderCid = ref(null);
+const preselectedTaskId = ref(null);
 
-// Data refs
-const allCpdTasks = ref([]) // Stores all fetched tasks
-const participants = ref([])
-const currentProviderCid = ref(null)
+const activeTab = ref('single');
+const isLoading = ref(true);
+const message = ref('');
+const messageType = ref('');
+const messageTimeoutId = ref(null);
 
-// UI State refs
-const activeTab = ref('single')
-const isLoading = ref(true)
-const message = ref('')
-const messageType = ref('')
-const messageTimeoutId = ref(null)
+const isSingleSubmitting = ref(false);
+const isBulkUploading = ref(false);
+const isPhotoUploading = ref(false);
 
-// Submission loading states
-const isSingleSubmitting = ref(false)
-const isBulkUploading = ref(false)
-const isPhotoUploading = ref(false)
+const singleEntryFormRef = ref(null);
+const bulkUploadFormRef = ref(null);
+const attendancePhotoFormRef = ref(null);
 
-// Refs for child components
-const singleEntryFormRef = ref(null)
-const bulkUploadFormRef = ref(null)
-const attendancePhotoFormRef = ref(null)
+const bulkUploadErrorList = ref([]);
 
-const bulkUploadErrorList = ref([])
-
-// Computed property to filter CPD tasks for selection dropdowns
 const cpdTasksForSelection = computed(() => {
   return allCpdTasks.value
-    .filter(task => {
-      // Logic for tasks available for adding participants/photos:
-      // 1. Must have an 'Approved' review_status OR is_cpd_approved is true.
-      // 2. If currentProviderCid is set, filter by tasks where cid_no matches.
-      //    (This assumes 'cid_no' on the task is the provider's CID who created it)
-      const isApproved = task.review_status === 'Approved' || task.is_cpd_approved === true;
+    .filter((task) => {
+      const isApproved =
+        task.application_status === 'APPROVED' ||
+        String(task.application_status).toUpperCase() === 'APPROVED';
       if (currentProviderCid.value) {
-        return isApproved && task.cid_no === currentProviderCid.value;
+        return isApproved && String(task.cid_no).trim() === String(currentProviderCid.value).trim();
       }
-      return isApproved; // If no provider CID, admin might see all approved tasks
+      return isApproved;
     })
     .sort((a, b) => (a.title_of_cpd || '').localeCompare(b.title_of_cpd || ''));
 });
 
-
 onMounted(async () => {
+  if (route.query.add_participants === 'true' && route.query.id) {
+    activeTab.value = 'bulk';
+    preselectedTaskId.value = route.query.id;
+  }
+
   try {
-    const userString = localStorage.getItem('user')
+    const userString = localStorage.getItem('user');
     if (userString) {
-      const loggedInUser = JSON.parse(userString)
-      currentProviderCid.value = loggedInUser?.cid || null
+      const loggedInUser = JSON.parse(userString);
+      currentProviderCid.value = loggedInUser?.cid || null;
       if (!currentProviderCid.value) {
-        console.warn("Logged in user data found, but 'cid' (Provider CID) is missing or null.")
+        console.warn("Logged in user data found, but 'cid' (Provider CID) is missing or null.");
+        toast.warning('Provider CID not found. Some functionality may be limited.');
       }
     } else {
-      console.warn('No user data found in localStorage. Provider CID cannot be determined.')
+      console.warn('No user data found in localStorage. Provider CID cannot be determined.');
+      toast.warning('User data not found. Please log in again.');
     }
   } catch (error) {
-    console.error('Error retrieving or parsing user data for provider CID:', error)
+    console.error('Error retrieving or parsing user data for provider CID:', error);
+    toast.error('Failed to load user data.');
   }
-  await fetchData()
-})
+
+  await fetchData();
+  console.log('Fetched data:', {
+    cpdTasks: allCpdTasks.value,
+    participants: participants.value,
+    currentProviderCid: currentProviderCid.value,
+    preselectedTaskId: preselectedTaskId.value,
+  });
+});
 
 async function fetchData() {
-  isLoading.value = true
+  isLoading.value = true;
   try {
     const [tasksResponse, participantsResponse] = await Promise.all([
       apiService.getMhpcCpdTask(),
@@ -162,26 +171,27 @@ async function fetchData() {
     allCpdTasks.value = tasksResponse.data?.results || tasksResponse.data || [];
     participants.value = participantsResponse.data?.results || participantsResponse.data || [];
 
+    if (allCpdTasks.value.length === 0) {
+      toast.info('No CPD tasks found. Please create or approve tasks to add participants.');
+    }
   } catch (error) {
-    console.error('Error fetching initial data:', error)
-    showMessage('Failed to load essential data. Please try refreshing the page.', 'error')
-    allCpdTasks.value = []
-    participants.value = []
+    console.error('Error fetching initial data:', error);
+    showMessage('Failed to load essential data. Please try refreshing the page.', 'error');
+    allCpdTasks.value = [];
+    participants.value = [];
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 
 function handleTabChange(newTab) {
-  activeTab.value = newTab
+  activeTab.value = newTab;
 }
 
 watch(activeTab, (newTab, oldTab) => {
   clearMessage();
   bulkUploadErrorList.value = [];
 
-  // Resetting forms when switching tabs to avoid carrying over old data.
-  // Child components must expose `resetForm(showMessageFeedback = true)`
   if (oldTab === 'single' && singleEntryFormRef.value?.resetForm) {
     singleEntryFormRef.value.resetForm(false);
   }
@@ -194,161 +204,169 @@ watch(activeTab, (newTab, oldTab) => {
 });
 
 async function handleSingleSubmit(submissionData) {
-  isSingleSubmitting.value = true
+  isSingleSubmitting.value = true;
   clearMessage();
-  bulkUploadErrorList.value = []
+  bulkUploadErrorList.value = [];
   try {
-    // Backend should ideally infer provider from logged-in user if it's a provider-specific action.
-    // If explicit CID needed: const payload = { ...submissionData, provider_cid: currentProviderCid.value };
-    await apiService.createMhpcCpdTaskParticipant(submissionData)
-    showMessage('Participant added successfully!', 'success')
+    await apiService.createMhpcCpdTaskParticipant(submissionData);
+    showMessage('Participant added successfully!', 'success');
     if (singleEntryFormRef.value?.resetForm) {
-      singleEntryFormRef.value.resetForm(false)
+      singleEntryFormRef.value.resetForm(false);
     }
   } catch (error) {
-    console.error('Error submitting single participant:', error)
-    let errorMessage = 'Failed to add participant.'
-    if (error.response?.data) { // Standard DRF error handling
-      const errors = error.response.data
-      if (typeof errors === 'object' && !Array.isArray(errors)) {
+    console.error('Error submitting single participant:', error);
+    let errorMessage = 'Failed to add participant.';
+    if (error.response?.data) {
+      const errors = error.response.data;
+      if (errors.detail) errorMessage = errors.detail;
+      else if (errors.error) errorMessage = errors.error;
+      else if (typeof errors === 'object' && !Array.isArray(errors)) {
         errorMessage = Object.entries(errors)
           .map(([key, value]) => `${key.replace(/_/g, ' ')}: ${Array.isArray(value) ? value.join(', ') : value}`)
-          .join('; ')
-      } else if (Array.isArray(errors)) {
-        errorMessage = errors.join('; ')
-      } else if (typeof errors === 'string') {
-        errorMessage = errors
-      }
+          .join('; ');
+      } else if (Array.isArray(errors)) errorMessage = errors.join('; ');
+      else if (typeof errors === 'string') errorMessage = errors;
     }
-    showMessage(errorMessage, 'error')
+    showMessage(errorMessage, 'error');
   } finally {
-    isSingleSubmitting.value = false
+    isSingleSubmitting.value = false;
   }
 }
 
 async function handleBulkSubmit({ cpdTask, file }) {
-  isBulkUploading.value = true
+  isBulkUploading.value = true;
   clearMessage();
-  bulkUploadErrorList.value = []
+  bulkUploadErrorList.value = [];
 
-  const formDataToSend = new FormData()
-  formDataToSend.append('cpd_task', cpdTask)
-  formDataToSend.append('file', file)
-  // If backend bulk endpoint requires provider context and can't infer from user:
-  // if (currentProviderCid.value) formDataToSend.append('provider_cid', currentProviderCid.value);
+  const formDataToSend = new FormData();
+  formDataToSend.append('cpd_task', cpdTask);
+  formDataToSend.append('file', file);
 
   try {
-    const responseData = await apiService.bulkCreateMhpcCpdTaskParticipants(formDataToSend)
-    const { created_count = 0, failed_count = 0, errors = [] } = responseData || {}
+    const response = await apiService.bulkCreateMhpcCpdTaskParticipants(formDataToSend);
+    const responseData = response.data || {};
+    const { created_count = 0, failed_count = 0, errors = [] } = responseData;
 
-    let finalMessage = ''
-    let finalMessageType = ''
+    let finalMessage = '';
+    let finalMessageType = '';
 
     if (created_count > 0) {
-      finalMessage = `${created_count} participant(s) successfully processed.`
-      finalMessageType = 'success'
+      finalMessage = `${created_count} participant(s) successfully processed.`;
+      finalMessageType = 'success';
       if (failed_count > 0 || errors.length > 0) {
-        finalMessageType = 'warning'
-        finalMessage += ` However,`
-        if (failed_count > 0) finalMessage += ` ${failed_count} other row(s) could not be processed.`
+        finalMessageType = 'warning';
+        finalMessage += ` However,`;
+        if (failed_count > 0) finalMessage += ` ${failed_count} row(s) could not be processed.`;
         if (errors.length > 0) {
-          finalMessage += ` There were ${errors.length} additional issue(s) with specific rows.`
-          bulkUploadErrorList.value = errors
+          finalMessage += ` There were ${errors.length} issue(s) with specific rows.`;
+          bulkUploadErrorList.value = errors;
         }
-      } else { // Pure success
+      } else {
         if (bulkUploadFormRef.value?.resetForm) {
-          bulkUploadFormRef.value.resetForm(false)
+          bulkUploadFormRef.value.resetForm(false);
         }
       }
     } else if (failed_count > 0 || errors.length > 0) {
-      finalMessage = `CSV processed, but no participants were created.`
-      finalMessageType = 'error'
-      if (failed_count > 0) finalMessage += ` ${failed_count} row(s) could not be processed.`
+      finalMessage = `CSV processed, but no participants were created.`;
+      finalMessageType = 'error';
+      if (failed_count > 0) finalMessage += ` ${failed_count} row(s) could not be processed.`;
       if (errors.length > 0) {
-        finalMessage += ` There were ${errors.length} issue(s) with specific rows.`
-        bulkUploadErrorList.value = errors
+        finalMessage += ` There were ${errors.length} issue(s) with specific rows.`;
+        bulkUploadErrorList.value = errors;
       }
     } else {
-      finalMessage = 'CSV processed. No new participants were found or created from the file.'
-      finalMessageType = 'info'
-       if (bulkUploadFormRef.value?.resetForm) { // Also reset if file was empty/no data
-          bulkUploadFormRef.value.resetForm(false)
-        }
+      finalMessage = 'CSV processed. No new participants were found or created from the file.';
+      finalMessageType = 'info';
+      if (bulkUploadFormRef.value?.resetForm) {
+        bulkUploadFormRef.value.resetForm(false);
+      }
     }
-    showMessage(finalMessage.trim(), finalMessageType)
+    showMessage(finalMessage.trim(), finalMessageType);
+    console.log('Bulk upload response:', responseData);
   } catch (error) {
-    console.error('Critical error during bulk upload:', error)
-    let errorMessage = 'Bulk upload failed. Please ensure the file format is correct and the CPD Task is valid.'
+    console.error('Critical error during bulk upload:', error);
+    let errorMessage = 'Bulk upload failed. Please ensure the file format is correct and the CPD Task is valid.';
+    let errors = [];
     if (error.response?.data) {
-      const errors = error.response.data;
-      if (errors.detail) errorMessage = errors.detail;
-      else if (errors.error) errorMessage = errors.error; // Specific 'error' key from backend
-      else if (typeof errors === 'object' && !Array.isArray(errors)) {
-           errorMessage = Object.entries(errors).map(([key, value]) => `${key.replace(/_/g, ' ')}: ${Array.isArray(value) ? value.join(', ') : value}`).join('; ');
-      } else if (Array.isArray(errors)) errorMessage = errors.join('; ');
-      else if (typeof errors === 'string') errorMessage = errors;
+      const responseData = error.response.data;
+      if (responseData.errors && Array.isArray(responseData.errors)) {
+        errors = responseData.errors;
+        errorMessage = `${responseData.failed_count || 0} row(s) could not be processed.`;
+        bulkUploadErrorList.value = errors;
+      } else if (responseData.detail) {
+        errorMessage = responseData.detail;
+      } else if (responseData.error) {
+        errorMessage = responseData.error;
+      } else if (typeof responseData === 'object' && !Array.isArray(responseData)) {
+        errorMessage = Object.entries(responseData)
+          .map(([key, value]) => `${key.replace(/_/g, ' ')}: ${Array.isArray(value) ? value.join(', ') : value}`)
+          .join('; ');
+      } else if (typeof responseData === 'string') {
+        errorMessage = responseData;
+      }
     }
-    showMessage(errorMessage, 'error')
-    bulkUploadErrorList.value = []
+    showMessage(errorMessage, 'error');
+    console.log('Error response:', error.response?.data);
   } finally {
-    isBulkUploading.value = false
+    isBulkUploading.value = false;
   }
 }
 
 async function handlePhotoSubmit({ cpdTask, photo, description }) {
-  isPhotoUploading.value = true
+  isPhotoUploading.value = true;
   clearMessage();
-  bulkUploadErrorList.value = []
+  bulkUploadErrorList.value = [];
   try {
-    const formDataToSend = new FormData()
-    formDataToSend.append('cpd_task', cpdTask)
-    formDataToSend.append('attendance_photo', photo, photo.name)
+    const formDataToSend = new FormData();
+    formDataToSend.append('cpd_task', cpdTask);
+    formDataToSend.append('attendance_photo', photo, photo.name);
     if (description) {
-      formDataToSend.append('photo_description', description)
+      formDataToSend.append('photo_description', description);
     }
-    // If backend photo endpoint requires provider context and can't infer from user:
-    // if (currentProviderCid.value) formDataToSend.append('provider_cid', currentProviderCid.value);
 
-    await apiService.uploadCpdTaskAttendancePhoto(formDataToSend)
-    showMessage('Attendance photo uploaded successfully!', 'success')
+    await apiService.uploadCpdTaskAttendancePhoto(formDataToSend);
+    showMessage('Attendance photo uploaded successfully!', 'success');
     if (attendancePhotoFormRef.value?.resetForm) {
-      attendancePhotoFormRef.value.resetForm(false)
+      attendancePhotoFormRef.value.resetForm(false);
     }
   } catch (error) {
-    console.error('Error uploading attendance photo:', error)
-    let errorMessage = 'Failed to upload attendance photo.'
+    console.error('Error uploading attendance photo:', error);
+    let errorMessage = 'Failed to upload attendance photo.';
     if (error.response?.data) {
-        const errors = error.response.data;
-        if (errors.detail) errorMessage = errors.detail;
-        else if (errors.attendance_photo && Array.isArray(errors.attendance_photo)) errorMessage = `Photo error: ${errors.attendance_photo.join(', ')}`;
-        else if (typeof errors === 'string') errorMessage = errors;
-        else if (typeof errors === 'object' && !Array.isArray(errors)) {
-           errorMessage = Object.entries(errors).map(([key, value]) => `${key.replace(/_/g, ' ')}: ${Array.isArray(value) ? value.join(', ') : value}`).join('; ');
-        } else if (Array.isArray(errors)) errorMessage = errors.join ('; ');
+      const errors = error.response.data;
+      if (errors.detail) errorMessage = errors.detail;
+      else if (errors.attendance_photo && Array.isArray(errors.attendance_photo))
+        errorMessage = `Photo error: ${errors.attendance_photo.join(', ')}`;
+      else if (typeof errors === 'string') errorMessage = errors;
+      else if (typeof errors === 'object' && !Array.isArray(errors)) {
+        errorMessage = Object.entries(errors)
+          .map(([key, value]) => `${key.replace(/_/g, ' ')}: ${Array.isArray(value) ? value.join(', ') : value}`)
+          .join('; ');
+      } else if (Array.isArray(errors)) errorMessage = errors.join('; ');
     }
     showMessage(errorMessage, 'error');
   } finally {
-    isPhotoUploading.value = false
+    isPhotoUploading.value = false;
   }
 }
 
 function cancel() {
-  router.go(-1)
+  router.go(-1);
 }
 
 function showMessage(text, type = 'info', duration = 7000) {
-  message.value = text
-  messageType.value = type
+  message.value = text;
+  messageType.value = type;
   if (messageTimeoutId.value) clearTimeout(messageTimeoutId.value);
-  messageTimeoutId.value = setTimeout(clearMessage, duration)
+  messageTimeoutId.value = setTimeout(clearMessage, duration);
 }
 
 function clearMessage() {
-    message.value = '';
-    messageType.value = '';
-    if (messageTimeoutId.value) {
-        clearTimeout(messageTimeoutId.value);
-        messageTimeoutId.value = null;
-    }
+  message.value = '';
+  messageType.value = '';
+  if (messageTimeoutId.value) {
+    clearTimeout(messageTimeoutId.value);
+    messageTimeoutId.value = null;
+  }
 }
 </script>

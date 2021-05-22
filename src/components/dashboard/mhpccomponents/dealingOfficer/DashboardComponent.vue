@@ -205,9 +205,7 @@
                 <defs>
                   <linearGradient id="cpdGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" style="stop-color: #10b981; stop-opacity: 1" />
-                    {/* green-500 */}
                     <stop offset="100%" style="stop-color: #6ee7b7; stop-opacity: 1" />
-                    {/* green-300 */}
                   </linearGradient>
                 </defs>
                 <path
@@ -310,9 +308,7 @@
                 <defs>
                   <linearGradient id="cogsGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" style="stop-color: #a855f7; stop-opacity: 1" />
-                    {/* purple-500 */}
                     <stop offset="100%" style="stop-color: #c084fc; stop-opacity: 1" />
-                    {/* purple-400 */}
                   </linearGradient>
                 </defs>
                 <path
@@ -343,11 +339,11 @@
           <div class="mt-4 space-y-2">
             <div class="flex justify-between text-sm">
               <span class="text-gray-600">Completed Today</span>
-              <span class="font-medium text-gray-800">5</span> {/* Placeholder */}
+              <span class="font-medium text-gray-800">5</span>
             </div>
             <div class="flex justify-between text-sm">
               <span class="text-gray-600">Avg. Processing Time</span>
-              <span class="font-medium text-gray-800">1.8 days</span> {/* Placeholder */}
+              <span class="font-medium text-gray-800">1.8 days</span>
             </div>
           </div>
 

@@ -12,21 +12,37 @@
         Verified Counselor
       </span>
 
-      <!-- Unregister button for counselors only -->
-      <button @click="unregisterCounselor"
+      <!-- Unregister button for counselors -->
+      <button
+        @click="unregisterCounselor"
         class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 w-fit"
-        :disabled="isSubmitting">
-        <span v-if="isSubmitting">Updating...</span>
+        :disabled="isSubmitting"
+      >
+        <span v-if="isSubmitting">
+          <svg class="animate-spin h-4 w-4 inline mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Unregistering...
+        </span>
         <span v-else>Unregister as Counselor</span>
       </button>
     </div>
 
     <!-- Register button for non-counselors -->
     <div v-if="!application.is_counselor">
-      <button @click="registerAsCounselor"
+      <button
+        @click="registerAsCounselor"
         class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-100 text-blue-700 hover:bg-blue-200"
-        :disabled="isSubmitting">
-        <span v-if="isSubmitting">Updating...</span>
+        :disabled="isSubmitting"
+      >
+        <span v-if="isSubmitting">
+          <svg class="animate-spin h-4 w-4 inline mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Registering...
+        </span>
         <span v-else>Register as Counselor</span>
       </button>
     </div>
@@ -53,27 +69,24 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update'])
+const emit = defineEmits(['update', 'set-loading'])
 const errorMessage = ref('')
 const isSubmitting = ref(false)
 const toast = useToast()
 
-// Helper function to get user ID from various possible locations
+// Helper function to get user ID
 const getUserId = () => {
-  // Try different paths to find the user ID
   const possibleIds = [
-    props.userId,                 // Direct prop
-    props.application.user_id,    // Common field name
-    props.application.userId,     // Camel case variation
-    props.application.id          // Sometimes the application itself has the ID
+    props.userId,
+    props.application.user_id,
+    props.application.userId,
+    props.application.id
   ]
 
-  // Return the first non-null ID
   for (const id of possibleIds) {
     if (id) return id
   }
 
-  // If we're here, we couldn't find an ID
   console.error('Could not determine user ID', props.application)
   return null
 }
@@ -91,9 +104,9 @@ const registerAsCounselor = async () => {
 
   isSubmitting.value = true
   errorMessage.value = ''
+  emit('set-loading', true) // Notify parent to show loading state
 
   try {
-    // Create form data
     const formData = new FormData()
     formData.append('is_counselor', 'true')
 
@@ -101,20 +114,21 @@ const registerAsCounselor = async () => {
       is_counselor: true
     })
 
-    // Make API call
     const response = await apiServices.patchUser(userId, formData)
     console.log('API response:', response)
 
-    // Show success toast
-    toast.success('Successfully registered as a counselor!')
+    // Verify the response data
+    if (response.data?.is_counselor !== true) {
+      throw new Error('API response did not confirm counselor registration.')
+    }
 
-    // Notify parent to refresh
-    emit('update')
+    toast.success('Successfully registered as a counselor!')
+    emit('update', { ...props.application, is_counselor: true }) // Update parent with new state
   } catch (error) {
     console.error('Error registering as counselor:', error)
     let apiErrorMessage = 'Failed to register as counselor.'
 
-    if (error.response && error.response.data) {
+    if (error.response?.data) {
       const errors = error.response.data
       console.log('API error details:', errors)
 
@@ -132,6 +146,7 @@ const registerAsCounselor = async () => {
     toast.error(apiErrorMessage)
   } finally {
     isSubmitting.value = false
+    emit('set-loading', false) // Notify parent to hide loading state
   }
 }
 
@@ -148,9 +163,9 @@ const unregisterCounselor = async () => {
 
   isSubmitting.value = true
   errorMessage.value = ''
+  emit('set-loading', true) // Notify parent to show loading state
 
   try {
-    // Create form data
     const formData = new FormData()
     formData.append('is_counselor', 'false')
 
@@ -158,20 +173,21 @@ const unregisterCounselor = async () => {
       is_counselor: false
     })
 
-    // Make API call
     const response = await apiServices.patchUser(userId, formData)
     console.log('API response:', response)
 
-    // Show success toast
-    toast.success('Successfully unregistered as a counselor.')
+    // Verify the response data
+    if (response.data?.is_counselor !== false) {
+      throw new Error('API response did not confirm counselor unregistration.')
+    }
 
-    // Notify parent to refresh
-    emit('update')
+    toast.success('Successfully unregistered as a counselor.')
+    emit('update', { ...props.application, is_counselor: false }) // Update parent with new state
   } catch (error) {
     console.error('Error unregistering as counselor:', error)
     let apiErrorMessage = 'Failed to unregister as counselor.'
 
-    if (error.response && error.response.data) {
+    if (error.response?.data) {
       const errors = error.response.data
       console.log('API error details:', errors)
 
@@ -189,6 +205,7 @@ const unregisterCounselor = async () => {
     toast.error(apiErrorMessage)
   } finally {
     isSubmitting.value = false
+    emit('set-loading', false) // Notify parent to hide loading state
   }
 }
 </script>

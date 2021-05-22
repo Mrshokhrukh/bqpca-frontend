@@ -25,7 +25,7 @@
             </div>
             <h1 class="text-4xl font-serif font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6">
               <span class="block">Bhutan Qualifications &</span>
-              <span class="block text-blue-400">Professional Certification</span>
+              <span class="block text-blue-400">Professionals Certification</span>
               <span class="block">Authority</span>
             </h1>
             <p class="mt-6 text-lg text-slate-300 leading-relaxed max-w-2xl">
