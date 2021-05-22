@@ -1573,9 +1573,26 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
       },
       {
-        name: 'Apply for Accreditation',
-        icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/user/${serviceType}/apply_for_accreditation`,
+        name: 'Create Institue Profile',
+        icon: getIconComponent('FileSearch'),
+        route: (serviceType) => `/admin/user/${serviceType}/institute_profile`,
+      },
+      {
+        name: 'Accreditation',
+        icon: getIconComponent('ClipboardList'),
+        children: [
+          {
+            name: 'Apply for Accreditation',
+            icon: getIconComponent('ClipboardList'),
+            route: (serviceType) => `/admin/user/${serviceType}/apply_for_accreditation`,
+          },
+          // {
+          //   name: 'Track My Applications',
+          //   icon: getIconComponent('Scale'),
+          //   route: (serviceType) => `/admin/user/${serviceType}/appeal_lists`,
+          // },
+
+        ],
       },
       {
         name: 'Appeal for Accreditation',
@@ -1597,10 +1614,23 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/user/${serviceType}/results`,
       },
+
       {
         name: 'Profile',
-        icon: getIconComponent('UserCircle'),
-        route: (serviceType) => `/admin/user/${serviceType}/profile`,
+        icon: getIconComponent('ClipboardList'),
+        children: [
+          {
+            name: 'Institute Profile',
+            icon: getIconComponent('ClipboardList'),
+            route: (serviceType) => `/admin/user/${serviceType}/profile`,
+          },
+          {
+            name: 'User Profile',
+            icon: getIconComponent('Scale'),
+            route: (serviceType) => `/admin/usser/${serviceType}/user_profile`,
+          },
+
+        ],
       },
     ],
     dealing_officer: [

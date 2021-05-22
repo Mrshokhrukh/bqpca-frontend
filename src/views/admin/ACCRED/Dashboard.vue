@@ -82,6 +82,7 @@ import AccreApplyForAppeal from '@/components/dashboard/accredcomponent/users/Ac
 import AccreUserProfile from '@/components/dashboard/accredcomponent/users/AccreUserProfile.vue'
 import CoIConfirmation from '@/components/dashboard/accredcomponent/users/CoIConfirmation.vue'
 import SiteVisitConfirmation from '@/components/dashboard/accredcomponent/users/SiteVisitConfirmation.vue'
+import CreateInstituteProfile from '@/components/dashboard/accredcomponent/users/CreateInstituteProfile.vue'
 
 // Import Dealing Officer Components
 import AccreDealingdashboard from '@/components/dashboard/accredcomponent/dealingOfficer/AccreDealingdashboard.vue'
@@ -243,6 +244,8 @@ const userComponent = computed(() => {
       return CoIConfirmation
     case path.endsWith('/accreditation/site_visit_confirmation'):
       return SiteVisitConfirmation
+    case path.endsWith('/accreditation/institute_profile'):
+      return CreateInstituteProfile
     default:
       return null
   }

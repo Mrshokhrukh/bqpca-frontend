@@ -150,6 +150,7 @@ export default {
       site_visit_confirmation: accredDashboard,
       results: accredDashboard,
       profile: accredDashboard,
+      institute_profile: accredDashboard,
     },
     engineering_certification: {
       dashboard: engineeringDashboard,
