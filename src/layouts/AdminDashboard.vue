@@ -25,42 +25,36 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
 import { useInstitutionStore } from '@/stores/institutionNavigationStore'
-import { SERVICE_TYPE_CHOICES } from '@/router/constants'
 import { generateNavigationItems } from '@/constants/navMenu'
 import { formatText } from '@/utils/formatText'
 
-import SideNavBar from './components/SideNavBar.vue' // Adjust path if needed
-import TopMenuBar from './components/TopMenuBar.vue' // Adjust path if needed
-import MainDisplayArea from './components/MainDisplayArea.vue' // Adjust path if needed
+import SideNavBar from './components/SideNavBar.vue'
+import TopMenuBar from './components/TopMenuBar.vue'
+import MainDisplayArea from './components/MainDisplayArea.vue'
+
 // State Management
 const authStore = useAuthStore()
 const router = useRouter()
-// const route = useRoute();
 const sidebarOpen = ref(true)
-const navigationItems = ref([]) // Now an array
-// const showSubMenu = reactive({});
+const navigationItems = ref([])
 
 // Lifecycle Hooks
 onBeforeMount(async () => {
   await router.isReady()
 
-  // Initialize health certification store if needed
   if (authStore.serviceType === 'health_certification' && authStore.role === 'user') {
     const healthStore = useHealthCertificationStore()
     await healthStore.initialize()
   }
 
-  // Initialize institution store if needed
   if (authStore.serviceType === 'health_certification' && authStore.role === 'institutions') {
     const institutionStore = useInstitutionStore()
     await institutionStore.initialize()
   }
 
-  // Generate navigation items after store initialization
   navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType)
 })
 
-// Watch for route changes to update navigation
 onMounted(async () => {
   if (authStore.serviceType === 'health_certification' && authStore.role === 'user') {
     const healthStore = useHealthCertificationStore()
@@ -75,15 +69,24 @@ onMounted(async () => {
   }
 })
 
+// Custom mapping for service type display names
+const serviceTypeDisplayMap = {
+  roq: 'Recognition of Qualification',
+  ecpf: 'ECPF',
+  health_certification: 'Medical Health Professionals',
+  engineering_certification: 'Engineering Professionals',
+  accreditation: 'Accreditation Services',
+}
+
 // Computed Properties
+const serviceTypeLabel = computed(() => {
+  return serviceTypeDisplayMap[authStore.serviceType] || ''
+})
+
 const currentRouteName = computed(() => {
   const formattedRole = formatText(authStore.role)
   const formattedServiceType = formatText(serviceTypeLabel.value)
   return `${formattedRole}, ${formattedServiceType} - Dashboard`
-})
-
-const serviceTypeLabel = computed(() => {
-  return SERVICE_TYPE_CHOICES.find((s) => s.key === authStore.serviceType)?.label || ''
 })
 
 const filteredNavigationItems = computed(() => {
@@ -92,18 +95,10 @@ const filteredNavigationItems = computed(() => {
 
 const currentYear = computed(() => new Date().getFullYear())
 
-// const isChildActive = (children) => {
-//   return children.some(child => route.path === child.route);
-// };
-
 // Methods
 const toggleSidebar = () => {
   sidebarOpen.value = !sidebarOpen.value
 }
-
-// const toggleSubMenu = (item) => {
-//   showSubMenu[item.name] = !showSubMenu[item.name];
-// };
 
 const handleLogout = async () => {
   await authStore.logout()
@@ -111,12 +106,10 @@ const handleLogout = async () => {
 </script>
 
 <style scoped>
-/* Smooth transitions */
 .transition-all {
   transition-property: all;
 }
 
-/* menu notification */
 .notification-badge {
   display: inline-block;
   background-color: red;
