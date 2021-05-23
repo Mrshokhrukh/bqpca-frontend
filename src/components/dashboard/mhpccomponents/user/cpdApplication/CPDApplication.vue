@@ -27,16 +27,16 @@
       <div class="p-6 space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6">
           <div class="space-y-1.5">
-            <label
-              for="display_registration_no_str"
-              class="text-xs font-medium text-gray-700"
+            <label for="display_registration_no_str" class="text-xs font-medium text-gray-700"
               >Registration Number</label
             >
             <p
               id="display_registration_no_str"
               class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
             >
-              {{ form.display_registration_no || (isLoadingRegistrationNo ? 'Fetching...' : 'N/A') }}
+              {{
+                form.display_registration_no || (isLoadingRegistrationNo ? 'Fetching...' : 'N/A')
+              }}
             </p>
           </div>
 
@@ -65,14 +65,36 @@
           </div>
 
           <div class="space-y-1.5">
-            <label for="display_gender" class="text-xs font-medium text-gray-700"
-              >Gender</label
-            >
+            <label for="display_gender" class="text-xs font-medium text-gray-700">Gender</label>
             <p
               id="display_gender"
               class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm capitalize min-h-[38px] flex items-center"
             >
               {{ form.gender || 'N/A' }}
+            </p>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="display_personnel_category" class="text-xs font-medium text-gray-700"
+              >Personnel Category</label
+            >
+            <p
+              id="display_personnel_category"
+              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+            >
+              {{ form.personnel_category_name || 'N/A' }}
+            </p>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="display_personnel_sub_category" class="text-xs font-medium text-gray-700"
+              >Personnel Sub-category</label
+            >
+            <p
+              id="display_personnel_sub_category"
+              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+            >
+              {{ form.personnel_sub_category_name || 'N/A' }}
             </p>
           </div>
         </div>
@@ -126,69 +148,6 @@
 
           <div class="space-y-1.5">
             <label
-              for="participation_category"
-              class="text-xs font-medium text-gray-700 flex items-center"
-            >
-              Participation Category <span class="text-red-500 ml-1">*</span>
-            </label>
-            <select
-              id="participation_category"
-              v-model="form.participation_category"
-              @change="handleCategoryChange"
-              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-50 text-gray-900 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 shadow-sm hover:border-gray-300 appearance-none"
-              required
-            >
-              <option value="" disabled>Select category</option>
-              <option
-                v-for="category in participationCategories"
-                :key="category.id"
-                :value="category.id"
-              >
-                {{ category.participation_category_name }}
-              </option>
-            </select>
-            <span v-if="errors.participation_category" class="text-xs text-red-500 block">{{
-              errors.participation_category
-            }}</span>
-          </div>
-
-          <div class="space-y-1.5">
-            <label
-              for="participant_sub_category"
-              class="text-xs font-medium text-gray-700 flex items-center"
-            >
-              Participant Sub-category <span class="text-red-500 ml-1">*</span>
-            </label>
-            <select
-              id="participant_sub_category"
-              v-model="form.participant_sub_category"
-              :disabled="!form.participation_category || filteredSubCategories.length === 0"
-              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-50 text-gray-900 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 shadow-sm hover:border-gray-300 appearance-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-              required
-            >
-              <option value="" disabled>Select sub-category</option>
-              <option
-                v-if="form.participation_category && filteredSubCategories.length === 0"
-                value=""
-                disabled
-              >
-                No sub-categories for selected category
-              </option>
-              <option
-                v-for="subCategory in filteredSubCategories"
-                :key="subCategory.id"
-                :value="subCategory.id"
-              >
-                {{ subCategory.participation_sub_category_name }}
-              </option>
-            </select>
-            <span v-if="errors.participant_sub_category" class="text-xs text-red-500 block">{{
-              errors.participant_sub_category
-            }}</span>
-          </div>
-
-          <div class="space-y-1.5">
-            <label
               for="type_of_cpd_activity"
               class="text-xs font-medium text-gray-700 flex items-center"
             >
@@ -207,6 +166,30 @@
             </select>
             <span v-if="errors.type_of_cpd_activity" class="text-xs text-red-500 block">{{
               errors.type_of_cpd_activity
+            }}</span>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="cpd_hours" class="text-xs font-medium text-gray-700 flex items-center">
+              CPD Hours <span class="text-red-500 ml-1">*</span>
+            </label>
+            <div class="relative">
+              <input
+                id="cpd_hours"
+                v-model.number="form.cpd_hours"
+                type="number"
+                min="0"
+                step="0.5"
+                class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-50 text-gray-900 text-sm placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 shadow-sm hover:border-gray-300"
+                required
+                placeholder="Enter CPD hours"
+              />
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500"
+                >hours</span
+              >
+            </div>
+            <span v-if="errors.cpd_hours" class="text-xs text-red-500 block">{{
+              errors.cpd_hours
             }}</span>
           </div>
 
@@ -247,19 +230,6 @@
               errors.attachment
             }}</span>
           </div>
-
-           <div class="space-y-1.5">
-            <label for="display_cpd_credit" class="text-xs font-medium text-gray-700"
-              >CPD Credit (Default)</label
-            >
-            <p
-              id="display_cpd_credit"
-              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
-            >
-              {{ form.cpd_credit }}
-            </p>
-          </div>
-
         </div>
       </div>
 
@@ -315,7 +285,7 @@
 </template>
 
 <script setup>
-import { reactive, onMounted, ref, computed } from 'vue'
+import { reactive, onMounted, ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
 import apiService from '@/services/services'
@@ -328,40 +298,31 @@ const authStore = useAuthStore()
 const router = useRouter()
 const fileInputRef = ref(null)
 const attachmentFileName = ref('')
+const isSubmitting = ref(false)
+const isLoadingRegistrationNo = ref(false)
 
 const LOCAL_STORAGE_DRAFT_KEY = 'mhpcCpdFormDraft'
 
 const cpdActivities = ref([])
-const participationCategories = ref([])
-const participationSubCategories = ref([])
-const isSubmitting = ref(false)
-const isLoadingRegistrationNo = ref(false)
 
 const form = reactive({
-  registration_record_id: null, // Stores the PK (integer ID) for the registration record
-  display_registration_no: '',  // Stores the human-readable registration string for display
+  registration_record_id: null,
+  display_registration_no: '',
   cid_no: '',
   full_name: '',
   gender: '',
   title_of_cpd: '',
   relevance_to_profession: '',
-  participation_category: '',
-  participant_sub_category: '',
+  personnel_category: '',
+  personnel_category_name: '',
+  personnel_sub_category: '',
+  personnel_sub_category_name: '',
   type_of_cpd_activity: '',
-  cpd_credit: 1,
+  cpd_hours: '',
   attachment: null,
 })
 
 const errors = reactive({})
-
-const filteredSubCategories = computed(() => {
-  const selectedCategoryId = form.participation_category
-  if (!selectedCategoryId) return []
-  return participationSubCategories.value.filter(
-    (subCategory) =>
-      parseInt(subCategory.participation_category_name) === parseInt(selectedCategoryId),
-  )
-})
 
 const loadDraft = () => {
   const savedDraft = localStorage.getItem(LOCAL_STORAGE_DRAFT_KEY)
@@ -373,16 +334,19 @@ const loadDraft = () => {
           form[key] = draftData[key]
         }
       })
-      // Ensure user-specific info from authStore takes precedence or initializes
       if (authStore.user) {
         form.cid_no = authStore.user.cid || draftData.cid_no || ''
         form.full_name =
-          (`${authStore.user.first_name || ''} ${authStore.user.middle_name || ''} ${authStore.user.last_name || ''}`
-            .replace(/\s+/g, ' ').trim()) || draftData.full_name || ''
+          `${authStore.user.first_name || ''} ${authStore.user.middle_name || ''} ${
+            authStore.user.last_name || ''
+          }`
+            .replace(/\s+/g, ' ')
+            .trim() ||
+          draftData.full_name ||
+          ''
         form.gender = authStore.user.gender || draftData.gender || ''
       }
       attachmentFileName.value = draftData.attachmentName || ''
-
       if (attachmentFileName.value) {
         toast.info('Draft loaded. Re-select attachment if needed.', { timeout: 4000 })
       } else {
@@ -422,151 +386,230 @@ const validateForm = () => {
     errors.relevance_to_profession = 'Professional relevance is required.'
     isValid = false
   }
-  if (!form.participation_category) {
-    errors.participation_category = 'Participation category is required.'
-    isValid = false
-  }
-  if (form.participation_category && !form.participant_sub_category) {
-    const potentialSubs = participationSubCategories.value.filter(
-      (sub) => parseInt(sub.participation_category_name) === parseInt(form.participation_category),
-    )
-    if (potentialSubs.length > 0) {
-      errors.participant_sub_category = 'Participant sub-category is required.'
-      isValid = false
-    }
-  }
   if (!form.type_of_cpd_activity) {
     errors.type_of_cpd_activity = 'CPD activity type is required.'
     isValid = false
   }
+  // cpd_hours validation is fine (v-model.number makes it null if empty)
+  if (form.cpd_hours === null || form.cpd_hours === '' || parseFloat(form.cpd_hours) <= 0) {
+    errors.cpd_hours = 'CPD hours must be a positive number.'
+    isValid = false
+  }
+
+  // **NEW VALIDATION**
+  if (!form.personnel_category) {
+    // This error won't show on a specific field, so a general toast might be better
+    // or you could add a general error display area on your form.
+    toast.error('Personnel Category is missing. Please ensure your registration details are fully loaded.');
+    errors.general_category = 'Personnel Category could not be determined.'; // For internal tracking
+    isValid = false;
+  }
+  // If participant_sub_category is also strictly required by backend:
+  if (!form.personnel_sub_category) {
+    toast.error('Personnel Sub-Category is missing. Please ensure your registration details are fully loaded.');
+    errors.general_subcategory = 'Personnel Sub-Category could not be determined.';
+    isValid = false;
+  }
+  // **END NEW VALIDATION**
+
   if (form.attachment && form.attachment.size > 2 * 1024 * 1024) {
     errors.attachment = 'File size must not exceed 2MB.'
     isValid = false
   }
   if (!form.registration_record_id) {
-    console.warn("Validation: Registration record ID is missing.")
-    // Depending on policy, you might want to show an error to the user here
-    // errors.general = "Registration information is missing. Cannot submit."
-    // isValid = false;
+    errors.general_registration = 'Registration information (Application ID) is missing. Cannot submit.'
+    toast.error(errors.general_registration);
+    isValid = false
   }
   return isValid
 }
 
 const fetchRegistrationDetails = async (cid) => {
-  if (!cid) return null;
-  isLoadingRegistrationNo.value = true;
+  if (!cid) return null
+  isLoadingRegistrationNo.value = true
   try {
-    const response = await apiService.getMhpcApplicationsByCid(cid);
-    if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-      const primaryApp = response.data.find(
-        (app) => (app.registration_type_name === 'New Registration' || app.is_primary) && app.id
-      );
-      const appToUse = primaryApp || response.data.find(app => app.id);
+    const response = await apiService.getMhpcFullApplicationListByCid(cid)
+    if (response.data?.results?.length > 0) {
+      const mainApplication = response.data.results[0]; // Get the main application object
+      const primaryQual = mainApplication.user_qualifications.find(
+        qual => qual.is_primary_qualification
+      ) || mainApplication.user_qualifications[0]; // Fallback to the first qualification
 
-      if (appToUse && appToUse.id) {
+      if (primaryQual) {
         return {
-          recordId: appToUse.id, // The Primary Key
-          displayNo: appToUse.registration_no || `Record ID: ${appToUse.id}` // String for display
-        };
+          recordId: mainApplication.id,
+          // Use mainApplication.registration_no for the display registration number
+          displayNo: mainApplication.registration_no || `App. ID: ${mainApplication.id}`,
+          personnelCategory: primaryQual.personnel_category,
+          personnelCategoryName: primaryQual.personnel_category_name,
+          personnelSubCategory: primaryQual.personnel_sub_category,
+          personnelSubCategoryName: primaryQual.personnel_sub_category_name
+        }
+      } else {
+        // If no qualifications, still return application ID and its registration_no
+         console.warn(`No qualifications found for application ID: ${mainApplication.id}, CID: ${cid}`);
+         return {
+            recordId: mainApplication.id,
+            displayNo: mainApplication.registration_no || `App. ID: ${mainApplication.id}`,
+            personnelCategory: null, // No primary qual to get this from
+            personnelCategoryName: 'N/A',
+            personnelSubCategory: null,
+            personnelSubCategoryName: 'N/A'
+         }
       }
     }
-    console.warn(`No suitable registration record found for CID: ${cid}.`);
-    toast.warning('Could not automatically fetch complete registration details.');
-    return null;
+    console.warn(`No suitable registration record found for CID: ${cid}. API Response:`, response.data);
+    toast.warning('Could not fetch complete registration details.');
+    return null
   } catch (error) {
     console.error('Error fetching registration details:', error);
-    toast.warning('Failed to fetch registration details. Submission might be affected.');
-    return null;
+    if(error.response) console.error("Error response data:", error.response.data);
+    toast.warning('Failed to fetch registration details.');
+    return null
   } finally {
-    isLoadingRegistrationNo.value = false;
+    isLoadingRegistrationNo.value = false
   }
-};
+}
 
 const handleSubmit = async () => {
   if (!validateForm()) {
     toast.error('Please correct the errors in the form before submitting.')
     return
   }
-  if (!form.registration_record_id) {
-    toast.error('Critical: Registration information is missing. Cannot submit application.');
-    return;
-  }
 
   isSubmitting.value = true
   const formData = new FormData()
 
-  const genderToSend = form.gender ? form.gender.toLowerCase() : 'others';
+  const genderToSend = form.gender ? form.gender.toLowerCase() : 'others'
 
-  formData.append('registration_no', String(form.registration_record_id)) // Send the PK
+  formData.append('registration_no', String(form.registration_record_id)) // This should be the Application PK
   formData.append('cid_no', form.cid_no || '')
   formData.append('full_name', form.full_name || '')
   formData.append('gender', genderToSend)
   formData.append('title_of_cpd', form.title_of_cpd)
   formData.append('relevance_to_profession', form.relevance_to_profession)
-  formData.append('participation_category', form.participation_category)
-  if (form.participant_sub_category) {
-    formData.append('participant_sub_category', form.participant_sub_category)
+
+  // **MODIFICATIONS START HERE**
+  // Send the fetched personnel category/sub-category IDs under the names the backend expects
+  if (form.personnel_category) {
+    // Ensure it's not empty/null before sending
+    formData.append('participation_category', String(form.personnel_category))
+  } else {
+    // Handle cases where personnel_category might be null but backend requires it.
+    // This might indicate an issue with data fetching or a state where submission shouldn't proceed.
+    // For now, we rely on validateForm to catch this if it's truly mandatory from a data integrity PoV.
+    // If backend requires it EVEN IF NULL (which is unlikely for a PKRelatedField unless null=True),
+    // you might need to send an empty string or handle it based on backend behavior.
+    // Given the error "This field is required", it must be sent.
+    // Consider adding a check in validateForm for form.personnel_category.
   }
+
+  if (form.personnel_sub_category) {
+    // Sub-category might be optional
+    formData.append('participant_sub_category', String(form.personnel_sub_category))
+  }
+  // If participant_sub_category is absolutely required by the backend even if the user has no sub-category,
+  // you'll need a strategy, but often sub-categories can be optional.
+  // The error message "participant_sub_category: [This field is required.]" suggests it IS required.
+  // Ensure form.personnel_sub_category has a value.
+
   formData.append('type_of_cpd_activity', form.type_of_cpd_activity)
-  formData.append('cpd_credit', String(form.cpd_credit))
+  formData.append('cpd_hours', String(form.cpd_hours))
+
+  // Add cpd_credit, using the cpd_hours value as per the requirement to replace credit with hours
+  formData.append('cpd_credit', String(form.cpd_hours)) // Or a fixed default like '1' if that's more appropriate
+  // **MODIFICATIONS END HERE**
+
   if (form.attachment) {
     formData.append('attachment', form.attachment, form.attachment.name)
   }
 
+  // ... rest of the handleSubmit function remains the same
   try {
     const response = await apiService.createMhpcCpdRecord(formData)
     if (response.status >= 200 && response.status < 300) {
       toast.success('CPD application submitted successfully!')
       clearDraft()
-      // Reset only user-editable CPD fields, keep personal info
+      // Reset form fields
       form.title_of_cpd = ''
       form.relevance_to_profession = ''
-      form.participation_category = ''
-      form.participant_sub_category = ''
       form.type_of_cpd_activity = ''
+      form.cpd_hours = '' // Reset to empty string, consistent with initialization
       form.attachment = null
       attachmentFileName.value = ''
       if (fileInputRef.value) fileInputRef.value.value = ''
-      Object.keys(errors).forEach(key => delete errors[key]);
-
+      Object.keys(errors).forEach((key) => delete errors[key])
       router.push('/admin/user/health_certification/dashboard')
     } else {
-      const errorData = response.data || { message: `Server responded with status ${response.status}` }
-      let errorMessage = typeof errorData === 'object' ? (errorData.detail || JSON.stringify(errorData)) : String(errorData)
-
-      if (typeof errorData === 'object' && errorData.registration_no && Array.isArray(errorData.registration_no)) {
-          errorMessage = `Registration No: ${errorData.registration_no.join(' ')}`;
+      const errorData = response.data || {
+        message: `Server responded with status ${response.status}`,
       }
+      let errorMessage =
+        typeof errorData === 'object'
+          ? errorData.detail || JSON.stringify(errorData)
+          : String(errorData)
 
-      toast.error(`Submission failed: ${errorMessage}`)
+      // Populate errors object from backend response
       if (typeof errorData === 'object' && errorData !== null) {
-        Object.keys(errorData).forEach(key => {
+        Object.keys(errorData).forEach((key) => {
           if (Object.hasOwn(errors, key)) {
-            errors[key] = Array.isArray(errorData[key]) ? errorData[key].join(', ') : errorData[key];
+            // Check if error key matches a form field error display
+            errors[key] = Array.isArray(errorData[key]) ? errorData[key].join(', ') : errorData[key]
+          } else {
+            // For general errors or errors not directly tied to a field in `errors`
+            if (key === 'detail') {
+              // Common key for general DRF errors
+              toast.error(`Submission failed: ${errorData[key]}`)
+            } else if (Array.isArray(errorData[key])) {
+              toast.error(`${key}: ${errorData[key].join(', ')}`)
+            } else {
+              toast.error(`${key}: ${errorData[key]}`)
+            }
           }
-        });
+        })
+        // If specific field errors were assigned, also show a general message if not already shown by detail
+        if (!errorData.detail) {
+          const fieldErrorMessages = Object.entries(errorData)
+            .map(([field, msg]) => `${field}: ${Array.isArray(msg) ? msg.join(', ') : msg}`)
+            .join('; ')
+          if (fieldErrorMessages && !errorMessage.includes(fieldErrorMessages)) {
+            // Avoid duplicate messages
+            toast.error(`Submission failed. Please check errors: ${fieldErrorMessages}`)
+          } else if (!fieldErrorMessages) {
+            toast.error(`Submission failed: ${errorMessage}`)
+          }
+        }
+      } else {
+        toast.error(`Submission failed: ${errorMessage}`)
       }
     }
   } catch (error) {
     let errorMsg = 'An unexpected error occurred during submission.'
     if (error.response && error.response.data) {
-        const errorData = error.response.data;
-        errorMsg = errorData.detail || errorData.message || (typeof errorData === 'object' ? JSON.stringify(errorData) : String(errorData));
-        if (typeof errorData === 'object' && errorData.registration_no && Array.isArray(errorData.registration_no)) {
-            errorMsg = `Registration No: ${errorData.registration_no.join(' ')}`;
-        }
-        if (typeof errorData === 'object' && errorData !== null) {
-            Object.keys(errorData).forEach(key => {
-                if (Object.hasOwn(errors, key)) {
-                    errors[key] = Array.isArray(errorData[key]) ? errorData[key].join(', ') : errorData[key];
-                }
-            });
-        }
+      const errorData = error.response.data
+      // Try to parse and display specific errors
+      if (typeof errorData === 'object' && errorData !== null) {
+        Object.keys(errorData).forEach((key) => {
+          if (Object.hasOwn(errors, key)) {
+            errors[key] = Array.isArray(errorData[key]) ? errorData[key].join(', ') : errorData[key]
+          }
+        })
+        // Construct a general message from the error data if not already specific
+        const generalError =
+          errorData.detail ||
+          errorData.message ||
+          Object.values(errorData)
+            .map((v) => (Array.isArray(v) ? v.join(' ') : v))
+            .join('; ')
+        errorMsg = generalError
+      } else {
+        errorMsg = String(errorData)
+      }
     } else if (error.message) {
-        errorMsg = error.message;
+      errorMsg = error.message
     }
     toast.error(`Submission failed: ${errorMsg}`)
-    console.error("Submission error object:", error.response || error);
+    console.error('Submission error object:', error.response || error)
   } finally {
     isSubmitting.value = false
   }
@@ -575,9 +618,8 @@ const handleSubmit = async () => {
 const handleCancel = () => {
   form.title_of_cpd = ''
   form.relevance_to_profession = ''
-  form.participation_category = ''
-  form.participant_sub_category = ''
   form.type_of_cpd_activity = ''
+  form.cpd_hours = ''
   form.attachment = null
   attachmentFileName.value = ''
   Object.keys(errors).forEach((key) => delete errors[key])
@@ -595,16 +637,21 @@ const handleFileUpload = (event) => {
     delete errors.attachment
     return
   }
-  const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png'];
+  const allowedTypes = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'image/jpeg',
+    'image/png',
+  ]
   if (!allowedTypes.includes(file.type)) {
     errors.attachment = 'Invalid file type. Allowed: PDF, DOC, DOCX, JPG, PNG.'
     form.attachment = null
     attachmentFileName.value = ''
     event.target.value = ''
-    toast.error(errors.attachment);
-    return;
+    toast.error(errors.attachment)
+    return
   }
-
   if (file.size > 2 * 1024 * 1024) {
     errors.attachment = 'File size must not exceed 2MB.'
     form.attachment = null
@@ -618,61 +665,24 @@ const handleFileUpload = (event) => {
   }
 }
 
-const handleCategoryChange = () => {
-  form.participant_sub_category = ''
-  delete errors.participant_sub_category
-}
-
 const fetchMasterData = async () => {
   try {
-    const [activitiesResponse, categoriesResponse, subCategoriesResponse] =
-      await Promise.allSettled([
-        apiService.getMhpcMastersSingleCpdActivity(),
-        apiService.getMhpcMastersMHPCParticipationCategories(),
-        apiService.getMhpcMastersMhpcParticipationSubCategories(),
-      ])
-
-    if (activitiesResponse.status === 'fulfilled') {
-      const data = activitiesResponse.value?.data?.results || activitiesResponse.value?.results
-      cpdActivities.value = data || []
-    } else {
-      console.error('Failed to fetch CPD Activities:', activitiesResponse.reason)
-    }
-
-    if (categoriesResponse.status === 'fulfilled') {
-      const data = categoriesResponse.value?.data?.results || categoriesResponse.value?.results
-      participationCategories.value = data || []
-    } else {
-      console.error('Failed to fetch Participation Categories:', categoriesResponse.reason)
-    }
-
-    if (subCategoriesResponse.status === 'fulfilled') {
-      const data = subCategoriesResponse.value?.data?.results || subCategoriesResponse.value?.results
-      participationSubCategories.value = data || []
-    } else {
-      console.error('Failed to fetch Participation SubCategories:', subCategoriesResponse.reason)
-    }
-
-    if (
-      activitiesResponse.status === 'rejected' ||
-      categoriesResponse.status === 'rejected' ||
-      subCategoriesResponse.status === 'rejected'
-    ) {
-      toast.warning('Could not fetch all dropdown data. Some options may be unavailable.')
-    }
+    const activitiesResponse = await apiService.getMhpcMastersSingleCpdActivity()
+    cpdActivities.value = activitiesResponse.data?.results || []
   } catch (error) {
-    toast.error('Failed to fetch essential master data for the form.')
-    console.error('Error fetching master data:', error)
+    toast.error('Failed to fetch CPD activity types.')
+    console.error('Error fetching CPD activities:', error)
   }
 }
 
 onMounted(async () => {
   if (authStore.user) {
     form.cid_no = authStore.user.cid || ''
-    form.full_name =
-      `${authStore.user.first_name || ''} ${authStore.user.middle_name || ''} ${authStore.user.last_name || ''}`
-        .replace(/\s+/g, ' ')
-        .trim()
+    form.full_name = `${authStore.user.first_name || ''} ${authStore.user.middle_name || ''} ${
+      authStore.user.last_name || ''
+    }`
+      .replace(/\s+/g, ' ')
+      .trim()
     form.gender = authStore.user.gender || ''
   } else {
     toast.error('User data not found. Please log in again.')
@@ -685,11 +695,15 @@ onMounted(async () => {
   if (!form.registration_record_id && form.cid_no) {
     const regDetails = await fetchRegistrationDetails(form.cid_no)
     if (regDetails) {
-      form.registration_record_id = regDetails.recordId;
-      form.display_registration_no = regDetails.displayNo;
+      form.registration_record_id = regDetails.recordId
+      form.display_registration_no = regDetails.displayNo
+      form.personnel_category = regDetails.personnelCategory
+      form.personnel_category_name = regDetails.personnelCategoryName
+      form.personnel_sub_category = regDetails.personnelSubCategory
+      form.personnel_sub_category_name = regDetails.personnelSubCategoryName
     }
   } else if (!form.cid_no) {
-    toast.warning('CID number not available, cannot fetch registration details.');
+    toast.warning('CID number not available, cannot fetch registration details.')
   }
 })
 </script>
