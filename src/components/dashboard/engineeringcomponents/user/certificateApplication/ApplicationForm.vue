@@ -1,6 +1,31 @@
 <template>
   <div class="mx-auto py-8">
-    <!-- Confirmation Modal -->
+    <!-- Existing Loading Overlay (unchanged) -->
+    <div v-if="isLoadingExistingApplication"
+      class="fixed inset-0 bg-white bg-opacity-75 z-50 flex items-center justify-center">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p class="text-gray-600">Checking for existing application...</p>
+      </div>
+    </div>
+
+    <!-- NEW: Redirect Overlay -->
+    <div v-if="isRedirecting" class="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center">
+      <div class="text-center">
+        <div class="animate-pulse">
+          <svg class="w-16 h-16 text-green-600 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Application Complete!</h3>
+        <p class="text-gray-600 mb-4">Your application has already been submitted.</p>
+        <p class="text-sm text-gray-500">Redirecting to your applications...</p>
+      </div>
+    </div>
+
+    <!-- Confirmation Modal (unchanged) -->
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
       <Dialog as="div" class="relative z-10 fixed inset-0 z-10 w-screen" @close="isConfirmationModalOpen = false">
         <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
@@ -40,7 +65,8 @@
                   <button type="button"
                     class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
                     @click="handleSubmitActual" :disabled="isSubmitting">
-                    {{ isSubmitting ? 'Submitting...' : 'Confirm' }}
+                    {{ isSubmitting ? (existingQualification ? 'Updating...' : 'Submitting...') : (existingQualification
+                      ? 'Update Application' : 'Submit Application') }}
                   </button>
                   <button type="button"
                     class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
@@ -60,13 +86,81 @@
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         {{ selectedType === 'cid' ? 'CID Holder Registration' : 'Non-CID Holder Registration' }}
       </h2>
+
+      <!-- Progress indicator -->
+      <div class="mb-4">
+        <div class="flex items-center justify-center space-x-4">
+          <div class="flex items-center">
+            <div :class="['w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold',
+              stage >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600']">
+              <svg v-if="stage > 1" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              <span v-else>1</span>
+            </div>
+            <span class="ml-2 text-sm font-medium text-gray-700">Personal Info</span>
+          </div>
+
+          <div :class="['w-8 h-0.5', stage >= 2 ? 'bg-blue-600' : 'bg-gray-300']"></div>
+
+          <div class="flex items-center">
+            <div :class="['w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold',
+              stage >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600']">
+              <svg v-if="stage > 2" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              <span v-else>2</span>
+            </div>
+            <span class="ml-2 text-sm font-medium text-gray-700">Qualification</span>
+          </div>
+
+          <div :class="['w-8 h-0.5', stage >= 3 ? 'bg-blue-600' : 'bg-gray-300']"></div>
+
+          <div class="flex items-center">
+            <div :class="['w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold',
+              stage >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600']">
+              3
+            </div>
+            <span class="ml-2 text-sm font-medium text-gray-700">Review</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- UPDATED: Resume message with !isRedirecting condition -->
+      <div v-if="existingApplication && !isRedirecting" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+              clip-rule="evenodd"></path>
+          </svg>
+          <div>
+            <p class="text-sm font-medium text-blue-800">
+              {{ existingQualification ? 'Resuming Your Application' : 'Continuing Your Application' }}
+            </p>
+            <p class="text-sm text-blue-600">
+              {{ existingQualification
+                ? 'We found your previous application with qualification details. You can review or make changes.'
+                : 'Your personal information has been saved. Please complete the qualification details.'
+              }}
+            </p>
+          </div>
+        </div>
+      </div>
+
       <p class="text-gray-600 text-center max-w-2xl mx-auto">
         Please fill in all required fields marked with an asterisk (<span class="text-red-600">*</span>). Ensure all
         information provided is accurate and up-to-date.
       </p>
     </div>
 
-    <form @submit.prevent="handleNext" class="bg-white border rounded-xl shadow-sm p-6" v-if="stage === 1">
+    <!-- UPDATED: Stage 1 Form with !isRedirecting condition -->
+    <form @submit.prevent="handleNext" class="bg-white border rounded-xl shadow-sm p-6"
+      v-if="stage === 1 && !isRedirecting">
       <h3 class="text-lg font-semibold text-gray-900 my-4">Step 1: Personal Information</h3>
       <!-- Form Sections -->
       <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
@@ -82,14 +176,28 @@
             <!-- CID Fields -->
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">CID No.</label>
-              <input v-model="localFormData.cid_no" type="number"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-                placeholder="Enter 11-digit CID number" @input="fetchDCRCData" :disabled="isLoadingDCRC" />
-              <!-- Simple loading indicator -->
-              <span v-if="isLoadingDCRC" class="text-sm text-blue-500 mt-1">Fetching details...</span>
-              <span v-if="errors.cid_no" class="text-sm text-red-500 mt-1">{{
-                errors.cid_no
-              }}</span>
+              <div class="relative">
+                <input v-model="localFormData.cid_no" type="number"
+                  class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm pr-10"
+                  placeholder="Enter 11-digit CID number" @input="fetchDCRCData"
+                  :disabled="isLoadingDCRC || isLoadingExistingApplication" />
+
+                <!-- Loading indicator for CID checking -->
+                <div v-if="isLoadingExistingApplication" class="absolute inset-y-0 right-0 flex items-center pr-3">
+                  <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                </div>
+              </div>
+
+              <!-- Status messages -->
+              <div class="mt-1">
+                <span v-if="isLoadingDCRC" class="text-sm text-blue-500">Fetching citizen details...</span>
+                <span v-else-if="isLoadingExistingApplication" class="text-sm text-blue-500">Checking for existing
+                  application...</span>
+                <span v-else-if="existingApplication && isCIDValid" class="text-sm text-green-600">
+                  ✓ Found existing application
+                </span>
+                <span v-else-if="errors.cid_no" class="text-sm text-red-500">{{ errors.cid_no }}</span>
+              </div>
             </div>
 
             <div class="col-span-1">
@@ -244,21 +352,6 @@
               errors.contact_no
             }}</span>
           </div>
-
-          <!-- Registration Type Field -->
-          <!-- <div class="col-span-1">
-            <label class="block text-sm font-medium text-gray-700 required">Registration Type</label>
-            <select v-model="localFormData.registration_type"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm">
-              <option value="">Select Registration Type</option>
-              <option v-for="regType in registrationTypes" :key="regType.id" :value="regType.id">
-                {{ regType.name }}
-              </option>
-            </select>
-            <span v-if="errors.registration_type" class="text-sm text-red-500 mt-1">{{
-              errors.registration_type
-            }}</span>
-          </div> -->
         </div>
 
         <!-- Passport Photo Section -->
@@ -292,16 +385,25 @@
           </button>
           <button type="submit"
             class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-            :disabled="isLoadingDCRC || isSubmitting">
-            {{ isSubmitting ? 'Saving...' : 'Next' }}
+            :disabled="isLoadingDCRC || isSubmitting || isLoadingExistingApplication">
+            {{ isSubmitting ? (applicationId ? 'Updating...' : 'Saving...') : (applicationId ? 'Update & Continue' :
+              'Next') }}
+          </button>
+        </div>
+
+        <!-- Add a "Start New Application" button for cases where user wants to start fresh -->
+        <div v-if="existingApplication && stage === 1" class="mt-4 text-center">
+          <button type="button" @click="startNewApplication"
+            class="text-sm text-gray-500 hover:text-gray-700 underline">
+            Start a completely new application instead
           </button>
         </div>
       </div>
     </form>
 
-    <!-- Stage 2 Form -->
+    <!-- UPDATED: Stage 2 Form with !isRedirecting condition -->
     <form @submit.prevent="openConfirmationModal" class="bg-white border rounded-xl shadow-sm p-6"
-      v-else-if="stage === 2">
+      v-else-if="stage === 2 && !isRedirecting">
       <h3 class="text-lg font-semibold text-gray-900 my-4">
         Step 2: Engineering Qualification & Documents
       </h3>
@@ -337,7 +439,7 @@
               </select>
               <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
                 errors.qualification_name
-                }}</span>
+              }}</span>
             </div>
 
             <div class="col-span-1">
@@ -469,6 +571,20 @@
         </button>
       </div>
     </form>
+
+    <!-- NEW: Fallback content when no form should be shown -->
+    <div v-else-if="!isLoadingExistingApplication && !isRedirecting"
+      class="bg-white border rounded-xl shadow-sm p-6 text-center">
+      <div class="py-12">
+        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+          </path>
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Loading Application</h3>
+        <p class="text-gray-500">Please wait while we prepare your application form...</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -484,6 +600,12 @@ const authStore = useAuthStore()
 const userId = authStore.userId
 const user = authStore.user
 const router = useRouter()
+const toast = useToast()
+
+// ADD THESE NEW VARIABLES FIRST
+const isLoadingExistingApplication = ref(false)
+const existingApplication = ref(null)
+const existingQualification = ref(null)
 
 const props = defineProps({
   selectedType: {
@@ -505,309 +627,12 @@ const fetchedDocumentTypes = ref([])
 const qualificationTypes = ref([])
 const qualifications = ref([])
 const universities = ref([])
-
-const supportingDocuments = ref([{ type: '', files: [], description: '' }]) // Start with one document row
-
-const addDocument = () => {
-  supportingDocuments.value.push({ type: '', files: [], description: '' })
-}
-
-const removeDocument = (index) => {
-  if (supportingDocuments.value.length > 1) {
-    // Prevent removing the last one
-    supportingDocuments.value.splice(index, 1)
-    updateFormDocuments() // Update main form data when removing
-  } else {
-    toast.warning('At least one document entry is required.')
-  }
-}
-
-const handleFileSelect = (event, index) => {
-  const files = Array.from(event.target.files)
-  // Reset error
-  delete errors.documents
-
-  if (files.length === 0) {
-    supportingDocuments.value[index].files = []
-    updateFormDocuments()
-    return // No file selected
-  }
-
-  const file = files[0] // Assuming single file upload per row for simplicity now
-
-  if (file.size > 2 * 1024 * 1024) {
-    errors.documents = `File "${file.name}" exceeds the 2MB size limit.`
-    event.target.value = '' // Clear the input
-    supportingDocuments.value[index].files = [] // Clear files in state
-    toast.error(errors.documents)
-    updateFormDocuments()
-    return
-  }
-  supportingDocuments.value[index].files = [file] // Store as an array even if single
-  updateFormDocuments()
-}
-
-const updateFormDocuments = () => {
-  // Filter out rows that might have a type selected but no file, or vice versa if needed
-  // For now, just map valid entries (where a file exists)
-  const documents = supportingDocuments.value.reduce((acc, doc) => {
-    if (doc.files && doc.files.length > 0 && doc.type) {
-      // Ensure both type and file exist
-      acc.push({
-        type: doc.type,
-        files: doc.files, // This is an array of files (currently just one per row)
-        description: doc.description || '', // Add description if needed later
-      })
-    }
-    return acc
-  }, [])
-  localFormData.documents = documents
-  console.log('Updated localFormData.documents:', localFormData.documents)
-}
-
-// List of countries (full list)
-const countries = ref([
-  'Afghanistan',
-  'Albania',
-  'Algeria',
-  'Andorra',
-  'Angola',
-  'Antigua and Barbuda',
-  'Argentina',
-  'Armenia',
-  'Australia',
-  'Austria',
-  'Azerbaijan',
-  'Bahamas',
-  'Bahrain',
-  'Bangladesh',
-  'Barbados',
-  'Belarus',
-  'Belgium',
-  'Belize',
-  'Benin',
-  'Bhutan',
-  'Bolivia',
-  'Bosnia and Herzegovina',
-  'Botswana',
-  'Brazil',
-  'Brunei',
-  'Bulgaria',
-  'Burkina Faso',
-  'Burundi',
-  'Cambodia',
-  'Cameroon',
-  'Canada',
-  'Cape Verde',
-  'Central African Republic',
-  'Chad',
-  'Chile',
-  'China',
-  'Colombia',
-  'Comoros',
-  'Congo',
-  'Costa Rica',
-  'Croatia',
-  'Cuba',
-  'Cyprus',
-  'Czech Republic',
-  'Denmark',
-  'Djibouti',
-  'Dominica',
-  'Dominican Republic',
-  'East Timor',
-  'Ecuador',
-  'Egypt',
-  'El Salvador',
-  'Equatorial Guinea',
-  'Eritrea',
-  'Estonia',
-  'Ethiopia',
-  'Fiji',
-  'Finland',
-  'France',
-  'Gabon',
-  'Gambia',
-  'Georgia',
-  'Germany',
-  'Ghana',
-  'Greece',
-  'Grenada',
-  'Guatemala',
-  'Guinea',
-  'Guinea-Bissau',
-  'Guyana',
-  'Haiti',
-  'Honduras',
-  'Hungary',
-  'Iceland',
-  'India',
-  'Indonesia',
-  'Iran',
-  'Iraq',
-  'Ireland',
-  'Israel',
-  'Italy',
-  'Ivory Coast',
-  'Jamaica',
-  'Japan',
-  'Jordan',
-  'Kazakhstan',
-  'Kenya',
-  'Kiribati',
-  'Korea, North',
-  'Korea, South',
-  'Kuwait',
-  'Kyrgyzstan',
-  'Laos',
-  'Latvia',
-  'Lebanon',
-  'Lesotho',
-  'Liberia',
-  'Libya',
-  'Liechtenstein',
-  'Lithuania',
-  'Luxembourg',
-  'Macedonia',
-  'Madagascar',
-  'Malawi',
-  'Malaysia',
-  'Maldives',
-  'Mali',
-  'Malta',
-  'Marshall Islands',
-  'Mauritania',
-  'Mauritius',
-  'Mexico',
-  'Micronesia',
-  'Moldova',
-  'Monaco',
-  'Mongolia',
-  'Montenegro',
-  'Morocco',
-  'Mozambique',
-  'Myanmar',
-  'Namibia',
-  'Nauru',
-  'Nepal',
-  'Netherlands',
-  'New Zealand',
-  'Nicaragua',
-  'Niger',
-  'Nigeria',
-  'Norway',
-  'Oman',
-  'Pakistan',
-  'Palau',
-  'Panama',
-  'Papua New Guinea',
-  'Paraguay',
-  'Peru',
-  'Philippines',
-  'Poland',
-  'Portugal',
-  'Qatar',
-  'Romania',
-  'Russia',
-  'Saint Kitts and Nevis',
-  'Saint Lucia',
-  'Saint Vincent',
-  'Samoa',
-  'San Marino',
-  'Sao Tome and Principe',
-  'Saudi Arabia',
-  'Senegal',
-  'Serbia',
-  'Seychelles',
-  'Sierra Leone',
-  'Singapore',
-  'Slovakia',
-  'Slovenia',
-  'Solomon Islands',
-  'Somalia',
-  'South Africa',
-  'South Sudan',
-  'Spain',
-  'Sri Lanka',
-  'Sudan',
-  'Suriname',
-  'Swaziland',
-  'Sweden',
-  'Switzerland',
-  'Syria',
-  'Taiwan',
-  'Tajikistan',
-  'Tanzania',
-  'Thailand',
-  'Togo',
-  'Tonga',
-  'Trinidad and Tobago',
-  'Tunisia',
-  'Turkey',
-  'Turkmenistan',
-  'Tuvalu',
-  'Uganda',
-  'Ukraine',
-  'United Arab Emirates',
-  'United Kingdom',
-  'United States',
-  'Uruguay',
-  'Uzbekistan',
-  'Vanuatu',
-  'Vatican City',
-  'Venezuela',
-  'Vietnam',
-  'Yemen',
-  'Zambia',
-  'Zimbabwe',
-])
-
-onMounted(async () => {
-  try {
-    // Parallel fetching
-    const [regTypesResponse, qualTypesResponse, qualsResponse, unisResponse, docTypesResponse] =
-      await Promise.all([
-        apiService.getEpcMastersRegistrationTypes(),
-        apiService.getEpcMastersQualificationTypes(),
-        apiService.getEpcMastersQualifications(),
-        apiService.getEpcMastersUniversities(),
-        apiService.getEpcMastersDocumentTypes(),
-      ])
-
-    registrationTypes.value = regTypesResponse.data.results || []
-    qualificationTypes.value = qualTypesResponse.data.results || []
-    qualifications.value = qualsResponse.data.results || []
-    universities.value = unisResponse.data.results || []
-    fetchedDocumentTypes.value = docTypesResponse.data.results || []
-
-    console.log('Master data fetched successfully')
-
-    // Auto-select "new registration" by finding the correct ID case-insensitively
-    const newRegistration = registrationTypes.value.find(
-      type => type.name.toLowerCase() === 'new registration'
-    )
-
-    if (newRegistration) {
-      localFormData.registration_type = newRegistration.id
-      console.log('Auto-selected registration type:', newRegistration.name, newRegistration.id)
-    } else {
-      console.error('Could not find "New Registration" type in the fetched registration types')
-    }
-
-  } catch (error) {
-    console.error('Error fetching master data:', error)
-    toast.error('Failed to fetch essential master data. Please refresh or contact support.')
-  }
-  // Pre-fill email from auth store
-  if (user && user.email) {
-    localFormData.email_address = user.email
-  }
-  // Set default nationality for CID holders
-  if (props.selectedType === 'cid') {
-    localFormData.nationality = 'Bhutanese'
-  }
-})
-
+const errors = reactive({})
+const isConfirmationModalOpen = ref(false)
+const isSubmitting = ref(false)
+const isLoadingDCRC = ref(false)
+const isRedirecting = ref(false)
+// DECLARE localFormData EARLY - BEFORE any functions that use it
 const localFormData = reactive({
   cid_holder: props.selectedType === 'cid',
   nationality: '', // Will be set in onMounted
@@ -829,67 +654,303 @@ const localFormData = reactive({
   documents: [], // Will hold { type: id, files: [File], description: '' }
   remarks: '',
   declaration: false,
-  // payment_status: 'Pending', // Status likely set by backend
-  // payment_id: null, // Set by backend/payment gateway
   registration_date: null, // Set before API call
   expiry_date: null, // Set before API call
   qualification_type: '',
   qualification_name: '',
   institute: '',
   year_of_completion: null, // Store as YYYY-MM string from input type=month
-  // is_active: false, // Set by backend
   application: null, // Will hold the ID from stage 1 submission
   registration_type: '',
   ...props.modelValue, // Spread props last to allow overriding defaults if needed
 })
 
-const errors = reactive({})
-const isConfirmationModalOpen = ref(false)
-const isSubmitting = ref(false)
-const toast = useToast()
-const isLoadingDCRC = ref(false)
+const supportingDocuments = ref([{ type: '', files: [], description: '' }]) // Start with one document row
 
-// Computed property for CID validation (basic length check)
+// Computed properties (these need to come after localFormData)
 const isCIDValid = computed(() => {
   return /^\d{11}$/.test(localFormData.cid_no)
 })
+
 const filteredQualifications = computed(() => {
   if (!localFormData.qualification_type) {
-    // If no qualification type is selected, return an empty array
     return []
   }
-
-  // Filter qualifications where qualification_type matches the selected type
   return qualifications.value.filter(
     qual => qual.qualification_type === Number(localFormData.qualification_type)
   )
 })
-// Watch for changes in localFormData to emit update
-watch(
-  () => localFormData,
-  (newData) => {
-    emit('update:modelValue', { ...newData })
-  },
-  { deep: true },
-)
-watch(() => localFormData.qualification_type, (newType) => {
-  // When qualification type changes, check if current selection is still valid
-  if (newType) {
-    const currentQualStillValid = filteredQualifications.value.some(
-      qual => qual.id === localFormData.qualification_name
-    )
 
-    // If current selection is no longer valid with the new type, reset it
-    if (!currentQualStillValid) {
-      localFormData.qualification_name = ''
+// List of countries
+const countries = ref([
+  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'East Timor', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Ivory Coast', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Korea, North', 'Korea, South', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe',
+])
+
+// Helper functions
+const addDocument = () => {
+  supportingDocuments.value.push({ type: '', files: [], description: '' })
+}
+
+const removeDocument = (index) => {
+  if (supportingDocuments.value.length > 1) {
+    supportingDocuments.value.splice(index, 1)
+    updateFormDocuments()
+  } else {
+    toast.warning('At least one document entry is required.')
+  }
+}
+
+const handleFileSelect = (event, index) => {
+  const files = Array.from(event.target.files)
+  delete errors.documents
+
+  if (files.length === 0) {
+    supportingDocuments.value[index].files = []
+    updateFormDocuments()
+    return
+  }
+
+  const file = files[0]
+
+  if (file.size > 2 * 1024 * 1024) {
+    errors.documents = `File "${file.name}" exceeds the 2MB size limit.`
+    event.target.value = ''
+    supportingDocuments.value[index].files = []
+    toast.error(errors.documents)
+    updateFormDocuments()
+    return
+  }
+  supportingDocuments.value[index].files = [file]
+  updateFormDocuments()
+}
+
+const updateFormDocuments = () => {
+  const documents = supportingDocuments.value.reduce((acc, doc) => {
+    if (doc.files && doc.files.length > 0 && doc.type) {
+      acc.push({
+        type: doc.type,
+        files: doc.files,
+        description: doc.description || '',
+      })
+    }
+    return acc
+  }, [])
+  localFormData.documents = documents
+  console.log('Updated localFormData.documents:', localFormData.documents)
+}
+
+// NOW define all the functions that use localFormData
+const checkExistingApplication = async () => {
+  if (props.selectedType === 'cid' && localFormData.cid_no && isCIDValid.value) {
+    isLoadingExistingApplication.value = true
+    try {
+      const response = await apiService.getEpcApplicationsByCid(localFormData.cid_no)
+
+      if (response.data && response.data.length > 0) {
+        const applicationId = response.data[0].id || response.data[0].application_id
+        const fullAppResponse = await apiService.getEpcNewApplication(applicationId)
+        if (fullAppResponse.data) {
+          existingApplication.value = fullAppResponse.data
+
+          try {
+            const qualResponse = await apiService.getEpcNewQualifications()
+            if (qualResponse.data && qualResponse.data.results) {
+              existingQualification.value = qualResponse.data.results.find(
+                qual => qual.application === applicationId
+              )
+            }
+          } catch (qualError) {
+            console.log('No existing qualification found - this is okay')
+          }
+
+          return true
+        }
+      }
+      return false
+    } catch (error) {
+      console.error('Error checking existing applications:', error)
+      return false
+    } finally {
+      isLoadingExistingApplication.value = false
+    }
+  } else if (props.selectedType !== 'cid') {
+    try {
+      isLoadingExistingApplication.value = true
+      const allAppsResponse = await apiService.getEpcNewApplications()
+
+      if (allAppsResponse.data && allAppsResponse.data.results) {
+        const userApp = allAppsResponse.data.results.find(
+          app => app.email_address === (user?.email || localFormData.email_address) && !app.cid_holder
+        )
+
+        if (userApp) {
+          existingApplication.value = userApp
+
+          try {
+            const qualResponse = await apiService.getEpcNewQualifications()
+            if (qualResponse.data && qualResponse.data.results) {
+              existingQualification.value = qualResponse.data.results.find(
+                qual => qual.application === userApp.id
+              )
+            }
+          } catch (qualError) {
+            console.log('No existing qualification found - this is okay')
+          }
+
+          return true
+        }
+      }
+      return false
+    } catch (error) {
+      console.error('Error checking existing applications for non-CID:', error)
+      return false
+    } finally {
+      isLoadingExistingApplication.value = false
+    }
+  }
+
+  return false
+}
+
+const populateFormFromExistingData = () => {
+  if (!existingApplication.value) return
+
+  const app = existingApplication.value
+
+  localFormData.application = app.id
+  applicationId.value = app.id
+  localFormData.full_name = app.full_name || ''
+  localFormData.email_address = app.email_address || ''
+  localFormData.gender = app.gender || ''
+  localFormData.date_of_birth = app.date_of_birth || ''
+  localFormData.contact_no = app.contact_no || ''
+  localFormData.nationality = app.nationality || ''
+  localFormData.registration_type = app.registration_type || ''
+
+  if (app.cid_holder) {
+    localFormData.cid_no = app.cid_no || ''
+    localFormData.dzongkhag = app.dzongkhag || ''
+    localFormData.gewog = app.gewog || ''
+    localFormData.village = app.village || ''
+  } else {
+    localFormData.workPermitNo = app.cid_no || ''
+    localFormData.country = app.dzongkhag || ''
+    localFormData.state = app.gewog || ''
+    localFormData.city = app.village || ''
+    localFormData.mobileNumber = app.mobile_number_non_bhutanese || ''
+  }
+
+  if (existingQualification.value) {
+    const qual = existingQualification.value
+    localFormData.qualification_type = qual.qualification_type || ''
+    localFormData.qualification_name = qual.qualification_name || ''
+    localFormData.institute = qual.institute_university || ''
+
+    if (qual.completion_year) {
+      localFormData.year_of_completion = `${qual.completion_year}-01`
+    }
+
+    localFormData.remarks = qual.remarks || ''
+    localFormData.declaration = qual.declaration === 'True' || qual.declaration === true
+  }
+}
+
+const determineStartingStage = () => {
+  if (!existingApplication.value) {
+    return 1 // No existing application, start from beginning
+  }
+
+  if (existingQualification.value) {
+    // Both application and qualification exist
+    // Check if it's already submitted or completed - redirect to my_applications
+    if (existingQualification.value.is_active === true ||
+      existingQualification.value.status === 'submitted' ||
+      existingQualification.value.status === 'completed') {
+      return 'redirect' // Special value to indicate we should redirect
+    } else {
+      return 2 // Qualification exists but not completed, continue from step 2
     }
   } else {
-    // If qualification type is cleared, also clear the qualification name
-    localFormData.qualification_name = ''
+    return 2 // Application exists but no qualification, start from step 2
   }
-})
-// --- Validation Functions ---
+}
 
+// Update the showProgressMessage function to handle redirects
+const showProgressMessage = (startingStage) => {
+  switch (startingStage) {
+    case 1:
+      toast.info('Starting new application')
+      break
+    case 2:
+      toast.success('Your personal information has been saved. Continuing with qualification details.')
+      break
+    case 'redirect':
+      toast.success('Your application is already complete. Redirecting to your applications...')
+      break
+  }
+}
+
+// Add a new function to handle the redirect
+const redirectToMyApplications = () => {
+  setTimeout(() => {
+    router.push('/admin/user/engineering_certification/my_applications')
+  }, 1500) // Small delay to let user see the message
+}
+
+const startNewApplication = () => {
+  if (confirm('Are you sure you want to start a new application? This will not affect your existing application, but you will create a separate one.')) {
+    existingApplication.value = null
+    existingQualification.value = null
+    applicationId.value = null
+    stage.value = 1
+
+    const initialFormData = {
+      cid_holder: props.selectedType === 'cid',
+      nationality: props.selectedType === 'cid' ? 'Bhutanese' : '',
+      email_address: user?.email || '',
+      workPermitNo: '',
+      mobileNumber: '',
+      full_name: '',
+      gender: '',
+      date_of_birth: '',
+      city: '',
+      state: '',
+      country: '',
+      cid_no: '',
+      dzongkhag: '',
+      gewog: '',
+      village: '',
+      contact_no: '',
+      passport_photo: null,
+      documents: [],
+      remarks: '',
+      declaration: false,
+      registration_date: null,
+      expiry_date: null,
+      qualification_type: '',
+      qualification_name: '',
+      institute: '',
+      year_of_completion: null,
+      application: null,
+      registration_type: '',
+    }
+
+    Object.assign(localFormData, initialFormData)
+
+    const newRegistration = registrationTypes.value.find(
+      type => type.name.toLowerCase() === 'new registration'
+    )
+    if (newRegistration) {
+      localFormData.registration_type = newRegistration.id
+    }
+
+    supportingDocuments.value = [{ type: '', files: [], description: '' }]
+    clearErrors()
+    toast.info('Starting new application')
+  }
+}
+
+// Validation functions
 const clearErrors = () => {
   Object.keys(errors).forEach((key) => delete errors[key])
 }
@@ -898,7 +959,6 @@ const validateFormStageOne = () => {
   clearErrors()
   let isValid = true
 
-  // Common fields
   if (!localFormData.full_name) {
     errors.full_name = 'Full name is required'
     isValid = false
@@ -927,7 +987,6 @@ const validateFormStageOne = () => {
     isValid = false
   }
 
-  // Type-specific fields
   if (props.selectedType === 'cid') {
     if (!localFormData.cid_no) {
       errors.cid_no = 'CID is required'
@@ -936,7 +995,6 @@ const validateFormStageOne = () => {
       errors.cid_no = 'CID must be exactly 11 digits.'
       isValid = false
     }
-    // DCRC fetched fields validation (should be auto-filled)
     if (!localFormData.dzongkhag) {
       errors.dzongkhag = 'Dzongkhag is required (fetch from DCRC)'
       isValid = false
@@ -950,7 +1008,6 @@ const validateFormStageOne = () => {
       isValid = false
     }
   } else {
-    // Non-CID
     if (!localFormData.workPermitNo) {
       errors.workPermitNo = 'Identity / Work Permit No is required'
       isValid = false
@@ -963,7 +1020,6 @@ const validateFormStageOne = () => {
       errors.country = 'Country is required'
       isValid = false
     }
-    // Email is read-only from store, less critical to validate here but could check format
     if (!localFormData.email_address) {
       errors.email_address = 'Email address is required'
       isValid = false
@@ -971,27 +1027,22 @@ const validateFormStageOne = () => {
       errors.email_address = 'Invalid email format'
       isValid = false
     }
-
     if (!localFormData.mobileNumber) {
       errors.mobileNumber = 'Mobile number is required'
       isValid = false
     } else if (!/^\d{8,}$/.test(localFormData.mobileNumber)) {
-      // Allow more than 8 for international? Adjust as needed.
       errors.mobileNumber = 'Invalid mobile number format (at least 8 digits expected).'
       isValid = false
     }
-    // Optional fields: city, state - no validation for now
   }
 
   return isValid
 }
 
 const validateFormStageTwo = () => {
-  // Assumes stage 1 is already valid
-  clearErrors() // Clear previous errors specific to stage 2
+  clearErrors()
   let isValid = true
 
-  // Qualification details
   if (!localFormData.qualification_type) {
     errors.qualification_type = 'Qualification Type is required'
     isValid = false
@@ -1008,33 +1059,26 @@ const validateFormStageTwo = () => {
     errors.year_of_completion = 'Year of Completion is required'
     isValid = false
   } else {
-    // Optional: Check if the date is not in the future
     const today = new Date()
-    // Ensure correct date parsing: YYYY-MM needs a day part
     const completionDateParts = localFormData.year_of_completion.split('-')
     const completionDate = new Date(
       parseInt(completionDateParts[0], 10),
       parseInt(completionDateParts[1], 10) - 1,
       1,
-    ) // Year, Month (0-indexed), Day
-
-    // Get today's date at the beginning of the day for fair comparison
+    )
     const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
 
-    // Check if completion month is after the current month
     if (completionDate > startOfToday) {
       errors.year_of_completion = 'Completion date cannot be in the future.'
       isValid = false
     }
   }
 
-  // Documents Validation
   if (
     localFormData.documents.length === 0 &&
     supportingDocuments.value.length > 0 &&
     supportingDocuments.value.some((d) => d.type || (d.files && d.files.length > 0))
   ) {
-    // This case means rows exist with partial data but no valid file/type combos were added
     errors.documents = 'Please select a document type and upload a file for each document entry.'
     isValid = false
   } else if (
@@ -1048,29 +1092,8 @@ const validateFormStageTwo = () => {
     errors.documents = 'Please select a document type for the uploaded file(s).'
     isValid = false
   }
-  // Check if essential document types are present (example using names - adapt if using IDs)
-  /* // This check can be complex and depends on exact document names/IDs
-   const requiredDocTypes = ['Graduation Certificate', 'CID', 'Work Permit', 'Class 10 Marksheet', 'Class 12 Marksheet', 'Graduation Marksheet']; // Example names
-   const uploadedDocTypeIds = localFormData.documents.map(doc => doc.type);
-   const uploadedDocTypeNames = fetchedDocumentTypes.value
-          .filter(dt => uploadedDocTypeIds.includes(dt.id))
-          .map(dt => dt.document_name);
 
-   const missingDocs = requiredDocTypes.filter(reqDocName =>
-      !uploadedDocTypeNames.some(upName => upName.toLowerCase().includes(reqDocName.toLowerCase()))
-   );
-
-   if (missingDocs.length > 0) {
-       // Be careful with CID/Work Permit logic - only one might be needed depending on selectedType
-       // errors.documents = `Missing required documents: ${missingDocs.join(', ')}`;
-       // isValid = false; // Decide if this should block submission or just warn
-       console.warn("Missing required documents:", missingDocs);
-   }
-   */
-
-  // Simplified check: Ensure at least one *valid* document combo is uploaded if rows exist
   if (supportingDocuments.value.length > 0 && localFormData.documents.length === 0) {
-    // Check if the first row has any data entered, if so, it's an incomplete entry
     const firstDoc = supportingDocuments.value[0]
     if (firstDoc.type || (firstDoc.files && firstDoc.files.length > 0)) {
       errors.documents = 'Please complete document uploads (select type and file).'
@@ -1078,7 +1101,6 @@ const validateFormStageTwo = () => {
     }
   }
 
-  // Declaration
   if (!localFormData.declaration) {
     errors.declaration = 'You must accept the declaration.'
     isValid = false
@@ -1087,36 +1109,31 @@ const validateFormStageTwo = () => {
   return isValid
 }
 
-// --- API Interaction ---
-
+// Helper functions for API
 const formatDateForInput = (dateString) => {
-  // Expects DD/MM/YYYY from API
   if (!dateString || !/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) return ''
   const [day, month, year] = dateString.split('/')
-  return `${year}-${month}-${day}` // Format for <input type="date">
+  return `${year}-${month}-${day}`
 }
 
-// --- *** Helper Function: Format Date for API *** ---
 const formatDateForAPI = (date) => {
-  // Input: Date object
-  if (!date || !(date instanceof Date)) return null // Check if it's a valid Date object
+  if (!date || !(date instanceof Date)) return null
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}` // YYYY-MM-DD format for API
+  return `${year}-${month}-${day}`
 }
-// --- *** End Helper Function *** ---
 
 const fetchDCRCData = async () => {
   if (props.selectedType !== 'cid' || !isCIDValid.value) {
-    // Clear DCRC fields if CID becomes invalid or changes significantly
-    localFormData.full_name = ''
-    localFormData.date_of_birth = ''
-    localFormData.gender = ''
-    localFormData.dzongkhag = ''
-    localFormData.gewog = ''
-    localFormData.village = ''
-    // Don't clear contact_no automatically, user might have entered it manually
+    if (!existingApplication.value) {
+      localFormData.full_name = ''
+      localFormData.date_of_birth = ''
+      localFormData.gender = ''
+      localFormData.dzongkhag = ''
+      localFormData.gewog = ''
+      localFormData.village = ''
+    }
     return
   }
 
@@ -1125,31 +1142,32 @@ const fetchDCRCData = async () => {
     return
   }
 
-  clearErrors() // Clear previous errors
+  clearErrors()
   isLoadingDCRC.value = true
+
   try {
-    // Include user_id as query parameter as expected by the backend
     const response = await apiService.fetchCitizenDetails(localFormData.cid_no, {
       params: { user_id: userId },
     })
 
     if (response.data && response.data.applicants_name) {
-      // Check if data is valid
       const genderMap = { F: 'female', M: 'male', O: 'other' }
 
-      localFormData.full_name = response.data.applicants_name
-      localFormData.date_of_birth = formatDateForInput(response.data.date_of_birth)
-      localFormData.gender = genderMap[response.data.gender] || ''
-      localFormData.dzongkhag = response.data.dzongkhag
-      localFormData.gewog = response.data.gewog
-      localFormData.village = response.data.village
-      // Update contact number only if it's currently empty and DCRC provides one
-      if (!localFormData.contact_no && response.data.mobile_number) {
-        localFormData.contact_no = response.data.mobile_number
+      if (!existingApplication.value) {
+        localFormData.full_name = response.data.applicants_name
+        localFormData.date_of_birth = formatDateForInput(response.data.date_of_birth)
+        localFormData.gender = genderMap[response.data.gender] || ''
+        localFormData.dzongkhag = response.data.dzongkhag
+        localFormData.gewog = response.data.gewog
+        localFormData.village = response.data.village
+
+        if (!localFormData.contact_no && response.data.mobile_number) {
+          localFormData.contact_no = response.data.mobile_number
+        }
       }
+
       toast.success('Citizen details fetched successfully')
     } else {
-      // Handle cases where API returns 200 OK but no valid data (e.g., CID not found but not a 404)
       throw new Error(
         response.data?.message ||
         response.data?.error ||
@@ -1160,24 +1178,24 @@ const fetchDCRCData = async () => {
     console.error('Error fetching DCRC data:', error)
     let errorMessage = 'Failed to fetch DCRC data. Please enter details manually.'
     if (error.response && error.response.data) {
-      // Try to extract specific error message from backend response
       errorMessage =
         error.response.data.error ||
         error.response.data.detail ||
         error.response.data.message ||
         errorMessage
     } else if (error.message) {
-      errorMessage = error.message // Use error message if available (e.g., from new Error thrown above)
+      errorMessage = error.message
     }
     toast.error(errorMessage)
 
-    // Clear fields on error to force manual entry
-    localFormData.full_name = ''
-    localFormData.date_of_birth = ''
-    localFormData.gender = ''
-    localFormData.dzongkhag = ''
-    localFormData.gewog = ''
-    localFormData.village = ''
+    if (!existingApplication.value) {
+      localFormData.full_name = ''
+      localFormData.date_of_birth = ''
+      localFormData.gender = ''
+      localFormData.dzongkhag = ''
+      localFormData.gewog = ''
+      localFormData.village = ''
+    }
   } finally {
     isLoadingDCRC.value = false
   }
@@ -1185,7 +1203,6 @@ const fetchDCRCData = async () => {
 
 const handlePassportPhotoSelect = (event) => {
   const file = event.target.files[0]
-  // Reset error
   delete errors.passport_photo
 
   if (file) {
@@ -1193,75 +1210,120 @@ const handlePassportPhotoSelect = (event) => {
       localFormData.passport_photo = null
       errors.passport_photo = 'File size exceeds 2MB limit.'
       toast.error(errors.passport_photo)
-      event.target.value = '' // Clear the input
+      event.target.value = ''
     } else if (!['image/jpeg', 'image/png'].includes(file.type)) {
       localFormData.passport_photo = null
       errors.passport_photo = 'Invalid file type. Please upload JPG or PNG.'
       toast.error(errors.passport_photo)
-      event.target.value = '' // Clear the input
+      event.target.value = ''
     } else {
       localFormData.passport_photo = file
     }
   } else {
-    localFormData.passport_photo = null // No file selected
+    localFormData.passport_photo = null
   }
 }
 
-// --- Form Submission Logic ---
-
 const handleNext = async () => {
-  // Stage 1 Submission
   if (!validateFormStageOne()) {
     toast.error('Please fix the errors in the form.')
     return
   }
 
-  isSubmitting.value = true // Indicate processing starts
+  isSubmitting.value = true
+
+  if (applicationId.value) {
+    try {
+      const apiFormData = new FormData()
+
+      apiFormData.append('cid_holder', localFormData.cid_holder ? 'true' : 'false')
+      apiFormData.append('nationality', localFormData.nationality)
+      apiFormData.append('email_address', localFormData.email_address)
+      apiFormData.append('full_name', localFormData.full_name)
+      apiFormData.append('gender', localFormData.gender)
+      apiFormData.append('date_of_birth', localFormData.date_of_birth)
+      apiFormData.append('contact_no', localFormData.contact_no)
+      apiFormData.append('registration_type', Number(localFormData.registration_type))
+
+      if (localFormData.cid_holder) {
+        apiFormData.append('cid_no', localFormData.cid_no)
+        apiFormData.append('dzongkhag', localFormData.dzongkhag)
+        apiFormData.append('gewog', localFormData.gewog)
+        apiFormData.append('village', localFormData.village)
+      } else {
+        apiFormData.append('cid_no', localFormData.workPermitNo)
+        apiFormData.append('dzongkhag', localFormData.country)
+        apiFormData.append('gewog', localFormData.state)
+        apiFormData.append('village', localFormData.city)
+        apiFormData.append('mobile_number_non_bhutanese', localFormData.mobileNumber)
+      }
+
+      if (localFormData.passport_photo instanceof File) {
+        apiFormData.append('passport_photo', localFormData.passport_photo)
+      }
+
+      await apiService.patchEpcNewApplication(applicationId.value, apiFormData)
+      toast.success('Personal information updated successfully!')
+      stage.value = 2
+
+    } catch (error) {
+      console.error('Error updating application:', error)
+      let errorMessage = 'Failed to update personal information.'
+      if (error.response && error.response.data) {
+        const errors = error.response.data
+        if (typeof errors === 'object') {
+          errorMessage = Object.entries(errors)
+            .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
+            .join('; ')
+        }
+      }
+      toast.error(`Error: ${errorMessage}`)
+    } finally {
+      isSubmitting.value = false
+    }
+    return
+  }
+
+  // Original create logic if no existing application
   const apiFormData = new FormData()
 
-  // Set dates before creating FormData
   const today = new Date()
   const expiry = new Date(today)
-  expiry.setFullYear(today.getFullYear() + 5) // Example: 5 year expiry
-  localFormData.registration_date = formatDateForAPI(today) // Use the helper function
-  localFormData.expiry_date = formatDateForAPI(expiry) // Use the helper function
+  expiry.setFullYear(today.getFullYear() + 5)
+  localFormData.registration_date = formatDateForAPI(today)
+  localFormData.expiry_date = formatDateForAPI(expiry)
 
-  // Map localFormData to API expected fields for Stage 1
   apiFormData.append('cid_holder', localFormData.cid_holder ? 'true' : 'false')
   apiFormData.append('nationality', localFormData.nationality)
   apiFormData.append('email_address', localFormData.email_address)
   apiFormData.append('full_name', localFormData.full_name)
   apiFormData.append('gender', localFormData.gender)
-  apiFormData.append('date_of_birth', localFormData.date_of_birth) // Should be YYYY-MM-DD
+  apiFormData.append('date_of_birth', localFormData.date_of_birth)
   apiFormData.append('contact_no', localFormData.contact_no)
   apiFormData.append('registration_type', Number(localFormData.registration_type))
 
-  // Append dates if required by the application creation endpoint
   if (localFormData.registration_date)
     apiFormData.append('registration_date', localFormData.registration_date)
-  if (localFormData.expiry_date) apiFormData.append('expiry_date', localFormData.expiry_date)
+  if (localFormData.expiry_date)
+    apiFormData.append('expiry_date', localFormData.expiry_date)
 
-  // Add CID or Non-CID specific fields
   if (localFormData.cid_holder) {
     apiFormData.append('cid_no', localFormData.cid_no)
     apiFormData.append('dzongkhag', localFormData.dzongkhag)
     apiFormData.append('gewog', localFormData.gewog)
     apiFormData.append('village', localFormData.village)
   } else {
-    // Use workPermitNo as cid_no for Non-CID as discussed (confirm API expectation)
-    apiFormData.append('cid_no', localFormData.workPermitNo) // Or a different field if API expects 'workPermitNo' directly
-    apiFormData.append('dzongkhag', localFormData.country) // Map country to dzongkhag
-    apiFormData.append('gewog', localFormData.state) // Map state to gewog
-    apiFormData.append('village', localFormData.city) // Map city to village
-    apiFormData.append('mobile_number_non_bhutanese', localFormData.mobileNumber) // Add specific field if backend has it
+    apiFormData.append('cid_no', localFormData.workPermitNo)
+    apiFormData.append('dzongkhag', localFormData.country)
+    apiFormData.append('gewog', localFormData.state)
+    apiFormData.append('village', localFormData.city)
+    apiFormData.append('mobile_number_non_bhutanese', localFormData.mobileNumber)
   }
 
-  // Add passport photo file
   if (localFormData.passport_photo instanceof File) {
     apiFormData.append('passport_photo', localFormData.passport_photo)
   }
 
-  // Log FormData contents before sending (for debugging)
   console.log('Submitting Stage 1 Data:')
   for (let pair of apiFormData.entries()) {
     console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]))
@@ -1269,35 +1331,29 @@ const handleNext = async () => {
 
   try {
     const response = await apiService.createEpcNewApplication(apiFormData)
-    applicationId.value = response.data.id // Store the created application ID
-    localFormData.application = applicationId.value // Link for stage 2
+    applicationId.value = response.data.id
+    localFormData.application = applicationId.value
 
     toast.success('Step 1: Personal information saved successfully!')
-    stage.value = 2 // Move to the next stage
+    stage.value = 2
   } catch (error) {
     console.error('Error submitting personal information (Stage 1):', error)
     let errorMessage = 'Failed to save personal information.'
     if (error.response && error.response.data) {
-      // Flatten potential nested errors
       const errors = error.response.data
       if (typeof errors === 'object') {
         errorMessage = Object.entries(errors)
           .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
           .join('; ')
-      } else if (typeof errors === 'string') {
-        errorMessage = errors
       }
-    } else if (error.message) {
-      errorMessage = error.message
     }
     toast.error(`Error: ${errorMessage}`)
   } finally {
-    isSubmitting.value = false // Indicate processing ends
+    isSubmitting.value = false
   }
 }
 
 const openConfirmationModal = () => {
-  // Run Stage 2 validation before showing modal
   if (validateFormStageTwo()) {
     isConfirmationModalOpen.value = true
   } else {
@@ -1306,10 +1362,8 @@ const openConfirmationModal = () => {
 }
 
 const handleSubmitActual = async () => {
-  // Stage 2 Submission (Qualification & Docs)
-  isConfirmationModalOpen.value = false // Close modal immediately
+  isConfirmationModalOpen.value = false
   if (!validateFormStageTwo()) {
-    // Double check validation
     toast.error('Validation failed. Cannot submit.')
     return
   }
@@ -1317,96 +1371,171 @@ const handleSubmitActual = async () => {
   isSubmitting.value = true
   const apiFormData = new FormData()
 
-  // Add Qualification details
   apiFormData.append('qualification_type', Number(localFormData.qualification_type))
   apiFormData.append('qualification_name', Number(localFormData.qualification_name))
   apiFormData.append('institute_university', Number(localFormData.institute))
-  // Format YYYY-MM to just YYYY for completion_year if API expects integer year
+
   const completionYear = localFormData.year_of_completion
-    ? new Date(localFormData.year_of_completion + '-01').getFullYear() // Extract year
+    ? new Date(localFormData.year_of_completion + '-01').getFullYear()
     : null
   if (completionYear) {
     apiFormData.append('completion_year', completionYear)
   }
-  apiFormData.append('is_primary_qualification', 'True') // Assuming this is the primary
-
-  // Add link to the application created in Stage 1
+  apiFormData.append('is_primary_qualification', 'True')
   apiFormData.append('application', localFormData.application)
-
-  // Add other required fields for the qualification endpoint (confirm with backend)
   apiFormData.append('remarks', localFormData.remarks || '')
-  apiFormData.append('declaration', localFormData.declaration ? 'True' : 'False') // Send as string 'True'/'False'
+  apiFormData.append('declaration', localFormData.declaration ? 'True' : 'False')
 
-  // Add dates again *if* the qualification endpoint requires them (seems redundant, but keeping as per user request)
-  // Re-calculate them just in case (though they should be in localFormData from stage 1)
-  // const today = new Date();
-  // const expiry = new Date(today);
-  // expiry.setFullYear(today.getFullYear() + 5);
-  // const regDateAPI = formatDateForAPI(today); // Use the helper function
-  // const expDateAPI = formatDateForAPI(expiry); // Use the helper function
-  // if (regDateAPI) apiFormData.append('registration_date', regDateAPI);
-  // if (expDateAPI) apiFormData.append('expiry_date', expDateAPI);
-  // Consider removing the date additions above if the backend correctly links qualification via 'application' ID
-
-  // Add other fields potentially expected by the qualification endpoint
-  // apiFormData.append('payment_status', 'pending'); // Status likely set by backend
-  // apiFormData.append('payment_id', ''); // Usually set after payment
-  // apiFormData.append('is_active', 'False'); // Backend likely controls activation
-
-  // Append attachments (documents) using the expected format `attachments-{index}-key`
   localFormData.documents.forEach((doc, index) => {
     if (doc.files && doc.files.length > 0 && doc.type) {
       doc.files.forEach((file) => {
-        // Although we handle one file per row currently, loop in case it changes
         apiFormData.append(`attachments-${index}-file`, file)
-        apiFormData.append(`attachments-${index}-file_type`, Number(doc.type)) // Ensure type is number
-        // Add description if the API expects it per file
-        // apiFormData.append(`attachments-${index}-description`, doc.description || '');
+        apiFormData.append(`attachments-${index}-file_type`, Number(doc.type))
       })
     }
   })
 
-  // Log FormData contents before sending (for debugging)
   console.log('Submitting Stage 2 Data (Qualification & Docs):')
   for (let pair of apiFormData.entries()) {
     console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]))
   }
 
   try {
-    // Call the API endpoint for creating qualification/submitting documents
-    await apiService.createEpcNewQualification(apiFormData)
+    if (existingQualification.value && existingQualification.value.id) {
+      await apiService.patchEpcNewQualification(existingQualification.value.id, apiFormData)
+      toast.success('Application updated successfully!')
+    } else {
+      await apiService.createEpcNewQualification(apiFormData)
+      toast.success('Application submitted successfully!')
+    }
 
-    toast.success('Application submitted successfully!')
-    // Redirect to dashboard or a success page
-    router.push("/admin/user/engineering_certification/dashboard") // Use named route
+    router.push("/admin/user/engineering_certification/dashboard")
   } catch (error) {
     console.error('Error submitting application (Stage 2):', error)
     let errorMessage = 'Application submission failed.'
     if (error.response && error.response.data) {
       const errors = error.response.data
       if (typeof errors === 'object') {
-        // Try to extract specific field errors or fallback to general message
-        let fieldErrors = Object.entries(errors)
+        errorMessage = Object.entries(errors)
           .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
           .join('; ')
-        errorMessage = fieldErrors || errors.detail || errors.message || JSON.stringify(errors)
-      } else if (typeof errors === 'string') {
-        errorMessage = errors
       }
-      // Specific check for attachment errors if backend provides detailed info
-      if (errorMessage.toLowerCase().includes('attachment')) {
-        errorMessage =
-          'Error processing attachments. Please check file types/sizes and try again. Details: ' +
-          errorMessage
-      }
-    } else if (error.message) {
-      errorMessage = error.message
     }
     toast.error(`Error: ${errorMessage}`)
   } finally {
     isSubmitting.value = false
   }
 }
+
+// NOW define the watch functions - AFTER localFormData is declared
+watch(() => localFormData.cid_no, async (newCid) => {
+  if (props.selectedType === 'cid' && newCid && isCIDValid.value) {
+    existingApplication.value = null
+    existingQualification.value = null
+
+    const hasExisting = await checkExistingApplication()
+
+    if (hasExisting) {
+      populateFormFromExistingData()
+      const startingStage = determineStartingStage()
+
+      if (startingStage === 'redirect') {
+        showProgressMessage(startingStage)
+        redirectToMyApplications()
+        return
+      }
+
+      // Only change stage if we're currently on stage 1 and not redirecting
+      if (stage.value === 1) {
+        stage.value = startingStage
+        showProgressMessage(startingStage)
+      }
+    }
+  }
+})
+
+watch(
+  () => localFormData,
+  (newData) => {
+    emit('update:modelValue', { ...newData })
+  },
+  { deep: true },
+)
+
+watch(() => localFormData.qualification_type, (newType) => {
+  if (newType) {
+    const currentQualStillValid = filteredQualifications.value.some(
+      qual => qual.id === localFormData.qualification_name
+    )
+
+    if (!currentQualStillValid) {
+      localFormData.qualification_name = ''
+    }
+  } else {
+    localFormData.qualification_name = ''
+  }
+})
+
+// Finally, the onMounted function
+onMounted(async () => {
+  try {
+    const [regTypesResponse, qualTypesResponse, qualsResponse, unisResponse, docTypesResponse] =
+      await Promise.all([
+        apiService.getEpcMastersRegistrationTypes(),
+        apiService.getEpcMastersQualificationTypes(),
+        apiService.getEpcMastersQualifications(),
+        apiService.getEpcMastersUniversities(),
+        apiService.getEpcMastersDocumentTypes(),
+      ])
+
+    registrationTypes.value = regTypesResponse.data.results || []
+    qualificationTypes.value = qualTypesResponse.data.results || []
+    qualifications.value = qualsResponse.data.results || []
+    universities.value = unisResponse.data.results || []
+    fetchedDocumentTypes.value = docTypesResponse.data.results || []
+
+    console.log('Master data fetched successfully')
+
+    const newRegistration = registrationTypes.value.find(
+      type => type.name.toLowerCase() === 'new registration'
+    )
+
+    if (newRegistration) {
+      localFormData.registration_type = newRegistration.id
+      console.log('Auto-selected registration type:', newRegistration.name, newRegistration.id)
+    }
+
+    if (user && user.email) {
+      localFormData.email_address = user.email
+    }
+
+    if (props.selectedType === 'cid') {
+      localFormData.nationality = 'Bhutanese'
+    }
+
+    // For non-CID users, check for existing applications immediately
+    if (props.selectedType !== 'cid') {
+      const hasExistingApp = await checkExistingApplication()
+      if (hasExistingApp) {
+        populateFormFromExistingData()
+        const startingStage = determineStartingStage()
+
+        if (startingStage === 'redirect') {
+          showProgressMessage(startingStage)
+          redirectToMyApplications()
+          return
+        }
+
+        stage.value = startingStage
+        showProgressMessage(startingStage)
+      }
+    }
+
+  } catch (error) {
+    console.error('Error during initialization:', error)
+    toast.error('Failed to fetch essential data. Please refresh or contact support.')
+  }
+})
 </script>
 
 <style scoped>
