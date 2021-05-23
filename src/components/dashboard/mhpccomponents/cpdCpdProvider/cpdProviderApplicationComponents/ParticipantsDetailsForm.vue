@@ -17,76 +17,40 @@
     <div class="p-6">
       <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Participation Category -->
+          <!-- Participation Categories -->
           <div class="col-span-1">
-            <label for="participationCategory" class="block text-sm font-medium text-gray-700 mb-1">
-              Participation Category <span class="text-red-500">*</span>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Participation Categories <span class="text-red-500">*</span>
             </label>
-            <div class="relative">
-              <select
-                id="participationCategory"
-                :value="props.participantDetails.category"
-                @change="handleCategoryChange($event.target.value)"
-                class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 pl-10 bg-white appearance-none pr-10"
-              >
-                <option value="" disabled>Select Category</option>
-                <option
-                  v-for="categoryOption in props.participationCategoryOptions"
-                  :key="`maincat-opt-${categoryOption.value}`"
+            <div class="space-y-2">
+              <div v-for="categoryOption in props.participationCategoryOptions" :key="categoryOption.value" class="flex items-center">
+                <input
+                  type="checkbox"
+                  :id="`category-${categoryOption.value}`"
                   :value="categoryOption.value"
-                >
-                  {{ categoryOption.text }}
-                </option>
-              </select>
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
+                  v-model="selectedCategories"
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label :for="`category-${categoryOption.value}`" class="ml-2 text-sm text-gray-700">{{ categoryOption.text }}</label>
               </div>
             </div>
           </div>
 
-          <!-- Participant sub-category (INDEPENDENT) -->
+          <!-- Participant Subcategories -->
           <div class="col-span-1">
-            <label for="participantSubcategory" class="block text-sm font-medium text-gray-700 mb-1">
-              Participant sub-category <span class="text-red-500">*</span>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Participant Subcategories <span class="text-red-500">*</span>
             </label>
-            <div class="relative">
-              <select
-                id="participantSubcategory"
-                :value="props.participantDetails.subcategory"
-                @change="handleFieldUpdate('subcategory', $event.target.value)"
-                class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 pl-10 bg-white appearance-none pr-10"
-                :disabled="!props.participantSubcategoryOptions || props.participantSubcategoryOptions.length === 0"
-              >
-                <option value="" disabled>
-                  {{ (!props.participantSubcategoryOptions || props.participantSubcategoryOptions.length === 0) ? 'No subcategories available' : 'Select Sub-Category' }}
-                  (All: {{ props.participantSubcategoryOptions ? props.participantSubcategoryOptions.length : 0 }} available)
-                </option>
-                <template v-if="props.participantSubcategoryOptions && props.participantSubcategoryOptions.length > 0">
-                  <option
-                    v-for="(subcategoryOption) in props.participantSubcategoryOptions"
-                    :key="`subcat-opt-${subcategoryOption.value}`"
-                    :value="subcategoryOption.value"
-                  >
-                    {{ subcategoryOption.text }}
-                  </option>
-                </template>
-              </select>
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
+            <div class="space-y-2">
+              <div v-for="subcategoryOption in props.participantSubcategoryOptions" :key="subcategoryOption.value" class="flex items-center">
+                <input
+                  type="checkbox"
+                  :id="`subcategory-${subcategoryOption.value}`"
+                  :value="subcategoryOption.value"
+                  v-model="selectedSubcategories"
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label :for="`subcategory-${subcategoryOption.value}`" class="ml-2 text-sm text-gray-700">{{ subcategoryOption.text }}</label>
               </div>
             </div>
             <p v-if="!props.participantSubcategoryOptions || props.participantSubcategoryOptions.length === 0" class="mt-1 text-xs text-orange-500 flex items-center">
@@ -97,6 +61,7 @@
             </p>
           </div>
 
+          <!-- Number of Participants -->
           <div class="col-span-1">
             <label for="numberParticipants" class="block text-sm font-medium text-gray-700 mb-1">
               Number of Participants <span class="text-red-500">*</span>
@@ -119,9 +84,10 @@
             </div>
           </div>
 
+          <!-- Relevance to Profession -->
           <div class="col-span-1 md:col-span-2">
             <label for="relevanceProfession" class="block text-sm font-medium text-gray-700 mb-1">
-              Relevance to profession <span class="text-red-500">*</span>
+              Relevance to Profession <span v-if="isRelevanceMandatory" class="text-red-500">*</span>
             </label>
             <div class="relative">
               <textarea
@@ -138,11 +104,11 @@
                 </svg>
               </div>
             </div>
-            <p class="mt-1 text-xs text-gray-500 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Be specific about how this training will enhance your professional skills and knowledge
+            <p v-if="isRelevanceMandatory" class="mt-1 text-sm text-red-500">
+              This field is mandatory since multiple categories are selected. Please justify why the training is relevant to multi-disciplinary participants.
+            </p>
+            <p v-else class="mt-1 text-sm text-gray-500">
+              This field is optional for single category selection.
             </p>
           </div>
         </div>
@@ -152,15 +118,15 @@
 </template>
 
 <script setup>
-import { watch, toRaw, onMounted, onUpdated } from 'vue'; // defineProps/Emits are auto-imported
+import { ref, watch, computed } from 'vue';
 
 const props = defineProps({
   participantDetails: {
     type: Object,
     required: true,
     default: () => ({
-      category: '',
-      subcategory: '',
+      categories: [],
+      subcategories: [],
       number: null,
       relevance: '',
     }),
@@ -177,89 +143,44 @@ const props = defineProps({
 
 const emit = defineEmits(['update:participantDetails']);
 
-// Helper function for safe logging
-const safeLogValue = (value) => {
-  try {
-    // If value is undefined, stringify will produce "undefined", which parse fails on.
-    // So, we can either check for undefined or pass null to stringify if it's undefined.
-    return JSON.parse(JSON.stringify(value === undefined ? null : toRaw(value)));
-  } catch (e) {
-    console.error("Error during safeLogValue:", e, "Original value:", toRaw(value));
-    return toRaw(value); // Fallback to raw value if JSON processing fails
-  }
-};
+// Local state for multi-select
+const selectedCategories = ref(props.participantDetails.categories || []);
+const selectedSubcategories = ref(props.participantDetails.subcategories || []);
 
+// Computed property to determine if relevance is mandatory
+const isRelevanceMandatory = computed(() => selectedCategories.value.length > 1);
 
-onMounted(() => {
-  console.log(
-    "%cCHILD: onMounted. Initial props.participantSubcategoryOptions:",
-    "color: green; font-weight: bold;",
-    safeLogValue(props.participantSubcategoryOptions)
-  );
-  console.log(
-    "%cCHILD: onMounted. Initial props.participantDetails:",
-    "color: green; font-weight: bold;",
-    safeLogValue(props.participantDetails)
-  );
-});
-
-onUpdated(() => {
-  console.log(
-    "%cCHILD: onUpdated. props.participantSubcategoryOptions:",
-    "color: purple; font-weight: bold;",
-    safeLogValue(props.participantSubcategoryOptions)
-  );
-   console.log(
-    "%cCHILD: onUpdated. props.participantDetails:",
-    "color: purple; font-weight: bold;",
-    safeLogValue(props.participantDetails)
-  );
-});
-
-watch(() => props.participantDetails, (newVal, oldVal) => {
-  console.log(
-    "%cCHILD: props.participantDetails changed (watcher):",
-    "color: #4CAF50; font-weight: bold;"
-  );
-  console.log("%c  New Value (Details):", "color: #4CAF50;", safeLogValue(newVal));
-  console.log("%c  Old Value (Details):", "color: #FFA000;", safeLogValue(oldVal));
-}, { deep: true, immediate: true });
-
-
-watch(() => props.participantSubcategoryOptions, (newVal, oldVal) => {
-  console.log(
-    "%cCHILD: props.participantSubcategoryOptions WATCHER TRIGGERED.",
-    "color: magenta; font-weight: bold;"
-  );
-  console.log(
-    "%c  CHILD Watcher New Value (SubCategoryOptions):",
-    "color: #9C27B0;",
-    safeLogValue(newVal) // USE HELPER
-  );
-  console.log(
-    "%c  CHILD Watcher Old Value (SubCategoryOptions):",
-    "color: #FF9800;",
-    safeLogValue(oldVal) // USE HELPER
-  );
-   if (newVal && Array.isArray(newVal)) {
-    console.log(`%c  CHILD Watcher: New SubCategoryOptions array received. Length: ${newVal.length}.`, "color: #9C27B0;");
-  } else {
-    console.log("%c  CHILD Watcher: New SubCategoryOptions value is not an array or is null/undefined (newVal is: " + typeof newVal + ")", "color: #F44336;");
-  }
-}, { deep: true, immediate: true });
-
-
-const handleCategoryChange = (newCategoryId) => {
-  console.log("CHILD: handleCategoryChange called with newCategoryId:", newCategoryId, "(type:", typeof newCategoryId, ")");
+// Watch selectedCategories and emit updates
+watch(selectedCategories, (newVal) => {
   emit('update:participantDetails', {
     ...props.participantDetails,
-    category: newCategoryId,
-    subcategory: '',
+    categories: newVal,
   });
-};
+});
 
+// Watch selectedSubcategories and emit updates
+watch(selectedSubcategories, (newVal) => {
+  emit('update:participantDetails', {
+    ...props.participantDetails,
+    subcategories: newVal,
+  });
+});
+
+// Watch participantSubcategoryOptions to filter out unavailable subcategories
+watch(() => props.participantSubcategoryOptions, (newOptions) => {
+  const availableSubcatIds = newOptions.map(opt => opt.value);
+  const updatedSubcategories = selectedSubcategories.value.filter(subcat => availableSubcatIds.includes(subcat));
+  if (updatedSubcategories.length !== selectedSubcategories.value.length) {
+    selectedSubcategories.value = updatedSubcategories;
+    emit('update:participantDetails', {
+      ...props.participantDetails,
+      subcategories: updatedSubcategories,
+    });
+  }
+});
+
+// Handle updates for number and relevance fields
 const handleFieldUpdate = (field, value) => {
-  console.log(`CHILD: handleFieldUpdate called for field: ${field}, value: ${value}`);
   emit('update:participantDetails', {
     ...props.participantDetails,
     [field]: value,

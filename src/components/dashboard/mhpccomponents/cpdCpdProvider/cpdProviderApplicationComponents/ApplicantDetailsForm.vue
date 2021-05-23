@@ -106,4 +106,6 @@
 defineProps({
   applicant: Object,
 })
+
+defineEmits(['update:applicant'])
 </script>
