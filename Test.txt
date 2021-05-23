@@ -1,11 +1,2 @@
-VPN: https://secure.neyduetewa.gov.bt/
-VPN Group: autonomous_vpn
-username: ujwalp_druksmart
-password: 68^e7GL@Zir,Y
-
-url: http://172.30.4.158/
-
-
-
-
-
+DO:
+- after review and Presentations, 

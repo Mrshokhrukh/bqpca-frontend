@@ -17,7 +17,7 @@
         <!-- User Info (without icon and popup) -->
         <div class="text-right">
           <p class="text-sm font-medium text-slate-700">{{ fullName }}</p>
-          <p class="text-xs text-slate-500">{{ serviceTypeLabel }}</p>
+          <!-- <p class="text-xs text-slate-500">{{ serviceTypeLabel }}</p> -->
         </div>
       </div>
     </div>
