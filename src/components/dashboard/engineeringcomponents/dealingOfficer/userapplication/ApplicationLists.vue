@@ -1,55 +1,18 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
-    <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">New Applications</h1>
-      <div class="flex items-center text-gray-600">
-        <span class="flex items-center">
-          <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-          Total: {{ filteredApplications.length }}
-        </span>
-        <span class="mx-4">|</span>
-        <span class="flex items-center">
-          <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
-          Pending: {{ pendingCount }}
-        </span>
-      </div>
-    </div>
+    <!-- Use the DOPageHeader Component -->
+    <DOPageHeader
+      title="New Applications"
+      :description="headerDescription"
+      :search-query="searchQuery"
+      @update:searchQuery="searchQuery = $event"
+      search-placeholder="Search by name, CID or registration number..."
+      :filter-value="filterStatus"
+      @update:filterValue="filterStatus = $event"
+      :filter-options="statusFilterOptions"
+    />
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-      <div class="relative">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search by name, CID or registration number..."
-          class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      </div>
-      <div class="flex gap-4">
-        <select
-          v-model="filterStatus"
-          class="flex-1 px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="all">All Statuses</option>
-          <option value="Pending">Pending</option>
-          <option value="Approved">Approved</option>
-          <option value="Regretted">Regretted</option>
-        </select>
-      </div>
-    </div>
+    <!-- Removed the old header and filter grid -->
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
@@ -102,6 +65,7 @@
                   <img
                     :src="app.passport_photo || ''"
                     class="h-8 w-8 rounded-full object-cover mr-3"
+                    alt="Applicant photo"
                   />
                   <div>
                     <div class="text-sm font-medium text-gray-900">{{ app.full_name }}</div>
@@ -131,14 +95,38 @@
                 </div>
               </td>
             </tr>
+            <!-- Empty State for Table -->
+            <tr v-if="filteredApplications.length === 0">
+              <td colspan="6" class="px-6 py-16 text-center text-gray-500">
+                No applications match the current filters.
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
 
+    <!-- Pagination -->
     <div
+      v-if="totalPages > 1"
       class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100"
     >
+      <div class="flex-1 flex justify-between sm:hidden">
+        <button
+          @click="prevPage"
+          :disabled="currentPage === 1"
+          class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <button
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+          class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
       <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
           <p class="text-sm text-gray-700">
@@ -167,14 +155,16 @@
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
+                aria-hidden="true"
               >
                 <path
                   fill-rule="evenodd"
-                  d="M12 1.586l-9.707 9.707a1 1 0 0 1-1.414-1.414l10.414-10.414a1 1 0 0 1 1.414 0l10.414 10.414a1 1 0 0 1-1.414 1.414L12 1.586z"
+                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
                   clip-rule="evenodd"
                 />
               </svg>
             </button>
+            <!-- Pagination Numbers can be added here if needed -->
             <button
               @click="nextPage"
               :disabled="currentPage === totalPages"
@@ -186,10 +176,11 @@
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
+                aria-hidden="true"
               >
                 <path
                   fill-rule="evenodd"
-                  d="M12 18.414l9.707-9.707a1 1 0 0 0-1.414-1.414L12 15.586 3.707 7.293a1 1 0 0 0-1.414 1.414l9.707 9.707z"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                   clip-rule="evenodd"
                 />
               </svg>
@@ -199,6 +190,7 @@
       </div>
     </div>
 
+    <!-- Modal -->
     <ViewDetailsModal
       :isOpen="isModalOpen"
       :application="selectedApplication"
@@ -215,10 +207,11 @@
 import { ref, computed, onMounted } from 'vue'
 import apiServices from '@/services/services'
 import ViewDetailsModal from '../modals/ViewApplicationDetailsModal.vue'
+import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue' // Import the header
 import { useToast } from 'vue-toastification'
 
 const applications = ref([])
-const filterStatus = ref('all')
+const filterStatus = ref('all') // Changed default to 'all' to match options
 const searchQuery = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 10
@@ -229,8 +222,31 @@ const personnelSubcategories = ref([])
 const sectors = ref([])
 const toast = useToast()
 
+// Filter options for the DOPageHeader
+const statusFilterOptions = ref([
+  { value: 'all', text: 'All Statuses' },
+  { value: 'Pending', text: 'Pending' },
+  { value: 'Approved', text: 'Approved' },
+  { value: 'Regretted', text: 'Regretted' },
+])
+
 const pendingCount = computed(() => {
-  return filteredApplications.value.filter((app) => getStatus(app) === 'Pending').length
+  // Note: This calculation needs to use the UNFILTERED applications
+  // if you want the total pending count regardless of search/status filter.
+  // If you want pending count *within the current filter*, use filteredApplications.value
+  return applications.value
+    .filter(
+      (app) =>
+        app.registration_type_name !== 'Renewal' &&
+        app.registration_type_name !== 'Additional Qualification' &&
+        app.registration_type_name !== 'Re-Registration',
+    )
+    .filter((app) => getStatus(app) === 'Pending').length
+})
+
+// Computed property for header description based on counts
+const headerDescription = computed(() => {
+  return `Total New: ${filteredApplications.value.length} | Pending Review: ${pendingCount.value}`
 })
 
 const filteredApplications = computed(() => {
@@ -242,10 +258,10 @@ const filteredApplications = computed(() => {
         app.registration_type_name !== 'Re-Registration',
     )
     .filter((app) => {
-      if (filterStatus.value !== 'all') {
+      if (filterStatus.value && filterStatus.value !== 'all') {
         return getStatus(app) === filterStatus.value
       }
-      return true
+      return true // Show all if filter is 'all' or empty
     })
     .filter((app) => {
       if (searchQuery.value) {
@@ -267,11 +283,11 @@ const paginatedApplications = computed(() => {
 })
 
 const totalPages = computed(() => {
-  return Math.ceil(filteredApplications.value.length / itemsPerPage)
+  return Math.max(1, Math.ceil(filteredApplications.value.length / itemsPerPage)) // Ensure at least 1 page
 })
 
 const paginationStart = computed(() => {
-  return (currentPage.value - 1) * itemsPerPage + 1
+  return filteredApplications.value.length > 0 ? (currentPage.value - 1) * itemsPerPage + 1 : 0
 })
 
 const paginationEnd = computed(() => {
@@ -334,7 +350,7 @@ const formatDate = (date) => {
 const fetchMasterData = async () => {
   try {
     const [categoriesRes, subcategoriesRes, sectorsRes] = await Promise.all([
-      apiServices.getEpcMastersParticipationCategories(),
+      apiServices.getEpcMastersPersonnelCategories(),
       apiServices.getEpcMastersSubCategories(),
       apiServices.getEpcMastersSectors(),
     ])
