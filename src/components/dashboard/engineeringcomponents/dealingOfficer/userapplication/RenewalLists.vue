@@ -1,95 +1,18 @@
-<!-- FILE: (e.g., components/renewals/RenewalListTable.vue - The Dealing Officer's View) -->
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Renewal Applications</h1>
-      <div class="flex flex-wrap items-center text-gray-600 gap-x-4 gap-y-2">
-        <span class="flex items-center"
-          ><span class="w-3 h-3 rounded-full bg-blue-500 mr-2 flex-shrink-0"></span> Total:
-          {{ filteredApplications.length }}</span
-        >
-        <span class="flex items-center"
-          ><span class="w-3 h-3 rounded-full bg-green-500 mr-2 flex-shrink-0"></span> Active:
-          {{ activeCount }}</span
-        >
-        <span class="flex items-center"
-          ><span class="w-3 h-3 rounded-full bg-yellow-500 mr-2 flex-shrink-0"></span> Renewal
-          Required: {{ renewalRequiredCount }}</span
-        >
-        <span class="flex items-center"
-          ><span class="w-3 h-3 rounded-full bg-red-500 mr-2 flex-shrink-0"></span> Inactive
-          (Expired): {{ inactiveCount }}</span
-        >
-        <span v-if="unknownExpiryCount > 0" class="flex items-center text-orange-600"
-          ><span class="w-3 h-3 rounded-full bg-orange-500 mr-2 flex-shrink-0"></span> Expiry
-          Unknown: {{ unknownExpiryCount }}</span
-        >
-      </div>
-    </div>
+    <!-- Use the DOPageHeader Component -->
+    <DOPageHeader
+      title="EPC Renewal Applications"
+      :description="headerDescription"
+      :search-query="searchQuery"
+      @update:searchQuery="searchQuery = $event"
+      search-placeholder="Search by name, CID or registration number..."
+      :filter-value="filterStatus"
+      @update:filterValue="filterStatus = $event"
+      :filter-options="statusFilterOptions"
+    />
 
-    <!-- Filters (remain the same) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-      <div class="relative">
-        <input
-          v-model.lazy.trim="searchQuery"
-          type="text"
-          placeholder="Search..."
-          class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      </div>
-      <div class="flex gap-4">
-        <select
-          v-model="filterStatus"
-          class="flex-1 px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="all">All Validity Statuses</option>
-          <option value="Active">Active</option>
-          <option value="Renewal Required">Renewal Required</option>
-          <option value="Inactive (Expired)">Inactive (Expired)</option>
-          <option value="Unknown">Unknown/Error</option>
-        </select>
-        <button
-          @click="resetFilters"
-          title="Reset Filters"
-          class="px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m-15.357-2a8.001 8.001 0 0115.357-2m0 0H15"
-            />
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Loading / Error / Table Section -->
-    <div v-if="isLoading"></div>
-    <div v-else-if="error"></div>
-    <div v-else class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
@@ -112,22 +35,17 @@
               <th
                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
               >
-                Expiry Date
+                Primary Qualification
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
               >
-                Reg. Validity
+                Renewal Status
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
               >
-                Renewal App Status
-              </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Submitted
+                Original Expiry
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
@@ -137,103 +55,71 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
-            <tr v-if="!paginatedApplications.length">
-              <td colspan="8" class="px-6 py-12 text-center text-gray-500">
-                No renewal applications found matching your criteria.
-              </td>
-            </tr>
             <tr
-              v-for="app in paginatedApplications"
-              :key="app.id"
-              class="hover:bg-gray-50 transition-colors duration-150"
+              v-for="item in paginatedCombinedData"
+              :key="item.renewal_id"
+              class="hover:bg-gray-50 transition-colors"
             >
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
-                #{{ app.id }}
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                #{{ item.renewal_id }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div
-                    v-if="!app.passport_photo"
-                    class="h-9 w-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3 font-semibold text-sm flex-shrink-0"
+                    v-if="!item.passport_photo"
+                    class="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3 flex-shrink-0"
                   >
-                    {{ getInitials(app.full_name) }}
+                    <span class="text-xs font-semibold">{{ getInitials(item) }}</span>
                   </div>
                   <img
                     v-else
-                    :src="app.passport_photo"
+                    :src="item.passport_photo"
                     @error="avatarError"
-                    class="h-9 w-9 rounded-full object-cover mr-3 flex-shrink-0"
+                    class="h-8 w-8 rounded-full object-cover mr-3 flex-shrink-0"
                     alt="Photo"
                   />
                   <div>
-                    <div class="text-sm font-medium text-gray-900">
-                      {{ app.full_name || 'N/A' }}
-                    </div>
-                    <div class="text-sm text-gray-500">{{ app.cid_no || 'N/A' }}</div>
+                    <div class="text-sm font-medium text-gray-900">{{ item.full_name }}</div>
+                    <div class="text-sm text-gray-500">{{ item.cid_no }}</div>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ app.registration_no || 'N/A' }}
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {{ item.registration_no }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDisplayDate(app.current_registration_expiry_date) }}
-                <!-- Explicitly show if date is missing -->
-                <span
-                  v-if="!app.current_registration_expiry_date"
-                  class="text-xs text-orange-500 italic"
-                  >(Missing)</span
-                >
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <template v-if="getPrimaryQualification(item)">
+                  {{ getPrimaryQualification(item).qualification_name_display || 'N/A' }}
+                </template>
+                <template v-else> N/A </template>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  :class="getRegistrationValidityStatusClasses(getRegistrationValidityStatus(app))"
-                >
-                  {{ getRegistrationValidityStatus(app) }}
+                <span :class="getRenewalStatusClasses(item)">
+                  {{ getRenewalStatus(item) }}
                 </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  v-if="getRenewalApplicationStatus(app) !== 'Info Missing'"
-                  :class="getQualificationStatusClasses(getRenewalApplicationStatus(app))"
-                  class="px-2 py-1 rounded text-xs"
-                >
-                  {{ getRenewalApplicationStatus(app) }}
-                </span>
-                <span v-else class="text-xs text-gray-400 italic">N/A</span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(app.registration_date) }}
+                {{ formatDate(item.current_registration_expiry_date) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div class="flex space-x-2">
+                <div class="flex space-x-3">
                   <button
-                    @click="viewDetails(app)"
-                    title="View Application Details"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200 inline-flex items-center text-xs"
+                    @click="viewDetails(item)"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 mr-1.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      stroke-width="2"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
                     View
                   </button>
                 </div>
+              </td>
+            </tr>
+            <tr v-if="!isLoading && paginatedCombinedData.length === 0">
+              <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                {{ 'No renewal applications found that match your criteria' }}
+              </td>
+            </tr>
+            <tr v-if="isLoading">
+              <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                Loading renewal application data...
               </td>
             </tr>
           </tbody>
@@ -244,329 +130,503 @@
     <!-- Pagination -->
     <div
       v-if="totalPages > 1"
-      class="flex items-center justify-between px-6 py-4 bg-white border-t"
+      class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100"
     >
-      <div class="text-sm text-gray-700">
-        Showing <span class="font-medium">{{ paginationStart }}</span> to
-        <span class="font-medium">{{ paginationEnd }}</span> of
-        <span class="font-medium">{{ filteredApplications.length }}</span> results
-      </div>
-      <div class="flex space-x-2">
+      <div class="flex-1 flex justify-between sm:hidden">
         <button
           @click="prevPage"
           :disabled="currentPage === 1"
-          class="px-3 py-1 rounded border"
-          :class="
-            currentPage === 1
-              ? 'text-gray-400 border-gray-200'
-              : 'text-gray-600 border-gray-300 hover:bg-gray-50'
-          "
+          class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
         >
           Previous
         </button>
         <button
           @click="nextPage"
           :disabled="currentPage === totalPages"
-          class="px-3 py-1 rounded border"
-          :class="
-            currentPage === totalPages
-              ? 'text-gray-400 border-gray-200'
-              : 'text-gray-600 border-gray-300 hover:bg-gray-50'
-          "
+          class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
         >
           Next
         </button>
       </div>
+      <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm text-gray-700">
+            Showing
+            <span class="font-medium">{{ paginationStart }}</span>
+            to
+            <span class="font-medium">{{ paginationEnd }}</span>
+            of
+            <span class="font-medium">{{ filteredCombinedData.length }}</span>
+            results
+          </p>
+        </div>
+        <div>
+          <nav
+            class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+            aria-label="Pagination"
+          >
+            <button
+              @click="prevPage"
+              :disabled="currentPage === 1"
+              class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+            >
+              <span class="sr-only">Previous</span>
+              <svg
+                class="h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+            <span
+              class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
+            >
+              Page {{ currentPage }} of {{ totalPages }}
+            </span>
+            <button
+              @click="nextPage"
+              :disabled="currentPage === totalPages"
+              class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+            >
+              <span class="sr-only">Next</span>
+              <svg
+                class="h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </nav>
+        </div>
+      </div>
     </div>
 
-    <!-- Modal (remains the same) -->
-    <ViewDetailsModal
-      :isOpen="isModalOpen"
-      :application="selectedApplication"
+    <!-- Modal -->
+    <RenewalDetailsModal
+      :is-open="isModalOpen"
+      :application="selectedItem"
       @close="closeModal"
       @update="handleUpdate"
+      :personnel-categories="personnelCategories"
+      :personnel-subcategories="personnelSubcategories"
+      :sectors="sectors"
     />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import apiServices from '@/services/services' // Adjust path if needed
-import ViewDetailsModal from '../modals/ViewApplicationDetailsModal.vue' // Adjust path if needed
+import apiServices from '@/services/services'
+import RenewalDetailsModal from '../modals/RenewalDetailsModal.vue'
+import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue'
 import { useToast } from 'vue-toastification'
 
-// --- Constants ---
-const RENEWAL_WINDOW_DAYS = 30
-const ITEMS_PER_PAGE = 10
-// *** IMPORTANT: Define the expected field name for expiry date from API ***
-const EXPIRY_DATE_FIELD_NAME = 'current_registration_expiry_date' // <--- ADJUST THIS if your API uses a different name (e.g., 'expiry_date', 'registration_expiry')
-
 // --- State ---
-const applications = ref([])
+const renewals = ref([])
+const applications = ref([]) // Store new applications for lookup
 const filterStatus = ref('all')
 const searchQuery = ref('')
 const currentPage = ref(1)
+const itemsPerPage = 10
 const isModalOpen = ref(false)
-const selectedApplication = ref(null)
-// Removed personnelCategories, etc. assuming they are passed to modal or fetched there
-const isLoading = ref(false)
-const error = ref(null)
+const selectedItem = ref(null)
+const personnelCategories = ref([])
+const personnelSubcategories = ref([])
+const sectors = ref([])
 const toast = useToast()
-const dataLoadWarning = ref('') // To store the expiry date warning
+const isLoading = ref(true)
+const isFetchingRenewals = ref(false)
+const isFetchingApplications = ref(false)
 
-// --- Helper Functions (remain mostly the same) ---
-const getToday = () => {
-  /* ... */ const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  return today
-}
-const formatDate = (dateString) => {
-  /* ... */ if (!dateString) return 'N/A'
-  try {
-    const date = new Date(dateString)
-    if (isNaN(date.getTime())) return 'Invalid Date'
-    return new Intl.DateTimeFormat('en-GB', {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-    }).format(date)
-  } catch {
-    return 'Invalid Date'
-  }
-}
-const formatDisplayDate = formatDate // Alias if needed
-const getInitials = (name) => {
-  /* ... */ if (!name) return '?'
-  return name
-    .split(' ')
-    .map((word) => word.charAt(0))
-    .filter((char) => char.match(/[a-zA-Z]/))
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
-}
-const avatarError = (event) => {
-  /* ... */ event.target.style.display = 'none'
-}
+// Filter options for the DOPageHeader
+const statusFilterOptions = ref([
+  { value: 'all', text: 'All Statuses' },
+  { value: 'Pending', text: 'Pending' },
+  { value: 'Approved', text: 'Approved' },
+  { value: 'Regretted', text: 'Regretted' },
+])
 
-// --- Core Status Logic ---
-const getRegistrationValidityStatus = (app) => {
-  // *** Use the defined constant for the field name ***
-  const expiryDateString = app[EXPIRY_DATE_FIELD_NAME]
-
-  if (!expiryDateString) {
-    return 'Unknown' // Expiry date missing from data
-  }
-  // ... (rest of the date comparison logic remains the same) ...
-  try {
-    const today = getToday()
-    const expiryDate = new Date(expiryDateString)
-    expiryDate.setHours(0, 0, 0, 0)
-    if (isNaN(expiryDate.getTime())) {
-      return 'Invalid Date'
-    }
-    if (expiryDate < today) {
-      return 'Inactive (Expired)'
-    } else {
-      const renewalStartDate = new Date(expiryDate)
-      renewalStartDate.setDate(expiryDate.getDate() - RENEWAL_WINDOW_DAYS)
-      renewalStartDate.setHours(0, 0, 0, 0)
-      if (today >= renewalStartDate) {
-        return 'Renewal Required'
-      } else {
-        return 'Active'
-      }
-    }
-  } catch (e) {
-    console.error('Error parsing expiry date:', expiryDateString, e)
-    return 'Date Error'
-  }
-}
-
-const getRenewalApplicationStatus = (app) => {
-  // Status of the renewal application itself (Pending/Approved/Regretted)
-  // *** ADJUST field name if needed (e.g., app.renewal_status) ***
-  const primaryQualification = app.user_qualifications?.find((q) => q.is_primary_qualification)
-  if (primaryQualification && primaryQualification.endorsement_decision) {
-    return primaryQualification.endorsement_decision
-  }
-  // Fallback based on a direct status field if qualifications aren't used for renewal status
-  if (app.status) {
-    return app.status // Assuming a field like 'status' exists on the renewal record
-  }
-  return 'Info Missing'
-}
-
-// --- Styling Logic (remains the same) ---
-const getRegistrationValidityStatusClasses = (status) => {
-  /* ... */ return [
-    'px-3 py-1 rounded-full text-xs font-semibold inline-block',
-    {
-      'bg-green-100 text-green-700': status === 'Active',
-      'bg-yellow-100 text-yellow-700': status === 'Renewal Required',
-      'bg-red-100 text-red-700': status === 'Inactive (Expired)',
-      'bg-gray-100 text-gray-600': ['Unknown', 'Invalid Date', 'Date Error'].includes(status),
-    },
-  ]
-}
-const getQualificationStatusClasses = (status) => {
-  /* ... */ return {
-    'bg-yellow-100 text-yellow-800': status === 'Pending',
-    'bg-green-100 text-green-800': status === 'Approved',
-    'bg-red-100 text-red-800': status === 'Regretted' || status === 'Rejected',
-    'bg-gray-100 text-gray-700': status === 'Info Missing',
-  }
-}
-
-// --- Computed Properties ---
-const filteredApplications = computed(() => {
-  // ... (filtering logic remains the same) ...
-  let filtered = [...applications.value]
-  if (filterStatus.value !== 'all') {
-    filtered = filtered.filter((app) => getRegistrationValidityStatus(app) === filterStatus.value)
-  }
-  const query = searchQuery.value.toLowerCase()
-  if (query) {
-    filtered = filtered.filter(
-      (app) =>
-        app.full_name?.toLowerCase().includes(query) ||
-        app.cid_no?.toLowerCase().includes(query) ||
-        app.registration_no?.toLowerCase().includes(query),
-    )
-  }
-  return filtered
-})
-const totalPages = computed(() => Math.ceil(filteredApplications.value.length / ITEMS_PER_PAGE))
-const paginatedApplications = computed(() => {
-  const start = (currentPage.value - 1) * ITEMS_PER_PAGE
-  const end = start + ITEMS_PER_PAGE
-  return filteredApplications.value.slice(start, end)
-})
-const paginationStart = computed(() =>
-  filteredApplications.value.length === 0 ? 0 : (currentPage.value - 1) * ITEMS_PER_PAGE + 1,
-)
-const paginationEnd = computed(() =>
-  Math.min(currentPage.value * ITEMS_PER_PAGE, filteredApplications.value.length),
-)
-// Counts
-const activeCount = computed(
-  () =>
-    filteredApplications.value.filter((app) => getRegistrationValidityStatus(app) === 'Active')
-      .length,
-)
-const inactiveCount = computed(
-  () =>
-    filteredApplications.value.filter(
-      (app) => getRegistrationValidityStatus(app) === 'Inactive (Expired)',
-    ).length,
-)
-const renewalRequiredCount = computed(
-  () =>
-    filteredApplications.value.filter(
-      (app) => getRegistrationValidityStatus(app) === 'Renewal Required',
-    ).length,
-)
-const unknownExpiryCount = computed(
-  () =>
-    filteredApplications.value.filter((app) => getRegistrationValidityStatus(app) === 'Unknown')
-      .length,
-) // Count unknowns
-
-// --- Watchers (remain the same) ---
-watch([filterStatus, searchQuery], () => {
+// --- Watchers ---
+watch([searchQuery, filterStatus], () => {
   if (currentPage.value !== 1) {
     currentPage.value = 1
   }
 })
 
-// --- API Interaction ---
-const fetchApplications = async () => {
-  isLoading.value = true
-  error.value = null
-  dataLoadWarning.value = '' // Reset warning
+watch([isFetchingRenewals, isFetchingApplications], ([fetchingRenewals, fetchingApps]) => {
+  isLoading.value = fetchingRenewals || fetchingApps
+})
 
+// --- Computed Properties ---
+// Create a lookup map of qualifications by ID for fast access
+const qualificationMap = computed(() => {
+  const map = {}
+  if (Array.isArray(applications.value)) {
+    applications.value.forEach((app) => {
+      if (app.user_qualifications && app.user_qualifications.length > 0) {
+        app.user_qualifications.forEach((qual) => {
+          if (qual && qual.id != null) {
+            map[qual.id] = {
+              ...qual,
+              // Include application data for easy access
+              application_info: {
+                id: app.id,
+                full_name: app.full_name,
+                cid_no: app.cid_no,
+                registration_no: app.registration_no,
+                passport_photo: app.passport_photo,
+                expiry_date: app.expiry_date,
+                registration_date: app.registration_date,
+              }
+            }
+          }
+        })
+      }
+    })
+  }
+  console.log('Qualification map created:', map)
+  return map
+})
+
+const combinedData = computed(() => {
+  if (!Array.isArray(renewals.value)) return []
+
+  return renewals.value.map((renewal) => {
+    console.log('Processing renewal:', renewal)
+
+    // Find the matching qualification and application data
+    const qualification = qualificationMap.value[renewal.user_qualification]
+    console.log(`Qualification found for renewal ${renewal.id}:`, qualification)
+
+    if (qualification && qualification.application_info) {
+      const appInfo = qualification.application_info
+      return {
+        renewal_id: renewal.id,
+        renewal_status: renewal.renewal_endorsement_decision || 'Pending',
+        renewal_review_status: renewal.renewal_review_status,
+        renewal_review_remarks: renewal.renewal_review_remarks,
+        new_expiry_date: renewal.new_expiry_date,
+        renewal_endorsement_decision: renewal.renewal_endorsement_decision,
+        endorsement_remarks: renewal.endorsement_remarks,
+        created_at: renewal.created_at,
+        updated_at: renewal.updated_at,
+        user_qualification: renewal.user_qualification,
+
+        // Application info from qualification lookup
+        application_id: appInfo.id,
+        full_name: appInfo.full_name || 'N/A',
+        cid_no: appInfo.cid_no || 'N/A',
+        registration_no: appInfo.registration_no || 'N/A',
+        current_registration_expiry_date: appInfo.expiry_date,
+        registration_date: appInfo.registration_date,
+        passport_photo: appInfo.passport_photo,
+
+        // Include the full qualification data
+        user_qualifications: [qualification],
+
+        // Pass through all original renewal fields
+        ...renewal
+      }
+    } else {
+      // Fallback if no qualification found
+      console.warn(`No qualification found for renewal ${renewal.id} with user_qualification ${renewal.user_qualification}`)
+      return {
+        renewal_id: renewal.id,
+        renewal_status: renewal.renewal_endorsement_decision || 'Pending',
+        application_id: renewal.id,
+        full_name: 'N/A',
+        cid_no: 'N/A',
+        registration_no: 'N/A',
+        current_registration_expiry_date: null,
+        registration_date: renewal.created_at,
+        passport_photo: null,
+        user_qualifications: [],
+        ...renewal
+      }
+    }
+  })
+})
+
+const filteredCombinedData = computed(() => {
+  if (!Array.isArray(combinedData.value)) return []
+
+  return combinedData.value.filter((item) => {
+    if (filterStatus.value !== 'all') {
+      if (getRenewalStatus(item) !== filterStatus.value) return false
+    }
+
+    if (searchQuery.value) {
+      const query = searchQuery.value.toLowerCase()
+      const name = (item.full_name || '').toLowerCase()
+      const cid = (item.cid_no || '').toLowerCase()
+      const regNo = (item.registration_no || '').toLowerCase()
+
+      const nameMatch = name !== 'n/a' && name.includes(query)
+      const cidMatch = cid !== 'n/a' && cid.includes(query)
+      const regNoMatch = regNo !== 'n/a' && regNo.includes(query)
+
+      if (!(nameMatch || cidMatch || regNoMatch)) {
+        if (
+          query === 'n/a' &&
+          (item.full_name === 'N/A' || item.cid_no === 'N/A' || item.registration_no === 'N/A')
+        ) {
+          return true
+        }
+        return false
+      }
+    }
+    return true
+  })
+})
+
+const paginatedCombinedData = computed(() => {
+  if (!Array.isArray(filteredCombinedData.value)) return []
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredCombinedData.value.slice(start, end)
+})
+
+const pendingCount = computed(() => {
+  return filteredCombinedData.value.filter((item) => getRenewalStatus(item) === 'Pending').length
+})
+
+// Computed property for the header description string
+const headerDescription = computed(() => {
+  return `Total Matches: ${filteredCombinedData.value.length} | Pending Review: ${pendingCount.value}`
+})
+
+const totalPages = computed(() => {
+  if (!Array.isArray(filteredCombinedData.value)) return 1
+  return Math.max(1, Math.ceil(filteredCombinedData.value.length / itemsPerPage))
+})
+
+const paginationStart = computed(() => {
+  if (!Array.isArray(filteredCombinedData.value) || filteredCombinedData.value.length === 0)
+    return 0
+  return (currentPage.value - 1) * itemsPerPage + 1
+})
+
+const paginationEnd = computed(() => {
+  if (!Array.isArray(filteredCombinedData.value)) return 0
+  return Math.min(currentPage.value * itemsPerPage, filteredCombinedData.value.length)
+})
+
+// --- Methods ---
+const getPrimaryQualification = (item) => {
+  if (Array.isArray(item.user_qualifications) && item.user_qualifications.length > 0) {
+    return item.user_qualifications.find((q) => q.is_primary_qualification)
+  }
+  return null
+}
+
+const getInitials = (item) => {
+  const name = item.full_name
+  if (!name || name === 'N/A') return '?'
+  return name
+    .split(' ')
+    .map((word) => word?.[0] || '')
+    .join('')
+    .toUpperCase()
+    .substring(0, 2)
+}
+
+// EPC specific renewal status logic - updated for new applications
+const getRenewalApplicationStatus = (app) => {
+  // For new applications, check the primary qualification's endorsement decision
+  const primaryQualification = app.user_qualifications?.find((q) => q.is_primary_qualification)
+  if (primaryQualification && primaryQualification.endorsement_decision) {
+    return primaryQualification.endorsement_decision
+  }
+
+  // Check if there's any qualification with an endorsement decision
+  if (app.user_qualifications && app.user_qualifications.length > 0) {
+    const anyEndorsement = app.user_qualifications[0].endorsement_decision
+    if (anyEndorsement) {
+      return anyEndorsement
+    }
+  }
+
+  // Default to Pending for new applications
+  return 'Pending'
+}
+
+const getRenewalStatus = (item) => {
+  return item.renewal_status || 'Pending'
+}
+
+const getRenewalStatusClasses = (item) => {
+  const status = getRenewalStatus(item)
+  return [
+    'px-3 py-1 rounded-full text-xs font-medium inline-block',
+    {
+      'bg-yellow-100 text-yellow-800': status === 'Pending',
+      'bg-green-100 text-green-800': status === 'Approved',
+      'bg-red-100 text-red-800': status === 'Regretted' || status === 'Rejected',
+      'bg-gray-100 text-gray-800': !['Pending', 'Approved', 'Regretted', 'Rejected'].includes(status),
+    },
+  ]
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
   try {
-    // *** ENSURE THIS IS THE CORRECT ENDPOINT FOR RENEWALS ***
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return 'N/A'
+    return date.toLocaleDateString('en-GB', {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+    })
+  } catch {
+    return 'N/A'
+  }
+}
+
+const avatarError = (event) => {
+  event.target.style.display = 'none'
+}
+
+const fetchMasterData = async () => {
+  try {
+    const responses = await Promise.allSettled([
+      apiServices.getMhpcMastersPersonnelCategories
+        ? apiServices.getMhpcMastersPersonnelCategories()
+        : Promise.resolve({ data: null }),
+      apiServices.getMhpcMastersSubCategories
+        ? apiServices.getMhpcMastersSubCategories()
+        : Promise.resolve({ data: null }),
+      apiServices.getMhpcMastersSectors
+        ? apiServices.getMhpcMastersSectors()
+        : Promise.resolve({ data: null }),
+    ])
+
+    const processResponse = (response, targetRef) => {
+      if (response.status === 'fulfilled' && response.value?.data) {
+        targetRef.value = response.value.data.results || response.value.data || []
+      } else if (response.status === 'rejected') {
+        console.error(`Failed fetch: ${response.reason}`)
+      }
+    }
+
+    processResponse(responses[0], personnelCategories)
+    processResponse(responses[1], personnelSubcategories)
+    processResponse(responses[2], sectors)
+  } catch (error) {
+    console.error('Error fetching master data container:', error)
+    toast.error('Failed to load master data')
+  }
+}
+
+// Fetch renewals from EPC renewals endpoint
+const fetchRenewals = async () => {
+  isFetchingRenewals.value = true
+  renewals.value = []
+  try {
     console.log('Fetching from getEpcRenewals...')
     const response = await apiServices.getEpcRenewals()
 
-    console.log('API Response received:', response.data) // Log the raw response
-
-    applications.value = response.data?.results || response.data || []
-
-    // *** Check if the crucial expiry date field exists in the received data ***
-    if (applications.value.length > 0) {
-      // Check only the first record for efficiency, assuming structure is consistent
-      const firstApp = applications.value[0]
-      console.log(`Checking for field '${EXPIRY_DATE_FIELD_NAME}' in first record:`, firstApp)
-
-      if (firstApp && Object.hasOwn(firstApp, EXPIRY_DATE_FIELD_NAME)) {
-        console.log(`Field '${EXPIRY_DATE_FIELD_NAME}' found.`)
-        // Further check if *some* values are null/empty even if the field exists
-        const missingValues = applications.value.filter(
-          (app) => !app[EXPIRY_DATE_FIELD_NAME],
-        ).length
-        if (missingValues > 0) {
-          dataLoadWarning.value = `${missingValues} record(s) have a missing expiry date value. Validity status may be incorrect for these.`
-          console.warn(dataLoadWarning.value)
-          toast.warning(dataLoadWarning.value, { timeout: 7000 })
-        }
-      } else {
-        // The field itself is missing from the API response structure
-        dataLoadWarning.value = `Required field '${EXPIRY_DATE_FIELD_NAME}' is missing from the API response. Validity status cannot be calculated accurately.`
-        console.error(dataLoadWarning.value)
-        toast.error(dataLoadWarning.value, { timeout: 10000 }) // Use error toast
-        // Display error prominently or adjust UI
-        error.value = `API response structure error: Missing '${EXPIRY_DATE_FIELD_NAME}'. Contact administrator.`
-      }
+    console.log('EPC Renewals API Response:', response.data)
+    const results = response?.data?.results ?? response?.data ?? null
+    if (Array.isArray(results)) {
+      renewals.value = results
+      console.log('First renewal sample:', results[0])
     } else {
-      console.log('No applications returned from API.')
+      console.error('Unexpected API response structure for EPC renewals:', response?.data)
+      toast.error('Received invalid renewal data structure.')
+      renewals.value = []
     }
-  } catch (err) {
-    console.error('Error fetching renewal applications:', err)
-    const errorMsg = err.response?.data?.detail || err.message || 'An unknown error occurred.'
-    error.value = `Failed to load renewal applications: ${errorMsg}`
-    applications.value = []
-    toast.error(`Error loading applications: ${errorMsg}`)
+  } catch (error) {
+    console.error('Error fetching EPC renewals:', error)
+    const errorMsg = error.response?.data?.detail || error.message || 'Unknown error'
+    toast.error(`Failed to load EPC renewal data: ${errorMsg}`)
+    renewals.value = []
   } finally {
-    isLoading.value = false
+    isFetchingRenewals.value = false
   }
 }
 
-// --- Modal and Actions (remain the same) ---
-const viewDetails = (application) => {
-  /* ... */ selectedApplication.value = {
-    ...application,
-    registrationValidity: getRegistrationValidityStatus(application),
-    renewalApplicationStatus: getRenewalApplicationStatus(application),
+// Fetch applications to get full user/qualification data for lookup
+const fetchApplications = async () => {
+  isFetchingApplications.value = true
+  applications.value = []
+  try {
+    console.log('Fetching from getEpcNewApplications for lookup data...')
+    const response = await apiServices.getEpcNewApplications()
+
+    console.log('EPC Applications API Response:', response.data)
+    const results = response?.data?.results ?? response?.data ?? null
+    if (Array.isArray(results)) {
+      applications.value = results
+      console.log('First application sample:', results[0])
+    } else {
+      console.error('Unexpected API response structure for EPC applications:', response?.data)
+      toast.error('Received invalid application data structure.')
+      applications.value = []
+    }
+  } catch (error) {
+    console.error('Error fetching EPC applications:', error)
+    const errorMsg = error.response?.data?.detail || error.message || 'Unknown error'
+    toast.error(`Failed to load EPC application data: ${errorMsg}`)
+    applications.value = []
+  } finally {
+    isFetchingApplications.value = false
   }
+}
+
+const viewDetails = (item) => {
+  selectedItem.value = JSON.parse(JSON.stringify(item))
   isModalOpen.value = true
 }
+
 const handleUpdate = async () => {
-  /* ... */ closeModal()
-  toast.success('Application updated')
-  await fetchApplications()
+  isLoading.value = true
+  // Refetch both renewals and applications data after update
+  await Promise.allSettled([fetchRenewals(), fetchApplications()])
+  closeModal()
+  toast.success('Renewal application processed successfully')
 }
+
 const closeModal = () => {
-  /* ... */ isModalOpen.value = false
-  selectedApplication.value = null
+  isModalOpen.value = false
+  selectedItem.value = null
 }
-const resetFilters = () => {
-  /* ... */ searchQuery.value = ''
-  filterStatus.value = 'all'
-  currentPage.value = 1
-}
+
 const prevPage = () => {
   if (currentPage.value > 1) currentPage.value--
 }
+
 const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++
 }
 
-// --- Lifecycle ---
-onMounted(fetchApplications) // Fetch data on mount
+// --- Lifecycle Hooks ---
+onMounted(async () => {
+  isLoading.value = true
+  // Fetch both renewals and applications concurrently
+  await Promise.allSettled([fetchMasterData(), fetchRenewals(), fetchApplications()])
+})
 </script>
 
 <style scoped>
-/* Optional: Add specific styles if needed */
+th,
+td {
+  vertical-align: middle;
+}
+td .flex {
+  flex-wrap: nowrap;
+}
 </style>
