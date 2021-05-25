@@ -231,28 +231,28 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import apiServices from '@/services/services'
-import RenewalDetailsModal from '../modals/RenewalDetailsModal.vue'
-import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue'
+import RenewalDetailsModal from '../modals/RenewalDetailsModal.vue' // Ensure this path is correct
+import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue' // Ensure this path is correct
 import { useToast } from 'vue-toastification'
 
 // --- State ---
-const renewals = ref([])
-const applications = ref([]) // Store new applications for lookup
-const filterStatus = ref('all')
-const searchQuery = ref('')
-const currentPage = ref(1)
-const itemsPerPage = 10
-const isModalOpen = ref(false)
-const selectedItem = ref(null)
-const personnelCategories = ref([])
-const personnelSubcategories = ref([])
-const sectors = ref([])
-const toast = useToast()
-const isLoading = ref(true)
-const isFetchingRenewals = ref(false)
-const isFetchingApplications = ref(false)
+const renewals = ref([]) // Stores raw renewal records from API
+const applications = ref([]) // Stores raw application records (used for lookup)
+const filterStatus = ref('all') // Current filter status for the list
+const searchQuery = ref('') // Current search query
+const currentPage = ref(1) // Current page for pagination
+const itemsPerPage = 10 // Number of items to display per page
+const isModalOpen = ref(false) // Controls visibility of the details modal
+const selectedItem = ref(null) // Holds the data for the item being viewed/edited in the modal
+const personnelCategories = ref([]) // Master data
+const personnelSubcategories = ref([]) // Master data
+const sectors = ref([]) // Master data
+const toast = useToast() // Toast notification service
+const isFetchingRenewals = ref(false) // Loading state for renewals API call
+const isFetchingApplications = ref(false) // Loading state for applications API call
+const isLoading = ref(true) // Combined loading state for initial data fetch
 
-// Filter options for the DOPageHeader
+// Filter options for the DOPageHeader component
 const statusFilterOptions = ref([
   { value: 'all', text: 'All Statuses' },
   { value: 'Pending', text: 'Pending' },
@@ -261,35 +261,41 @@ const statusFilterOptions = ref([
 ])
 
 // --- Watchers ---
+// Reset to first page if search query or filter status changes
 watch([searchQuery, filterStatus], () => {
   if (currentPage.value !== 1) {
     currentPage.value = 1
   }
 })
 
+// Combined loading state based on individual fetches
 watch([isFetchingRenewals, isFetchingApplications], ([fetchingRenewals, fetchingApps]) => {
   isLoading.value = fetchingRenewals || fetchingApps
 })
 
 // --- Computed Properties ---
-// Create a lookup map of qualifications by ID for fast access
+
+// Creates a lookup map of qualifications by their ID.
+// Each qualification in the map includes its parent application's basic info.
+// This allows efficient merging of renewal data with its corresponding qualification
+// and parent application details in the `combinedData` computed property.
 const qualificationMap = computed(() => {
   const map = {}
   if (Array.isArray(applications.value)) {
     applications.value.forEach((app) => {
       if (app.user_qualifications && app.user_qualifications.length > 0) {
         app.user_qualifications.forEach((qual) => {
-          if (qual && qual.id != null) {
+          if (qual && qual.id != null) { // Ensure qualification and its ID are valid
             map[qual.id] = {
-              ...qual,
-              // Include application data for easy access
+              ...qual, // Spread all qualification fields
+              // Nest parent application data for easy access from the qualification context
               application_info: {
                 id: app.id,
                 full_name: app.full_name,
                 cid_no: app.cid_no,
                 registration_no: app.registration_no,
                 passport_photo: app.passport_photo,
-                expiry_date: app.expiry_date,
+                expiry_date: app.expiry_date, // This is current_registration_expiry_date for the renewal
                 registration_date: app.registration_date,
               }
             }
@@ -298,101 +304,105 @@ const qualificationMap = computed(() => {
       }
     })
   }
-  console.log('Qualification map created:', map)
   return map
 })
 
+// Merges raw renewal data with detailed application and qualification information.
+// It uses `qualificationMap` for efficient lookups. Each item in the result
+// represents a renewal augmented with related data for display.
 const combinedData = computed(() => {
   if (!Array.isArray(renewals.value)) return []
 
   return renewals.value.map((renewal) => {
-    console.log('Processing renewal:', renewal)
-
-    // Find the matching qualification and application data
+    // `renewal.user_qualification` is the ID of the EnggUserQualification record linked to this renewal.
     const qualification = qualificationMap.value[renewal.user_qualification]
-    console.log(`Qualification found for renewal ${renewal.id}:`, qualification)
 
     if (qualification && qualification.application_info) {
       const appInfo = qualification.application_info
       return {
-        renewal_id: renewal.id,
-        renewal_status: renewal.renewal_endorsement_decision || 'Pending',
+        // Fields from the EnggRenewal model
+        renewal_id: renewal.id, // Primary key of the renewal record
+        renewal_status: renewal.renewal_endorsement_decision || 'Pending', // Display status of the renewal
         renewal_review_status: renewal.renewal_review_status,
         renewal_review_remarks: renewal.renewal_review_remarks,
-        new_expiry_date: renewal.new_expiry_date,
-        renewal_endorsement_decision: renewal.renewal_endorsement_decision,
+        new_expiry_date: renewal.new_expiry_date, // New expiry date if renewal was processed
         endorsement_remarks: renewal.endorsement_remarks,
-        created_at: renewal.created_at,
-        updated_at: renewal.updated_at,
-        user_qualification: renewal.user_qualification,
+        created_at: renewal.created_at, // Renewal submission/creation date
+        updated_at: renewal.updated_at, // Last update to the renewal record
+        user_qualification: renewal.user_qualification, // ID of the linked EnggUserQualification
 
-        // Application info from qualification lookup
+        // Fields from the parent EnggApplication model (via qualificationMap)
         application_id: appInfo.id,
         full_name: appInfo.full_name || 'N/A',
         cid_no: appInfo.cid_no || 'N/A',
         registration_no: appInfo.registration_no || 'N/A',
-        current_registration_expiry_date: appInfo.expiry_date,
-        registration_date: appInfo.registration_date,
+        current_registration_expiry_date: appInfo.expiry_date, // Original expiry from EnggApplication
+        registration_date: appInfo.registration_date, // Original registration date from EnggApplication
         passport_photo: appInfo.passport_photo,
 
-        // Include the full qualification data
+        // Structure to pass to the modal, mimicking an application object with qualifications
         user_qualifications: [qualification],
 
-        // Pass through all original renewal fields
-        ...renewal
+        ...renewal // Include all other original renewal fields
       }
     } else {
-      // Fallback if no qualification found
-      console.warn(`No qualification found for renewal ${renewal.id} with user_qualification ${renewal.user_qualification}`)
+      // Fallback if the qualification associated with the renewal isn't found.
+      // This might indicate data inconsistency or a deleted related record.
+      console.warn(`No qualification data found for renewal ID ${renewal.id} linked to user_qualification ID ${renewal.user_qualification}. Displaying renewal data with placeholders.`)
       return {
         renewal_id: renewal.id,
         renewal_status: renewal.renewal_endorsement_decision || 'Pending',
-        application_id: renewal.id,
-        full_name: 'N/A',
+        created_at: renewal.created_at,
+        user_qualification: renewal.user_qualification,
+
+        // Fallback application info
+        application_id: null,
+        full_name: 'Data Incomplete',
         cid_no: 'N/A',
         registration_no: 'N/A',
         current_registration_expiry_date: null,
-        registration_date: renewal.created_at,
+        registration_date: renewal.created_at, // Use renewal creation as a fallback for submission date
         passport_photo: null,
-        user_qualifications: [],
+        user_qualifications: [], // No qualification data available
         ...renewal
       }
     }
   })
 })
 
+// Applies filters (status and search query) to the `combinedData`.
 const filteredCombinedData = computed(() => {
   if (!Array.isArray(combinedData.value)) return []
 
   return combinedData.value.filter((item) => {
+    // Apply status filter
     if (filterStatus.value !== 'all') {
       if (getRenewalStatus(item) !== filterStatus.value) return false
     }
 
+    // Apply search query filter
     if (searchQuery.value) {
-      const query = searchQuery.value.toLowerCase()
+      const query = searchQuery.value.toLowerCase().trim()
+      if (!query) return true // If query is empty after trim, don't filter
+
       const name = (item.full_name || '').toLowerCase()
       const cid = (item.cid_no || '').toLowerCase()
       const regNo = (item.registration_no || '').toLowerCase()
 
-      const nameMatch = name !== 'n/a' && name.includes(query)
-      const cidMatch = cid !== 'n/a' && cid.includes(query)
-      const regNoMatch = regNo !== 'n/a' && regNo.includes(query)
-
-      if (!(nameMatch || cidMatch || regNoMatch)) {
-        if (
-          query === 'n/a' &&
-          (item.full_name === 'N/A' || item.cid_no === 'N/A' || item.registration_no === 'N/A')
-        ) {
-          return true
-        }
-        return false
+      // Check for "N/A" literal search if that's intended
+      if (query === 'n/a') {
+        return name === 'n/a' || cid === 'n/a' || regNo === 'n/a'
       }
+
+      return (name !== 'n/a' && name.includes(query)) ||
+             (cid !== 'n/a' && cid.includes(query)) ||
+             (regNo !== 'n/a' && regNo.includes(query))
     }
-    return true
+    return true // Pass if no filters active or item matches
   })
 })
 
+// Slices the `filteredCombinedData` for the current page.
 const paginatedCombinedData = computed(() => {
   if (!Array.isArray(filteredCombinedData.value)) return []
   const start = (currentPage.value - 1) * itemsPerPage
@@ -404,7 +414,6 @@ const pendingCount = computed(() => {
   return filteredCombinedData.value.filter((item) => getRenewalStatus(item) === 'Pending').length
 })
 
-// Computed property for the header description string
 const headerDescription = computed(() => {
   return `Total Matches: ${filteredCombinedData.value.length} | Pending Review: ${pendingCount.value}`
 })
@@ -415,8 +424,7 @@ const totalPages = computed(() => {
 })
 
 const paginationStart = computed(() => {
-  if (!Array.isArray(filteredCombinedData.value) || filteredCombinedData.value.length === 0)
-    return 0
+  if (!Array.isArray(filteredCombinedData.value) || filteredCombinedData.value.length === 0) return 0
   return (currentPage.value - 1) * itemsPerPage + 1
 })
 
@@ -427,15 +435,18 @@ const paginationEnd = computed(() => {
 
 // --- Methods ---
 const getPrimaryQualification = (item) => {
+  // This expects 'item' to be an object from `combinedData` which has `user_qualifications` array
   if (Array.isArray(item.user_qualifications) && item.user_qualifications.length > 0) {
-    return item.user_qualifications.find((q) => q.is_primary_qualification)
+    // The `combinedData` already structures `user_qualifications` to contain the primary one (or first)
+    // from the `qualificationMap`'s perspective.
+    return item.user_qualifications[0] // Assuming the first one is the relevant one for display
   }
   return null
 }
 
 const getInitials = (item) => {
   const name = item.full_name
-  if (!name || name === 'N/A') return '?'
+  if (!name || name === 'N/A' || name === 'Data Incomplete') return '?'
   return name
     .split(' ')
     .map((word) => word?.[0] || '')
@@ -444,39 +455,22 @@ const getInitials = (item) => {
     .substring(0, 2)
 }
 
-// EPC specific renewal status logic - updated for new applications
-const getRenewalApplicationStatus = (app) => {
-  // For new applications, check the primary qualification's endorsement decision
-  const primaryQualification = app.user_qualifications?.find((q) => q.is_primary_qualification)
-  if (primaryQualification && primaryQualification.endorsement_decision) {
-    return primaryQualification.endorsement_decision
-  }
-
-  // Check if there's any qualification with an endorsement decision
-  if (app.user_qualifications && app.user_qualifications.length > 0) {
-    const anyEndorsement = app.user_qualifications[0].endorsement_decision
-    if (anyEndorsement) {
-      return anyEndorsement
-    }
-  }
-
-  // Default to Pending for new applications
-  return 'Pending'
-}
-
+// Determines the display status of a renewal item.
 const getRenewalStatus = (item) => {
+  // `item.renewal_status` is already derived from `renewal_endorsement_decision` in `combinedData`.
   return item.renewal_status || 'Pending'
 }
 
+// Provides CSS classes based on the renewal status for styling.
 const getRenewalStatusClasses = (item) => {
   const status = getRenewalStatus(item)
   return [
-    'px-3 py-1 rounded-full text-xs font-medium inline-block',
-    {
+    'px-3 py-1 rounded-full text-xs font-medium inline-block', // Base classes
+    { // Conditional classes
       'bg-yellow-100 text-yellow-800': status === 'Pending',
       'bg-green-100 text-green-800': status === 'Approved',
-      'bg-red-100 text-red-800': status === 'Regretted' || status === 'Rejected',
-      'bg-gray-100 text-gray-800': !['Pending', 'Approved', 'Regretted', 'Rejected'].includes(status),
+      'bg-red-100 text-red-800': status === 'Regretted' || status === 'Rejected', // Group similar negative statuses
+      'bg-gray-100 text-gray-800': !['Pending', 'Approved', 'Regretted', 'Rejected'].includes(status), // Fallback
     },
   ]
 }
@@ -485,27 +479,33 @@ const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   try {
     const date = new Date(dateString)
-    if (isNaN(date.getTime())) return 'N/A'
-    return date.toLocaleDateString('en-GB', {
+    if (isNaN(date.getTime())) return 'N/A' // Invalid date object
+    return date.toLocaleDateString('en-GB', { // Using en-GB for dd/Mon/yyyy format
       year: 'numeric',
       month: 'short',
       day: '2-digit',
     })
-  } catch {
+  } catch (e) {
+    // Catch potential errors from Date constructor for very malformed strings
+    console.error("Error formatting date:", dateString, e);
     return 'N/A'
   }
 }
 
+// Fallback for avatar image errors.
 const avatarError = (event) => {
-  event.target.style.display = 'none'
+  event.target.style.display = 'none' // Hide broken image
+  // Optionally, replace with a default avatar image or show initials container
 }
 
+// Fetches master data like categories, subcategories, sectors.
 const fetchMasterData = async () => {
   try {
+    // Using Promise.allSettled to ensure all attempts are made even if some fail.
     const responses = await Promise.allSettled([
       apiServices.getMhpcMastersPersonnelCategories
         ? apiServices.getMhpcMastersPersonnelCategories()
-        : Promise.resolve({ data: null }),
+        : Promise.resolve({ data: null }), // Fallback if service method is optional/missing
       apiServices.getMhpcMastersSubCategories
         ? apiServices.getMhpcMastersSubCategories()
         : Promise.resolve({ data: null }),
@@ -514,97 +514,100 @@ const fetchMasterData = async () => {
         : Promise.resolve({ data: null }),
     ])
 
-    const processResponse = (response, targetRef) => {
-      if (response.status === 'fulfilled' && response.value?.data) {
-        targetRef.value = response.value.data.results || response.value.data || []
+    const processResponse = (response, targetRef, entityName) => {
+      if (response.status === 'fulfilled') {
+        const data = response.value?.data
+        targetRef.value = data?.results || data || [] // Handle paginated or direct array responses
       } else if (response.status === 'rejected') {
-        console.error(`Failed fetch: ${response.reason}`)
+        console.error(`Failed to fetch ${entityName}:`, response.reason)
+        // Optionally, toast a non-blocking warning for master data fetch failure
+        // toast.warning(`Could not load ${entityName} list.`);
       }
     }
 
-    processResponse(responses[0], personnelCategories)
-    processResponse(responses[1], personnelSubcategories)
-    processResponse(responses[2], sectors)
+    processResponse(responses[0], personnelCategories, 'Personnel Categories')
+    processResponse(responses[1], personnelSubcategories, 'Personnel Subcategories')
+    processResponse(responses[2], sectors, 'Sectors')
   } catch (error) {
-    console.error('Error fetching master data container:', error)
-    toast.error('Failed to load master data')
+    // This catch is for errors in Promise.allSettled setup, not individual promise rejections.
+    console.error('Error in master data fetching process:', error)
+    toast.error('A system error occurred while fetching master data.')
   }
 }
 
-// Fetch renewals from EPC renewals endpoint
+// Fetches EPC renewal records.
 const fetchRenewals = async () => {
   isFetchingRenewals.value = true
-  renewals.value = []
+  renewals.value = [] // Clear previous data
   try {
-    console.log('Fetching from getEpcRenewals...')
     const response = await apiServices.getEpcRenewals()
+    const results = response?.data?.results ?? response?.data ?? null // Robust handling of API response structure
 
-    console.log('EPC Renewals API Response:', response.data)
-    const results = response?.data?.results ?? response?.data ?? null
     if (Array.isArray(results)) {
       renewals.value = results
-      console.log('First renewal sample:', results[0])
     } else {
-      console.error('Unexpected API response structure for EPC renewals:', response?.data)
-      toast.error('Received invalid renewal data structure.')
-      renewals.value = []
+      console.error('Unexpected API response structure for EPC renewals. Expected an array.', response?.data)
+      toast.error('Received invalid renewal data structure from server.')
+      renewals.value = [] // Ensure it's an empty array
     }
   } catch (error) {
     console.error('Error fetching EPC renewals:', error)
-    const errorMsg = error.response?.data?.detail || error.message || 'Unknown error'
+    const errorMsg = error.response?.data?.detail || error.message || 'An unknown error occurred'
     toast.error(`Failed to load EPC renewal data: ${errorMsg}`)
-    renewals.value = []
+    renewals.value = [] // Ensure it's an empty array on error
   } finally {
     isFetchingRenewals.value = false
   }
 }
 
-// Fetch applications to get full user/qualification data for lookup
+// Fetches EPC application records, used to build the `qualificationMap` for lookups.
 const fetchApplications = async () => {
   isFetchingApplications.value = true
-  applications.value = []
+  applications.value = [] // Clear previous data
   try {
-    console.log('Fetching from getEpcNewApplications for lookup data...')
     const response = await apiServices.getEpcNewApplications()
+    const results = response?.data?.results ?? response?.data ?? null // Robust handling
 
-    console.log('EPC Applications API Response:', response.data)
-    const results = response?.data?.results ?? response?.data ?? null
     if (Array.isArray(results)) {
       applications.value = results
-      console.log('First application sample:', results[0])
     } else {
-      console.error('Unexpected API response structure for EPC applications:', response?.data)
-      toast.error('Received invalid application data structure.')
+      console.error('Unexpected API response structure for EPC applications. Expected an array.', response?.data)
+      toast.error('Received invalid application data structure from server.')
       applications.value = []
     }
   } catch (error) {
-    console.error('Error fetching EPC applications:', error)
-    const errorMsg = error.response?.data?.detail || error.message || 'Unknown error'
-    toast.error(`Failed to load EPC application data: ${errorMsg}`)
-    applications.value = []
+    console.error('Error fetching EPC applications for lookup:', error)
+    const errorMsg = error.response?.data?.detail || error.message || 'An unknown error occurred'
+    toast.error(`Failed to load EPC application data for lookup: ${errorMsg}`)
+    applications.value = [] // Ensure it's an empty array on error
   } finally {
     isFetchingApplications.value = false
   }
 }
 
+// Opens the modal with a deep clone of the selected item.
 const viewDetails = (item) => {
+  // Deep clone to prevent accidental modification of the list item if modal edits directly
   selectedItem.value = JSON.parse(JSON.stringify(item))
   isModalOpen.value = true
 }
 
+// Handles the 'update' event from the modal.
 const handleUpdate = async () => {
-  isLoading.value = true
-  // Refetch both renewals and applications data after update
+  isLoading.value = true // Show loading indicator while refetching
+  // Refetch both renewals and applications data to reflect changes.
   await Promise.allSettled([fetchRenewals(), fetchApplications()])
   closeModal()
-  toast.success('Renewal application processed successfully')
+  toast.success('Renewal application successfully processed.') // General success message
 }
 
+// Closes the details modal.
 const closeModal = () => {
   isModalOpen.value = false
-  selectedItem.value = null
+  selectedItem.value = null // Clear selected item
 }
 
+// Pagination methods
 const prevPage = () => {
   if (currentPage.value > 1) currentPage.value--
 }
@@ -615,10 +618,32 @@ const nextPage = () => {
 
 // --- Lifecycle Hooks ---
 onMounted(async () => {
-  isLoading.value = true
-  // Fetch both renewals and applications concurrently
+  isLoading.value = true // Set initial loading state
+  // Fetch all necessary data concurrently on component mount.
   await Promise.allSettled([fetchMasterData(), fetchRenewals(), fetchApplications()])
+  // isLoading will be set to false by the watcher once all fetches complete.
 })
+
+// Note: The `getRenewalApplicationStatus` function was present in the original script.
+// It's not directly used by this component's template for table rendering (which uses `getRenewalStatus`).
+// It's kept on the assumption it might be used by the `RenewalDetailsModal` or has another purpose.
+// If confirmed unused, it can be removed.
+const getRenewalApplicationStatus = (app) => {
+  // For new applications, check the primary qualification's endorsement decision
+  const primaryQualification = app.user_qualifications?.find((q) => q.is_primary_qualification)
+  if (primaryQualification && primaryQualification.endorsement_decision) {
+    return primaryQualification.endorsement_decision
+  }
+  // Check if there's any qualification with an endorsement decision
+  if (app.user_qualifications && app.user_qualifications.length > 0) {
+    const anyEndorsement = app.user_qualifications[0].endorsement_decision
+    if (anyEndorsement) {
+      return anyEndorsement
+    }
+  }
+  return 'Pending' // Default for new applications
+}
+
 </script>
 
 <style scoped>
