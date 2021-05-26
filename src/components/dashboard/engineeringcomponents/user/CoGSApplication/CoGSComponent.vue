@@ -1,169 +1,102 @@
-```vue
 <template>
-  <div class="min-h-screen bg-gray-50 py-12">
-    <div class="w-full mx-auto px-4">
-      <!-- Enhanced Header -->
-      <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
-        <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
-          Certificate of Goods Standing (CoGS) Application
-        </h2>
-        <p class="text-gray-600 text-center max-w-2xl mx-auto">
-          Please fill in all required fields marked with an asterisk (<span class="text-red-600"
-            >*</span
-          >). You can save your progress as a draft.
-        </p>
-      </div>
+  <div class="w-full mx-auto px-4 sm:px-6 py-8 bg-gray-50 min-h-screen">
+    <PageHeader
+      title="Certificate of Good Standing (CoGS) Application"
+      subtitle="Please fill in all required fields marked with an asterisk (*). Ensure all information provided is accurate and up-to-date."
+    >
+      <template #icon>
+        <FileText class="w-6 h-6 text-blue-600" />
+      </template>
+    </PageHeader>
 
-      <!-- User Notification Area -->
+    <form @submit.prevent="submitForm" class="space-y-8 mt-8">
+      <input type="hidden" v-model="form.registration_no" />
+      <input type="hidden" v-model="form.cid_no" />
+      <input type="hidden" v-model="form.full_name" />
+      <input type="hidden" v-model="form.gender" />
+
+      <!-- Section 1: Supervisor Details -->
       <div
-        v-if="draftMessage"
-        class="mb-4 p-4 rounded-md text-sm z-20 border border-gray-300"
-        :class="draftMessageClass"
-        data-testid="draft-notification"
+        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl group"
       >
-        {{ draftMessage || 'No message available' }}
-      </div>
-
-      <!-- Payment Status Feedback -->
-      <div
-        v-if="form.payment_status"
-        class="mb-4 p-4 rounded-md text-sm"
-        :class="paymentStatusClass"
-      >
-        Payment Status: {{ paymentStatusText }}
-      </div>
-
-      <!-- Main Form -->
-      <form @submit.prevent="submitForm" class="space-y-8">
-        <!-- Hidden Fields (Still used for submission payload) -->
-        <input type="hidden" v-model="form.registration_no" />
-        <input type="hidden" v-model="form.cid_no" />
-        <input type="hidden" v-model="form.payment_id" />
-        <input type="hidden" v-model="form.payment_status" />
-
-        <!-- Personal Details Section (Read-only) -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b">
-            <div class="flex items-center space-x-3">
-              <div
-                class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold"
-              >
-                1
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-gray-900">Personal Details</h3>
-                <p class="mt-1 text-gray-600">Your information (auto-populated)</p>
-              </div>
+        <div
+          class="p-5 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-50"
+        >
+          <div class="flex items-center space-x-4">
+            <div
+              class="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xl shadow-md transition-transform group-hover:scale-105"
+            >
+              1
             </div>
-          </div>
-          <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="space-y-1">
-              <label class="block text-sm font-medium text-gray-500">Registration Number</label>
-              <p class="text-gray-800 font-semibold">
-                {{ form.registration_no || 'Fetching...' }}
+            <div>
+              <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Supervisor Details</h3>
+              <p class="mt-1 text-xs sm:text-sm text-gray-600">
+                Provide information about your current supervisor.
               </p>
-            </div>
-            <div class="space-y-1">
-              <label class="block text-sm font-medium text-gray-500"
-                >CID No./Identity/Work Permit No.</label
-              >
-              <p class="text-gray-800 font-semibold">{{ form.cid_no || 'N/A' }}</p>
-            </div>
-            <div class="space-y-1">
-              <label class="block text-sm font-medium text-gray-500">Full Name</label>
-              <p class="text-gray-800 font-semibold">
-                {{ displayFullName || 'N/A' }}
-              </p>
-            </div>
-            <div class="space-y-1">
-              <label class="block text-sm font-medium text-gray-500">Gender</label>
-              <p class="text-gray-800 font-semibold">{{ form.gender || 'N/A' }}</p>
             </div>
           </div>
         </div>
 
-        <!-- Supervisor Details Section -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b">
-            <div class="flex items-center space-x-3">
-              <div
-                class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold"
+        <div class="p-6 sm:p-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+            <!-- Supervisor Name -->
+            <div class="space-y-1.5">
+              <label class="block text-sm font-medium text-gray-700 required" for="supervisor_name"
+                >Supervisor's Name</label
               >
-                2
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-gray-900">Supervisor & Application Details</h3>
-                <p class="mt-1 text-gray-600">
-                  Information about your supervisor and the reason for application
-                </p>
-              </div>
+              <input
+                type="text"
+                id="supervisor_name"
+                v-model="form.supervisor_name"
+                class="form-input"
+                placeholder="Enter supervisor's full name"
+              />
+              <span v-if="errors.supervisor_name" class="error-message">{{
+                errors.supervisor_name
+              }}</span>
             </div>
-          </div>
 
-          <div class="p-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <!-- Reason for Application -->
-              <div class="space-y-2 md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 required"
-                  >Reason for Application</label
-                >
-                <textarea
-                  v-model="form.reason_for_application"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  rows="3"
-                  placeholder="Enter reason for application"
-                ></textarea>
-                <span v-if="errors.reason_for_application" class="text-sm text-red-500 block">{{
-                  errors.reason_for_application
-                }}</span>
-              </div>
+            <!-- Supervisor Designation -->
+            <div class="space-y-1.5">
+              <label
+                class="block text-sm font-medium text-gray-700 required"
+                for="supervisor_designation"
+                >Supervisor's Designation</label
+              >
+              <input
+                type="text"
+                id="supervisor_designation"
+                v-model="form.supervisor_designation"
+                class="form-input"
+                placeholder="e.g., Head of Department"
+              />
+              <span v-if="errors.supervisor_designation" class="error-message">{{
+                errors.supervisor_designation
+              }}</span>
+            </div>
 
-              <!-- Supervisor Name -->
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700 required"
-                  >Supervisor's Name</label
-                >
-                <input
-                  type="text"
-                  v-model="form.supervisor_name"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Enter supervisor's name"
-                />
-                <span v-if="errors.supervisor_name" class="text-sm text-red-500 block">{{
-                  errors.supervisor_name
-                }}</span>
-              </div>
-
-              <!-- Supervisor Designation -->
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700 required"
-                  >Supervisor's Designation</label
-                >
-                <input
-                  type="text"
-                  v-model="form.supervisor_designation"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Enter supervisor's designation"
-                />
-                <span v-if="errors.supervisor_designation" class="text-sm text-red-500 block">{{
-                  errors.supervisor_designation
-                }}</span>
-              </div>
-
-              <!-- Agency -->
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700 required">Agency</label>
-                <Listbox v-model="form.agency">
-                  <div class="relative">
-                    <ListboxButton
-                      class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-left"
+            <!-- Agency / Organization -->
+            <div class="space-y-1.5">
+              <label class="block text-sm font-medium text-gray-700 required" for="agency"
+                >Agency / Organization</label
+              >
+              <Listbox v-model="form.agency" as="div">
+                <div class="relative">
+                  <ListboxButton class="form-input text-left w-full">
+                    <span class="block truncate">{{ selectedAgencyName || 'Select Agency' }}</span>
+                    <span
+                      class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
                     >
-                      <span class="block truncate">{{
-                        selectedAgencyName || 'Select Agency'
-                      }}</span>
-                    </ListboxButton>
+                      <ChevronDown class="h-5 w-5 text-gray-400" aria-hidden="true" />
+                    </span>
+                  </ListboxButton>
+                  <transition
+                    leave-active-class="transition duration-100 ease-in"
+                    leave-from-class="opacity-100"
+                    leave-to-class="opacity-0"
+                  >
                     <ListboxOptions
-                      class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+                      class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
                     >
                       <ListboxOption
                         v-for="agency in agencyOptions"
@@ -171,371 +104,493 @@
                         :value="agency.id"
                         v-slot="{ active, selected }"
                       >
-                        <ListItemContent
-                          :active="active"
-                          :selected="selected"
-                          :name="agency.name"
-                        />
+                        <li
+                          :class="[
+                            active ? 'text-white bg-blue-600' : 'text-gray-900',
+                            'cursor-default select-none relative py-2 pl-10 pr-4',
+                          ]"
+                        >
+                          <span
+                            :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']"
+                          >
+                            {{ agency.name }}
+                          </span>
+                          <span
+                            v-if="selected"
+                            :class="[
+                              active ? 'text-white' : 'text-blue-600',
+                              'absolute inset-y-0 left-0 flex items-center pl-3',
+                            ]"
+                          >
+                            <Check class="h-5 w-5" aria-hidden="true" />
+                          </span>
+                        </li>
                       </ListboxOption>
                     </ListboxOptions>
-                  </div>
-                </Listbox>
-                <span v-if="errors.agency" class="text-sm text-red-500 block">{{
-                  errors.agency
-                }}</span>
-              </div>
+                  </transition>
+                </div>
+              </Listbox>
+              <span v-if="errors.agency" class="error-message">{{ errors.agency }}</span>
+            </div>
 
-              <!-- Department -->
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700 required">Department</label>
-                <Listbox v-model="form.department">
-                  <div class="relative">
-                    <ListboxButton
-                      class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-left"
+            <!-- Department -->
+            <div class="space-y-1.5">
+              <label class="block text-sm font-medium text-gray-700" for="department"
+                >Department</label
+              >
+              <Listbox v-model="form.department" as="div">
+                <div class="relative">
+                  <ListboxButton class="form-input text-left w-full">
+                    <span class="block truncate">{{ selectedDepartmentName || 'Select Department (Optional)' }}</span>
+                    <span
+                      class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
                     >
-                      <span class="block truncate">{{
-                        selectedDepartmentName || 'Select Department'
-                      }}</span>
-                    </ListboxButton>
+                      <ChevronDown class="h-5 w-5 text-gray-400" aria-hidden="true" />
+                    </span>
+                  </ListboxButton>
+                  <transition
+                    leave-active-class="transition duration-100 ease-in"
+                    leave-from-class="opacity-100"
+                    leave-to-class="opacity-0"
+                  >
                     <ListboxOptions
-                      class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+                      class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
                     >
                       <ListboxOption
-                        v-for="dept in departmentOptions"
-                        :key="dept.id"
-                        :value="dept.id"
+                        v-for="department in departmentOptions"
+                        :key="department.id"
+                        :value="department.id"
                         v-slot="{ active, selected }"
                       >
-                        <ListItemContent :active="active" :selected="selected" :name="dept.name" />
+                        <li
+                          :class="[
+                            active ? 'text-white bg-blue-600' : 'text-gray-900',
+                            'cursor-default select-none relative py-2 pl-10 pr-4',
+                          ]"
+                        >
+                          <span
+                            :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']"
+                          >
+                            {{ department.name }}
+                          </span>
+                          <span
+                            v-if="selected"
+                            :class="[
+                              active ? 'text-white' : 'text-blue-600',
+                              'absolute inset-y-0 left-0 flex items-center pl-3',
+                            ]"
+                          >
+                            <Check class="h-5 w-5" aria-hidden="true" />
+                          </span>
+                        </li>
                       </ListboxOption>
                     </ListboxOptions>
-                  </div>
-                </Listbox>
-                <span v-if="errors.department" class="text-sm text-red-500 block">{{
-                  errors.department
-                }}</span>
-              </div>
+                  </transition>
+                </div>
+              </Listbox>
+              <span v-if="errors.department" class="error-message">{{ errors.department }}</span>
+            </div>
 
-              <!-- Workplace/Working Organisation -->
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700 required"
-                  >Workplace/Working Organisation</label
-                >
-                <Listbox v-model="form.workplace">
-                  <div class="relative">
-                    <ListboxButton
-                      class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-left"
+            <!-- Workplace -->
+            <div class="space-y-1.5">
+              <label class="block text-sm font-medium text-gray-700" for="workplace"
+                >Workplace</label
+              >
+              <Listbox v-model="form.workplace" as="div">
+                <div class="relative">
+                  <ListboxButton class="form-input text-left w-full">
+                    <span class="block truncate">{{ selectedWorkplaceName || 'Select Workplace (Optional)' }}</span>
+                    <span
+                      class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
                     >
-                      <span class="block truncate">{{
-                        selectedWorkplaceName || 'Select Workplace'
-                      }}</span>
-                    </ListboxButton>
+                      <ChevronDown class="h-5 w-5 text-gray-400" aria-hidden="true" />
+                    </span>
+                  </ListboxButton>
+                  <transition
+                    leave-active-class="transition duration-100 ease-in"
+                    leave-from-class="opacity-100"
+                    leave-to-class="opacity-0"
+                  >
                     <ListboxOptions
-                      class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+                      class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
                     >
                       <ListboxOption
-                        v-for="place in workplaceOptions"
-                        :key="place.id"
-                        :value="place.id"
+                        v-for="workplace in workplaceOptions"
+                        :key="workplace.id"
+                        :value="workplace.id"
                         v-slot="{ active, selected }"
                       >
-                        <ListItemContent :active="active" :selected="selected" :name="place.name" />
+                        <li
+                          :class="[
+                            active ? 'text-white bg-blue-600' : 'text-gray-900',
+                            'cursor-default select-none relative py-2 pl-10 pr-4',
+                          ]"
+                        >
+                          <span
+                            :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']"
+                          >
+                            {{ workplace.name }}
+                          </span>
+                          <span
+                            v-if="selected"
+                            :class="[
+                              active ? 'text-white' : 'text-blue-600',
+                              'absolute inset-y-0 left-0 flex items-center pl-3',
+                            ]"
+                          >
+                            <Check class="h-5 w-5" aria-hidden="true" />
+                          </span>
+                        </li>
                       </ListboxOption>
                     </ListboxOptions>
-                  </div>
-                </Listbox>
-                <span v-if="errors.workplace" class="text-sm text-red-500 block">{{
-                  errors.workplace
-                }}</span>
-              </div>
+                  </transition>
+                </div>
+              </Listbox>
+              <span v-if="errors.workplace" class="error-message">{{ errors.workplace }}</span>
+            </div>
 
-              <!-- Supervisor Contact Number -->
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700 required"
-                  >Supervisor's Contact Number</label
-                >
-                <input
-                  type="tel"
-                  v-model="form.contact_number"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Enter supervisor's contact number"
-                />
-                <span v-if="errors.contact_number" class="text-sm text-red-500 block">{{
-                  errors.contact_number
-                }}</span>
-              </div>
+            <!-- Supervisor Contact Number -->
+            <div class="space-y-1.5">
+              <label class="block text-sm font-medium text-gray-700 required" for="contact_number"
+                >Supervisor's Contact Number</label
+              >
+              <input
+                type="tel"
+                id="contact_number"
+                v-model="form.contact_number"
+                class="form-input"
+                placeholder="Enter 8-digit mobile number"
+              />
+              <span v-if="errors.contact_number" class="error-message">{{
+                errors.contact_number
+              }}</span>
+            </div>
 
-              <!-- Supervisor Email Address -->
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700 required"
-                  >Supervisor's Email Address</label
-                >
-                <input
-                  type="email"
-                  v-model="form.email_address"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Enter supervisor's email address"
-                />
-                <span v-if="errors.email_address" class="text-sm text-red-500 block">{{
-                  errors.email_address
-                }}</span>
-              </div>
+            <!-- Supervisor Email -->
+            <div class="space-y-1.5 md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 required" for="email_address"
+                >Supervisor's Email Address</label
+              >
+              <input
+                type="email"
+                id="email_address"
+                v-model="form.email_address"
+                class="form-input"
+                placeholder="Enter valid official email"
+              />
+              <span v-if="errors.email_address" class="error-message">{{
+                errors.email_address
+              }}</span>
+            </div>
+
+            <!-- Reason for Application -->
+            <div class="space-y-1.5 md:col-span-2">
+              <label
+                class="block text-sm font-medium text-gray-700 required"
+                for="reason_for_application"
+                >Reason for Application</label
+              >
+              <textarea
+                id="reason_for_application"
+                v-model="form.reason_for_application"
+                class="form-input"
+                rows="3"
+                placeholder="Briefly state why you need this certificate"
+              ></textarea>
+              <span v-if="errors.reason_for_application" class="error-message">{{
+                errors.reason_for_application
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Recipient Details -->
+      <div
+        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl group"
+      >
+        <div
+          class="p-5 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-50"
+        >
+          <div class="flex items-center space-x-4">
+            <div
+              class="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xl shadow-md transition-transform group-hover:scale-105"
+            >
+              2
+            </div>
+            <div>
+              <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Recipient Details</h3>
+              <p class="mt-1 text-xs sm:text-sm text-gray-600">
+                Who should receive the certificate?
+              </p>
             </div>
           </div>
         </div>
 
-        <!-- Recipient Details Section -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b">
-            <div class="flex items-center space-x-3">
-              <div
-                class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold"
+        <div class="p-6 sm:p-8">
+          <div class="mb-6">
+            <label class="flex items-center cursor-pointer">
+              <Switch
+                v-model="isRecipientSelf"
+                :class="[
+                  isRecipientSelf ? 'bg-blue-600' : 'bg-gray-200',
+                  'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                ]"
               >
-                3
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-gray-900">Recipient Details</h3>
-                <p class="mt-1 text-gray-600">Who should receive the certificate?</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="p-8">
-            <!-- Recipient Toggle -->
-            <div class="mb-8">
-              <Switch v-model="isRecipientSelf" class="relative inline-flex items-center">
                 <span class="sr-only">Toggle recipient</span>
-                <div
+                <span
                   :class="[
-                    isRecipientSelf ? 'bg-blue-600' : 'bg-gray-200',
-                    'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out',
+                    isRecipientSelf ? 'translate-x-5' : 'translate-x-0',
+                    'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
                   ]"
                 >
                   <span
                     :class="[
-                      isRecipientSelf ? 'translate-x-6' : 'translate-x-1',
-                      'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out mt-1',
+                      isRecipientSelf
+                        ? 'opacity-0 duration-100 ease-out'
+                        : 'opacity-100 duration-200 ease-in',
+                      'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity',
                     ]"
-                  />
-                </div>
-                <span class="ml-3 text-sm font-medium text-gray-900">{{
-                  isRecipientSelf ? 'Recipient is Myself' : 'Recipient is Someone Else'
-                }}</span>
+                    aria-hidden="true"
+                  ></span>
+                  <span
+                    :class="[
+                      isRecipientSelf
+                        ? 'opacity-100 duration-200 ease-in'
+                        : 'opacity-0 duration-100 ease-out',
+                      'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity',
+                    ]"
+                    aria-hidden="true"
+                  ></span>
+                </span>
               </Switch>
-            </div>
+              <span class="ml-3">
+                <span class="text-sm font-medium text-gray-900">Recipient is Self</span>
+                <span class="text-xs text-gray-500 block"
+                  >(Toggle if certificate is for another person/organization)</span
+                >
+              </span>
+            </label>
+          </div>
 
-            <!-- Other Recipient Form (Conditional) -->
-            <Transition
-              enter-active-class="transition ease-out duration-200"
-              enter-from-class="opacity-0 scale-95"
-              enter-to-class="opacity-100 scale-100"
-              leave-active-class="transition ease-in duration-150"
-              leave-from-class="opacity-100 scale-100"
-              leave-to-class="opacity-0 scale-95"
-            >
-              <div v-if="!isRecipientSelf" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Recipient Name -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700 required"
-                    >Recipient's Name</label
-                  >
-                  <input
-                    type="text"
-                    v-model="form.recipient_name"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter recipient's name"
-                  />
-                  <span v-if="errors.recipient_name" class="text-sm text-red-500 block">{{
-                    errors.recipient_name
-                  }}</span>
-                </div>
-
-                <!-- Recipient Contact Number -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700 required"
-                    >Recipient's Contact Number</label
-                  >
-                  <input
-                    type="tel"
-                    v-model="form.recipient_contact_number"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter recipient's contact number"
-                  />
-                  <span v-if="errors.recipient_contact_number" class="text-sm text-red-500 block">{{
-                    errors.recipient_contact_number
-                  }}</span>
-                </div>
-
-                <!-- Recipient Email -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700 required"
-                    >Recipient's Email</label
-                  >
-                  <input
-                    type="email"
-                    v-model="form.recipient_email"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter recipient's email address"
-                  />
-                  <span v-if="errors.recipient_email" class="text-sm text-red-500 block">{{
-                    errors.recipient_email
-                  }}</span>
-                </div>
-
-                <!-- Recipient Address -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700 required"
-                    >Recipient's Address</label
-                  >
-                  <input
-                    type="text"
-                    v-model="form.address"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter recipient's full address"
-                  />
-                  <span v-if="errors.address" class="text-sm text-red-500 block">{{
-                    errors.address
-                  }}</span>
-                </div>
-
-                <!-- Recipient PO Box -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Recipient's PO. Box</label>
-                  <input
-                    type="text"
-                    v-model="form.po_box"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter recipient's PO Box (optional)"
-                  />
-                  <span v-if="errors.po_box" class="text-sm text-red-500 block">{{
-                    errors.po_box
-                  }}</span>
-                </div>
-
-                <!-- Recipient Zip Code -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700"
-                    >Recipient's Zip code</label
-                  >
-                  <input
-                    type="text"
-                    v-model="form.zip_code"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter recipient's zip code (optional)"
-                  />
-                  <span v-if="errors.zip_code" class="text-sm text-red-500 block">{{
-                    errors.zip_code
-                  }}</span>
-                </div>
+          <TransitionRoot
+            :show="!isRecipientSelf"
+            enter="transition-opacity duration-300 ease-out"
+            enter-from="opacity-0"
+            enter-to="opacity-100"
+            leave="transition-opacity duration-200 ease-in"
+            leave-from="opacity-100"
+            leave-to="opacity-0"
+            as="div"
+          >
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+              <!-- Recipient Name -->
+              <div class="space-y-1.5">
+                <label class="block text-sm font-medium text-gray-700 required" for="recipient_name"
+                  >Recipient's Name</label
+                >
+                <input
+                  type="text"
+                  id="recipient_name"
+                  v-model="form.recipient_name"
+                  class="form-input"
+                  placeholder="Enter recipient's full name"
+                  :disabled="isRecipientSelf"
+                />
+                <span v-if="errors.recipient_name" class="error-message">{{
+                  errors.recipient_name
+                }}</span>
               </div>
-            </Transition>
+
+              <!-- Recipient Contact Number -->
+              <div class="space-y-1.5">
+                <label
+                  class="block text-sm font-medium text-gray-700 required"
+                  for="recipient_contact_number"
+                  >Recipient's Contact Number</label
+                >
+                <input
+                  type="tel"
+                  id="recipient_contact_number"
+                  v-model="form.recipient_contact_number"
+                  class="form-input"
+                  placeholder="Enter recipient's contact no."
+                  :disabled="isRecipientSelf"
+                />
+                <span v-if="errors.recipient_contact_number" class="error-message">{{
+                  errors.recipient_contact_number
+                }}</span>
+              </div>
+
+              <!-- Recipient Email -->
+              <div class="space-y-1.5">
+                <label
+                  class="block text-sm font-medium text-gray-700 required"
+                  for="recipient_email"
+                  >Recipient's Email</label
+                >
+                <input
+                  type="email"
+                  id="recipient_email"
+                  v-model="form.recipient_email"
+                  class="form-input"
+                  placeholder="Enter recipient's email address"
+                  :disabled="isRecipientSelf"
+                />
+                <span v-if="errors.recipient_email" class="error-message">{{
+                  errors.recipient_email
+                }}</span>
+              </div>
+
+              <!-- Recipient Address -->
+              <div class="space-y-1.5">
+                <label class="block text-sm font-medium text-gray-700 required" for="address"
+                  >Recipient's Full Address</label
+                >
+                <input
+                  type="text"
+                  id="address"
+                  v-model="form.address"
+                  class="form-input"
+                  placeholder="Street, City, Country"
+                  :disabled="isRecipientSelf"
+                />
+                <span v-if="errors.address" class="error-message">{{ errors.address }}</span>
+              </div>
+
+              <!-- Recipient PO Box -->
+              <div class="space-y-1.5">
+                <label class="block text-sm font-medium text-gray-700" for="po_box"
+                  >Recipient's PO. Box (Optional)</label
+                >
+                <input
+                  type="text"
+                  id="po_box"
+                  v-model="form.po_box"
+                  class="form-input"
+                  placeholder="Enter PO Box if applicable"
+                  :disabled="isRecipientSelf"
+                />
+                <span v-if="errors.po_box" class="error-message">{{ errors.po_box }}</span>
+              </div>
+
+              <!-- Recipient Zip Code -->
+              <div class="space-y-1.5">
+                <label class="block text-sm font-medium text-gray-700" for="zip_code"
+                  >Recipient's Zip/Postal Code (Optional)</label
+                >
+                <input
+                  type="text"
+                  id="zip_code"
+                  v-model="form.zip_code"
+                  class="form-input"
+                  placeholder="Enter zip code if applicable"
+                  :disabled="isRecipientSelf"
+                />
+                <span v-if="errors.zip_code" class="error-message">{{ errors.zip_code }}</span>
+              </div>
+            </div>
+          </TransitionRoot>
+        </div>
+      </div>
+
+      <!-- Section 3: Declaration & Submission -->
+      <div
+        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl group"
+      >
+        <div
+          class="p-5 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-50"
+        >
+          <div class="flex items-center space-x-4">
+            <div
+              class="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xl shadow-md transition-transform group-hover:scale-105"
+            >
+              3
+            </div>
+            <div>
+              <h3 class="text-lg sm:text-xl font-semibold text-gray-900">
+                Declaration & Submission
+              </h3>
+              <p class="mt-1 text-xs sm:text-sm text-gray-600">
+                Confirm the accuracy of your information.
+              </p>
+            </div>
           </div>
         </div>
 
-        <!-- Declaration Section -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 border-b">
-            <div class="flex items-center space-x-3">
-              <div
-                class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold"
+        <div class="p-6 sm:p-8">
+          <div class="bg-blue-50 p-4 rounded-lg mb-5 border border-blue-100">
+            <p class="text-sm text-blue-800">
+              By submitting this application, I solemnly declare that all the information provided
+              herein is true, accurate, and complete to the best of my knowledge and belief. I
+              understand that any false statement may lead to the rejection of this application or
+              revocation of the certificate.
+            </p>
+          </div>
+          <div class="flex items-start space-x-3">
+            <input
+              type="checkbox"
+              v-model="form.declaration"
+              id="declarationCheckbox"
+              class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mt-0.5 flex-shrink-0"
+            />
+            <label
+              for="declarationCheckbox"
+              class="text-sm text-gray-700 select-none cursor-pointer"
+            >
+              I confirm that I have read the declaration above and agree to the
+              <button
+                type="button"
+                @click.stop="openTermsModal"
+                class="text-blue-600 hover:text-blue-800 hover:underline font-medium ml-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded"
               >
-                4
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-gray-900">Declaration</h3>
-                <p class="mt-1 text-gray-600">Please read and agree to the terms</p>
-              </div>
-            </div>
+                Terms & Conditions</button
+              >. <span class="text-red-600 font-medium">*</span>
+            </label>
           </div>
-
-          <div class="p-8">
-            <div class="flex items-start space-x-3">
-              <input
-                type="checkbox"
-                v-model="form.declaration"
-                id="declarationCheckbox"
-                class="mt-1 flex-shrink-0 h-5 w-5 rounded border-gray-400 text-blue-600 focus:ring-blue-500"
-                aria-describedby="declaration-description"
-              />
-              <div class="flex-grow">
-                <label for="declarationCheckbox" class="text-sm font-medium text-gray-800">
-                  I hereby declare that the information provided in this application is true,
-                  complete, and accurate to the best of my knowledge.
-                </label>
-                <p id="declaration-description" class="text-xs text-gray-600 mt-1">
-                  By checking this box, you confirm your understanding and agreement.
-                  <button
-                    type="button"
-                    @click="openTermsModal"
-                    class="text-blue-600 hover:underline text-xs"
-                  >
-                    Read More Terms
-                  </button>
-                </p>
-              </div>
-            </div>
-            <span v-if="errors.declaration" class="text-sm text-red-500 block mt-2">
-              {{ errors.declaration }}
-            </span>
-          </div>
+          <span v-if="errors.declaration" class="error-message block mt-2">{{
+            errors.declaration
+          }}</span>
         </div>
+      </div>
 
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-8">
-          <button
-            type="button"
-            @click="cancelForm"
-            class="w-full sm:w-auto px-6 py-3 rounded-xl text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-          >
-            Cancel & Clear Form
-          </button>
-          <button
-            type="button"
-            @click="saveDraft"
-            class="w-full sm:w-auto px-6 py-3 rounded-xl bg-yellow-500 text-white hover:bg-yellow-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400"
-          >
-            Save as Draft
-          </button>
-          <button
-            type="submit"
-            :disabled="!form.declaration || form.payment_status === 'completed'"
-            class="w-full sm:w-auto px-6 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Submit Application
-          </button>
-          <button
-            v-if="shouldShowPaymentButton"
-            type="button"
-            @click="initiatePayment"
-            class="w-full sm:w-auto px-6 py-3 rounded-xl bg-teal-500 text-white hover:bg-teal-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-400"
-            :class="{ 'animate-pulse': form.payment_status === 'processing_payment' }"
-          >
-            {{ getPaymentButtonText }}
-          </button>
-        </div>
-      </form>
+      <!-- Message Area -->
+      <div v-if="message" :class="['p-4 rounded-lg text-sm mt-6', messageClass]">
+        {{ message }}
+      </div>
 
-      <!-- Terms Modal -->
-      <TransitionRoot as="template" :show="showTermsModal">
-        <Dialog as="div" class="fixed z-10 inset-0 overflow-y-auto" @close="closeTermsModal">
+      <!-- Action Buttons -->
+      <div class="flex justify-end space-x-4 pt-4">
+        <button type="button" @click="cancelForm" class="btn btn-secondary">Cancel</button>
+        <button
+          type="submit"
+          :disabled="!form.declaration"
+          class="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Submit Application
+        </button>
+      </div>
+    </form>
+
+    <!-- Terms Modal -->
+    <TransitionRoot as="template" :show="showTermsModal">
+      <Dialog as="div" class="relative z-50" @close="closeTermsModal">
+        <TransitionChild
+          as="template"
+          enter="ease-out duration-300"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="ease-in duration-200"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 z-10 overflow-y-auto">
           <div
-            class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+            class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
           >
-            <TransitionChild
-              as="template"
-              enter="ease-out duration-300"
-              enter-from="opacity-0"
-              enter-to="opacity-100"
-              leave="ease-in duration-200"
-              leave-from="opacity-100"
-              leave-to="opacity-0"
-            >
-              <DialogOverlay class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-            </TransitionChild>
-            <span
-              class="hidden sm:inline-block sm:align-middle sm:h-screen"
-              aria-hidden="true"
-            ></span>
             <TransitionChild
               as="template"
               enter="ease-out duration-300"
@@ -545,70 +600,95 @@
               leave-from="opacity-100 translate-y-0 sm:scale-100"
               leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <div
-                class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg"
+              <DialogPanel
+                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
               >
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
-                    <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                      <DialogTitle as="h3" class="text-lg leading-6 font-medium text-gray-900">
+                    <div
+                      class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10"
+                    >
+                      <FileText class="h-6 w-6 text-blue-600" aria-hidden="true" />
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                      <DialogTitle as="h3" class="text-lg font-semibold leading-6 text-gray-900">
                         Terms and Conditions
                       </DialogTitle>
-                      <div class="mt-4 prose prose-sm text-gray-500 max-h-80 overflow-y-auto">
+                      <div class="mt-4 prose prose-sm max-w-none text-gray-600">
                         <p>
-                          Placeholder terms: By submitting this application for a Certificate of
-                          Good Standing (CoGS), you affirm that all information provided is accurate
-                          and complete. You authorize the relevant authorities to verify this
-                          information. You understand that any false statements may lead to
-                          rejection of the application or revocation of the certificate. You agree
-                          to comply with all applicable regulations and standards related to your
-                          profession.
+                          By submitting this application for a Certificate of Good Standing (CoGS),
+                          I hereby declare and agree to the following:
                         </p>
-                        <p>
-                          The processing of this application is subject to standard procedures and
-                          timelines. You will be notified of the outcome via the contact details
-                          provided. Ensure your supervisor and recipient details are correct to
-                          avoid delays.
-                        </p>
+                        <ol class="list-decimal pl-5 space-y-2 mt-3">
+                          <li>
+                            All information provided in this application form and any supporting
+                            documents is true, accurate, and complete to the best of my knowledge
+                            and belief.
+                          </li>
+                          <li>
+                            I understand that providing false, misleading, or incomplete information
+                            may result in the rejection of this application, revocation of any
+                            certificate issued, and potential disciplinary or legal action.
+                          </li>
+                          <li>
+                            I authorize the relevant council or regulatory body (e.g., EPC) to
+                            verify the information provided, including contacting my supervisor and
+                            agency/organization.
+                          </li>
+                          <li>
+                            I agree to comply with all applicable laws, regulations, codes of
+                            conduct, and professional standards pertaining to my profession and the
+                            purpose for which the CoGS is sought.
+                          </li>
+                          <li>
+                            I understand that the CoGS confirms my registration status and standing
+                            *at the time of issuance* and does not guarantee future standing.
+                          </li>
+                          <li>
+                            I consent to the collection, use, and disclosure of my personal
+                            information as necessary for the processing of this application and the
+                            issuance of the CoGS.
+                          </li>
+                        </ol>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
                     type="button"
-                    class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                    class="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
                     @click="closeTermsModal"
                   >
-                    I Understand
+                    I Understand & Agree
+                  </button>
+                  <button
+                    type="button"
+                    class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                    @click="closeTermsModal"
+                  >
+                    Cancel
                   </button>
                 </div>
-              </div>
+              </DialogPanel>
             </TransitionChild>
           </div>
-        </Dialog>
-      </TransitionRoot>
-
-      <!-- Payment Modal -->
-      <PaymentModal
-        ref="paymentModal"
-        :amount="1000"
-        @payment-completed="handlePaymentCompleted"
-        @close="closePaymentModal"
-      />
-    </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch, computed, nextTick } from 'vue'
+import { ref, reactive, onMounted, watch, computed } from 'vue'
 import { useToast } from 'vue-toastification'
 import apiService from '@/services/services'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
+import PageHeader from '@/components/common/MHPC/PageHeader.vue'
 import {
   Dialog,
-  DialogOverlay,
+  DialogPanel,
   DialogTitle,
   Listbox,
   ListboxButton,
@@ -618,21 +698,7 @@ import {
   TransitionChild,
   TransitionRoot,
 } from '@headlessui/vue'
-import { CheckIcon } from '@heroicons/vue/24/outline'
-import PaymentModal from '@/components/common/PaymentModal.vue'
-
-const ListItemContent = {
-  props: ['active', 'selected', 'name'],
-  components: { CheckIcon },
-  template: `
-    <div :class="[active ? 'text-white bg-blue-600' : 'text-gray-900', 'cursor-default select-none relative py-2 pl-10 pr-4']">
-      <span :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">{{ name }}</span>
-      <span v-if="selected" :class="[active ? 'text-white' : 'text-blue-600', 'absolute inset-y-0 left-0 flex items-center pl-3']">
-        <CheckIcon class="h-5 w-5" aria-hidden="true" />
-      </span>
-    </div>
-  `,
-}
+import { FileText, ChevronDown, Check } from 'lucide-vue-next'
 
 const toast = useToast()
 const authStore = useAuthStore()
@@ -640,8 +706,8 @@ const router = useRouter()
 
 const form = reactive({
   registration_no: '',
-  full_name: '',
   cid_no: '',
+  full_name: '',
   gender: '',
   user_contact_number: '',
   user_email: '',
@@ -660,9 +726,6 @@ const form = reactive({
   po_box: '',
   zip_code: '',
   declaration: false,
-  application_id: null,
-  payment_id: '',
-  payment_status: '',
 })
 
 const errors = reactive({})
@@ -671,473 +734,321 @@ const showTermsModal = ref(false)
 const agencyOptions = ref([])
 const departmentOptions = ref([])
 const workplaceOptions = ref([])
-const draftMessage = ref('')
-const draftMessageClass = ref('')
-const paymentModal = ref(null)
-const isLoading = ref(false)
+const message = ref('')
+const messageClass = ref('')
 
-const displayFullName = computed(() => {
-  if (form.full_name) {
-    return form.full_name
-  }
-  if (authStore.user && authStore.user.first_name && authStore.user.last_name) {
-    const fullName = authStore.user.middle_name
-      ? `${authStore.user.first_name} ${authStore.user.middle_name} ${authStore.user.last_name}`
-      : `${authStore.user.first_name} ${authStore.user.last_name}`
-    console.log('Falling back to authStore fullName:', fullName)
-    return fullName
-  }
-  console.log('No full_name available, returning empty string')
-  return ''
-})
-
-const selectedAgencyName = computed(() => {
-  const agency = agencyOptions.value.find((a) => a.id === form.agency)
-  return agency ? agency.name : ''
-})
-
-const selectedDepartmentName = computed(() => {
-  const dept = departmentOptions.value.find((d) => d.id === form.department)
-  return dept ? dept.name : ''
-})
-
-const selectedWorkplaceName = computed(() => {
-  const place = workplaceOptions.value.find((w) => w.id === form.workplace)
-  return place ? place.name : ''
-})
-
-const localStorageKey = computed(() => `cogsDraftData_${authStore.user?.cid || 'guest'}`)
-
-const shouldShowPaymentButton = computed(() => {
-  return form.application_id && form.payment_status && form.payment_status !== 'completed'
-})
-
-const paymentStatusClass = computed(() => {
-  return {
-    'bg-green-100 text-green-700': form.payment_status === 'completed',
-    'bg-yellow-100 text-yellow-700':
-      form.payment_status === 'processing_payment' || form.payment_status === 'pending',
-    'bg-red-100 text-red-700': form.payment_status === 'failed',
-  }
-})
-
-const paymentStatusText = computed(() => {
-  return form.payment_status === 'completed'
-    ? 'Paid'
-    : form.payment_status === 'processing_payment'
-      ? 'Processing'
-      : form.payment_status === 'failed'
-        ? 'Failed'
-        : 'Pending'
-})
-
-const getPaymentButtonText = computed(() => {
-  return form.payment_status === 'failed' ? 'Re-process Payment' : 'Proceed to Payment'
-})
-
-const fetchUserApplicationData = async (cid) => {
+const fetchRegistrationNumber = async (cid) => {
   if (!cid) return null
   try {
     const response = await apiService.getEpcApplicationsByCid(cid)
-    const data = response.data.results || response.data || []
-    if (Array.isArray(data) && data.length > 0) {
-      return data[0]
+    if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+      const sortedApps = response.data.sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at),
+      )
+      return sortedApps[0].registration_no || sortedApps[0].id
     }
+    console.warn('No existing EPC application found to retrieve registration number for CID:', cid)
     return null
   } catch (error) {
-    console.error('Error fetching application data:', error)
-    toast.warning('Could not fetch application data.')
+    toast.error('Failed to fetch registration number.')
+    console.error('Error fetching registration number:', error)
     return null
   }
 }
 
 const fetchMasterData = async () => {
   try {
-    const [agenciesResponse, departmentsResponse, workplacesResponse] = await Promise.all([
-      apiService.getEpcCogsAgencies(),
-      apiService.getEpcInstituteDepartments(),
-      apiService.getEpcCogsWorkplaces(),
+    // Fetch agencies, departments, and workplaces for EPC
+    const [agenciesResponse, departmentsResponse, workplacesResponse] = await Promise.allSettled([
+      apiService.getEpcCogsAgencies({ limit: 1000 }),
+      apiService.getEpcCogsDepartments({ limit: 1000 }),
+      apiService.getEpcCogsWorkplaces({ limit: 1000 }),
     ])
 
-    agencyOptions.value = agenciesResponse.data.results || agenciesResponse.data || []
-    departmentOptions.value = departmentsResponse.data.results || departmentsResponse.data || []
-    workplaceOptions.value = workplacesResponse.data.results || workplacesResponse.data || []
-  } catch (error) {
-    toast.error('Failed to fetch master data (Agencies/Departments/Workplaces): ' + error.message)
-    console.error('Error fetching master data:', error)
-    if (import.meta.env.DEV) {
-      console.warn('Using dummy dropdown data in DEV mode.')
-      if (!departmentOptions.value.length)
-        departmentOptions.value = [
-          { id: 1, name: 'Dept A (Dummy)' },
-          { id: 2, name: 'Dept B (Dummy)' },
-        ]
-      if (!workplaceOptions.value.length)
-        workplaceOptions.value = [
-          { id: 1, name: 'Workplace X (Dummy)' },
-          { id: 2, name: 'Workplace Y (Dummy)' },
-        ]
-      if (!agencyOptions.value.length)
-        agencyOptions.value = [
-          { id: 1, name: 'Agency 1 (Dummy)' },
-          { id: 2, name: 'Agency 2 (Dummy)' },
-        ]
-    }
-  }
-}
-
-const loadDraft = () => {
-  const savedDraft = localStorage.getItem(localStorageKey.value)
-  if (savedDraft) {
-    try {
-      const draftData = JSON.parse(savedDraft)
-      console.log('Loading draft data:', draftData)
-      Object.keys(form).forEach((key) => {
-        if (
-          key !== 'registration_no' &&
-          key !== 'cid_no' &&
-          key !== 'gender' &&
-          key !== 'user_contact_number' &&
-          key !== 'user_email' &&
-          (key !== 'full_name' || !form.full_name) &&
-          key !== 'application_id' &&
-          key !== 'payment_id' &&
-          key !== 'payment_status' &&
-          key in draftData
-        ) {
-          form[key] = draftData[key]
-        }
-      })
-      if (typeof draftData.isRecipientSelf === 'boolean') {
-        isRecipientSelf.value = draftData.isRecipientSelf
-      }
-      updateRecipientDetails()
-      showDraftMessage('Draft loaded successfully.', 'bg-green-100 text-green-700')
-      console.log('Form after loading draft:', { ...form })
-    } catch (e) {
-      console.error('Error parsing draft data:', e)
-      localStorage.removeItem(localStorageKey.value)
-      showDraftMessage('Could not load draft (invalid data).', 'bg-red-100 text-red-700')
-    }
-  } else {
-    console.log('No draft found in localStorage for key:', localStorageKey.value)
-  }
-}
-
-const saveDraft = () => {
-  try {
-    const draftData = {
-      ...form,
-      isRecipientSelf: isRecipientSelf.value,
-    }
-    console.log('Saving draft data:', draftData)
-    localStorage.setItem(localStorageKey.value, JSON.stringify(draftData))
-    showDraftMessage('Draft saved successfully.', 'bg-yellow-100 text-yellow-700')
-    console.log('Draft saved to localStorage with key:', localStorageKey.value)
-  } catch (e) {
-    console.error('Error saving draft:', e)
-    showDraftMessage(
-      'Could not save draft. Local storage might be full or disabled.',
-      'bg-red-100 text-red-700',
-    )
-  }
-}
-
-const clearDraft = () => {
-  console.log('Clearing draft from localStorage with key:', localStorageKey.value)
-  localStorage.removeItem(localStorageKey.value)
-  showDraftMessage('Draft cleared.', 'bg-blue-100 text-blue-700')
-}
-
-const showDraftMessage = async (msg, cssClass) => {
-  console.log('Displaying draft message:', msg, 'with class:', cssClass)
-  draftMessage.value = msg
-  draftMessageClass.value = cssClass
-  console.log('draftMessage set to:', draftMessage.value)
-  await nextTick() // Ensure DOM updates
-  console.log('Notification should be visible with:', draftMessage.value)
-  setTimeout(() => {
-    draftMessage.value = ''
-    draftMessageClass.value = ''
-    console.log('Cleared draft message')
-  }, 5000)
-}
-
-const initiatePayment = () => {
-  if (form.application_id) {
-    paymentModal.value.openModal()
-  } else {
-    toast.error('No application found for payment.')
-  }
-}
-
-const closePaymentModal = () => {
-  // No need to reset application_id; keep it for retries
-}
-
-const handlePaymentCompleted = async (paymentData) => {
-  if (!form.application_id) {
-    toast.error('No application selected for payment.')
-    return
-  }
-
-  const applicationId = form.application_id
-  const paymentId = paymentData.paymentHash
-  const user = authStore.user
-
-  if (!user || !user.contact_number || !user.email || !user.cid) {
-    toast.error('Missing user information. Please update your profile.')
-    return
-  }
-
-  try {
-    isLoading.value = true
-
-    // 1. Initiate Payment
-    const paymentInitiationFormData = new FormData()
-    paymentInitiationFormData.append('refNo', paymentId)
-    paymentInitiationFormData.append('serviceCode', 'cogs_application_fee')
-    paymentInitiationFormData.append('taxPayerName', user.cid)
-    paymentInitiationFormData.append('taxPayerNo', user.cid)
-    paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
-    paymentInitiationFormData.append('totalPayableAmount', 1000)
-    paymentInitiationFormData.append('description', 'CoGS Application Fee')
-    paymentInitiationFormData.append('mobileNo', user.contact_number)
-    paymentInitiationFormData.append('payerEmail', user.email)
-    paymentInitiationFormData.append('user', user.id)
-    paymentInitiationFormData.append('payableAmount', 1000)
-    paymentInitiationFormData.append('application_no', applicationId)
-    paymentInitiationFormData.append('app_type', 'certificate_of_good_standing')
-
-    await apiService.makePayment(paymentInitiationFormData)
-
-    // 2. Update Application
-    const updateFormData = new FormData()
-    updateFormData.append('payment_id', paymentId)
-    updateFormData.append('payment_status', 'processing_payment')
-
-    await apiService.patchEpcCogs(applicationId, updateFormData)
-
-    // 3. Update Local State
-    form.payment_id = paymentId
-    form.payment_status = 'processing_payment'
-
-    toast.success(`Payment initiated! ID: ${paymentId}. ${paymentData.message}`)
-  } catch (error) {
-    console.error('Payment update error:', error)
-    if (error.response) {
-      if (error.response.data) {
-        if (error.response.data.detail) {
-          toast.error('API Error: ' + error.response.data.detail)
-        } else {
-          toast.error('API Error: ' + JSON.stringify(error.response.data))
-        }
-      } else {
-        toast.error('API Error: ' + error.response.statusText)
-      }
-    } else if (error.request) {
-      toast.error('Network Error: No response from server')
+    // Process agencies
+    if (agenciesResponse.status === 'fulfilled' && agenciesResponse.value.data) {
+      const agenciesData = agenciesResponse.value.data.results || agenciesResponse.value.data
+      agencyOptions.value = Array.isArray(agenciesData) ? agenciesData.sort((a, b) =>
+        (a.name || '').localeCompare(b.name || '')
+      ) : []
     } else {
-      toast.error(
-        'Payment request generated successfully, but there was an error confirming the payment. Contact us with the payment ID: ' +
-          paymentId,
-      )
+      console.error('Agency data format unexpected:', agenciesResponse)
+      agencyOptions.value = []
     }
-  } finally {
-    isLoading.value = false
+
+    // Process departments
+    if (departmentsResponse.status === 'fulfilled' && departmentsResponse.value.data) {
+      const departmentsData = departmentsResponse.value.data.results || departmentsResponse.value.data
+      departmentOptions.value = Array.isArray(departmentsData) ? departmentsData.sort((a, b) =>
+        (a.name || '').localeCompare(b.name || '')
+      ) : []
+    } else {
+      console.error('Department data format unexpected:', departmentsResponse)
+      departmentOptions.value = []
+    }
+
+    // Process workplaces
+    if (workplacesResponse.status === 'fulfilled' && workplacesResponse.value.data) {
+      const workplacesData = workplacesResponse.value.data.results || workplacesResponse.value.data
+      workplaceOptions.value = Array.isArray(workplacesData) ? workplacesData.sort((a, b) =>
+        (a.name || '').localeCompare(b.name || '')
+      ) : []
+    } else {
+      console.error('Workplace data format unexpected:', workplacesResponse)
+      workplaceOptions.value = []
+    }
+
+  } catch (error) {
+    toast.error('Failed to load master data.')
+    console.error('Error fetching master data:', error)
+    agencyOptions.value = []
+    departmentOptions.value = []
+    workplaceOptions.value = []
   }
 }
 
 onMounted(async () => {
   if (authStore.user && authStore.user.cid) {
     form.cid_no = authStore.user.cid
-    form.gender = authStore.user.gender || 'N/A'
+    form.full_name = authStore.user.middle_name
+      ? `${authStore.user.first_name} ${authStore.user.middle_name} ${authStore.user.last_name}`
+      : `${authStore.user.first_name} ${authStore.user.last_name}`
+    form.gender = authStore.user.gender
     form.user_contact_number = authStore.user.contact_number || ''
     form.user_email = authStore.user.email || ''
-    console.log('authStore.user:', authStore.user)
 
-    const applicationData = await fetchUserApplicationData(form.cid_no)
-    if (applicationData) {
-      form.registration_no = applicationData.registration_no || ''
-      form.full_name = applicationData.full_name || ''
-      form.application_id = applicationData.id || null
-      form.payment_id = applicationData.payment_id || ''
-      form.payment_status = applicationData.payment_status || ''
-      console.log('Set form.full_name:', form.full_name)
-      console.log('Set form.application_id:', form.application_id)
-      console.log('Set form.payment_status:', form.payment_status)
+    const registrationNumber = await fetchRegistrationNumber(form.cid_no)
+    if (registrationNumber) {
+      form.registration_no = registrationNumber
+    } else {
+      toast.warning(
+        'Could not retrieve your registration number. Please ensure you have a valid EPC registration.',
+        { timeout: 7000 },
+      )
     }
-
     await fetchMasterData()
-    loadDraft()
-    console.log('After loadDraft, form:', { ...form })
     updateRecipientDetails()
   } else {
-    toast.error('User not authenticated or essential data missing. Cannot prefill data.')
+    toast.error('User information not found. Please log in again.')
+    router.push('/login')
   }
 })
 
 const validateForm = () => {
   Object.keys(errors).forEach((key) => delete errors[key])
   let isValid = true
+  const phoneRegex = /^(17|77)\d{6}$/
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-  if (!form.reason_for_application?.trim())
+  if (!form.reason_for_application?.trim()) {
     errors.reason_for_application = 'Reason for Application is required'
-  if (!form.supervisor_name?.trim()) errors.supervisor_name = 'Supervisor Name is required'
-  if (!form.supervisor_designation?.trim())
+    isValid = false
+  }
+  if (!form.supervisor_name?.trim()) {
+    errors.supervisor_name = 'Supervisor Name is required'
+    isValid = false
+  }
+  if (!form.supervisor_designation?.trim()) {
     errors.supervisor_designation = 'Supervisor Designation is required'
-  if (!form.agency) errors.agency = 'Agency is required'
-  if (!form.department) errors.department = 'Department is required'
-  if (!form.workplace) errors.workplace = 'Workplace is required'
-  if (!form.contact_number?.trim()) errors.contact_number = 'Supervisor Contact Number is required'
-  else if (!/^\d{8,}$/.test(form.contact_number.replace(/\s+/g, '')))
-    errors.contact_number = 'Contact Number must be at least 8 digits'
-  if (!form.email_address?.trim()) errors.email_address = 'Supervisor Email is required'
-  else if (!/^\S+@\S+\.\S+$/.test(form.email_address))
+    isValid = false
+  }
+  if (!form.agency) {
+    errors.agency = 'Agency / Organization is required'
+    isValid = false
+  }
+  if (!form.contact_number?.trim()) {
+    errors.contact_number = 'Supervisor Contact Number is required'
+    isValid = false
+  } else if (!phoneRegex.test(form.contact_number)) {
+    errors.contact_number =
+      'Please enter a valid 8-digit Bhutanese mobile number (starting with 17 or 77)'
+    isValid = false
+  }
+  if (!form.email_address?.trim()) {
+    errors.email_address = 'Supervisor Email is required'
+    isValid = false
+  } else if (!emailRegex.test(form.email_address)) {
     errors.email_address = 'Please enter a valid email address'
-
-  if (!isRecipientSelf.value) {
-    if (!form.recipient_name?.trim()) errors.recipient_name = 'Recipient Name is required'
-    if (!form.recipient_contact_number?.trim())
-      errors.recipient_contact_number = 'Recipient Contact Number is required'
-    else if (!/^\d{8,}$/.test(form.recipient_contact_number.replace(/\s+/g, '')))
-      errors.recipient_contact_number = 'Contact Number must be at least 8 digits'
-    if (!form.recipient_email?.trim()) errors.recipient_email = 'Recipient Email is required'
-    else if (!/^\S+@\S+\.\S+$/.test(form.recipient_email))
-      errors.recipient_email = 'Please enter a valid email address'
-    if (!form.address?.trim()) errors.address = 'Recipient Address is required'
+    isValid = false
   }
 
-  if (!form.declaration) errors.declaration = 'You must agree to the declaration before submitting.'
-
-  isValid = Object.keys(errors).length === 0
+  if (!isRecipientSelf.value) {
+    if (!form.recipient_name?.trim()) {
+      errors.recipient_name = 'Recipient Name is required'
+      isValid = false
+    }
+    if (!form.recipient_contact_number?.trim()) {
+      errors.recipient_contact_number = 'Recipient Contact Number is required'
+      isValid = false
+    } else if (!phoneRegex.test(form.recipient_contact_number)) {
+      errors.recipient_contact_number =
+        'Please enter a valid 8-digit Bhutanese mobile number (starting with 17 or 77)'
+      isValid = false
+    }
+    if (!form.recipient_email?.trim()) {
+      errors.recipient_email = 'Recipient Email is required'
+      isValid = false
+    } else if (!emailRegex.test(form.recipient_email)) {
+      errors.recipient_email = 'Please enter a valid email address'
+      isValid = false
+    }
+    if (!form.address?.trim()) {
+      errors.address = "Recipient's Full Address is required"
+      isValid = false
+    }
+  }
+  if (!form.declaration) {
+    errors.declaration = 'You must agree to the declaration and terms before submitting.'
+    isValid = false
+  }
   return isValid
 }
 
 const submitForm = async () => {
-  if (!validateForm()) {
-    toast.error('Please correct the errors marked in the form.')
-    const firstErrorField = document.querySelector('[class*="text-red-500"]')
-    if (firstErrorField) {
-      const fieldContainer = firstErrorField.closest('.space-y-2, .flex.items-start')
-      if (fieldContainer) {
-        fieldContainer.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      } else {
-        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  if (validateForm()) {
+    try {
+      const requestData = {
+        registration_no: form.registration_no,
+        cid_no: form.cid_no,
+        full_name: form.full_name,
+        gender: form.gender,
+        reason_for_application: form.reason_for_application,
+        supervisor_name: form.supervisor_name,
+        supervisor_designation: form.supervisor_designation,
+        agency: form.agency,
+        department: form.department || null,
+        workplace: form.workplace || null,
+        contact_number: form.contact_number,
+        email_address: form.email_address,
+        recipient_name: isRecipientSelf.value ? form.full_name : form.recipient_name,
+        recipient_contact_number: isRecipientSelf.value
+          ? form.user_contact_number
+          : form.recipient_contact_number,
+        recipient_email: isRecipientSelf.value ? form.user_email : form.recipient_email,
+        address: isRecipientSelf.value ? null : form.address,
+        po_box: isRecipientSelf.value ? null : form.po_box || null,
+        zip_code: isRecipientSelf.value ? null : form.zip_code || null,
+        declaration: form.declaration,
+        review_status: 'Pending',
+        review_remark: '',
+        endorsement_decision: 'Pending',
+        endorsement_remark: '',
+        is_payment_complete: false,
+        payment_id: '',
+        is_active: true,
       }
-    }
-    return
-  }
 
-  const fullName = displayFullName.value
-  const requestData = {
-    registration_no: form.registration_no || null,
-    cid_no: form.cid_no,
-    full_name: fullName,
-    gender: form.gender,
-    reason_for_application: form.reason_for_application,
-    supervisor_name: form.supervisor_name,
-    supervisor_designation: form.supervisor_designation,
-    agency: form.agency,
-    department: form.department,
-    workplace: form.workplace,
-    contact_number: form.contact_number,
-    email_address: form.email_address,
-    recipient_name: isRecipientSelf.value ? fullName : form.recipient_name,
-    recipient_contact_number: isRecipientSelf.value
-      ? form.user_contact_number
-      : form.recipient_contact_number,
-    recipient_email: isRecipientSelf.value ? form.user_email : form.recipient_email,
-    address: isRecipientSelf.value ? null : form.address,
-    po_box: isRecipientSelf.value ? null : form.po_box || null,
-    zip_code: isRecipientSelf.value ? null : form.zip_code || null,
-    declaration: form.declaration,
-    review_status: 'Pending',
-    endorsement_decision: 'Pending',
-    is_active: true,
-    payment_id: form.payment_id || null,
-    payment_status: form.payment_status || 'pending',
-  }
+      const response = await apiService.createEpcCogs(requestData)
 
-  console.log('Submitting data:', JSON.stringify(requestData, null, 2))
+      if (response.status === 201) {
+        toast.success('Application submitted successfully!')
+        message.value = 'Your application has been submitted successfully! Redirecting...'
+        messageClass.value = 'bg-green-100 text-green-800 border border-green-200'
 
-  try {
-    const response = await apiService.createEpcCogs(requestData)
-    if (response.status === 201 || response.status === 200) {
-      form.application_id = response.data.id
-      form.payment_status = response.data.payment_status || 'pending'
-      form.payment_id = response.data.payment_id || ''
-      clearDraft() // Clear draft after successful submission
-      toast.success('Application submitted successfully!')
-      if (form.payment_status === 'pending') {
-        initiatePayment()
+        setTimeout(() => {
+          router.push('/admin/user/engineering_certification/dashboard')
+        }, 2500)
       } else {
-        router.push({ name: 'user-engineering-dashboard' })
+        toast.error(`Submission failed with status: ${response.status}. Please try again.`)
+        console.error('Unexpected response status:', response.status, response.data)
+        message.value = 'Application submission failed. Please check errors or try again later.'
+        messageClass.value = 'bg-red-100 text-red-800 border border-red-200'
       }
-    } else {
-      toast.warning(`Application submitted but received status: ${response.status}. Please verify.`)
-      clearDraft()
-      router.push({ name: 'user-engineering-dashboard' })
-    }
-  } catch (error) {
-    console.error('Error submitting form:', error)
-    let errorMsg = 'An error occurred during submission. Please try again.'
-    if (error.response) {
-      console.error('Error data:', error.response.data)
-      console.error('Error status:', error.response.status)
-      errorMsg = `Server error: ${error.response.status}`
-      if (typeof error.response.data === 'object' && error.response.data !== null) {
-        let details = ''
-        if (error.response.data.detail) {
-          details = error.response.data.detail
-        } else {
-          details = Object.entries(error.response.data)
-            .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
-            .join('; ')
-        }
-        if (details) errorMsg += ` - ${details}`
-        Object.keys(error.response.data).forEach((key) => {
-          if (key in errors) {
-            errors[key] = Array.isArray(error.response.data[key])
-              ? error.response.data[key].join(' ')
-              : String(error.response.data[key])
+    } catch (error) {
+      // Default generic error message
+      message.value = 'An error occurred during submission. Please try again.'
+      messageClass.value = 'bg-red-100 text-red-800 border border-red-200'
+
+      if (error.response) {
+        console.error('Error data:', error.response.data)
+        if (error.response.status === 400 && error.response.data) {
+          const serverErrors = error.response.data
+
+          if (
+            serverErrors.cid_no &&
+            Array.isArray(serverErrors.cid_no) &&
+            serverErrors.cid_no.length > 0
+          ) {
+            toast.error(serverErrors.cid_no[0])
+            message.value = serverErrors.cid_no[0]
+          } else {
+            // Handle other validation errors (assign to fields and show generic toast)
+            let otherErrorsFound = false
+            Object.keys(serverErrors).forEach((key) => {
+              if (
+                Object.prototype.hasOwnProperty.call(form, key) ||
+                Object.prototype.hasOwnProperty.call(errors, key)
+              ) {
+                errors[key] = Array.isArray(serverErrors[key])
+                  ? serverErrors[key][0]
+                  : serverErrors[key]
+                otherErrorsFound = true
+              } else {
+                console.warn(`Unhandled error key from server: ${key}`)
+              }
+            })
+
+            if (otherErrorsFound) {
+              toast.warning('Validation errors found. Please check the form.')
+              message.value = 'Please correct the highlighted errors before submitting.'
+              messageClass.value = 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+              scrollToFirstError()
+            } else {
+              // If serverErrors exists but doesn't match form fields and isn't cid_no
+              const detail = serverErrors.detail || 'An unknown validation error occurred.'
+              toast.error(detail)
+              message.value = detail
+            }
           }
-        })
-        if (Object.keys(errors).length > 0) {
-          errorMsg = 'Please correct the errors highlighted in the form.'
+        } else {
+          // Handle other non-400 server errors
+          const detail =
+            error.response.data?.detail ||
+            `Server error occurred (Status: ${error.response.status}).`
+          toast.error(detail)
+          message.value = detail
         }
-      } else if (typeof error.response.data === 'string') {
-        errorMsg += ` - ${error.response.data}`
+      } else if (error.request) {
+        toast.error('No response from server. Check your network connection.')
+        message.value = 'Could not connect to the server. Please check your network.'
+      } else {
+        // Handle errors in setting up the request or other client-side issues
+        toast.error('An application error occurred: ' + error.message)
+        message.value = 'An unexpected application error occurred.'
       }
-      toast.error(errorMsg)
-    } else if (error.request) {
-      toast.error('Could not reach the server. Please check your network connection.')
-    } else {
-      toast.error(errorMsg + ` (${error.message})`)
     }
+  } else {
+    toast.warning('Please fill in all required fields correctly.')
+    scrollToFirstError()
+    message.value = 'Please correct the highlighted errors before submitting.'
+    messageClass.value = 'bg-yellow-100 text-yellow-800 border border-yellow-200'
   }
 }
 
-const resetFormFields = () => {
-  const preservedData = {
-    registration_no: form.registration_no,
-    cid_no: form.cid_no,
-    gender: form.gender,
-    user_contact_number: form.user_contact_number,
-    user_email: form.user_email,
-    full_name: form.full_name,
-    application_id: form.application_id,
-    payment_id: form.payment_id,
-    payment_status: form.payment_status,
+const scrollToFirstError = () => {
+  const firstErrorElement = document.querySelector('.error-message')
+  if (firstErrorElement) {
+    firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
+}
 
+const cancelForm = () => {
+  if (formHasValues()) {
+    if (!confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+      return
+    }
+  }
+  clearForm()
+  message.value = 'Form has been cleared.'
+  messageClass.value = 'bg-blue-100 text-blue-800 border border-blue-200'
+  setTimeout(() => {
+    message.value = ''
+    messageClass.value = ''
+  }, 3000)
+}
+
+const clearForm = () => {
   Object.assign(form, {
-    registration_no: '',
-    cid_no: '',
-    gender: '',
-    user_contact_number: '',
-    user_email: '',
-    full_name: '',
     reason_for_application: '',
     supervisor_name: '',
     supervisor_designation: '',
@@ -1153,149 +1064,127 @@ const resetFormFields = () => {
     po_box: '',
     zip_code: '',
     declaration: false,
-    application_id: null,
-    payment_id: '',
-    payment_status: '',
   })
-
-  Object.assign(form, preservedData)
   isRecipientSelf.value = true
-  Object.keys(errors).forEach((key) => delete errors[key])
   updateRecipientDetails()
+  Object.keys(errors).forEach((key) => delete errors[key])
 }
 
-const cancelForm = () => {
-  resetFormFields()
-  clearDraft()
-  toast.info('Form cleared and draft removed.')
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+const formHasValues = () => {
+  return (
+    form.reason_for_application ||
+    form.supervisor_name ||
+    form.supervisor_designation ||
+    form.agency ||
+    form.department ||
+    form.workplace ||
+    form.contact_number ||
+    form.email_address ||
+    form.declaration ||
+    (!isRecipientSelf.value &&
+      (form.recipient_name ||
+        form.recipient_contact_number ||
+        form.recipient_email ||
+        form.address ||
+        form.po_box ||
+        form.zip_code))
+  )
 }
 
 const updateRecipientDetails = () => {
-  delete errors.recipient_name
-  delete errors.recipient_contact_number
-  delete errors.recipient_email
-  delete errors.address
-
   if (isRecipientSelf.value) {
-    const fullName = displayFullName.value
-    form.recipient_name = fullName || ''
-    form.recipient_contact_number = form.user_contact_number || ''
-    form.recipient_email = form.user_email || ''
+    form.recipient_name = form.full_name
+    form.recipient_contact_number = form.user_contact_number
+    form.recipient_email = form.user_email
+    form.address = ''
+    form.po_box = ''
+    form.zip_code = ''
+    delete errors.recipient_name
+    delete errors.recipient_contact_number
+    delete errors.recipient_email
+    delete errors.address
+  } else {
+    form.recipient_name = ''
+    form.recipient_contact_number = ''
+    form.recipient_email = ''
     form.address = ''
     form.po_box = ''
     form.zip_code = ''
   }
 }
 
-watch(isRecipientSelf, () => {
-  updateRecipientDetails()
+watch(isRecipientSelf, (newValue, oldValue) => {
+  if (newValue !== oldValue) {
+    updateRecipientDetails()
+  }
 })
 
 const openTermsModal = () => {
   showTermsModal.value = true
 }
+
 const closeTermsModal = () => {
   showTermsModal.value = false
 }
+
+const selectedAgencyName = computed(() => {
+  const agency = agencyOptions.value.find((a) => a.id === form.agency)
+  return agency ? agency.name : ''
+})
+
+const selectedDepartmentName = computed(() => {
+  const department = departmentOptions.value.find((d) => d.id === form.department)
+  return department ? department.name : ''
+})
+
+const selectedWorkplaceName = computed(() => {
+  const workplace = workplaceOptions.value.find((w) => w.id === form.workplace)
+  return workplace ? workplace.name : ''
+})
 </script>
 
-<style scoped>
+<style>
+.form-input {
+  @apply block w-full px-4 py-2.5 rounded-lg border border-gray-300 shadow-sm placeholder-gray-400
+       focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none
+       transition duration-150 ease-in-out sm:text-sm;
+}
+
+.form-input:disabled {
+  @apply bg-gray-100 cursor-not-allowed opacity-70;
+}
+
 .required::after {
   content: ' *';
-  color: #ef4444;
-  margin-left: 2px;
+  color: theme('colors.red.600');
+  font-weight: 600;
 }
 
-.transition {
-  transition-property: opacity, transform;
-}
-.ease-out {
-  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
-}
-.duration-200 {
-  transition-duration: 200ms;
-}
-.duration-150 {
-  transition-duration: 150ms;
-}
-.opacity-0 {
-  opacity: 0;
-}
-.scale-95 {
-  transform: scale(0.95);
-}
-.opacity-100 {
-  opacity: 1;
-}
-.scale-100 {
-  transform: scale(1);
-}
-.ease-in {
-  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+.error-message {
+  @apply text-xs text-red-600 mt-1;
 }
 
-.bg-green-100 {
-  background-color: #dcfce7;
-}
-.text-green-700 {
-  color: #15803d;
-}
-.bg-red-100 {
-  background-color: #fee2e2;
-}
-.text-red-700 {
-  color: #b91c1c;
-}
-.bg-yellow-100 {
-  background-color: #fef9c3;
-}
-.text-yellow-700 {
-  color: #a16207;
-}
-.bg-blue-100 {
-  background-color: #dbeafe;
-}
-.text-blue-700 {
-  color: #1e40af;
+.btn {
+  @apply inline-flex justify-center items-center px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-150 ease-in-out;
 }
 
-.relative {
-  position: relative;
-}
-.absolute {
-  position: absolute;
-}
-.z-10 {
-  z-index: 10;
-}
-.z-20 {
-  z-index: 20;
-}
-.fixed.z-10 {
-  z-index: 50;
+.btn-primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
 }
 
-.prose p {
-  margin-bottom: 1em;
-}
-.prose-sm {
-  font-size: 0.875rem;
-  line-height: 1.5;
+.btn-secondary {
+  @apply bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-blue-500;
 }
 
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.headlessui-listbox-option[data-headlessui-state~='active'] {
+  background-color: theme('colors.blue.600');
+  color: white;
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+.headlessui-switch[data-headlessui-state~='checked'] {
+  background-color: theme('colors.blue.600');
+}
+.headlessui-switch[data-headlessui-state~='not-checked'] {
+  background-color: theme('colors.gray.200');
 }
 </style>
-```
