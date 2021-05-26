@@ -63,7 +63,9 @@
             </button>
           </div>
         </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Personal Information -->
           <div class="space-y-8">
             <div class="bg-gray-50 rounded-lg p-6">
               <div class="flex items-center gap-2 mb-4">
@@ -162,6 +164,8 @@
                 </div>
               </div>
             </div>
+
+            <!-- Attachment Section -->
             <div class="bg-gray-50 rounded-lg p-6">
               <div class="flex items-center gap-2 mb-4">
                 <svg
@@ -212,6 +216,8 @@
               <div v-else class="text-sm text-gray-500">No attachment available</div>
             </div>
           </div>
+
+          <!-- CPD Details -->
           <div class="space-y-8">
             <div class="bg-gray-50 rounded-lg p-6">
               <div class="flex items-center gap-2 mb-4">
@@ -328,6 +334,8 @@
                 </div>
               </div>
             </div>
+
+            <!-- Review Details -->
             <div class="bg-gray-50 rounded-lg p-6">
               <div class="flex items-center gap-2 mb-4">
                 <svg
@@ -388,6 +396,8 @@
             </div>
           </div>
         </div>
+
+        <!-- Award Credits Section -->
         <div class="mt-8 pt-6 border-t border-gray-200">
           <div class="flex justify-between items-center mb-4">
             <div class="flex items-center gap-2">
@@ -407,7 +417,7 @@
               <h3 class="text-lg font-medium text-gray-900">Award Credits</h3>
             </div>
           </div>
-          <!-- Replace your existing button with this improved version -->
+          
           <div>
             <label for="credits" class="block text-sm font-medium text-gray-700 mb-2">
               Number of Credits to Award
@@ -438,7 +448,8 @@
                   required
                   class="block w-full pl-10 pr-12 py-3 rounded-md border border-gray-300 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   placeholder="0.0"
-                  @input="$emit('update:credit-score', $event.target.valueAsNumber)"
+                  @input="handleCreditInput"
+                  @change="handleCreditInput"
                 />
                 <div class="absolute inset-y-0 right-0 flex items-center">
                   <div class="h-full flex flex-col border-l border-gray-300">
@@ -484,12 +495,12 @@
                 </div>
               </div>
               <button
-                @click="$emit('award-credits')"
+                @click="handleAwardCredits"
                 class="px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-md hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 ease-in-out flex items-center justify-center min-w-[120px] shadow-md"
-                :class="{ 'opacity-50 cursor-not-allowed': creditError }"
-                :disabled="creditError"
+                :class="{ 'opacity-50 cursor-not-allowed': creditError || isProcessing }"
+                :disabled="creditError || isProcessing"
               >
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg v-if="!isProcessing" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -497,33 +508,42 @@
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                Award Credits
+                <svg v-else class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {{ isProcessing ? 'Processing...' : 'Award Credits' }}
               </button>
             </div>
             <div v-if="creditError" class="mt-1 text-red-500 text-sm">
               {{ creditError }}
             </div>
           </div>
+
+          <!-- Action Buttons -->
           <div class="my-8 border-t border-gray-200 pt-6">
             <div class="flex justify-end gap-4">
               <button
                 type="button"
                 @click="$emit('close-modal')"
                 class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                :disabled="isProcessing"
               >
                 Cancel
               </button>
               <button
                 @click="showConfirmationDialog('approve')"
                 class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                :disabled="isProcessing"
               >
-                Approve
+                {{ isProcessing ? 'Processing...' : 'Approve Without Credits' }}
               </button>
               <button
                 @click="showConfirmationDialog('reject')"
                 class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                :disabled="isProcessing"
               >
-                Reject
+                {{ isProcessing ? 'Processing...' : 'Reject' }}
               </button>
             </div>
           </div>
@@ -589,7 +609,7 @@
 <script setup>
 import { ref } from 'vue'
 
-defineProps({
+const props = defineProps({
   participant: {
     type: Object,
     default: null,
@@ -604,6 +624,7 @@ defineProps({
   },
 })
 
+const isProcessing = ref(false)
 const showDialog = ref(false)
 const dialogType = ref('')
 const confirmationMessage = ref('')
@@ -615,6 +636,29 @@ const emits = defineEmits([
   'approve',
   'reject',
 ])
+
+const handleCreditInput = (event) => {
+  const value = parseFloat(event.target.value) || 0
+  emits('update:credit-score', value)
+}
+
+const handleAwardCredits = () => {
+  if (props.creditScore <= 0) {
+    return
+  }
+  
+  if (!props.participant || !props.participant.id) {
+    return
+  }
+  
+  isProcessing.value = true
+  emits('award-credits')
+  
+  // Reset processing state after a delay (will be overridden by parent component)
+  setTimeout(() => {
+    isProcessing.value = false
+  }, 3000)
+}
 
 const showConfirmationDialog = (type) => {
   dialogType.value = type
@@ -629,12 +673,20 @@ const closeConfirmationDialog = () => {
 }
 
 const confirmAction = () => {
+  isProcessing.value = true
+  
   if (dialogType.value === 'approve') {
     emits('approve', confirmationMessage.value)
   } else {
     emits('reject', confirmationMessage.value)
   }
+  
   closeConfirmationDialog()
+  
+  // Reset processing state after a delay (will be overridden by parent component)
+  setTimeout(() => {
+    isProcessing.value = false
+  }, 3000)
 }
 </script>
 

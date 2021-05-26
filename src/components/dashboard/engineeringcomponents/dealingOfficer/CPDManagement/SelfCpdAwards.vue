@@ -1,10 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
     <!-- Notification Modal -->
-    <SelfCPDNotificationModal
-      :notification="notification"
-      @close-notification="closeNotification"
-    />
+    <SelfCPDNotificationModal :notification="notification" @close-notification="closeNotification" />
 
     <!-- Header Card -->
     <div class="mx-auto">
@@ -26,31 +23,19 @@
       <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 mb-6">
         <div class="relative flex-grow">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg
-              class="h-5 w-5 text-gray-400"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l Plays4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                clip-rule="evenodd"
-              />
+            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+              fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd"
+                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                clip-rule="evenodd" />
             </svg>
           </div>
-          <input
-            v-model="searchQuery"
-            type="text"
+          <input v-model="searchQuery" type="text"
             class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            placeholder="Search by name, registration number or activity..."
-          />
+            placeholder="Search by name, registration number or activity..." />
         </div>
-        <select
-          v-model="statusFilter"
-          class="w-full md:w-64 block pl-3 pr-10 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-        >
+        <select v-model="statusFilter"
+          class="w-full md:w-64 block pl-3 pr-10 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
           <option value="All">All Statuses</option>
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
@@ -59,42 +44,21 @@
       </div>
 
       <!-- Loading State -->
-      <div
-        v-if="isLoading"
-        class="flex justify-center items-center py-16 bg-white rounded-lg shadow-sm"
-      >
+      <div v-if="isLoading" class="flex justify-center items-center py-16 bg-white rounded-lg shadow-sm">
         <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
         <span class="ml-3 text-gray-600">Loading participants...</span>
       </div>
 
       <!-- Empty State or Table -->
-      <SelfCPDEmptyState
-        v-else-if="filteredParticipants.length === 0"
-        :participants-length="participants.length"
-      />
-      <SelfCPDParticipantsTable
-        v-else
-        :participants="paginatedParticipants"
-        :pagination-start="paginationStart"
-        :pagination-end="paginationEnd"
-        :total-participants="filteredParticipants.length"
-        :current-page="currentPage"
-        :total-pages="totalPages"
-        @open-award-modal="openAwardModal"
-        @prev-page="prevPage"
-        @next-page="nextPage"
-      />
+      <SelfCPDEmptyState v-else-if="filteredParticipants.length === 0" :participants-length="participants.length" />
+      <SelfCPDParticipantsTable v-else :participants="paginatedParticipants" :pagination-start="paginationStart"
+        :pagination-end="paginationEnd" :total-participants="filteredParticipants.length" :current-page="currentPage"
+        :total-pages="totalPages" @open-award-modal="openAwardModal" @prev-page="prevPage" @next-page="nextPage" />
 
       <!-- Award Modal -->
-      <SelfCPDAwardModal
-        v-if="isAwardModalVisible"
-        :participant="selectedParticipant"
-        :credit-score="creditScore"
-        :credit-error="creditError"
-        @close-modal="closeAwardModal"
-        @award-credits="awardCredits"
-        @update:credit-score="creditScore = $event"
-      />
+      <SelfCPDAwardModal v-if="isAwardModalVisible" :participant="selectedParticipant" :credit-score="creditScore"
+        :credit-error="creditError" @close-modal="closeAwardModal" @award-credits="awardCredits"
+        @approve="handleApprove" @reject="handleReject" @update:credit-score="creditScore = $event" />
     </div>
   </div>
 </template>
@@ -221,7 +185,20 @@ const closeAwardModal = () => {
   setTimeout(() => {
     selectedParticipant.value = null
     creditScore.value = 0
+    creditError.value = ''
   }, 300)
+}
+
+const updateParticipantInList = (updatedData) => {
+  const participantIndex = participants.value.findIndex(
+    (p) => p.id === selectedParticipant.value.id,
+  )
+  if (participantIndex !== -1) {
+    participants.value.splice(participantIndex, 1, {
+      ...participants.value[participantIndex],
+      ...updatedData,
+    })
+  }
 }
 
 const awardCredits = () => {
@@ -245,17 +222,10 @@ const awardCredits = () => {
   apiServices
     .patchEpcCpdRecord(selectedParticipant.value.id, updatedData)
     .then(() => {
-      const participantIndex = participants.value.findIndex(
-        (p) => p.id === selectedParticipant.value.id,
-      )
-      if (participantIndex !== -1) {
-        const updatedParticipant = {
-          ...participants.value[participantIndex],
-          cpdCredits: updatedCredits,
-          reviewStatus: 'Approved',
-        }
-        participants.value.splice(participantIndex, 1, updatedParticipant)
-      }
+      updateParticipantInList({
+        cpdCredits: updatedCredits,
+        reviewStatus: 'Approved',
+      })
       showNotification(
         'success',
         'Credits Awarded',
@@ -268,6 +238,84 @@ const awardCredits = () => {
       showNotification(
         'error',
         'Failed to Award Credits',
+        'There was an error processing your request. Please try again.',
+      )
+    })
+    .finally(() => {
+      isLoading.value = false
+    })
+}
+
+const handleApprove = (message) => {
+  if (!selectedParticipant.value || selectedParticipant.value.id === undefined) {
+    console.error('Selected participant is invalid or has no ID.')
+    return
+  }
+
+  const updatedData = {
+    review_status: 'Approved',
+    remark: message || null,
+  }
+
+  isLoading.value = true
+  apiServices
+    .patchEpcCpdRecord(selectedParticipant.value.id, updatedData)
+    .then(() => {
+      updateParticipantInList({
+        reviewStatus: 'Approved',
+        remarks: message || null,
+      })
+      showNotification(
+        'success',
+        'Application Approved',
+        `Successfully approved application for ${selectedParticipant.value.fullName}.`,
+      )
+      closeAwardModal()
+    })
+    .catch((error) => {
+      console.error('Error approving application:', error)
+      showNotification(
+        'error',
+        'Failed to Approve',
+        'There was an error processing your request. Please try again.',
+      )
+    })
+    .finally(() => {
+      isLoading.value = false
+    })
+}
+
+const handleReject = (message) => {
+  if (!selectedParticipant.value || selectedParticipant.value.id === undefined) {
+    console.error('Selected participant is invalid or has no ID.')
+    return
+  }
+
+  const updatedData = {
+    review_status: 'Rejected',
+    remark: message || null,
+  }
+
+  isLoading.value = true
+  apiServices
+    .patchEpcCpdRecord(selectedParticipant.value.id, updatedData)
+    .then(() => {
+      updateParticipantInList({
+        reviewStatus: 'Rejected',
+        remarks: message || null,
+      })
+      showNotification(
+        'success',
+        'Application Rejected',
+        `Successfully rejected application for ${selectedParticipant.value.fullName}.`,
+      )
+      closeAwardModal()
+    })
+    .catch((error) => {
+      console.error('Error rejecting application:', error)
+      showNotification(
+        'error',
+        'Failed to Reject',
         'There was an error processing your request. Please try again.',
       )
     })
