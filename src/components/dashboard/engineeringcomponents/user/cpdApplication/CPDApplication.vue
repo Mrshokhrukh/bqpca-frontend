@@ -228,12 +228,6 @@
             <span v-if="errors.participant_sub_category" class="text-xs text-red-500 block">{{
               errors.participant_sub_category
             }}</span>
-            <!-- Debug info -->
-            <div v-if="form.participation_category" class="text-xs text-gray-500 mt-1">
-              Debug: Selected category ID: {{ form.participation_category }},
-              Available sub-categories: {{ filteredSubCategories.length }},
-              Total sub-categories: {{ participationSubCategories.length }}
-            </div>
           </div>
 
           <div class="space-y-1.5">
