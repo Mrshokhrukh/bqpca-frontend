@@ -34,6 +34,15 @@
                   categoryOption.text }}</label>
               </div>
             </div>
+            <p v-if="!props.participationCategoryOptions || props.participationCategoryOptions.length === 0"
+              class="mt-1 text-xs text-orange-500 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              No categories available to select.
+            </p>
           </div>
 
           <!-- Participant Subcategories -->
@@ -123,8 +132,8 @@ const props = defineProps({
     type: Object,
     required: true,
     default: () => ({
-      categories: [],
-      subcategories: [],
+      category: [],    // Fixed: using 'category' instead of 'categories'
+      subcategory: [], // Fixed: using 'subcategory' instead of 'subcategories'
       number: null,
       relevance: '',
     }),
@@ -141,44 +150,57 @@ const props = defineProps({
 
 const emit = defineEmits(['update:participantDetails']);
 
-// Local state for multi-select
-const selectedCategories = ref(props.participantDetails.categories || []);
-const selectedSubcategories = ref(props.participantDetails.subcategories || []);
+// Fixed: Initialize with correct field names from props
+const selectedCategories = ref(props.participantDetails.category || []);
+const selectedSubcategories = ref(props.participantDetails.subcategory || []);
 
 // Computed property to determine if relevance is mandatory
 const isRelevanceMandatory = computed(() => selectedCategories.value.length > 1);
 
-// Watch selectedCategories and emit updates
+// Watch selectedCategories and emit updates with correct field name
 watch(selectedCategories, (newVal) => {
+  console.log('Categories changed:', newVal);
   emit('update:participantDetails', {
     ...props.participantDetails,
-    categories: newVal,
+    category: newVal,  // Fixed: using 'category' instead of 'categories'
   });
-});
+}, { deep: true });
 
-// Watch selectedSubcategories and emit updates
+// Watch selectedSubcategories and emit updates with correct field name
 watch(selectedSubcategories, (newVal) => {
+  console.log('Subcategories changed:', newVal);
   emit('update:participantDetails', {
     ...props.participantDetails,
-    subcategories: newVal,
+    subcategory: newVal,  // Fixed: using 'subcategory' instead of 'subcategories'
   });
-});
+}, { deep: true });
+
+// Watch props.participantDetails to sync local state
+watch(() => props.participantDetails, (newDetails) => {
+  if (newDetails) {
+    selectedCategories.value = newDetails.category || [];
+    selectedSubcategories.value = newDetails.subcategory || [];
+  }
+}, { deep: true });
 
 // Watch participantSubcategoryOptions to filter out unavailable subcategories
 watch(() => props.participantSubcategoryOptions, (newOptions) => {
-  const availableSubcatIds = newOptions.map(opt => opt.value);
-  const updatedSubcategories = selectedSubcategories.value.filter(subcat => availableSubcatIds.includes(subcat));
-  if (updatedSubcategories.length !== selectedSubcategories.value.length) {
-    selectedSubcategories.value = updatedSubcategories;
-    emit('update:participantDetails', {
-      ...props.participantDetails,
-      subcategories: updatedSubcategories,
-    });
+  if (newOptions && Array.isArray(newOptions)) {
+    const availableSubcatIds = newOptions.map(opt => opt.value);
+    const updatedSubcategories = selectedSubcategories.value.filter(subcat => availableSubcatIds.includes(subcat));
+    if (updatedSubcategories.length !== selectedSubcategories.value.length) {
+      selectedSubcategories.value = updatedSubcategories;
+      emit('update:participantDetails', {
+        ...props.participantDetails,
+        subcategory: updatedSubcategories,  // Fixed: using 'subcategory'
+      });
+    }
   }
 });
 
 // Handle updates for number and relevance fields
 const handleFieldUpdate = (field, value) => {
+  console.log(`Field ${field} updated:`, value);
   emit('update:participantDetails', {
     ...props.participantDetails,
     [field]: value,

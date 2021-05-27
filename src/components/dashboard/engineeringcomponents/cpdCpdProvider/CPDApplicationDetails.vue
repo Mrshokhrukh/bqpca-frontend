@@ -170,7 +170,7 @@ const teachingMethods = ref([{ activity: '', duration: null }])
 const totalHours = ref(0)
 const calculatedCredits = ref(0)
 
-// Updated participantDetails to use arrays for multi-select
+// Fixed participantDetails to use correct field names
 const participantDetails = reactive({
   category: [],
   subcategory: [],
@@ -209,9 +209,11 @@ const handleParticipantDetailsUpdate = (updatedDetails) => {
   validateForm() // Re-validate on update
 }
 
+const handleCpdProviderUpdate = (updatedData) => {
+  Object.assign(cpdProvider, updatedData)
+}
+
 const toggleApprovedFields = () => {
-  // application.isApproved in the parent is already updated to 'true' or 'false' (string)
-  // by handleApplicationUpdate if the child emits 'update:application' before 'approval-change'.
   if (application.isApproved === 'true') {
     application.title = ''
     application.venue = ''
@@ -275,7 +277,6 @@ const handleAttachmentUpload = (event) => {
   }
 }
 
-// Updated to use EPC API endpoints
 const fetchResourcePersonDetails = async (person) => {
   if (!person.regNo) {
     person.name = ''
@@ -338,7 +339,6 @@ const removeParticipant = (index) => {
   participants.value.splice(index, 1)
 }
 
-// Updated to use EPC API endpoints
 const fetchParticipantName = async (participant) => {
   if (!participant.regNo) {
     participant.name = ''
@@ -562,7 +562,6 @@ const prepareFormData = (isDraft = false) => {
   return formData
 }
 
-// Updated to use EPC API endpoints
 const saveDraft = async () => {
   if (!applicant.agencyTrainingLocation && !application.title) {
     validationErrors.value = [
@@ -576,6 +575,12 @@ const saveDraft = async () => {
   try {
     loading.value = true
     const formData = prepareFormData(true)
+
+    console.log('Saving draft with formData entries:')
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value)
+    }
+
     await apiService.createEpcCpdTask(formData)
     successMessage.value = 'Draft saved successfully!'
     setTimeout(() => {
@@ -601,7 +606,6 @@ const handleSubmit = () => {
   }
 }
 
-// Updated to use EPC API endpoints
 const confirmSubmit = async () => {
   showConfirmation.value = false
   if (!isFormValid.value) {
@@ -612,6 +616,12 @@ const confirmSubmit = async () => {
     loading.value = true
     validationErrors.value = []
     const formData = prepareFormData(false)
+
+    console.log('Submitting form with formData entries:')
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value)
+    }
+
     const response = await apiService.createEpcCpdTask(formData)
     console.log('Form submitted successfully', response.data)
     successMessage.value = 'CPD application submitted successfully!'
@@ -635,7 +645,6 @@ const cancelForm = () => {
   router.push('/engineering_certification/dashboard')
 }
 
-// Updated to use EPC API endpoints
 const fetchUserRegistrations = async () => {
   try {
     const response = await apiService.getEpcNewApplications()
@@ -653,7 +662,7 @@ const fetchUserRegistrations = async () => {
   }
 }
 
-// Updated to use EPC API endpoints
+// Fixed the loadDropdownOptions function to properly map API data
 const loadDropdownOptions = async () => {
   loading.value = true
   participantFormKey.value++
@@ -676,33 +685,41 @@ const loadDropdownOptions = async () => {
       apiService.getEpcMastersParticipationSubCategories(),
     ])
 
-    console.log('CPD Type Response:', cpdTypeResponse)
+    console.log('Categories Response:', categoriesResponse)
+    console.log('Subcategories Response:', subcategoriesResponse)
 
     agencyOptions.value =
-      agencyResponse?.data?.results.map((item) => ({ text: item.name, value: item.id })) || []
+      agencyResponse?.data?.results?.map((item) => ({ text: item.name, value: item.id })) || []
     reasonOptions.value =
-      reasonResponse?.data?.results.map((item) => ({ text: item.name, value: item.id })) || []
+      reasonResponse?.data?.results?.map((item) => ({ text: item.name, value: item.id })) || []
     cpdTypeOptions.value =
-      cpdTypeResponse?.data?.results.map((item) => ({
+      cpdTypeResponse?.data?.results?.map((item) => ({
         text: item.cpd_activity_name,
         value: item.id,
       })) || []
     methodologyOptions.value =
-      methodologyResponse?.data?.results.map((item) => ({
+      methodologyResponse?.data?.results?.map((item) => ({
         text: item.methodology_name,
         value: item.id,
       })) || []
+
+    // Fixed mapping for participation categories - using correct field names
     participationCategoryOptions.value =
-      categoriesResponse?.data?.results.map((category) => ({
-        text: category.category_name,
+      categoriesResponse?.data?.results?.map((category) => ({
+        text: category.participation_category_name || category.category_name,
         value: category.id,
       })) || []
+
+    // Fixed mapping for participation subcategories - using correct field names
     participantSubcategoryOptions.value =
-      subcategoriesResponse?.data?.results.map((subcategory) => ({
-        text: subcategory.sub_category_name,
+      subcategoriesResponse?.data?.results?.map((subcategory) => ({
+        text: subcategory.participation_sub_category_name || subcategory.sub_category_name,
         value: subcategory.id,
-        categoryId: subcategory.category_id || subcategory.category,
+        categoryId: subcategory.participation_category_name || subcategory.category_id || subcategory.category,
       })) || []
+
+    console.log('Mapped participation categories:', participationCategoryOptions.value)
+    console.log('Mapped participation subcategories:', participantSubcategoryOptions.value)
   } catch (error) {
     console.error('Error loading dropdown options:', error)
     validationErrors.value = ['Error loading form data. Please refresh the page.']
@@ -733,13 +750,6 @@ onMounted(async () => {
     }
   }
 
-  if (props.modelValue) {
-    application.isApproved = props.modelValue.isApproved ? 'true' : 'false'
-    application.title = props.modelValue.title || ''
-    application.venue = props.modelValue.venue || ''
-    application.fromDate = props.modelValue.fromDate || ''
-    application.toDate = props.modelValue.toDate || ''
-  }
   isCpdApproved.value = application.isApproved === 'true'
 
   watch(
