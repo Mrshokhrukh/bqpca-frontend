@@ -14,12 +14,8 @@
         <div>
           <ApplicationDetailsForm :application="application" :handle-approval-letter-upload="handleApprovalLetterUpload"
             @update:modelValue="handleApplicationUpdate" @approval-change="toggleApprovedFields" />
-        </div>
-        <div>
-          <CpdProviderForm :cpd-provider="cpdProvider" :agency-options="agencyOptions"
-            :reason-options="reasonOptions" />
-        </div>
-        <div>
+          <CpdProviderForm :cpd-provider="cpdProvider" :agency-options="agencyOptions" :reason-options="reasonOptions"
+            @update:cpdProvider="handleCpdProviderUpdate" />
           <ResourcePersonsForm :resource-persons="resourcePersons"
             :resource-person-certificate="resourcePersonCertificate"
             :fetch-resource-person-details="fetchResourcePersonDetails"
@@ -200,6 +196,7 @@ const areOptionsLoaded = ref(false)
 const participantFormKey = ref(0)
 
 const handleApplicationUpdate = (updatedDataFromChild) => {
+  console.log('Application update received:', updatedDataFromChild)
   Object.assign(application, updatedDataFromChild)
 }
 
@@ -374,6 +371,24 @@ const fetchParticipantName = async (participant) => {
 
 const validateForm = () => {
   validationErrors.value = []
+
+  console.log('=== FORM VALIDATION DEBUG ===')
+  console.log('applicant:', applicant)
+  console.log('application:', application)
+  console.log('cpdProvider:', cpdProvider)
+  console.log('resourcePersons:', resourcePersons.value)
+  console.log('resourcePersonCertificate:', resourcePersonCertificate.value)
+  console.log('teachingMethod:', teachingMethod)
+  console.log('selectedMethodologies:', selectedMethodologies.value)
+  console.log('teachingMethods:', teachingMethods.value)
+  console.log('courseDocument:', courseDocument.value)
+  console.log('participantDetails:', participantDetails)
+  console.log('areOptionsLoaded:', areOptionsLoaded.value)
+  console.log('approvalLetter:', approvalLetter.value)
+  console.log('attachment:', attachment.value)
+  console.log('participants:', participants.value)
+  console.log('attendanceSheet:', attendanceSheet.value)
+
   if (!applicant.agencyTrainingLocation)
     validationErrors.value.push('Agency/Training Location is required.')
 
@@ -447,10 +462,19 @@ const validateForm = () => {
       )
     }
   }
+
+  console.log('Validation Errors:', validationErrors.value)
+  console.log('Form Valid:', validationErrors.value.length === 0)
+  console.log('=== END VALIDATION DEBUG ===')
+
   return validationErrors.value.length === 0
 }
 
-const isFormValid = computed(() => validateForm())
+const isFormValid = computed(() => {
+  const result = validateForm()
+  console.log('isFormValid computed result:', result)
+  return result
+})
 
 const prepareFormData = (isDraft = false) => {
   const formData = new FormData()
@@ -647,10 +671,12 @@ const loadDropdownOptions = async () => {
       apiService.getEpcCpdProvidingAgencies(),
       apiService.getEpcCpdReasonsForConducting(),
       apiService.getEpcMastersCpdActivities(),
-      apiService.getEpcCpdTaskMethodologies(),
+      apiService.getEpcMastersCpdMethodologies(),
       apiService.getEpcMastersParticipationCategories(),
       apiService.getEpcMastersParticipationSubCategories(),
     ])
+
+    console.log('CPD Type Response:', cpdTypeResponse)
 
     agencyOptions.value =
       agencyResponse?.data?.results.map((item) => ({ text: item.name, value: item.id })) || []
@@ -658,7 +684,7 @@ const loadDropdownOptions = async () => {
       reasonResponse?.data?.results.map((item) => ({ text: item.name, value: item.id })) || []
     cpdTypeOptions.value =
       cpdTypeResponse?.data?.results.map((item) => ({
-        text: item.activity_name,
+        text: item.cpd_activity_name,
         value: item.id,
       })) || []
     methodologyOptions.value =

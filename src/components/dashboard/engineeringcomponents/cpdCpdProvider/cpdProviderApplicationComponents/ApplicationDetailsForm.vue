@@ -38,7 +38,7 @@
             <!-- Validation Question -->
             <div class="mb-5">
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Is CPD validated by KGUMSB or International Organization? <span class="text-red-500">*</span>
+                Is CPD validated? <span class="text-red-500">*</span>
               </label>
               <div class="flex flex-wrap gap-4">
                 <div class="relative">
