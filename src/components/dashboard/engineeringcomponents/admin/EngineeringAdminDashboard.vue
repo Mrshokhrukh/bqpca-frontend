@@ -109,6 +109,7 @@ import {
 // --- State ---
 const counts = ref({
   cpdActivities: 0,
+
   cpdCredits: 0,
   cpdMethodologies: 0,
   documentTypes: 0,
@@ -164,10 +165,16 @@ const configurationCards = [
     usedIn: ['Professional Development', 'Certification'],
     children: [
       {
+        text: 'CPD Activity',
+        route: `${basePath}/cpd_activity`,
+        icon: null,
+      },
+      {
         text: 'CPD Activities',
         route: `${basePath}/cpd_activities`,
         icon: null,
       },
+
       {
         text: 'CPD Credits',
         route: `${basePath}/cpd_credits`,
@@ -178,6 +185,7 @@ const configurationCards = [
         route: `${basePath}/cpd_methodologies`,
         icon: null,
       },
+
     ],
     gradient: gradientClasses('blue', 'blue'),
     iconBg: iconBgClass('blue'),
@@ -185,27 +193,7 @@ const configurationCards = [
     button: buttonClasses('blue'),
     icon: 'BookOpen',
   },
-  {
-    id: 'cpdActivity',
-    title: 'Technical Activity',
-    description: 'Manage Engineering Technical Development activities',
-    countLabel: 'Active Activities',
-    countRef: 'cpdActivities',
-    countSuffix: 'activities',
-    usedIn: ['Professional Development'],
-    children: [
-      {
-        text: 'Manage Technical Activities',
-        route: `${basePath}/cpd_activity`,
-        icon: null,
-      },
-    ],
-    gradient: gradientClasses('indigo', 'indigo'),
-    iconBg: iconBgClass('indigo'),
-    iconColor: iconColorClass('indigo'),
-    button: buttonClasses('indigo'),
-    icon: 'ClipboardList',
-  },
+
   {
     id: 'documentManagement',
     title: 'Document Management',

@@ -1408,13 +1408,18 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/e_signatures`,
           },
           {
-            name: 'Fee Structures',
-            route: (serviceType) => `/admin/admin/${serviceType}/fee_structures`,
+            name: 'File Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
           },
-          {
+           {
             name: 'Fees Associated For',
             route: (serviceType) => `/admin/admin/${serviceType}/fees_associated_for`,
           },
+          {
+            name: 'Fee Structures',
+            route: (serviceType) => `/admin/admin/${serviceType}/fee_structures`,
+          },
+
           {
             name: 'COGS Agency',
             route: (serviceType) => `/admin/admin/${serviceType}/cogs_agency`,
