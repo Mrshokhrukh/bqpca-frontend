@@ -1,12 +1,9 @@
 <template>
   <div class="p-8 rounded-xl bg-gray-50">
-    <h2 class="text-3xl font-bold text-gray-800 mb-8">New Teaching Center Application</h2>
+    <h2 class="text-3xl font-bold text-gray-800 mb-8">New Training Center Application</h2>
 
     <!-- Loading Overlay -->
-    <div
-      v-if="isLoading"
-      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
-    >
+    <div v-if="isLoading" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
       <div class="text-white text-xl">Processing...</div>
       <!-- You can add a spinner here -->
     </div>
@@ -20,92 +17,57 @@
             <label for="trainingInstituteName" class="block text-sm font-medium text-gray-600">
               Training Institute Name <span class="text-red-500">*</span>
             </label>
-            <select
-              id="trainingInstituteName"
-              v-model="formData.institute_id"
+            <select id="trainingInstituteName" v-model="formData.institute_id"
               class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-              :disabled="isLoading"
-            >
+              required :disabled="isLoading">
               <option value="" disabled>Select Institute</option>
-              <option
-                v-for="institute in instituteOptions"
-                :key="institute.value"
-                :value="institute.value"
-              >
+              <option v-for="institute in instituteOptions" :key="institute.value" :value="institute.value">
                 {{ institute.label }}
               </option>
             </select>
           </div>
           <div>
             <label for="country" class="block text-sm font-medium text-gray-600"> Country </label>
-            <input
-              type="text"
-              id="country"
-              v-model="formData.proponent_country"
-              disabled
-              class="mt-2 block w-full px-3 py-2 bg-gray-100 border border-gray-200 rounded-md shadow-sm sm:text-sm text-gray-500 cursor-not-allowed"
-            />
+            <input type="text" id="country" v-model="formData.proponent_country" disabled
+              class="mt-2 block w-full px-3 py-2 bg-gray-100 border border-gray-200 rounded-md shadow-sm sm:text-sm text-gray-500 cursor-not-allowed" />
           </div>
           <div>
             <label for="dzongkhag" class="block text-sm font-medium text-gray-600">
               Dzongkhag/Throme
             </label>
-            <input
-              type="text"
-              id="dzongkhag"
-              v-model="formData.proponent_dzongkhag"
-              disabled
-              class="mt-2 block w-full px-3 py-2 bg-gray-100 border border-gray-200 rounded-md shadow-sm sm:text-sm text-gray-500 cursor-not-allowed"
-            />
+            <input type="text" id="dzongkhag" v-model="formData.proponent_dzongkhag" disabled
+              class="mt-2 block w-full px-3 py-2 bg-gray-100 border border-gray-200 rounded-md shadow-sm sm:text-sm text-gray-500 cursor-not-allowed" />
           </div>
           <div>
             <label for="cityGewogProponent" class="block text-sm font-medium text-gray-600">
               City/Gewog
             </label>
-            <input
-              type="text"
-              id="cityGewogProponent"
-              v-model="formData.proponent_city_gewog"
-              disabled
-              class="mt-2 block w-full px-3 py-2 bg-gray-100 border border-gray-200 rounded-md shadow-sm sm:text-sm text-gray-500 cursor-not-allowed"
-            />
+            <input type="text" id="cityGewogProponent" v-model="formData.proponent_city_gewog" disabled
+              class="mt-2 block w-full px-3 py-2 bg-gray-100 border border-gray-200 rounded-md shadow-sm sm:text-sm text-gray-500 cursor-not-allowed" />
           </div>
           <div>
             <label for="addressLocation" class="block text-sm font-medium text-gray-600">
               Address/Location
             </label>
-            <input
-              type="text"
-              id="addressLocation"
-              v-model="formData.proponent_address"
+            <input type="text" id="addressLocation" v-model="formData.proponent_address"
               class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              :disabled="isLoading"
-            />
+              :disabled="isLoading" />
           </div>
           <div>
             <label for="contactNo" class="block text-sm font-medium text-gray-600">
               Contact No.
             </label>
-            <input
-              type="text"
-              id="contactNo"
-              v-model="formData.proponent_contact_no"
+            <input type="text" id="contactNo" v-model="formData.proponent_contact_no"
               class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              :disabled="isLoading"
-            />
+              :disabled="isLoading" />
           </div>
           <div>
             <label for="emailAddress" class="block text-sm font-medium text-gray-600">
               Email Address
             </label>
-            <input
-              type="email"
-              id="emailAddress"
-              v-model="formData.proponent_email"
+            <input type="email" id="emailAddress" v-model="formData.proponent_email"
               class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              :disabled="isLoading"
-            />
+              :disabled="isLoading" />
           </div>
         </div>
       </section>
@@ -113,53 +75,34 @@
       <!-- Teaching Center Details Section -->
       <section class="p-6 bg-white rounded-lg shadow">
         <h3 class="text-2xl font-semibold text-gray-700 mb-6">
-          Proposal Details (Teaching Center Details)
+          Proposal Details (Training Center Details)
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
           <div>
             <label for="centerName" class="block text-sm font-medium text-gray-600">
               Center Name <span class="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              id="centerName"
-              v-model="formData.center_name"
+            <input type="text" id="centerName" v-model="formData.center_name"
               class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-              :disabled="isLoading"
-            />
+              required :disabled="isLoading" />
           </div>
           <div>
             <label for="centerLocation" class="block text-sm font-medium text-gray-600">
               Center Location <span class="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              id="centerLocation"
-              v-model="formData.center_location"
+            <input type="text" id="centerLocation" v-model="formData.center_location"
               class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-              :disabled="isLoading"
-            />
+              required :disabled="isLoading" />
           </div>
           <div>
             <label for="stateDzongkhag" class="block text-sm font-medium text-gray-600">
               State/Dzongkhag <span class="text-red-500">*</span>
             </label>
-            <select
-              id="stateDzongkhag"
-              v-model="formData.state_dzongkhag"
-              @change="formData.city_gewog = ''"
+            <select id="stateDzongkhag" v-model="formData.state_dzongkhag" @change="formData.city_gewog = ''"
               class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-              :disabled="isLoading"
-            >
+              required :disabled="isLoading">
               <option value="" disabled>Select Dzongkhag</option>
-              <option
-                v-for="dzongkhag in dzongkhagOptions"
-                :key="dzongkhag.value"
-                :value="dzongkhag.value"
-              >
+              <option v-for="dzongkhag in dzongkhagOptions" :key="dzongkhag.value" :value="dzongkhag.value">
                 {{ dzongkhag.label }}
               </option>
             </select>
@@ -168,13 +111,9 @@
             <label for="cityGewogCenter" class="block text-sm font-medium text-gray-600">
               City/Gewog <span class="text-red-500">*</span>
             </label>
-            <select
-              id="cityGewogCenter"
-              v-model="formData.city_gewog"
+            <select id="cityGewogCenter" v-model="formData.city_gewog"
               class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              :disabled="!formData.state_dzongkhag || isLoading"
-              required
-            >
+              :disabled="!formData.state_dzongkhag || isLoading" required>
               <option value="" disabled>Select City/Gewog</option>
               <option v-for="city in cityGewogOptions" :key="city.value" :value="city.value">
                 {{ city.label }}
@@ -188,37 +127,23 @@
             <label for="targetCategory" class="block text-sm font-medium text-gray-600">
               Target Category <span class="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              id="targetCategory"
-              v-model="formData.target_category"
+            <input type="text" id="targetCategory" v-model="formData.target_category"
               class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-              :disabled="isLoading"
-            />
+              required :disabled="isLoading" />
           </div>
 
           <div class="md:col-span-2">
             <label for="tcAttachments" class="block text-sm font-medium text-gray-600">
               Attachments (if any)
             </label>
-            <input
-              type="file"
-              id="tcAttachments"
-              ref="attachmentsInput"
-              @change="handleAttachmentChange"
-              multiple
+            <input type="file" id="tcAttachments" ref="attachmentsInput" @change="handleAttachmentChange" multiple
               class="mt-2 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-              :disabled="isLoading"
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-            />
+              :disabled="isLoading" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
             <p class="mt-1 text-sm text-gray-500">
               Attach relevant documents (e.g., infrastructure proof, faculty list). Max 5MB each.
             </p>
-            <ul
-              v-if="formData.tc_attachments && formData.tc_attachments.length > 0"
-              class="mt-2 list-disc list-inside text-sm text-gray-600"
-            >
+            <ul v-if="formData.tc_attachments && formData.tc_attachments.length > 0"
+              class="mt-2 list-disc list-inside text-sm text-gray-600">
               <li v-for="file in formData.tc_attachments" :key="file.name">{{ file.name }}</li>
             </ul>
             <p v-else class="mt-2 text-xs text-gray-500 italic">No attachments selected.</p>
@@ -228,13 +153,9 @@
             <label for="remarks" class="block text-sm font-medium text-gray-600">
               Remarks (General)
             </label>
-            <textarea
-              id="remarks"
-              v-model="formData.remarks"
-              rows="3"
+            <textarea id="remarks" v-model="formData.remarks" rows="3"
               class="mt-2 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              :disabled="isLoading"
-            ></textarea>
+              :disabled="isLoading"></textarea>
           </div>
         </div>
       </section>
@@ -242,20 +163,13 @@
       <!-- Declaration Section -->
       <div class="flex items-start p-6 bg-white rounded-lg shadow">
         <div class="flex items-center h-5">
-          <input
-            id="declaration"
-            aria-describedby="declaration-description"
-            type="checkbox"
-            v-model="formData.declaration"
-            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-            required
-            :disabled="isLoading"
-          />
+          <input id="declaration" aria-describedby="declaration-description" type="checkbox"
+            v-model="formData.declaration" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+            required :disabled="isLoading" />
         </div>
         <div class="ml-3 text-sm">
-          <label for="declaration" class="font-medium text-gray-700"
-            >Declaration <span class="text-red-500">*</span></label
-          >
+          <label for="declaration" class="font-medium text-gray-700">Declaration <span
+              class="text-red-500">*</span></label>
           <p id="declaration-description" class="text-gray-500">
             I hereby declare that the information provided above is true and correct to the best of
             my knowledge.
@@ -264,9 +178,7 @@
       </div>
 
       <!-- Action Buttons Section -->
-      <div
-        class="flex flex-col sm:flex-row justify-between items-center p-6 bg-white rounded-lg shadow gap-4"
-      >
+      <div class="flex flex-col sm:flex-row justify-between items-center p-6 bg-white rounded-lg shadow gap-4">
         <div v-if="applicationId" class="text-sm text-gray-600">
           Application Status:
           <span class="font-semibold capitalize">{{ applicationStatus || 'Unknown' }}</span>
@@ -280,52 +192,35 @@
         <div v-else class="text-sm text-gray-600">
           Fill the form and submit for approval or save as draft.
         </div>
-        <div
-          class="flex flex-wrap justify-end space-x-0 sm:space-x-4 space-y-2 sm:space-y-0 w-full sm:w-auto"
-        >
-          <button
-            v-if="applicationStatus === 'approved'"
-            type="button"
+        <div class="flex flex-wrap justify-end space-x-0 sm:space-x-4 space-y-2 sm:space-y-0 w-full sm:w-auto">
+          <button v-if="applicationStatus === 'approved'" type="button"
             class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out"
-            @click="openPaymentModal"
-            :disabled="isLoading"
-          >
+            @click="openPaymentModal" :disabled="isLoading">
             Make Payment
           </button>
-          <button
-            type="button"
+          <button type="button"
             class="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition duration-150 ease-in-out"
-            @click="handleCancel"
-            :disabled="isLoading"
-          >
+            @click="handleCancel" :disabled="isLoading">
             Cancel
           </button>
-          <button
-            type="button"
+          <button type="button"
             class="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-300 transition duration-150 ease-in-out"
-            @click="saveDraft"
-            :disabled="
-              applicationStatus === 'pending' ||
+            @click="saveDraft" :disabled="applicationStatus === 'pending' ||
               applicationStatus === 'approved' ||
               applicationStatus === 'paid'
-            "
-            :class="{
-              'opacity-50 cursor-not-allowed':
-                applicationStatus === 'pending' ||
-                applicationStatus === 'approved' ||
-                applicationStatus === 'paid',
-            }"
-          >
+              " :class="{
+                'opacity-50 cursor-not-allowed':
+                  applicationStatus === 'pending' ||
+                  applicationStatus === 'approved' ||
+                  applicationStatus === 'paid',
+              }">
             Save as Draft
           </button>
-          <button
-            type="submit"
-            :disabled="
-              !formData.declaration ||
-              isLoading ||
-              applicationStatus === 'pending' ||
-              applicationStatus === 'approved' ||
-              applicationStatus === 'paid'
+          <button type="submit" :disabled="!formData.declaration ||
+            isLoading ||
+            applicationStatus === 'pending' ||
+            applicationStatus === 'approved' ||
+            applicationStatus === 'paid'
             "
             class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
             :class="{
@@ -335,8 +230,7 @@
                 applicationStatus === 'pending' ||
                 applicationStatus === 'approved' ||
                 applicationStatus === 'paid',
-            }"
-          >
+            }">
             Submit
           </button>
         </div>
@@ -344,11 +238,7 @@
     </form>
 
     <!-- Payment Modal -->
-    <PaymentModal
-      v-if="isPaymentModalOpen"
-      @submit="handlePaymentSubmit"
-      @cancel="closePaymentModal"
-    />
+    <PaymentModal v-if="isPaymentModalOpen" @submit="handlePaymentSubmit" @cancel="closePaymentModal" />
   </div>
 </template>
 
@@ -782,33 +672,41 @@ onUnmounted(() => {
 input:disabled,
 select:disabled,
 textarea:disabled {
-  background-color: #f3f4f6; /* bg-gray-100 */
+  background-color: #f3f4f6;
+  /* bg-gray-100 */
   cursor: not-allowed;
-  color: #6b7280; /* text-gray-500 */
+  color: #6b7280;
+  /* text-gray-500 */
 }
+
 /* Custom file input button style */
 input[type='file']::-webkit-file-upload-button,
 input[type='file']::file-selector-button {
   @apply mr-4 py-2 px-4 rounded-md border-0 text-sm font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 cursor-pointer transition duration-150 ease-in-out;
 }
+
 /* Style for disabled file input button */
 input[type='file']:disabled::-webkit-file-upload-button,
 input[type='file']:disabled::file-selector-button {
   cursor: not-allowed;
   opacity: 0.6;
 }
+
 /* Required field indicator */
 .text-red-500 {
   color: #ef4444;
 }
+
 /* Ensure buttons handle disabled state visually */
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
 .opacity-50 {
   opacity: 0.5;
 }
+
 .cursor-not-allowed {
   cursor: not-allowed;
 }

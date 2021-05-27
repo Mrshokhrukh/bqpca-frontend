@@ -1516,7 +1516,7 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('Activity'),
         children: [
           {
-            name: 'Teaching Institutes',
+            name: 'Training Center',
             route: (serviceType) =>
               `/admin/institutions/${serviceType}/teaching_center_application`,
           },
@@ -1587,7 +1587,6 @@ const serviceSpecificMenuItems = {
           //   icon: getIconComponent('Scale'),
           //   route: (serviceType) => `/admin/user/${serviceType}/appeal_lists`,
           // },
-
         ],
       },
       {
@@ -1625,7 +1624,6 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('Scale'),
             route: (serviceType) => `/admin/usser/${serviceType}/user_profile`,
           },
-
         ],
       },
     ],
