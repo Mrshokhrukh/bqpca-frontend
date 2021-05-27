@@ -472,59 +472,133 @@
       </div>
 
       <!-- Documents Section -->
+      <!-- ENHANCED: Documents Section with Progress Indicator -->
       <div class="mt-12">
         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">
-            Supporting Documents (Max 2MB each)
-          </h3>
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">
+              Supporting Documents (Max 2MB each) - All Required
+            </h3>
+            <!-- Progress indicator -->
+            <div class="text-sm font-medium">
+              <span :class="[
+                'px-3 py-1 rounded-full text-xs',
+                getDocumentValidationSummary().totalUploaded === getDocumentValidationSummary().totalRequired
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-orange-100 text-orange-800'
+              ]">
+                {{ getDocumentValidationSummary().totalUploaded }} / {{ getDocumentValidationSummary().totalRequired }}
+                Complete
+              </span>
+            </div>
+          </div>
+
           <p class="text-sm text-gray-500 mb-4">
-            Attach required documents: Graduation Certificate, CID/Work Permit, Security Clearance
-            (if applicable), ROQ Certificate (if applicable), Class 10 Marksheet, Class 12
-            Marksheet, Graduation Marksheet.
+            All document types listed below are <strong>mandatory</strong>. Please upload all required documents to
+            proceed
+            with your application.
           </p>
-          <div class="space-y-4">
-            <div v-for="(doc, index) in supportingDocuments" :key="index"
-              class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 bg-white p-4 rounded-lg border border-gray-100">
-              <div class="w-full sm:w-1/3">
-                <label class="block text-xs font-medium text-gray-600 mb-1">Document Type<span
-                    class="text-red-500">*</span></label>
-                <select v-model="doc.type"
-                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-                  required>
-                  <option value="">Select Type</option>
-                  <option v-for="type in fetchedDocumentTypes" :key="type.id" :value="type.id">
-                    {{ type.document_name }}
-                  </option>
-                </select>
+
+          <!-- Show missing documents summary if any -->
+          <div v-if="getDocumentValidationSummary().missing.length > 0"
+            class="bg-orange-50 border-l-4 border-orange-400 p-4 mb-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-orange-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                    clip-rule="evenodd" />
+                </svg>
               </div>
-              <div class="flex-1 w-full flex items-center space-x-2">
-                <div class="flex-grow">
-                  <label class="block text-xs font-medium text-gray-600 mb-1">Upload File<span
-                      class="text-red-500">*</span></label>
-                  <input type="file" @change="(e) => handleFileSelect(e, index)"
-                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required />
-                  <!-- Display selected file names -->
-                  <div v-if="doc.files && doc.files.length > 0" class="text-xs text-gray-600 mt-1">
-                    Selected: {{doc.files.map((f) => f.name).join(', ')}}
-                  </div>
-                </div>
-                <button v-if="supportingDocuments.length > 1" @click="removeDocument(index)" type="button"
-                  class="p-2 text-gray-400 hover:text-red-500 transition-colors self-end mb-1">
-                  <span class="sr-only">Remove</span>
-                  ✕
-                </button>
+              <div class="ml-3">
+                <p class="text-sm text-orange-700">
+                  <strong>Missing Documents:</strong> {{ getDocumentValidationSummary().missing.join(', ') }}
+                </p>
               </div>
             </div>
+          </div>
 
-            <button type="button" @click="addDocument"
-              class="mt-4 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center text-sm">
-              <span class="mr-2 text-lg">+</span>
-              Add Another Document
-            </button>
-            <span v-if="errors.documents" class="block text-sm text-red-500 mt-1">{{
-              errors.documents
-            }}</span>
+          <div class="space-y-4">
+            <div v-for="(doc, index) in supportingDocuments" :key="index" :class="[
+              'flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 p-4 rounded-lg border',
+              doc.files && doc.files.length > 0
+                ? 'bg-green-50 border-green-200'
+                : 'bg-white border-gray-100'
+            ]">
+              <div class="w-full sm:w-1/3">
+                <label class="block text-xs font-medium text-gray-600 mb-1">
+                  Document Type<span class="text-red-500">*</span>
+                </label>
+                <!-- Document type is read-only since it's pre-populated -->
+                <div class="flex items-center">
+                  <input type="text" :value="getDocumentTypeName(doc.type)"
+                    class="block w-full rounded-lg border-gray-300 shadow-sm bg-gray-100 py-1 px-2 text-sm cursor-not-allowed"
+                    readonly disabled />
+                  <!-- Success indicator for uploaded documents -->
+                  <div v-if="doc.files && doc.files.length > 0" class="ml-2">
+                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div class="flex-1 w-full">
+                <label class="block text-xs font-medium text-gray-600 mb-1">
+                  Upload File<span class="text-red-500">*</span>
+                </label>
+                <input type="file" @change="(e) => handleFileSelect(e, index)"
+                  class="block w-full text-sm text-gray-500 file:mr-4 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required />
+
+                <!-- Display selected file names with success styling -->
+                <div v-if="doc.files && doc.files.length > 0" class="text-xs text-green-700 mt-1 font-medium">
+                  ✓ Selected: {{doc.files.map((f) => f.name).join(', ')}}
+                </div>
+
+                <!-- Show validation error for this specific document -->
+                <div v-if="doc.error" class="text-xs text-red-500 mt-1">
+                  {{ doc.error }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Overall document validation error -->
+          <div v-if="errors.documents" class="bg-red-50 border-l-4 border-red-400 p-4 mt-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-red-700">{{ errors.documents }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Success message when all documents are uploaded -->
+          <div
+            v-if="getDocumentValidationSummary().totalUploaded === getDocumentValidationSummary().totalRequired && getDocumentValidationSummary().totalRequired > 0"
+            class="bg-green-50 border-l-4 border-green-400 p-4 mt-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-green-700">
+                  <strong>All required documents uploaded!</strong> You can now proceed with your application.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -558,17 +632,39 @@
       </div>
 
       <!-- Form Actions -->
+      <!-- UPDATED: Form Actions with enhanced validation feedback -->
       <div class="mt-12 flex justify-end space-x-4">
         <button type="button" @click="stage = 1"
           class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
           :disabled="isSubmitting">
           Back
         </button>
-        <button type="submit"
-          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-          :disabled="!localFormData.declaration || isSubmitting">
-          Submit Registration
+        <button type="submit" :class="[
+          'px-6 py-3 rounded-lg transition-colors text-white font-medium',
+          (!localFormData.declaration || getDocumentValidationSummary().totalUploaded !== getDocumentValidationSummary().totalRequired || isSubmitting)
+            ? 'bg-gray-400 cursor-not-allowed'
+            : 'bg-blue-600 hover:bg-blue-700'
+        ]" :disabled="!localFormData.declaration || getDocumentValidationSummary().totalUploaded !== getDocumentValidationSummary().totalRequired || isSubmitting">
+          <span v-if="isSubmitting">
+            {{ existingQualification ? 'Updating...' : 'Submitting...' }}
+          </span>
+          <span
+            v-else-if="getDocumentValidationSummary().totalUploaded !== getDocumentValidationSummary().totalRequired">
+            Upload All Documents ({{ getDocumentValidationSummary().missing.length }} Missing)
+          </span>
+          <span v-else>
+            Submit Registration
+          </span>
         </button>
+      </div>
+
+      <!-- OPTIONAL: Add a summary card showing what's required -->
+      <div v-if="getDocumentValidationSummary().missing.length > 0" class="mt-4 text-center">
+        <p class="text-sm text-gray-600">
+          Please upload <strong>{{ getDocumentValidationSummary().missing.length }}</strong>
+          remaining document{{ getDocumentValidationSummary().missing.length > 1 ? 's' : '' }}
+          to enable submission.
+        </p>
       </div>
     </form>
 
@@ -687,21 +783,24 @@ const countries = ref([
 ])
 
 // Helper functions
-const addDocument = () => {
-  supportingDocuments.value.push({ type: '', files: [], description: '' })
-}
+// const addDocument = () => {
+//   supportingDocuments.value.push({ type: '', files: [], description: '' })
+// }
 
-const removeDocument = (index) => {
-  if (supportingDocuments.value.length > 1) {
-    supportingDocuments.value.splice(index, 1)
-    updateFormDocuments()
-  } else {
-    toast.warning('At least one document entry is required.')
-  }
-}
+// const removeDocument = (index) => {
+//   if (supportingDocuments.value.length > 1) {
+//     supportingDocuments.value.splice(index, 1)
+//     updateFormDocuments()
+//   } else {
+//     toast.warning('At least one document entry is required.')
+//   }
+// }
 
 const handleFileSelect = (event, index) => {
   const files = Array.from(event.target.files)
+
+  // Clear previous errors
+  supportingDocuments.value[index].error = null
   delete errors.documents
 
   if (files.length === 0) {
@@ -713,13 +812,15 @@ const handleFileSelect = (event, index) => {
   const file = files[0]
 
   if (file.size > 2 * 1024 * 1024) {
-    errors.documents = `File "${file.name}" exceeds the 2MB size limit.`
+    const errorMsg = `File "${file.name}" exceeds the 2MB size limit.`
+    supportingDocuments.value[index].error = errorMsg
     event.target.value = ''
     supportingDocuments.value[index].files = []
-    toast.error(errors.documents)
+    toast.error(errorMsg)
     updateFormDocuments()
     return
   }
+
   supportingDocuments.value[index].files = [file]
   updateFormDocuments()
 }
@@ -852,6 +953,43 @@ const populateFormFromExistingData = () => {
 
     localFormData.remarks = qual.remarks || ''
     localFormData.declaration = qual.declaration === 'True' || qual.declaration === true
+
+    // UPDATED: Handle existing documents for pre-populated document types
+    // If there are existing documents, we need to preserve them but still ensure
+    // all document types are represented in supportingDocuments
+    if (qual.attachments && qual.attachments.length > 0) {
+      // For existing applications, we'll need to check if documents exist
+      // but still maintain all document types in the structure
+      console.log('Existing qualification has attachments:', qual.attachments)
+
+      // Note: You might need to fetch and populate existing files here
+      // depending on how your API returns attachment data
+      // This is a placeholder for that logic
+    }
+  }
+
+  // Re-initialize supporting documents to ensure all types are present
+  // even when populating from existing data
+  if (fetchedDocumentTypes.value.length > 0) {
+    initializeSupportingDocuments()
+  }
+}
+
+// ADD a helper function to handle document validation errors
+const getDocumentValidationSummary = () => {
+  const missingDocs = supportingDocuments.value
+    .filter(doc => !doc.files || doc.files.length === 0)
+    .map(doc => getDocumentTypeName(doc.type))
+
+  const uploadedDocs = supportingDocuments.value
+    .filter(doc => doc.files && doc.files.length > 0)
+    .map(doc => getDocumentTypeName(doc.type))
+
+  return {
+    missing: missingDocs,
+    uploaded: uploadedDocs,
+    totalRequired: fetchedDocumentTypes.value.length,
+    totalUploaded: uploadedDocs.length
   }
 }
 
@@ -1043,6 +1181,11 @@ const validateFormStageTwo = () => {
   clearErrors()
   let isValid = true
 
+  // Clear individual document errors first
+  supportingDocuments.value.forEach(doc => {
+    doc.error = null
+  })
+
   if (!localFormData.qualification_type) {
     errors.qualification_type = 'Qualification Type is required'
     isValid = false
@@ -1074,31 +1217,20 @@ const validateFormStageTwo = () => {
     }
   }
 
-  if (
-    localFormData.documents.length === 0 &&
-    supportingDocuments.value.length > 0 &&
-    supportingDocuments.value.some((d) => d.type || (d.files && d.files.length > 0))
-  ) {
-    errors.documents = 'Please select a document type and upload a file for each document entry.'
-    isValid = false
-  } else if (
-    supportingDocuments.value.some((doc) => doc.type && (!doc.files || doc.files.length === 0))
-  ) {
-    errors.documents = 'Please upload a file for the selected document type(s).'
-    isValid = false
-  } else if (
-    supportingDocuments.value.some((doc) => !doc.type && doc.files && doc.files.length > 0)
-  ) {
-    errors.documents = 'Please select a document type for the uploaded file(s).'
-    isValid = false
-  }
+  // UPDATED: Validate that ALL document types have files uploaded
+  const missingDocuments = []
 
-  if (supportingDocuments.value.length > 0 && localFormData.documents.length === 0) {
-    const firstDoc = supportingDocuments.value[0]
-    if (firstDoc.type || (firstDoc.files && firstDoc.files.length > 0)) {
-      errors.documents = 'Please complete document uploads (select type and file).'
+  supportingDocuments.value.forEach((doc, index) => {
+    if (!doc.files || doc.files.length === 0) {
+      const docTypeName = getDocumentTypeName(doc.type)
+      doc.error = `${docTypeName} is required`
+      missingDocuments.push(docTypeName)
       isValid = false
     }
+  })
+
+  if (missingDocuments.length > 0) {
+    errors.documents = `Missing required documents: ${missingDocuments.join(', ')}`
   }
 
   if (!localFormData.declaration) {
@@ -1109,6 +1241,21 @@ const validateFormStageTwo = () => {
   return isValid
 }
 
+const getDocumentTypeName = (typeId) => {
+  const docType = fetchedDocumentTypes.value.find(type => type.id === typeId)
+  return docType ? docType.document_name : 'Unknown Document Type'
+}
+const initializeSupportingDocuments = () => {
+  if (fetchedDocumentTypes.value.length > 0) {
+    supportingDocuments.value = fetchedDocumentTypes.value.map(docType => ({
+      type: docType.id,
+      files: [],
+      description: '',
+      error: null // For individual document validation errors
+    }))
+    console.log('Initialized supporting documents with all types:', supportingDocuments.value)
+  }
+}
 // Helper functions for API
 const formatDateForInput = (dateString) => {
   if (!dateString || !/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) return ''
@@ -1493,6 +1640,9 @@ onMounted(async () => {
     qualifications.value = qualsResponse.data.results || []
     universities.value = unisResponse.data.results || []
     fetchedDocumentTypes.value = docTypesResponse.data.results || []
+
+    // IMPORTANT: Initialize supporting documents AFTER fetching document types
+    initializeSupportingDocuments()
 
     console.log('Master data fetched successfully')
 
