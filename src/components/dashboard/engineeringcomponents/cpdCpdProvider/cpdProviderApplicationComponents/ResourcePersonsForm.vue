@@ -250,7 +250,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue' // ADDED: onMounted import
 
 const props = defineProps({
   resourcePersons: { type: Array, default: () => [{ regNo: '', name: '', certificate: null }] },
@@ -276,21 +276,34 @@ watch(
   { deep: true }
 )
 
-// Watch for changes in localResourcePersons and emit to parent
+// ENHANCED: Watch for changes in localResourcePersons and emit to parent with immediate: true
 watch(
   localResourcePersons,
   (newValue) => {
+    console.log('🔄 ResourcePersonsForm emitting updated persons:', newValue) // ADDED: logging
     emit('update:resourcePersons', [...newValue])
   },
-  { deep: true }
+  { deep: true, immediate: true } // ADDED: immediate: true
 )
 
-// Update registration number and fetch details
+// ENHANCED: Update registration number and fetch details with better logging
 const updateRegNo = async (index, regNo) => {
+  console.log('🔄 Updating registration number for index', index, 'to', regNo) // ADDED: logging
+
   localResourcePersons.value[index] = { ...localResourcePersons.value[index], regNo }
-  await props.fetchResourcePersonDetails(localResourcePersons.value[index])
+
+  // Fetch name details if function is provided
+  if (props.fetchResourcePersonDetails) {
+    await props.fetchResourcePersonDetails(localResourcePersons.value[index])
+  }
+
+  // Ensure name is set
   localResourcePersons.value[index].name = localResourcePersons.value[index].name || ''
+
+  // Emit to parent
   emit('update:resourcePersons', [...localResourcePersons.value])
+
+  console.log('🔄 Resource person updated:', localResourcePersons.value[index]) // ADDED: logging
 }
 
 // Add a new resource person locally
@@ -305,15 +318,39 @@ const removeLocalResourcePerson = (index) => {
   emit('update:resourcePersons', [...localResourcePersons.value])
 }
 
-// Handle certificate upload for a specific resource person
+// ENHANCED: Handle certificate upload for a specific resource person
 const handleLocalCertificateUpload = (event, index) => {
   const file = event.target.files[0]
   if (file && file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
+    // Update local resource person with certificate
     localResourcePersons.value[index] = { ...localResourcePersons.value[index], certificate: file }
+
+    // IMPORTANT: Also call the parent's certificate upload handler
+    // This ensures the parent component gets the certificate file
+    if (props.handleCertificateUpload) {
+      props.handleCertificateUpload(event)
+    }
+
+    // Emit updated resource persons to parent
     emit('update:resourcePersons', [...localResourcePersons.value])
+
+    console.log('🔄 Certificate uploaded for resource person', index, file.name) // ADDED: logging
   } else {
     alert('Please upload a PDF file less than 5MB')
     event.target.value = ''
   }
 }
+
+// ADDED: Proper initialization
+onMounted(() => {
+  // Ensure we have at least one resource person
+  if (localResourcePersons.value.length === 0) {
+    localResourcePersons.value = [{ regNo: '', name: '', certificate: null }]
+  }
+
+  // Emit initial state to parent
+  emit('update:resourcePersons', [...localResourcePersons.value])
+
+  console.log('🔄 ResourcePersonsForm mounted with:', localResourcePersons.value)
+})
 </script>
