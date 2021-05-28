@@ -42,6 +42,88 @@
         </div>
       </div>
 
+      <!-- Change Details Section -->
+      <div v-if="selectedOriginalApplication" class="bg-white border p-6 rounded-lg shadow-sm">
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">Change Details</h3>
+        <div v-for="(change, index) in form.change_details_input" :key="index" class="mb-4 border-b pb-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Changed Field -->
+            <div>
+              <label :for="'changed_field_' + index" class="block text-sm font-medium text-gray-700 required">
+                Changed Field
+              </label>
+              <select
+                :id="'changed_field_' + index"
+                v-model="change.changed_field"
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              >
+                <option value="" disabled>Select Field</option>
+                <option v-for="field in changedFieldOptions" :key="field.value" :value="field.value">
+                  {{ field.label }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Old Value -->
+            <div>
+              <label :for="'old_value_' + index" class="block text-sm font-medium text-gray-700 required">
+                Old Value
+              </label>
+              <input
+                type="text"
+                :id="'old_value_' + index"
+                v-model="change.old_value"
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              />
+            </div>
+
+            <!-- New Value -->
+            <div>
+              <label :for="'new_value_' + index" class="block text-sm font-medium text-gray-700 required">
+                New Value
+              </label>
+              <input
+                type="text"
+                :id="'new_value_' + index"
+                v-model="change.new_value"
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              />
+            </div>
+
+            <!-- Other Description (if 'other' is selected) -->
+            <div v-if="change.changed_field === 'other'">
+              <label :for="'other_description_' + index" class="block text-sm font-medium text-gray-700 required">
+                Description of Change
+              </label>
+              <input
+                type="text"
+                :id="'other_description_' + index"
+                v-model="change.other_description"
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              />
+            </div>
+          </div>
+          <button
+            type="button"
+            @click="removeChangeDetail(index)"
+            class="mt-2 text-red-600 hover:text-red-800"
+          >
+            Remove Change
+          </button>
+        </div>
+        <button
+          type="button"
+          @click="addChangeDetail"
+          class="mt-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary"
+        >
+          Add Change Detail
+        </button>
+      </div>
+
       <!-- Personal Information Section -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
         <h3 class="text-xl font-semibold mb-4 text-gray-900">Personal Information</h3>
@@ -401,7 +483,6 @@
 
       <!-- Declaration -->
       <div class="bg-white border p-6 rounded-lg shadow-sm space-y-6">
-        <!-- Declaration -->
         <div class="flex items-start">
           <div class="flex items-center h-5">
             <input
@@ -433,7 +514,7 @@
         </button>
         <button
           type="button"
-          @click="openPaymentModal"
+          @click="handleSubmit"
           :disabled="isSubmitting || !declaration"
           class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -452,7 +533,7 @@ import FileUpload from '@/components/common/FileUpload.vue'
 import { useToast } from 'vue-toastification'
 import PaymentModal from '@/components/common/PaymentModal.vue'
 
-const authStore = useAuthStore() // Use authStore
+const authStore = useAuthStore()
 const { user } = useAuthStore()
 const toast = useToast()
 
@@ -470,6 +551,20 @@ const currentYear = new Date().getFullYear()
 const minYear = currentYear - 50
 
 const userCid = user.cid
+
+// Define available fields for change details
+const changedFieldOptions = [
+  { value: 'cid_no', label: 'CID Number' },
+  { value: 'applicants_name', label: 'Name' },
+  { value: 'date_of_birth', label: 'Date of Birth' },
+  { value: 'contact_no', label: 'Contact Number' },
+  { value: 'email_address', label: 'Email Address' },
+  { value: 'course_title', label: 'Course Title' },
+  { value: 'name_of_institute', label: 'Name of Institute' },
+  { value: 'name_of_university', label: 'Name of University' },
+  { value: 'student_id_no', label: 'Student ID Number' },
+  { value: 'other', label: 'Other' },
+]
 
 const form = reactive({
   cid_no: '',
@@ -494,11 +589,12 @@ const form = reactive({
   location: '',
   country: '',
   reason_for_issue_of_second_copy: '',
-  // second_copy_other: "",
+  second_copy_other: '',
   second_copy_supporting_document: null,
   is_payment_complete: false,
   payment_id: null,
-  status: 'applied', // Initialize status
+  status: 'applied',
+  change_details_input: [], // Array to store change details
 })
 
 const paymentModal = ref(null)
@@ -518,12 +614,27 @@ const onPaymentCompleted = (paymentData) => {
   handleSubmitActual()
 }
 
-// Fetch original applications and reasons for second copy
+// Add a new change detail entry
+const addChangeDetail = () => {
+  form.change_details_input.push({
+    changed_field: '',
+    old_value: '',
+    new_value: '',
+    other_description: ''
+  })
+}
+
+// Remove a change detail entry
+const removeChangeDetail = (index) => {
+  form.change_details_input.splice(index, 1)
+}
+
+// Fetch original applications and other data
 onMounted(async () => {
   try {
     const [applicationsResponse, reasonsResponse, qualificationsResponse, courseTypesResponse] =
       await Promise.all([
-        apiService.getRecognitionOfQualification(userCid), // Remove .value
+        apiService.getRecognitionOfQualification(userCid),
         apiService.getReasonsForIssueOfSecondCopy(),
         apiService.getQualifications(),
         apiService.getTypesOfCourse(),
@@ -593,9 +704,9 @@ const onOriginalApplicationSelect = (app) => {
     website: app.website,
     location: app.location,
     country: app.country,
-    // Only set these if they exist in the original app; otherwise, let user select
     ...(app.qualification && { qualification: app.qualification.id }),
     ...(app.type_of_course && { type_of_course: app.type_of_course.id }),
+    change_details_input: [], // Reset change details on new selection
   })
   searchQuery.value = ''
   filteredApplications.value = []
@@ -608,19 +719,43 @@ const handleSubmit = () => {
     return
   }
   if (!form.reason_for_issue_of_second_copy) {
-    // Checks for "" or null or undefined
     toast.error('Please select a reason for the second copy.')
     return
   }
   if (!form.qualification) {
-    // Checks for "" or null or undefined
     toast.error('Please select a qualification.')
     return
   }
   if (!form.type_of_course) {
-    // Checks for "" or null or undefined
     toast.error('Please select the type of course.')
     return
+  }
+  if (!form.second_copy_supporting_document) {
+    toast.error('Please upload a supporting document.')
+    return
+  }
+  if (form.change_details_input.length === 0) {
+    toast.error('Please add at least one change detail.')
+    return
+  }
+  for (let i = 0; i < form.change_details_input.length; i++) {
+    const change = form.change_details_input[i]
+    if (!change.changed_field) {
+      toast.error(`Please select a changed field for change detail #${i + 1}.`)
+      return
+    }
+    if (!change.old_value) {
+      toast.error(`Please provide the old value for change detail #${i + 1}.`)
+      return
+    }
+    if (!change.new_value) {
+      toast.error(`Please provide the new value for change detail #${i + 1}.`)
+      return
+    }
+    if (change.changed_field === 'other' && !change.other_description) {
+      toast.error(`Please provide a description for 'Other' change detail #${i + 1}.`)
+      return
+    }
   }
   if (!declaration.value) {
     toast.error('Please accept the declaration.')
@@ -643,7 +778,6 @@ const formatDate = (dateString) => {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
-
   return `${year}-${month}-${day}`
 }
 
@@ -653,14 +787,17 @@ const handleSubmitActual = async () => {
   try {
     if (!selectedOriginalApplication.value) {
       toast.error('Please select an original application')
-      isSubmitting.value = false // Re-enable button
-      return // Stop execution
+      isSubmitting.value = false
+      return
     }
 
     const formData = new FormData()
 
     formData.append('original_application_id', selectedOriginalApplication.value.id)
     formData.append('is_second_copy', 'true')
+
+    // Append change details as JSON string
+    formData.append('change_details_input', JSON.stringify(form.change_details_input))
 
     // Payment Request
     const paymentData = {
@@ -672,17 +809,16 @@ const handleSubmitActual = async () => {
       mobileNo: form.contact_no,
       totalPayableAmount: 1000.0,
       serviceCode: '100193',
-      description: 'Payment for Second Copy ROQ', // Updated Description
+      description: 'Payment for Second Copy ROQ',
       payableAmount: 1000.0,
       taxPayerName: form.applicants_name,
       application_no: form.payment_id,
-      app_type: 'ROQ', // This might need adjustment for second copy
+      app_type: 'ROQ',
       user_id: authStore.userId,
     }
 
     try {
       const paymentResponse = await apiService.makePayment(paymentData)
-
       if (paymentResponse.status !== 201 && paymentResponse.status !== 200) {
         throw new Error('Payment request failed')
       }
@@ -692,30 +828,18 @@ const handleSubmitActual = async () => {
         'Payment request failed: ' + (paymentError.response?.data?.message || paymentError.message),
       )
       isSubmitting.value = false
-      return // Stop if payment fails
+      return
     }
 
-    // Append other form fields, including date formatting
+    // Append other form fields
     for (const key in form) {
+      if (key === 'change_details_input') continue // Skip change_details_input as it's already appended
       if (Object.prototype.hasOwnProperty.call(form, key)) {
         let value = form[key]
-
-        // Special handling for qualification and type_of_course
-        if (key === 'qualification' || key === 'type_of_course') {
-          console.log(`${key} value:`, value, typeof value)
-
-          // Make sure we're sending a number, not a string or null
-          const numericValue = parseInt(value)
-          if (!isNaN(numericValue)) {
-            formData.append(key, numericValue.toString())
-            continue // Skip the normal append below for these fields
-          }
-        }
-
         if (value instanceof File) {
           formData.append(key, value)
         } else if (key === 'date_of_birth') {
-          formData.append(key, formatDate(value)) // Format Date
+          formData.append(key, formatDate(value))
         } else if (typeof value === 'boolean') {
           formData.append(key, value.toString())
         } else if (value !== null && value !== undefined) {
@@ -724,8 +848,7 @@ const handleSubmitActual = async () => {
       }
     }
 
-    // Submit the form
-    const response = await apiService.createRecognitionOfQualification(formData) // Call the correct endpoint.
+    const response = await apiService.createRecognitionOfQualification(formData)
     if (response.status === 201) {
       toast.success(
         'Second copy application submitted successfully. Please check your email to complete the payment.',

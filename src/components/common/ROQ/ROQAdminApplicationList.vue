@@ -473,7 +473,7 @@ const showRegretColumn = computed(() => {
 const headers = computed(() => {
   const baseHeaders = [
     { key: 'applicant', label: 'Applicant Details', visible: true, sortable: true },
-    { key: 'course', label: 'Course Information', visible: true, sortable: true },
+    { key: 'course', label: 'Qualification Information', visible: true, sortable: true },
     { key: 'status', label: 'Status', visible: true, sortable: true },
     { key: 'roq_status', label: 'ROQ Status', visible: showRoqStatusColumn.value, sortable: false },
     { key: 'roq_regret', label: 'Regret Letter', visible: showRegretColumn.value, sortable: false },
