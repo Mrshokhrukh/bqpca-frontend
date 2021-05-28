@@ -796,8 +796,25 @@ const handleSubmitActual = async () => {
     formData.append('original_application_id', selectedOriginalApplication.value.id)
     formData.append('is_second_copy', 'true')
 
-    // Append change details as JSON string
-    formData.append('change_details_input', JSON.stringify(form.change_details_input))
+    // Append change details with array indexing
+    form.change_details_input.forEach((change, index) => {
+      // Trim values to prevent whitespace issues
+      const changedField = (change.changed_field || '').trim()
+      const oldValue = (change.old_value || '').trim()
+      const newValue = (change.new_value || '').trim()
+      const otherDescription = (change.other_description || '').trim()
+
+      if (!changedField || !oldValue || !newValue) {
+        throw new Error(`Invalid change detail at index ${index}: All fields must be non-empty`)
+      }
+
+      formData.append(`change_details_input[${index}][changed_field]`, changedField)
+      formData.append(`change_details_input[${index}][old_value]`, oldValue)
+      formData.append(`change_details_input[${index}][new_value]`, newValue)
+      if (otherDescription) {
+        formData.append(`change_details_input[${index}][other_description]`, otherDescription)
+      }
+    })
 
     // Payment Request
     const paymentData = {
@@ -807,14 +824,20 @@ const handleSubmitActual = async () => {
       taxPayerDocumentNo: 'BAOW',
       payerEmail: form.email_address,
       mobileNo: form.contact_no,
-      totalPayableAmount: 1000.0,
+      totalPayableAmount: 100.0, // Matches BIRMS payload
       serviceCode: '100193',
       description: 'Payment for Second Copy ROQ',
-      payableAmount: 1000.0,
+      payableAmount: 100.0,
       taxPayerName: form.applicants_name,
       application_no: form.payment_id,
       app_type: 'ROQ',
       user_id: authStore.userId,
+    }
+
+    // Log FormData for debugging
+    console.log('FormData contents:');
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value} (type: ${typeof value})`);
     }
 
     try {
@@ -822,6 +845,11 @@ const handleSubmitActual = async () => {
       if (paymentResponse.status !== 201 && paymentResponse.status !== 200) {
         throw new Error('Payment request failed')
       }
+      const receivedAmount = paymentResponse.data.content.totalPayableAmount
+      if (receivedAmount !== 100.0) {
+        throw new Error(`Unexpected payment amount: ${receivedAmount}`)
+      }
+      console.log('Payment response:', paymentResponse.data)
     } catch (paymentError) {
       console.error('Error making payment:', paymentError)
       toast.error(
@@ -833,7 +861,7 @@ const handleSubmitActual = async () => {
 
     // Append other form fields
     for (const key in form) {
-      if (key === 'change_details_input') continue // Skip change_details_input as it's already appended
+      if (key === 'change_details_input') continue
       if (Object.prototype.hasOwnProperty.call(form, key)) {
         let value = form[key]
         if (value instanceof File) {
