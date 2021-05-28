@@ -105,7 +105,7 @@ const filteredApplications = computed(() => {
     const matchesType = selectedType.value ? app.type_of_course?.name === selectedType.value : true
     const matchesSearch = searchQuery.value
       ? Object.values(app).some((value) =>
-          String(value).toLowerCase().includes(searchQuery.value.toLowerCase()),
+          String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
         )
       : true
     const isNotSecondCopy = !app.is_second_copy
@@ -146,13 +146,21 @@ watch([selectedStatus, selectedType, searchQuery], () => {
   currentPage.value = 1
 })
 
-const handleApplicationSubmitted = async () => {
+const handleApplicationSubmitted = async (newApplication) => {
   showModal.value = false
   loading.value = true
   try {
+    if (newApplication) {
+      const existingIndex = applications.value.findIndex((app) => app.id === newApplication.id)
+      if (existingIndex !== -1) {
+        applications.value[existingIndex] = { ...newApplication }
+      } else {
+        applications.value.unshift({ ...newApplication })
+      }
+      currentPage.value = 1
+    }
     await loadData()
     await nextTick()
-    console.log('Applications updated:', applications.value)
   } catch (error) {
     console.error('Error refreshing data:', error)
   } finally {
@@ -163,9 +171,7 @@ const handleApplicationSubmitted = async () => {
 const loadData = async () => {
   loading.value = true
   try {
-    console.log(user.cid)
     const response = await apiService.getRecognitionOfQualification(user.cid)
-    console.log('API response:', response.data)
     applications.value = response.data // Assign the array directly
   } catch (error) {
     console.error('Error loading data:', error)

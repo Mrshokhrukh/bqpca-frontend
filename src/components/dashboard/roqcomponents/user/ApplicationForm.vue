@@ -1,7 +1,5 @@
-<!-- Template modifications -->
 <template>
   <div>
-    <!-- CID Holder or Non-CID Holder Selection -->
     <CIDSelection v-model="isCIDHolder" />
 
     <PaymentModal
@@ -12,11 +10,9 @@
     />
 
     <form v-if="isCIDHolder !== null" @submit.prevent="handleSubmit" class="space-y-6 mt-6">
-      <!-- Personal Information Section - CID Holders -->
       <div v-if="isCIDHolder" class="bg-white border p-6 rounded-lg shadow-sm">
         <h3 class="text-xl font-semibold text-gray-900 mb-4">Personal Information</h3>
 
-        <!-- Caution Message -->
         <div
           class="bg-yellow-100 border-l-4 border-yellow-500 rounded text-yellow-700 p-4 mb-4"
           role="alert"
@@ -32,7 +28,6 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- CID No. -->
           <div class="relative">
             <label for="cid" class="block text-sm font-medium text-gray-700">CID No.</label>
             <div class="mt-1 relative rounded-md shadow-sm">
@@ -57,7 +52,6 @@
             </p>
           </div>
 
-          <!-- Full Name -->
           <div>
             <label for="full_name" class="block text-sm font-medium text-gray-700">Full Name</label>
             <input
@@ -70,7 +64,6 @@
             />
           </div>
 
-          <!-- Date of Birth -->
           <div>
             <label for="date_of_birth" class="block text-sm font-medium text-gray-700"
               >Date of Birth</label
@@ -85,7 +78,6 @@
             />
           </div>
 
-          <!-- Contact Number -->
           <div>
             <label for="contact_number" class="block text-sm font-medium text-gray-700 required"
               >Contact Number</label
@@ -111,7 +103,6 @@
             <p v-else class="mt-1 text-sm text-gray-500">Must be 8 digits</p>
           </div>
 
-          <!-- Email Address -->
           <div>
             <label for="email_address" class="block text-sm font-medium text-gray-700"
               >Email Address</label
@@ -136,7 +127,6 @@
             </p>
           </div>
 
-          <!-- Gender (convert to select) -->
           <div>
             <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
             <select
@@ -152,7 +142,6 @@
             </select>
           </div>
 
-          <!-- Dzongkhag -->
           <div>
             <label for="dzongkhag" class="block text-sm font-medium text-gray-700">Dzongkhag</label>
             <input
@@ -165,7 +154,6 @@
             />
           </div>
 
-          <!-- Gewog -->
           <div>
             <label for="gewog" class="block text-sm font-medium text-gray-700">Gewog</label>
             <input
@@ -178,7 +166,6 @@
             />
           </div>
 
-          <!-- Village -->
           <div>
             <label for="village" class="block text-sm font-medium text-gray-700">Village</label>
             <input
@@ -193,12 +180,10 @@
         </div>
       </div>
 
-      <!-- Personal Information Section - Non-CID Holders -->
       <div v-else class="bg-white border p-6 rounded-lg shadow-sm">
         <h3 class="text-xl font-semibold text-gray-900 mb-4">Personal Information</h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Full Name -->
           <div>
             <label for="full_name_non_cid" class="block text-sm font-medium text-gray-700 required"
               >Full Name</label
@@ -222,7 +207,6 @@
             </p>
           </div>
 
-          <!-- Date of Birth -->
           <div>
             <label
               for="date_of_birth_non_cid"
@@ -248,7 +232,6 @@
             </p>
           </div>
 
-          <!-- Contact Number -->
           <div>
             <label
               for="contact_number_non_cid"
@@ -276,7 +259,6 @@
             <p v-else class="mt-1 text-sm text-gray-500">Must be 8 digits</p>
           </div>
 
-          <!-- Email Address -->
           <div>
             <label for="email_address_non_cid" class="block text-sm font-medium text-gray-700"
               >Email Address</label
@@ -301,7 +283,6 @@
             </p>
           </div>
 
-          <!-- Gender -->
           <div>
             <label for="gender_non_cid" class="block text-sm font-medium text-gray-700 required"
               >Gender</label
@@ -328,7 +309,6 @@
             </p>
           </div>
 
-          <!-- Dzongkhag -->
           <div>
             <label for="dzongkhag_non_cid" class="block text-sm font-medium text-gray-700 required"
               >Dzongkhag</label
@@ -352,7 +332,6 @@
             </p>
           </div>
 
-          <!-- Gewog -->
           <div>
             <label for="gewog_non_cid" class="block text-sm font-medium text-gray-700 required"
               >Gewog</label
@@ -375,7 +354,6 @@
             </p>
           </div>
 
-          <!-- Village -->
           <div>
             <label for="village_non_cid" class="block text-sm font-medium text-gray-700 required"
               >Village</label
@@ -402,12 +380,10 @@
       </div>
 
       <EducationTypeSelection v-model="form.from_in_country" />
-      <!-- Education Details Section -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
         <h3 class="text-xl font-semibold text-gray-900 mb-4">Education Details</h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-          <!-- Student ID No. -->
           <div class="relative">
             <label for="student_id_no" class="block text-sm font-medium text-gray-700 required"
               >Student ID No.</label
@@ -447,7 +423,6 @@
             </p>
           </div>
 
-          <!-- Course Title -->
           <div>
             <label for="course_title" class="block text-sm font-medium text-gray-700 required"
               >Course Title</label
@@ -467,7 +442,6 @@
             </p>
           </div>
 
-          <!-- Qualification -->
           <div>
             <label for="qualification" class="block text-sm font-medium text-gray-700 required"
               >Qualification</label
@@ -495,7 +469,6 @@
             </p>
           </div>
 
-          <!-- Type of Course -->
           <div>
             <label for="type_of_course" class="block text-sm font-medium text-gray-700 required"
               >Type of Course</label
@@ -523,7 +496,6 @@
             </p>
           </div>
 
-          <!-- Duration of Course -->
           <div>
             <label for="duration_of_course" class="block text-sm font-medium text-gray-700 required"
               >Duration of Course (Years)</label
@@ -549,7 +521,6 @@
             </p>
           </div>
 
-          <!-- Name of Institute -->
           <div>
             <label for="name_of_institute" class="block text-sm font-medium text-gray-700 required"
               >Name of Institute</label
@@ -569,7 +540,6 @@
             </p>
           </div>
 
-          <!-- Name of University -->
           <div>
             <label for="name_of_university" class="block text-sm font-medium text-gray-700 required"
               >Name of University</label
@@ -589,7 +559,6 @@
             </p>
           </div>
 
-          <!-- Year of Completion -->
           <div>
             <label for="year_of_completion" class="block text-sm font-medium text-gray-700 required"
               >Year of Completion</label
@@ -611,7 +580,6 @@
             </p>
           </div>
 
-          <!-- Website -->
           <div>
             <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
             <input
@@ -634,7 +602,6 @@
             </p>
           </div>
 
-          <!-- Location -->
           <div>
             <label for="location" class="block text-sm font-medium text-gray-700 required"
               >Location</label
@@ -658,7 +625,6 @@
             </p>
           </div>
 
-          <!-- Country -->
           <div>
             <label for="country" class="block text-sm font-medium text-gray-700 required"
               >Country</label
@@ -680,12 +646,10 @@
         </div>
       </div>
 
-      <!-- Supporting Documents Section -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
         <h3 class="text-xl font-semibold mb-4 text-gray-900">Supporting Documents</h3>
 
         <div class="space-y-6">
-          <!-- Degree Certificate -->
           <div v-if="!form.from_in_country">
             <label class="block text-sm font-medium text-gray-700 required"
               >Degree Certificate</label
@@ -710,7 +674,6 @@
             </div>
           </div>
 
-          <!-- Academic Transcript -->
           <div v-if="!form.from_in_country">
             <label class="block text-sm font-medium text-gray-700 required"
               >Academic Transcript</label
@@ -735,7 +698,6 @@
             </div>
           </div>
 
-          <!-- Passport Size Photo -->
           <div>
             <label class="block text-sm font-medium text-gray-700 required"
               >Passport Size Photo</label
@@ -764,9 +726,7 @@
         </div>
       </div>
 
-      <!-- Remarks and Declaration Section -->
       <div class="bg-white border p-6 rounded-lg shadow-sm space-y-6">
-        <!-- Remarks -->
         <div>
           <label for="remarks" class="block text-sm font-medium text-gray-700">Remarks</label>
           <textarea
@@ -777,7 +737,6 @@
           ></textarea>
         </div>
 
-        <!-- Declaration -->
         <div class="flex items-start">
           <div class="flex items-center h-5">
             <input
@@ -805,14 +764,12 @@
         </div>
       </div>
 
-      <!-- Validation Summary -->
       <div
         v-if="validation.showSummary && Object.keys(validation.errors).length > 0"
         class="bg-red-50 border-l-4 border-red-400 p-4"
       >
         <div class="flex">
           <div class="flex-shrink-0">
-            <!-- You can add an error icon here if you want -->
           </div>
           <div class="ml-3">
             <p class="text-sm text-red-700 font-medium">Please correct the following errors:</p>
@@ -823,7 +780,6 @@
         </div>
       </div>
 
-      <!-- Form Actions -->
       <div class="flex justify-end space-x-4">
         <button
           type="button"
@@ -864,7 +820,7 @@ import EducationTypeSelection from './EducationTypeSelection.vue'
 
 const { user } = useAuthStore()
 const toast = useToast()
-const authStore = useAuthStore() // Get the authStore instance
+const authStore = useAuthStore()
 
 const isLoadingDCRC = ref(false)
 const isLoadingRUB = ref(false)
@@ -883,8 +839,14 @@ const props = defineProps({
   mode: { type: String, default: 'create' },
 })
 
+const getScalarId = (value) => {
+  if (value && typeof value === 'object' && value.id !== undefined) {
+    return value.id
+  }
+  return value
+}
+
 const form = reactive({
-  // Personal Information
   cid_no: props.initialData?.cid_no || '',
   applicants_name: props.initialData?.applicants_name || '',
   date_of_birth: props.initialData?.date_of_birth || '',
@@ -895,12 +857,11 @@ const form = reactive({
   gewog: props.initialData?.gewog || '',
   village: props.initialData?.village || '',
 
-  // Education Details
   from_in_country:
     props.initialData?.from_in_country !== undefined ? props.initialData.from_in_country : null,
   course_title: props.initialData?.course_title || '',
-  qualification: props.initialData?.qualification || '',
-  type_of_course: props.initialData?.type_of_course || '',
+  qualification: getScalarId(props.initialData?.qualification) || '',
+  type_of_course: getScalarId(props.initialData?.type_of_course) || '',
   duration_of_course: props.initialData?.duration_of_course || '',
   name_of_institute: props.initialData?.name_of_institute || '',
   name_of_university: props.initialData?.name_of_university || '',
@@ -910,12 +871,10 @@ const form = reactive({
   location: props.initialData?.location || '',
   country: props.initialData?.country || '',
 
-  // Documents
   degree_certificate: null,
   academic_transcript: null,
   passport_size_photo: null,
 
-  // Additional Fields
   remarks: props.initialData?.remarks || '',
   declaration: props.initialData?.declaration || false,
   is_payment_complete: props.initialData?.is_payment_complete || false,
@@ -923,14 +882,10 @@ const form = reactive({
   status: props.initialData?.status || 'applied',
 })
 
-// Add validation state
 const validation = reactive({
   errors: {},
   showSummary: false,
-
-  // Define validation rules for each field
   rules: {
-    // Personal Information
     cid_no: (value) => {
       if (isCIDHolder.value && !value) return 'CID number is required'
       if (isCIDHolder.value && !/^\d{11}$/.test(value)) return 'CID number must be 11 digits'
@@ -970,8 +925,6 @@ const validation = reactive({
       if (!isCIDHolder.value && !value) return 'Village is required'
       return null
     },
-
-    // Education Details
     student_id_no: (value) => {
       if (!value) return 'Student ID number is required'
       return null
@@ -1021,22 +974,18 @@ const validation = reactive({
       if (!value) return 'Country is required'
       return null
     },
-
-    // Documents
     degree_certificate: (value) => {
-      if (!form.from_in_country && !value) return 'Degree certificate is required'
+      if (!form.from_in_country && !value && props.mode === 'create' && !props.initialData?.degree_certificate) return 'Degree certificate is required'
       return null
     },
     academic_transcript: (value) => {
-      if (!form.from_in_country && !value) return 'Academic transcript is required'
+      if (!form.from_in_country && !value && props.mode === 'create' && !props.initialData?.academic_transcript) return 'Academic transcript is required'
       return null
     },
     passport_size_photo: (value) => {
-      if (!value) return 'Passport size photo is required'
+      if (!value && props.mode === 'create' && !props.initialData?.passport_size_photo) return 'Passport size photo is required'
       return null
     },
-
-    // Declaration
     declaration: (value) => {
       if (!value) return 'You must accept the declaration'
       return null
@@ -1044,7 +993,6 @@ const validation = reactive({
   },
 })
 
-// Function to validate a specific field
 const validateField = (fieldName) => {
   if (validation.rules[fieldName]) {
     const error = validation.rules[fieldName](form[fieldName])
@@ -1056,13 +1004,9 @@ const validateField = (fieldName) => {
   }
 }
 
-// Function to validate all fields
 const validateForm = () => {
   validation.errors = {}
-
-  // Validate all fields that have rules
   for (const field in validation.rules) {
-    // Skip validation for fields that are not applicable
     if (
       (isCIDHolder.value &&
         ['gender_non_cid', 'dzongkhag_non_cid', 'gewog_non_cid', 'village_non_cid'].includes(
@@ -1070,12 +1014,11 @@ const validateForm = () => {
         )) ||
       (form.from_in_country && ['degree_certificate', 'academic_transcript'].includes(field))
     ) {
+      delete validation.errors[field];
       continue
     }
-
     validateField(field)
   }
-
   validation.showSummary = Object.keys(validation.errors).length > 0
   return Object.keys(validation.errors).length === 0
 }
@@ -1083,12 +1026,10 @@ const validateForm = () => {
 const paymentModal = ref(null)
 
 const openPaymentModal = () => {
-  // Validate the form before opening payment modal
   if (validateForm()) {
     paymentModal.value.openModal()
   } else {
     toast.error('Please fix the form errors before submitting')
-    // Scroll to the top to see the error summary
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
@@ -1108,44 +1049,48 @@ const isCIDValid = computed(() => {
   return /^\d{11}$/.test(form.cid_no)
 })
 
-// const genderDisplay = computed(() => {
-//   const genderMap = {
-//     M: 'Male',
-//     F: 'Female',
-//   }
-//   return genderMap[form.gender] || ''
-// })
-
 watch(
   () => form.from_in_country,
-  (newValue) => {
-    if (newValue === true) {
-      form.country = 'Bhutan'
-      form.course_title = ''
-      form.qualification = ''
-      form.type_of_course = ''
-      form.duration_of_course = ''
-      form.name_of_institute = ''
-      form.name_of_university = ''
-      form.year_of_completion = ''
-      form.website = ''
-      form.location = ''
-      form.degree_certificate = null
-      form.academic_transcript = null
-    } else {
-      form.country = ''
-    }
+  (newValue, oldValue) => {
+    if (newValue !== oldValue) {
+      isRUBDataFetched.value = false;
+      const fieldsToReset = [
+        'course_title', 'qualification', 'type_of_course', 'duration_of_course',
+        'name_of_institute', 'name_of_university', 'year_of_completion',
+        'website', 'location'
+      ];
 
-    // Validate form when the education type changes
-    validateForm()
+      fieldsToReset.forEach(field => form[field] = '');
+
+      if (newValue === true) {
+        form.country = 'Bhutan';
+        form.degree_certificate = null;
+        form.academic_transcript = null;
+      } else if (newValue === false) {
+        form.country = '';
+      }
+    }
+    validateForm();
   }
 )
 
-// Add watcher to validate CID holder fields
 watch(
   () => isCIDHolder.value,
-  () => {
-    validateForm()
+  (newValue, oldValue) => {
+    if(newValue !== oldValue) {
+        isDCRCDataFetched.value = false;
+        const fieldsToReset = [
+            'cid_no', 'applicants_name', 'date_of_birth',
+            'gender', 'dzongkhag', 'gewog', 'village'
+        ];
+        if(newValue === false) {
+            fieldsToReset.forEach(field => form[field] = '');
+        } else {
+             form.applicants_name = ''; form.date_of_birth = ''; form.gender = '';
+             form.dzongkhag = ''; form.gewog = ''; form.village = '';
+        }
+    }
+    validateForm();
   }
 )
 
@@ -1173,7 +1118,6 @@ onMounted(async () => {
 
 const fetchDCRCData = async () => {
   const userId = authStore.userId
-
   if (!isCIDValid.value) {
     toast.error('Please enter a valid 11-digit CID')
     validation.errors.cid_no = 'Please enter a valid 11-digit CID'
@@ -1190,7 +1134,7 @@ const fetchDCRCData = async () => {
       params: { user_id: userId },
     })
 
-    const formatDate = (dateString) => {
+    const formatDateInternal = (dateString) => {
       if (!dateString) return ''
       const [day, month, year] = dateString.split('/')
       return `${year}-${month}-${day}`
@@ -1199,14 +1143,14 @@ const fetchDCRCData = async () => {
     Object.assign(form, {
       cid_no: response.data.cid_no,
       applicants_name: response.data.applicants_name,
-      date_of_birth: formatDate(response.data.date_of_birth),
+      date_of_birth: formatDateInternal(response.data.date_of_birth),
       gender: response.data.gender,
       dzongkhag: response.data.dzongkhag,
       gewog: response.data.gewog,
       village: response.data.village,
     })
 
-    isDCRCDataFetched.value = true // Set flag on success
+    isDCRCDataFetched.value = true
     validateForm()
     toast.success(
       response.data.changes_saved
@@ -1217,7 +1161,7 @@ const fetchDCRCData = async () => {
     toast.error('Failed to fetch DCRC data')
     console.error('Error fetching DCRC data:', error)
     validation.errors.cid_no = 'Failed to fetch data for this CID'
-    isDCRCDataFetched.value = false // Ensure flag is false on failure
+    isDCRCDataFetched.value = false
   } finally {
     isLoadingDCRC.value = false
   }
@@ -1228,6 +1172,12 @@ const fetchRUBData = async () => {
     validation.errors.student_id_no = 'Student ID is required'
     return
   }
+   if (!form.cid_no && isCIDHolder.value) {
+    toast.error('CID number is required to fetch RUB data.');
+    validation.errors.cid_no = 'CID number is required for RUB fetch.';
+    return;
+  }
+
 
   isLoadingRUB.value = true
   try {
@@ -1239,6 +1189,7 @@ const fetchRUBData = async () => {
       form.year_of_completion = response.data.passYear || ''
       form.website = response.data.website || 'https://rub.gov.bt'
       form.duration_of_course = response.data.duration || ''
+      form.location = response.data.location || ''
 
       let courseTypeId = null
       const newCourseTypeName = response.data.level
@@ -1248,7 +1199,7 @@ const fetchRUBData = async () => {
 
       if (existingCourseType) {
         courseTypeId = existingCourseType.value
-      } else {
+      } else if (newCourseTypeName) {
         const addCourseTypeResponse = await apiService.createTypeOfCourse({
           name: newCourseTypeName,
           definition: newCourseTypeName,
@@ -1259,7 +1210,7 @@ const fetchRUBData = async () => {
       }
       form.type_of_course = courseTypeId
 
-      isRUBDataFetched.value = true // Set flag on success
+      isRUBDataFetched.value = true
       validateForm()
       toast.success('RUB data fetched successfully')
     } else {
@@ -1272,7 +1223,7 @@ const fetchRUBData = async () => {
     const errorMessage = error.response?.data?.message || error.message || 'Unknown error'
     toast.error(`Failed to fetch RUB data: ${errorMessage}`)
     validation.errors.student_id_no = 'Failed to fetch data for this Student ID'
-    isRUBDataFetched.value = false // Ensure flag is false on failure
+    isRUBDataFetched.value = false
   } finally {
     isLoadingRUB.value = false
   }
@@ -1291,12 +1242,10 @@ const formatDate = (dateString) => {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
-
   return `${year}-${month}-${day}`
 }
 
 const handleSubmit = () => {
-  // Always validate the form when submitting
   if (validateForm()) {
     if (form.declaration) {
       openPaymentModal()
@@ -1306,19 +1255,14 @@ const handleSubmit = () => {
     }
   } else {
     toast.error('Please fix the form errors before submitting')
-    // Scroll to the top to see the error summary
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
 
 const handleSaveAsDraft = async () => {
-  // For draft, we don't need to validate everything
   form.status = 'draft'
-
-  // Minimal validation for draft
   const requiredForDraft = ['applicants_name']
   let isValid = true
-
   for (const field of requiredForDraft) {
     const error = validation.rules[field](form[field])
     if (error) {
@@ -1326,9 +1270,8 @@ const handleSaveAsDraft = async () => {
       isValid = false
     }
   }
-
   if (isValid) {
-    await handleSubmitActual(true) // Pass a flag to indicate it's a draft
+    await handleSubmitActual(true)
   } else {
     toast.error('Please provide at least your name to save as draft')
   }
@@ -1338,44 +1281,41 @@ const handleSubmitActual = async (isDraft = false) => {
   isSubmitting.value = true
   try {
     const formData = new FormData()
+    const formKeysToBackendKeys = {
+        'type_of_course': 'type_of_course_id',
+        'qualification': 'qualification_id',
+    };
 
-    // Build FormData
     for (const key in form) {
       if (Object.prototype.hasOwnProperty.call(form, key)) {
         let value = form[key]
+        const backendKey = formKeysToBackendKeys[key] || key
 
-        // Add special handling for qualification and type_of_course here
-        if (key === 'qualification' || key === 'type_of_course') {
-          console.log(`${key} value:`, value, typeof value)
-
-          // Make sure we're sending a number, not a string or null
-          const numericValue = parseInt(value)
-          if (!isNaN(numericValue)) {
-            formData.append(key, numericValue.toString())
-            continue // Skip the normal append below for these fields
-          }
+        if (value === null || value === undefined) {
+          continue
+        }
+        if ((key === 'qualification' || key === 'type_of_course') && value === '') {
+          continue
         }
 
         if (value instanceof File) {
-          formData.append(key, value)
+          formData.append(backendKey, value)
         } else if (key === 'date_of_birth') {
-          formData.append(key, formatDate(value))
+          formData.append(backendKey, formatDate(value))
         } else if (typeof value === 'boolean') {
-          formData.append(key, value.toString())
-        } else if (value !== null && value !== undefined) {
-          formData.append(key, value.toString())
+          formData.append(backendKey, value.toString())
+        } else {
+          formData.append(backendKey, value.toString())
         }
       }
     }
 
-    // Only make the main request if it's not a draft, OR, if payment is complete.  Drafts should save even if no payment.
     if (!isDraft) {
-      // Payment Request (only if not a draft)
       const paymentData = {
         platform: 'BQPCA e-Zhapto',
-        refNo: form.payment_id, // Use the payment_id from the form
-        taxPayerNo: form.cid_no,
-        taxPayerDocumentNo: form.cid_no, //AGENCYCODE replaced with literal as per instructions
+        refNo: form.payment_id,
+        taxPayerNo: form.cid_no || 'N/A',
+        taxPayerDocumentNo: form.cid_no || 'N/A',
         payerEmail: form.email_address,
         mobileNo: form.contact_no,
         totalPayableAmount: 1000.0,
@@ -1383,19 +1323,14 @@ const handleSubmitActual = async (isDraft = false) => {
         description: 'Payment for ROQ Application',
         payableAmount: 1000.0,
         taxPayerName: form.applicants_name,
-        application_no: form.payment_id, // Use payment_id, consistent with refNo
+        application_no: form.payment_id,
         app_type: 'ROQ',
         user_id: authStore.userId,
       }
       try {
         const paymentResponse = await apiService.makePayment(paymentData)
-        console.log('Payment Response:', paymentResponse)
-
-        //Check payment response status, if needed.
-
         if (paymentResponse.status !== 201 && paymentResponse.status !== 200) {
-          // Check success
-          throw new Error('Payment request failed') // important - throw error to prevent main request.
+          throw new Error('Payment request failed with status: ' + paymentResponse.status)
         }
       } catch (paymentError) {
         console.error('Error making payment:', paymentError)
@@ -1403,13 +1338,13 @@ const handleSubmitActual = async (isDraft = false) => {
           'Payment request failed: ' +
             (paymentError.response?.data?.message || paymentError.message)
         )
-        isSubmitting.value = false // Reset before returning.
-        return // Stop execution if payment fails
+        isSubmitting.value = false
+        return
       }
     }
 
     let response
-    if (props.mode === 'edit') {
+    if (props.mode === 'edit' && props.initialData?.id) {
       response = await apiService.updateRecognitionOfQualification(props.initialData.id, formData)
       if (response.status === 200) {
         toast.success('Application updated successfully')
@@ -1423,21 +1358,36 @@ const handleSubmitActual = async (isDraft = false) => {
           toast.success(
             'Application submitted successfully. Please check your email to complete the payment.'
           )
-          emit('application-submitted')
         }
       }
     }
-    emit('submitted') // Emit 'submitted' for both create and edit on success
+    emit('submitted', response.data)
+    if (response.status === 200 || response.status === 201) {
+        emit('close-modal');
+    }
+
   } catch (error) {
     console.error('Error submitting form:', error.response?.data || error)
-    const errorMessage = error.response?.data?.message || 'Failed to save application'
-    toast.error(errorMessage)
+    let errorMessage = 'Failed to save application.'
+    if (error.response?.data) {
+      const errors = error.response.data
+      if (typeof errors === 'object') {
+        const fieldErrorMessages = Object.entries(errors)
+          .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
+          .join('; ')
+        if (fieldErrorMessages) errorMessage = fieldErrorMessages
+        else if (errors.detail) errorMessage = errors.detail
+        else if (errors.message) errorMessage = errors.message
+      } else if (typeof errors === 'string') {
+        errorMessage = errors
+      }
+    }
+    toast.error(errorMessage, { timeout: 7000 })
   } finally {
     isSubmitting.value = false
   }
 }
 
-// Helper function to extract file name from URL
 const getFileNameFromUrl = (url) => {
   if (!url) return ''
   return url.substring(url.lastIndexOf('/') + 1)
@@ -1448,28 +1398,12 @@ const emit = defineEmits(['application-submitted', 'close-modal', 'submitted'])
 const handleCIDInput = (event) => {
   const input = event.target.value.replace(/\D/g, '')
   form.cid_no = input.slice(0, 11)
-
-  // Validate the CID field
   validateField('cid_no')
-
   if (form.cid_no.length === 11) {
     fetchDCRCData()
   }
 }
 
-watch(
-  () => isCIDHolder.value,
-  () => {
-    isDCRCDataFetched.value = false
-  }
-)
-
-watch(
-  () => form.from_in_country,
-  () => {
-    isRUBDataFetched.value = false
-  }
-)
 </script>
 
 <style scoped>

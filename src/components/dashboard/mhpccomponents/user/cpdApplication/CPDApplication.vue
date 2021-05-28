@@ -489,42 +489,28 @@ const handleSubmit = async () => {
   formData.append('title_of_cpd', form.title_of_cpd)
   formData.append('relevance_to_profession', form.relevance_to_profession)
 
-  // **MODIFICATIONS START HERE**
   // Send the fetched personnel category/sub-category IDs under the names the backend expects
   if (form.personnel_category) {
     // Ensure it's not empty/null before sending
     formData.append('participation_category', String(form.personnel_category))
-  } else {
-    // Handle cases where personnel_category might be null but backend requires it.
-    // This might indicate an issue with data fetching or a state where submission shouldn't proceed.
-    // For now, we rely on validateForm to catch this if it's truly mandatory from a data integrity PoV.
-    // If backend requires it EVEN IF NULL (which is unlikely for a PKRelatedField unless null=True),
-    // you might need to send an empty string or handle it based on backend behavior.
-    // Given the error "This field is required", it must be sent.
-    // Consider adding a check in validateForm for form.personnel_category.
   }
 
   if (form.personnel_sub_category) {
     // Sub-category might be optional
     formData.append('participant_sub_category', String(form.personnel_sub_category))
   }
-  // If participant_sub_category is absolutely required by the backend even if the user has no sub-category,
-  // you'll need a strategy, but often sub-categories can be optional.
-  // The error message "participant_sub_category: [This field is required.]" suggests it IS required.
-  // Ensure form.personnel_sub_category has a value.
 
   formData.append('type_of_cpd_activity', form.type_of_cpd_activity)
   formData.append('cpd_hours', String(form.cpd_hours))
 
   // Add cpd_credit, using the cpd_hours value as per the requirement to replace credit with hours
-  formData.append('cpd_credit', String(form.cpd_hours)) // Or a fixed default like '1' if that's more appropriate
-  // **MODIFICATIONS END HERE**
+  formData.append('cpd_credit', String(1)); // Or a fixed default like '1' if that's more appropriate
+
 
   if (form.attachment) {
     formData.append('attachment', form.attachment, form.attachment.name)
   }
 
-  // ... rest of the handleSubmit function remains the same
   try {
     const response = await apiService.createMhpcCpdRecord(formData)
     if (response.status >= 200 && response.status < 300) {
