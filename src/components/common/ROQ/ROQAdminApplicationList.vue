@@ -1,6 +1,37 @@
-// Child Component: ROQAdminApplicationList.vue
 <template>
   <div class="w-full">
+    <!-- Modal for Viewing Chief's Remarks -->
+    <div
+      v-if="showChiefRemarksModal"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">Chief's Remarks</h3>
+          <button
+            @click="closeChiefRemarksModal"
+            class="text-gray-500 hover:text-gray-700 focus:outline-none"
+          >
+            <X class="h-5 w-5" />
+          </button>
+        </div>
+        <div class="text-sm text-gray-700 mb-6">
+          <p v-if="selectedApplication?.chief_remarks" class="whitespace-pre-wrap">
+            {{ selectedApplication.chief_remarks }}
+          </p>
+          <p v-else class="text-gray-500 italic">No remarks available.</p>
+        </div>
+        <div class="flex justify-end">
+          <button
+            @click="closeChiefRemarksModal"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
       <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
         <div class="flex flex-wrap items-center gap-5">
@@ -319,6 +350,7 @@ import {
   FileSearch,
   Loader2,
   CheckCircle,
+  X,
 } from 'lucide-vue-next'
 import ActionButtons from './ROQAdminActionButtons.vue'
 
@@ -347,6 +379,8 @@ const sortOrder = ref({ field: 'updated_at', direction: 'desc' })
 
 const isSendingStatus = reactive({})
 const isSendingRegret = reactive({})
+const showChiefRemarksModal = ref(false)
+const selectedApplication = ref(null)
 
 const statusOptions = [
   'draft',
@@ -378,6 +412,7 @@ const mappedApplications = computed(() => {
     roq_status_letter_sent_date: app.roq_status_letter_sent_date,
     roq_regret_letter: app.roq_regret_letter,
     roq_regret_letter_sent_date: app.roq_regret_letter_sent_date,
+    chief_remarks: app.chief_remarks,
   }))
 })
 
@@ -416,11 +451,10 @@ const sortedApplications = computed(() => {
     if (aValue < bValue) return -1 * modifier
     if (aValue > bValue) return 1 * modifier
 
-    // Secondary sort by updated_at descending if primary values are equal
     const aDate = a.updated_at ? new Date(a.updated_at).getTime() : 0
     const bDate = b.updated_at ? new Date(b.updated_at).getTime() : 0
-    if (aDate < bDate) return 1 // Secondary sort descending
-    if (aDate > bDate) return -1
+    if (aDate < bDate) return 1
+    if (aDate > aDate) return -1
 
     return 0
   })
@@ -431,9 +465,8 @@ const calculateMonthsAgo = (dateString) => {
   try {
     const date = new Date(dateString)
     const now = new Date()
-    const diffTime = now - date
-    const diffMonths = diffTime / (1000 * 60 * 60 * 24 * 30.4375)
-    return diffMonths
+    const diffTime = (now - date) / (1000 * 60 * 60 * 24 * 30.5)
+    return diffTime
   } catch {
     return Infinity
   }
@@ -451,16 +484,15 @@ const shouldShowRegretSendButton = (application) => {
   if (application.status !== 'processing' || application.roq_regret_letter) {
     return false
   }
-  const monthsAgo = calculateMonthsAgo(application.updated_at)
-  return monthsAgo >= 2
+  const months = calculateMonthsAgo(application.updated_at)
+  return months >= 2
 }
 
-// Computed properties to control column visibility
 const showRoqStatusColumn = computed(() => {
   return (
-    props.userRole === 'dealing_officer' &&
-    sortedApplications.value.some((app) => shouldShowRoqSendButton(app) || app.roq_status_letter)
-  )
+      props.userRole === 'dealing_officer' &&
+      sortedApplications.value.some((app) => shouldShowRoqSendButton(app) || app.roq_status_letter)
+    )
 })
 
 const showRegretColumn = computed(() => {
@@ -497,7 +529,8 @@ const formatDate = (date) => {
       minute: '2-digit',
       hour12: true,
     })
-  } catch {
+  } catch (e) {
+    console.error('Invalid date format:', date, e)
     return 'Invalid Date'
   }
 }
@@ -515,28 +548,28 @@ const getStatusClass = (status) => {
   const statusClasses = {
     draft: 'bg-gray-100 text-gray-800',
     processing_payment: 'bg-gray-100 text-gray-800',
-    applied: 'bg-blue-100 text-blue-800',
-    processing: 'bg-amber-100 text-amber-800',
-    under_review: 'bg-purple-100 text-purple-800',
-    approved: 'bg-green-100 text-green-800',
-    regretted: 'bg-red-100 text-red-800',
-    reprocess: 'bg-orange-100 text-orange-800',
-    reupload: 'bg-indigo-100 text-indigo-800',
+    applied: 'bg-blue-100 text-blue-600',
+    processing: 'bg-amber-100 text-blue-700',
+    under_review: 'bg-purple-100 text-blue-800',
+    approved: 'bg-green-100 text-green-600',
+    regretted: 'bg-red-100 text-red-600',
+    reprocess: 'bg-orange-100 text-orange-600',
+    reupload: 'bg-blue-100 text-blue-600',
   }
   return `${baseClasses} ${statusClasses[status] || ''}`
 }
 
 const getStatusDotClass = (status) => {
   const statusClasses = {
-    draft: 'bg-gray-500',
+    draft: 'bg-blue-500',
     processing_payment: 'bg-gray-500',
     applied: 'bg-blue-500',
-    processing: 'bg-amber-500',
+    processing: 'bg-blue-400',
     under_review: 'bg-purple-500',
     approved: 'bg-green-500',
     regretted: 'bg-red-500',
     reprocess: 'bg-orange-500',
-    reupload: 'bg-indigo-500',
+    reupload: 'bg-blue-500',
   }
   return statusClasses[status] || ''
 }
@@ -544,8 +577,8 @@ const getStatusDotClass = (status) => {
 const getSortIconClass = (field, direction) => {
   return {
     'text-gray-400': sortOrder.value.field !== field || sortOrder.value.direction !== direction,
-    'text-blue-600': sortOrder.value.field === field && sortOrder.value.direction === direction,
-    'opacity-30': sortOrder.value.field !== field,
+    'text-blue-600': sortOrder.value.field === field && direction === sortOrder.value.direction,
+    'opacity-0.3': sortOrder.value.field !== field,
   }
 }
 
@@ -558,13 +591,12 @@ const handleRoqStatusUpdate = async (application) => {
       roq_status_letter: true,
       roq_status_letter_sent_date: new Date().toISOString(),
     })
-    toast.success(`Status email update marked as sent for ${application.fullName}.`)
+    toast.success(`Status email sent for ${application.fullName}.`)
     emit('refresh')
   } catch (error) {
-    console.error('Failed to send ROQ status update:', error)
+    console.error('Failed to send ROQ status:', error)
     const errorMsg =
-      error.response?.data?.detail ||
-      `Failed to mark status email as sent for ${application.fullName}.`
+      error.response?.data?.detail || `Failed to send status for ${application.fullName}.`
     toast.error(errorMsg)
   } finally {
     isSendingStatus[application.id] = false
@@ -581,13 +613,12 @@ const handleRegretLetterSend = async (application) => {
       roq_regret_letter_sent_date: new Date().toISOString(),
       status: 'regretted',
     })
-    toast.success(`Regret email update marked as sent for ${application.fullName}.`)
+    toast.success(`Regret email sent for ${application.fullName}.`)
     emit('refresh')
   } catch (error) {
-    console.error('Failed to send regret letter:', error)
+    console.error('Failed to send regret:', error)
     const errorMsg =
-      error.response?.data?.detail ||
-      `Failed to mark regret email as sent for ${application.fullName}.`
+      error.response?.data?.detail || `Failed to send regret for ${application.fullName}.`
     toast.error(errorMsg)
   } finally {
     isSendingRegret[application.id] = false
@@ -596,7 +627,7 @@ const handleRegretLetterSend = async (application) => {
 
 const sortBy = (field) => {
   const headerConfig = headers.value.find((h) => h.key === field)
-  if (!headerConfig || !headerConfig.sortable) return // Only sort if header is sortable
+  if (!headerConfig || !headerConfig.sortable) return
 
   if (sortOrder.value.field === field) {
     sortOrder.value.direction = sortOrder.value.direction === 'asc' ? 'desc' : 'asc'
@@ -614,7 +645,17 @@ const handleFilter = (event) => {
 }
 
 const handleAction = ({ action, application }) => {
-  emit('action', { action, application })
+  if (action === 'viewChiefRemarks') {
+    selectedApplication.value = application
+    showChiefRemarksModal.value = true
+  } else {
+    emit('action', { action, application })
+  }
+}
+
+const closeChiefRemarksModal = () => {
+  showChiefRemarksModal.value = false
+  selectedApplication.value = null
 }
 
 watch(
@@ -627,7 +668,6 @@ watch(
 watch(
   () => props.applications,
   () => {
-    // Reset sending status when applications list changes to avoid stale states
     Object.keys(isSendingStatus).forEach((key) => delete isSendingStatus[key])
     Object.keys(isSendingRegret).forEach((key) => delete isSendingRegret[key])
   },
