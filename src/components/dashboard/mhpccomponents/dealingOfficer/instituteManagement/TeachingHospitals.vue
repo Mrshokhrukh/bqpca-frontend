@@ -1,11 +1,12 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
+    <!-- Header Section -->
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Teaching Hospitals</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">Teaching Center Applications</h1>
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-          Total: {{ teachingCenters.length }}
+          Total Pending/Reviewed: {{ teachingCenters.length }}
         </span>
       </div>
     </div>
@@ -15,7 +16,7 @@
       v-if="alert.show"
       :class="`mb-4 p-4 rounded-md ${alert.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`"
     >
-      <div class="flex">
+       <div class="flex">
         <div class="flex-shrink-0">
           <svg
             v-if="alert.type === 'success'"
@@ -41,76 +42,55 @@
           <p class="text-sm font-medium">{{ alert.message }}</p>
         </div>
         <div class="ml-auto pl-3">
-          <div class="-mx-1.5 -my-1.5">
-            <button
-              @click="alert.show = false"
-              class="inline-flex rounded-md p-1.5"
-              :class="
-                alert.type === 'success'
-                  ? 'text-green-500 hover:bg-green-100'
-                  : 'text-red-500 hover:bg-red-100'
-              "
-            >
-              <span class="sr-only">Dismiss</span>
-              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fill-rule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </button>
-          </div>
+          <button
+            @click="alert.show = false"
+            class="inline-flex rounded-md p-1.5"
+            :class="
+              alert.type === 'success'
+                ? 'text-green-500 hover:bg-green-100'
+                : 'text-red-500 hover:bg-red-100'
+            "
+          >
+            <span class="sr-only">Dismiss</span>
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
 
+
+    <!-- Loading Spinner -->
     <div v-if="loading" class="flex justify-center my-8">
       <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
     </div>
 
+    <!-- No Data Message -->
     <div
       v-else-if="teachingCenters.length === 0"
       class="bg-white p-8 text-center text-gray-500 rounded-xl shadow-sm border border-gray-100"
     >
-      <p>No teaching hospitals found</p>
+      <p>No new teaching center applications found.</p>
     </div>
 
+    <!-- Teaching Hospitals Table -->
     <div v-else class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Name
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                City
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Specialty
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Status
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Actions
-              </th>
+              <th scope="col" class="table-th">Institute</th>
+              <th scope="col" class="table-th">Center Name</th>
+              <th scope="col" class="table-th">Location (Center)</th>
+              <th scope="col" class="table-th">Target Category</th>
+              <th scope="col" class="table-th">Applied On</th>
+              <th scope="col" class="table-th">Status</th>
+              <th scope="col" class="table-th">Actions</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
@@ -119,40 +99,30 @@
               :key="center.id"
               class="hover:bg-gray-50 transition-colors"
             >
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ center.center_name }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ center.center_location }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
-                >
+              <td class="table-td">{{ center.institute_details?.name_of_institution || 'N/A' }}</td>
+              <td class="table-td font-medium text-gray-900">{{ center.center_name }}</td>
+              <td class="table-td">{{ center.center_location }}, {{ center.state_dzongkhag }}</td>
+              <td class="table-td">
+                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-cyan-100 text-cyan-800">
                   {{ center.target_category }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="table-td">{{ center.created_at ? new Date(center.created_at).toLocaleDateString() : 'N/A' }}</td>
+              <td class="table-td">
                 <span
-                  class="px-3 py-1 rounded-full text-xs font-medium"
-                  :class="{
-                    'bg-yellow-100 text-yellow-800': center.tc_review_decision === 'Pending',
-                    'bg-green-100 text-green-800': center.tc_review_decision === 'Approved',
-                    'bg-red-100 text-red-800': center.tc_review_decision === 'Regretted',
-                  }"
+                  class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  :class="getStatusClass(center.tc_review_decision)"
                 >
-                  {{ center.tc_review_decision }}
+                  {{ center.tc_review_decision ? center.tc_review_decision.replace(/_/g, ' ') : 'Pending Review' }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div class="flex space-x-3">
-                  <button
-                    @click="openModal(center)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                  >
-                    View
-                  </button>
-                </div>
+              <td class="table-td">
+                <button
+                  @click="openApplicationModal(center)"
+                  class="text-indigo-600 hover:text-indigo-900 font-medium py-1 px-3 rounded-md hover:bg-indigo-50 transition-colors duration-150"
+                >
+                  View/Process
+                </button>
               </td>
             </tr>
           </tbody>
@@ -162,14 +132,15 @@
 
     <TeachingHospitalsDetailsModal
       :is-open="isModalOpen"
-      :hospital-details="selectedHospital"
-      @close-modal="closeModal"
-      @approve="handleApprove"
-      @regret="handleRegret"
+      :hospital-details="selectedApplication"
+      @close-modal="closeApplicationModal"
+      @approve="triggerApprove"
+      @reject="triggerReject"
+      @submit-verification="triggerSubmitVerification"
     />
 
     <!-- Confirmation Modal -->
-    <div v-if="confirmModal.show" class="fixed z-20 inset-0 overflow-y-auto">
+    <div v-if="confirmModal.show" class="fixed z-30 inset-0 overflow-y-auto">
       <div
         class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
       >
@@ -210,18 +181,6 @@
                     {{ confirmModal.message }}
                   </p>
                 </div>
-                <div v-if="confirmModal.action === 'regret'" class="mt-3">
-                  <label for="regret-reason" class="block text-sm font-medium text-gray-700"
-                    >Reason for Regret</label
-                  >
-                  <textarea
-                    id="regret-reason"
-                    v-model="rejectionReason"
-                    rows="3"
-                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    placeholder="Please provide a reason for regret"
-                  ></textarea>
-                </div>
               </div>
             </div>
           </div>
@@ -230,9 +189,11 @@
               type="button"
               @click="confirmAction"
               :class="`inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm
-                ${confirmModal.action === 'approve' ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' : 'bg-red-600 hover:bg-red-700 focus:ring-red-500'}`"
+                ${confirmModal.action === 'approve' ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+                : confirmModal.action === 'submit-verification' ? 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
+                : 'bg-red-600 hover:bg-red-700 focus:ring-red-500'}`"
             >
-              {{ confirmModal.action === 'approve' ? 'Approve' : 'Regret' }}
+              {{ confirmModal.buttonText || 'Confirm' }}
             </button>
             <button
               type="button"
@@ -245,34 +206,29 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import TeachingHospitalsDetailsModal from '../modals/TeachingHospitalsDetailsModal.vue'
-import apiServices from '@/services/services'
+import apiServices from '@/services/services.js'
 
 const teachingCenters = ref([])
 const isModalOpen = ref(false)
-const selectedHospital = ref({})
+const selectedApplication = ref({})
 const loading = ref(false)
-const rejectionReason = ref('')
 
-// Alert system for success/error messages
-const alert = ref({
-  show: false,
-  type: 'success',
-  message: '',
-})
-
-// Confirmation modal
+const alert = ref({ show: false, type: 'success', message: '' })
 const confirmModal = ref({
   show: false,
   title: '',
   message: '',
   action: '',
   centerId: null,
+  payload: null,
+  buttonText: 'Confirm',
 })
 
 onMounted(async () => {
@@ -280,126 +236,173 @@ onMounted(async () => {
 })
 
 const fetchTeachingCenters = async () => {
+  loading.value = true
   try {
-    loading.value = true
-
-    // Fetch Teaching Centers for the table
     const response = await apiServices.getMhpcTeachingCenters()
 
-    // axios wraps response in data property
-    if (response && response.data && response.data.results) {
-      teachingCenters.value = response.data.results
-    } else if (response && response.results) {
-      teachingCenters.value = response.results
-    } else if (Array.isArray(response)) {
-      teachingCenters.value = response
-    } else if (response && Array.isArray(response.data)) {
-      teachingCenters.value = response.data
+    const applications = response.data?.results || response.data || response.results || response || []
+    if (Array.isArray(applications)) {
+      // No complex mapping needed here if modal directly uses `institute_details`
+      // And handles single string URLs for tc_attachments and tc_report
+      teachingCenters.value = applications;
     } else {
-      console.error('Unexpected API response structure:', response)
-      showAlert('error', 'Failed to load teaching hospitals data')
+      console.error('Unexpected API response structure for teaching centers:', response)
+      showAlert('error', 'Failed to load applications: Unexpected data format.')
+      teachingCenters.value = []
     }
   } catch (error) {
-    console.error('Error fetching data:', error)
-    showAlert('error', 'Failed to load teaching hospitals data')
+    console.error('Error fetching teaching center applications:', error)
+    showAlert('error', `Failed to load applications: ${error.message || 'Server error'}`)
   } finally {
     loading.value = false
   }
 }
 
-const openModal = (center) => {
-  selectedHospital.value = center
+const getStatusClass = (status) => {
+  if (status === 'Approved') return 'bg-green-100 text-green-800';
+  if (status === 'Rejected' || status === 'Regretted') return 'bg-red-100 text-red-800';
+  if (status === 'Verification_Completed') return 'bg-blue-100 text-blue-800';
+  return 'bg-yellow-100 text-yellow-800';
+};
+
+const openApplicationModal = (application) => {
+  // The `application` object from `teachingCenters.value` now directly contains `institute_details`
+  selectedApplication.value = { ...application };
   isModalOpen.value = true
 }
 
-const closeModal = () => {
+const closeApplicationModal = () => {
   isModalOpen.value = false
-  selectedHospital.value = {} // Clear selected hospital data when closing
+  selectedApplication.value = {}
 }
 
-const handleApprove = () => {
+const triggerApprove = () => {
   confirmModal.value = {
     show: true,
-    title: 'Approve Teaching Hospital',
-    message: `Are you sure you want to approve "${selectedHospital.value.center_name}"?`,
+    title: 'Approve Application',
+    message: `Are you sure you want to approve the application for "${selectedApplication.value.center_name}"? This will enable payment for the institute.`,
     action: 'approve',
-    centerId: selectedHospital.value.id,
+    centerId: selectedApplication.value.id,
+    payload: null,
+    buttonText: 'Approve',
   }
 }
 
-const handleRegret = () => {
+const triggerReject = (rejectionReason) => {
   confirmModal.value = {
     show: true,
-    title: 'Regret Teaching Hospital',
-    message: `Are you sure you want to regret "${selectedHospital.value.center_name}"?`,
-    action: 'regret',
-    centerId: selectedHospital.value.id,
+    title: 'Reject Application',
+    message: `Are you sure you want to reject the application for "${selectedApplication.value.center_name}"?`,
+    action: 'reject',
+    centerId: selectedApplication.value.id,
+    payload: { tc_reason_if_rejected: rejectionReason },
+    buttonText: 'Reject',
   }
-  rejectionReason.value = '' // Reset rejection reason
+}
+
+const triggerSubmitVerification = (verificationData) => {
+  confirmModal.value = {
+    show: true,
+    title: 'Submit Physical Verification',
+    message: `Record physical verification for "${selectedApplication.value.center_name}"?`,
+    action: 'submit-verification',
+    centerId: selectedApplication.value.id,
+    payload: verificationData,
+    buttonText: 'Submit Verification',
+  }
 }
 
 const confirmAction = async () => {
+  loading.value = true;
+  const id = confirmModal.value.centerId;
+  const action = confirmModal.value.action;
+  const payload = confirmModal.value.payload;
+  let updateData = {};
+  let successMessage = '';
+
   try {
-    loading.value = true
-    const id = confirmModal.value.centerId
+    if (!id) throw new Error('Application ID is missing');
 
-    if (!id) {
-      throw new Error('Teaching hospital ID is missing')
+    switch (action) {
+      case 'approve':
+        updateData = { tc_review_decision: 'Approved', tc_reason_if_rejected: null };
+        successMessage = 'Application approved successfully. Payment is now enabled for the institute.';
+        break;
+      case 'reject':
+        if (!payload?.tc_reason_if_rejected?.trim()) {
+          showAlert('error', 'Rejection reason is required.');
+          loading.value = false;
+          return;
+        }
+        updateData = {
+          tc_review_decision: 'Rejected',
+          tc_reason_if_rejected: payload.tc_reason_if_rejected.trim()
+        };
+        successMessage = 'Application rejected successfully.';
+        break;
+      case 'submit-verification':
+        if (!payload?.verificationDate || !payload?.verificationReport?.trim()) {
+          showAlert('error', 'Verification date and report are required.');
+          loading.value = false;
+          return;
+        }
+        updateData = {
+          verification_date: payload.verificationDate,
+          verification_report: payload.verificationReport,
+           tc_review_decision: 'Verification_Completed'
+        };
+        successMessage = 'Physical verification details submitted successfully.';
+        break;
+      default:
+        throw new Error('Invalid action specified.');
     }
 
-    const updateData = {
-      tc_review_decision: confirmModal.value.action === 'approve' ? 'Approved' : 'Regretted',
-    }
+    await apiServices.patchMhpcTeachingCenter(id, updateData);
 
-    // Add reason if rejecting
-    if (confirmModal.value.action === 'regret') {
-      if (!rejectionReason.value.trim()) {
-        showAlert('error', 'Please provide a reason for regret')
-        loading.value = false
-        return
+    showAlert('success', successMessage);
+    await fetchTeachingCenters();
+    confirmModal.value.show = false;
+
+    if (action === 'approve' || action === 'reject') {
+      closeApplicationModal();
+    } else if (action === 'submit-verification') {
+      const freshApp = teachingCenters.value.find(app => app.id === id);
+      if(freshApp) {
+        selectedApplication.value = { ...freshApp };
+      } else {
+        closeApplicationModal();
       }
-      updateData.tc_reason_if_rejected = rejectionReason.value.trim()
     }
 
-    // Update the teaching center
-    await apiServices.patchMhpcTeachingCenter(id, updateData)
-
-    // Update local data to reflect the change
-    const index = teachingCenters.value.findIndex((center) => center.id === id)
-    if (index !== -1) {
-      teachingCenters.value[index].tc_review_decision = updateData.tc_review_decision
-      if (updateData.tc_reason_if_rejected) {
-        teachingCenters.value[index].tc_reason_if_rejected = updateData.tc_reason_if_rejected
-      }
-    }
-
-    // Show success message
-    showAlert(
-      'success',
-      `Teaching hospital ${confirmModal.value.action === 'approve' ? 'approved' : 'regretted'} successfully`,
-    )
-
-    // Close modals
-    confirmModal.value.show = false
-    closeModal()
   } catch (error) {
-    console.error('Error updating teaching hospital:', error)
-    showAlert('error', `Failed to ${confirmModal.value.action} teaching hospital`)
+    console.error(`Error during ${action}:`, error.response?.data || error.message || error);
+    let errorDetail = 'An unexpected error occurred.';
+    if (error.response?.data) {
+        if (typeof error.response.data === 'string') {
+            errorDetail = error.response.data;
+        } else if (typeof error.response.data === 'object') {
+            errorDetail = error.response.data.detail || error.response.data.message || JSON.stringify(error.response.data);
+        }
+    } else if (error.message) {
+        errorDetail = error.message;
+    }
+    showAlert('error', `Failed to ${action.replace('-', ' ')}. ${errorDetail}`);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 const showAlert = (type, message) => {
-  alert.value = {
-    show: true,
-    type,
-    message,
-  }
-
-  // Auto-hide alert after 5 seconds
-  setTimeout(() => {
-    alert.value.show = false
-  }, 5000)
+  alert.value = { show: true, type, message }
+  setTimeout(() => { alert.value.show = false }, 7000)
 }
 </script>
+
+<style scoped>
+.table-th {
+  @apply px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider;
+}
+.table-td {
+  @apply px-6 py-4 whitespace-nowrap text-sm text-gray-700;
+}
+</style>

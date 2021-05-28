@@ -645,6 +645,64 @@ export default {
   deleteMhpcCourseDetail(id) {
     return apiClient.delete(`/mhpc/mhpc-course-details/${id}/`)
   },
+   // --- NEW: Masters Hospital/Center Types ---
+  /**
+   
+   * @param {object} params - Optional query parameters (e.g., { is_active: true })
+   * @returns {Promise}
+   */
+  getMhpcMastersHospitalCenterTypes(params = {}) {
+    return apiClient.get('/mhpc/masters-hospital-center-types/', { params })
+  },
+
+  /**
+
+   * @param {object} data
+   * @returns {Promise}
+   */
+  createMhpcMastersHospitalCenterType(data) {
+    return apiClient.post('/mhpc/masters-hospital-center-types/', data)
+  },
+
+  /**
+
+   * @param {number|string} id
+   * @returns {Promise}
+   */
+  getMhpcMastersHospitalCenterType(id) {
+    return apiClient.get(`/mhpc/masters-hospital-center-types/${id}/`)
+  },
+
+  /**
+
+   * @param {number|string} id
+   * @param {object} data -
+   * @returns {Promise}
+   */
+  updateMhpcMastersHospitalCenterType(id, data) {
+    return apiClient.put(`/mhpc/masters-hospital-center-types/${id}/`, data)
+  },
+
+  /**
+
+   * @param {number|string} id
+   * @param {object} data
+   * @returns {Promise}
+   */
+  patchMhpcMastersHospitalCenterType(id, data) {
+    return apiClient.patch(`/mhpc/masters-hospital-center-types/${id}/`, data)
+  },
+
+  /**
+
+   * @param {number|string} id
+   * @returns {Promise}
+   */
+  deleteMhpcMastersHospitalCenterType(id) {
+    return apiClient.delete(`/mhpc/masters-hospital-center-types/${id}/`)
+  },
+
+
   // MHPC Teaching Center
   getMhpcTeachingCenters() {
     return apiClient.get('/mhpc/mhpc-teaching-centers/')
