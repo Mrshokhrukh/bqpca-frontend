@@ -25,7 +25,7 @@
           <div class="flex items-center gap-2">
             <span class="text-gray-500 font-medium">Registration No:</span>
             <span class="font-mono text-gray-700">{{
-              userDetail?.registrationNumber || 'N/A'
+              userDetail?.registration_no || 'N/A'
             }}</span>
           </div>
         </div>

@@ -1,92 +1,85 @@
 <template>
-  <div class="bg-gray-50 p-6 min-h-screen">
-    <div class="w-full mx-auto space-y-6">
-      <!-- Empty state when no applications at all -->
-      <FirstDashboardState
-        v-if="hasNoApplications && !isLoading"
-        message="You don't have any applications yet.  Once you submit an application, you'll see it here."
-      />
-      <!-- Empty state when there are applications, but none are approved -->
-      <EmptyDashboardState
-        v-else-if="!hasApprovedApplications && !isLoading"
-        message="You don't have any approved applications yet. Once approved, you will have access to the dashboard."
-      />
+  <div class="min-h-screen bg-gray-50 p-6">
+    <div class="mx-auto w-full space-y-6">
+      <LoadingSpinner v-if="isLoading" />
 
-      <template v-else>
-        <ProfileHeader
-          :user-detail="userDetail"
-          :renewal-message="renewalStatus"
-          :qualifications="getPrimaryQualifications"
-          @view-certificate="handleViewCertificate"
+      <template v-if="!isLoading">
+        <FirstDashboardState
+          v-if="dashboardState.isFirstState"
+          :message="dashboardState.message"
         />
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard
-            title="CPD Credits"
-            icon="Award"
-            :progress="cpdCredits"
-            :total="50"
-            type="progress"
+        <EmptyDashboardState
+          v-else-if="dashboardState.isPending"
+          :qualification-info="dashboardState.qualificationInfo"
+          :key="dashboardState.qualificationInfo?.qualification?.id + (dashboardState.qualificationInfo?.qualification?.updated_at || '')"
+        />
+        <template v-else-if="dashboardState.isApproved">
+          <ProfileHeader
+            :user-detail="userDetail"
+            :renewal-message="renewalStatus"
+            :qualifications="dashboardState.primaryQualifications"
+            @view-certificate="handleViewCertificate"
           />
-          <CogsStatusCard :expiry-date="licenseExpiryDate" :status="licenseStatus" />
-          <ActivityFeed title="Recent Activities" :activities="recentActivities" />
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <StatCard
+              title="CPD Credits"
+              icon="Award"
+              :progress="cpdCredits"
+              :total="50"
+              type="progress"
+            />
+            <CogsStatusCard :expiry-date="licenseExpiryDate" :status="licenseStatus" />
+            <ActivityFeed title="Recent Activities" :activities="recentActivities" />
+          </div>
+          <ApplicationHistoryCard
+            :applications="applications"
+            @show-rejected="showRejectedApplications"
+          />
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <DeadlinesList title="Upcoming Deadlines" :deadlines="upcomingDeadlines" />
+          </div>
+          <ApplicationsModal
+            v-if="selectedApplications.length"
+            :applications="selectedApplications"
+            :title="modalTitle"
+            @close="closeApplicationsModal"
+            @visit="visitApplication"
+          />
+          <CertificateModal
+            v-if="showCertificateModal"
+            :application="selectedApplication"
+            @close="closeCertificateModal"
+          />
+        </template>
+        <div v-else class="p-10 text-center">
+          <p class="text-gray-600">Could not determine dashboard state. Please check your application status or contact support.</p>
         </div>
-
-        <ApplicationHistoryCard
-          :applications="applications"
-          @show-rejected="showRejectedApplications"
-        />
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <DeadlinesList title="Upcoming Deadlines" :deadlines="upcomingDeadlines" />
-        </div>
-
-        <ApplicationModal
-          v-if="selectedApplications.length"
-          :applications="selectedApplications"
-          :title="modalTitle"
-          @close="closeApplicationsModal"
-          @visit="visitApplication"
-        />
-
-        <!-- Pass selectedApplication to the modal -->
-        <CertificateModal
-          v-if="showCertificateModal"
-          :application="selectedApplication"
-          @close="closeCertificateModal"
-        />
-
-        <LoadingSpinner v-if="isLoading" />
       </template>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from 'vue' // Import ref
+import { computed, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
-import { storeToRefs } from 'pinia'
 import { useEpcDashboardStore } from '@/stores/epcUserDashboardStore'
+import { storeToRefs } from 'pinia'
 
-// Components
 import ProfileHeader from './dashboardComponents/ProfileHeaders.vue'
 import StatCard from './dashboardComponents/StatCards.vue'
 import CogsStatusCard from './dashboardComponents/CogsStatusCards.vue'
 import ApplicationHistoryCard from './dashboardComponents/ApplicationHistoryCards.vue'
 import ActivityFeed from './dashboardComponents/ActivityFeeds.vue'
 import DeadlinesList from './dashboardComponents/DeadlinesLists.vue'
-import ApplicationModal from './dashboardComponents/ApplicationModal.vue'
+import ApplicationsModal from './dashboardComponents/ApplicationModal.vue'
 import CertificateModal from '../../../common/EPC/EPCCertificateModal.vue'
 import LoadingSpinner from '../../../common/EPC/EPCLoadingSpinner.vue'
-// Uncommented the Empty State Components
 import EmptyDashboardState from './dashboardComponents/EmptyDashboardStates.vue'
 import FirstDashboardState from './dashboardComponents/FirstDashboardStates.vue'
 
-// Store setup
 const authStore = useAuthStore()
 const dashboardStore = useEpcDashboardStore()
 const { user } = storeToRefs(authStore)
-
-// State
 const {
   userDetail,
   applications,
@@ -100,158 +93,122 @@ const {
   modalTitle,
   isLoading,
   selectedApplication,
-  showCertificateModal,
+  showCertificateModal
 } = storeToRefs(dashboardStore)
 
-// Computed property to get primary qualifications for the ProfileHeader
-const getPrimaryQualifications = computed(() => {
-  if (!applications.value) {
-    console.warn('Applications data is undefined or null.')
-    return []
+// Reactive variable to track engineering program enablement (similar to DPR in MHPC)
+const isEngineeringProgramEnabled = ref(false)
+
+// Advanced dashboard state logic similar to MHPC
+const dashboardState = computed(() => {
+  if (isLoading.value) return { isLoading: true }
+
+  const hasNoApplications = !applications.value?.length
+  if (hasNoApplications) {
+    return {
+      isFirstState: true,
+      message: "You don't have any applications yet. Please apply to get started."
+    }
   }
 
-  const primaryQualifications = []
+  // Check if applications have qualifications
+  const hasApplicationsButNoQualifications = applications.value.every(
+    app => !app.user_qualifications?.length
+  )
 
-  applications.value.forEach((app) => {
-    if (app.user_qualifications && Array.isArray(app.user_qualifications)) {
-      app.user_qualifications.forEach((qualification) => {
-        if (
-          qualification.is_primary_qualification &&
-          qualification.endorsement_decision === 'Approved'
-        ) {
-          primaryQualifications.push(qualification)
-        }
-      })
-    } else {
-      console.warn(`Application ${app.id} has no valid user_qualifications array.`)
+  if (hasApplicationsButNoQualifications) {
+    return {
+      isFirstState: true,
+      message: "Your application is registered. Please add your qualifications to proceed with the review process."
     }
-  })
-  console.info('Primary qualifications:', primaryQualifications)
-  return primaryQualifications
-})
-
-// Computed property to check if user has any approved applications
-const hasApprovedApplications = computed(() => {
-  if (!applications.value) {
-    console.warn('No applications found.')
-    return false
   }
-  let hasApproved = false
 
-  applications.value.forEach((app) => {
-    if (app.user_qualifications && Array.isArray(app.user_qualifications)) {
-      if (app.user_qualifications.some((q) => q.endorsement_decision === 'Approved')) {
-        hasApproved = true
-      }
-    } else {
-      console.warn(
-        `Application ${app.id} has no valid user_qualifications array or it's undefined.`,
-      )
+  // Check for approved primary qualifications
+  const primaryQualifications = applications.value
+    .flatMap(app => app.user_qualifications || [])
+    .filter(q => q.is_primary_qualification && q.endorsement_decision === 'Approved')
+
+  if (primaryQualifications.length) {
+    return {
+      isApproved: true,
+      primaryQualifications
     }
-  })
+  }
 
-  console.info('Has approved applications:', hasApproved)
-  return hasApproved
+  // Check for pending primary qualifications
+  const qualificationInfo = applications.value.reduce((acc, app) => {
+    const primaryQual = app.user_qualifications?.find(q => q.is_primary_qualification && q.endorsement_decision !== 'Approved')
+    return acc || (primaryQual ? { application: app, qualification: primaryQual } : null)
+  }, null)
+
+  if (qualificationInfo) {
+    return {
+      isPending: true,
+      qualificationInfo
+    }
+  }
+
+  // If we have applications but don't fit other criteria, show basic dashboard
+  return {
+    isApproved: true,
+    primaryQualifications: []
+  }
 })
 
-// Computed property to check if the user has NO applications at all.
-const hasNoApplications = computed(() => {
-  return !applications.value || applications.value.length === 0
-})
-
-// Methods
 const fetchDashboardData = async () => {
-  if (!user.value?.cid) {
-    console.error('User CID not found')
-    return
-  }
-
+  if (!user.value?.cid) return
   try {
-    console.info('Fetching dashboard data for CID:', user.value.cid)
     await dashboardStore.fetchAllData(user.value.cid)
-    console.info('Dashboard data fetched successfully:', applications.value)
   } catch (error) {
     console.error('Error fetching dashboard data:', error)
   }
 }
 
-const showRejectedApplications = () => {
-  dashboardStore.setSelectedApplications('Rejected')
-}
+const showRejectedApplications = () => dashboardStore.setSelectedApplications('Rejected')
 
-const closeApplicationsModal = () => {
-  dashboardStore.clearSelectedApplications()
-}
+const closeApplicationsModal = () => dashboardStore.clearSelectedApplications()
 
 const visitApplication = (app) => {
-  // Use a map for better readability and maintainability
   const routes = {
-    'test Type app': '/admin/user/engineering/cpd', // Assuming 'test Type app' is a registration_type_name
-    License: '/admin/user/engineering_certification/registration', // Keep this as a fallback, but be specific if possible
-    // Add other registration types and their corresponding routes here
+    CPD: '/admin/user/engineering/cpd',
+    License: '/admin/user/engineering_certification/registration',
+    'Engineering Program': '/admin/user/engineering/education_programs'
   }
-
-  // Get the route based on registration_type_name, fallback to app.type if needed
-  const route = routes[app.type] || routes[app.registration_type_name] || null
-
-  if (route && app.status === 'Rejected') {
-    window.location.href = route
+  if (app.type in routes && app.status === 'Rejected') {
+    window.location.href = routes[app.type]
   }
 }
 
-// Handle View Certificate
 const handleViewCertificate = () => {
-  console.info('Handling view certificate...')
-  dashboardStore.setShowCertificateModal(true)
+  const primaryQual = dashboardState.value.primaryQualifications[0]
+  if (!primaryQual) return
 
-  // Get the first primary and approved qualification (if any)
-  const primaryApprovedQualification = getPrimaryQualifications.value[0]
+  const application = applications.value.find(app =>
+    app.user_qualifications.some(q => q.id === primaryQual.id)
+  )
 
-  if (primaryApprovedQualification) {
-    console.info('Primary approved qualification found:', primaryApprovedQualification)
-
-    // Find the application this qualification belongs to
-    const applicationForCertificate = applications.value.find((app) =>
-      app.user_qualifications?.some((q) => q.id === primaryApprovedQualification.id),
-    )
-
-    if (applicationForCertificate) {
-      console.info('Application for certificate found:', applicationForCertificate)
-      // Set the selected application in the store
-      dashboardStore.setSelectedApplication(applicationForCertificate) // Pass the entire object
-    } else {
-      console.error('Application not found for the primary qualification')
-    }
-  } else {
-    console.error('No primary and approved qualification found to display certificate.')
+  if (application) {
+    dashboardStore.setSelectedApplication({ results: [application] })
+    dashboardStore.setShowCertificateModal(true)
   }
 }
 
 const closeCertificateModal = () => {
   dashboardStore.setShowCertificateModal(false)
-  dashboardStore.setSelectedApplication(null) // Clear selected application
+  dashboardStore.setSelectedApplication(null)
 }
 
 onMounted(fetchDashboardData)
 
-// Watch for changes in applications array
-watch(
-  applications,
-  (newApplications) => {
-    console.info('Applications updated:', newApplications)
-  },
-  { deep: true },
-)
+watch(applications, (newApplications) => {
+  // Check for approved engineering program applications (similar to EOI in MHPC)
+  const approvedProgram = newApplications?.find(app => 
+    app.type === 'Engineering Program' && app.status === 'Approved'
+  )
+  isEngineeringProgramEnabled.value = !!approvedProgram
+}, { deep: true })
 
-// Watch for changes in userDetail
-watch(
-  userDetail,
-  (newUserDetails) => {
-    console.info('User details updated:', newUserDetails)
-    if (newUserDetails && newUserDetails.username) {
-      fetchDashboardData()
-    }
-  },
-  { deep: true },
-)
+watch(userDetail, (newUserDetails) => {
+  if (newUserDetails?.username) fetchDashboardData()
+}, { deep: true })
 </script>

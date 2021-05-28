@@ -1,15 +1,25 @@
-// src/stores/epcUserDashboardStore.js
 import { defineStore } from 'pinia'
 import apiServices from '@/services/services'
+import dayjs from 'dayjs'
 import { useAuthStore } from '@/stores/authStore'
 
 export const useEpcDashboardStore = defineStore('epcDashboard', {
   state: () => ({
-    userDetail: null,
+    userDetail: {
+      username: '',
+      registration_no: '',
+      name: '',
+      id: '',
+      email: '',
+      phone: '',
+      qualification: '',
+      registrationType: '',
+      photo: null,
+    },
     applications: [],
     cpdCredits: 0,
     licenseExpiryDate: null,
-    licenseStatus: 'Inactive',
+    licenseStatus: null,
     renewalMessage: '',
     showViewCertificateButton: false,
     recentActivities: [],
@@ -19,7 +29,7 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
     isLoading: false,
     selectedApplication: null,
     showCertificateModal: false,
-    error: null, // Add an error state
+    error: null,
   }),
 
   getters: {
@@ -28,12 +38,8 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
       if (!this.applications || !authStore.user?.cid) {
         return null
       }
-
-      // Find applications that match the user's CID
       const userApplications = this.applications.filter((app) => app.cid === authStore.user.cid)
-
-      // Sort by date (most recent first) and return the first one, or null if none found
-      return userApplications.sort((a, b) => new Date(b.date) - new Date(a.date))[0] || null
+      return userApplications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0] || null
     },
 
     hasApplication() {
@@ -47,7 +53,6 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
     hasApprovedApp() {
       const app = this.currentUserApplication
       if (!app) return false
-      //Check in user_qualification for endorsement_decision
       return app.user_qualifications?.some((q) => q.endorsement_decision === 'Approved') ?? false
     },
 
@@ -61,364 +66,231 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
 
     isInReregistrationPeriod() {
       if (!this.hasApprovedApp || !this.licenseExpiryDate) return false
-
       const expiryDate = new Date(this.licenseExpiryDate)
       const today = new Date()
-      const monthsSinceExpiry =
-        (today.getTime() - expiryDate.getTime()) / (1000 * 60 * 60 * 24 * 30)
-
+      const monthsSinceExpiry = (today.getTime() - expiryDate.getTime()) / (1000 * 60 * 60 * 24 * 30)
       return monthsSinceExpiry > 0 && monthsSinceExpiry <= 2
-    },
-    visibleMenus() {
-      // 1. After Registration (but before application):
-      if (!this.hasSubmitted) {
-        return {
-          baseMenus: {
-            dashboard: true,
-            certification: true,
-            cpdManagement: false,
-            cogsManagement: false,
-            profile: true,
-          },
-          certificationSubMenus: {
-            applyForCertification: true,
-            myApplications: false,
-            renewal: false,
-            reRegistration: false,
-            additionalQualification: false,
-          },
-        }
-      }
-
-      // 2. Once Application is Applied (but not yet approved):
-      if (this.hasSubmitted && !this.hasApprovedApp) {
-        return {
-          baseMenus: {
-            dashboard: true,
-            certification: true,
-            cpdManagement: false,
-            cogsManagement: false,
-            profile: true,
-          },
-          certificationSubMenus: {
-            applyForCertification: true,
-            myApplications: true,
-            renewal: false,
-            reRegistration: false,
-            additionalQualification: false,
-          },
-        }
-      }
-
-      // 3. Once Application is Approved:
-      if (this.hasApprovedApp) {
-        let baseMenus = {
-          dashboard: true,
-          certification: true,
-          cpdManagement: true,
-          cogsManagement: false,
-          profile: true,
-        }
-
-        let certificationSubMenus = {
-          applyForCertification: true,
-          myApplications: true,
-          renewal: false,
-          reRegistration: false,
-          additionalQualification: true,
-        }
-
-        // 4. Renewal Period:
-        if (this.isRenewalPeriod) {
-          certificationSubMenus.renewal = true
-        }
-
-        // 5. Re-registration Period:
-        if (this.isInReregistrationPeriod) {
-          certificationSubMenus.reRegistration = true
-        }
-
-        return { baseMenus, certificationSubMenus }
-      }
-      //default menus in case of an error or unexpected state.
-      return {
-        baseMenus: {
-          dashboard: true,
-          certification: false,
-          cpdManagement: false,
-          cogsManagement: false,
-          profile: true,
-        },
-        certificationSubMenus: {
-          applyForCertification: false,
-          myApplications: false,
-          renewal: false,
-          reRegistration: false,
-          additionalQualification: false,
-        },
-      }
     },
   },
 
   actions: {
+    /** Fetch all dashboard data with proper error handling (similar to MHPC structure) */
     async fetchAllData(cid) {
       this.isLoading = true
-      this.error = null // Reset error state
-      try {
-        // Fetch all required data in parallel
-        await Promise.all([
-          this.fetchUserDetails(cid),
-          this.fetchApplications(cid),
-          this.fetchCpdCredits(cid),
-          this.fetchActivities(cid),
-          this.fetchDeadlines(cid),
-        ])
+      this.error = null
 
-        // Determine license status, renewal message, and certificate button visibility *after* data is fetched
-        this.determineLicenseStatus()
-        this.determineRenewalMessage()
-        this.determineShowCertificateButton()
+      try {
+        // Fetch applications data
+        const applicationsData = await apiServices
+          .getEpcFullApplicationListByCid(cid)
+          .catch((error) => {
+            console.error('Error fetching EPC applications data:', error)
+            return null
+          })
+
+        // Fetch CPD data
+        const cpdData = await apiServices.getEpcCpdRecordsByCid(cid).catch((error) => {
+          console.error('Error fetching EPC CPD data:', error)
+          return null
+        })
+
+        // Process data only if it exists
+        if (applicationsData) this.processApplicationsData(applicationsData)
+        if (cpdData) this.processCpdData(cpdData)
+
+        this.updateActivitiesAndDeadlines()
       } catch (error) {
-        console.error('Error fetching dashboard data:', error)
-        this.error = error.message || 'An unexpected error occurred.' // Set error state
+        console.error('Error in fetchAllData:', error)
+        this.error = 'An unexpected error occurred. Some data may be incomplete.'
       } finally {
         this.isLoading = false
       }
     },
 
-    async fetchUserDetails(cid) {
-      try {
-        const response = await apiServices.getApplicationWithCid(cid)
-        const userData = Array.isArray(response.data) ? response.data : response.data?.results || []
-
-        if (userData.length > 0) {
-          // Sort applications by creation date (most recent first)
-          const sortedApplications = userData.sort(
-            (a, b) => new Date(b.created_at) - new Date(a.created_at),
-          )
-
-          // Extract user details from the most recent application
-          const latestApplication = sortedApplications[0]
-
-          // Extract the primary qualification (if available)
-          const primaryQualification = latestApplication.user_qualifications?.find(
-            (q) => q.is_primary_qualification,
-          )
-
-          this.userDetail = {
-            name: latestApplication.full_name || 'N/A',
-            id: latestApplication.cid_no || 'N/A',
-            email: latestApplication.email_address || 'N/A',
-            phone: latestApplication.contact_no || 'N/A',
-            // Use primary qualification details if available, otherwise default
-            qualification: primaryQualification?.qualification_name_display || 'N/A',
-            registrationNumber: latestApplication.registration_no || 'N/A',
-            registrationType: latestApplication.registration_type_name || 'N/A',
-            photo: latestApplication.passport_photo || null,
-          }
-        } else {
-          this.userDetail = null // No user data found
-        }
-      } catch (error) {
-        console.error('Error fetching user details:', error)
-        this.error = error.message || 'Failed to fetch user details.'
-        this.userDetail = null // Ensure userDetail is reset on error
-      }
-    },
-
-    async fetchApplications(cid) {
-      try {
-        const response = await apiServices.getApplicationWithCid(cid)
-        const applicationsData = Array.isArray(response.data)
-          ? response.data
-          : response.data?.results || []
-        this.applications = applicationsData // Directly assign, no mapping needed
-      } catch (error) {
-        console.error('Error fetching applications:', error)
-        this.error = error.message || 'Failed to fetch applications.'
-        this.applications = [] // Set to empty array on error
-      }
-    },
-
-    async fetchCpdCredits(cid) {
-      try {
-        const response = await apiServices.getEpcCpdTasks()
-        const cpdData = Array.isArray(response.data) ? response.data : response.data?.results || []
-        const userTasks = cpdData.filter((task) => task.cid === cid) //Make sure the task object has cid
-        this.cpdCredits = userTasks.reduce((total, task) => total + (task.credits || 0), 0)
-      } catch (error) {
-        console.error('Error fetching CPD credits:', error)
-        this.error = error.message || 'Failed to fetch CPD credits.'
-        this.cpdCredits = 0 // Reset on error
-      }
-    },
-    async fetchActivities(cid) {
-      try {
-        const [appResponse, cpdResponse] = await Promise.all([
-          apiServices.getApplicationWithCid(cid),
-          apiServices.getEpcCpdTasks(),
-        ])
-
-        const activities = []
-
-        const appData = Array.isArray(appResponse.data)
-          ? appResponse.data
-          : appResponse.data?.results || []
-
-        appData.forEach((app) => {
-          // Iterate through user_qualifications for activity details
-          app.user_qualifications?.forEach((qualification) => {
-            activities.push({
-              id: `app-${app.id}-${qualification.id}`, // More specific ID
-              type: 'Application',
-              status: qualification.endorsement_decision || 'Pending', // Get status from qualification
-              date: qualification.updated_at || qualification.created_at, // Use qualification dates
-              title: `${app.registration_type_name || 'Registration'} application ${qualification.endorsement_decision?.toLowerCase() || 'pending'}`, // Use type_name
-              description:
-                qualification.endorsement_remarks ||
-                `Your application has been ${qualification.endorsement_decision?.toLowerCase() || 'processed'}`,
-            })
-          })
-        })
-
-        const cpdData = Array.isArray(cpdResponse.data)
-          ? cpdResponse.data
-          : cpdResponse.data?.results || []
-
-        const userCpdTasks = cpdData.filter((task) => task.cid === cid)
-        userCpdTasks.forEach((cpd) => {
-          activities.push({
-            id: `cpd-${cpd.id}`,
-            type: 'CPD',
-            status: cpd.status || 'Submitted', // Use task status if available
-            date: cpd.created_at, //Use created date
-            title: `CPD Activity: ${cpd.title || 'Activity'}`,
-            description: `${cpd.credits || 0} credits earned for ${cpd.description || 'professional development'}`,
-          })
-        })
-
-        this.recentActivities = activities
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
-          .slice(0, 5)
-      } catch (error) {
-        console.error('Error fetching activities:', error)
-        this.error = error.message || 'Failed to fetch recent activities.'
-        this.recentActivities = [] // Reset on error
-      }
-    },
-    async fetchDeadlines(cid) {
-      try {
-        const appResponse = await apiServices.getApplicationWithCid(cid)
-        const deadlines = []
-
-        const appData = Array.isArray(appResponse.data)
-          ? appResponse.data
-          : appResponse.data?.results || []
-
-        appData.forEach((app) => {
-          app.user_qualifications?.forEach((qualification) => {
-            if (qualification.endorsement_decision === 'Approved' && qualification.expiry_date) {
-              deadlines.push({
-                id: `renewal-${app.id}-${qualification.id}`,
-                title: 'License Renewal',
-                date: qualification.expiry_date,
-                type: 'Renewal',
-                description: 'Submit your renewal application before license expires',
-              })
-            }
-          })
-        })
-
-        const currentYear = new Date().getFullYear()
-        const cpdDeadline = new Date(currentYear, 11, 31) // December 31st
-
-        deadlines.push({
-          id: 'cpd-annual',
-          title: 'Annual CPD Submission',
-          date: cpdDeadline.toISOString(),
-          type: 'CPD',
-          description: 'Submit your CPD records for the year',
-        })
-
-        this.upcomingDeadlines = deadlines
-          .sort((a, b) => new Date(a.date) - new Date(b.date))
-          .slice(0, 3)
-      } catch (error) {
-        console.error('Error fetching deadlines:', error)
-        this.error = error.message || 'Failed to fetch upcoming deadlines.'
-        this.upcomingDeadlines = [] // Reset on error
-      }
-    },
-    determineLicenseStatus() {
-      let latestExpiry = null
-      let latestStatus = 'Inactive' // Default to Inactive
-
-      this.applications.forEach((app) => {
-        app.user_qualifications?.forEach((qualification) => {
-          if (qualification.endorsement_decision === 'Approved') {
-            const expiryDate = new Date(qualification.expiry_date)
-            if (!isNaN(expiryDate)) {
-              // Check if expiry_date is valid
-              if (!latestExpiry || expiryDate > new Date(latestExpiry)) {
-                latestExpiry = qualification.expiry_date
-                latestStatus =
-                  new Date(qualification.expiry_date) > new Date() ? 'Active' : 'Expired'
-              }
-            }
-          }
-        })
-      })
-
-      this.licenseExpiryDate = latestExpiry
-      this.licenseStatus = latestStatus
-    },
-
-    determineRenewalMessage() {
-      if (this.licenseStatus === 'Active' && this.licenseExpiryDate) {
-        const expiryDate = new Date(this.licenseExpiryDate)
-        const today = new Date()
-        const daysToExpiry = Math.ceil(
-          (expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-        )
-
-        if (daysToExpiry <= 30) {
-          this.renewalMessage = `Your license will expire in ${daysToExpiry} days. Please renew soon.`
-        } else if (daysToExpiry <= 90) {
-          this.renewalMessage = 'Your license renewal is due in the next 3 months.'
-        } else {
-          this.renewalMessage = ''
-        }
-      } else if (this.licenseStatus === 'Expired') {
-        this.renewalMessage = 'Your license has expired. Please renew immediately.'
+    /** Process applications data with null safety and empty case handling */
+    processApplicationsData(response) {      
+      // Handle both direct array and paginated response structure
+      const results = Array.isArray(response?.data) 
+        ? response.data 
+        : response?.data?.results || []
+      
+      if (results.length > 0) {
+        const latestApp = results[0]
+        this.updateUserDetails(latestApp)
+        this.updateLicenseStatus(latestApp)
+        this.processApplicationsList(results)
+        this.checkExpiration(latestApp.expiry_date)
       } else {
-        this.renewalMessage = ''
+        this.renewalMessage = 'No applications available'
+        this.applications = []
       }
     },
 
-    determineShowCertificateButton() {
-      this.showViewCertificateButton = this.applications.some((app) =>
-        app.user_qualifications?.some((q) => q.endorsement_decision === 'Approved'),
-      )
+    /** Process CPD data with null safety */
+    processCpdData(response) {      
+      const cpdDetails = response?.data?.details
+      if (response?.data?.valid && cpdDetails) {
+        this.cpdCredits = cpdDetails.cpd_credit || 0
+        this.addCpdApplication(cpdDetails)
+      } else {
+        this.cpdCredits = 0
+      }
     },
 
+    /** Update user details with null checks - FIXED to get registration_no from top level */
+    updateUserDetails(app) {      
+      if (app) {
+        const primaryQualification = app.user_qualifications?.find(q => q.is_primary_qualification)
+        
+        // Registration number is at the top level of the application object
+        this.userDetail.registration_no = app.registration_no || ''
+        this.userDetail.username = app.full_name || ''
+        this.userDetail.name = app.full_name || ''
+        this.userDetail.id = app.cid_no || ''
+        this.userDetail.email = app.email_address || ''
+        this.userDetail.phone = app.contact_no || ''
+        this.userDetail.registrationType = app.registration_type_name || ''
+        this.userDetail.photo = app.passport_photo || null
+        
+        // Dates can come from app or primary qualification
+        this.licenseExpiryDate = app.expiry_date || primaryQualification?.expiry_date || null
+        this.licenseStatus = app.user_qualifications?.[0]?.endorsement_decision || 'Unknown'
+        
+        // Extract primary qualification details if available
+        if (primaryQualification) {
+          this.userDetail.qualification = primaryQualification.qualification_name_display || 'N/A'
+        }
+      }
+    },
+
+    /** Update license status with null safety */
+    updateLicenseStatus(app) {
+      if (app?.user_qualifications && Array.isArray(app.user_qualifications)) {
+        this.showViewCertificateButton = app.user_qualifications.every(
+          (q) => q?.endorsement_decision === 'Approved'
+        )
+      } else {
+        this.showViewCertificateButton = false
+      }
+    },
+
+    /** Process applications list with null safety */
+    processApplicationsList(results) {      
+      if (Array.isArray(results)) {
+        this.applications = results.map((app) => ({
+          ...app,
+          name: app?.registration_type_name || 'Unknown Application',
+          type: this.determineApplicationType(app?.registration_type_name),
+          date: app?.created_at || '',
+          status: app?.user_qualifications?.[0]?.endorsement_decision || 'Status Unavailable',
+          remarks: app?.user_qualifications?.[0]?.endorsement_remarks || '',
+        }))
+      } else {
+        this.applications = []
+      }
+    },
+
+    /** Determine application type with null check */
+    determineApplicationType(name) {
+      if (!name) return 'Other'
+      if (name.includes('Registration') || name.includes('Certification')) return 'License'
+      if (name.includes('CPD')) return 'CPD'
+      if (name.includes('Education') || name.includes('Program')) return 'Engineering Program'
+      return 'Other'
+    },
+
+    /** Add CPD application with null safety */
+    addCpdApplication(cpdDetails) {
+      if (cpdDetails) {
+        this.applications.push({
+          ...cpdDetails,
+          name: cpdDetails.title_of_cpd || 'CPD Record',
+          type: 'CPD',
+          date: cpdDetails.created_at || '',
+          status: cpdDetails.review_status || 'Pending',
+          remarks: cpdDetails.remark || '',
+        })
+      }
+    },
+
+    /** Check expiration with date validation */
+    checkExpiration(expiryDate) {
+      if (!expiryDate || !dayjs(expiryDate).isValid()) {
+        this.renewalMessage = 'Expiry date not available'
+        return
+      }
+
+      const expiry = dayjs(expiryDate)
+      const current = dayjs()
+      const threeMonths = expiry.subtract(3, 'month')
+      const twoWeeks = expiry.subtract(2, 'week')
+
+      if (current.isAfter(expiry)) {
+        this.renewalMessage = 'License has expired'
+      } else if (current.isAfter(twoWeeks)) {
+        this.renewalMessage = 'License expires in less than 2 weeks'
+      } else if (current.isAfter(threeMonths)) {
+        this.renewalMessage = 'License expires in less than 3 months'
+      } else {
+        this.renewalMessage = 'License is valid'
+      }
+    },
+
+    /** Update activities and deadlines with null safety */
+    updateActivitiesAndDeadlines() {
+      if (Array.isArray(this.applications)) {
+        this.recentActivities = this.applications.slice(0, 5).map((app) => ({
+          type: (app.type || 'other').toLowerCase(),
+          title: app.name || 'Untitled',
+          date: app.date || '',
+          status: app.status || 'Unknown',
+          description: app.remarks || `Your application has been ${app.status?.toLowerCase() || 'processed'}`,
+        }))
+
+        this.upcomingDeadlines = [
+          {
+            title: 'CPD Points Target',
+            date: dayjs().endOf('year').format('YYYY-MM-DD'),
+            type: 'CPD',
+            description: 'Submit your CPD records for the year',
+          },
+          {
+            title: 'License Renewal',
+            date: this.licenseExpiryDate || null,
+            type: 'Renewal',
+            description: 'Submit your renewal application before license expires',
+          },
+        ].filter((deadline) => deadline.date)
+      } else {
+        this.recentActivities = []
+        this.upcomingDeadlines = []
+      }
+    },
+
+    /** Set selected applications with null safety */
     setSelectedApplications(status) {
-      // Filter applications based on the endorsement_decision within user_qualifications
-      this.selectedApplications = this.applications.filter((app) =>
-        app.user_qualifications?.some((q) => q.endorsement_decision === status),
-      )
-      this.modalTitle = `${status} Applications`
+      if (Array.isArray(this.applications)) {
+        this.selectedApplications = this.applications.filter((app) => app.status === status)
+        this.modalTitle = `${status} Applications`
+      } else {
+        this.selectedApplications = []
+        this.modalTitle = ''
+      }
     },
 
+    /** Clear selected applications */
     clearSelectedApplications() {
       this.selectedApplications = []
       this.modalTitle = ''
     },
 
+    /** Toggle certificate modal with null safety */
     async setShowCertificateModal(show) {
-      if (show) {
+      this.showCertificateModal = show
+      if (show && Array.isArray(this.applications)) {
         // Find an approved application
         const approvedApp = this.applications.find((app) =>
-          app.user_qualifications?.some((q) => q.endorsement_decision === 'Approved'),
+          app.user_qualifications?.some((q) => q.endorsement_decision === 'Approved')
         )
 
         if (approvedApp) {
@@ -427,64 +299,55 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
             const applicationData = response.data
 
             if (applicationData) {
-              // Find the primary qualification within the application
               const primaryQualification = applicationData.user_qualifications?.find(
-                (q) => q.is_primary_qualification,
+                (q) => q.is_primary_qualification
               )
 
               this.selectedApplication = {
                 ...applicationData,
-                // Use primary qualification details, if available
-                registrationNumber: primaryQualification?.registration_no || 'N/A',
+                // Registration number is at top level of application
+                registrationNumber: applicationData.registration_no || 'N/A',
                 fullName: applicationData.full_name || 'N/A',
-                issueDate: primaryQualification?.registration_date || applicationData.created_at,
-                expiryDate: primaryQualification?.expiry_date || null,
+                issueDate: applicationData.registration_date || applicationData.created_at,
+                expiryDate: applicationData.expiry_date || null,
                 qualificationName: primaryQualification?.qualification_name_display || 'N/A',
               }
             } else {
-              console.error('Application data is empty.')
               this.selectedApplication = null
             }
           } catch (error) {
-            console.error('Error fetching application details for certificate:', error)
+            console.error('Error fetching EPC application details for certificate:', error)
             this.error = error.message || 'Failed to fetch certificate details.'
             this.selectedApplication = null
           }
         }
+      } else {
+        this.selectedApplication = null
       }
-      this.showCertificateModal = show // Always set the modal visibility
     },
-    // --- Actions adapted from source store ---
-    async fetchApplicationDetails() {
-      //renamed to initializeApplications
-      this.isLoading = true
-      this.error = null // Assuming you add an error ref to the state
 
-      try {
-        //using already existing function.
-        await this.fetchApplications(useAuthStore().user.cid) // Fetch applications based on CID.
-      } catch (err) {
-        console.error('Error fetching application details:', err)
-        this.error = err.response?.data?.message || 'Failed to fetch application details' // Assuming you add an error ref
-        this.applications = [] //  set to empty if there's an error
-      } finally {
-        this.isLoading = false
-      }
+    setSelectedApplication(application) {
+      this.selectedApplication = application
     },
-    async initialize() {
-      const authStore = useAuthStore()
-      if (authStore.isAuthenticated) {
-        await this.fetchApplicationDetails() // Call the new method to load application details
-      }
-    },
+
+    /** Reset store to initial state */
     resetStore() {
-      // Reset all state properties to their initial values
       Object.assign(this, {
-        userDetail: null,
+        userDetail: {
+          username: '',
+          registration_no: '',
+          name: '',
+          id: '',
+          email: '',
+          phone: '',
+          qualification: '',
+          registrationType: '',
+          photo: null,
+        },
         applications: [],
         cpdCredits: 0,
         licenseExpiryDate: null,
-        licenseStatus: 'Inactive',
+        licenseStatus: null,
         renewalMessage: '',
         showViewCertificateButton: false,
         recentActivities: [],
@@ -494,7 +357,7 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
         isLoading: false,
         selectedApplication: null,
         showCertificateModal: false,
-        error: null, // Assuming you also want to reset error
+        error: null,
       })
     },
   },
