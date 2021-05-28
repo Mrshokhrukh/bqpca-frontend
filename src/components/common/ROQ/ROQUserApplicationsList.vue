@@ -283,7 +283,7 @@ const statusOptions = [
 // Updated headers (removed ROQ columns)
 const headers = [
   { key: 'applicant', label: 'Applicant Details' },
-  { key: 'course', label: 'Course Information' },
+  { key: 'course', label: 'Qualification Information' },
   { key: 'status', label: 'Status' },
   { key: 'actions', label: 'Actions' },
 ]

@@ -64,8 +64,9 @@
               type="text"
               id="full_name"
               v-model="form.applicants_name"
-              readonly
-              class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :readonly="isDCRCDataFetched"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :class="{ 'bg-gray-50': isDCRCDataFetched }"
             />
           </div>
 
@@ -78,8 +79,9 @@
               type="date"
               id="date_of_birth"
               v-model="form.date_of_birth"
-              readonly
-              class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :readonly="isDCRCDataFetched"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :class="{ 'bg-gray-50': isDCRCDataFetched }"
             />
           </div>
 
@@ -134,17 +136,20 @@
             </p>
           </div>
 
-          <!-- Gender -->
+          <!-- Gender (convert to select) -->
           <div>
             <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
-            <input
-              type="text"
+            <select
               id="gender"
-              :value="genderDisplay"
-              readonly
-              class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-            />
-            <input type="hidden" v-model="form.gender" />
+              v-model="form.gender"
+              :disabled="isDCRCDataFetched"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :class="{ 'bg-gray-50': isDCRCDataFetched }"
+            >
+              <option value="" disabled>Select Gender</option>
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+            </select>
           </div>
 
           <!-- Dzongkhag -->
@@ -154,8 +159,9 @@
               type="text"
               id="dzongkhag"
               v-model="form.dzongkhag"
-              readonly
-              class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :readonly="isDCRCDataFetched"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :class="{ 'bg-gray-50': isDCRCDataFetched }"
             />
           </div>
 
@@ -166,8 +172,9 @@
               type="text"
               id="gewog"
               v-model="form.gewog"
-              readonly
-              class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :readonly="isDCRCDataFetched"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :class="{ 'bg-gray-50': isDCRCDataFetched }"
             />
           </div>
 
@@ -178,8 +185,9 @@
               type="text"
               id="village"
               v-model="form.village"
-              readonly
-              class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :readonly="isDCRCDataFetched"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :class="{ 'bg-gray-50': isDCRCDataFetched }"
             />
           </div>
         </div>
@@ -449,16 +457,10 @@
               id="course_title"
               v-model="form.course_title"
               required
-              :readonly="form.from_in_country"
+              :readonly="form.from_in_country && isRUBDataFetched"
               @input="validateField('course_title')"
-              :class="[
-                'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
-                { 'bg-gray-50': form.from_in_country },
-                {
-                  'border-red-300 focus:border-red-500 focus:ring-red-500':
-                    validation.errors.course_title,
-                },
-              ]"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :class="{ 'bg-gray-50': form.from_in_country && isRUBDataFetched }"
             />
             <p v-if="validation.errors.course_title" class="mt-1 text-sm text-red-500">
               {{ validation.errors.course_title }}
@@ -557,16 +559,10 @@
               id="name_of_institute"
               v-model="form.name_of_institute"
               required
-              :readonly="form.from_in_country"
+              :readonly="form.from_in_country && isRUBDataFetched"
               @input="validateField('name_of_institute')"
-              :class="[
-                'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
-                { 'bg-gray-50': form.from_in_country },
-                {
-                  'border-red-300 focus:border-red-500 focus:ring-red-500':
-                    validation.errors.name_of_institute,
-                },
-              ]"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :class="{ 'bg-gray-50': form.from_in_country && isRUBDataFetched }"
             />
             <p v-if="validation.errors.name_of_institute" class="mt-1 text-sm text-red-500">
               {{ validation.errors.name_of_institute }}
@@ -583,16 +579,10 @@
               id="name_of_university"
               v-model="form.name_of_university"
               required
-              :readonly="form.from_in_country"
+              :readonly="form.from_in_country && isRUBDataFetched"
               @input="validateField('name_of_university')"
-              :class="[
-                'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
-                { 'bg-gray-50': form.from_in_country },
-                {
-                  'border-red-300 focus:border-red-500 focus:ring-red-500':
-                    validation.errors.name_of_university,
-                },
-              ]"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :class="{ 'bg-gray-50': form.from_in_country && isRUBDataFetched }"
             />
             <p v-if="validation.errors.name_of_university" class="mt-1 text-sm text-red-500">
               {{ validation.errors.name_of_university }}
@@ -611,16 +601,10 @@
               :min="minYear"
               :max="currentYear"
               required
-              :readonly="form.from_in_country"
+              :readonly="form.from_in_country && isRUBDataFetched"
               @input="validateField('year_of_completion')"
-              :class="[
-                'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
-                { 'bg-gray-50': form.from_in_country },
-                {
-                  'border-red-300 focus:border-red-500 focus:ring-red-500':
-                    validation.errors.year_of_completion,
-                },
-              ]"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :class="{ 'bg-gray-50': form.from_in_country && isRUBDataFetched }"
             />
             <p v-if="validation.errors.year_of_completion" class="mt-1 text-sm text-red-500">
               {{ validation.errors.year_of_completion }}
@@ -686,14 +670,8 @@
               required
               :readonly="form.from_in_country"
               @input="validateField('country')"
-              :class="[
-                'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
-                { 'bg-gray-50': form.from_in_country },
-                {
-                  'border-red-300 focus:border-red-500 focus:ring-red-500':
-                    validation.errors.country,
-                },
-              ]"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :class="{ 'bg-gray-50': form.from_in_country }"
             />
             <p v-if="validation.errors.country" class="mt-1 text-sm text-red-500">
               {{ validation.errors.country }}
@@ -890,6 +868,8 @@ const authStore = useAuthStore() // Get the authStore instance
 
 const isLoadingDCRC = ref(false)
 const isLoadingRUB = ref(false)
+const isDCRCDataFetched = ref(false)
+const isRUBDataFetched = ref(false)
 const isSubmitting = ref(false)
 const currentYear = new Date().getFullYear()
 const minYear = currentYear - 50
@@ -1086,7 +1066,7 @@ const validateForm = () => {
     if (
       (isCIDHolder.value &&
         ['gender_non_cid', 'dzongkhag_non_cid', 'gewog_non_cid', 'village_non_cid'].includes(
-          field,
+          field
         )) ||
       (form.from_in_country && ['degree_certificate', 'academic_transcript'].includes(field))
     ) {
@@ -1128,13 +1108,13 @@ const isCIDValid = computed(() => {
   return /^\d{11}$/.test(form.cid_no)
 })
 
-const genderDisplay = computed(() => {
-  const genderMap = {
-    M: 'Male',
-    F: 'Female',
-  }
-  return genderMap[form.gender] || ''
-})
+// const genderDisplay = computed(() => {
+//   const genderMap = {
+//     M: 'Male',
+//     F: 'Female',
+//   }
+//   return genderMap[form.gender] || ''
+// })
 
 watch(
   () => form.from_in_country,
@@ -1158,7 +1138,7 @@ watch(
 
     // Validate form when the education type changes
     validateForm()
-  },
+  }
 )
 
 // Add watcher to validate CID holder fields
@@ -1166,7 +1146,7 @@ watch(
   () => isCIDHolder.value,
   () => {
     validateForm()
-  },
+  }
 )
 
 onMounted(async () => {
@@ -1226,18 +1206,18 @@ const fetchDCRCData = async () => {
       village: response.data.village,
     })
 
-    // Validate fields after fetching
+    isDCRCDataFetched.value = true // Set flag on success
     validateForm()
-
-    if (response.data.changes_saved) {
-      toast.success('DCRC data fetched and user profile updated successfully')
-    } else {
-      toast.success('DCRC data fetched successfully')
-    }
+    toast.success(
+      response.data.changes_saved
+        ? 'DCRC data fetched and user profile updated successfully'
+        : 'DCRC data fetched successfully'
+    )
   } catch (error) {
     toast.error('Failed to fetch DCRC data')
     console.error('Error fetching DCRC data:', error)
     validation.errors.cid_no = 'Failed to fetch data for this CID'
+    isDCRCDataFetched.value = false // Ensure flag is false on failure
   } finally {
     isLoadingDCRC.value = false
   }
@@ -1262,48 +1242,37 @@ const fetchRUBData = async () => {
 
       let courseTypeId = null
       const newCourseTypeName = response.data.level
-
       const existingCourseType = courseTypeOptions.value.find(
-        (type) => type.label === newCourseTypeName,
+        (type) => type.label === newCourseTypeName
       )
 
       if (existingCourseType) {
         courseTypeId = existingCourseType.value
       } else {
-        try {
-          const addCourseTypeResponse = await apiService.createTypeOfCourse({
-            name: newCourseTypeName,
-            definition: newCourseTypeName,
-          })
-
-          const newCourseType = addCourseTypeResponse.data
-          courseTypeId = newCourseType.id
-
-          courseTypeOptions.value.push({ value: newCourseType.id, label: newCourseType.name })
-        } catch (addError) {
-          console.error('Error adding course type:', addError)
-          const errorMessage =
-            addError.response?.data?.message || addError.message || 'Unknown error'
-          toast.error(`Failed to add course type "${newCourseTypeName}": ${errorMessage}`)
-          isLoadingRUB.value = false
-          return
-        }
+        const addCourseTypeResponse = await apiService.createTypeOfCourse({
+          name: newCourseTypeName,
+          definition: newCourseTypeName,
+        })
+        const newCourseType = addCourseTypeResponse.data
+        courseTypeId = newCourseType.id
+        courseTypeOptions.value.push({ value: newCourseType.id, label: newCourseType.name })
       }
       form.type_of_course = courseTypeId
 
-      // Validate the form after fetching RUB data
+      isRUBDataFetched.value = true // Set flag on success
       validateForm()
-
       toast.success('RUB data fetched successfully')
     } else {
       toast.error('No RUB data found for provided IDs.')
       validation.errors.student_id_no = 'No data found for this Student ID'
+      isRUBDataFetched.value = false
     }
   } catch (error) {
     console.error('Error fetching RUB data:', error)
     const errorMessage = error.response?.data?.message || error.message || 'Unknown error'
     toast.error(`Failed to fetch RUB data: ${errorMessage}`)
     validation.errors.student_id_no = 'Failed to fetch data for this Student ID'
+    isRUBDataFetched.value = false // Ensure flag is false on failure
   } finally {
     isLoadingRUB.value = false
   }
@@ -1432,7 +1401,7 @@ const handleSubmitActual = async (isDraft = false) => {
         console.error('Error making payment:', paymentError)
         toast.error(
           'Payment request failed: ' +
-            (paymentError.response?.data?.message || paymentError.message),
+            (paymentError.response?.data?.message || paymentError.message)
         )
         isSubmitting.value = false // Reset before returning.
         return // Stop execution if payment fails
@@ -1452,7 +1421,7 @@ const handleSubmitActual = async (isDraft = false) => {
           toast.success('Application saved as draft')
         } else {
           toast.success(
-            'Application submitted successfully. Please check your email to complete the payment.',
+            'Application submitted successfully. Please check your email to complete the payment.'
           )
           emit('application-submitted')
         }
@@ -1487,6 +1456,20 @@ const handleCIDInput = (event) => {
     fetchDCRCData()
   }
 }
+
+watch(
+  () => isCIDHolder.value,
+  () => {
+    isDCRCDataFetched.value = false
+  }
+)
+
+watch(
+  () => form.from_in_country,
+  () => {
+    isRUBDataFetched.value = false
+  }
+)
 </script>
 
 <style scoped>
