@@ -20,14 +20,18 @@
             :resource-person-certificate="resourcePersonCertificate"
             :fetch-resource-person-details="fetchResourcePersonDetails"
             :handle-certificate-upload="handleCertificateUpload" :add-resource-person="addResourcePerson"
-            :remove-resource-person="removeResourcePerson" :user-registrations="userRegistrations" />
+            :remove-resource-person="removeResourcePerson" :user-registrations="userRegistrations"
+            @update:resourcePersons="handleResourcePersonsUpdate" />
         </div>
         <div>
           <TeachingLearningMethodForm :teaching-method="teachingMethod" :cpd-type-options="cpdTypeOptions"
             :methodology-options="methodologyOptions" :selected-methodologies="selectedMethodologies"
-            :teaching-methods="teachingMethods" :total-hours="totalHours" :course-document="courseDocument"
+            :teaching-methods="teachingMethods" :total-hours="totalHours" :course-document-file="courseDocument"
             :handle-course-document-upload="handleCourseDocumentUpload" :add-teaching-method="addTeachingMethod"
-            :remove-teaching-method="removeTeachingMethod" :calculate-total-hours="calculateTotalHours" />
+            :remove-teaching-method="removeTeachingMethod"
+            @update:teachingMethod="(data) => Object.assign(teachingMethod, data)"
+            @update:selectedMethodologies="handleMethodologiesUpdate"
+            @update:teachingMethods="handleTeachingMethodsUpdate" />
         </div>
         <template v-if="areOptionsLoaded">
           <div>
@@ -60,8 +64,8 @@
             :handle-attachment-upload="handleAttachmentUpload" :application="application" />
         </div>
         <div>
-          <FormActions :loading="loading" :save-draft="saveDraft" :handle-submit="handleSubmit"
-            :cancel-form="cancelForm" :is-valid="isFormValid" />
+          <FormActions :loading="loading" :form-valid="isFormValid" @save-draft="saveDraft" @submit="handleSubmit"
+            @cancel="cancelForm" />
         </div>
       </div>
     </div>
@@ -72,7 +76,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch, toRaw, computed } from 'vue'
+import { ref, reactive, onMounted, watch, computed } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 import apiService from '@/services/services'
@@ -107,15 +111,6 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const safeLogValue = (value) => {
-  try {
-    return JSON.parse(JSON.stringify(value === undefined ? null : toRaw(value)))
-  } catch (e) {
-    console.error('Error during safeLogValue (PARENT):', e, 'Original value:', toRaw(value))
-    return toRaw(value)
-  }
-}
-
 function updateModelValue() {
   emit('update:modelValue', {
     isApproved: application.isApproved === 'true',
@@ -130,6 +125,7 @@ function updateModelValue() {
 const authStore = useAuthStore()
 const router = useRouter()
 
+// --- Reactive State ---
 const loading = ref(false)
 const showConfirmation = ref(false)
 const validationErrors = ref([])
@@ -138,8 +134,8 @@ const userRegistrations = ref([])
 
 const applicant = reactive({
   registrationNumber: '',
-  cidNumber: '',
-  fullName: '',
+  cidNumber: '', // Will be populated by watcher
+  fullName: '',  // Will be populated by watcher
   agencyTrainingLocation: '',
 })
 
@@ -168,9 +164,7 @@ const teachingMethod = reactive({
 const selectedMethodologies = ref([])
 const teachingMethods = ref([{ activity: '', duration: null }])
 const totalHours = ref(0)
-const calculatedCredits = ref(0)
 
-// Fixed participantDetails to use correct field names
 const participantDetails = reactive({
   category: [],
   subcategory: [],
@@ -179,42 +173,223 @@ const participantDetails = reactive({
 })
 
 const participants = ref([])
-const isCpdApproved = ref(false)
 
+// File refs
 const approvalLetter = ref(null)
 const courseDocument = ref(null)
 const attendanceSheet = ref(null)
 const attachment = ref(null)
 
+// Dropdown options
 const agencyOptions = ref([])
 const reasonOptions = ref([])
 const cpdTypeOptions = ref([])
 const methodologyOptions = ref([])
 const participationCategoryOptions = ref([])
 const participantSubcategoryOptions = ref([])
+
+// UI State
 const areOptionsLoaded = ref(false)
 const participantFormKey = ref(0)
 
+// --- Computed Properties ---
+const isCpdApproved = computed(() => application.isApproved === 'true')
+const calculatedCredits = computed(() => totalHours.value)
+
+const isFormValid = computed(() => {
+  return performValidation()
+})
+
+// --- Watchers ---
+
+// Watch for changes in authStore.user to reactively update applicant details
+watch(
+  () => authStore.user,
+  (currentUser) => {
+    if (currentUser) {
+      applicant.cidNumber = currentUser.cid || '';
+      applicant.fullName = [currentUser.first_name, currentUser.middle_name, currentUser.last_name]
+        .filter(Boolean)
+        .join(' ') || '';
+      // If applicant.registrationNumber also comes from authStore.user, set it here.
+      // e.g., applicant.registrationNumber = currentUser.registrationNumber || '';
+    } else {
+      // Clear fields if user becomes null (e.g., logout)
+      applicant.cidNumber = '';
+      applicant.fullName = '';
+      // applicant.registrationNumber = ''; // Also clear if it's from authStore
+    }
+  },
+  { immediate: true, deep: true } // immediate ensures it runs on mount, deep for nested changes
+)
+
+watch(
+  () => application.isApproved,
+  () => {
+    // This watcher can be kept if there are specific side effects tied to application.isApproved
+    // that are not covered by toggleApprovedFields or computed properties.
+    // For example, if other parts of the application need to react directly.
+  },
+  { immediate: true }
+)
+
+
+// --- Methods ---
+
 const handleApplicationUpdate = (updatedDataFromChild) => {
-  console.log('Application update received:', updatedDataFromChild)
   Object.assign(application, updatedDataFromChild)
 }
 
 const handleParticipantDetailsUpdate = (updatedDetails) => {
-  console.log(
-    'PARENT: Received update:participantDetails event with:',
-    safeLogValue(updatedDetails)
-  )
   Object.assign(participantDetails, updatedDetails)
-  validateForm() // Re-validate on update
 }
 
 const handleCpdProviderUpdate = (updatedData) => {
   Object.assign(cpdProvider, updatedData)
 }
 
+const handleResourcePersonsUpdate = (updatedResourcePersons) => {
+  resourcePersons.value = [...updatedResourcePersons]
+}
+
+const handleTeachingMethodsUpdate = (updatedMethods) => {
+  teachingMethods.value = [...updatedMethods];
+  calculateTotalHours();
+}
+
+const handleMethodologiesUpdate = (updatedMethodologies) => {
+  selectedMethodologies.value = [...updatedMethodologies];
+}
+
+const genericFileHandler = (event, fileRef, fieldName) => {
+  const files = event.target.files
+  if (!files || files.length === 0) {
+    fileRef.value = null
+    if (fieldName === 'Approval Letter') updateModelValue()
+    return
+  }
+  const file = files[0]
+  if (file && file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
+    fileRef.value = file
+    if (fieldName === 'Approval Letter') updateModelValue()
+  } else {
+    event.target.value = ''
+    fileRef.value = null
+    validationErrors.value.push(`${fieldName}: Invalid file. Must be a PDF, max 5MB.`)
+    if (fieldName === 'Approval Letter') updateModelValue()
+  }
+}
+
+const handleApprovalLetterUpload = (event) => genericFileHandler(event, approvalLetter, 'Approval Letter')
+const handleCertificateUpload = (event) => genericFileHandler(event, resourcePersonCertificate, 'Resource Person Certificate')
+const handleCourseDocumentUpload = (event) => genericFileHandler(event, courseDocument, 'Course Document')
+const handleAttendanceSheetUpload = (event) => genericFileHandler(event, attendanceSheet, 'Attendance Sheet')
+const handleAttachmentUpload = (event) => genericFileHandler(event, attachment, 'General Attachment')
+
+const fetchResourcePersonDetails = async (person) => {
+  if (!person.regNo) {
+    person.name = ''
+    return
+  }
+  loading.value = true
+  try {
+    const response = await apiService.getEpcFullApplicationListByCid('')
+    if (response.data && response.data.results && Array.isArray(response.data.results)) {
+      const matchingApplication = response.data.results.find(app => app.registration_no === person.regNo)
+      person.name = matchingApplication ? matchingApplication.full_name || '' : ''
+    } else {
+      person.name = ''
+    }
+  } catch (_error) {
+    person.name = ''
+  } finally {
+    loading.value = false
+  }
+}
+
+const fetchParticipantName = async (participant) => {
+  if (!participant.regNo) {
+    participant.name = ''
+    return
+  }
+  loading.value = true
+  try {
+    const response = await apiService.getEpcFullApplicationListByCid('')
+    if (response.data && response.data.results && Array.isArray(response.data.results)) {
+      const matchingApplication = response.data.results.find(app => app.registration_no === participant.regNo)
+      participant.name = matchingApplication ? matchingApplication.full_name || '' : ''
+    } else {
+      participant.name = ''
+    }
+  } catch (_error) {
+    participant.name = ''
+  } finally {
+    loading.value = false
+  }
+}
+
+const fetchUserRegistrations = async () => {
+  try {
+    const response = await apiService.getEpcNewApplications()
+    if (response.data && response.data.results && Array.isArray(response.data.results)) {
+      userRegistrations.value = response.data.results.map((app) => ({
+        id: app.id,
+        registration_no: app.registration_no,
+        full_name: app.full_name,
+        cid_no: app.cid_no,
+      }))
+      userRegistrations.value.sort((a, b) => a.full_name.localeCompare(b.full_name))
+      // If applicant.registrationNumber needs to be set from this fetch, do it here.
+      // For example, if the logged-in user's registration number is found in this list:
+      // const currentUserRegistration = userRegistrations.value.find(reg => reg.cid_no === applicant.cidNumber);
+      // if (currentUserRegistration) {
+      //   applicant.registrationNumber = currentUserRegistration.registration_no;
+      // }
+    }
+  } catch (_error) {
+    validationErrors.value.push('Error fetching user registration data.')
+  }
+}
+
+const loadDropdownOptions = async () => {
+  // Removed loading.value = true here, will be handled by onMounted or specific callers
+  areOptionsLoaded.value = false
+  participantFormKey.value++
+  try {
+    const responses = await Promise.all([
+      apiService.getEpcCpdProvidingAgencies(),
+      apiService.getEpcCpdReasonsForConducting(),
+      apiService.getEpcMastersCpdActivities(),
+      apiService.getEpcMastersCpdMethodologies(),
+      apiService.getEpcMastersParticipationCategories(),
+      apiService.getEpcMastersParticipationSubCategories(),
+    ])
+    const mapToOptions = (data, textField, valueField) =>
+      data?.results?.map((item) => ({ text: item[textField], value: item[valueField] })) || []
+
+    agencyOptions.value = mapToOptions(responses[0]?.data, 'name', 'id')
+    reasonOptions.value = mapToOptions(responses[1]?.data, 'name', 'id')
+    cpdTypeOptions.value = mapToOptions(responses[2]?.data, 'cpd_activity_name', 'id')
+    methodologyOptions.value = mapToOptions(responses[3]?.data, 'methodology_name', 'id')
+    participationCategoryOptions.value = responses[4]?.data?.results?.map(cat => ({
+      text: cat.participation_category_name || cat.category_name,
+      value: cat.id
+    })) || []
+    participantSubcategoryOptions.value = responses[5]?.data?.results?.map(sub => ({
+      text: sub.participation_sub_category_name || sub.sub_category_name,
+      value: sub.id,
+      categoryId: sub.participation_category_name || sub.category_id || sub.category
+    })) || []
+  } catch (_error) {
+    validationErrors.value = ['Error loading form data. Please refresh the page.']
+  } finally {
+    // Removed loading.value = false here
+    areOptionsLoaded.value = true
+  }
+}
+
 const toggleApprovedFields = () => {
-  if (application.isApproved === 'true') {
+  if (isCpdApproved.value) {
     application.title = ''
     application.venue = ''
     application.fromDate = ''
@@ -226,266 +401,112 @@ const toggleApprovedFields = () => {
   updateModelValue()
 }
 
-const handleApprovalLetterUpload = (event) => {
-  const file = event.target.files[0]
-  if (file && file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
-    approvalLetter.value = file
-    updateModelValue()
-  } else {
-    alert('Please upload a PDF file less than 5MB')
-    event.target.value = ''
-  }
-}
-
-const handleCertificateUpload = (event) => {
-  const file = event.target.files[0]
-  if (file && file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
-    resourcePersonCertificate.value = file
-  } else {
-    alert('Please upload a PDF file less than 5MB')
-    event.target.value = ''
-  }
-}
-
-const handleCourseDocumentUpload = (event) => {
-  const file = event.target.files[0]
-  if (file && file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
-    courseDocument.value = file
-  } else {
-    alert('Please upload a PDF file less than 5MB')
-    event.target.value = ''
-  }
-}
-
-const handleAttendanceSheetUpload = (event) => {
-  const file = event.target.files[0]
-  if (file && file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
-    attendanceSheet.value = file
-  } else {
-    alert('Please upload a PDF file less than 5MB')
-    event.target.value = ''
-  }
-}
-
-const handleAttachmentUpload = (event) => {
-  const file = event.target.files[0]
-  if (file && file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
-    attachment.value = file
-  } else {
-    alert('Please upload a PDF file less than 5MB')
-    event.target.value = ''
-  }
-}
-
-const fetchResourcePersonDetails = async (person) => {
-  if (!person.regNo) {
-    person.name = ''
-    return
-  }
-  try {
-    loading.value = true
-    const response = await apiService.getEpcFullApplicationListByCid('')
-    if (response.data && response.data.results && Array.isArray(response.data.results)) {
-      const matchingApplication = response.data.results.find(
-        (app) => app.registration_no === person.regNo
-      )
-      person.name = matchingApplication ? matchingApplication.full_name || 'Unknown' : ''
-    } else {
-      const manualName = prompt(
-        `Please enter name for resource person with registration number ${person.regNo}:`
-      )
-      person.name = manualName || ''
-    }
-  } catch (error) {
-    console.error('Error fetching resource person details:', error)
-    const manualName = prompt(
-      `Could not fetch details for registration number ${person.regNo}. Please enter the name manually:`
-    )
-    person.name = manualName || ''
-  } finally {
-    loading.value = false
-  }
-}
-
-const addResourcePerson = () => {
-  resourcePersons.value.push({ regNo: '', name: '' })
-}
-
-const removeResourcePerson = (index) => {
-  resourcePersons.value.splice(index, 1)
-}
+const addResourcePerson = () => resourcePersons.value.push({ regNo: '', name: '' })
+const removeResourcePerson = (index) => resourcePersons.value.splice(index, 1)
 
 const calculateTotalHours = () => {
   totalHours.value = teachingMethods.value.reduce((sum, method) => {
     return sum + (Number(method.duration) || 0)
   }, 0)
-  calculatedCredits.value = totalHours.value
 }
 
-const addTeachingMethod = () => {
-  teachingMethods.value.push({ activity: '', duration: null })
-}
-
+const addTeachingMethod = () => teachingMethods.value.push({ activity: '', duration: null })
 const removeTeachingMethod = (index) => {
   teachingMethods.value.splice(index, 1)
   calculateTotalHours()
 }
 
-const addParticipant = () => {
-  participants.value.push({ regNo: '', name: '' })
-}
+const addParticipant = () => participants.value.push({ regNo: '', name: '' })
+const removeParticipant = (index) => participants.value.splice(index, 1)
 
-const removeParticipant = (index) => {
-  participants.value.splice(index, 1)
-}
-
-const fetchParticipantName = async (participant) => {
-  if (!participant.regNo) {
-    participant.name = ''
-    return
-  }
-  try {
-    loading.value = true
-    const response = await apiService.getEpcFullApplicationListByCid('')
-    if (response.data && response.data.results && Array.isArray(response.data.results)) {
-      const matchingApplication = response.data.results.find(
-        (app) => app.registration_no === participant.regNo
-      )
-      participant.name = matchingApplication ? matchingApplication.full_name || 'Unknown' : ''
-    } else {
-      const manualName = prompt(
-        `Please enter name for participant with registration number ${participant.regNo}:`
-      )
-      participant.name = manualName || ''
-    }
-  } catch (error) {
-    console.error('Error fetching participant name:', error)
-    const manualName = prompt(
-      `Could not fetch details for registration number ${participant.regNo}. Please enter the name manually:`
-    )
-    participant.name = manualName || ''
-  } finally {
-    loading.value = false
-  }
-}
-
-const validateForm = () => {
+const performValidation = () => {
   validationErrors.value = []
 
-  console.log('=== FORM VALIDATION DEBUG ===')
-  console.log('applicant:', applicant)
-  console.log('application:', application)
-  console.log('cpdProvider:', cpdProvider)
-  console.log('resourcePersons:', resourcePersons.value)
-  console.log('resourcePersonCertificate:', resourcePersonCertificate.value)
-  console.log('teachingMethod:', teachingMethod)
-  console.log('selectedMethodologies:', selectedMethodologies.value)
-  console.log('teachingMethods:', teachingMethods.value)
-  console.log('courseDocument:', courseDocument.value)
-  console.log('participantDetails:', participantDetails)
-  console.log('areOptionsLoaded:', areOptionsLoaded.value)
-  console.log('approvalLetter:', approvalLetter.value)
-  console.log('attachment:', attachment.value)
-  console.log('participants:', participants.value)
-  console.log('attendanceSheet:', attendanceSheet.value)
+  // Basic validations
+  if (!applicant.agencyTrainingLocation) validationErrors.value.push('Agency/Training Location is required.')
 
-  if (!applicant.agencyTrainingLocation)
-    validationErrors.value.push('Agency/Training Location is required.')
-
-  if (application.isApproved === 'false') {
+  if (!isCpdApproved.value) {
     if (!application.title) validationErrors.value.push('Title of CPD is required.')
     if (!application.venue) validationErrors.value.push('Venue is required.')
     if (!application.fromDate) validationErrors.value.push('From Date is required.')
     if (!application.toDate) validationErrors.value.push('To Date is required.')
-    if (
-      application.fromDate &&
-      application.toDate &&
-      new Date(application.fromDate) > new Date(application.toDate)
-    ) {
+    if (application.fromDate && application.toDate && new Date(application.fromDate) > new Date(application.toDate)) {
       validationErrors.value.push('From Date cannot be later than To Date.')
     }
-  } else if (application.isApproved === 'true' && !approvalLetter.value) {
-    validationErrors.value.push('Approval Letter is required.')
+  } else if (isCpdApproved.value && !approvalLetter.value) {
+    validationErrors.value.push('Approval Letter is required for approved CPD.')
   }
 
+  // CPD Provider validations
   if (!cpdProvider.agency) validationErrors.value.push('CPD Providing Agency is required.')
-  if (cpdProvider.agency === 'other' && !cpdProvider.otherAgency)
-    validationErrors.value.push('Please specify the Other Agency.')
+  if (cpdProvider.agency === 'other' && !cpdProvider.otherAgency) validationErrors.value.push('Please specify the Other Agency.')
   if (!cpdProvider.reason) validationErrors.value.push('Reason for Conducting is required.')
   if (!cpdProvider.reasonDetails) validationErrors.value.push('Reason Details are required.')
 
-  if (resourcePersons.value.some((person) => !person.regNo))
-    validationErrors.value.push('Registration Number is required for all Resource Persons.')
-  if (!resourcePersonCertificate.value)
-    validationErrors.value.push('Document supporting expertise of Resource Persons is required.')
+  // Resource Persons validations
+  if (resourcePersons.value.some((person) => !person.regNo)) validationErrors.value.push('Registration Number is required for all Resource Persons.')
+  if (!resourcePersonCertificate.value) validationErrors.value.push('Document supporting expertise of Resource Persons is required.')
 
+  // Teaching Method validations (FIXED)
   if (!teachingMethod.type) validationErrors.value.push('Type of CPD is required.')
-  if (selectedMethodologies.value.length === 0)
-    validationErrors.value.push('At least one Methodology must be selected.')
-  if (!teachingMethod.expectedOutcome) validationErrors.value.push('Expected Outcome is required.')
-  if (!teachingMethods.value.some((method) => method.activity && method.duration > 0)) {
-    validationErrors.value.push(
-      'At least one Teaching Method with activity and positive duration is required.'
-    )
-  }
-  if (!courseDocument.value) validationErrors.value.push('Course Document is required.')
 
+  // Check selectedMethodologies array properly
+  console.log('Validation - selectedMethodologies:', selectedMethodologies.value); // Debug log
+  if (!Array.isArray(selectedMethodologies.value) || selectedMethodologies.value.length === 0) {
+    validationErrors.value.push('At least one Methodology must be selected.')
+  }
+
+  if (!teachingMethod.expectedOutcome) validationErrors.value.push('Expected Outcome is required.')
+
+  // Check teachingMethods array properly
+  console.log('Validation - teachingMethods:', teachingMethods.value); // Debug log
+  const validTeachingMethods = teachingMethods.value.filter(method =>
+    method.activity && method.activity.trim() !== '' &&
+    method.duration && Number(method.duration) > 0
+  );
+
+  if (validTeachingMethods.length === 0) {
+    validationErrors.value.push('At least one Teaching Method with activity and positive duration is required.')
+  }
+
+  if (!courseDocument.value) validationErrors.value.push('Course Document/Program Outline is required.')
+
+  // Participant Details validations (only if options are loaded)
   if (areOptionsLoaded.value) {
     if (!Array.isArray(participantDetails.category) || participantDetails.category.length === 0) {
       validationErrors.value.push('At least one Participation Category is required.')
     }
-    if (
-      !Array.isArray(participantDetails.subcategory) ||
-      participantDetails.subcategory.length === 0
-    ) {
+    if (!Array.isArray(participantDetails.subcategory) || participantDetails.subcategory.length === 0) {
       validationErrors.value.push('At least one Participant Sub-Category is required.')
     }
-    if (!participantDetails.number || participantDetails.number <= 0)
+    if (!participantDetails.number || participantDetails.number <= 0) {
       validationErrors.value.push('Number of Participants must be a positive number.')
-    if (
-      Array.isArray(participantDetails.category) &&
-      participantDetails.category.length > 1 &&
-      !participantDetails.relevance
-    ) {
-      validationErrors.value.push(
-        'Relevance to profession is required when multiple categories are selected.'
-      )
+    }
+    if (Array.isArray(participantDetails.category) && participantDetails.category.length > 1 && !participantDetails.relevance) {
+      validationErrors.value.push('Relevance to profession is required when multiple participation categories are selected.')
     }
   }
 
-  if (application.isApproved === 'true') {
-    if (!attachment.value)
-      validationErrors.value.push('General Attachment is required for approved CPD.')
+  // Approved CPD specific validations
+  if (isCpdApproved.value) {
+    if (!attachment.value) validationErrors.value.push('General Attachment is required for approved CPD.')
     if (participants.value.length > 0 && !attendanceSheet.value) {
-      validationErrors.value.push(
-        'Attendance Sheet is required when participants are listed for an approved CPD.'
-      )
+      validationErrors.value.push('Attendance Sheet is required when participants are listed for an approved CPD.')
     }
   }
 
-  console.log('Validation Errors:', validationErrors.value)
-  console.log('Form Valid:', validationErrors.value.length === 0)
-  console.log('=== END VALIDATION DEBUG ===')
-
+  console.log('Validation errors:', validationErrors.value); // Debug log
   return validationErrors.value.length === 0
 }
 
-const isFormValid = computed(() => {
-  const result = validateForm()
-  console.log('isFormValid computed result:', result)
-  return result
-})
 
 const prepareFormData = (isDraft = false) => {
   const formData = new FormData()
   formData.append('cid_no', applicant.cidNumber)
   formData.append('full_name', applicant.fullName)
   formData.append('proposed_training_location', applicant.agencyTrainingLocation)
-
-  const isCpdApprovedFlag = application.isApproved === 'true'
-  formData.append('is_cpd_approved', isCpdApprovedFlag)
-
-  if (!isCpdApprovedFlag) {
+  formData.append('is_cpd_approved', isCpdApproved.value)
+  if (!isCpdApproved.value) {
     formData.append('title_of_cpd', application.title)
     formData.append('venue', application.venue)
     formData.append('from_date', application.fromDate)
@@ -494,57 +515,31 @@ const prepareFormData = (isDraft = false) => {
     if (approvalLetter.value) formData.append('approval_letter_attachment', approvalLetter.value)
     if (attachment.value) formData.append('general_approved_cpd_attachment', attachment.value)
   }
-
-  formData.append(
-    'cpd_providing_agency',
-    cpdProvider.agency === 'other' ? '' : parseInt(cpdProvider.agency, 10) || ''
-  )
-  if (cpdProvider.agency === 'other') {
-    formData.append('if_others_specify', cpdProvider.otherAgency || '')
-  }
+  formData.append('cpd_providing_agency', cpdProvider.agency === 'other' ? '' : parseInt(cpdProvider.agency, 10) || '')
+  if (cpdProvider.agency === 'other') formData.append('if_others_specify', cpdProvider.otherAgency || '')
   formData.append('reason_for_conducting', parseInt(cpdProvider.reason, 10) || '')
   formData.append('reason_for_details', cpdProvider.reasonDetails)
-
   const validResourcePersons = resourcePersons.value
     .filter((person) => person.regNo && person.name)
-    .map((person) => ({
-      resource_person_reg_no: person.regNo,
-      resource_person_name: person.name,
-    }))
-  if (validResourcePersons.length > 0) {
-    formData.append('resources', JSON.stringify(validResourcePersons))
-  }
-  if (resourcePersonCertificate.value)
-    formData.append('document_supporting_expertise', resourcePersonCertificate.value)
-
+    .map((person) => ({ resource_person_reg_no: person.regNo, resource_person_name: person.name }))
+  if (validResourcePersons.length > 0) formData.append('resources', JSON.stringify(validResourcePersons))
+  if (resourcePersonCertificate.value) formData.append('document_supporting_expertise', resourcePersonCertificate.value)
   formData.append('type_of_cpd', teachingMethod.type)
-  const validMethodologies = selectedMethodologies.value.map((methodId) => ({
-    methodology_name: methodId,
-  }))
-  if (validMethodologies.length > 0) {
-    formData.append('methodologies', JSON.stringify(validMethodologies))
-  }
-
+  const validMethodologies = selectedMethodologies.value.map((methodId) => ({ methodology_name: methodId }))
+  if (validMethodologies.length > 0) formData.append('methodologies', JSON.stringify(validMethodologies))
   const validLearningMethods = teachingMethods.value
     .filter((method) => method.activity && method.duration > 0)
-    .map((method) => ({
-      activities: method.activity,
-      duration: method.duration,
-    }))
-  if (validLearningMethods.length > 0) {
-    formData.append('learning_methods', JSON.stringify(validLearningMethods))
-  }
+    .map((method) => ({ activities: method.activity, duration: method.duration }))
+  if (validLearningMethods.length > 0) formData.append('learning_methods', JSON.stringify(validLearningMethods))
   formData.append('expected_outcome', teachingMethod.expectedOutcome)
   if (courseDocument.value) formData.append('course_document', courseDocument.value)
-
   if (areOptionsLoaded.value) {
-    formData.append('participation_category', JSON.stringify(participantDetails.category))
-    formData.append('participant_sub_category', JSON.stringify(participantDetails.subcategory))
+    formData.append('participation_category', JSON.stringify(participantDetails.category.map(c => c.value || c)))
+    formData.append('participant_sub_category', JSON.stringify(participantDetails.subcategory.map(s => s.value || s)))
     formData.append('number_of_participants', participantDetails.number || 0)
     formData.append('relevance_to_topic', participantDetails.relevance || '')
   }
-
-  if (isCpdApprovedFlag && participants.value.length > 0) {
+  if (isCpdApproved.value && participants.value.length > 0) {
     const validParticipants = participants.value
       .filter((p) => p.regNo && p.name)
       .map((p) => ({
@@ -552,46 +547,36 @@ const prepareFormData = (isDraft = false) => {
         cpd_credits: calculatedCredits.value,
         review_status: 'Pending',
       }))
-    if (validParticipants.length > 0) {
-      formData.append('participants', JSON.stringify(validParticipants))
-    }
+    if (validParticipants.length > 0) formData.append('participants', JSON.stringify(validParticipants))
     if (attendanceSheet.value) formData.append('attendance_sheet_attachment', attendanceSheet.value)
   }
-
   formData.append('is_draft', isDraft)
   return formData
 }
 
 const saveDraft = async () => {
-  if (!applicant.agencyTrainingLocation && !application.title) {
-    validationErrors.value = [
-      'Please fill in at least Agency/Training Location or Title to save a draft.',
-    ]
+  if (!applicant.agencyTrainingLocation && !application.title && !isCpdApproved.value) {
+    validationErrors.value = ['Please fill in at least Agency/Training Location or Title of CPD (if not pre-approved) to save a draft.']
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    return
+  }
+  if (isCpdApproved.value && !approvalLetter.value) {
+    validationErrors.value = ['Please upload the Approval Letter to save a draft for a pre-approved CPD.']
     window.scrollTo({ top: 0, behavior: 'smooth' })
     return
   }
   validationErrors.value = []
-
+  loading.value = true
   try {
-    loading.value = true
     const formData = prepareFormData(true)
-
-    console.log('Saving draft with formData entries:')
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value)
-    }
-
     await apiService.createEpcCpdTask(formData)
     successMessage.value = 'Draft saved successfully!'
-    setTimeout(() => {
-      successMessage.value = ''
-    }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 3000)
   } catch (error) {
-    console.error('Error saving draft:', error)
     validationErrors.value = ['An error occurred while saving the draft.']
     if (error.response && error.response.data) {
       const errorMessages = Object.values(error.response.data).flat()
-      validationErrors.value = errorMessages.length > 0 ? errorMessages : validationErrors.value
+      validationErrors.value.push(...errorMessages)
     }
   } finally {
     loading.value = false
@@ -612,28 +597,19 @@ const confirmSubmit = async () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
     return
   }
+  loading.value = true
   try {
-    loading.value = true
-    validationErrors.value = []
     const formData = prepareFormData(false)
-
-    console.log('Submitting form with formData entries:')
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value)
-    }
-
-    const response = await apiService.createEpcCpdTask(formData)
-    console.log('Form submitted successfully', response.data)
+    await apiService.createEpcCpdTask(formData) // No response variable needed if not used
     successMessage.value = 'CPD application submitted successfully!'
     setTimeout(() => {
       router.push('/engineering_certification/track_cpd_applications')
     }, 2000)
   } catch (error) {
-    console.error('Error submitting form:', error)
     validationErrors.value = ['An error occurred while submitting the form.']
     if (error.response && error.response.data) {
       const errorMessages = Object.values(error.response.data).flat()
-      validationErrors.value = errorMessages.length > 0 ? errorMessages : validationErrors.value
+      validationErrors.value.push(...errorMessages)
     }
     window.scrollTo({ top: 0, behavior: 'smooth' })
   } finally {
@@ -645,100 +621,18 @@ const cancelForm = () => {
   router.push('/engineering_certification/dashboard')
 }
 
-const fetchUserRegistrations = async () => {
-  try {
-    const response = await apiService.getEpcNewApplications()
-    if (response.data && response.data.results && Array.isArray(response.data.results)) {
-      userRegistrations.value = response.data.results.map((app) => ({
-        id: app.id,
-        registration_no: app.registration_no,
-        full_name: app.full_name,
-        cid_no: app.cid_no,
-      }))
-      userRegistrations.value.sort((a, b) => a.full_name.localeCompare(b.full_name))
-    }
-  } catch (error) {
-    console.error('Error fetching user registrations:', error)
-  }
-}
-
-// Fixed the loadDropdownOptions function to properly map API data
-const loadDropdownOptions = async () => {
-  loading.value = true
-  participantFormKey.value++
-  areOptionsLoaded.value = false
-
-  try {
-    const [
-      agencyResponse,
-      reasonResponse,
-      cpdTypeResponse,
-      methodologyResponse,
-      categoriesResponse,
-      subcategoriesResponse,
-    ] = await Promise.all([
-      apiService.getEpcCpdProvidingAgencies(),
-      apiService.getEpcCpdReasonsForConducting(),
-      apiService.getEpcMastersCpdActivities(),
-      apiService.getEpcMastersCpdMethodologies(),
-      apiService.getEpcMastersParticipationCategories(),
-      apiService.getEpcMastersParticipationSubCategories(),
-    ])
-
-    console.log('Categories Response:', categoriesResponse)
-    console.log('Subcategories Response:', subcategoriesResponse)
-
-    agencyOptions.value =
-      agencyResponse?.data?.results?.map((item) => ({ text: item.name, value: item.id })) || []
-    reasonOptions.value =
-      reasonResponse?.data?.results?.map((item) => ({ text: item.name, value: item.id })) || []
-    cpdTypeOptions.value =
-      cpdTypeResponse?.data?.results?.map((item) => ({
-        text: item.cpd_activity_name,
-        value: item.id,
-      })) || []
-    methodologyOptions.value =
-      methodologyResponse?.data?.results?.map((item) => ({
-        text: item.methodology_name,
-        value: item.id,
-      })) || []
-
-    // Fixed mapping for participation categories - using correct field names
-    participationCategoryOptions.value =
-      categoriesResponse?.data?.results?.map((category) => ({
-        text: category.participation_category_name || category.category_name,
-        value: category.id,
-      })) || []
-
-    // Fixed mapping for participation subcategories - using correct field names
-    participantSubcategoryOptions.value =
-      subcategoriesResponse?.data?.results?.map((subcategory) => ({
-        text: subcategory.participation_sub_category_name || subcategory.sub_category_name,
-        value: subcategory.id,
-        categoryId: subcategory.participation_category_name || subcategory.category_id || subcategory.category,
-      })) || []
-
-    console.log('Mapped participation categories:', participationCategoryOptions.value)
-    console.log('Mapped participation subcategories:', participantSubcategoryOptions.value)
-  } catch (error) {
-    console.error('Error loading dropdown options:', error)
-    validationErrors.value = ['Error loading form data. Please refresh the page.']
-  } finally {
-    loading.value = false
-    areOptionsLoaded.value = true
-  }
-}
-
 onMounted(async () => {
-  applicant.cidNumber = authStore.user?.cid || ''
-  applicant.fullName =
-    [authStore.user?.first_name, authStore.user?.middle_name, authStore.user?.last_name]
-      .filter(Boolean)
-      .join(' ') || ''
+  loading.value = true;
+  // Applicant details (cid, fullName) are now populated by the watcher for authStore.user.
+  // The watcher runs with immediate: true, so it will populate on mount if authStore.user is available.
 
-  await fetchUserRegistrations()
-  await loadDropdownOptions()
+  // Fetch other necessary data
+  await Promise.all([
+    fetchUserRegistrations(), // This might populate applicant.registrationNumber or userRegistrations for lookups
+    loadDropdownOptions()     // Load all dropdowns
+  ]);
 
+  // Initialize form based on modelValue prop (e.g., for editing an existing application)
   if (props.modelValue) {
     application.isApproved = props.modelValue.isApproved ? 'true' : 'false'
     application.title = props.modelValue.title || ''
@@ -750,14 +644,9 @@ onMounted(async () => {
     }
   }
 
-  isCpdApproved.value = application.isApproved === 'true'
+  calculateTotalHours(); // Initial calculation
 
-  watch(
-    () => application.isApproved,
-    (newIsApprovedString) => {
-      isCpdApproved.value = newIsApprovedString === 'true'
-    },
-    { immediate: true }
-  )
+  loading.value = false;
 })
+
 </script>

@@ -1,16 +1,14 @@
-<!-- TeachingMethodForm.vue -->
 <template>
   <div class="bg-gray-50 rounded-lg p-6 mb-6">
     <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
       Teaching & Learning Method
     </h3>
 
-    <!-- CPD Type Selection -->
     <div class="mb-6">
       <label class="block text-sm font-medium text-gray-700 mb-2">
         Type of CPD <span class="text-red-500">*</span>
       </label>
-      <select v-model="localTeachingMethod.type" @change="updateTeachingMethod"
+      <select v-model="localTeachingMethod.type" @change="updateLocalTeachingMethodDirectly"
         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         required>
         <option value="">Select CPD Type</option>
@@ -20,7 +18,6 @@
       </select>
     </div>
 
-    <!-- Teaching Methodologies - Checkboxes -->
     <div class="mb-6">
       <label class="block text-sm font-medium text-gray-700 mb-3">
         Teaching Methodologies <span class="text-red-500">*</span>
@@ -36,9 +33,8 @@
         <div v-for="methodology in methodologyOptions" :key="methodology.value"
           class="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded">
           <input :id="`methodology-${methodology.value}`" v-model="localSelectedMethodologies"
-            :value="methodology.value" type="checkbox"
-            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-            @change="updateSelectedMethodologies" />
+            :value="methodology.value" type="checkbox" @change="emitMethodologies"
+            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" />
           <label :for="`methodology-${methodology.value}`"
             class="text-sm text-gray-700 cursor-pointer flex-1 leading-5">
             {{ methodology.text }}
@@ -61,7 +57,6 @@
       </div>
     </div>
 
-    <!-- Quick Selection Buttons -->
     <div class="mb-6">
       <div class="flex flex-wrap gap-2">
         <button @click="selectAll" type="button"
@@ -82,13 +77,12 @@
       </div>
     </div>
 
-    <!-- Learning Activities -->
     <div class="mb-6">
       <div class="flex justify-between items-center mb-3">
         <label class="block text-sm font-medium text-gray-700">
           Learning Activities <span class="text-red-500">*</span>
         </label>
-        <button @click="addTeachingMethod" type="button"
+        <button @click="addLocalTeachingMethod" type="button"
           class="px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
           :disabled="isLoading">
           + Add Activity
@@ -103,49 +97,47 @@
         <div v-for="(method, index) in localTeachingMethods" :key="index"
           class="flex gap-3 items-center p-3 bg-white border border-gray-200 rounded-md">
           <div class="flex-1">
-            <input v-model="method.activity" @input="updateTeachingMethods" type="text"
+            <input v-model="method.activity" @input="emitTeachingMethods" type="text"
               placeholder="Learning Activity Name"
               class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               required />
           </div>
           <div class="w-32">
-            <input v-model.number="method.duration" @input="updateTeachingMethods" type="number" placeholder="Hours"
+            <input v-model.number="method.duration" @input="emitTeachingMethods" type="number" placeholder="Hours"
               min="0.5" step="0.5"
               class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               required />
           </div>
-          <button v-if="localTeachingMethods.length > 1" @click="removeTeachingMethod(index)" type="button"
+          <button v-if="localTeachingMethods.length > 0" @click="removeLocalTeachingMethod(index)" type="button"
             class="px-2 py-1 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
             Remove
           </button>
         </div>
       </div>
 
-      <div v-if="totalHours > 0" class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
+      <div v-if="calculatedTotalHours > 0" class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
         <p class="text-sm text-blue-800 font-medium">
-          Total Hours: {{ totalHours }} | Total Credits: {{ totalHours }}
+          Total Hours: {{ calculatedTotalHours }} | Total Credits: {{ calculatedTotalHours }}
         </p>
       </div>
     </div>
 
-    <!-- Expected Outcome -->
     <div class="mb-6">
       <label class="block text-sm font-medium text-gray-700 mb-2">
         Objective & Expected Outcome <span class="text-red-500">*</span>
       </label>
-      <textarea v-model="localTeachingMethod.expectedOutcome" @input="updateTeachingMethod" rows="4"
+      <textarea v-model="localTeachingMethod.expectedOutcome" @input="updateLocalTeachingMethodDirectly" rows="4"
         placeholder="Describe the objectives and expected outcomes of the CPD program..."
         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         required></textarea>
     </div>
 
-    <!-- Course Document Upload -->
     <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-2">
         Course Document <span class="text-red-500">*</span>
       </label>
       <div class="flex items-center space-x-3">
-        <input @change="handleCourseDocumentUpload" type="file" accept=".pdf"
+        <input @change="handleCourseDocumentUploadEvent" type="file" accept=".pdf"
           class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
         <div v-if="courseDocumentFile" class="text-sm text-green-600 flex items-center">
           <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -153,7 +145,7 @@
               d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
               clip-rule="evenodd"></path>
           </svg>
-          Uploaded
+          Uploaded: {{ courseDocumentFile.name }}
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-1">
@@ -164,7 +156,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed, nextTick } from 'vue';
 
 const props = defineProps({
   teachingMethod: {
@@ -201,14 +193,6 @@ const props = defineProps({
     type: Function,
     required: true
   },
-  addTeachingMethod: {
-    type: Function,
-    required: true
-  },
-  removeTeachingMethod: {
-    type: Function,
-    required: true
-  },
   isLoading: {
     type: Boolean,
     default: false
@@ -223,38 +207,68 @@ const emit = defineEmits([
 
 // Local reactive copies
 const localTeachingMethod = ref({ ...props.teachingMethod });
-const localSelectedMethodologies = ref([...props.selectedMethodologies]);
-const localTeachingMethods = ref(Array.isArray(props.teachingMethods) ? [...props.teachingMethods] : []);
+const localSelectedMethodologies = ref([]);
+const localTeachingMethods = ref([]);
 
-// Watch for prop changes
+// Initialize local data from props
+const initializeData = () => {
+  localTeachingMethod.value = { ...props.teachingMethod };
+  localSelectedMethodologies.value = Array.isArray(props.selectedMethodologies) ? [...props.selectedMethodologies] : [];
+  localTeachingMethods.value = Array.isArray(props.teachingMethods) && props.teachingMethods.length > 0
+    ? props.teachingMethods.map(tm => ({ ...tm }))
+    : [{ activity: '', duration: null }];
+};
+
+// Emit functions to update parent immediately
+const emitTeachingMethod = () => {
+  emit('update:teachingMethod', { ...localTeachingMethod.value });
+};
+
+const emitMethodologies = () => {
+  emit('update:selectedMethodologies', [...localSelectedMethodologies.value]);
+};
+
+const emitTeachingMethods = () => {
+  emit('update:teachingMethods', localTeachingMethods.value.map(tm => ({ ...tm })));
+};
+
+// Watch for prop changes to sync local state (without immediate to avoid initial conflicts)
 watch(() => props.teachingMethod, (newVal) => {
-  localTeachingMethod.value = { ...newVal };
+  if (JSON.stringify(newVal) !== JSON.stringify(localTeachingMethod.value)) {
+    localTeachingMethod.value = { ...newVal };
+  }
 }, { deep: true });
 
 watch(() => props.selectedMethodologies, (newVal) => {
-  localSelectedMethodologies.value = Array.isArray(newVal) ? [...newVal] : [];
+  if (JSON.stringify(newVal) !== JSON.stringify(localSelectedMethodologies.value)) {
+    localSelectedMethodologies.value = Array.isArray(newVal) ? [...newVal] : [];
+  }
 }, { deep: true });
 
 watch(() => props.teachingMethods, (newVal) => {
-  localTeachingMethods.value = Array.isArray(newVal) ? [...newVal] : [];
+  const newTeachingMethodsInternal = Array.isArray(newVal) && newVal.length > 0
+    ? newVal.map(tm => ({ ...tm }))
+    : [{ activity: '', duration: null }];
+  if (JSON.stringify(newTeachingMethodsInternal) !== JSON.stringify(localTeachingMethods.value)) {
+    localTeachingMethods.value = newTeachingMethodsInternal;
+  }
 }, { deep: true });
 
-// Methods
-const updateTeachingMethod = () => {
-  emit('update:teachingMethod', localTeachingMethod.value);
+// Computed property for total hours based on localTeachingMethods
+const calculatedTotalHours = computed(() => {
+  return localTeachingMethods.value.reduce((sum, method) => {
+    return sum + (Number(method.duration) || 0);
+  }, 0);
+});
+
+// Methods for localTeachingMethod
+const updateLocalTeachingMethodDirectly = () => {
+  nextTick(() => {
+    emitTeachingMethod();
+  });
 };
 
-const updateSelectedMethodologies = () => {
-  emit('update:selectedMethodologies', localSelectedMethodologies.value);
-};
-
-const updateTeachingMethods = () => {
-  if (!Array.isArray(localTeachingMethods.value)) {
-    localTeachingMethods.value = [];
-  }
-  emit('update:teachingMethods', localTeachingMethods.value);
-};
-
+// Methods for localSelectedMethodologies
 const getMethodologyName = (methodologyId) => {
   const methodology = props.methodologyOptions.find(m => m.value === methodologyId);
   return methodology ? methodology.text : `ID: ${methodologyId}`;
@@ -264,55 +278,72 @@ const removeMethodology = (methodologyId) => {
   const index = localSelectedMethodologies.value.indexOf(methodologyId);
   if (index > -1) {
     localSelectedMethodologies.value.splice(index, 1);
-    updateSelectedMethodologies();
+    nextTick(() => {
+      emitMethodologies();
+    });
   }
 };
 
-// Quick selection methods
 const selectAll = () => {
   localSelectedMethodologies.value = props.methodologyOptions.map(m => m.value);
-  updateSelectedMethodologies();
+  nextTick(() => {
+    emitMethodologies();
+  });
 };
 
 const clearAll = () => {
   localSelectedMethodologies.value = [];
-  updateSelectedMethodologies();
+  nextTick(() => {
+    emitMethodologies();
+  });
 };
 
 const selectCommon = () => {
   const commonMethodologyNames = [
-    'lecture',
-    'discussion',
-    'case study',
-    'workshop',
-    'demonstration',
-    'presentation'
+    'lecture', 'discussion', 'case study', 'workshop', 'demonstration', 'presentation'
   ];
-
-  const commonMethodologies = props.methodologyOptions.filter(m =>
-    commonMethodologyNames.some(common =>
-      m.text.toLowerCase().includes(common.toLowerCase())
-    )
-  );
-
-  localSelectedMethodologies.value = commonMethodologies.map(m => m.value);
-  updateSelectedMethodologies();
+  localSelectedMethodologies.value = props.methodologyOptions
+    .filter(m => commonMethodologyNames.some(common => m.text.toLowerCase().includes(common.toLowerCase())))
+    .map(m => m.value);
+  nextTick(() => {
+    emitMethodologies();
+  });
 };
 
-const handleCourseDocumentUpload = (event) => {
+// Methods for localTeachingMethods
+const addLocalTeachingMethod = () => {
+  localTeachingMethods.value.push({ activity: '', duration: null });
+  nextTick(() => {
+    emitTeachingMethods();
+  });
+};
+
+const removeLocalTeachingMethod = (index) => {
+  if (index >= 0 && index < localTeachingMethods.value.length) {
+    localTeachingMethods.value.splice(index, 1);
+    if (localTeachingMethods.value.length === 0) {
+      localTeachingMethods.value.push({ activity: '', duration: null });
+    }
+    nextTick(() => {
+      emitTeachingMethods();
+    });
+  }
+};
+
+// Method for course document upload
+const handleCourseDocumentUploadEvent = (event) => {
   props.handleCourseDocumentUpload(event);
 };
 
-// Initialize
-onMounted(() => {
-  localTeachingMethod.value = { ...props.teachingMethod };
-  localSelectedMethodologies.value = Array.isArray(props.selectedMethodologies)
-    ? [...props.selectedMethodologies]
-    : [];
-  localTeachingMethods.value = Array.isArray(props.teachingMethods)
-    ? [...props.teachingMethods]
-    : [];
-  console.log('teachingMethods prop:', props.teachingMethods); // Debug
+// Initialize on mount and emit initial values
+onMounted(async () => {
+  initializeData();
+
+  // Wait for next tick to ensure DOM is ready, then emit initial values
+  await nextTick();
+  emitTeachingMethod();
+  emitMethodologies();
+  emitTeachingMethods();
 });
 </script>
 
@@ -344,11 +375,7 @@ input[type="checkbox"]:focus {
   outline-offset: 2px;
 }
 
-.inline-block {
-  transition: all 0.2s ease-in-out;
-}
-
-.inline-block:hover {
+.inline-block.px-2.py-1:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

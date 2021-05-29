@@ -1,6 +1,5 @@
 <template>
   <div class="rounded-xl border border-gray-200 shadow-sm bg-white overflow-hidden">
-    <!-- Header -->
     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-200">
       <h3 class="text-xl font-semibold text-gray-800 flex items-center">
         <span class="inline-block mr-2">
@@ -19,8 +18,7 @@
     </div>
 
     <div class="p-6 space-y-6">
-      <!-- Primary Resource Person -->
-      <div class="bg-gradient-to-r from-blue-50 to-blue-50 p-5 rounded-lg border border-blue-100 shadow-sm">
+      <div v-if="localResourcePersons.length > 0" class="bg-gradient-to-r from-blue-50 to-blue-50 p-5 rounded-lg border border-blue-100 shadow-sm">
         <h4 class="text-md font-medium text-gray-800 mb-4 flex items-center">
           <span class="inline-block mr-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24"
@@ -33,7 +31,6 @@
         </h4>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Registration Number -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
               Registration Number <span class="text-red-500">*</span>
@@ -61,7 +58,7 @@
               </div>
             </div>
 
-            <p v-if="userRegistrations.length === 0" class="mt-2 text-sm text-red-600 flex items-center">
+            <p v-if="userRegistrations && userRegistrations.length === 0" class="mt-2 text-sm text-red-600 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -70,7 +67,6 @@
               No users found. Please ensure there are registered users in the system.
             </p>
 
-            <!-- Selected Person Indicator -->
             <div v-if="localResourcePersons[0].name" class="mt-2 bg-blue-50 p-2 rounded-lg border border-blue-100">
               <p class="text-sm text-blue-800 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-blue-600" fill="none"
@@ -81,20 +77,17 @@
                 <span class="font-medium">{{ localResourcePersons[0].name }}</span>
               </p>
             </div>
-
-            <!-- Hidden Name Field -->
             <input type="text" :value="localResourcePersons[0].name" class="hidden" readonly />
           </div>
 
-          <!-- Document Upload -->
           <div>
-            <label for="certificates-0" class="block text-sm font-medium text-gray-700 mb-2">
+            <label :for="`certificate-0`" class="block text-sm font-medium text-gray-700 mb-2">
               Document supporting expertise <span class="text-red-500">*</span>
             </label>
             <div class="relative">
-              <input :id="`certificates-${0}`" type="file" @change="handleLocalCertificateUpload($event, 0)"
+              <input :id="`certificate-0`" type="file" @change="handleLocalCertificateUpload($event, 0)" accept=".pdf"
                 class="hidden" />
-              <label :for="`certificates-${0}`"
+              <label :for="`certificate-0`"
                 class="cursor-pointer flex items-center justify-center w-full text-sm text-gray-700 py-2.5 px-4 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition-colors duration-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none"
                   viewBox="0 0 24 24" stroke="currentColor">
@@ -120,7 +113,6 @@
         </div>
       </div>
 
-      <!-- Additional Resource Persons -->
       <div v-if="localResourcePersons.length > 1" class="space-y-4">
         <h4 class="text-md font-medium text-gray-700 flex items-center">
           <span class="inline-block mr-2">
@@ -144,7 +136,7 @@
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </span>
-              Resource Person #{{ personIndex + 1 }}
+              Resource Person #{{ personIndex + 2 }}
             </h5>
             <button @click="removeLocalResourcePerson(personIndex + 1)"
               class="p-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors duration-200 flex items-center"
@@ -158,7 +150,6 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Registration Number -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Registration Number <span class="text-red-500">*</span>
@@ -186,7 +177,6 @@
                 </div>
               </div>
 
-              <!-- Selected Person Indicator -->
               <div v-if="person.name" class="mt-2 bg-blue-50 p-2 rounded-lg border border-blue-100">
                 <p class="text-sm text-blue-800 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-blue-600" fill="none"
@@ -197,20 +187,17 @@
                   <span class="font-medium">{{ person.name }}</span>
                 </p>
               </div>
-
-              <!-- Hidden Name Field -->
               <input type="text" :value="person.name" class="hidden" readonly />
             </div>
 
-            <!-- Document Upload -->
             <div>
-              <label :for="`certificates-${personIndex + 1}`" class="block text-sm font-medium text-gray-700 mb-2">
+              <label :for="`certificate-${personIndex + 1}`" class="block text-sm font-medium text-gray-700 mb-2">
                 Document supporting expertise <span class="text-red-500">*</span>
               </label>
               <div class="relative">
-                <input :id="`certificates-${personIndex + 1}`" type="file"
+                <input :id="`certificate-${personIndex + 1}`" type="file" accept=".pdf"
                   @change="handleLocalCertificateUpload($event, personIndex + 1)" class="hidden" />
-                <label :for="`certificates-${personIndex + 1}`"
+                <label :for="`certificate-${personIndex + 1}`"
                   class="cursor-pointer flex items-center justify-center w-full text-sm text-gray-700 py-2.5 px-4 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition-colors duration-200">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
@@ -233,7 +220,6 @@
         </div>
       </div>
 
-      <!-- Add Resource Person Button -->
       <div class="flex justify-center md:justify-start mt-6">
         <button @click="addLocalResourcePerson"
           class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center shadow-sm">
@@ -250,107 +236,122 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue' // ADDED: onMounted import
+import { ref, watch, onMounted, nextTick } from 'vue';
 
 const props = defineProps({
   resourcePersons: { type: Array, default: () => [{ regNo: '', name: '', certificate: null }] },
-  resourcePersonCertificate: Object, // Retained for backward compatibility, but not used
   fetchResourcePersonDetails: Function,
-  handleCertificateUpload: Function, // Parent will handle validation
-  addResourcePerson: Function,
-  removeResourcePerson: Function,
-  userRegistrations: Array,
-})
+  handleCertificateUpload: Function, // Parent's handler for the single certificate ref
+  userRegistrations: { type: Array, default: () => [] },
+});
 
-const emit = defineEmits(['update:resourcePersons'])
+const emit = defineEmits(['update:resourcePersons']);
 
-// Create a local copy of resourcePersons to avoid mutating the prop
-const localResourcePersons = ref([...props.resourcePersons])
+const localResourcePersons = ref([]);
 
-// Watch for changes in props.resourcePersons to sync with local state
-watch(
-  () => props.resourcePersons,
-  (newValue) => {
-    localResourcePersons.value = [...newValue]
-  },
-  { deep: true }
-)
+// Initialize localResourcePersons from props and ensure it has at least one item
+const initializeLocalData = () => {
+  const initialData = props.resourcePersons && props.resourcePersons.length > 0
+    ? props.resourcePersons.map(p => ({ // Iterate and copy, preserving File objects
+        regNo: p.regNo || '',
+        name: p.name || '',
+        // If p.certificate is a File, keep it; otherwise, nullify
+        certificate: p.certificate instanceof File ? p.certificate : null
+      }))
+    : [{ regNo: '', name: '', certificate: null }]; // Default if prop is empty
+  localResourcePersons.value = initialData;
+};
 
-// ENHANCED: Watch for changes in localResourcePersons and emit to parent with immediate: true
-watch(
-  localResourcePersons,
-  (newValue) => {
-    console.log('🔄 ResourcePersonsForm emitting updated persons:', newValue) // ADDED: logging
-    emit('update:resourcePersons', [...newValue])
-  },
-  { deep: true, immediate: true } // ADDED: immediate: true
-)
+// Watch for external changes to props.resourcePersons
+watch(() => props.resourcePersons, (newVal) => {
+    // Simple check to prevent re-initializing if the content appears the same
+    // This helps avoid potential infinite loops if parent also watches child's emits.
+    const newPropSimple = newVal.map(p => ({ r: p.regNo, n: p.name, cName: p.certificate instanceof File ? p.certificate.name : null, cSize: p.certificate instanceof File ? p.certificate.size : null }));
+    const localSimple = localResourcePersons.value.map(p => ({ r: p.regNo, n: p.name, cName: p.certificate instanceof File ? p.certificate.name : null, cSize: p.certificate instanceof File ? p.certificate.size : null }));
 
-// ENHANCED: Update registration number and fetch details with better logging
-const updateRegNo = async (index, regNo) => {
-  console.log('🔄 Updating registration number for index', index, 'to', regNo) // ADDED: logging
-
-  localResourcePersons.value[index] = { ...localResourcePersons.value[index], regNo }
-
-  // Fetch name details if function is provided
-  if (props.fetchResourcePersonDetails) {
-    await props.fetchResourcePersonDetails(localResourcePersons.value[index])
-  }
-
-  // Ensure name is set
-  localResourcePersons.value[index].name = localResourcePersons.value[index].name || ''
-
-  // Emit to parent
-  emit('update:resourcePersons', [...localResourcePersons.value])
-
-  console.log('🔄 Resource person updated:', localResourcePersons.value[index]) // ADDED: logging
-}
-
-// Add a new resource person locally
-const addLocalResourcePerson = () => {
-  localResourcePersons.value.push({ regNo: '', name: '', certificate: null })
-  emit('update:resourcePersons', [...localResourcePersons.value])
-}
-
-// Remove a resource person locally
-const removeLocalResourcePerson = (index) => {
-  localResourcePersons.value.splice(index, 1)
-  emit('update:resourcePersons', [...localResourcePersons.value])
-}
-
-// ENHANCED: Handle certificate upload for a specific resource person
-const handleLocalCertificateUpload = (event, index) => {
-  const file = event.target.files[0]
-  if (file && file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
-    // Update local resource person with certificate
-    localResourcePersons.value[index] = { ...localResourcePersons.value[index], certificate: file }
-
-    // IMPORTANT: Also call the parent's certificate upload handler
-    // This ensures the parent component gets the certificate file
-    if (props.handleCertificateUpload) {
-      props.handleCertificateUpload(event)
+    if (JSON.stringify(newPropSimple) !== JSON.stringify(localSimple)) {
+        initializeLocalData();
     }
+}, { deep: true });
 
-    // Emit updated resource persons to parent
-    emit('update:resourcePersons', [...localResourcePersons.value])
 
-    console.log('🔄 Certificate uploaded for resource person', index, file.name) // ADDED: logging
+// Watch for local changes and emit to parent
+watch(localResourcePersons, (newLocalValue) => {
+  // Emit a deep copy of the new value to the parent
+  const dataToEmit = newLocalValue.map(person => ({
+    ...person, // Spreads regNo, name
+    certificate: person.certificate, // Ensures the File object is passed directly
+  }));
+  emit('update:resourcePersons', dataToEmit);
+}, { deep: true });
+
+
+const updateRegNo = async (index, newRegNo) => {
+  if (!localResourcePersons.value[index]) return;
+
+  let personToUpdate = { ...localResourcePersons.value[index], regNo: newRegNo, name: '' };
+
+  if (props.fetchResourcePersonDetails) {
+    let tempPersonDetails = { regNo: newRegNo, name: '' };
+    await props.fetchResourcePersonDetails(tempPersonDetails);
+    personToUpdate.name = tempPersonDetails.name || '';
   } else {
-    alert('Please upload a PDF file less than 5MB')
-    event.target.value = ''
+    const selectedRegistration = props.userRegistrations.find(reg => reg.registration_no === newRegNo);
+    if (selectedRegistration) {
+      personToUpdate.name = selectedRegistration.full_name;
+    }
   }
-}
+  personToUpdate.name = personToUpdate.name || '';
+  // Replace the object at the index to ensure reactivity and trigger the watcher
+  localResourcePersons.value.splice(index, 1, personToUpdate);
+};
 
-// ADDED: Proper initialization
+const addLocalResourcePerson = () => {
+  localResourcePersons.value.push({ regNo: '', name: '', certificate: null });
+  // Watcher will emit the update
+};
+
+const removeLocalResourcePerson = (indexToRemove) => {
+  if (indexToRemove >= 0 && indexToRemove < localResourcePersons.value.length) {
+    localResourcePersons.value.splice(indexToRemove, 1);
+    if (localResourcePersons.value.length === 0) {
+        // Ensure there's always at least one resource person entry if needed by UI structure
+        nextTick(() => { // Use nextTick to allow DOM to update if needed before adding
+            localResourcePersons.value.push({ regNo: '', name: '', certificate: null });
+        });
+    }
+  }
+  // Watcher will emit the update
+};
+
+const handleLocalCertificateUpload = (event, index) => {
+  if (!localResourcePersons.value[index]) return;
+
+  const file = event.target.files?.[0];
+  let personToUpdate = { ...localResourcePersons.value[index] }; // Work with a copy
+
+  if (file) {
+    if (file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
+      personToUpdate.certificate = file; // Assign the File object
+      // If parent uses a single certificate ref, call its handler
+      if (props.handleCertificateUpload) {
+         props.handleCertificateUpload(event); // Pass the original event
+      }
+    } else {
+      personToUpdate.certificate = null; // Clear certificate if invalid
+      alert('Invalid file. Please upload a PDF file less than 5MB.'); // Consider replacing alert
+      event.target.value = ''; // Reset file input
+    }
+  } else {
+    personToUpdate.certificate = null; // No file selected
+  }
+  // Replace the object at the index, triggering the watcher
+  localResourcePersons.value.splice(index, 1, personToUpdate);
+};
+
 onMounted(() => {
-  // Ensure we have at least one resource person
-  if (localResourcePersons.value.length === 0) {
-    localResourcePersons.value = [{ regNo: '', name: '', certificate: null }]
-  }
-
-  // Emit initial state to parent
-  emit('update:resourcePersons', [...localResourcePersons.value])
-
-  console.log('🔄 ResourcePersonsForm mounted with:', localResourcePersons.value)
-})
+  initializeLocalData();
+  // The watcher on localResourcePersons with deep:true and the prop watcher
+  // should handle the initial state and emissions correctly.
+});
 </script>

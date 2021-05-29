@@ -1,6 +1,5 @@
 <template>
   <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-    <!-- Header Section -->
     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-200">
       <div class="flex items-center space-x-3">
         <div class="flex-shrink-0">
@@ -20,10 +19,8 @@
       </div>
     </div>
 
-    <!-- Form Content -->
     <div class="p-6 space-y-8">
       <form @submit.prevent>
-        <!-- First Section: Basic Information -->
         <div class="mb-8">
           <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24"
@@ -35,7 +32,6 @@
           </h3>
 
           <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
-            <!-- Validation Question -->
             <div class="mb-5">
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Is CPD validated? <span class="text-red-500">*</span>
@@ -43,7 +39,8 @@
               <div class="flex flex-wrap gap-4">
                 <div class="relative">
                   <input type="radio" id="approvedYes" value="true" name="isApproved" v-model="formData.isApproved"
-                    class="sr-only peer" @change="validateInput" aria-describedby="isApproved-error" />
+                    class="sr-only peer" @change="() => { validateInput(); emitUpdate(); }"
+                    aria-describedby="isApproved-error" />
                   <label for="approvedYes"
                     class="flex items-center px-5 py-3 bg-white border rounded-lg cursor-pointer transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-blue-300"
                     :class="{ 'border-red-500': errors.isApproved }">
@@ -56,7 +53,8 @@
                 </div>
                 <div class="relative">
                   <input type="radio" id="approvedNo" value="false" name="isApproved" v-model="formData.isApproved"
-                    class="sr-only peer" @change="validateInput" aria-describedby="isApproved-error" />
+                    class="sr-only peer" @change="() => { validateInput(); emitUpdate(); }"
+                    aria-describedby="isApproved-error" />
                   <label for="approvedNo"
                     class="flex items-center px-5 py-3 bg-white border rounded-lg cursor-pointer transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-blue-300"
                     :class="{ 'border-red-500': errors.isApproved }">
@@ -78,7 +76,6 @@
               </p>
             </div>
 
-            <!-- Title of CPD - Always Visible -->
             <div class="mb-5">
 
               <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
@@ -110,7 +107,6 @@
           </div>
         </div>
 
-        <!-- Second Section: Location & Dates - Always Visible -->
         <div class="mb-8">
           <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24"
@@ -124,7 +120,6 @@
           </h3>
 
           <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
-            <!-- Venue -->
             <div class="mb-5">
               <label for="venue" class="block text-sm font-medium text-gray-700 mb-2">
                 Venue <span class="text-red-500">*</span>
@@ -155,9 +150,7 @@
               </p>
             </div>
 
-            <!-- Date Range -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- From Date -->
               <div>
                 <label for="fromDate" class="block text-sm font-medium text-gray-700 mb-2">
                   From Date <span class="text-red-500">*</span>
@@ -173,7 +166,7 @@
                   <input type="date" id="fromDate" v-model="formData.fromDate" :min="today" :class="[
                     'w-full rounded-lg border shadow-sm pl-10 p-2.5',
                     errors.fromDate ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                  ]" @change="validateInput" aria-describedby="fromDate-error" />
+                  ]" @change="() => { validateInput(); emitUpdate(); }" aria-describedby="fromDate-error" />
                 </div>
                 <p v-if="errors.fromDate" id="fromDate-error" class="mt-1 text-xs text-red-500 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24"
@@ -185,7 +178,6 @@
                 </p>
               </div>
 
-              <!-- To Date -->
               <div>
                 <label for="toDate" class="block text-sm font-medium text-gray-700 mb-2">
                   To Date <span class="text-red-500">*</span>
@@ -201,7 +193,7 @@
                   <input type="date" id="toDate" v-model="formData.toDate" :min="formData.fromDate || today" :class="[
                     'w-full rounded-lg border shadow-sm pl-10 p-2.5',
                     errors.toDate ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                  ]" @change="validateInput" aria-describedby="toDate-error" />
+                  ]" @change="() => { validateInput(); emitUpdate(); }" aria-describedby="toDate-error" />
                 </div>
                 <p v-if="errors.toDate" id="toDate-error" class="mt-1 text-xs text-red-500 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24"
@@ -216,7 +208,6 @@
           </div>
         </div>
 
-        <!-- Third Section: Documentation - Conditional -->
         <div v-if="formData.isApproved === 'true'" class="mb-8">
           <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24"
@@ -228,7 +219,6 @@
           </h3>
 
           <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
-            <!-- Approval Letter -->
             <div>
               <label for="approvalLetter" class="block text-sm font-medium text-gray-700 mb-2">
                 Attach Approval Letter <span class="text-red-500">*</span>
@@ -292,12 +282,12 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'update:valid', 'approval-change']);
 
 const formData = ref({
-  isApproved: props.application?.isApproved || null,
+  isApproved: props.application?.isApproved || null, // Initialize with prop or null
   title: props.application?.title || '',
   venue: props.application?.venue || '',
   fromDate: props.application?.fromDate || '',
   toDate: props.application?.toDate || '',
-  approvalLetterFile: null,
+  approvalLetterFile: null, // This is local to the component for handling the file object
 });
 
 const errors = ref({
@@ -305,8 +295,8 @@ const errors = ref({
   title: false,
   venue: false,
   fromDate: false,
-  toDate: '',
-  approvalLetterFile: '',
+  toDate: '', // Can be a string for more descriptive error
+  approvalLetterFile: '', // Can be a string for more descriptive error
 });
 
 const today = computed(() => {
@@ -370,8 +360,8 @@ const handleInput = (field) => {
   if (typeof formData.value[field] === 'string') {
     formData.value[field] = formData.value[field].trimStart();
   }
-  validateInput();
-  // emitUpdate(); // Consider if you want to emit on every keystroke for text fields
+  validateInput(); // This validates and emits 'update:valid'
+  emitUpdate();    // Emit the updated model value
 };
 
 // Handle file input
@@ -383,22 +373,24 @@ const handleFileInput = (event) => {
     if (file.type !== 'application/pdf') {
       errors.value.approvalLetterFile = 'Please upload a PDF file.';
       formData.value.approvalLetterFile = null;
-      if (inputElement) inputElement.value = null;
+      if (inputElement) inputElement.value = null; // Reset file input
     } else if (file.size > 5 * 1024 * 1024) { // 5MB
       errors.value.approvalLetterFile = 'File size must be less than 5MB.';
       formData.value.approvalLetterFile = null;
-      if (inputElement) inputElement.value = null;
+      if (inputElement) inputElement.value = null; // Reset file input
     } else {
       formData.value.approvalLetterFile = file;
       errors.value.approvalLetterFile = ''; // Clear previous errors like "required" or "PDF only"
-      props.handleApprovalLetterUpload(event);
+      props.handleApprovalLetterUpload(event); // Call the prop function to pass the event to parent
     }
   } else {
+    // If no file is selected (e.g., user cancels file dialog)
     formData.value.approvalLetterFile = null;
-    // If file is deselected, validateInput will determine if "required" error should be set.
+    // If the field was previously valid and now no file is selected,
+    // validateInput will check if it's required and set error accordingly.
   }
   validateInput(); // Re-validate to update overall form validity and error state for file input
-  emitUpdate();
+  emitUpdate(); // Emit update as isApproved state might affect parent's approvalLetter
 };
 
 // Emit updated form data
@@ -409,7 +401,9 @@ const emitUpdate = () => {
     venue: formData.value.venue.trim(),
     fromDate: formData.value.fromDate,
     toDate: formData.value.toDate,
-    // approvalLetterFile is handled by its own mechanism (handleApprovalLetterUpload prop)
+    // Note: approvalLetterFile itself is not directly part of the modelValue emitted here.
+    // The parent component handles the actual file object through the `handleApprovalLetterUpload` prop.
+    // However, the `isApproved` status, which is part of this emit, dictates if the parent expects that file.
   };
   emit('update:modelValue', dataToEmit);
 };
@@ -418,39 +412,48 @@ const emitUpdate = () => {
 watch(
   () => props.application,
   (newValue) => {
-    formData.value.isApproved = newValue.isApproved !== undefined ? newValue.isApproved : null;
+    // Update formData based on incoming props
+    formData.value.isApproved = newValue.isApproved !== undefined ? String(newValue.isApproved) : null;
     formData.value.title = newValue.title || '';
     formData.value.venue = newValue.venue || '';
     formData.value.fromDate = newValue.fromDate || '';
     formData.value.toDate = newValue.toDate || '';
-    // formData.value.approvalLetterFile is managed locally
-    validateInput();
+    // formData.value.approvalLetterFile is managed locally and by the parent through prop.
+    // If the parent passes a new approvalLetter file (e.g., when editing),
+    // that should be handled by the parent updating its own state and potentially
+    // re-rendering this component or providing a mechanism to clear/update the file input.
+    // For now, we assume the parent manages the actual File object for `approvalLetter`.
+    validateInput(); // Validate after updating from props
   },
   { immediate: true, deep: true }
 );
 
-// Watch for isApproved changes
+// Watch for isApproved changes to emit approval-change and manage conditional logic
 watch(
   () => formData.value.isApproved,
   (newValue, oldValue) => {
-    if (newValue === oldValue && (oldValue !== undefined && oldValue !== null)) return; // Avoid redundant runs if value truly hasn't changed
+    // Only proceed if the value has actually changed to avoid redundant operations
+    if (newValue === oldValue && (oldValue !== undefined && oldValue !== null) && newValue !== null) return;
 
-    emit('approval-change', newValue);
+
+    emit('approval-change', newValue); // Emit the change in approval status
 
     if (newValue !== 'true') {
-      // If "No" is selected or it's unselected, clear the approval letter file and reset the input
+      // If "No" is selected or it's unselected (null), clear the local approval letter file state
       formData.value.approvalLetterFile = null;
-      // The error for approvalLetterFile will be cleared by validateInput if it's no longer required
+      // Also, reset the file input element itself
       const fileInput = document.getElementById('approvalLetter');
       if (fileInput) {
         fileInput.value = null;
       }
+      // The error for approvalLetterFile will be cleared by validateInput if it's no longer required.
     }
-    // No need to clear title, venue, dates as they are always visible and potentially filled.
+    // The title, venue, and dates are always visible, so they are not cleared here.
     // Their validation status will be updated by validateInput.
 
-    validateInput();
-    emitUpdate();
+    validateInput(); // Re-validate the form
+    emitUpdate();    // Emit the updated model value
   }
+  // { immediate: true } // Consider if immediate is needed here, might conflict with prop watcher
 );
 </script>
