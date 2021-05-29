@@ -1,299 +1,420 @@
 <template>
-  <TransitionRoot appear :show="isOpen" as="template">
-    <Dialog as="div" @close="closeModalHandler" class="relative z-50">
-      <TransitionChild
-        as="template"
-        enter="duration-300 ease-out"
-        enter-from="opacity-0"
-        enter-to="opacity-100"
-        leave="duration-200 ease-in"
-        leave-from="opacity-100"
-        leave-to="opacity-0"
+  <div
+    v-if="isOpen"
+    class="fixed z-20 inset-0 overflow-y-auto"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div
+      class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+    >
+      <div
+        class="fixed inset-0 bg-gray-700 bg-opacity-75 transition-opacity"
+        aria-hidden="true"
+        @click="closeModal"
+      ></div>
+
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"> </span>
+
+      <div
+        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl w-full"
       >
-        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" />
-      </TransitionChild>
-
-      <div class="fixed inset-0 overflow-y-auto">
-        <div class="flex min-h-full items-start justify-center p-4 sm:pt-12">
-          <TransitionChild
-            as="template"
-            enter="duration-300 ease-out"
-            enter-from="opacity-0 scale-95"
-            enter-to="opacity-100 scale-100"
-            leave="duration-200 ease-in"
-            leave-from="opacity-100 scale-100"
-            leave-to="opacity-0 scale-95"
-          >
-            <DialogPanel
-              class="relative w-full max-w-7xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all max-h-screen sm:max-h-[calc(100vh-80px)] overflow-y-auto"
-            >
-              <div
-                v-if="isLoading"
-                class="absolute inset-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm flex items-center justify-center z-30 rounded-2xl"
-              >
-                <div class="flex flex-col items-center">
-                  <svg
-                    class="animate-spin h-10 w-10 text-blue-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  <p class="mt-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Processing...
-                  </p>
-                </div>
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
+          <div class="sm:flex sm:items-start w-full">
+            <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+              <div class="flex justify-between items-center mb-4 pb-3 border-b">
+                <h3 class="text-xl leading-6 font-semibold text-gray-900" id="modal-title">
+                  Teaching Center Application Review
+                </h3>
+                <span
+                  class="px-3 py-1 rounded-full text-xs font-medium"
+                  :class="statusBadgeClass"
+                >
+                  {{ formattedStatus(hospitalDetails.tc_review_decision) }}
+                </span>
               </div>
 
-              <ApplicationStatus
-                v-if="application"
-                :overallStatus="overallStatus"
-                @close="closeModal"
-              />
-
-              <div v-if="application" class="px-8 py-6 bg-white">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <!-- Left Column -->
-                  <div class="lg:col-span-1 space-y-6">
-                    <PersonalInformation
-                      :application="application"
-                      @update="refreshApplication"
-                      @set-loading="handleSetLoading"
-                    />
-                    <ContactInformation :application="application" />
-                    <div
-                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
-                    >
-                      <div class="border-t border-gray-100 p-6 bg-gray-50">
-                        <div class="flex flex-col space-y-4">
-                          <h5 class="font-medium text-gray-900">Counselor Status</h5>
-                          <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">
-                              {{
-                                application.is_counselor
-                                  ? 'Registered Counselor'
-                                  : 'Not a Counselor'
-                              }}
-                            </span>
-                            <CounselorStatus
-                              :application="application"
-                              @update="refreshApplication"
-                              @set-loading="handleSetLoading"
-                            />
-                          </div>
-                        </div>
-                      </div>
+              <div class="max-h-[70vh] overflow-y-auto pr-2 space-y-6 custom-scrollbar">
+                <!-- Proponent Details Section -->
+                <section>
+                  <h4 class="text-md font-semibold text-indigo-700 mb-2">Proponent Details (Institute)</h4>
+                  <dl class="text-sm space-y-1">
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded bg-gray-50">
+                      <dt class="font-medium text-gray-600">Institute Name:</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.institute?.name_of_institution || hospitalDetails.institute_name || 'N/A' }}</dd>
                     </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded">
+                      <dt class="font-medium text-gray-600">Country:</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.country || 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded bg-gray-50">
+                      <dt class="font-medium text-gray-600">Dzongkhag (Proponent):</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.dzongkhag || 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded">
+                      <dt class="font-medium text-gray-600">City/Gewog (Proponent):</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.cityGewog || 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded bg-gray-50">
+                      <dt class="font-medium text-gray-600">Address (Proponent):</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.addressLocation || 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded">
+                      <dt class="font-medium text-gray-600">Contact No (Proponent):</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.contactNo || 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded bg-gray-50">
+                      <dt class="font-medium text-gray-600">Email (Proponent):</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.emailAddress || 'N/A' }}</dd>
+                    </div>
+                    <!-- Additional Institute fields if available -->
+                     <template v-if="hospitalDetails.institute">
+                        <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded">
+                          <dt class="font-medium text-gray-600">Institute CID:</dt>
+                          <dd class="col-span-2 text-gray-800">{{ hospitalDetails.institute.CID || 'N/A' }}</dd>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded bg-gray-50">
+                          <dt class="font-medium text-gray-600">Teaching Institute Type:</dt>
+                          <dd class="col-span-2 text-gray-800">{{ hospitalDetails.institute.teaching_institute || 'N/A' }}</dd>
+                        </div>
+                     </template>
+                  </dl>
+                </section>
+
+                <!-- Teaching Center Details Section -->
+                <section>
+                  <h4 class="text-md font-semibold text-indigo-700 mb-2 mt-4">Proposed Teaching Center Details</h4>
+                  <dl class="text-sm space-y-1">
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded bg-gray-50">
+                      <dt class="font-medium text-gray-600">Center Name:</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.center_name || 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded">
+                      <dt class="font-medium text-gray-600">Center Location:</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.center_location || 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded bg-gray-50">
+                      <dt class="font-medium text-gray-600">Dzongkhag (Center):</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.state_dzongkhag || 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded">
+                      <dt class="font-medium text-gray-600">City/Gewog (Center):</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.city_gewog || 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded bg-gray-50">
+                      <dt class="font-medium text-gray-600">Target Category:</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.target_category || 'N/A' }}</dd>
+                    </div>
+                     <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded">
+                      <dt class="font-medium text-gray-600">Renewal Review Name:</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.tc_renewal_review_name || 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded bg-gray-50">
+                      <dt class="font-medium text-gray-600">Review Summary:</dt>
+                      <dd class="col-span-2 text-gray-800 whitespace-pre-wrap">{{ hospitalDetails.tc_review_summary || 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded">
+                      <dt class="font-medium text-gray-600">Valid Till:</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.valid_till ? formatDate(hospitalDetails.valid_till) : 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded bg-gray-50">
+                      <dt class="font-medium text-gray-600">Attachments:</dt>
+                      <dd class="col-span-2 text-gray-800">
+                        <ul v-if="hospitalDetails.tc_attachments && hospitalDetails.tc_attachments.length > 0" class="list-disc list-inside">
+                            <li v-for="(file, index) in hospitalDetails.tc_attachments" :key="`att-${index}`">
+                                <a :href="file.url || '#'" target="_blank" class="text-blue-600 hover:underline" :download="file.name">{{ file.name || `Attachment ${index + 1}` }}</a>
+                            </li>
+                        </ul>
+                        <span v-else>No attachments</span>
+                      </dd>
+                    </div>
+                     <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded">
+                      <dt class="font-medium text-gray-600">Report File:</dt>
+                       <dd class="col-span-2 text-gray-800">
+                        <a v-if="hospitalDetails.tc_report && (hospitalDetails.tc_report.url || hospitalDetails.tc_report.name)" :href="hospitalDetails.tc_report.url || '#'" target="_blank" class="text-blue-600 hover:underline" :download="hospitalDetails.tc_report.name">{{ hospitalDetails.tc_report.name || 'View Report' }}</a>
+                        <span v-else>No report file</span>
+                      </dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded bg-gray-50">
+                      <dt class="font-medium text-gray-600">TC Remarks (User):</dt>
+                      <dd class="col-span-2 text-gray-800 whitespace-pre-wrap">{{ hospitalDetails.tc_remarks || 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded">
+                      <dt class="font-medium text-gray-600">General Remarks (User):</dt>
+                      <dd class="col-span-2 text-gray-800 whitespace-pre-wrap">{{ hospitalDetails.remarks || 'N/A' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 py-1 px-2 rounded bg-gray-50">
+                      <dt class="font-medium text-gray-600">Declaration Accepted:</dt>
+                      <dd class="col-span-2 text-gray-800">{{ hospitalDetails.declaration ? 'Yes' : 'No' }}</dd>
+                    </div>
+                  </dl>
+                </section>
+
+                <!-- Dealing Officer Section -->
+                <section class="mt-6 pt-4 border-t">
+                  <h4 class="text-md font-semibold text-green-700 mb-3">Dealing Officer Actions</h4>
+
+                  <!-- Display Existing Verification/Rejection -->
+                  <div v-if="hospitalDetails.verification_date" class="mb-3 p-2 bg-blue-50 border border-blue-200 rounded-md text-sm">
+                    <p><span class="font-medium">Physical Verification Recorded:</span></p>
+                    <p>Date: {{ formatDate(hospitalDetails.verification_date) }}</p>
+                    <p>Report: {{ hospitalDetails.verification_report || 'N/A' }}</p>
+                  </div>
+                  <div v-if="hospitalDetails.tc_review_decision === 'Rejected' && hospitalDetails.tc_reason_if_rejected" class="mb-3 p-2 bg-red-50 border border-red-200 rounded-md text-sm">
+                    <p><span class="font-medium">Rejection Reason:</span> {{ hospitalDetails.tc_reason_if_rejected }}</p>
                   </div>
 
-                  <!-- Right Column -->
-                  <div class="lg:col-span-2 space-y-6">
-                    <ApplicationDetailsSection
-                      :application="application"
-                      :personnelCategories="personnelCategories"
-                      :personnelSubcategories="personnelSubcategories"
-                      :sectors="sectors"
-                      @update="refreshApplication"
-                      @set-loading="handleSetLoading"
-                    />
-                    <QualificationList
-                      :qualifications="application.user_qualifications"
-                      :applicationId="application.id"
-                      @update="refreshApplication"
-                      @set-loading="handleSetLoading"
-                    />
+                  <!-- Physical Verification Input (if pending and not yet approved/rejected) -->
+                  <div v-if="canRecordVerification" class="space-y-3 mb-4 p-3 border rounded-md bg-gray-50">
+                    <h5 class="text-sm font-medium text-gray-800">Record Physical Verification:</h5>
+                    <div>
+                      <label for="verificationDate" class="block text-xs font-medium text-gray-700">Verification Date <span class="text-red-500">*</span></label>
+                      <input type="date" id="verificationDate" v-model="localVerificationDate" :max="todayDate()" class="mt-1 block w-full sm:w-1/2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+                    </div>
+                    <div>
+                      <label for="verificationReport" class="block text-xs font-medium text-gray-700">Verification Report/Notes <span class="text-red-500">*</span></label>
+                      <textarea id="verificationReport" v-model="localVerificationReport" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2" placeholder="Enter notes from physical verification"></textarea>
+                    </div>
+                    <button
+                        type="button"
+                        @click="submitVerificationHandler"
+                        :disabled="!localVerificationDate || !localVerificationReport.trim()"
+                        class="btn-sm btn-info"
+                    >
+                        Save Verification Details
+                    </button>
                   </div>
-                </div>
+
+                  <!-- Approval/Rejection Inputs & Actions (if applicable) -->
+                  <div v-if="canDecide" class="space-y-3 p-3 border rounded-md bg-gray-50">
+                     <h5 class="text-sm font-medium text-gray-800">Application Decision:</h5>
+                     <div v-if="showRejectionReasonInput">
+                        <label for="rejectionReason" class="block text-xs font-medium text-gray-700">Reason for Rejection <span class="text-red-500">*</span></label>
+                        <textarea id="rejectionReason" v-model="localRejectionReason" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2" placeholder="Provide clear reason for rejection"></textarea>
+                     </div>
+                     <!-- Action buttons for Approve/Reject are in the footer -->
+                  </div>
+                </section>
               </div>
-              <FooterButtons
-                v-if="application"
-                :application="application"
-                @open-certificate-modal="openCertificateModal"
-                @update="refreshApplication"
-                :is-loading="isLoading"
-                @close="closeModal"
-                @set-loading="handleSetLoading"
-              />
-            </DialogPanel>
-          </TransitionChild>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer with Action Buttons -->
+        <div class="bg-gray-100 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <button
+            v-if="canApprove"
+            type="button"
+            @click="approveHandler"
+            class="btn btn-success sm:ml-3"
+          >
+            Approve Application
+          </button>
+          <button
+            v-if="canReject"
+            type="button"
+            @click="rejectHandler"
+            :disabled="isRejecting && !localRejectionReason.trim()"
+            class="btn btn-danger sm:ml-3"
+          >
+            {{ isRejecting ? 'Confirm Rejection' : 'Reject Application' }}
+          </button>
+           <button
+            v-if="isRejecting"
+            type="button"
+            @click="cancelReject"
+            class="btn btn-secondary sm:ml-3"
+          >
+            Cancel Rejection
+          </button>
+          <button
+            type="button"
+            @click="closeModal"
+            class="btn btn-secondary sm:mt-0"
+            :class="{'sm:ml-3': !canApprove && !canReject && !isRejecting}"
+          >
+            Close
+          </button>
         </div>
       </div>
-    </Dialog>
-  </TransitionRoot>
-
-  <Teleport to="body">
-    <div v-if="isCertificateModalOpen" class="certificate-modal-wrapper">
-      <MHPCCertificateModal :application="application" @close="closeCertificateModal" />
     </div>
-  </Teleport>
+  </div>
 </template>
 
 <script setup>
-import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
-import { ref, computed, nextTick } from 'vue'
-import apiServices from '@/services/services'
-import MHPCCertificateModal from '@/components/common/MHPC/MHPCCertificateModal.vue'
-import PersonalInformation from './applicationDetailsComponents/PersonalInformation.vue'
-import ContactInformation from './applicationDetailsComponents/ContactInformation.vue'
-import ApplicationStatus from './applicationDetailsComponents/ApplicationStatus.vue'
-import ApplicationDetailsSection from './applicationDetailsComponents/ApplicationDetailsSection.vue'
-import QualificationList from './applicationDetailsComponents/QualificationList.vue'
-import FooterButtons from './applicationDetailsComponents/FooterButtons.vue'
-import CounselorStatus from './applicationDetailsComponents/CounselorStatus.vue'
+import { ref, watch, computed } from 'vue'
 
 const props = defineProps({
   isOpen: Boolean,
-  application: {
+  hospitalDetails: {
     type: Object,
-    default: () => null,
-  },
-  personnelCategories: {
-    type: Array,
-    default: () => [],
-  },
-  personnelSubcategories: {
-    type: Array,
-    default: () => [],
-  },
-  sectors: {
-    type: Array,
-    default: () => [],
+    default: () => ({ tc_attachments: [], tc_report: {} }),
   },
 })
 
-const emit = defineEmits(['close', 'update'])
-const isLoading = ref(false)
-const isCertificateModalOpen = ref(false)
+const emit = defineEmits(['close-modal', 'approve', 'reject', 'submit-verification'])
+
+const localVerificationDate = ref('')
+const localVerificationReport = ref('')
+const localRejectionReason = ref('')
+const isRejecting = ref(false) // To control visibility of rejection reason input
+
+const todayDate = () => new Date().toISOString().split('T')[0];
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  } catch (e) {
+    console.error('Invalid date format:', dateString, e);
+    return dateString; // fallback
+  }
+};
+
+watch(() => props.hospitalDetails, (newDetails) => {
+  if (newDetails) {
+    localVerificationDate.value = newDetails.verification_date ? new Date(newDetails.verification_date).toISOString().split('T')[0] : '';
+    localVerificationReport.value = newDetails.verification_report || '';
+    localRejectionReason.value = newDetails.tc_reason_if_rejected || '';
+    isRejecting.value = false; // Reset reject state
+  }
+}, { immediate: true, deep: true })
 
 const closeModal = () => {
-  emit('close')
-}
-const closeModalHandler = () => {
-  emit('close')
+  emit('close-modal')
 }
 
-const handleSetLoading = (loadingState) => {
-  isLoading.value = loadingState
-}
-
-const overallStatus = computed(() => {
-  if (!props.application?.user_qualifications?.[0]) return 'Pending'
-
-  const appReview = props.application.user_qualifications[0].application_review_status
-  const physReview = props.application.user_qualifications[0].physical_review_status
-  const endorse = props.application.user_qualifications[0].endorsement_decision
-
-  if (appReview === 'Regretted' || physReview === 'Regretted' || endorse === 'Regretted') {
-    return 'Regretted'
-  } else if (appReview === 'Approved' && physReview === 'Approved' && endorse === 'Approved') {
-    return 'Approved'
-  } else {
-    return 'Pending'
+const submitVerificationHandler = () => {
+  if (!localVerificationDate.value || !localVerificationReport.value.trim()) {
+    alert('Please provide both verification date and report.');
+    return;
   }
-})
+  emit('submit-verification', {
+    verificationDate: localVerificationDate.value,
+    verificationReport: localVerificationReport.value,
+  });
+}
 
-const refreshApplication = async () => {
-  if (!props.application?.id) return
-  isLoading.value = true // Show loader
-  try {
-    const response = await apiServices.getMhpcNewApplication(props.application.id)
-    emit('update', response.data)
-    await nextTick()
-  } catch (error) {
-    console.error('Error refreshing application:', error)
-  } finally {
-    isLoading.value = false // Hide loader
+const approveHandler = () => {
+  // Condition: Verification must be completed before approval, or if allowed otherwise
+  if (!props.hospitalDetails.verification_date && !isVerificationOptionalForApproval.value) {
+      alert('Physical verification must be recorded before approving the application.');
+      return;
   }
+  emit('approve');
 }
 
-const openCertificateModal = () => {
-  isCertificateModalOpen.value = true
+const rejectHandler = () => {
+  if (!isRejecting.value) {
+    isRejecting.value = true; // Show reason input
+    // If already rejected and has a reason, prefill it for editing
+    if (props.hospitalDetails.tc_review_decision === 'Rejected' && props.hospitalDetails.tc_reason_if_rejected) {
+        localRejectionReason.value = props.hospitalDetails.tc_reason_if_rejected;
+    }
+    return;
+  }
+  if (!localRejectionReason.value.trim()) {
+    alert('Please provide a reason for rejection.');
+    return;
+  }
+  emit('reject', localRejectionReason.value);
+  isRejecting.value = false; // Reset after emitting
 }
 
-const closeCertificateModal = () => {
-  isCertificateModalOpen.value = false
+const cancelReject = () => {
+    isRejecting.value = false;
+    // Do not clear localRejectionReason if it was prefilled from an existing rejection
+    if(props.hospitalDetails.tc_review_decision !== 'Rejected') {
+        localRejectionReason.value = '';
+    }
 }
+
+const formattedStatus = (status) => {
+    if (!status) return 'Pending Review';
+    return status.replace(/_/g, ' ');
+}
+
+const statusBadgeClass = computed(() => {
+  const status = props.hospitalDetails.tc_review_decision;
+  if (status === 'Approved') return 'bg-green-100 text-green-800';
+  if (status === 'Rejected' || status === 'Regretted') return 'bg-red-100 text-red-800'; // 'Regretted' for backward compatibility
+  if (status === 'Verification_Completed') return 'bg-blue-100 text-blue-800';
+  return 'bg-yellow-100 text-yellow-800'; // Pending or other
+});
+
+// --- Computed properties for conditional UI ---
+const isInitialPending = computed(() => !props.hospitalDetails.tc_review_decision || props.hospitalDetails.tc_review_decision === 'Pending');
+const isVerificationDone = computed(() => !!props.hospitalDetails.verification_date);
+const isApproved = computed(() => props.hospitalDetails.tc_review_decision === 'Approved');
+const isRejectedStatus = computed(() => props.hospitalDetails.tc_review_decision === 'Rejected' || props.hospitalDetails.tc_review_decision === 'Regretted');
+
+
+// Decides if verification step is needed or optional for approval/rejection.
+// For this flow, let's assume verification is mandatory before approval.
+const isVerificationOptionalForApproval = ref(false); // Set true if DO can approve without explicit verification step
+
+const canRecordVerification = computed(() => {
+    return (isInitialPending.value || props.hospitalDetails.tc_review_decision === 'Verification_Completed') && !isApproved.value && !isRejectedStatus.value;
+});
+
+const canDecide = computed(() => {
+    // DO can decide if verification is done OR if it's an initial pending state and verification is optional for decision making
+    // AND not already approved or rejected
+    return (isVerificationDone.value || (isInitialPending.value && isVerificationOptionalForApproval.value) || props.hospitalDetails.tc_review_decision === 'Verification_Completed') && !isApproved.value && !isRejectedStatus.value;
+});
+
+const canApprove = computed(() => {
+    return canDecide.value && !isRejecting.value;
+});
+
+const canReject = computed(() => {
+    return canDecide.value || (isRejectedStatus.value && isRejecting.value); // Allow updating reason if already rejected
+});
+
+const showRejectionReasonInput = computed(() => {
+    return isRejecting.value && canReject.value;
+});
+
 </script>
 
 <style scoped>
-/* Enhanced scrollbar styles */
-.overflow-y-auto {
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
-}
-
-.overflow-y-auto::-webkit-scrollbar {
+.custom-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
-
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: transparent;
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* Tailwind gray-300 */
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* Tailwind gray-400 */
+}
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
 }
 
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
-  border-radius: 3px;
+/* Simple Button Styles (can be expanded or use Tailwind @apply) */
+.btn {
+  @apply inline-flex justify-center items-center rounded-md border shadow-sm px-4 py-2 text-base font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 sm:w-auto sm:text-sm disabled:opacity-50;
 }
-
-/* Enhanced transitions */
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 200ms;
+.btn-sm {
+   @apply px-3 py-1.5 text-xs;
 }
-
-/* Enhanced card hover effects */
-.rounded-xl {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+.btn-success {
+  @apply border-transparent bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
 }
-
-.rounded-xl:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+.btn-danger {
+  @apply border-transparent bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
 }
-
-/* Status indicator animations */
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
+.btn-info {
+  @apply border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
 }
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Certificate Modal Positioning */
-.certificate-modal-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 60;
-  /* Higher than the main modal */
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+.btn-secondary {
+  @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500;
 }
 </style>

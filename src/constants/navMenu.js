@@ -15,17 +15,16 @@ import {
   XCircle,
   FileSearch,
   CreditCard,
-  Heart,
-  Wrench,
+  Heart, // Used for Teaching Hospital child
+  Wrench, // Used for Maintenance section items (alternative)
   Award,
   FilePlus,
   List,
-  RefreshCw,
+  RefreshCw, // Used for Track & Renewal
   Edit,
   Link,
   Users2,
   Monitor,
-  // Added missing icons
   Scale,
   History,
   ClipboardList,
@@ -33,7 +32,7 @@ import {
   Building,
   UserPlus,
   CheckSquare,
-  Layers,
+  Layers, // Used for Department Management
   Target,
   Key,
   Star,
@@ -41,8 +40,10 @@ import {
   PenTool,
   DollarSign,
   Wallet,
-  GraduationCap,
+  GraduationCap, // Used for Course Management
   Sliders,
+  Activity,
+  // Add any other icons you use like 'Certificate', 'BuildingPlus' if they are from lucide-vue-next
 } from 'lucide-vue-next'
 
 // Icon mapping for dynamic icon selection
@@ -90,14 +91,17 @@ const iconMap = {
   Wallet,
   GraduationCap,
   Sliders,
+  Activity,
+  // Certificate: Certificate, // Example if you use it
+  // BuildingPlus: BuildingPlus, // Example if you use it
 }
-import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
+import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore' // Ensure this path is correct
 // import { useAuthStore } from '@/stores/authStore'
 // import { useInstitutionStore } from '@/stores/institutionNavigationStore'
 
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
-  return iconMap[iconName] || File
+  return iconMap[iconName] || File // Defaults to File if iconName not in map
 }
 
 // Define the dealing_officer menu items (shared across all services)
@@ -126,7 +130,7 @@ const dealingOfficerMenuItems = [
 
 // Service-specific menu items structured as service > role > routes
 const serviceSpecificMenuItems = {
-  roq: {
+  roq: { // ... (ROQ section unchanged) ...
     user: [
       {
         name: 'Dashboard',
@@ -160,11 +164,6 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('Wrench'),
         route: (serviceType) => `/admin/admin/${serviceType}/decisions`,
       },
-      // {
-      //   name: 'Learning Types',
-      //   icon: getIconComponent('BookOpen'),
-      //   route: (serviceType) => `/admin/admin/${serviceType}/learning_types`,
-      // },
       {
         name: 'Qualifications',
         icon: getIconComponent('Award'),
@@ -180,28 +179,12 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/admin/${serviceType}/type_of_courses`,
       },
-      // {
-      //   name: 'Gender Types',
-      //   icon: getIconComponent('Users'),
-      //   route: (serviceType) => `/admin/admin/${serviceType}/genders`,
-      // },
       {
         name: 'Esignatures',
-        icon: getIconComponent('Users'),
+        icon: getIconComponent('PenTool'), // Changed from Users
         route: (serviceType) => `/admin/admin/${serviceType}/esign`,
       },
-      // {
-      //   name: 'Countries',
-      //   icon: getIconComponent('Globe'),
-      //   route: (serviceType) => `/admin/admin/${serviceType}/countries`,
-      // },
-      // {
-      //   name: 'User Profile',
-      //   icon: getIconComponent('Users'),
-      //   route: (serviceType) => `/admin/admin/${serviceType}/user_profile`,
-      // },
     ],
-    // Add dealing_officer to roq
     dealing_officer: dealingOfficerMenuItems,
     chief: [
       {
@@ -219,28 +202,18 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('CheckCircle'),
         route: (serviceType) => `/admin/chief/${serviceType}/second_copy_lists`,
       },
-      // {
-      //   name: 'Reports',
-      //   icon: getIconComponent('ClipboardCheck'),
-      //   route: (serviceType) => `/admin/chief/${serviceType}/reports`,
-      // },
-      // {
-      //   name: 'Profile',
-      //   icon: getIconComponent('ClipboardCheck'),
-      //   route: (serviceType) => `/admin/chief/${serviceType}/profile`,
-      // },
     ],
   },
-  ecpf: {
+  ecpf: { // ... (ECPF section unchanged) ...
     user: [
       {
         name: 'Dashboard',
-        icon: getIconComponent('LayoutDashboard'), // More specific dashboard icon
+        icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
       },
       {
         name: 'New Applications',
-        icon: getIconComponent('FilePlus'), // Icon for adding new things
+        icon: getIconComponent('FilePlus'),
         children: [
           {
             name: 'Independant ECPF',
@@ -258,37 +231,37 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'ECPF Renewal',
-        icon: getIconComponent('List'), //List icon
+        icon: getIconComponent('RefreshCw'),
         route: (serviceType) => `/admin/user/${serviceType}/ecpf_renewal`,
       },
       {
         name: 'ECPF Name Change',
-        icon: getIconComponent('RefreshCw'), // Icon for refresh/change
+        icon: getIconComponent('Edit'),
         route: (serviceType) => `/admin/user/${serviceType}/ecpf_name_change`,
       },
       {
         name: 'Location Change',
-        icon: getIconComponent('Edit'), // Icon for editing/location
+        icon: getIconComponent('Building'),
         route: (serviceType) => `/admin/user/${serviceType}/ecpf_location_change`,
       },
       {
         name: 'Change in Ownership',
-        icon: getIconComponent('Users2'), // Icon representing multiple users
+        icon: getIconComponent('Users2'),
         route: (serviceType) => `/admin/user/${serviceType}/ecpf_ownership_change`,
       },
       {
         name: 'Linkage Establishment',
-        icon: getIconComponent('Link'), // Use a suitable 'link' icon
+        icon: getIconComponent('Link'),
         route: (serviceType) => `/admin/user/${serviceType}/ecpf_linkage_establishment`,
       },
       {
         name: 'Education Fair',
-        icon: getIconComponent('Briefcase'), // Briefcase is good for fairs/events
+        icon: getIconComponent('Briefcase'),
         route: (serviceType) => `/admin/user/${serviceType}/ecpf_education_fair`,
       },
       {
         name: 'Promotional Event',
-        icon: getIconComponent('Activity'), //Use activity
+        icon: getIconComponent('Activity'),
         children: [
           {
             name: 'In-house Event',
@@ -304,15 +277,14 @@ const serviceSpecificMenuItems = {
           },
         ],
       },
-
       {
         name: 'HR Bio Data',
-        icon: getIconComponent('Users'), // 'Users' for HR
+        icon: getIconComponent('Users'),
         route: (serviceType) => `/admin/user/${serviceType}/hr_biodata`,
       },
       {
         name: 'Student Management',
-        icon: getIconComponent('Users'), // 'Users' for Student Management
+        icon: getIconComponent('GraduationCap'),
         route: (serviceType) => `/admin/user/${serviceType}/student_biodata`,
       },
       {
@@ -322,84 +294,84 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Track My Applications',
-        icon: getIconComponent('UserCircle'),
+        icon: getIconComponent('FileSearch'),
         route: (serviceType) => `/admin/user/${serviceType}/track_applications`,
       },
       {
         name: 'Upload Trade License',
-        icon: getIconComponent('UserCircle'),
+        icon: getIconComponent('FilePlus'),
         route: (serviceType) => `/admin/user/${serviceType}/upload_trade_license`,
       },
       {
         name: 'Non Compliance Records',
-        icon: getIconComponent('UserCircle'),
+        icon: getIconComponent('XCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/non_compliance_records`,
       },
     ],
     admin: [
       {
         name: 'Dashboard',
-        icon: getIconComponent('ClipboardList'), // More specific than CreditCard
+        icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
       },
       {
         name: 'Compliance Action',
-        icon: getIconComponent('ClipboardList'), // More specific than CreditCard
+        icon: getIconComponent('ClipboardList'),
         route: (serviceType) => `/admin/admin/${serviceType}/compliance_action`,
       },
       {
         name: 'Compliance Action Taken',
-        icon: getIconComponent('CheckSquare'), // Represents actions completed
+        icon: getIconComponent('CheckSquare'),
         route: (serviceType) => `/admin/admin/${serviceType}/compliance_action_taken`,
       },
       {
         name: 'Decisions',
-        icon: getIconComponent('Scale'), // Represents judgment/decision making
+        icon: getIconComponent('Scale'),
         route: (serviceType) => `/admin/admin/${serviceType}/ecpf_decisions`,
       },
       {
         name: 'Qualifications',
-        icon: getIconComponent('GraduationCap'), //Relates to academic/professional qualifications
+        icon: getIconComponent('GraduationCap'),
         route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
       },
       {
         name: 'Infrastructures',
-        icon: getIconComponent('Building2'), // Represents buildings/infrastructure
+        icon: getIconComponent('Building2'),
         route: (serviceType) => `/admin/admin/${serviceType}/infrastructures`,
       },
       {
         name: 'Institutes',
-        icon: getIconComponent('Building'), // Represents educational/research institutes.
+        icon: getIconComponent('Building'),
         route: (serviceType) => `/admin/admin/${serviceType}/institutes`,
       },
       {
         name: 'Issue Compliances',
-        icon: getIconComponent('FileText'), //Relates to compliance documentation
+        icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/admin/${serviceType}/issue_compliances`,
       },
       {
         name: 'Positions',
-        icon: getIconComponent('UserCircle'), // Represents job positions
+        icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/admin/${serviceType}/positions`,
       },
       {
         name: 'Promotional Event Types',
-        icon: getIconComponent('Star'), // or 'Megaphone' if available, for promotion
+        icon: getIconComponent('Star'),
         route: (serviceType) => `/admin/admin/${serviceType}/promotional_event_types`,
       },
       {
         name: 'Service Categories',
-        icon: getIconComponent('Layers'), // Represents different categories/layers
+        icon: getIconComponent('Layers'),
         route: (serviceType) => `/admin/admin/${serviceType}/service_categories`,
       },
       {
         name: 'Status',
-        icon: getIconComponent('Sliders'), // Represents progress or settings, better than Clock
+        icon: getIconComponent('Sliders'),
         route: (serviceType) => `/admin/admin/${serviceType}/status`,
       },
       {
         name: 'Types of Firms',
-        icon: getIconComponent('Briefcase'), // Represents different types of businesses
+        icon: getIconComponent('Briefcase'),
         route: (serviceType) => `/admin/admin/${serviceType}/types_of_firms`,
       },
     ],
@@ -411,52 +383,52 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Applications',
-        icon: getIconComponent('FileText'), // Using FileText for Applications
+        icon: getIconComponent('FileText'),
         children: [
           {
             name: 'Independant ECPF Applications',
-            icon: getIconComponent('UserCircle'), // User for Individual
+            icon: getIconComponent('UserCircle'),
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/individual_ecpf_applications`,
           },
           {
             name: 'Collaborated ECPF Applications',
-            icon: getIconComponent('Users2'), // Users2 for Collaboration
+            icon: getIconComponent('Users2'),
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/collaborated_ecpf_applications`,
           },
           {
             name: 'New Branch Applications',
-            icon: getIconComponent('BuildingPlus'), // BuildingPlus or Building2 for Branch, consider adding BuildingPlus to icon list if needed, or just use Building2
+            icon: getIconComponent('Building2'),
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/branch_ecpf_applications`,
           },
           {
             name: 'Renewal Applications',
-            icon: getIconComponent('RefreshCw'), // RefreshCw for Renewal
+            icon: getIconComponent('RefreshCw'),
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_applications`,
           },
         ],
       },
       {
         name: 'Change Requests',
-        icon: getIconComponent('Edit'), // Edit for Change Requests
+        icon: getIconComponent('Edit'),
         children: [
           {
             name: 'ECPF Name Change',
-            icon: getIconComponent('Edit'), // Edit for Change
+            icon: getIconComponent('PenTool'),
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/name_change_applications`,
           },
           {
             name: 'ECPF Location Change',
-            icon: getIconComponent('Building'), // Building for Location
+            icon: getIconComponent('Building'),
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/location_change_applications`,
           },
           {
             name: 'ECPF Ownership Change',
-            icon: getIconComponent('Users'), // Users for Ownership
+            icon: getIconComponent('Users'),
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/ownership_change_applications`,
           },
@@ -464,66 +436,66 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Events',
-        icon: getIconComponent('Briefcase'), // Briefcase for Events
+        icon: getIconComponent('Briefcase'),
         children: [
           {
             name: 'Education Fair Applications',
-            icon: getIconComponent('GraduationCap'), // GraduationCap for Education
+            icon: getIconComponent('GraduationCap'),
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/education_fair_applications`,
           },
           {
             name: 'Mass Media Event Applications',
-            icon: getIconComponent('Monitor'), // Monitor for Media
+            icon: getIconComponent('Monitor'),
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/mass_media_applications`,
           },
           {
             name: 'In House Event Applications',
-            icon: getIconComponent('Building'), // Building for In House
+            icon: getIconComponent('Building'),
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/in_house_event_applications`,
           },
           {
             name: 'Hei Visit Applications',
-            icon: getIconComponent('Building2'), // Building2 for HEI
+            icon: getIconComponent('Building2'),
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/hei_visit_applications`,
           },
         ],
       },
       {
         name: 'ECPF Linkages',
-        icon: getIconComponent('Link'), // Link for Linkages
+        icon: getIconComponent('Link'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_link_establishment`,
       },
       {
         name: 'Bio Data',
-        icon: getIconComponent('Users'), // Users for Bio Data
+        icon: getIconComponent('Users'),
         children: [
           {
             name: 'Add HR',
-            icon: getIconComponent('UserPlus'), // UserPlus for Add
+            icon: getIconComponent('UserPlus'),
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/add_hr`,
           },
           {
             name: 'Add Student',
-            icon: getIconComponent('UserPlus'), // UserPlus for Add
+            icon: getIconComponent('UserPlus'),
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/add_student`,
           },
         ],
       },
       {
         name: 'Non-Complaince Record',
-        icon: getIconComponent('XCircle'), // XCircle for Non-Compliance
+        icon: getIconComponent('XCircle'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/non_compliance_records`,
       },
       {
         name: 'Reports',
-        icon: getIconComponent('FileBarChart'), // FileBarChart for Reports
+        icon: getIconComponent('FileBarChart'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_reports`,
       },
       {
         name: 'Payments',
-        icon: getIconComponent('CreditCard'), // CreditCard for Payments
+        icon: getIconComponent('CreditCard'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/ecpf_payment_history`,
       },
     ],
@@ -535,7 +507,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Applications',
-        icon: getIconComponent('Activity'), //Use activity
+        icon: getIconComponent('FileText'),
         children: [
           {
             name: 'Independant ECPF Applications',
@@ -557,7 +529,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Change Requests',
-        icon: getIconComponent('Activity'), //Use activity
+        icon: getIconComponent('Edit'),
         children: [
           {
             name: 'ECPF Name Change',
@@ -575,7 +547,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Events',
-        icon: getIconComponent('Activity'), //Use activity
+        icon: getIconComponent('Briefcase'),
         children: [
           {
             name: 'Education Fair Applications',
@@ -597,12 +569,12 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'ECPF Linkages',
-        icon: getIconComponent('ClipboardCheck'),
+        icon: getIconComponent('Link'),
         route: (serviceType) => `/admin/chief/${serviceType}/ecpf_link_establishment`,
       },
       {
         name: 'Bio Data',
-        icon: getIconComponent('Activity'), //Use activity
+        icon: getIconComponent('Users'),
         children: [
           {
             name: 'Add HR',
@@ -616,12 +588,12 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Non-Compliance Record',
-        icon: getIconComponent('FileSearch'),
+        icon: getIconComponent('XCircle'),
         route: (serviceType) => `/admin/chief/${serviceType}/non_compliance_records`,
       },
       {
         name: 'Reports',
-        icon: getIconComponent('FileSearch'),
+        icon: getIconComponent('FileBarChart'),
         route: (serviceType) => `/admin/chief/${serviceType}/ecpf_reports`,
       },
       {
@@ -630,10 +602,8 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/chief/${serviceType}/ecpf_payment_history`,
       },
     ],
-    // // Add dealing_officer to ecpf
-    // dealing_officer: dealingOfficerMenuItems,
   },
-  health_certification: {
+  health_certification: { // ... (User, Admin, Dealing Officer, CME/CPD Provider sections for health_certification unchanged) ...
     user: [
       {
         name: 'Dashboard',
@@ -646,7 +616,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Registration Services',
-        icon: getIconComponent('Certificate'),
+        icon: getIconComponent('ClipboardCheck'),
         hidden: () => {
           const store = useHealthCertificationStore()
           return !store.visibleMenus.baseMenus.certification
@@ -654,37 +624,29 @@ const serviceSpecificMenuItems = {
         children: () => {
           const store = useHealthCertificationStore()
           const items = []
-
           if (store.visibleMenus.certificationSubMenus.applyForCertification) {
             items.push({
               name: 'Apply for Registration',
               route: (serviceType) => `/admin/user/${serviceType}/registration`,
             })
           }
-
-          // Always show Track My Applications once application is submitted
           if (store.visibleMenus.certificationSubMenus.myApplications) {
             items.push({
               name: 'Track My Registration',
               route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
             })
           }
-
-          // if (store.visibleMenus.certificationSubMenus.renewal) {
           items.push({
             name: 'Registration Renewal',
             route: (serviceType) => `/admin/user/${serviceType}/renewal`,
             badge: store.visibleMenus.hasRenewalInProgress ? 'In Progress' : null,
           })
-          // }
-
           if (store.visibleMenus.certificationSubMenus.additionalQualification) {
             items.push({
               name: 'Additional Qualification Registration',
               route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
             })
           }
-
           return items
         },
       },
@@ -708,7 +670,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'CoGS Services',
-        icon: getIconComponent('Users'),
+        icon: getIconComponent('Award'),
         hidden: () => {
           const store = useHealthCertificationStore()
           return !store.visibleMenus.baseMenus.cogsManagement
@@ -726,11 +688,11 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Counselor Services',
-        icon: getIconComponent('FileText'),
-        // Assuming Counselor Management should follow same visibility as CPD/COGS
+        icon: getIconComponent('Users'),
         hidden: () => {
           const store = useHealthCertificationStore()
-          return !store.visibleMenus.baseMenus.cpdManagement
+          // Assuming 'counselorManagement' exists in visibleMenus.baseMenus
+          return !store.visibleMenus.baseMenus.counselorManagement
         },
         children: [
           {
@@ -745,23 +707,13 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Profile',
-        icon: getIconComponent('Users'),
+        icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/user_profile`,
         hidden: () => {
           const store = useHealthCertificationStore()
           return !store.visibleMenus.baseMenus.profile
         },
       },
-      // {
-      //   name: 'Reports',
-      //   icon: getIconComponent('FileSearch'),
-      //   route: (serviceType) => `/admin/user/${serviceType}/reports`,
-      //   // Assuming Reports should be visible when CPD/COGS is visible
-      //   hidden: () => {
-      //     const store = useHealthCertificationStore()
-      //     return !store.visibleMenus.baseMenus.cpdManagement
-      //   },
-      // },
     ],
     admin: [
       {
@@ -787,14 +739,9 @@ const serviceSpecificMenuItems = {
           },
         ],
       },
-      // {
-      //   name: 'Self Assessed CPD Activity',
-      //   icon: getIconComponent('FileText'),
-      //   route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
-      // },
       {
         name: 'Document Management',
-        icon: getIconComponent('File'),
+        icon: getIconComponent('Folder'),
         children: [
           {
             name: 'Document Types',
@@ -804,15 +751,11 @@ const serviceSpecificMenuItems = {
             name: 'E-Signatures',
             route: (serviceType) => `/admin/admin/${serviceType}/e_signatures`,
           },
-          // {
-          //   name: 'File Types',
-          //   route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
-          // },
         ],
       },
       {
         name: 'Fee Management',
-        icon: getIconComponent('CreditCard'),
+        icon: getIconComponent('DollarSign'),
         children: [
           {
             name: 'Fee Structures',
@@ -826,7 +769,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Participation',
-        icon: getIconComponent('Users'),
+        icon: getIconComponent('Users2'),
         children: [
           {
             name: 'Categories',
@@ -876,12 +819,12 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'University',
-        icon: getIconComponent('BookOpen'),
+        icon: getIconComponent('GraduationCap'),
         route: (serviceType) => `/admin/admin/${serviceType}/university`,
       },
       {
         name: 'COGS Management',
-        icon: getIconComponent('Building2'),
+        icon: getIconComponent('Award'),
         children: [
           {
             name: 'Agency',
@@ -920,7 +863,6 @@ const serviceSpecificMenuItems = {
             name: 'Renewal Application Lists',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_lists`,
           },
-
           {
             name: 'CoGS Management',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cogs`,
@@ -943,15 +885,11 @@ const serviceSpecificMenuItems = {
             name: 'Manage Providers',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_provider_management`,
           },
-          // {
-          //   name: 'Reports',
-          //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_reports`,
-          // },
         ],
       },
       {
         name: 'Institute Management',
-        icon: getIconComponent('Building2'),
+        icon: getIconComponent('Building'),
         children: [
           {
             name: 'EOI Applications',
@@ -997,20 +935,19 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/profiles`,
       },
-
       {
         name: 'Counselor Application',
-        icon: getIconComponent('ClipboardCheck'),
+        icon: getIconComponent('Users'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/counselor_application`,
       },
       {
         name: 'Complaints',
-        icon: getIconComponent('ClipboardCheck'),
+        icon: getIconComponent('FileSearch'), // Or XCircle/AlertTriangle
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/complaints`,
       },
       {
         name: 'Reports',
-        icon: getIconComponent('ClipboardCheck'),
+        icon: getIconComponent('FileBarChart'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
       },
       {
@@ -1027,22 +964,22 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Apply New CPD',
-        icon: getIconComponent('BookOpen'),
+        icon: getIconComponent('FilePlus'),
         route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cpd_application_details`,
       },
       {
         name: 'Track Applications',
-        icon: getIconComponent('FileText'),
+        icon: getIconComponent('FileSearch'),
         route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cpd_application_tracker`,
       },
       {
         name: 'CPD approved Add Participants',
-        icon: getIconComponent('FileText'),
+        icon: getIconComponent('UserPlus'),
         route: (serviceType) =>
           `/admin/cme_cpd_provider/${serviceType}/cpd_approved_add_participants`,
       },
     ],
-    institutions: [
+    institutions: [ // MODIFIED SECTION for health_certification.institutions
       {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
@@ -1050,7 +987,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'EOI Management',
-        icon: getIconComponent('Activity'),
+        icon: getIconComponent('FileText'),
         children: [
           {
             name: 'Apply for EOI',
@@ -1064,7 +1001,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'DPR Management',
-        icon: getIconComponent('Activity'),
+        icon: getIconComponent('FileText'),
         children: [
           {
             name: 'Apply for DPR',
@@ -1077,59 +1014,67 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Institute Renewal',
-        icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
-      },
-      {
-        name: 'Teaching Hospital',
-        icon: getIconComponent('Activity'),
+        name: 'Institute Profile', 
+        icon: getIconComponent('Building'),
         children: [
           {
-            name: 'Teaching Hospital',
+            name: 'Profile',
+            icon: getIconComponent('UserCircle'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
+          },
+          {
+            name: 'Institute Renewal',
+            icon: getIconComponent('RefreshCw'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
+          },
+
+          {
+            name: 'New Teaching Hospital',
+            icon: getIconComponent('Heart'),
             route: (serviceType) => `/admin/institutions/${serviceType}/new_teaching_hospital`,
           },
           {
-            name: 'Track & Renewal',
+            name: 'Site Visit Schedule',
+            icon: getIconComponent('Heart'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/site_visit_schedule`,
+          },
+          {
+            name: 'Track & Renew Teaching Hospital',
+            icon: getIconComponent('RefreshCw'),
             route: (serviceType) => `/admin/institutions/${serviceType}/renewal_teaching_hospital`,
+          },
+
+
+          {
+            name: 'CAPA',
+            icon: getIconComponent('ClipboardCheck'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
           },
           {
             name: 'New Education Program',
+            icon: getIconComponent('BookOpen'),
             route: (serviceType) => `/admin/institutions/${serviceType}/new_education_program`,
           },
-        ],
-      },
-      {
-        name: 'Institution Profile',
-        icon: getIconComponent('UserCircle'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
-      },
-      {
-        name: 'CAPA',
-        icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
-      },
-      {
-        name: 'Maintenance',
-        icon: getIconComponent('Activity'),
-        children: [
           {
-            name: 'Staff Management',
+            name: 'Faculty Management',
+            icon: getIconComponent('Users'),
             route: (serviceType) => `/admin/institutions/${serviceType}/staff_management`,
           },
           {
-            name: 'Course Management',
+            name: 'Module Management',
+            icon: getIconComponent('GraduationCap'),
             route: (serviceType) => `/admin/institutions/${serviceType}/course_management`,
           },
           {
             name: 'Department Management',
+            icon: getIconComponent('Layers'),
             route: (serviceType) => `/admin/institutions/${serviceType}/department_management`,
           },
         ],
       },
     ],
   },
-  engineering_certification: {
+  engineering_certification: { // ... (User, Admin, Dealing Officer, etc. sections for engineering_certification unchanged) ...
     user: [
       {
         name: 'Dashboard',
@@ -1174,7 +1119,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'CoGS Management',
-        icon: getIconComponent('CreditCard'),
+        icon: getIconComponent('Award'),
         children: [
           {
             name: 'Apply for CoGS',
@@ -1186,14 +1131,12 @@ const serviceSpecificMenuItems = {
           },
         ],
       },
-
       {
         name: 'Profile',
         icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/profile`,
       },
     ],
-
     dealing_officer: [
       {
         name: 'Dashboard',
@@ -1257,7 +1200,6 @@ const serviceSpecificMenuItems = {
             name: 'CAPA Management',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/capa_management`,
           },
-
           {
             name: 'All Institute Profile',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/all_institute_profile`,
@@ -1290,7 +1232,6 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('Users'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/profiles`,
       },
-
       {
         name: 'Payments',
         icon: getIconComponent('DollarSign'),
@@ -1302,7 +1243,6 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
       },
     ],
-
     chief: [
       {
         name: 'Dashboard',
@@ -1310,7 +1250,6 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/chief/${serviceType}/dashboard`,
       },
     ],
-
     director: [
       {
         name: 'Dashboard',
@@ -1318,7 +1257,6 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/director/${serviceType}/dashboard`,
       },
     ],
-
     admin: [
       {
         name: 'Dashboard',
@@ -1327,7 +1265,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Content & Learning',
-        icon: getIconComponent('BookOpen'), // Suggest changing to a more appropriate icon if needed
+        icon: getIconComponent('BookOpen'),
         children: [
           {
             name: 'CPD Activities',
@@ -1352,8 +1290,8 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('Users'),
         children: [
           {
-            name: 'Users', // Kept 'Users' as it seems to refer to general user management in this context
-            route: (serviceType) => `/admin/admin/${serviceType}/user_management`, // Assuming this route is for general user list/management
+            name: 'Users',
+            route: (serviceType) => `/admin/admin/${serviceType}/user_management`,
           },
           {
             name: 'Personnel Categories',
@@ -1375,7 +1313,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Registration',
-        icon: getIconComponent('ClipboardCheck'), // Suggest changing to a more appropriate icon if needed
+        icon: getIconComponent('ClipboardCheck'),
         children: [
           {
             name: 'Registration Types',
@@ -1397,7 +1335,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'System Configuration',
-        icon: getIconComponent('Settings'), // Suggest using a 'Settings' icon if available
+        icon: getIconComponent('Settings'),
         children: [
           {
             name: 'Document Types',
@@ -1439,7 +1377,6 @@ const serviceSpecificMenuItems = {
         ],
       },
     ],
-
     super_admin: [
       {
         name: 'Dashboard',
@@ -1447,7 +1384,6 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/super_admin/${serviceType}/dashboard`,
       },
     ],
-
     cme_cpd_provider: [
       {
         name: 'Dashboard',
@@ -1456,12 +1392,12 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'CPD Application',
-        icon: getIconComponent('FileText'),
+        icon: getIconComponent('FilePlus'),
         route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cpd_application_details`,
       },
       {
         name: 'Track Applications',
-        icon: getIconComponent('Search'),
+        icon: getIconComponent('FileSearch'),
         route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cpd_application_tracker`,
       },
       {
@@ -1472,12 +1408,11 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Profile',
-        icon: getIconComponent('UserPlus'),
+        icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cme_cpd_provider_profile`,
       },
     ],
-
-    institutions: [
+    institutions: [ // MODIFIED SECTION for engineering_certification.institutions
       {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
@@ -1485,7 +1420,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'EOI Management',
-        icon: getIconComponent('Activity'),
+        icon: getIconComponent('FileText'),
         children: [
           {
             name: 'Apply for EOI',
@@ -1499,7 +1434,7 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'DPR Management',
-        icon: getIconComponent('Activity'),
+        icon: getIconComponent('FileText'),
         children: [
           {
             name: 'Apply for DPR',
@@ -1512,61 +1447,62 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Institute Renewal',
-        icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
-      },
-      {
-        name: 'Teaching Institutes',
-        icon: getIconComponent('Activity'),
+        name: 'Institute Management', // Parent Item
+        icon: getIconComponent('Building'),
         children: [
           {
-            name: 'Training Center',
-            route: (serviceType) =>
-              `/admin/institutions/${serviceType}/teaching_center_application`,
+            name: 'Institute Renewal',
+            icon: getIconComponent('RefreshCw'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
+          },
+          // Flattened children of former "Teaching Institutes"
+          {
+            name: 'New Teaching Institute', // R
+            icon: getIconComponent('Building2'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_application`,
           },
           {
-            name: 'Track & Renewal',
-            route: (serviceType) =>
-              `/admin/institutions/${serviceType}/teaching_center_track_and_renew`,
+            name: 'Track & Renew Teaching Institute', // Renamed for clarity
+            icon: getIconComponent('RefreshCw'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_track_and_renew`,
           },
           {
             name: 'New Education Program',
+            icon: getIconComponent('BookOpen'),
             route: (serviceType) => `/admin/institutions/${serviceType}/new_education_program`,
           },
-        ],
-      },
-      {
-        name: 'Institution Profile',
-        icon: getIconComponent('UserCircle'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
-      },
-      {
-        name: 'CAPA',
-        icon: getIconComponent('ClipboardCheck'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
-      },
-      {
-        name: 'Maintenance',
-        icon: getIconComponent('Activity'),
-        children: [
+          // Other direct children
           {
-            name: 'Staff Management',
+            name: 'Institution Profile',
+            icon: getIconComponent('UserCircle'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/institution_profile`,
+          },
+          {
+            name: 'CAPA',
+            icon: getIconComponent('ClipboardCheck'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
+          },
+          // Flattened children of former "Maintenance"
+          {
+            name: 'Faculty Management',
+            icon: getIconComponent('Users'),
             route: (serviceType) => `/admin/institutions/${serviceType}/staff_management`,
           },
           {
-            name: 'Course Management',
+            name: 'Module Management',
+            icon: getIconComponent('GraduationCap'),
             route: (serviceType) => `/admin/institutions/${serviceType}/course_management`,
           },
           {
             name: 'Department Management',
+            icon: getIconComponent('Layers'),
             route: (serviceType) => `/admin/institutions/${serviceType}/department_management`,
           },
         ],
       },
     ],
   },
-  accreditation: {
+  accreditation: { // ... (Accreditation section unchanged) ...
     user: [
       {
         name: 'Dashboard',
@@ -1575,33 +1511,28 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Create Institue Profile',
-        icon: getIconComponent('FileSearch'),
+        icon: getIconComponent('Building'),
         route: (serviceType) => `/admin/user/${serviceType}/institute_profile`,
       },
       {
         name: 'Accreditation',
-        icon: getIconComponent('ClipboardList'),
+        icon: getIconComponent('Award'),
         children: [
           {
             name: 'Apply for Accreditation',
-            icon: getIconComponent('ClipboardList'),
+            icon: getIconComponent('FilePlus'),
             route: (serviceType) => `/admin/user/${serviceType}/apply_for_accreditation`,
           },
-          // {
-          //   name: 'Track My Applications',
-          //   icon: getIconComponent('Scale'),
-          //   route: (serviceType) => `/admin/user/${serviceType}/appeal_lists`,
-          // },
         ],
       },
       {
         name: 'Appeal for Accreditation',
-        icon: getIconComponent('FileSearch'),
+        icon: getIconComponent('History'),
         route: (serviceType) => `/admin/user/${serviceType}/appeal`,
       },
       {
         name: 'CoI Confirmation',
-        icon: getIconComponent('CheckCircle'),
+        icon: getIconComponent('CheckSquare'),
         route: (serviceType) => `/admin/user/${serviceType}/coi_confirmation`,
       },
       {
@@ -1611,23 +1542,22 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Track Applications',
-        icon: getIconComponent('FileText'),
+        icon: getIconComponent('FileSearch'),
         route: (serviceType) => `/admin/user/${serviceType}/results`,
       },
-
       {
         name: 'Profile',
-        icon: getIconComponent('ClipboardList'),
+        icon: getIconComponent('UserCircle'),
         children: [
           {
             name: 'Institute Profile',
-            icon: getIconComponent('ClipboardList'),
+            icon: getIconComponent('Building'),
             route: (serviceType) => `/admin/user/${serviceType}/profile`,
           },
           {
             name: 'User Profile',
-            icon: getIconComponent('Scale'),
-            route: (serviceType) => `/admin/usser/${serviceType}/user_profile`,
+            icon: getIconComponent('Users'), // Corrected from User
+            route: (serviceType) => `/admin/user/${serviceType}/user_profile`, // Corrected "usser" to "user"
           },
         ],
       },
@@ -1635,12 +1565,12 @@ const serviceSpecificMenuItems = {
     dealing_officer: [
       {
         name: 'Dashboard',
-        icon: getIconComponent('LayoutDashboard'), // Corrected icon name
-        route: (serviceType) => `/admin/dealing_Officer/${serviceType}/dashboard`,
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`, // Corrected "dealing_Officer"
       },
       {
         name: 'Accreditation Applications',
-        icon: getIconComponent('CreditCard'),
+        icon: getIconComponent('ClipboardList'),
         children: [
           {
             name: 'Institutional Accreditation',
@@ -1657,7 +1587,7 @@ const serviceSpecificMenuItems = {
           },
           {
             name: 'Accreditation Assessment',
-            icon: getIconComponent('ClipboardCheck'),
+            icon: getIconComponent('CheckSquare'),
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/accreditation_assessment`,
           },
@@ -1665,19 +1595,17 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Appeals Applications',
-        icon: getIconComponent('CheckCircle'),
+        icon: getIconComponent('History'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/appeals`,
       },
-
       {
         name: 'Assessor Management',
-        icon: getIconComponent('ClipboardCheck'),
+        icon: getIconComponent('Users'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/assessor_management`,
       },
-
       {
         name: 'Reports',
-        icon: getIconComponent('FileText'),
+        icon: getIconComponent('FileBarChart'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
       },
       {
@@ -1698,17 +1626,17 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Applications',
-            icon: getIconComponent('ClipboardList'),
+            icon: getIconComponent('FileText'),
             route: (serviceType) => `/admin/admin/${serviceType}/application_lists`,
           },
           {
             name: 'Appeals',
-            icon: getIconComponent('Scale'),
+            icon: getIconComponent('History'),
             route: (serviceType) => `/admin/admin/${serviceType}/appeal_lists`,
           },
           {
             name: 'Past Accreditations',
-            icon: getIconComponent('History'),
+            icon: getIconComponent('History'), // Or Archive if available
             route: (serviceType) => `/admin/admin/${serviceType}/past_accreditations`,
           },
         ],
@@ -1724,12 +1652,12 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Manage Institutes',
-            icon: getIconComponent('Building'),
+            icon: getIconComponent('Building2'),
             route: (serviceType) => `/admin/admin/${serviceType}/institute`,
           },
           {
             name: 'Assessor Pool',
-            icon: getIconComponent('Users'),
+            icon: getIconComponent('Users2'),
             route: (serviceType) => `/admin/admin/${serviceType}/assessor_pool`,
           },
           {
@@ -1745,17 +1673,17 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Categories',
-            icon: getIconComponent('UserCircle'),
+            icon: getIconComponent('List'),
             route: (serviceType) => `/admin/admin/${serviceType}/employee_category`,
           },
           {
             name: 'Employee Types',
-            icon: getIconComponent('Users'),
+            icon: getIconComponent('Briefcase'),
             route: (serviceType) => `/admin/admin/${serviceType}/employee_type`,
           },
           {
             name: 'Staff Types',
-            icon: getIconComponent('UserPlus'),
+            icon: getIconComponent('Users'),
             route: (serviceType) => `/admin/admin/${serviceType}/staff_type`,
           },
           {
@@ -1843,7 +1771,7 @@ const serviceSpecificMenuItems = {
 
 /**
  * Generates navigation items based on the service type and role.
- * @param {string} resolveDirective
+ * @param {string} role
  * @param {string} serviceType
  * @returns {Array}
  */
@@ -1853,7 +1781,6 @@ export const generateNavigationItems = (role, serviceType) => {
   const serviceMenu = serviceSpecificMenuItems[serviceType]
   if (!serviceMenu || !serviceMenu[role]) return []
 
-  // Process the menu items to resolve dynamic routes and handle hidden properties
   const processMenuItem = (item) => {
     let isHidden = false
     if (typeof item.hidden === 'function') {
@@ -1862,7 +1789,6 @@ export const generateNavigationItems = (role, serviceType) => {
       isHidden = item.hidden
     }
 
-    // If the item is hidden, return null (don't include it in the menu)
     if (isHidden) {
       return null
     }
@@ -1873,24 +1799,19 @@ export const generateNavigationItems = (role, serviceType) => {
     }
 
     if (newItem.children) {
-      // If children is a function, execute it to get the items
       const childItems =
         typeof newItem.children === 'function' ? newItem.children() : newItem.children
 
-      // Process children and filter out null items (recursively)
       newItem.children = childItems
-        .map((child) => processMenuItem(child)) // Recursively process child items
+        .map((child) => processMenuItem(child))
         .filter((child) => child !== null)
 
-      // If all children are hidden, hide the parent item
-      if (newItem.children.length === 0) {
+      if (newItem.children.length === 0 && !newItem.route) {
         return null
       }
     }
-
     return newItem
   }
 
-  // Process and filter the menu items
   return serviceMenu[role].map(processMenuItem).filter((item) => item !== null)
 }

@@ -133,6 +133,8 @@ import StaffManagement from '@/components/dashboard/mhpccomponents/institutions/
 import CourseManagement from '@/components/dashboard/mhpccomponents/institutions/CourseManagement.vue'
 import DepartmentManagement from '@/components/dashboard/mhpccomponents/institutions/DepartmentManagement.vue'
 import CPDapprovedAddParticipants from '@/components/dashboard/mhpccomponents/cpdCpdProvider/Participantscomponents/CPDapprovedAddParticipants.vue'
+import PhysicalVerification from '@/components/dashboard/mhpccomponents/institutions/PhysicalVerification.vue'
+
 
 const { role } = useAuthStore()
 const route = useRoute()
@@ -342,6 +344,9 @@ const bmhInstitutionsComponent = computed(() => {
       return CourseManagement
     case path.endsWith('/health_certification/department_management'):
       return DepartmentManagement
+    case path.endsWith('/health_certification/site_visit_schedule'):
+      return PhysicalVerification
+
     default:
       return null
   }
