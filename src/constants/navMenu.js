@@ -1014,7 +1014,7 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Institute Profile', // Parent Item
+        name: 'Institute Profile', 
         icon: getIconComponent('Building'),
         children: [
           {
@@ -1027,14 +1027,19 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('RefreshCw'),
             route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
           },
-          // Flattened children of former "Teaching Hospital"
+
           {
-            name: 'New Teaching Hospital', // Renamed for clarity if 'Teaching Hospital' is too generic
+            name: 'New Teaching Hospital',
             icon: getIconComponent('Heart'),
             route: (serviceType) => `/admin/institutions/${serviceType}/new_teaching_hospital`,
           },
           {
-            name: 'Track & Renew Teaching Hospital', // Renamed for clarity
+            name: 'Site Visit Schedule',
+            icon: getIconComponent('Heart'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/site_visit_schedule`,
+          },
+          {
+            name: 'Track & Renew Teaching Hospital',
             icon: getIconComponent('RefreshCw'),
             route: (serviceType) => `/admin/institutions/${serviceType}/renewal_teaching_hospital`,
           },

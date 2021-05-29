@@ -430,6 +430,7 @@ export default {
       staff_management: mhpcDashboard,
       course_management: mhpcDashboard,
       department_management: mhpcDashboard,
+      site_visit_schedule: mhpcDashboard,
 
       // ... other Health Certification routes for director
     },

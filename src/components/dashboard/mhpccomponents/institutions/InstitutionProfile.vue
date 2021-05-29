@@ -1,3 +1,4 @@
+```vue
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -33,15 +34,15 @@
             <div class="flex items-center gap-4">
               <span
                 :class="{
-                  'bg-green-100 text-green-800': institute.review_decision === 'Approved',
-                  'bg-yellow-100 text-yellow-800': institute.review_decision === 'Pending',
+                  'bg-green-100 text-green-800': institute.do_dpr_review_decision === 'Approved',
+                  'bg-yellow-100 text-yellow-800': institute.do_dpr_review_decision === 'Pending',
                   'bg-red-100 text-red-800':
-                    institute.review_decision !== 'Approved' &&
-                    institute.review_decision !== 'Pending',
+                    institute.do_dpr_review_decision !== 'Approved' &&
+                    institute.do_dpr_review_decision !== 'Pending',
                 }"
                 class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
               >
-                {{ institute.review_decision }}
+                {{ institute.do_dpr_review_decision }}
               </span>
             </div>
           </div>
@@ -86,11 +87,11 @@
             <dl class="space-y-4">
               <div>
                 <dt class="text-sm font-medium text-gray-600">Course</dt>
-                <dd class="text-gray-800">{{ institute.title_of_course }}</dd>
+                <dd class="text-gray-800">{{ institute.title_of_course || 'N/A' }}</dd>
               </div>
               <div>
                 <dt class="text-sm font-medium text-gray-600">Duration</dt>
-                <dd class="text-gray-800">{{ institute.course_duration }} Months</dd>
+                <dd class="text-gray-800">{{ institute.course_duration ? `${institute.course_duration} Months` : 'N/A' }}</dd>
               </div>
               <div>
                 <dt class="text-sm font-medium text-gray-600">Commencement Date</dt>
@@ -104,7 +105,7 @@
                       ? 'Diploma'
                       : institute.type_of_programme === 'B'
                         ? 'Bachelor'
-                        : 'Other'
+                        : institute.type_of_programme || 'N/A'
                   }}
                 </dd>
               </div>
@@ -125,7 +126,7 @@
               </div>
               <div>
                 <dt class="text-sm font-medium text-gray-600">Remarks</dt>
-                <dd class="text-gray-800">{{ institute.remarks || 'None' }}</dd>
+                <dd class="text-gray-800">{{ institute.institute_dpr_remarks || 'None' }}</dd>
               </div>
             </dl>
           </div>
@@ -257,72 +258,123 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useToast } from 'vue-toastification'
-import apiServices from '@/services/services'
-import { useAuthStore } from '@/stores/authStore'
-import { storeToRefs } from 'pinia'
-import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
-import { GlobeAltIcon, DocumentIcon } from '@heroicons/vue/24/outline'
+import { ref, onMounted, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { useToast } from 'vue-toastification';
+import apiServices from '@/services/services';
+import { useAuthStore } from '@/stores/authStore';
+import { storeToRefs } from 'pinia';
+import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue';
+import { GlobeAltIcon, DocumentIcon } from '@heroicons/vue/24/outline';
 
-const institute = ref(null)
-const teachingCenters = ref([])
-const errorMessage = ref('')
-const authStore = useAuthStore()
-const { user } = storeToRefs(authStore)
-const toast = useToast()
+const route = useRoute();
+const institute = ref(null);
+const teachingCenters = ref([]);
+const errorMessage = ref('');
+const authStore = useAuthStore();
+const { user } = storeToRefs(authStore);
+const toast = useToast();
 
 // Computed properties for formatted dates
 const formattedCommencementDate = computed(() => {
-  return institute.value?.commencement_date ? formatDate(institute.value.commencement_date) : 'N/A'
-})
+  return institute.value?.commencement_date
+    ? formatDate(institute.value.commencement_date)
+    : 'N/A';
+});
 
 const formattedValidSince = computed(() => {
-  return institute.value?.valid_since ? formatDate(institute.value.valid_since) : 'N/A'
-})
+  return institute.value?.valid_since ? formatDate(institute.value.valid_since) : 'N/A';
+});
 
 const formattedValidTill = computed(() => {
-  return institute.value?.valid_till ? formatDate(institute.value.valid_till) : 'N/A'
-})
+  return institute.value?.valid_till ? formatDate(institute.value.valid_till) : 'N/A';
+});
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-}
+  if (!dateString) return 'N/A';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+};
 
 // Fetch institute data
 const fetchInstitute = async () => {
+  errorMessage.value = ''; // Clear previous errors
+  institute.value = null; // Reset institute data
+  teachingCenters.value = []; // Reset teaching centers
+
   try {
-    const response = await apiServices.getMhpcInstitute('1')
-    if (!response || !response.data) {
-      throw new Error("Invalid API response. Expected 'results' array.")
+    const instituteId = route.params.id || route.params.cid || user.value?.cid || '1';
+    if (!instituteId) {
+      errorMessage.value = 'Institute ID or CID is not available.';
+      toast.error(errorMessage.value);
+      return;
     }
 
-    if (!user.value || !user.value.cid) {
-      throw new Error('User CID is not available.')
+    const response = await apiServices.getMhpcInstitute(instituteId);
+    console.log('API Response:', JSON.stringify(response.data, null, 2));
+
+    let instituteData = null;
+
+    // Case 1: Handle direct array response
+    if (Array.isArray(response.data)) {
+      if (response.data.length === 0) {
+        errorMessage.value = `No institute found for the identifier: ${instituteId}.`;
+        toast.info(errorMessage.value);
+        return;
+      }
+      instituteData = response.data[0]; // Take the first institute
+    }
+    // Case 2: Handle object with 'results' property
+    else if (response.data && 'results' in response.data) {
+      if (!Array.isArray(response.data.results) || response.data.results.length === 0) {
+        errorMessage.value = `No institute found for the identifier: ${instituteId}.`;
+        toast.info(errorMessage.value);
+        return;
+      }
+      instituteData = response.data.results[0]; // Take the first institute
+    }
+    // Case 3: Handle single object response
+    else if (response.data && typeof response.data === 'object') {
+      // Verify the object has expected properties to ensure it's valid institute data
+      if (!response.data.id || !response.data.CID) {
+        throw new Error(`Invalid institute data: Missing required fields (id or CID)`);
+      }
+      instituteData = response.data; // Use the object directly
+    }
+    // Case 4: Invalid response format
+    else {
+      throw new Error(`Invalid API response format: ${JSON.stringify(response.data)}`);
     }
 
-    institute.value = response.data
-
-    if (!institute.value) {
-      throw new Error(`Institute with CID ${user.value.cid} not found.`)
+    // Authorization check
+    if (user.value?.cid && instituteData.CID !== user.value.cid) {
+      if (instituteId === user.value.cid) {
+        errorMessage.value = `Data Mismatch: Fetched institute (CID: ${instituteData.CID}) does not match your requested CID (${user.value.cid}).`;
+        toast.error(errorMessage.value);
+        return;
+      }
+      // Allow viewing other profiles if instituteId wasn't user CID
     }
 
-    // Populate teaching centers from institute.teaching_centers
-    teachingCenters.value = institute.value.teaching_centers || []
+    // Assign data
+    institute.value = instituteData;
+    teachingCenters.value = instituteData.teaching_centers || [];
+
   } catch (error) {
-    console.error('Error fetching institute:', error)
-    errorMessage.value = error.message || 'An unexpected error occurred. Please try again.'
-    toast.error(errorMessage.value)
+    console.error('Error fetching institute:', error);
+    institute.value = null;
+    teachingCenters.value = [];
+    errorMessage.value = error.message || 'An unexpected error occurred. Please try again.';
+    toast.error(errorMessage.value);
   }
-}
+};
 
 onMounted(() => {
-  fetchInstitute()
-})
+  fetchInstitute();
+});
 </script>
 
 <style scoped>
 /* No additional styles needed, Tailwind CSS handles everything */
 </style>
+```

@@ -647,7 +647,7 @@ export default {
   },
    // --- NEW: Masters Hospital/Center Types ---
   /**
-   
+
    * @param {object} params - Optional query parameters (e.g., { is_active: true })
    * @returns {Promise}
    */
@@ -805,10 +805,6 @@ export default {
   deleteMhpcCpdTaskParticipant(id) {
     return apiClient.delete(`/mhpc/mhpc-cpd-task-participants/${id}/`)
   },
-  // --- Complaint Management Endpoints ---
-  getComplaints(params = {}) {
-    return apiClient.get('/mhpc/complaints/', { params })
-  },
  // ***** NEW METHOD FOR BULK UPLOAD *****
   /**
    * Bulk creates CPD Task Participants from a CSV file.
@@ -828,6 +824,11 @@ export default {
       }
     })
   },
+  // --- Complaint Management Endpoints ---
+  getComplaints(params = {}) {
+    return apiClient.get('/mhpc/complaints/', { params })
+  },
+
   getComplaintDetails(complaintId) {
     return apiClient.get(`/mhpc/complaints/${complaintId}/`)
   },
@@ -849,5 +850,145 @@ export default {
         'Content-Type': 'multipart/form-data',
       },
     })
+  },
+
+  // --- MHPC Faculty Assignment Endpoints ---
+  getMhpcFacultyAssignments() {
+    return apiClient.get('/mhpc/mhpc-faculty-assignment/')
+  },
+  createMhpcFacultyAssignment(data) {
+    return apiClient.post('/mhpc/mhpc-faculty-assignment/', data)
+  },
+  getMhpcFacultyAssignment(id) {
+    return apiClient.get(`/mhpc/mhpc-faculty-assignment/${id}/`)
+  },
+  updateMhpcFacultyAssignment(id, data) {
+    return apiClient.put(`/mhpc/mhpc-faculty-assignment/${id}/`, data)
+  },
+  patchMhpcFacultyAssignment(id, data) {
+    return apiClient.patch(`/mhpc/mhpc-faculty-assignment/${id}/`, data)
+  },
+  deleteMhpcFacultyAssignment(id) {
+    return apiClient.delete(`/mhpc/mhpc-faculty-assignment/${id}/`)
+  },
+
+  // --- MHPC Module Endpoints ---
+  getMhpcModules() {
+    return apiClient.get('/mhpc/mhpc-module/')
+  },
+  createMhpcModule(data) {
+    return apiClient.post('/mhpc/mhpc-module/', data)
+  },
+  getMhpcModule(id) {
+    return apiClient.get(`/mhpc/mhpc-module/${id}/`)
+  },
+  updateMhpcModule(id, data) {
+    return apiClient.put(`/mhpc/mhpc-module/${id}/`, data)
+  },
+  patchMhpcModule(id, data) {
+    return apiClient.patch(`/mhpc/mhpc-module/${id}/`, data)
+  },
+  deleteMhpcModule(id) {
+    return apiClient.delete(`/mhpc/mhpc-module/${id}/`)
+  },
+
+  // --- MHPC Program Master Endpoints ---
+  getMhpcProgramMasters() {
+    return apiClient.get('/mhpc/mhpc-program-master/')
+  },
+  createMhpcProgramMaster(data) {
+    return apiClient.post('/mhpc/mhpc-program-master/', data)
+  },
+  getMhpcProgramMaster(id) {
+    return apiClient.get(`/mhpc/mhpc-program-master/${id}/`)
+  },
+  updateMhpcProgramMaster(id, data) {
+    return apiClient.put(`/mhpc/mhpc-program-master/${id}/`, data)
+  },
+  patchMhpcProgramMaster(id, data) {
+    return apiClient.patch(`/mhpc/mhpc-program-master/${id}/`, data)
+  },
+  deleteMhpcProgramMaster(id) {
+    return apiClient.delete(`/mhpc/mhpc-program-master/${id}/`)
+  },
+
+  // --- MHPC Program Offered Endpoints ---
+  getMhpcProgramsOffered() {
+    return apiClient.get('/mhpc/mhpc-program-offered/')
+  },
+  createMhpcProgramOffered(data) {
+    return apiClient.post('/mhpc/mhpc-program-offered/', data)
+  },
+  getMhpcProgramOffered(id) {
+    return apiClient.get(`/mhpc/mhpc-program-offered/${id}/`)
+  },
+  updateMhpcProgramOffered(id, data) {
+    return apiClient.put(`/mhpc/mhpc-program-offered/${id}/`, data)
+  },
+  patchMhpcProgramOffered(id, data) {
+    return apiClient.patch(`/mhpc/mhpc-program-offered/${id}/`, data)
+  },
+  deleteMhpcProgramOffered(id) {
+    return apiClient.delete(`/mhpc/mhpc-program-offered/${id}/`)
+  },
+
+  // --- MHPC Semester Endpoints ---
+  getMhpcSemesters() {
+    return apiClient.get('/mhpc/mhpc-semester/')
+  },
+  createMhpcSemester(data) {
+    return apiClient.post('/mhpc/mhpc-semester/', data)
+  },
+  getMhpcSemester(id) {
+    return apiClient.get(`/mhpc/mhpc-semester/${id}/`)
+  },
+  updateMhpcSemester(id, data) {
+    return apiClient.put(`/mhpc/mhpc-semester/${id}/`, data)
+  },
+  patchMhpcSemester(id, data) {
+    return apiClient.patch(`/mhpc/mhpc-semester/${id}/`, data)
+  },
+  deleteMhpcSemester(id) {
+    return apiClient.delete(`/mhpc/mhpc-semester/${id}/`)
+  },
+
+  // --- MHPC Teaching Faculty Endpoints ---
+  getMhpcTeachingFaculties() {
+    return apiClient.get('/mhpc/mhpc-teaching-faculty/')
+  },
+  createMhpcTeachingFaculty(data) {
+    return apiClient.post('/mhpc/mhpc-teaching-faculty/', data)
+  },
+  getMhpcTeachingFaculty(id) {
+    return apiClient.get(`/mhpc/mhpc-teaching-faculty/${id}/`)
+  },
+  updateMhpcTeachingFaculty(id, data) {
+    return apiClient.put(`/mhpc/mhpc-teaching-faculty/${id}/`, data)
+  },
+  patchMhpcTeachingFaculty(id, data) {
+    return apiClient.patch(`/mhpc/mhpc-teaching-faculty/${id}/`, data)
+  },
+  deleteMhpcTeachingFaculty(id) {
+    return apiClient.delete(`/mhpc/mhpc-teaching-faculty/${id}/`)
+  },
+
+  // --- MHPC Term Endpoints ---
+  getMhpcTerms() {
+    return apiClient.get('/mhpc/mhpc-term/')
+  },
+  createMhpcTerm(data) {
+    return apiClient.post('/mhpc/mhpc-term/', data)
+  },
+  getMhpcTerm(id) {
+    return apiClient.get(`/mhpc/mhpc-term/${id}/`)
+  },
+  updateMhpcTerm(id, data) {
+    return apiClient.put(`/mhpc/mhpc-term/${id}/`, data)
+  },
+  patchMhpcTerm(id, data) {
+    return apiClient.patch(`/mhpc/mhpc-term/${id}/`, data)
+  },
+  deleteMhpcTerm(id) {
+    return apiClient.delete(`/mhpc/mhpc-term/${id}/`)
   },
 }
