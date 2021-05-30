@@ -6,7 +6,7 @@
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-          Total Pending/Reviewed: {{ teachingCenters.length }}
+          Total Pending/Reviewed: {{ loading ? 'Loading...' : teachingCenters.length }}
         </span>
       </div>
     </div>
@@ -47,8 +47,8 @@
             class="inline-flex rounded-md p-1.5"
             :class="
               alert.type === 'success'
-                ? 'text-green-500 hover:bg-green-100'
-                : 'text-red-500 hover:bg-red-100'
+                ? 'text-green-500 hover:bg-green-100 focus:ring-2 focus:ring-green-500'
+                : 'text-red-500 hover:bg-red-100 focus:ring-2 focus:ring-red-500'
             "
           >
             <span class="sr-only">Dismiss</span>
@@ -64,7 +64,6 @@
       </div>
     </div>
 
-
     <!-- Loading Spinner -->
     <div v-if="loading" class="flex justify-center my-8">
       <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -72,13 +71,13 @@
 
     <!-- No Data Message -->
     <div
-      v-else-if="teachingCenters.length === 0"
+      v-else-if="!loading && teachingCenters.length === 0"
       class="bg-white p-8 text-center text-gray-500 rounded-xl shadow-sm border border-gray-100"
     >
       <p>No new teaching center applications found.</p>
     </div>
 
-    <!-- Teaching Hospitals Table -->
+    <!-- Teaching Centers Table -->
     <div v-else class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -100,12 +99,15 @@
               class="hover:bg-gray-50 transition-colors"
             >
               <td class="table-td">{{ center.institute_details?.name_of_institution || 'N/A' }}</td>
-              <td class="table-td font-medium text-gray-900">{{ center.center_name }}</td>
-              <td class="table-td">{{ center.center_location }}, {{ center.state_dzongkhag }}</td>
+              <td class="table-td font-medium text-gray-900">{{ center.center_name || 'N/A' }}</td>
               <td class="table-td">
-                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-cyan-100 text-cyan-800">
+                {{ center.center_location || 'N/A' }}{{ center.state_dzongkhag ? `, ${center.state_dzongkhag}` : '' }}
+              </td>
+              <td class="table-td">
+                <span v-if="center.target_category" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-cyan-100 text-cyan-800">
                   {{ center.target_category }}
                 </span>
+                <span v-else>N/A</span>
               </td>
               <td class="table-td">{{ center.created_at ? new Date(center.created_at).toLocaleDateString() : 'N/A' }}</td>
               <td class="table-td">
@@ -113,7 +115,7 @@
                   class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
                   :class="getStatusClass(center.tc_review_decision)"
                 >
-                  {{ center.tc_review_decision ? center.tc_review_decision.replace(/_/g, ' ') : 'Pending Review' }}
+                  {{ formatStatusText(center.tc_review_decision) }}
                 </span>
               </td>
               <td class="table-td">
@@ -130,6 +132,7 @@
       </div>
     </div>
 
+    <!-- Application Details Modal -->
     <TeachingHospitalsDetailsModal
       :is-open="isModalOpen"
       :hospital-details="selectedApplication"
@@ -139,7 +142,7 @@
       @submit-verification="triggerSubmitVerification"
     />
 
-    <!-- Confirmation Modal -->
+    <!-- Confirmation Modal for Actions -->
     <div v-if="confirmModal.show" class="fixed z-30 inset-0 overflow-y-auto">
       <div
         class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
@@ -147,23 +150,30 @@
         <div
           class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
           @click="confirmModal.show = false"
+          aria-hidden="true"
         ></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen"></span>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"> </span>
         <div
           class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
         >
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div
-                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full sm:mx-0 sm:h-10 sm:w-10"
+                :class="{
+                  'bg-green-100': confirmModal.action === 'approve',
+                  'bg-blue-100': confirmModal.action === 'submit-verification',
+                  'bg-red-100': confirmModal.action === 'reject'
+                }"
               >
-                <svg
-                  class="h-6 w-6 text-red-600"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
+                <!-- Icon based on action -->
+                <svg v-if="confirmModal.action === 'approve'" class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <svg v-else-if="confirmModal.action === 'submit-verification'" class="h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <svg v-else class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" >
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -180,6 +190,17 @@
                   <p class="text-sm text-gray-500">
                     {{ confirmModal.message }}
                   </p>
+                  <!-- Additional input for rejection reason if action is reject and payload structure needs it -->
+                   <div v-if="confirmModal.action === 'reject' && !confirmModal.payload?.tc_reason_if_rejected" class="mt-4">
+                      <label for="rejectionReasonConfirm" class="block text-sm font-medium text-gray-700">Rejection Reason (Required)</label>
+                      <textarea
+                        id="rejectionReasonConfirm"
+                        v-model="rejectionReasonInput"
+                        rows="3"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        placeholder="Provide a clear reason for rejection..."
+                      ></textarea>
+                  </div>
                 </div>
               </div>
             </div>
@@ -188,17 +209,20 @@
             <button
               type="button"
               @click="confirmAction"
+              :disabled="loading || (confirmModal.action === 'reject' && !confirmModal.payload?.tc_reason_if_rejected && !rejectionReasonInput.trim())"
               :class="`inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm
-                ${confirmModal.action === 'approve' ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
-                : confirmModal.action === 'submit-verification' ? 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
-                : 'bg-red-600 hover:bg-red-700 focus:ring-red-500'}`"
+                ${confirmModal.action === 'approve' ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500 disabled:bg-green-300'
+                : confirmModal.action === 'submit-verification' ? 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 disabled:bg-blue-300'
+                : 'bg-red-600 hover:bg-red-700 focus:ring-red-500 disabled:bg-red-300'}`"
             >
-              {{ confirmModal.buttonText || 'Confirm' }}
+              <span v-if="loading && confirmModal.show">Processing...</span>
+              <span v-else>{{ confirmModal.buttonText || 'Confirm' }}</span>
             </button>
             <button
               type="button"
               @click="confirmModal.show = false"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              :disabled="loading"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-100"
             >
               Cancel
             </button>
@@ -212,24 +236,27 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+// Make sure these paths are correct for your project structure
 import TeachingHospitalsDetailsModal from '../modals/TeachingHospitalsDetailsModal.vue'
 import apiServices from '@/services/services.js'
 
 const teachingCenters = ref([])
 const isModalOpen = ref(false)
-const selectedApplication = ref({})
-const loading = ref(false)
+const selectedApplication = ref({}) // Will hold the center object for the modal
+const loading = ref(false) // General loading state for the page/actions
 
 const alert = ref({ show: false, type: 'success', message: '' })
 const confirmModal = ref({
   show: false,
   title: '',
   message: '',
-  action: '',
+  action: '', // 'approve', 'reject', 'submit-verification'
   centerId: null,
-  payload: null,
+  payload: null, // Data to be sent with the action (e.g., rejection reason, verification details)
   buttonText: 'Confirm',
 })
+const rejectionReasonInput = ref(''); // For the confirmation modal's textarea if needed
+
 
 onMounted(async () => {
   await fetchTeachingCenters()
@@ -237,70 +264,131 @@ onMounted(async () => {
 
 const fetchTeachingCenters = async () => {
   loading.value = true
+  teachingCenters.value = [] // Clear previous data
   try {
     const response = await apiServices.getMhpcTeachingCenters()
+    console.log("API Response Raw for Teaching Centers:", response);
 
-    const applications = response.data?.results || response.data || response.results || response || []
-    if (Array.isArray(applications)) {
-      // No complex mapping needed here if modal directly uses `institute_details`
-      // And handles single string URLs for tc_attachments and tc_report
-      teachingCenters.value = applications;
+    let applicationsData = null;
+
+    if (response && response.data && Array.isArray(response.data.results)) {
+      applicationsData = response.data.results; // Standard DRF paginated response
+    } else if (response && response.data && Array.isArray(response.data)) {
+      applicationsData = response.data; // Non-paginated list
+    } else if (response && Array.isArray(response.results) && !response.data) {
+      applicationsData = response.results; // Alternative paginated if axios strips 'data'
+    } else if (response && Array.isArray(response)) {
+      applicationsData = response; // Direct array response
     } else {
-      console.error('Unexpected API response structure for teaching centers:', response)
-      showAlert('error', 'Failed to load applications: Unexpected data format.')
-      teachingCenters.value = []
+      console.error('Unexpected API response structure for teaching centers:', response);
+      showAlert('error', 'Failed to load applications: Unexpected data format. Check console.');
     }
+
+    if (applicationsData && Array.isArray(applicationsData)) {
+      teachingCenters.value = applicationsData.map(app => ({
+        ...app,
+        institute_details: app.institute_details || { name_of_institution: 'N/A (Missing Institute Data)' }
+      }));
+      console.log("Processed teachingCenters.value:", teachingCenters.value);
+      if (teachingCenters.value.length === 0 && !alert.value.show) { // Only show if no other alert is active
+         // The v-else-if for no data message will handle this.
+      }
+    } else {
+      console.warn('applicationsData is not an array or is null after parsing:', applicationsData);
+      if (!alert.value.show) {
+        // showAlert('info', 'No teaching center applications found at this time.'); // Can be redundant with the "No data" message
+      }
+      teachingCenters.value = [];
+    }
+
   } catch (error) {
-    console.error('Error fetching teaching center applications:', error)
-    showAlert('error', `Failed to load applications: ${error.message || 'Server error'}`)
+    console.error('Error fetching teaching center applications:', error);
+    let errorMessage = 'Failed to load applications.';
+    if (error.response) {
+      const data = error.response.data;
+      errorMessage += ` Status ${error.response.status}. `;
+      if (data && data.detail) errorMessage += data.detail;
+      else if (data && typeof data === 'object') errorMessage += JSON.stringify(data);
+      else if (typeof data === 'string') errorMessage += data;
+    } else if (error.request) {
+      errorMessage += ' No response from server. Check network connection.';
+    } else {
+      errorMessage += ` ${error.message || 'An unknown error occurred.'}`;
+    }
+    showAlert('error', errorMessage);
+    teachingCenters.value = [];
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
-const getStatusClass = (status) => {
-  if (status === 'Approved') return 'bg-green-100 text-green-800';
-  if (status === 'Rejected' || status === 'Regretted') return 'bg-red-100 text-red-800';
-  if (status === 'Verification_Completed') return 'bg-blue-100 text-blue-800';
+const getStatusClass = (statusKey) => {
+  // Match backend status keys (e.g., 'Pending', 'Approved', 'Rejected', 'VERIFIED_PV')
+  const status = String(statusKey).toLowerCase();
+  if (status === 'approved') return 'bg-green-100 text-green-800';
+  if (status === 'rejected' || status === 'regretted') return 'bg-red-100 text-red-800';
+  if (status === 'verification_completed' || status === 'verified_pv' || status === 'physically verified') return 'bg-blue-100 text-blue-800';
+  // Default for 'Pending', 'Pending_Review', 'PENDING_PV', etc.
   return 'bg-yellow-100 text-yellow-800';
 };
 
+const formatStatusText = (statusKey) => {
+  if (!statusKey) return 'Pending Review';
+  return String(statusKey).replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
 const openApplicationModal = (application) => {
-  // The `application` object from `teachingCenters.value` now directly contains `institute_details`
-  selectedApplication.value = { ...application };
-  isModalOpen.value = true
+  console.log("Opening modal for application:", JSON.parse(JSON.stringify(application)));
+  selectedApplication.value = { ...application }; // Create a copy to avoid direct mutation if needed
+  isModalOpen.value = true;
 }
 
 const closeApplicationModal = () => {
-  isModalOpen.value = false
-  selectedApplication.value = {}
+  isModalOpen.value = false;
+  selectedApplication.value = {};
 }
 
-const triggerApprove = () => {
+const triggerApprove = (/* approvalPayloadFromModal - if modal sends anything */) => {
+  if (!selectedApplication.value || !selectedApplication.value.id) {
+    showAlert('error', 'No application selected for approval.');
+    return;
+  }
   confirmModal.value = {
     show: true,
     title: 'Approve Application',
     message: `Are you sure you want to approve the application for "${selectedApplication.value.center_name}"? This will enable payment for the institute.`,
     action: 'approve',
     centerId: selectedApplication.value.id,
-    payload: null,
+    payload: { /* approvalMessage: approvalPayloadFromModal?.message */ }, // Example if modal sends a message
     buttonText: 'Approve',
-  }
+  };
+  rejectionReasonInput.value = ''; // Clear any previous input
 }
 
-const triggerReject = (rejectionReason) => {
+const triggerReject = (rejectionDetails) => { // Expects { rejectionReason: '...' } from modal
+  if (!selectedApplication.value || !selectedApplication.value.id) {
+    showAlert('error', 'No application selected for rejection.');
+    return;
+  }
+  const reason = rejectionDetails?.rejectionReason || '';
   confirmModal.value = {
     show: true,
     title: 'Reject Application',
-    message: `Are you sure you want to reject the application for "${selectedApplication.value.center_name}"?`,
+    message: `Are you sure you want to reject the application for "${selectedApplication.value.center_name}"? Please provide a reason.`,
     action: 'reject',
     centerId: selectedApplication.value.id,
-    payload: { tc_reason_if_rejected: rejectionReason },
+    payload: { tc_reason_if_rejected: reason }, // Pre-fill if modal already provided it
     buttonText: 'Reject',
-  }
+  };
+  rejectionReasonInput.value = reason; // Sync with textarea in confirm modal
 }
 
 const triggerSubmitVerification = (verificationData) => {
+  console.log("Parent received verificationData for confirmModal:", JSON.stringify(verificationData));
+  if (!selectedApplication.value || !selectedApplication.value.id) {
+    showAlert('error', 'No application selected for verification submission.');
+    return;
+  }
   confirmModal.value = {
     show: true,
     title: 'Submit Physical Verification',
@@ -309,68 +397,88 @@ const triggerSubmitVerification = (verificationData) => {
     centerId: selectedApplication.value.id,
     payload: verificationData,
     buttonText: 'Submit Verification',
-  }
+  };
+  rejectionReasonInput.value = ''; // Clear
 }
 
 const confirmAction = async () => {
   loading.value = true;
   const id = confirmModal.value.centerId;
   const action = confirmModal.value.action;
-  const payload = confirmModal.value.payload;
+  let payloadFromConfirm = { ...confirmModal.value.payload };
+
   let updateData = {};
   let successMessage = '';
 
   try {
-    if (!id) throw new Error('Application ID is missing');
+    if (!id) throw new Error('Application ID is missing for action.');
+
+    if (action === 'reject') {
+        
+        const reasonFromInput = rejectionReasonInput.value.trim();
+        const reasonFromPayload = payloadFromConfirm?.tc_reason_if_rejected?.trim();
+
+        if (!reasonFromInput && !reasonFromPayload) {
+            showAlert('error', 'Rejection reason is required.');
+            loading.value = false;
+            // Do not close confirmModal.value.show here, let user correct.
+            return;
+        }
+        payloadFromConfirm.tc_reason_if_rejected = reasonFromInput || reasonFromPayload;
+    }
+
 
     switch (action) {
       case 'approve':
-        updateData = { tc_review_decision: 'Approved', tc_reason_if_rejected: null };
-        successMessage = 'Application approved successfully. Payment is now enabled for the institute.';
+        updateData = {
+          tc_review_decision: 'Approved', // Match backend's EndorsementDecisionChoices value
+          tc_reason_if_rejected: null,
+          // approval_message: payloadFromConfirm?.approvalMessage || null,
+        };
+        successMessage = 'Application approved successfully.';
         break;
       case 'reject':
-        if (!payload?.tc_reason_if_rejected?.trim()) {
-          showAlert('error', 'Rejection reason is required.');
-          loading.value = false;
-          return;
-        }
         updateData = {
-          tc_review_decision: 'Rejected',
-          tc_reason_if_rejected: payload.tc_reason_if_rejected.trim()
+          tc_review_decision: 'Rejected', // Match backend's EndorsementDecisionChoices value
+          tc_reason_if_rejected: payloadFromConfirm.tc_reason_if_rejected,
         };
         successMessage = 'Application rejected successfully.';
         break;
       case 'submit-verification':
-        if (!payload?.verificationDate || !payload?.verificationReport?.trim()) {
-          showAlert('error', 'Verification date and report are required.');
+        if (!payloadFromConfirm?.verificationDate || !payloadFromConfirm?.verificationReport?.trim() || !payloadFromConfirm?.verificationStatus) {
+          showAlert('error', 'Verification date, report, and status are required.');
           loading.value = false;
-          return;
+          return; // Don't close confirm modal, user needs to see error
         }
         updateData = {
-          verification_date: payload.verificationDate,
-          verification_report: payload.verificationReport,
-           tc_review_decision: 'Verification_Completed'
+          physical_verification_date: payloadFromConfirm.verificationDate,
+          physical_verification_remarks: payloadFromConfirm.verificationReport,
+          physical_verification_status: payloadFromConfirm.verificationStatus, // e.g., 'VERIFIED_PV'
+          send_to_user: payloadFromConfirm.sendToUser || false,
+          // tc_review_decision: 'Verification_Completed' // Backend might handle this transition based on physical_verification_status
         };
         successMessage = 'Physical verification details submitted successfully.';
         break;
       default:
-        throw new Error('Invalid action specified.');
+        throw new Error('Invalid action specified for confirmation.');
     }
 
+    console.log("PATCHING Teaching Center with ID:", id, "Data:", updateData);
     await apiServices.patchMhpcTeachingCenter(id, updateData);
 
     showAlert('success', successMessage);
-    await fetchTeachingCenters();
-    confirmModal.value.show = false;
+    confirmModal.value.show = false; // Close confirmation modal on success
+    rejectionReasonInput.value = ''; // Reset rejection reason input
+    await fetchTeachingCenters(); // Refresh the list
 
     if (action === 'approve' || action === 'reject') {
-      closeApplicationModal();
+      closeApplicationModal(); // Close the main details modal
     } else if (action === 'submit-verification') {
       const freshApp = teachingCenters.value.find(app => app.id === id);
-      if(freshApp) {
-        selectedApplication.value = { ...freshApp };
+      if (freshApp) {
+        selectedApplication.value = { ...freshApp }; // Refresh data in open modal
       } else {
-        closeApplicationModal();
+        closeApplicationModal(); // If app is no longer in list (e.g. filtered out)
       }
     }
 
@@ -381,20 +489,28 @@ const confirmAction = async () => {
         if (typeof error.response.data === 'string') {
             errorDetail = error.response.data;
         } else if (typeof error.response.data === 'object') {
-            errorDetail = error.response.data.detail || error.response.data.message || JSON.stringify(error.response.data);
+            const fieldErrors = Object.entries(error.response.data)
+                .map(([key, value]) => `${key.replace(/_/g, ' ')}: ${Array.isArray(value) ? value.join(', ') : value}`)
+                .join('; ');
+            errorDetail = fieldErrors || error.response.data.detail || error.response.data.message || JSON.stringify(error.response.data);
         }
     } else if (error.message) {
         errorDetail = error.message;
     }
     showAlert('error', `Failed to ${action.replace('-', ' ')}. ${errorDetail}`);
+    // Don't close confirmModal on error, let user try again or cancel
   } finally {
     loading.value = false;
   }
 }
 
 const showAlert = (type, message) => {
-  alert.value = { show: true, type, message }
-  setTimeout(() => { alert.value.show = false }, 7000)
+  alert.value = { show: true, type, message };
+  setTimeout(() => {
+    if (alert.value.message === message) { // Only hide if it's still the same message
+        alert.value.show = false;
+    }
+  }, 7000);
 }
 </script>
 
@@ -405,4 +521,5 @@ const showAlert = (type, message) => {
 .table-td {
   @apply px-6 py-4 whitespace-nowrap text-sm text-gray-700;
 }
+/* Add any other styles you need */
 </style>
