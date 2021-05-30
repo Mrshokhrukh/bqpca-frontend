@@ -809,7 +809,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, computed, onMounted } from 'vue'
+import { ref, reactive, watch, computed, onMounted, nextTick } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import apiService from '@/services/services'
 import FileUpload from '@/components/common/FileUpload.vue'
@@ -1077,22 +1077,33 @@ watch(
 watch(
   () => isCIDHolder.value,
   (newValue, oldValue) => {
-    if(newValue !== oldValue) {
-        isDCRCDataFetched.value = false;
-        const fieldsToReset = [
-            'cid_no', 'applicants_name', 'date_of_birth',
-            'gender', 'dzongkhag', 'gewog', 'village'
-        ];
-        if(newValue === false) {
-            fieldsToReset.forEach(field => form[field] = '');
+    if (newValue !== oldValue) {
+      isDCRCDataFetched.value = false;
+      form.applicants_name = '';
+      form.date_of_birth = '';
+      form.gender = '';
+      form.dzongkhag = '';
+      form.gewog = '';
+      form.village = '';
+
+      if (newValue === false) {
+        if (authStore.user && authStore.user.cid) {
+          form.cid_no = authStore.user.cid;
         } else {
-             form.applicants_name = ''; form.date_of_birth = ''; form.gender = '';
-             form.dzongkhag = ''; form.gewog = ''; form.village = '';
+          form.cid_no = '';
+          toast.warn(
+            "Logged-in user's CID is not available in authStore. This may be an issue if the backend requires a CID for non-CID holder applications."
+          );
         }
+      } else if (newValue === true) {
+        form.cid_no = '';
+      }
+      nextTick(() => {
+        validateForm();
+      });
     }
-    validateForm();
   }
-)
+);
 
 onMounted(async () => {
   try {
