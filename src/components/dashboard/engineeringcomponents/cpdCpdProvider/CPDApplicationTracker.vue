@@ -214,9 +214,9 @@
             </td>
             <td
               class="px-6 py-4 text-sm text-gray-900 font-medium max-w-xs truncate"
-              :title="application.title_of_cpd || ''"
+              :title="application.description || ''"
             >
-              {{ application.title_of_cpd || 'N/A' }}
+              {{ application.description || 'N/A' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
               {{ formatDate(application.created_at) }}
@@ -360,15 +360,6 @@
               </div>
             </div>
           </div>
-          <!-- Status Banner (Rejected) -->
-          <div
-            v-if="getStatusText(selectedApplication) === 'Rejected' && selectedApplication.feedback"
-            class="bg-red-50 border-l-4 border-red-400 text-red-700 p-4 rounded-r-lg"
-            role="alert"
-          >
-            <p class="font-bold">Application Rejected</p>
-            <p class="text-sm mt-1"><strong>Reason:</strong> {{ selectedApplication.feedback }}</p>
-          </div>
 
           <!-- Basic Info Section -->
           <div class="border border-gray-200 p-4 rounded-lg">
@@ -400,19 +391,19 @@
               <div class="sm:col-span-2">
                 <p class="text-xs font-medium text-gray-500 uppercase">Title of CPD</p>
                 <p class="text-sm text-gray-800">
-                  {{ selectedApplication.title_of_cpd || 'N/A' }}
+                  {{ selectedApplication.description || 'N/A' }}
                 </p>
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 uppercase">Venue</p>
                 <p class="text-sm text-gray-800">
-                  {{ selectedApplication.venue || 'N/A' }}
+                  {{ selectedApplication.venue || selectedApplication.location || 'N/A' }}
                 </p>
               </div>
               <div class="sm:col-span-2">
                 <p class="text-xs font-medium text-gray-500 uppercase">Duration</p>
                 <p class="text-sm text-gray-800">
-                  {{ formatDateRange(selectedApplication.from_date, selectedApplication.to_date) }}
+                  {{ formatDateRange(selectedApplication.from_date || selectedApplication.start_date, selectedApplication.to_date || selectedApplication.end_date) }}
                 </p>
               </div>
             </div>
@@ -458,13 +449,19 @@
               <div>
                 <p class="text-xs font-medium text-gray-500 uppercase">CPD Credits</p>
                 <p class="text-sm text-gray-800">
-                  {{ selectedApplication.credit || '0' }}
+                  {{ selectedApplication.credit || selectedApplication.expected_cpd_credits || '0' }}
                 </p>
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 uppercase">No. of Participants</p>
                 <p class="text-sm text-gray-800">
                   {{ selectedApplication.number_of_participants || '0' }}
+                </p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-gray-500 uppercase">Duration (Hours)</p>
+                <p class="text-sm text-gray-800">
+                  {{ selectedApplication.duration_in_hours || 'N/A' }}
                 </p>
               </div>
               <div class="col-span-full">
@@ -480,6 +477,43 @@
                 <p class="text-sm text-gray-800 mt-1">
                   {{ selectedApplication.relevance_to_topic || 'N/A' }}
                 </p>
+              </div>
+              <div class="col-span-full">
+                <p class="text-xs font-medium text-gray-500 uppercase">Reason for Conducting</p>
+                <p class="text-sm text-gray-800 mt-1">
+                  {{ selectedApplication.reason_for_details || 'N/A' }}
+                </p>
+              </div>
+              <div class="col-span-full">
+                <p class="text-xs font-medium text-gray-500 uppercase">CPD Providing Agency</p>
+                <p class="text-sm text-gray-800 mt-1">
+                  {{ selectedApplication.cpd_providing_agency || selectedApplication.if_others_specify || 'N/A' }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Supporting Documents Section -->
+          <div v-if="selectedApplication.document_supporting_expertise || selectedApplication.course_document || selectedApplication.attachment" class="border border-gray-200 p-4 rounded-lg">
+            <h3 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">
+              Supporting Documents
+            </h3>
+            <div class="space-y-2">
+              <div v-if="selectedApplication.document_supporting_expertise">
+                <p class="text-xs font-medium text-gray-500 uppercase">Supporting Expertise Document</p>
+                <a :href="selectedApplication.document_supporting_expertise" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">View Document</a>
+              </div>
+              <div v-if="selectedApplication.course_document">
+                <p class="text-xs font-medium text-gray-500 uppercase">Course Document</p>
+                <a :href="selectedApplication.course_document" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">View Document</a>
+              </div>
+              <div v-if="selectedApplication.attachment">
+                <p class="text-xs font-medium text-gray-500 uppercase">Additional Attachment</p>
+                <a :href="selectedApplication.attachment" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">View Document</a>
+              </div>
+              <div v-if="selectedApplication.attendance_sheet_attachment">
+                <p class="text-xs font-medium text-gray-500 uppercase">Attendance Sheet</p>
+                <a :href="selectedApplication.attendance_sheet_attachment" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">View Document</a>
               </div>
             </div>
           </div>
@@ -562,17 +596,6 @@
           >
             <p>Participant details have not been added yet.</p>
           </div>
-
-          <!-- Reviewer Comments (if present and not rejected already shown) -->
-          <div
-            v-if="selectedApplication.feedback && getStatusText(selectedApplication) !== 'Rejected'"
-            class="border border-gray-200 p-4 rounded-lg bg-yellow-50"
-          >
-            <h3 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">
-              Reviewer Comments / Feedback
-            </h3>
-            <p class="text-sm text-gray-800">{{ selectedApplication.feedback }}</p>
-          </div>
         </div>
 
         <!-- Modal Footer -->
@@ -625,43 +648,35 @@ const searchTerm = ref('')
 const statusFilter = ref('')
 const showViewModal = ref(false)
 const selectedApplication = ref(null)
-// Example: Get provider identifier if needed for frontend filtering
-// const providerIdentifier = computed(() => authStore.user?.registration_no || authStore.user?.cid);
 
 // --- Status Logic ---
 
-// Determines the user-facing status text
+// Determines the user-facing status text based on the actual API fields
 const getStatusText = (application) => {
   if (!application) return 'Unknown'
 
   if (application.is_draft) {
     return 'Draft'
   }
-  // Use review_status as the primary indicator from backend
-  switch (application.review_status) {
-    case 'Pending':
-      return 'Pending'
-    case 'Rejected':
-    case 'Regretted': // Allow for variations
-      return 'Rejected'
-    case 'Approved':
-      // If approved, check if participants are missing
-      if (!application.participants || application.participants.length === 0) {
-        // You might want to check if number_of_participants > 0 as well,
-        // but checking the array is usually sufficient
-        return 'Needs Participants'
-      } else {
-        // Assumed 'Completed' if approved and participants array exists/is not empty
-        // More complex logic could check if all participant statuses are final
-        return 'Completed'
-      }
-    default:
-      // If review_status is null, undefined, or unexpected, treat as Pending or Unknown
-      console.warn(
-        `Unknown review_status: ${application.review_status} for app ID: ${application.id}`,
-      )
-      return 'Unknown' // Or 'Pending' maybe?
+
+  // Check if CPD is approved
+  if (application.is_cpd_approved) {
+    // If approved, check if participants are missing
+    if (!application.participants || application.participants.length === 0) {
+      return 'Needs Participants'
+    } else {
+      return 'Completed'
+    }
   }
+
+  // If status is false and not a draft, it's likely pending or rejected
+  // You may need to adjust this logic based on your exact API behavior
+  if (application.status === false && !application.is_draft) {
+    return 'Pending'
+  }
+
+  // Default fallback
+  return 'Unknown'
 }
 
 // Determines the Tailwind CSS classes for the status badge
@@ -697,8 +712,8 @@ const filteredApplications = computed(() => {
   const statusTerm = statusFilter.value
 
   return applications.value.filter((app) => {
-    // Match on Title or ID
-    const titleMatch = app.title_of_cpd?.toLowerCase().includes(term)
+    // Match on Description (title) or ID
+    const titleMatch = app.description?.toLowerCase().includes(term)
     const idMatch = app.id?.toString().toLowerCase().includes(term)
     const searchMatch = term === '' || titleMatch || idMatch
 
@@ -836,12 +851,12 @@ const editApplication = (application) => {
 
 const addParticipants = (application) => {
   // Double check status before navigating
-  if (application.review_status !== 'Approved') {
+  if (!application.is_cpd_approved) {
     toast.error('This application must be Approved before adding participants.')
     console.warn(
       'Attempted to add participants to non-approved application:',
       application.id,
-      application.review_status,
+      application.is_cpd_approved,
     )
     return
   }
