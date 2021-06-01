@@ -21,7 +21,7 @@
               aria-label="CPD Task"
             >
               <option value="">Select a CPD task</option>
-              <!-- Uses processedCpdTasks for filtering -->
+              <!-- FIXED: Use processedCpdTasks with correct field mapping -->
               <option v-for="task in processedCpdTasks" :key="task.id" :value="task.id">
                 {{ task.title }} - {{ task.activity_date }}
               </option>
@@ -56,13 +56,13 @@
                   aria-label="Participant Registration Number"
                 >
                   <option value="">Select a participant</option>
-                  <!-- participants prop should be the list of all users -->
+                  <!-- FIXED: Handle different possible field names for registration number -->
                   <option
                     v-for="participant in participants"
-                    :key="participant.id || participant.reg_no"
-                    :value="participant.reg_no"
+                    :key="participant.id || participant.registration_no || participant.reg_no"
+                    :value="getParticipantRegNo(participant)"
                   >
-                    {{ participant.full_name || participant.name }} - {{ participant.reg_no }}
+                    {{ getParticipantName(participant) }} - {{ getParticipantRegNo(participant) }}
                   </option>
                    <option v-if="participants.length === 0" disabled>
                     No participants available to select.
@@ -88,7 +88,8 @@
     <!-- Form Actions -->
     <FormActions
       submitLabel="Add Participant to Task"
-      :disabled="!isFormValid"
+      :disabled="!isFormValid || isSubmitting"
+      :is-submitting="isSubmitting"
       @submit="submitForm"
       @reset="resetForm"
       @cancel="$emit('cancel')"
@@ -131,9 +132,9 @@
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="participant in filteredParticipantsForModal" :key="participant.id || participant.reg_no">
-                  <td class="px-6 py-4 whitespace-nowrap">{{ participant.full_name || participant.name }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap">{{ participant.reg_no }}</td>
+                <tr v-for="participant in filteredParticipantsForModal" :key="participant.id || getParticipantRegNo(participant)">
+                  <td class="px-6 py-4 whitespace-nowrap">{{ getParticipantName(participant) }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ getParticipantRegNo(participant) }}</td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <button
                       @click="selectParticipantFromModal(participant)"
@@ -170,28 +171,32 @@
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
-import FormActions from './FormActions.vue' // Assuming this is a generic actions component
+import FormActions from './FormActions.vue'
 
 const props = defineProps({
-  cpdTasks: { // Raw list of CPD Provider Applications
+  cpdTasks: {
     type: Array,
     default: () => [],
   },
-  participants: { // List of ALL potential participants (users)
+  participants: {
     type: Array,
     default: () => [],
   },
-  currentProviderCid: { // CID of the logged-in provider
+  currentProviderCid: {
     type: String,
     default: null,
+  },
+  isSubmitting: {
+    type: Boolean,
+    default: false,
   }
 })
 
 const emit = defineEmits(['submit', 'cancel'])
 
 const formData = reactive({
-  cpdTask: '',          // Will store the ID of the selected CpdProviderApplication
-  participantRegNo: '', // Will store the reg_no of the selected participant
+  cpdTask: '',
+  participantRegNo: '',
 })
 
 // For participant search modal
@@ -199,11 +204,21 @@ const searchParticipantModal = ref(false)
 const participantSearch = ref('')
 const filteredParticipantsForModal = ref([])
 
-// Computed property to filter and map CPD tasks for the dropdown
+// FIXED: Helper functions to handle different field name variations
+function getParticipantName(participant) {
+  return participant.full_name || participant.name || 'Unknown Name'
+}
+
+function getParticipantRegNo(participant) {
+  return participant.registration_no || participant.reg_no || participant.registrationNo || ''
+}
+
+// FIXED: Updated to use correct field names from your API data
 const processedCpdTasks = computed(() => {
   if (!props.cpdTasks || props.cpdTasks.length === 0) {
     return [];
   }
+
   return props.cpdTasks
     .filter(taskApp => {
       // Condition 1: Application must be approved
@@ -211,89 +226,94 @@ const processedCpdTasks = computed(() => {
       if (!isApproved) return false;
 
       // Condition 2: Must belong to the current provider (if currentProviderCid is specified)
-      // The CpdProviderApplication object has 'cid_no' which should be the provider's CID.
       if (props.currentProviderCid && taskApp.cid_no !== props.currentProviderCid) {
         return false;
       }
-      // If currentProviderCid is null (e.g., admin), all approved tasks are shown.
-      // You might want to adjust this if a provider context is ALWAYS required.
-      // For now, if props.currentProviderCid is null/empty, this specific filter by CID is skipped.
-      // However, the is_cpd_approved filter still applies.
 
-      return true; // Passed all filters
+      return true;
     })
     .map(taskApp => ({
-      id: taskApp.id, // ID of the CpdProviderApplication
-      title: taskApp.title_of_cpd || 'Untitled Task',
-      activity_date: taskApp.from_date || 'No date available'
+      id: taskApp.id,
+      // FIXED: Use 'title' instead of 'title_of_cpd' based on your API data
+      title: taskApp.title || taskApp.title_of_cpd || 'Untitled Task',
+      // FIXED: Use 'from_date' which exists in your data
+      activity_date: taskApp.from_date || taskApp.start_date || 'No date available'
     }));
 });
 
 const isFormValid = computed(() => {
-  return formData.cpdTask && formData.participantRegNo;
+  return !!(formData.cpdTask && formData.participantRegNo);
 });
 
 function searchParticipantsInModal() {
   if (!participantSearch.value.trim()) {
-    filteredParticipantsForModal.value = props.participants; // Show all if search is empty
+    filteredParticipantsForModal.value = props.participants;
     return;
   }
   const search = participantSearch.value.toLowerCase();
   filteredParticipantsForModal.value = props.participants.filter((p) => {
-    const name = (p.full_name || p.name || '').toLowerCase();
-    const regNo = (p.reg_no || '').toLowerCase();
+    const name = getParticipantName(p).toLowerCase();
+    const regNo = getParticipantRegNo(p).toLowerCase();
     return name.includes(search) || regNo.includes(search);
   });
 }
 
 function selectParticipantFromModal(participant) {
-  formData.participantRegNo = participant.reg_no;
+  formData.participantRegNo = getParticipantRegNo(participant);
   searchParticipantModal.value = false;
 }
 
 function submitForm() {
-  if (!isFormValid.value) return;
+  if (!isFormValid.value) {
+    return;
+  }
+
   const payload = {
-    cpd_task: formData.cpdTask, // This is the ID of the CpdProviderApplication
+    cpd_task: parseInt(formData.cpdTask), // Ensure it's a number
     participant_reg_no: formData.participantRegNo,
   };
-  emit('submit', payload); // Emit the payload for the parent to handle
+
+  emit('submit', payload);
 }
 
-function resetForm() {
-  formData.cpdTask = '';
-  formData.participantRegNo = '';
+function resetForm(clearSelection = true) {
+  if (clearSelection) {
+    formData.cpdTask = '';
+    formData.participantRegNo = '';
+  }
   participantSearch.value = '';
-  // Re-initialize modal participants if needed, or let it be handled by next open
   if (props.participants) {
-      filteredParticipantsForModal.value = [...props.participants];
+    filteredParticipantsForModal.value = [...props.participants];
   } else {
-      filteredParticipantsForModal.value = [];
+    filteredParticipantsForModal.value = [];
   }
 }
 
-// Initialize filteredParticipantsForModal for the search modal when participants prop changes or on mount
+// Initialize filteredParticipantsForModal for the search modal
 watch(
   () => props.participants,
   (newVal) => {
     filteredParticipantsForModal.value = newVal ? [...newVal] : [];
   },
-  { immediate: true, deep: true } // deep true if participants array contains objects that might change
+  { immediate: true, deep: true }
 );
 
-// Watch for changes in cpdTasks to ensure processedCpdTasks updates,
-// and if the selected cpdTask is no longer valid, reset it.
+// Watch for changes in processedCpdTasks
 watch(() => processedCpdTasks.value, (newProcessedTasks) => {
-    if (formData.cpdTask && !newProcessedTasks.some(task => task.id === formData.cpdTask)) {
-        formData.cpdTask = ''; // Reset if current selection is no longer valid
-    }
+  if (formData.cpdTask && !newProcessedTasks.some(task => task.id == formData.cpdTask)) {
+    formData.cpdTask = '';
+  }
 });
 
-// Watch for changes in participants to ensure selected participantRegNo is still valid.
+// Watch for changes in participants
 watch(() => props.participants, (newParticipants) => {
-    if (formData.participantRegNo && !newParticipants.some(p => p.reg_no === formData.participantRegNo)) {
-        formData.participantRegNo = ''; // Reset if current selection is no longer valid
-    }
+  if (formData.participantRegNo && !newParticipants.some(p => getParticipantRegNo(p) === formData.participantRegNo)) {
+    formData.participantRegNo = '';
+  }
 }, { deep: true });
 
+// Expose resetForm method to parent component
+defineExpose({
+  resetForm
+});
 </script>

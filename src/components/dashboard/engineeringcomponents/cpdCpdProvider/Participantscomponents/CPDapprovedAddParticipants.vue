@@ -114,17 +114,19 @@ const attendancePhotoFormRef = ref(null);
 const bulkUploadErrorList = ref([]);
 
 const cpdTasksForSelection = computed(() => {
-  return allCpdTasks.value
+  const filtered = allCpdTasks.value
     .filter((task) => {
-      const isApproved =
-        task.application_status === 'APPROVED' ||
-        String(task.application_status).toUpperCase() === 'APPROVED';
+      const isApproved = task.is_cpd_approved === true;
+
       if (currentProviderCid.value) {
-        return isApproved && String(task.cid_no).trim() === String(currentProviderCid.value).trim();
+        const matches = isApproved && String(task.cid_no).trim() === String(currentProviderCid.value).trim();
+        return matches;
       }
       return isApproved;
     })
-    .sort((a, b) => (a.title_of_cpd || '').localeCompare(b.title_of_cpd || ''));
+    .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+
+  return filtered;
 });
 
 onMounted(async () => {
@@ -138,12 +140,11 @@ onMounted(async () => {
     if (userString) {
       const loggedInUser = JSON.parse(userString);
       currentProviderCid.value = loggedInUser?.cid || null;
+
       if (!currentProviderCid.value) {
-        console.warn("Logged in user data found, but 'cid' (Provider CID) is missing or null.");
         toast.warning('Provider CID not found. Some functionality may be limited.');
       }
     } else {
-      console.warn('No user data found in localStorage. Provider CID cannot be determined.');
       toast.warning('User data not found. Please log in again.');
     }
   } catch (error) {
@@ -152,20 +153,14 @@ onMounted(async () => {
   }
 
   await fetchData();
-  console.log('Fetched data:', {
-    cpdTasks: allCpdTasks.value,
-    participants: participants.value,
-    currentProviderCid: currentProviderCid.value,
-    preselectedTaskId: preselectedTaskId.value,
-  });
 });
 
 async function fetchData() {
   isLoading.value = true;
   try {
     const [tasksResponse, participantsResponse] = await Promise.all([
-      apiService.getMhpcCpdTask(),
-      apiService.getMhpcCounsellors(),
+      apiService.getEpcCpdTasks(),
+      apiService.getEpcFullApplicationListByCid(''),
     ]);
 
     allCpdTasks.value = tasksResponse.data?.results || tasksResponse.data || [];
@@ -173,6 +168,8 @@ async function fetchData() {
 
     if (allCpdTasks.value.length === 0) {
       toast.info('No CPD tasks found. Please create or approve tasks to add participants.');
+    } else if (cpdTasksForSelection.value.length === 0) {
+      toast.warning('No approved CPD tasks found for your provider ID. Check if tasks are approved and your CID matches.');
     }
   } catch (error) {
     console.error('Error fetching initial data:', error);
@@ -207,8 +204,10 @@ async function handleSingleSubmit(submissionData) {
   isSingleSubmitting.value = true;
   clearMessage();
   bulkUploadErrorList.value = [];
+
   try {
-    await apiService.createMhpcCpdTaskParticipant(submissionData);
+    const response = await apiService.createEpcCpdTaskParticipant(submissionData);
+
     showMessage('Participant added successfully!', 'success');
     if (singleEntryFormRef.value?.resetForm) {
       singleEntryFormRef.value.resetForm(false);
@@ -243,7 +242,7 @@ async function handleBulkSubmit({ cpdTask, file }) {
   formDataToSend.append('file', file);
 
   try {
-    const response = await apiService.bulkCreateMhpcCpdTaskParticipants(formDataToSend);
+    const response = await apiService.bulkCreateEpcCpdTaskParticipants(formDataToSend);
     const responseData = response.data || {};
     const { created_count = 0, failed_count = 0, errors = [] } = responseData;
 
@@ -282,7 +281,6 @@ async function handleBulkSubmit({ cpdTask, file }) {
       }
     }
     showMessage(finalMessage.trim(), finalMessageType);
-    console.log('Bulk upload response:', responseData);
   } catch (error) {
     console.error('Critical error during bulk upload:', error);
     let errorMessage = 'Bulk upload failed. Please ensure the file format is correct and the CPD Task is valid.';
@@ -306,7 +304,6 @@ async function handleBulkSubmit({ cpdTask, file }) {
       }
     }
     showMessage(errorMessage, 'error');
-    console.log('Error response:', error.response?.data);
   } finally {
     isBulkUploading.value = false;
   }
@@ -316,6 +313,7 @@ async function handlePhotoSubmit({ cpdTask, photo, description }) {
   isPhotoUploading.value = true;
   clearMessage();
   bulkUploadErrorList.value = [];
+
   try {
     const formDataToSend = new FormData();
     formDataToSend.append('cpd_task', cpdTask);
@@ -324,7 +322,7 @@ async function handlePhotoSubmit({ cpdTask, photo, description }) {
       formDataToSend.append('photo_description', description);
     }
 
-    await apiService.uploadCpdTaskAttendancePhoto(formDataToSend);
+    await apiService.uploadEpcCpdTaskAttendancePhoto(formDataToSend);
     showMessage('Attendance photo uploaded successfully!', 'success');
     if (attendancePhotoFormRef.value?.resetForm) {
       attendancePhotoFormRef.value.resetForm(false);

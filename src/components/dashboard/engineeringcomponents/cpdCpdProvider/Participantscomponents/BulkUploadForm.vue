@@ -11,8 +11,7 @@
       </p>
       <ul class="list-disc list-inside text-sm text-green-600 mt-1 pl-2">
         <li>
-          <code>participant_reg_no</code>: The registration number of the participant (from
-          Application model).
+          <code>participant_reg_no</code>: The registration number of the participant (required).
         </li>
         <li>
           <code>review_status</code>: Optional. Can be 'Approved', 'Regretted', or 'Pending'.
@@ -47,26 +46,25 @@
               id="bulkCpdTask"
               v-model="formData.cpdTask"
               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none pr-10"
-              :disabled="props.isProcessingUpload || loading"
+              :disabled="props.isProcessingUpload"
               aria-required="true"
               aria-label="CPD Task"
             >
               <option value="">Select an approved CPD task</option>
-              <option v-if="filteredCpdTasks.length === 0 && !loading" disabled>
+              <option v-if="processedCpdTasks.length === 0" disabled>
                 No approved CPD tasks available
               </option>
-              <option v-for="task in filteredCpdTasks" :key="task.id" :value="task.id">
-                {{ task.title_of_cpd }} ({{ formatDateRange(task.from_date, task.to_date) }})
+              <option v-for="task in processedCpdTasks" :key="task.id" :value="task.id">
+                {{ task.title }} ({{ formatDateRange(task.from_date, task.to_date) }})
               </option>
             </select>
             <MagnifyingGlassIcon
               class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none"
             />
           </div>
-          <div v-if="loading" class="mt-2 text-sm text-gray-600">Loading CPD tasks...</div>
-          <div v-if="taskError" class="mt-2 text-sm text-red-600">
-            {{ taskError }}
-          </div>
+          <p class="mt-1 text-sm text-gray-500">
+            Select an approved CPD task to add participants to.
+          </p>
         </div>
 
         <div>
@@ -133,7 +131,7 @@
     <FormActions
       submitLabel="Upload Participants"
       :disabled="!isFormValid || props.isProcessingUpload"
-      :isLoading="props.isProcessingUpload"
+      :is-submitting="props.isProcessingUpload"
       @submit="submitForm"
       @reset="resetForm"
       @cancel="$emit('cancel')"
@@ -150,7 +148,6 @@ import {
   InformationCircleIcon,
 } from '@heroicons/vue/24/outline'
 import FormActions from './FormActions.vue'
-import apiServices from '@/services/services'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
@@ -184,22 +181,32 @@ const csvFile = ref(null)
 const csvFileInput = ref(null)
 const fileError = ref('')
 const isDragging = ref(false)
-const localCpdTasks = ref([])
-const loading = ref(false)
-const taskError = ref('')
 
-const filteredCpdTasks = computed(() => {
-  const tasks = localCpdTasks.value.length > 0 ? localCpdTasks.value : props.cpdTasks
-  if (!props.currentProviderCid || !tasks || tasks.length === 0) {
+// FIXED: Process CPD tasks using correct field names
+const processedCpdTasks = computed(() => {
+  if (!props.cpdTasks || props.cpdTasks.length === 0) {
     return []
   }
-  return tasks.filter((task) => {
-    const isApproved =
-      task.application_status === 'APPROVED' ||
-      String(task.application_status).toUpperCase() === 'APPROVED'
-    const belongsToProvider = String(task.cid_no).trim() === String(props.currentProviderCid).trim()
-    return isApproved && belongsToProvider
-  })
+
+  return props.cpdTasks
+    .filter((task) => {
+      // FIXED: Use 'is_cpd_approved' instead of 'application_status'
+      const isApproved = task.is_cpd_approved === true;
+
+      if (props.currentProviderCid) {
+        const belongsToProvider = String(task.cid_no).trim() === String(props.currentProviderCid).trim();
+        return isApproved && belongsToProvider;
+      }
+      return isApproved;
+    })
+    .map(task => ({
+      id: task.id,
+      // FIXED: Use 'title' instead of 'title_of_cpd' based on your API data
+      title: task.title || task.title_of_cpd || 'Untitled Task',
+      from_date: task.from_date || task.start_date,
+      to_date: task.to_date || task.end_date
+    }))
+    .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
 })
 
 const isFormValid = computed(() => {
@@ -223,30 +230,6 @@ const formatDateRange = (startDate, endDate) => {
   } catch (err) {
     console.error('Error formatting date range:', err)
     return `${startDate} to ${endDate}`
-  }
-}
-
-const fetchCpdTasks = async () => {
-  try {
-    loading.value = true
-    taskError.value = ''
-    const response = await apiServices.getMhpcCpdTask()
-    if (response.data && Array.isArray(response.data.results)) {
-      localCpdTasks.value = response.data.results
-      if (localCpdTasks.value.length === 0) {
-        taskError.value = 'No approved CPD tasks found for your account.'
-      }
-    } else {
-      localCpdTasks.value = []
-      taskError.value = 'No CPD tasks data received from server.'
-    }
-  } catch (err) {
-    console.error('Error fetching CPD tasks:', err)
-    localCpdTasks.value = []
-    taskError.value = err.message || 'Failed to load CPD tasks. Please try again.'
-    toast.error(taskError.value)
-  } finally {
-    loading.value = false
   }
 }
 
@@ -316,14 +299,15 @@ function submitForm() {
   if (!isFormValid.value || props.isProcessingUpload) return
   fileError.value = ''
   emit('submit', {
-    cpdTask: formData.cpdTask,
+    cpdTask: parseInt(formData.cpdTask), // Ensure it's a number
     file: csvFile.value,
   })
-  toast.success('Participants CSV submitted successfully.')
 }
 
-function resetForm() {
-  formData.cpdTask = props.preselectedTaskId || ''
+function resetForm(clearSelection = true) {
+  if (clearSelection) {
+    formData.cpdTask = props.preselectedTaskId || ''
+  }
   removeCsvFile()
   fileError.value = ''
 }
@@ -331,17 +315,20 @@ function resetForm() {
 function downloadTemplate() {
   try {
     const csvContent = [
-      '# Note: Ensure participant_reg_no values are unique for the selected CPD task',
-      'participant_reg_no,review_status(optional),endorsement_decision(optional)',
-      'MM/Orth-000005,Pending(optional),Pending(optional)',
-      'MM/Orth-000006,Approved(optional),Approved(optional)',
+      '# CSV Template for Bulk Participant Upload',
+      '# Required: participant_reg_no',
+      '# Optional: review_status, endorsement_decision (Pending/Approved/Regretted)',
+      'participant_reg_no,review_status,endorsement_decision',
+      '839f683f-b4e4-4948-8,Pending,Pending',
+      '123456-abcd-5678-9,Approved,Approved',
+      '987654-efgh-3210-1,Regretted,Regretted',
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'participant_bulk_upload_template.csv');
+    link.setAttribute('download', 'cpd_participants_bulk_upload_template.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -354,27 +341,28 @@ function downloadTemplate() {
 }
 
 onMounted(() => {
-  console.log('Props received:', {
-    cpdTasks: props.cpdTasks,
-    currentProviderCid: props.currentProviderCid,
-    preselectedTaskId: props.preselectedTaskId,
-  })
-  if (!props.cpdTasks || props.cpdTasks.length === 0) {
-    fetchCpdTasks()
-  }
-  if (
-    props.preselectedTaskId &&
-    filteredCpdTasks.value.some((task) => String(task.id) === String(props.preselectedTaskId))
-  ) {
+  // Set preselected task if available and valid
+  if (props.preselectedTaskId && processedCpdTasks.value.some((task) => String(task.id) === String(props.preselectedTaskId))) {
     formData.cpdTask = props.preselectedTaskId
   }
 })
 
+// Watch for preselected task changes
 watch(
   () => props.preselectedTaskId,
   (newId) => {
-    if (newId && filteredCpdTasks.value.some((task) => String(task.id) === String(newId))) {
+    if (newId && processedCpdTasks.value.some((task) => String(task.id) === String(newId))) {
       formData.cpdTask = newId
+    }
+  }
+)
+
+// Watch for changes in processedCpdTasks to reset invalid selection
+watch(
+  () => processedCpdTasks.value,
+  (newTasks) => {
+    if (formData.cpdTask && !newTasks.some(task => String(task.id) === String(formData.cpdTask))) {
+      formData.cpdTask = props.preselectedTaskId || ''
     }
   }
 )
