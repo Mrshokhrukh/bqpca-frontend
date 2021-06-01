@@ -1014,7 +1014,7 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Institute Profile', 
+        name: 'Institute Profile',
         icon: getIconComponent('Building'),
         children: [
           {
@@ -1406,11 +1406,11 @@ const serviceSpecificMenuItems = {
         route: (serviceType) =>
           `/admin/cme_cpd_provider/${serviceType}/cpd_approved_add_participants`,
       },
-      {
-        name: 'Profile',
-        icon: getIconComponent('UserCircle'),
-        route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cme_cpd_provider_profile`,
-      },
+      // {
+      //   name: 'Profile',
+      //   icon: getIconComponent('UserCircle'),
+      //   route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cme_cpd_provider_profile`,
+      // },
     ],
     institutions: [ // MODIFIED SECTION for engineering_certification.institutions
       {
