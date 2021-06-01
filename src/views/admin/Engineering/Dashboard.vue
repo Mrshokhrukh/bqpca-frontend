@@ -120,7 +120,7 @@ import Reports from '@/components/dashboard/engineeringcomponents/dealingOfficer
 import EngineeringProviderDashboard from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/EngineeringCpdCpdProviderDashboard.vue'
 import CPDApplicationDetails from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDApplicationDetails.vue'
 import CPDApplicationTracker from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDApplicationTracker.vue'
-import CPDapprovedAddParticipants from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDapprovedAddParticipants.vue'
+import CPDapprovedAddParticipants from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/Participantscomponents/CPDapprovedAddParticipants.vue'
 import CpdProviderProfile from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CpdProviderProfile.vue'
 // Institution Components
 import InstituteEoiApplication from '@/components/dashboard/engineeringcomponents/institutions/InstituteEoiApplication.vue'
