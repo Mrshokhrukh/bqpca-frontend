@@ -315,14 +315,17 @@ async function handlePhotoSubmit({ cpdTask, photo, description }) {
   bulkUploadErrorList.value = [];
 
   try {
+    // Create FormData for the PATCH request
     const formDataToSend = new FormData();
-    formDataToSend.append('cpd_task', cpdTask);
-    formDataToSend.append('attendance_photo', photo, photo.name);
+    formDataToSend.append('attendance_sheet_attachment', photo, photo.name);
+
+    // Add description as a separate field if provided
     if (description) {
       formDataToSend.append('photo_description', description);
     }
 
-    await apiService.uploadEpcCpdTaskAttendancePhoto(formDataToSend);
+    // Use PATCH to update only the attendance_sheet_attachment field
+    await apiService.patchEpcCpdTask(cpdTask, formDataToSend);
     showMessage('Attendance photo uploaded successfully!', 'success');
     if (attendancePhotoFormRef.value?.resetForm) {
       attendancePhotoFormRef.value.resetForm(false);
@@ -333,8 +336,8 @@ async function handlePhotoSubmit({ cpdTask, photo, description }) {
     if (error.response?.data) {
       const errors = error.response.data;
       if (errors.detail) errorMessage = errors.detail;
-      else if (errors.attendance_photo && Array.isArray(errors.attendance_photo))
-        errorMessage = `Photo error: ${errors.attendance_photo.join(', ')}`;
+      else if (errors.attendance_sheet_attachment && Array.isArray(errors.attendance_sheet_attachment))
+        errorMessage = `Photo error: ${errors.attendance_sheet_attachment.join(', ')}`;
       else if (typeof errors === 'string') errorMessage = errors;
       else if (typeof errors === 'object' && !Array.isArray(errors)) {
         errorMessage = Object.entries(errors)
