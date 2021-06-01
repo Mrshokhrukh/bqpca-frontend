@@ -1,7 +1,5 @@
-<!-- Example Filename:EpcCpdApplicationList.vue -->
 <template>
   <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-    <!-- Inline Notification -->
     <Transition name="notification">
       <div
         v-if="notification.show"
@@ -10,8 +8,8 @@
           notification.type === 'success'
             ? 'bg-green-50 border-l-4 border-green-500'
             : notification.type === 'error'
-              ? 'bg-red-50 border-l-4 border-red-500'
-              : 'bg-blue-50 border-l-4 border-blue-500',
+            ? 'bg-red-50 border-l-4 border-red-500'
+            : 'bg-blue-50 border-l-4 border-blue-500',
         ]"
       >
         <div
@@ -20,11 +18,10 @@
             notification.type === 'success'
               ? 'text-green-500'
               : notification.type === 'error'
-                ? 'text-red-500'
-                : 'text-blue-500',
+              ? 'text-red-500'
+              : 'text-blue-500',
           ]"
         >
-          <!-- Icons for notification types -->
           <svg
             v-if="notification.type === 'success'"
             class="w-6 h-6"
@@ -69,8 +66,8 @@
               notification.type === 'success'
                 ? 'text-green-800'
                 : notification.type === 'error'
-                  ? 'text-red-800'
-                  : 'text-blue-800',
+                ? 'text-red-800'
+                : 'text-blue-800',
             ]"
           >
             {{ notification.title }}
@@ -81,14 +78,14 @@
               notification.type === 'success'
                 ? 'text-green-700'
                 : notification.type === 'error'
-                  ? 'text-red-700'
-                  : 'text-blue-700',
+                ? 'text-red-700'
+                : 'text-blue-700',
             ]"
           >
             {{ notification.message }}
           </p>
         </div>
-        <button @click="closeNotification" class="ml-4 text-gray-500 hover:text-gray-600">
+        <button @click="closeNotification" class="ml-auto pl-3 text-gray-500 hover:text-gray-600">
           <span class="sr-only">Close</span>
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -102,15 +99,13 @@
       </div>
     </Transition>
 
-    <!-- Header Card -->
-    <div class="m mx-auto">
+    <div class="mx-auto">
       <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
         <h1 class="text-2xl font-bold text-gray-900">EPC CPD Applications</h1>
-        <!-- Updated Title -->
         <div class="flex mt-4 space-x-6">
           <div class="flex items-center">
             <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-            <span class="text-gray-600">Total: {{ applications.length }}</span>
+            <span class="text-gray-600">Total (Non-Draft): {{ filteredApplications.filter(app => app.status !== 'Draft').length }}</span>
           </div>
           <div class="flex items-center">
             <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
@@ -119,7 +114,6 @@
         </div>
       </div>
 
-      <!-- Search and Filter -->
       <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 mb-6">
         <div class="relative flex-grow">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -148,7 +142,8 @@
           v-model="statusFilter"
           class="w-full md:w-64 block pl-3 pr-10 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         >
-          <option value="All">All Statuses</option>
+          <option value="All">All (Exclude Drafts)</option>
+          <option value="AllIncludeDrafts">All (Include Drafts)</option>
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
           <option value="Rejected">Rejected</option>
@@ -156,15 +151,13 @@
         </select>
       </div>
 
-      <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center py-16">
         <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
         <span class="ml-3 text-gray-600">Loading applications...</span>
       </div>
 
-      <!-- Empty State -->
       <div
-        v-else-if="filteredApplications.length === 0"
+        v-else-if="paginatedApplications.length === 0"
         class="bg-white shadow-sm rounded-lg py-16 text-center border border-gray-200"
       >
         <svg
@@ -191,7 +184,6 @@
         </p>
       </div>
 
-      <!-- Applications Table -->
       <div v-else class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
@@ -246,9 +238,8 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm text-gray-900">{{ app.applicantName }}</div>
-                  <div class="text-xs text-gray-500">{{ app.cidNumber }}</div>
+                  <div class="text-xs text-gray-500">CID: {{ app.cidNumber }}</div>
                   <div class="text-xs text-gray-500">Reg: {{ app.registrationNumber }}</div>
-                  <!-- Added Reg No -->
                 </td>
                 <td class="px-6 py-4">
                   <div class="text-sm text-gray-900">{{ app.title }}</div>
@@ -258,7 +249,7 @@
                   <span
                     :class="[
                       getStatusColor(app.status),
-                      'px-2 py-1 text-xs font-medium rounded-full',
+                      'px-2 py-1 text-xs font-semibold rounded-full',
                     ]"
                   >
                     {{ app.status }}
@@ -280,8 +271,8 @@
           </table>
         </div>
 
-        <!-- Pagination -->
         <div
+          v-if="filteredApplications.length > pageSize"
           class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
         >
           <div class="flex-1 flex justify-between items-center">
@@ -345,13 +336,13 @@
       </div>
     </div>
 
-    <!-- View Modal -->
     <CpdViewApplicationsModal
       v-if="isViewModalOpen"
-      :application="selectedApplication"
+      :application="selectedApplicationForModal"
       @save="saveApplication"
       @approve="approveApplication"
       @reject="rejectApplication"
+      @updateParticipant="updateParticipant"
       @close="closeViewModal"
     />
   </div>
@@ -359,17 +350,20 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import CpdViewApplicationsModal from '../modals/CpdViewApplicationsModal.vue' // Verify path
-import apiServices from '@/services/services' // Assuming this imports your API service functions
+// Ensure this path is correct for your project structure
+import CpdViewApplicationsModal from '../modals/CpdViewApplicationsModal.vue'
+// Ensure this path is correct and 'services' is properly configured
+import apiServices from '@/services/services'
 
 const applications = ref([])
 const selectedApplication = ref(null)
 const isViewModalOpen = ref(false)
 const loading = ref(true)
 const searchQuery = ref('')
+// Default to 'All' (which excludes drafts by default in filteredApplications)
 const statusFilter = ref('All')
 const currentPage = ref(1)
-const pageSize = ref(10) // Adjust page size as needed
+const pageSize = ref(10)
 
 // Notification state
 const notification = ref({
@@ -380,34 +374,105 @@ const notification = ref({
   timeout: null,
 })
 
-// Calculate pending applications count
+// Transform application data for modal
+const selectedApplicationForModal = computed(() => {
+  if (!selectedApplication.value) return null
+
+  // Transform the data to match what the modal expects
+  return {
+    // Raw API data (using original field names from API)
+    id: selectedApplication.value.id,
+    registration_no: selectedApplication.value.registrationNumber,
+    cid_no: selectedApplication.value.cidNumber,
+    full_name: selectedApplication.value.applicantName,
+    title: selectedApplication.value.title,
+    description: selectedApplication.value.description,
+    start_date: selectedApplication.value.startDate,
+    end_date: selectedApplication.value.endDate,
+    location: selectedApplication.value.location,
+    venue: selectedApplication.value.venue,
+    expected_cpd_credits: selectedApplication.value.expectedCpdCredits,
+    credit: selectedApplication.value.cpdCredits,
+    duration_in_hours: selectedApplication.value.durationInHours,
+    number_of_participants: selectedApplication.value.numberOfParticipants,
+    relevance_to_topic: selectedApplication.value.relevanceToTopic,
+    expected_outcome: selectedApplication.value.expected_outcome,
+
+    // Attachments
+    course_document: selectedApplication.value.courseDocument?.url,
+    document_supporting_expertise: selectedApplication.value.supportingDocument?.url,
+    attendance_sheet_attachment: selectedApplication.value.attendanceSheetAttachment?.url,
+
+    // Status fields
+    status: selectedApplication.value.isDraft === false,
+    is_cpd_approved: selectedApplication.value.isCpdApproved,
+    is_draft: selectedApplication.value.isDraft,
+
+    // Participants array
+    participants: selectedApplication.value.participants || [],
+
+    // Additional fields
+    type_of_cpd: selectedApplication.value.typeOfCpdId,
+    proposed_training_location: selectedApplication.value.proposedTrainingLocation,
+    cpd_providing_agency: selectedApplication.value.cpdProvidingAgency,
+    if_others_specify: selectedApplication.value.ifOthersSpecify,
+    reason_for_conducting: selectedApplication.value.reasonForConducting,
+    reason_for_details: selectedApplication.value.reasonForDetails,
+    learning_methods: selectedApplication.value.learningMethods,
+    resources: selectedApplication.value.resources,
+    methodologies: selectedApplication.value.methodologies,
+    created_at: selectedApplication.value.createdAt,
+    updated_at: selectedApplication.value.updatedAt,
+  }
+})
+
+// Determines the display status based on is_draft and is_cpd_approved
+const getTaskStatus = (item) => {
+  if (item.is_draft === true) {
+    return 'Draft'
+  }
+  // If not a draft, check approval status
+  if (item.is_cpd_approved === true) {
+    return 'Approved'
+  }
+  if (item.is_cpd_approved === false) {
+    return 'Rejected'
+  }
+  // If is_cpd_approved is null or undefined (and not a draft), it's Pending
+  return 'Pending'
+}
+
+// Calculate pending applications count based on the derived status
 const pendingCount = computed(() => {
-  // Ensure status comparison is accurate
   return applications.value.filter((app) => getTaskStatus(app) === 'Pending').length
 })
 
 // Filter applications based on search query and status filter
 const filteredApplications = computed(() => {
-  let filtered = applications.value
+  let filtered = [...applications.value] // Create a shallow copy to avoid modifying the original
 
-  // Apply status filter first
-  if (statusFilter.value !== 'All') {
-    filtered = filtered.filter((app) => getTaskStatus(app) === statusFilter.value)
-  } else {
-    // Exclude 'Draft' status when 'All' is selected unless explicitly chosen
-    filtered = filtered.filter((app) => getTaskStatus(app) !== 'Draft')
-  }
-
-  // Apply search filter if there's a search query
+  // Apply search filter first
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase().trim()
     filtered = filtered.filter(
       (app) =>
         (app.applicantName && app.applicantName.toLowerCase().includes(query)) ||
-        (app.cidNumber && app.cidNumber.toString().includes(query)) ||
+        (app.cidNumber && app.cidNumber.toString().toLowerCase().includes(query)) ||
         (app.title && app.title.toLowerCase().includes(query)) ||
-        (app.registrationNumber && app.registrationNumber.toString().toLowerCase().includes(query)), // Include registration number in search
+        (app.registrationNumber && app.registrationNumber.toString().toLowerCase().includes(query))
     )
+  }
+
+  // Apply status filter
+  if (statusFilter.value === 'All') {
+    // 'All' excludes drafts by default
+    filtered = filtered.filter((app) => getTaskStatus(app) !== 'Draft')
+  } else if (statusFilter.value === 'AllIncludeDrafts') {
+    // 'AllIncludeDrafts' shows everything
+    // No additional filtering needed here as we started with all applications
+  } else {
+    // Specific status filter (Pending, Approved, Rejected, Draft)
+    filtered = filtered.filter((app) => getTaskStatus(app) === statusFilter.value)
   }
 
   return filtered
@@ -423,13 +488,11 @@ const paginationStart = computed(() => {
 })
 
 const paginationEnd = computed(() => {
-  // Correctly calculate the end index
   const end = paginationStart.value + pageSize.value
   return Math.min(end, filteredApplications.value.length)
 })
 
 const paginatedApplications = computed(() => {
-  // Slice the filtered applications based on calculated start and end
   return filteredApplications.value.slice(paginationStart.value, paginationEnd.value)
 })
 
@@ -445,25 +508,17 @@ const prevPage = () => {
   }
 }
 
-// Reset pagination to page 1 when filters change
-const resetPagination = () => {
-  currentPage.value = 1
-}
-
-// Watch for changes in filters to reset pagination
+// Reset pagination to page 1 when filters or search query change
 watch([searchQuery, statusFilter], () => {
-  resetPagination()
+  currentPage.value = 1
 })
 // --- End Pagination Logic ---
 
 // --- Notification Logic ---
 const showNotification = (type, title, message, duration = 5000) => {
-  if (notification.value.timeout) clearTimeout(notification.value.timeout) // Clear existing timeout
-
-  notification.value = { show: true, type, title, message, timeout: null } // Set new notification
-
+  if (notification.value.timeout) clearTimeout(notification.value.timeout)
+  notification.value = { show: true, type, title, message, timeout: null }
   if (duration > 0) {
-    // Auto-close if duration is set
     notification.value.timeout = setTimeout(closeNotification, duration)
   }
 }
@@ -479,18 +534,17 @@ const closeNotification = () => {
 
 // --- UI Helpers ---
 const getStatusColor = (status) => {
-  return (
-    {
-      Pending: 'bg-yellow-100 text-yellow-800',
-      Approved: 'bg-green-100 text-green-800',
-      Rejected: 'bg-red-100 text-red-800',
-      Draft: 'bg-gray-100 text-gray-800',
-    }[status] || 'bg-gray-100 text-gray-800' // Default fallback
-  )
+  const colors = {
+    Pending: 'bg-yellow-100 text-yellow-800',
+    Approved: 'bg-green-100 text-green-800',
+    Rejected: 'bg-red-100 text-red-800',
+    Draft: 'bg-gray-100 text-gray-800',
+  }
+  return colors[status] || 'bg-gray-100 text-gray-800'
 }
 
 const openViewModal = (app) => {
-  selectedApplication.value = { ...app } // Use a copy to prevent direct modification
+  selectedApplication.value = { ...app } // Create a copy to avoid direct modification
   isViewModalOpen.value = true
 }
 
@@ -502,158 +556,127 @@ const closeViewModal = () => {
 
 // --- CRUD Operations ---
 
-// Note: 'saveApplication' currently only patches 'credit'. Adjust if more fields need saving.
-const saveApplication = async (updatedApp) => {
-  // This function seems specific to saving just the 'credit' field from the modal.
-  // If the modal allows saving other fields, expand the patchData object accordingly.
-  if (!updatedApp || !updatedApp.id) {
-    showNotification('error', 'Save Failed', 'Invalid application data provided.')
+// NEW: Handle participant updates
+const updateParticipant = async (participantData) => {
+  if (!participantData || !participantData.id) {
+    showNotification('error', 'Update Failed', 'Invalid participant data.')
     return
   }
 
-  try {
-    loading.value = true // Show loading indicator during save
-
-    const patchData = {
-      // Map the field from the modal (updatedApp.cpdCredits) to the backend field name ('credit')
-      credit: updatedApp.cpdCredits,
-      // Add any other fields from updatedApp that should be saved via PATCH
-      // e.g., remarks: updatedApp.remarks
-    }
-
-    // Use the EPC PATCH endpoint
-    await apiServices.patchEpcCpdTask(updatedApp.id, patchData)
-
-    showNotification('success', 'Application Updated', 'Changes saved successfully.')
-
-    // Refresh the list to show updated data
-    await fetchApplications()
-    closeViewModal() // Close modal on successful save
-  } catch (err) {
-    console.error('Failed to save application:', err.response ? err.response.data : err)
-    showNotification(
-      'error',
-      'Save Failed',
-      `Error saving changes: ${err.response?.data?.detail || err.message || 'Please try again.'}`,
-    )
-  } finally {
-    loading.value = false // Hide loading indicator
-  }
-}
-
-const approveApplication = async (applicationData) => {
-  if (!applicationData || !applicationData.id) {
-    showNotification('error', 'Approval Failed', 'Invalid application data provided.')
-    return
-  }
   try {
     loading.value = true
-    console.log('Approving application data:', applicationData)
 
-    const updatedApplication = { ...applicationData } // Work with a copy
-    let patchData = {
-      review_status: 'Approved', // Set the main status
-      // Include remarks if they were provided in the modal
-      review_remarks: updatedApplication.remarks || '',
+    // Call the participant-specific API endpoint
+    const patchData = {
+      cpd_credits: participantData.cpd_credits,
+      review_status: participantData.review_status,
+      review_remarks: participantData.review_remarks || 'Updated via review'
     }
 
-    // Handle participants update if applicable and needed
-    if (
-      updatedApplication.participants &&
-      Array.isArray(updatedApplication.participants) &&
-      updatedApplication.participants.length > 0
-    ) {
-      const participantsToUpdate = updatedApplication.participants
-        .filter(
-          (p) => p && typeof p === 'object' && p.review_status && p.review_status !== 'Pending',
-        ) // Find participants changed in modal
-        .map((p) => ({
-          id: p.id,
-          review_status: p.review_status, // Use the status set in the modal (e.g., 'Approved')
-          review_remarks: p.review_remarks || '',
-          // Ensure correct field name for credits from your Participant Serializer
-          cpd_credits: p.cpd_credits || 0, // Adjust field name if necessary
-          // cpd_credits_for_participant: p.cpd_credits_for_participant || 0 // Example alternative
-        }))
+    await apiServices.patchEpcCpdTaskParticipant(participantData.id, patchData)
 
-      if (participantsToUpdate.length > 0) {
-        patchData.participants = participantsToUpdate // Add to payload if changes exist
-      }
-    }
+    showNotification('success', 'Participant Updated', 'Participant information updated successfully.')
 
-    // Use the EPC PATCH endpoint
-    await apiServices.patchEpcCpdTask(updatedApplication.id, patchData)
+    // Refresh the applications list to get updated data
+    await fetchApplications()
 
-    showNotification(
-      'success',
-      'Application Approved',
-      'The CPD application has been approved successfully.',
-    )
-    closeViewModal()
-    await fetchApplications() // Refresh the list
   } catch (err) {
-    console.error('Failed to approve application:', err.response ? err.response.data : err)
+    console.error('Failed to update participant:', err.response ? err.response.data : err)
     showNotification(
       'error',
-      'Approval Failed',
-      `Error approving application: ${err.response?.data?.detail || err.message || 'Please try again.'}`,
+      'Update Failed',
+      `Error updating participant: ${err.response?.data?.detail || err.message || 'Please try again.'}`
     )
   } finally {
     loading.value = false
   }
 }
 
-const rejectApplication = async (rejectionData) => {
-  if (!rejectionData || !rejectionData.id) {
-    showNotification('error', 'Rejection Failed', 'Invalid application data provided.')
+// Updated saveApplication to handle expected_cpd_credits
+const saveApplication = async (updatedApplicationData) => {
+  if (!updatedApplicationData || !updatedApplicationData.id) {
+    showNotification('error', 'Save Failed', 'Invalid application data for saving.')
     return
   }
   try {
     loading.value = true
-    console.log('Rejecting application data:', rejectionData)
-
-    const updatedApplication = { ...rejectionData } // Work with a copy
-    let patchData = {
-      review_status: 'Rejected', // Set the main status
-      // Ensure rejection remarks are included
-      review_remarks: updatedApplication.remarks || 'Rejected due to review.',
+    const patchData = {
+      expected_cpd_credits: updatedApplicationData.expected_cpd_credits || updatedApplicationData.cpdCredits,
+      credit: updatedApplicationData.credit || updatedApplicationData.cpdCredits,
+      review_remarks: updatedApplicationData.remarks,
     }
-
-    // Handle participants update if applicable (e.g., reject all participants)
-    if (
-      updatedApplication.participants &&
-      Array.isArray(updatedApplication.participants) &&
-      updatedApplication.participants.length > 0
-    ) {
-      // Option: Mark all participants as Rejected when the main task is rejected
-      const participantsToUpdate = updatedApplication.participants
-        .filter((p) => p && typeof p === 'object') // Ensure valid participants
-        .map((p) => ({
-          id: p.id,
-          review_status: 'Rejected', // Set participant status
-          review_remarks: updatedApplication.remarks || 'Rejected with main application.', // Apply main remarks
-          // Set credits to 0 on rejection
-          cpd_credits: 0, // Adjust field name if necessary
-          // cpd_credits_for_participant: 0 // Example alternative
-        }))
-
-      if (participantsToUpdate.length > 0) {
-        patchData.participants = participantsToUpdate
-      }
-    }
-
-    // Use the EPC  PATCH endpoint
-    await apiServices.patchEpcCpdTask(updatedApplication.id, patchData)
-
-    showNotification('success', 'Application Rejected', 'The CPD application has been rejected.')
+    await apiServices.patchEpcCpdTask(updatedApplicationData.id, patchData)
+    showNotification('success', 'Application Updated', 'Changes saved successfully.')
+    await fetchApplications() // Refresh list
     closeViewModal()
-    await fetchApplications() // Refresh the list
+  } catch (err) {
+    console.error('Failed to save application:', err.response ? err.response.data : err)
+    showNotification(
+      'error',
+      'Save Failed',
+      `Error saving changes: ${err.response?.data?.detail || err.message || 'Please try again.'}`
+    )
+  } finally {
+    loading.value = false
+  }
+}
+
+const approveApplication = async (applicationDataFromModal) => {
+  if (!applicationDataFromModal || !applicationDataFromModal.id) {
+    showNotification('error', 'Approval Failed', 'Invalid application data for approval.')
+    return
+  }
+  try {
+    loading.value = true
+    const patchData = {
+      is_cpd_approved: true,
+      is_draft: false,
+      review_status: 'Approved',
+      review_remarks: applicationDataFromModal.remarks || 'Application approved',
+      credit: applicationDataFromModal.credit || applicationDataFromModal.cpdCredits,
+    }
+
+    await apiServices.patchEpcCpdTask(applicationDataFromModal.id, patchData)
+    showNotification('success', 'Application Approved', 'The CPD application has been approved.')
+    await fetchApplications()
+    closeViewModal()
+  } catch (err) {
+    console.error('Failed to approve application:', err.response ? err.response.data : err)
+    showNotification(
+      'error',
+      'Approval Failed',
+      `Error approving application: ${err.response?.data?.detail || err.message || 'Please try again.'}`
+    )
+  } finally {
+    loading.value = false
+  }
+}
+
+const rejectApplication = async (applicationDataFromModal) => {
+  if (!applicationDataFromModal || !applicationDataFromModal.id) {
+    showNotification('error', 'Rejection Failed', 'Invalid application data for rejection.')
+    return
+  }
+  try {
+    loading.value = true
+    const patchData = {
+      is_cpd_approved: false,
+      is_draft: false,
+      review_status: 'Rejected',
+      review_remarks: applicationDataFromModal.remarks || 'Application rejected',
+      credit: 0,
+    }
+
+    await apiServices.patchEpcCpdTask(applicationDataFromModal.id, patchData)
+    showNotification('success', 'Application Rejected', 'The CPD application has been rejected.')
+    await fetchApplications()
+    closeViewModal()
   } catch (err) {
     console.error('Failed to reject application:', err.response ? err.response.data : err)
     showNotification(
       'error',
       'Rejection Failed',
-      `Error rejecting application: ${err.response?.data?.detail || err.message || 'Please try again.'}`,
+      `Error rejecting application: ${err.response?.data?.detail || err.message || 'Please try again.'}`
     )
   } finally {
     loading.value = false
@@ -664,167 +687,133 @@ const rejectApplication = async (rejectionData) => {
 const fetchApplications = async () => {
   try {
     loading.value = true
-
-    const response = await apiServices.getEpcCpdTasks() // Assumed function name for LIST
-
-    // Robustly handle potential API response structures
-    let results = []
+    const response = await apiServices.getEpcCpdTasks()
+    let rawResults = []
     if (response?.data?.results && Array.isArray(response.data.results)) {
-      results = response.data.results // Standard DRF pagination
+      rawResults = response.data.results
     } else if (response?.data && Array.isArray(response.data)) {
-      results = response.data // Direct array response
-    } else if (response?.results && Array.isArray(response.results)) {
-      results = response.results // Less common structure
+      rawResults = response.data
+    } else if (response && Array.isArray(response)) {
+      rawResults = response
     } else {
-      console.warn('Unexpected API response structure:', response)
+      console.warn('Unexpected API response structure for applications:', response)
     }
-
-    processApiResponse(results) // Process the extracted data
+    processApiResponse(rawResults)
   } catch (err) {
     console.error('Failed to fetch applications:', err.response ? err.response.data : err)
-    showNotification('error', 'Load Failed', 'There was an error loading the CPD applications.')
-    applications.value = [] // Clear data on error
+    showNotification('error', 'Load Failed', 'Error loading CPD applications. Please try again.')
+    applications.value = []
   } finally {
     loading.value = false
   }
 }
 
+// Helper to safely format date or return N/A
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  try {
+    return new Date(dateString).toLocaleDateString();
+  } catch (e) {
+    return 'Invalid Date';
+  }
+}
+
+// Maps API ID for 'type_of_cpd' to a human-readable name.
+const cpdActivityTypeMap = {
+  1: 'Workshop',
+  2: 'Seminar',
+  3: 'Online Course',
+  4: 'Conference',
+};
+
+const getActivityType = (item) => {
+  if (item && item.type_of_cpd !== undefined && item.type_of_cpd !== null) {
+    return cpdActivityTypeMap[item.type_of_cpd] || `Unknown Type (ID: ${item.type_of_cpd})`;
+  }
+  return 'Not specified';
+}
+
 // Function to process API response data into the format needed by the template
-const processApiResponse = (results) => {
-  if (!Array.isArray(results)) {
-    console.error('processApiResponse received non-array data:', results)
+const processApiResponse = (rawResults) => {
+  if (!Array.isArray(rawResults)) {
+    console.error('processApiResponse received non-array data:', rawResults)
     applications.value = []
     return
   }
-  applications.value = results.map((item) => ({
+  applications.value = rawResults.map((item) => ({
     // --- Core Task Info ---
     id: item.id,
-    title: item.title_of_cpd || 'N/A',
-    status: getTaskStatus(item), // Use helper for status logic
-    date: item.created_at ? new Date(item.created_at).toLocaleDateString() : 'N/A', // Format date safely
-    isDraft: item.is_draft || false,
+    title: item.title || 'N/A',
+    status: getTaskStatus(item),
+    date: formatDate(item.created_at),
+    isDraft: item.is_draft,
+    isCpdApproved: item.is_cpd_approved,
 
-    // --- Applicant Info (Assuming from related EnggApplication or directly on Task) ---
-    applicantName: item.full_name || 'Unknown', // Check if this comes directly or needs lookup
-    cidNumber: item.cid_no || 'N/A', // Check if this comes directly or needs lookup
-    // Handle registration_no potentially being an object {id: x, registration_no: '...'} or just a string
-    registrationNumber:
-      typeof item.registration_no === 'object'
-        ? item.registration_no?.registration_no
-        : item.registration_no || 'N/A',
-    fullName: item.full_name || 'Unknown', // Redundant? Same as applicantName?
-    gender: item.gender || 'Not specified', // Needs to come from related Application
+    // --- Applicant Info ---
+    applicantName: item.full_name || 'Unknown',
+    cidNumber: item.cid_no || 'N/A',
+    registrationNumber: item.registration_no || 'N/A',
 
-    // --- CPD Specific Details (Directly from EnggCPDTask model/serializer) ---
-    cpdTitle: item.title_of_cpd || 'N/A', // Redundant? Same as title?
+    // --- CPD Specific Details ---
+    description: item.description || '',
+    startDate: item.start_date,
+    endDate: item.end_date,
+    location: item.location || '',
     venue: item.venue || '',
-    fromDate: item.from_date ? new Date(item.from_date).toLocaleDateString() : 'N/A',
-    toDate: item.to_date ? new Date(item.to_date).toLocaleDateString() : 'N/A',
-    activityType: getActivityType(item), // Use helper based on 'type_of_cpd' field
+    expectedCpdCredits: item.expected_cpd_credits || 0,
+    cpdCredits: item.credit || 0,
+    activityType: getActivityType(item),
+    typeOfCpdId: item.type_of_cpd,
+
+    proposedTrainingLocation: item.proposed_training_location || '',
+    cpdProvidingAgency: item.cpd_providing_agency,
+    ifOthersSpecify: item.if_others_specify || '',
+    reasonForConducting: item.reason_for_conducting,
+    reasonForDetails: item.reason_for_details || '',
     expected_outcome: item.expected_outcome || '',
-    cpdCredits: item.credit || 0, // Main credit field on the task
-    relevance: item.relevance_to_topic || item.reason_for_details || 'Not specified', // Check serializer output
+    durationInHours: item.duration_in_hours || 0,
+    numberOfParticipants: item.number_of_participants || 0,
+    relevanceToTopic: item.relevance_to_topic || '',
 
     // --- Review Info ---
-    reviewStatus: item.review_status || 'Pending', // Main review status
-    // Combine remark fields if necessary, check serializer output
-    remarks: item.review_remarks || item.remark || '',
+    reviewStatusApi: item.review_status || 'Pending',
+    remarks: item.review_remarks || '',
 
-    // --- Attachments (Assuming URL strings) ---
-    attachment: item.attachment
-      ? { name: item.attachment.split('/').pop(), url: item.attachment }
-      : null,
-    // Add other attachments if needed (e.g., course_document, attendance_sheet_attachment)
+    // --- Attachments ---
+    attachment: item.attachment ? { name: item.attachment.split('/').pop(), url: item.attachment } : null,
+    courseDocument: item.course_document ? { name: item.course_document.split('/').pop(), url: item.course_document } : null,
+    supportingDocument: item.document_supporting_expertise ? { name: item.document_supporting_expertise.split('/').pop(), url: item.document_supporting_expertise } : null,
+    attendanceSheetAttachment: item.attendance_sheet_attachment ? { name: item.attendance_sheet_attachment.split('/').pop(), url: item.attendance_sheet_attachment } : null,
 
     // --- Timestamps ---
-    createdAt: item.created_at, // Store raw value if needed
-    updatedAt: item.updated_at, // Store raw value if needed
+    createdAt: item.created_at,
+    updatedAt: item.updated_at,
 
-    // --- Participants (Map if included in Task List Serializer) ---
-    // Ensure participants data structure matches your Participant Serializer output
+    // --- Arrays from API ---
+    learningMethods: item.learning_methods || [],
+    resources: item.resources || [],
+    methodologies: item.methodologies || [],
+
+    // --- Participants ---
     participants: Array.isArray(item.participants)
       ? item.participants.map((p) => ({
           id: p.id,
-          participant_reg_no: p.participant_reg_no, // Adjust based on serializer
-          participant_name: p.participant_name || 'N/A', // If name is included
+          cpd_task_id: p.cpd_task_id,
+          participant_reg_no: p.participant_reg_no || 'N/A',
           review_status: p.review_status || 'Pending',
           review_remarks: p.review_remarks || '',
-          // Use the specific credit field for participants
-          cpd_credits: p.cpd_credits || 0, // Adjust field name if needed (e.g., cpd_credits_for_participant)
+          cpd_credits: p.cpd_credits !== null ? p.cpd_credits : (p.cpd_credits_for_participant !== null ? p.cpd_credits_for_participant : 0),
+          endorsement_decision: p.endorsement_decision || 'Pending',
+          endorsement_remarks: p.endorsement_remarks || '',
         }))
       : [],
-
-    // --- Placeholders for fields NOT typically on EnggCPDTask (check your serializer) ---
-    // These likely come from related models like EnggCPDRecord if nested
-    participationCategory: getParticipationCategory(item), // Update helper based on actual data
-    participantSubCategory: getParticipantSubcategory(item), // Update helper based on actual data
-  }))
+  }));
 }
-
-// --- Helper functions for processing API data ---
-// Determines the display status based on draft flag and review status
-const getTaskStatus = (item) => {
-  if (item.is_draft) return 'Draft'
-  return item.review_status || 'Pending' // Default to Pending if null/undefined
-}
-
-// *** IMPORTANT: Adjust these helpers based on your ACTUAL EnggCPDTask Serializer output ***
-// These helpers assume certain nested structures or field names. Verify them.
-
-const getParticipationCategory = (item) => {
-  // This field is likely on a related model (EnggCPDRecord?), not EnggCPDTask directly.
-  // Check how your serializer includes this data (if at all).
-  // Example if nested: return item.related_record?.participation_category?.name || 'N/A';
-
-  // --- MODIFICATION START: Address unused 'item' warning ---
-  // Log the item to satisfy the linter/type checker that 'item' is used.
-  // Replace this whole function with actual logic based on your serializer.
-  if (!item) {
-    // Basic check to use 'item'
-    console.warn('getParticipationCategory called with invalid item')
-  }
-  // console.log("Processing item for Participation Category:", item.id); // Example usage
-  // --- MODIFICATION END ---
-
-  return 'N/A' // Placeholder - Requires knowledge of your serializer
-}
-
-const getParticipantSubcategory = (item) => {
-  // Similar to Participation Category - check your serializer output.
-  // Example if nested: return item.related_record?.participant_sub_category?.name || 'N/A';
-
-  // --- MODIFICATION START: Address unused 'item' warning ---
-  // Log the item to satisfy the linter/type checker that 'item' is used.
-  // Replace this whole function with actual logic based on your serializer.
-  if (!item) {
-    // Basic check to use 'item'
-    console.warn('getParticipantSubcategory called with invalid item')
-  }
-  // console.log("Processing item for Participant SubCategory:", item.id); // Example usage
-  // --- MODIFICATION END ---
-
-  return 'N/A' // Placeholder - Requires knowledge of your serializer
-}
-
-const getActivityType = (item) => {
-  // Accesses the 'type_of_cpd' field, expecting an object with 'cpd_activity_name'
-  // This corresponds to the EnggCPDActivityAlt model.
-  if (
-    item?.type_of_cpd &&
-    typeof item.type_of_cpd === 'object' &&
-    item.type_of_cpd.cpd_activity_name
-  ) {
-    return item.type_of_cpd.cpd_activity_name
-  }
-  // Fallback if it's just an ID or missing
-  return item?.type_of_cpd || 'Not specified' // Add optional chaining for safety
-}
-// --- End Helper Functions ---
 
 // Fetch initial data when the component mounts
 onMounted(() => {
-  fetchApplications()
-})
+  fetchApplications();
+});
 </script>
 
 <style scoped>
@@ -840,10 +829,5 @@ onMounted(() => {
 .notification-leave-to {
   opacity: 0;
   transform: translateY(-20px); /* Slide up slightly on exit */
-}
-
-/* Ensure table layout handles overflow */
-.table-fixed {
-  table-layout: fixed;
 }
 </style>

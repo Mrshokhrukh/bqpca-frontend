@@ -33,9 +33,9 @@
                   :class="[
                     'px-8 py-6 border-b relative overflow-hidden',
                     {
-                      'bg-yellow-50 border-yellow-100': application.status === 'Pending',
-                      'bg-green-50 border-green-100': application.status === 'Approved',
-                      'bg-red-50 border-red-100': application.status === 'Rejected',
+                      'bg-yellow-50 border-yellow-100': getApplicationStatus() === 'Pending',
+                      'bg-green-50 border-green-100': getApplicationStatus() === 'Approved',
+                      'bg-red-50 border-red-100': getApplicationStatus() === 'Rejected',
                     },
                   ]"
                 >
@@ -58,21 +58,21 @@
                         :class="[
                           'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
                           {
-                            'bg-yellow-100 text-yellow-800': application.status === 'Pending',
-                            'bg-green-100 text-green-800': application.status === 'Approved',
-                            'bg-red-100 text-red-800': application.status === 'Rejected',
+                            'bg-yellow-100 text-yellow-800': getApplicationStatus() === 'Pending',
+                            'bg-green-100 text-green-800': getApplicationStatus() === 'Approved',
+                            'bg-red-100 text-red-800': getApplicationStatus() === 'Rejected',
                           },
                         ]"
                       >
                         <Circle
                           class="h-4 w-4"
                           :class="{
-                            'text-yellow-500': application.status === 'Pending',
-                            'text-green-500': application.status === 'Approved',
-                            'text-red-500': application.status === 'Rejected',
+                            'text-yellow-500': getApplicationStatus() === 'Pending',
+                            'text-green-500': getApplicationStatus() === 'Approved',
+                            'text-red-500': getApplicationStatus() === 'Rejected',
                           }"
                         />
-                        <span>{{ application.status || 'Pending' }}</span>
+                        <span>{{ getApplicationStatus() }}</span>
                       </span>
                       <button
                         type="button"
@@ -110,7 +110,7 @@
                               <div>
                                 <span class="text-xs text-gray-500">Registration Number</span>
                                 <p class="text-sm text-gray-900">
-                                  {{ application.registrationNumber || 'Not provided' }}
+                                  {{ application.registration_no || 'Not provided' }}
                                 </p>
                               </div>
                             </div>
@@ -119,7 +119,7 @@
                               <div>
                                 <span class="text-xs text-gray-500">CID/Identity Number</span>
                                 <p class="text-sm text-gray-900">
-                                  {{ application.cidNumber || 'Not provided' }}
+                                  {{ application.cid_no || 'Not provided' }}
                                 </p>
                               </div>
                             </div>
@@ -128,16 +128,16 @@
                               <div>
                                 <span class="text-xs text-gray-500">Full Name</span>
                                 <p class="text-sm text-gray-900">
-                                  {{ application.fullName || 'Not provided' }}
+                                  {{ application.full_name || 'Not provided' }}
                                 </p>
                               </div>
                             </div>
                             <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                               <UserCircle class="h-4 w-4 text-gray-400" />
                               <div>
-                                <span class="text-xs text-gray-500">Gender</span>
+                                <span class="text-xs text-gray-500">Location</span>
                                 <p class="text-sm text-gray-900">
-                                  {{ application.gender || 'Not provided' }}
+                                  {{ application.location || 'Not provided' }}
                                 </p>
                               </div>
                             </div>
@@ -146,7 +146,7 @@
                       </div>
 
                       <div
-                        v-if="application.attachment"
+                        v-if="application.course_document || application.document_supporting_expertise || application.attendance_sheet_attachment"
                         class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
                       >
                         <div class="p-6">
@@ -154,23 +154,51 @@
                             class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
                           >
                             <Paperclip class="h-5 w-5 text-gray-500" />
-                            <span>Attachment</span>
+                            <span>Attachments</span>
                           </h4>
-                          <div
-                            class="p-4 bg-gray-50 rounded-lg flex flex-col items-center space-y-3"
-                          >
-                            <FileText class="h-12 w-12 text-gray-400" />
-                            <p class="text-sm text-gray-900 text-center">
-                              {{ application.attachment.name || 'Document' }}
-                            </p>
-                            <a
-                              v-if="application.attachment.url"
-                              :href="application.attachment.url"
-                              target="_blank"
-                              class="px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-300 rounded-lg shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                          <div class="space-y-3">
+                            <div
+                              v-if="application.course_document"
+                              class="p-4 bg-gray-50 rounded-lg flex flex-col items-center space-y-3"
                             >
-                              View Document
-                            </a>
+                              <FileText class="h-8 w-8 text-gray-400" />
+                              <p class="text-sm text-gray-900 text-center">Course Document</p>
+                              <a
+                                :href="application.course_document"
+                                target="_blank"
+                                class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-white border border-blue-300 rounded-lg shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                              >
+                                View Document
+                              </a>
+                            </div>
+                            <div
+                              v-if="application.document_supporting_expertise"
+                              class="p-4 bg-gray-50 rounded-lg flex flex-col items-center space-y-3"
+                            >
+                              <FileText class="h-8 w-8 text-gray-400" />
+                              <p class="text-sm text-gray-900 text-center">Supporting Expertise</p>
+                              <a
+                                :href="application.document_supporting_expertise"
+                                target="_blank"
+                                class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-white border border-blue-300 rounded-lg shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                              >
+                                View Document
+                              </a>
+                            </div>
+                            <div
+                              v-if="application.attendance_sheet_attachment"
+                              class="p-4 bg-gray-50 rounded-lg flex flex-col items-center space-y-3"
+                            >
+                              <FileText class="h-8 w-8 text-gray-400" />
+                              <p class="text-sm text-gray-900 text-center">Attendance Sheet</p>
+                              <a
+                                :href="application.attendance_sheet_attachment"
+                                target="_blank"
+                                class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-white border border-blue-300 rounded-lg shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                              >
+                                View Document
+                              </a>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -192,46 +220,135 @@
                               <p class="text-sm font-medium text-gray-500">Title of CPD</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <FileText class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.cpdTitle || 'Not provided' }}</span>
+                                <span>{{ application.title || 'Not provided' }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">
-                                Relevance to Profession
+                              <p class="text-sm font-medium text-gray-500">Description</p>
+                              <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
+                                <Link class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                                <span>{{ application.description || 'Not provided' }}</span>
                               </p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                              <p class="text-sm font-medium text-gray-500">Start Date</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <Link class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.relevance || 'Not provided' }}</span>
+                                <Calendar class="h-4 w-4 text-gray-400" />
+                                <span>{{ formatDate(application.start_date) || 'Not provided' }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">
-                                Participation Category
+                              <p class="text-sm font-medium text-gray-500">End Date</p>
+                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
+                                <Calendar class="h-4 w-4 text-gray-400" />
+                                <span>{{ formatDate(application.end_date) || 'Not provided' }}</span>
                               </p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                              <p class="text-sm font-medium text-gray-500">Duration (Hours)</p>
+                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
+                                <Clock class="h-4 w-4 text-gray-400" />
+                                <span>{{ application.duration_in_hours || 'Not provided' }}</span>
+                              </p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                              <p class="text-sm font-medium text-gray-500">Expected Participants</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Users class="h-4 w-4 text-gray-400" />
-                                <span>{{
-                                  application.participationCategory || 'Not provided'
-                                }}</span>
+                                <span>{{ application.number_of_participants || 'Not provided' }}</span>
                               </p>
                             </div>
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">
-                                Participant Sub-category
-                              </p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <UserCheck class="h-4 w-4 text-gray-400" />
-                                <span>{{
-                                  application.participantSubCategory || 'Not provided'
-                                }}</span>
-                              </p>
-                            </div>
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Type of CPD Activity</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <Activity class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.activityType || 'Not provided' }}</span>
-                              </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Participants Section -->
+                      <div
+                        v-if="application.participants && application.participants.length > 0"
+                        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+                      >
+                        <div class="p-6">
+                          <h4
+                            class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
+                          >
+                            <Users class="h-5 w-5 text-gray-500" />
+                            <span>Participants ({{ application.participants.length }})</span>
+                          </h4>
+                          <div class="space-y-4">
+                            <div
+                              v-for="participant in application.participants"
+                              :key="participant.id"
+                              class="p-4 bg-gray-50 rounded-lg border border-gray-200"
+                            >
+                              <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                      <p class="text-xs text-gray-500">Registration No.</p>
+                                      <p class="text-sm font-medium text-gray-900">
+                                        {{ participant.participant_reg_no || 'Not provided' }}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p class="text-xs text-gray-500">Review Status</p>
+                                      <span
+                                        :class="[
+                                          'inline-flex px-2 py-1 text-xs font-medium rounded-full',
+                                          {
+                                            'bg-yellow-100 text-yellow-800': participant.review_status === 'Pending',
+                                            'bg-green-100 text-green-800': participant.review_status === 'Approved',
+                                            'bg-red-100 text-red-800': participant.review_status === 'Rejected',
+                                          },
+                                        ]"
+                                      >
+                                        {{ participant.review_status || 'Pending' }}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <p class="text-xs text-gray-500">CPD Credits</p>
+                                      <div v-if="editingParticipant === participant.id" class="mt-1">
+                                        <input
+                                          v-model.number="participantCredits[participant.id]"
+                                          type="number"
+                                          min="0"
+                                          step="0.5"
+                                          class="w-20 px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        />
+                                      </div>
+                                      <p v-else class="text-sm font-medium text-gray-900">
+                                        {{ participant.cpd_credits || participant.cpd_credits_for_participant || '0' }}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div v-if="participant.review_remarks" class="mt-3">
+                                    <p class="text-xs text-gray-500">Remarks</p>
+                                    <p class="text-sm text-gray-700">{{ participant.review_remarks }}</p>
+                                  </div>
+                                </div>
+                                <div class="flex items-center space-x-2 ml-4">
+                                  <button
+                                    v-if="editingParticipant !== participant.id"
+                                    @click="startEditingParticipant(participant)"
+                                    class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                                  >
+                                    Edit
+                                  </button>
+                                  <template v-else>
+                                    <button
+                                      @click="saveParticipant(participant)"
+                                      class="px-3 py-1.5 text-xs font-medium text-white bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      @click="cancelEditingParticipant()"
+                                      class="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </template>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -249,10 +366,10 @@
                           </h4>
                           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">CPD Credits</p>
+                              <p class="text-sm font-medium text-gray-500">Expected CPD Credits</p>
                               <div v-if="isEditing" class="mt-2">
                                 <input
-                                  v-model.number="editedApplication.cpdCredits"
+                                  v-model.number="editedApplication.expected_cpd_credits"
                                   type="number"
                                   min="0"
                                   step="0.5"
@@ -264,14 +381,14 @@
                                 class="text-sm text-gray-900 mt-2 flex items-center space-x-2"
                               >
                                 <Award class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.cpdCredits || '0' }}</span>
+                                <span>{{ application.expected_cpd_credits || '0' }}</span>
                               </p>
                             </div>
-                            <div v-if="application.remarks" class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Remarks</p>
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                              <p class="text-sm font-medium text-gray-500">Assigned Credits</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <MessageSquare class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.remarks }}</span>
+                                <Award class="h-4 w-4 text-gray-400" />
+                                <span>{{ application.credit || '0' }}</span>
                               </p>
                             </div>
                           </div>
@@ -348,7 +465,7 @@
                               class="text-base font-medium text-red-800 mb-4 flex items-center space-x-2"
                             >
                               <XCircle class="h-4 w-4 text-red-600" />
-                              <span>Regret Application</span>
+                              <span>Reject Application</span>
                             </h5>
                             <div class="space-y-4">
                               <div>
@@ -372,8 +489,8 @@
                               <div class="flex justify-end space-x-3">
                                 <button
                                   @click="
-                                    showRejectionForm = false,
-                                    rejectionError = ''
+                                    showRejectionForm = false;
+                                    rejectionError = '';
                                   "
                                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
                                 >
@@ -405,7 +522,7 @@
                               class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors flex items-center space-x-2"
                             >
                               <XCircle class="h-4 w-4" />
-                              <span>Regret Application</span>
+                              <span>Reject Application</span>
                             </button>
                           </div>
                         </div>
@@ -466,10 +583,12 @@ import {
   Award,
   Badge,
   BookOpen,
+  Calendar,
   Check,
   CheckCircle,
   Circle,
   ClipboardCheck,
+  Clock,
   FileText,
   Hash,
   Link,
@@ -489,25 +608,29 @@ const props = defineProps({
     type: Object,
     required: true,
     default: () => ({
-      registrationNumber: '',
-      cidNumber: '',
-      fullName: '',
-      gender: '',
-      cpdTitle: '',
-      relevance: '',
-      participationCategory: '',
-      participantSubCategory: '',
-      activityType: '',
-      attachment: null,
-      cpdCredits: 0,
-      status: '',
-      reviewStatus: '',
-      remarks: '',
+      registration_no: '',
+      cid_no: '',
+      full_name: '',
+      title: '',
+      description: '',
+      start_date: '',
+      end_date: '',
+      location: '',
+      expected_cpd_credits: 0,
+      credit: 0,
+      duration_in_hours: 0,
+      number_of_participants: 0,
+      course_document: '',
+      document_supporting_expertise: '',
+      attendance_sheet_attachment: '',
+      participants: [],
+      status: false,
+      is_cpd_approved: false,
     }),
   },
 })
 
-const emit = defineEmits(['close', 'save', 'approve', 'reject'])
+const emit = defineEmits(['close', 'save', 'approve', 'reject', 'updateParticipant'])
 
 const isEditing = ref(false)
 const editedApplication = ref({ ...props.application })
@@ -516,23 +639,52 @@ const showRejectionForm = ref(false)
 const approvalMessage = ref('')
 const rejectionMessage = ref('')
 const rejectionError = ref('')
-const approvalCredits = ref(props.application?.cpdCredits || 0)
+const approvalCredits = ref(props.application?.expected_cpd_credits || 0)
+
+// Participant editing
+const editingParticipant = ref(null)
+const participantCredits = ref({})
 
 watch(
   () => props.application,
   (newApplication) => {
     if (newApplication) {
       editedApplication.value = { ...newApplication }
-      approvalCredits.value = newApplication.cpdCredits || 0
+      approvalCredits.value = newApplication.expected_cpd_credits || 0
       isEditing.value = false
       showApprovalForm.value = false
       showRejectionForm.value = false
       approvalMessage.value = ''
       rejectionMessage.value = ''
       rejectionError.value = ''
+      editingParticipant.value = null
+      participantCredits.value = {}
     }
   },
+  { immediate: true }
 )
+
+const getApplicationStatus = () => {
+  if (props.application?.is_cpd_approved === true) {
+    return 'Approved'
+  } else if (props.application?.is_cpd_approved === false) {
+    return 'Rejected'
+  }
+  return 'Pending'
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'Not provided'
+  try {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  } catch (error) {
+    return dateString
+  }
+}
 
 const startEditing = () => {
   editedApplication.value = { ...props.application }
@@ -542,18 +694,44 @@ const startEditing = () => {
 }
 
 const saveChanges = () => {
-  const creditsToSave = Number(editedApplication.value.cpdCredits)
+  const creditsToSave = Number(editedApplication.value.expected_cpd_credits)
   if (isNaN(creditsToSave) || creditsToSave < 0) {
-    editedApplication.value.cpdCredits = 0
+    editedApplication.value.expected_cpd_credits = 0
   } else {
-    editedApplication.value.cpdCredits = creditsToSave
+    editedApplication.value.expected_cpd_credits = creditsToSave
   }
 
   emit('save', {
     id: props.application.id,
-    cpdCredits: editedApplication.value.cpdCredits,
+    expected_cpd_credits: editedApplication.value.expected_cpd_credits,
   })
   isEditing.value = false
+}
+
+const startEditingParticipant = (participant) => {
+  editingParticipant.value = participant.id
+  participantCredits.value[participant.id] = participant.cpd_credits || participant.cpd_credits_for_participant || 0
+}
+
+const cancelEditingParticipant = () => {
+  editingParticipant.value = null
+  participantCredits.value = {}
+}
+
+const saveParticipant = (participant) => {
+  const credits = Number(participantCredits.value[participant.id])
+  if (isNaN(credits) || credits < 0) {
+    participantCredits.value[participant.id] = 0
+  }
+
+  emit('updateParticipant', {
+    id: participant.id,
+    cpd_credits: participantCredits.value[participant.id],
+    review_status: 'Approved'
+  })
+
+  editingParticipant.value = null
+  participantCredits.value = {}
 }
 
 const approveApplication = () => {
@@ -563,7 +741,9 @@ const approveApplication = () => {
 
   emit('approve', {
     id: props.application.id,
-    cpdCredits: approvalCredits.value,
+    credit: approvalCredits.value,
+    is_cpd_approved: true,
+    status: true,
     remarks: approvalMessage.value || 'Application approved',
   })
   showApprovalForm.value = false
@@ -579,6 +759,8 @@ const rejectApplication = () => {
 
   emit('reject', {
     id: props.application.id,
+    status: false,
+    is_cpd_approved: false,
     remarks: rejectionMessage.value,
   })
   showRejectionForm.value = false
