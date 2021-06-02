@@ -6,7 +6,6 @@
       </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Left Column - Add/Edit Form -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8">
           <h2 class="text-xl font-semibold text-slate-900 mb-4">
             {{
@@ -49,7 +48,6 @@
           </form>
         </div>
 
-        <!-- Right Column - COGS Workplaces List -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
           <div class="mb-6 space-y-4">
             <div class="flex justify-between items-center">
@@ -61,7 +59,6 @@
               </span>
             </div>
 
-            <!-- Search Bar -->
             <div class="relative">
               <input
                 type="text"
@@ -85,7 +82,6 @@
             </div>
           </div>
 
-          <!-- Workplaces Grid -->
           <div class="space-y-4 mb-6">
             <TransitionGroup name="list">
               <div
@@ -129,14 +125,12 @@
               </div>
             </TransitionGroup>
 
-            <!-- Empty State -->
             <div v-if="filteredWorkplaces.length === 0" class="text-center py-8">
-              <p class="text-slate-500">No workplaces found</p>
+              <p class="text-slate-500">No workplaces found. Try adding some!</p>
             </div>
           </div>
 
-          <!-- Pagination -->
-          <div v-if="filteredWorkplaces.length > itemsPerPage" class="flex justify-center gap-2">
+          <div v-if="totalPages > 1" class="flex justify-center gap-2">
             <button
               @click="currentPage--"
               :disabled="currentPage === 1"
@@ -158,7 +152,6 @@
         </div>
       </div>
 
-      <!-- Confirmation modal -->
       <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
         <AlertDialogContent
           class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50"
@@ -194,7 +187,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import apiServices from '@/services/services'
+import apiServices from '@/services/services' // Make sure this path is correct and it exports the services object
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -214,34 +207,43 @@ const formData = ref({
 const isEditing = ref(false)
 const searchQuery = ref('')
 const currentPage = ref(1)
-const itemsPerPage = 5
+const itemsPerPage = 5 // You can adjust this value
 
 const isDeleteModalOpen = ref(false)
 const workplaceToDelete = ref(null)
 
 // Fetch workplaces on component mount
-onMounted(async () => {
+const fetchWorkplaces = async () => {
   try {
-    const response = await apiServices.getEpcMastersCogsWorkplaces()
-    console.log('API Response:', response.data)
+    // CORRECTED: Using the function name from your API service definition
+    const response = await apiServices.getEpcCogsWorkplaces()
 
-    if (Array.isArray(response.data.results)) {
+    // Assuming your API returns an object with a 'results' array, or just the array directly
+    if (Array.isArray(response.data?.results)) {
       workplaces.value = response.data.results
-    } else {
-      console.error('API did not return an array of results.')
-      workplaces.value = []
+    } else if (Array.isArray(response.data)) {
+      workplaces.value = response.data;
+    }
+     else {
+      console.error('API response did not contain an array of results.')
+      workplaces.value = [] // Default to empty array on error or unexpected format
     }
   } catch (error) {
     console.error('Error fetching workplaces:', error)
-    workplaces.value = []
+    workplaces.value = [] // Default to empty array on error
   }
-})
+}
+
+onMounted(fetchWorkplaces)
 
 // Computed
 const filteredWorkplaces = computed(() => {
+  if (!searchQuery.value) {
+    return workplaces.value
+  }
   return workplaces.value.filter((workplace) => {
     const query = searchQuery.value.toLowerCase()
-    return workplace.name.toLowerCase().includes(query)
+    return workplace.name?.toLowerCase().includes(query) // Added optional chaining for safety
   })
 })
 
@@ -255,31 +257,58 @@ const paginatedWorkplaces = computed(() => {
   return filteredWorkplaces.value.slice(start, end)
 })
 
+// Watch for search query changes to reset pagination
+watch(searchQuery, () => {
+  currentPage.value = 1
+})
+
+// Watch for changes in workplaces that might affect total pages
+watch(workplaces, () => {
+    if (currentPage.value > totalPages.value && totalPages.value > 0) {
+        currentPage.value = totalPages.value;
+    } else if (totalPages.value === 0) {
+        currentPage.value = 1;
+    }
+}, { deep: true });
+
+
 // Methods
 const handleSubmit = async () => {
   try {
-    if (isEditing.value) {
-      const response = await apiServices.updateEpcMastersCogsWorkplace(
+    if (isEditing.value && formData.value.id) {
+      // CORRECTED: Using the function name from your API service definition
+      const response = await apiServices.updateEpcCogsWorkplace(
         formData.value.id,
-        formData.value,
+        { name: formData.value.name }, // Send only necessary data
       )
       const index = workplaces.value.findIndex((dt) => dt.id === formData.value.id)
       if (index !== -1) {
-        workplaces.value[index] = response.data
+        workplaces.value[index] = response.data // Assuming API returns the updated object
       }
     } else {
-      const response = await apiServices.createEpcMastersCogsWorkplace(formData.value)
-      workplaces.value.push(response.data)
+      // CORRECTED: Using the function name from your API service definition
+      const response = await apiServices.createEpcCogsWorkplace({ name: formData.value.name }) // Send only necessary data
+      workplaces.value.push(response.data) // Assuming API returns the created object with an ID
     }
     resetForm()
+    await fetchWorkplaces(); // Re-fetch to ensure data consistency and proper pagination
   } catch (error) {
-    console.error('Error saving workplace:', error)
+    console.error('Error saving workplace:', error.response?.data || error.message || error)
   }
 }
 
 const startEdit = (workplace) => {
   formData.value = { ...workplace }
   isEditing.value = true
+  window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top for better UX
+}
+
+const resetForm = () => {
+  formData.value = {
+    id: null,
+    name: '',
+  }
+  isEditing.value = false
 }
 
 const cancelEdit = () => {
@@ -297,32 +326,18 @@ const closeDeleteModal = () => {
 }
 
 const confirmDelete = async () => {
-  if (!workplaceToDelete.value) return
+  if (!workplaceToDelete.value?.id) return
 
   try {
-    await apiServices.deleteEpcMastersCogsWorkplace(workplaceToDelete.value.id)
-    const index = workplaces.value.findIndex((dt) => dt.id === workplaceToDelete.value.id)
-    if (index !== -1) {
-      workplaces.value.splice(index, 1)
-    }
+    // CORRECTED: Using the function name from your API service definition
+    await apiServices.deleteEpcCogsWorkplace(workplaceToDelete.value.id)
     closeDeleteModal()
+    await fetchWorkplaces(); // Re-fetch to update the list and pagination
   } catch (error) {
-    console.error('Error deleting workplace:', error)
+    console.error('Error deleting workplace:', error.response?.data || error.message || error)
   }
 }
 
-const resetForm = () => {
-  formData.value = {
-    id: null,
-    name: '',
-  }
-  isEditing.value = false
-}
-
-// Watch for search query changes to reset pagination
-watch(searchQuery, () => {
-  currentPage.value = 1
-})
 </script>
 
 <style scoped>
