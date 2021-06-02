@@ -1049,6 +1049,11 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('RefreshCw'),
             route: (serviceType) => `/admin/institutions/${serviceType}/renewal_teaching_hospital`,
           },
+          {
+            name: 'Teaching Hospital Tracking',
+            icon: getIconComponent('RefreshCw'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_tracking`,
+          },
 
           {
             name: 'CAPA',
