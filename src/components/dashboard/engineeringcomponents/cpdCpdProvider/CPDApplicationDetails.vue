@@ -300,7 +300,8 @@ const fetchResourcePersonDetails = async (person) => {
     } else {
       person.name = ''
     }
-  } catch (_error) {
+  } catch {
+    
     person.name = ''
   } finally {
     loading.value = false
@@ -321,7 +322,7 @@ const fetchParticipantName = async (participant) => {
     } else {
       participant.name = ''
     }
-  } catch (_error) {
+  } catch {
     participant.name = ''
   } finally {
     loading.value = false
@@ -346,7 +347,7 @@ const fetchUserRegistrations = async () => {
       //   applicant.registrationNumber = currentUserRegistration.registration_no;
       // }
     }
-  } catch (_error) {
+  } catch {
     validationErrors.value.push('Error fetching user registration data.')
   }
 }
@@ -380,7 +381,7 @@ const loadDropdownOptions = async () => {
       value: sub.id,
       categoryId: sub.participation_category_name || sub.category_id || sub.category
     })) || []
-  } catch (_error) {
+  } catch {
     validationErrors.value = ['Error loading form data. Please refresh the page.']
   } finally {
     // Removed loading.value = false here
