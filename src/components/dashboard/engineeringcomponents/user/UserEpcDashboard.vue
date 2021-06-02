@@ -8,8 +8,9 @@
         <EmptyDashboardState v-else-if="dashboardState.isPending" :qualification-info="dashboardState.qualificationInfo"
           :key="dashboardState.qualificationInfo?.qualification?.id + (dashboardState.qualificationInfo?.qualification?.updated_at || '')" />
         <template v-else-if="dashboardState.isApproved">
-          <ProfileHeader :user-detail="userDetail" :renewal-message="renewalStatus"
-            :qualifications="dashboardState.primaryQualifications" @view-certificate="handleViewCertificate" />
+          <!-- Removed :renewal-message prop since ProfileHeader now calculates its own -->
+          <ProfileHeader :user-detail="userDetail" :qualifications="dashboardState.primaryQualifications"
+            @view-certificate="handleViewCertificate" />
           <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
             <StatCard title="CPD Credits" icon="Award" :progress="cpdCredits" :total="50" type="progress" />
             <CogsStatusCard :expiry-date="licenseExpiryDate" :status="licenseStatus" />
@@ -61,7 +62,7 @@ const {
   cpdCredits,
   licenseExpiryDate,
   licenseStatus,
-  renewalMessage: renewalStatus,
+  // Removed renewalMessage since ProfileHeader calculates its own
   recentActivities,
   upcomingDeadlines,
   selectedApplications,
