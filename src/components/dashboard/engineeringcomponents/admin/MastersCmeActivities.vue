@@ -6,33 +6,37 @@
       </h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Left Column - Add/Edit Form -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8">
           <h2 class="text-xl font-semibold text-slate-900 mb-4">
             {{ isEditing ? 'Edit CPD Activity' : 'Add New CPD Activity' }}
           </h2>
+
+          <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p class="text-red-700 text-sm">{{ errorMessage }}</p>
+          </div>
+
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
-                <label for="cmeActivityName" class="block text-sm font-medium text-slate-700"
+                <label for="cpd_activity_name" class="block text-sm font-medium text-slate-700"
                   >CPD Activity Name</label
                 >
                 <input
                   type="text"
-                  id="cmeActivityName"
-                  v-model="formData.cme_activity_name"
+                  id="cpd_activity_name"
+                  v-model="formData.cpd_activity_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter CPD activity name"
                   required
                 />
               </div>
               <div>
-                <label for="cmeActivityDescription" class="block text-sm font-medium text-slate-700"
+                <label for="cpd_activity_description" class="block text-sm font-medium text-slate-700"
                   >Description</label
                 >
                 <textarea
-                  id="cmeActivityDescription"
-                  v-model="formData.cme_activity_description"
+                  id="cpd_activity_description"
+                  v-model="formData.cpd_activity_description"
                   rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter CPD activity description"
@@ -42,9 +46,10 @@
               <div class="flex gap-3">
                 <button
                   type="submit"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  :disabled="isSubmitting"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {{ isEditing ? 'Update Activity' : 'Add Activity' }}
+                  {{ isSubmitting ? 'Saving...' : (isEditing ? 'Update Activity' : 'Add Activity') }}
                 </button>
                 <button
                   v-if="isEditing"
@@ -59,18 +64,16 @@
           </form>
         </div>
 
-        <!-- Right Column - Data Table -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
           <div class="mb-6 space-y-4">
             <div class="flex justify-between items-center">
               <h2 class="text-xl font-semibold text-slate-900">CPD Activities List</h2>
               <span class="text-sm text-slate-500">
-                {{ cmeActivities.length }} Activity{{ cmeActivities.length !== 1 ? 's' : '' }}
+                {{ cpdActivities.length }} Activity{{ cpdActivities.length !== 1 ? 's' : '' }}
               </span>
             </div>
           </div>
 
-          <!-- CPD Activities List -->
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200">
               <thead class="bg-slate-50">
@@ -99,10 +102,12 @@
                   class="hover:bg-blue-50/30 transition-colors duration-200"
                 >
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-900">
-                    {{ activity.cme_activity_name }}
+                    {{ activity.cpd_activity_name }}
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-700">
-                    {{ activity.cme_activity_description }}
+                  <td class="px-3 py-4 text-sm text-slate-700">
+                    <div class="max-w-xs truncate" :title="activity.cpd_activity_description">
+                      {{ activity.cpd_activity_description }}
+                    </div>
                   </td>
                   <td
                     class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
@@ -111,6 +116,7 @@
                       <button
                         @click="editActivity(activity)"
                         class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+                        title="Edit Activity"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -124,6 +130,7 @@
                       <button
                         @click="confirmDelete(activity)"
                         class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                        title="Delete Activity"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -137,16 +144,15 @@
                     </div>
                   </td>
                 </tr>
-                <tr v-if="cmeActivities.length === 0">
-                  <td colspan="4" class="px-6 py-4 text-center text-slate-500">
-                    No CPD activities found
+                <tr v-if="!cpdActivities || cpdActivities.length === 0">
+                  <td colspan="3" class="px-6 py-4 text-center text-slate-500">
+                    No CPD activities found.
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <!-- Pagination -->
           <div v-if="totalPages > 1" class="flex justify-center gap-2 mt-6">
             <button
               @click="currentPage--"
@@ -169,8 +175,8 @@
         </div>
       </div>
 
-      <!-- Delete Confirmation Modal -->
       <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
+        <AlertDialogOverlay class="fixed inset-0 bg-black/50 z-40" />
         <AlertDialogContent
           class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50"
         >
@@ -179,7 +185,7 @@
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
             This action cannot be undone. This will permanently delete the CPD activity "{{
-              activityToDelete?.cme_activity_name
+              activityToDelete?.cpd_activity_name
             }}".
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
@@ -197,7 +203,6 @@
             </AlertDialogAction>
           </div>
         </AlertDialogContent>
-        <AlertDialogOverlay class="fixed inset-0 bg-black/50 z-40" />
       </AlertDialogRoot>
     </div>
   </div>
@@ -205,7 +210,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import apiServices from '@/services/services'
+import apiServices from '@/services/services' // Ensure this path is correct
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -214,53 +219,104 @@ import {
   AlertDialogOverlay,
   AlertDialogRoot,
   AlertDialogTitle,
-} from 'radix-vue'
+} from 'radix-vue' // Assuming you are using Radix Vue for the modal
 
 // State
-const cmeActivities = ref([])
+const cpdActivities = ref([])
 const formData = ref({
-  cme_activity_name: '',
-  cme_activity_description: '',
+  cpd_activity_name: '',
+  cpd_activity_description: '', // This is used by the form v-model
 })
 const isEditing = ref(false)
+const isSubmitting = ref(false)
+const errorMessage = ref('')
 const editingId = ref(null)
 const isDeleteModalOpen = ref(false)
 const activityToDelete = ref(null)
 const currentPage = ref(1)
-const itemsPerPage = 5
+const itemsPerPage = 5 // Adjust as needed
 
 // Methods
 const fetchActivities = async (page = 1) => {
   try {
+    // Using the plural endpoint for fetching activities
     const response = await apiServices.getEpcMastersCpdActivities()
-    cmeActivities.value = response.data.results
+    if (response.data && Array.isArray(response.data.results)) {
+      cpdActivities.value = response.data.results
+    } else if (Array.isArray(response.data)) {
+      cpdActivities.value = response.data;
+    } else {
+      cpdActivities.value = [];
+      console.warn("Unexpected API response structure for activities:", response.data);
+    }
     currentPage.value = page
   } catch (error) {
-    console.error('Error fetching cme activities:', error)
+    console.error('Error fetching CPD activities:', error)
+    errorMessage.value = 'Failed to fetch CPD activities. Please try again.'
+    cpdActivities.value = [];
   }
 }
 
 const handleSubmit = async () => {
+  if (isSubmitting.value) return
+
+  isSubmitting.value = true
+  errorMessage.value = ''
+
+  const payload = {
+    cpd_activity_name: formData.value.cpd_activity_name,
+    description: formData.value.cpd_activity_description,
+  };
+
+  console.log('Submitting payload:', payload);
+
   try {
     if (isEditing.value) {
-      await apiServices.updateEpcMastersCpdActivity(editingId.value, formData.value)
+      // Using the plural endpoint for updating activities
+      await apiServices.updateEpcMastersCpdActivities(editingId.value, payload)
     } else {
-      await apiServices.createEpcMastersCpdActivity(formData.value)
+      // Using the plural endpoint for creating activities
+      await apiServices.createEpcMastersCpdActivities(payload)
     }
     resetForm()
-    fetchActivities()
+    await fetchActivities(isEditing.value ? currentPage.value : 1)
   } catch (error) {
-    console.error('Error saving cme activity:', error)
+    console.error('Error saving CPD activity:', error.response || error)
+    if (error.response && error.response.data) {
+      if (typeof error.response.data === 'object') {
+        const errorMessages = [];
+        for (const key in error.response.data) {
+          if (Array.isArray(error.response.data[key])) {
+            errorMessages.push(`${key}: ${error.response.data[key].join(', ')}`);
+          } else {
+            errorMessages.push(`${key}: ${error.response.data[key]}`);
+          }
+        }
+        errorMessage.value = errorMessages.join('; ') || 'An unknown error occurred.';
+        if (error.response.data.description && Array.isArray(error.response.data.description)) {
+             errorMessage.value = `Description: ${error.response.data.description.join(', ')}`;
+        }
+
+      } else {
+        errorMessage.value = error.response.data;
+      }
+    } else {
+      errorMessage.value = 'Failed to save CPD activity. Please check your connection and try again.'
+    }
+  } finally {
+    isSubmitting.value = false
   }
 }
 
 const editActivity = (activity) => {
   formData.value = {
-    cme_activity_name: activity.cme_activity_name,
-    cme_activity_description: activity.cme_activity_description,
+    cpd_activity_name: activity.cpd_activity_name,
+    cpd_activity_description: activity.cpd_activity_description,
   }
   isEditing.value = true
   editingId.value = activity.id
+  errorMessage.value = ''
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 const cancelEdit = () => {
@@ -269,11 +325,12 @@ const cancelEdit = () => {
 
 const resetForm = () => {
   formData.value = {
-    cme_activity_name: '',
-    cme_activity_description: '',
+    cpd_activity_name: '',
+    cpd_activity_description: '',
   }
   isEditing.value = false
   editingId.value = null
+  errorMessage.value = ''
 }
 
 const confirmDelete = (activity) => {
@@ -289,32 +346,42 @@ const cancelDelete = () => {
 const deleteActivity = async () => {
   if (!activityToDelete.value) return
   try {
-    await apiServices.deleteEpcMastersCpdActivity(activityToDelete.value.id)
-    const index = cmeActivities.value.findIndex((act) => act.id === activityToDelete.value.id)
-    if (index !== -1) {
-      cmeActivities.value.splice(index, 1)
+    // Using the plural endpoint for deleting activities
+    await apiServices.deleteEpcMastersCpdActivities(activityToDelete.value.id)
+    await fetchActivities(currentPage.value);
+
+    if (paginatedActivities.value.length === 0 && currentPage.value > 1) {
+        currentPage.value--;
     }
+
     cancelDelete()
-    fetchActivities()
   } catch (error) {
-    console.error('Error deleting cme activity:', error)
+    console.error('Error deleting CPD activity:', error)
+    errorMessage.value = 'Failed to delete CPD activity. Please try again.'
   }
 }
 
 const totalPages = computed(() => {
-  return Math.ceil(cmeActivities.value.length / itemsPerPage)
+  if (!cpdActivities.value) return 0;
+  return Math.ceil(cpdActivities.value.length / itemsPerPage)
 })
 
 const paginatedActivities = computed(() => {
+  if (!cpdActivities.value) return [];
   const start = (currentPage.value - 1) * itemsPerPage
   const end = start + itemsPerPage
-  return cmeActivities.value.slice(start, end)
+  return cpdActivities.value.slice(start, end)
 })
 
-// Lifecycle
 onMounted(() => {
   fetchActivities()
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+.h-fit {
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+}
+</style>
