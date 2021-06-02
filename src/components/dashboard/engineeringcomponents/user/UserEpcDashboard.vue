@@ -4,55 +4,30 @@
       <LoadingSpinner v-if="isLoading" />
 
       <template v-if="!isLoading">
-        <FirstDashboardState
-          v-if="dashboardState.isFirstState"
-          :message="dashboardState.message"
-        />
-        <EmptyDashboardState
-          v-else-if="dashboardState.isPending"
-          :qualification-info="dashboardState.qualificationInfo"
-          :key="dashboardState.qualificationInfo?.qualification?.id + (dashboardState.qualificationInfo?.qualification?.updated_at || '')"
-        />
+        <FirstDashboardState v-if="dashboardState.isFirstState" :message="dashboardState.message" />
+        <EmptyDashboardState v-else-if="dashboardState.isPending" :qualification-info="dashboardState.qualificationInfo"
+          :key="dashboardState.qualificationInfo?.qualification?.id + (dashboardState.qualificationInfo?.qualification?.updated_at || '')" />
         <template v-else-if="dashboardState.isApproved">
-          <ProfileHeader
-            :user-detail="userDetail"
-            :renewal-message="renewalStatus"
-            :qualifications="dashboardState.primaryQualifications"
-            @view-certificate="handleViewCertificate"
-          />
+          <ProfileHeader :user-detail="userDetail" :renewal-message="renewalStatus"
+            :qualifications="dashboardState.primaryQualifications" @view-certificate="handleViewCertificate" />
           <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <StatCard
-              title="CPD Credits"
-              icon="Award"
-              :progress="cpdCredits"
-              :total="50"
-              type="progress"
-            />
+            <StatCard title="CPD Credits" icon="Award" :progress="cpdCredits" :total="50" type="progress" />
             <CogsStatusCard :expiry-date="licenseExpiryDate" :status="licenseStatus" />
             <ActivityFeed title="Recent Activities" :activities="recentActivities" />
           </div>
-          <ApplicationHistoryCard
-            :applications="applications"
-            @show-rejected="showRejectedApplications"
-          />
+          <ApplicationHistoryCard :applications="applications" @show-rejected="showRejectedApplications" />
           <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
             <DeadlinesList title="Upcoming Deadlines" :deadlines="upcomingDeadlines" />
           </div>
-          <ApplicationsModal
-            v-if="selectedApplications.length"
-            :applications="selectedApplications"
-            :title="modalTitle"
-            @close="closeApplicationsModal"
-            @visit="visitApplication"
-          />
-          <CertificateModal
-            v-if="showCertificateModal"
-            :application="selectedApplication"
-            @close="closeCertificateModal"
-          />
+          <ApplicationsModal v-if="selectedApplications.length" :applications="selectedApplications" :title="modalTitle"
+            @close="closeApplicationsModal" @visit="visitApplication" />
+          <CertificateModal v-if="showCertificateModal" :application="selectedApplication"
+            @close="closeCertificateModal" />
         </template>
         <div v-else class="p-10 text-center">
-          <p class="text-gray-600">Could not determine dashboard state. Please check your application status or contact support.</p>
+          <p class="text-gray-600">Could not determine dashboard state. Please check your application status or contact
+            support.
+          </p>
         </div>
       </template>
     </div>
@@ -202,7 +177,7 @@ onMounted(fetchDashboardData)
 
 watch(applications, (newApplications) => {
   // Check for approved engineering program applications (similar to EOI in MHPC)
-  const approvedProgram = newApplications?.find(app => 
+  const approvedProgram = newApplications?.find(app =>
     app.type === 'Engineering Program' && app.status === 'Approved'
   )
   isEngineeringProgramEnabled.value = !!approvedProgram
