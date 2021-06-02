@@ -543,11 +543,9 @@ const createPayload = (isDraft = false) => {
   }
 
   Object.keys(dataToSubmit).forEach((key) => {
-    // Payment_id is no longer relevant for initial submission in this new flow
-    if (key === 'payment_id') return;
-
     const value = dataToSubmit[key];
 
+    // Handle file uploads
     if (key === 'tc_attachments' && value) {
       if (value.length > 0) {
         for (let i = 0; i < value.length; i++) {
@@ -558,8 +556,16 @@ const createPayload = (isDraft = false) => {
     else if (key === 'tc_report' && value) {
       formPayload.append('tc_report', value);
     }
-    else if (value !== null && value !== undefined) {
-      const backendKey = (key === 'institute_id') ? 'institute' : key;
+    // Handle regular fields
+    else if (value !== null && value !== undefined && value !== '') {
+      // Map frontend field names to backend field names
+      let backendKey = key;
+
+      // Map institute_id correctly for backend
+      if (key === 'institute_id') {
+        backendKey = 'institute_id'; // Keep as institute_id for the serializer
+      }
+
       if (typeof value === 'boolean') {
         formPayload.append(backendKey, value.toString());
       } else {
@@ -567,6 +573,12 @@ const createPayload = (isDraft = false) => {
       }
     }
   });
+
+  // Ensure payment_id is always included (even if empty)
+  if (!formPayload.has('payment_id')) {
+    formPayload.append('payment_id', '');
+  }
+
   return formPayload;
 }
 
