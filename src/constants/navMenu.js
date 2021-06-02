@@ -1107,6 +1107,7 @@ const serviceSpecificMenuItems = {
           const store = useEngineeringCertificationStore()
           const items = []
 
+          // Show registration for new users
           if (store.visibleMenus.certificationSubMenus.registration) {
             items.push({
               name: 'Registration',
@@ -1114,6 +1115,7 @@ const serviceSpecificMenuItems = {
             })
           }
 
+          // Show applications if user has submitted any
           if (store.visibleMenus.certificationSubMenus.myApplications) {
             items.push({
               name: 'My Applications',
@@ -1121,20 +1123,25 @@ const serviceSpecificMenuItems = {
             })
           }
 
+          // Show renewal option if within renewal period (including expired)
           if (store.visibleMenus.certificationSubMenus.renewal) {
-            items.push({
+            const renewalItem = {
               name: 'Renewal',
               route: (serviceType) => `/admin/user/${serviceType}/renewal`,
-            })
+            }
+
+            // Add badge if qualification is expired
+            if (store.hasExpiredQualification) {
+              renewalItem.badge = 'Required'
+              renewalItem.class = 'text-red-600 font-semibold'
+            } else if (store.hasPendingRenewalApplication) {
+              renewalItem.badge = 'In Progress'
+            }
+
+            items.push(renewalItem)
           }
 
-          if (store.visibleMenus.certificationSubMenus.reRegistration) {
-            items.push({
-              name: 'Re-Registration',
-              route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
-            })
-          }
-
+          // Show additional qualification only for users with active (non-expired) qualifications
           if (store.visibleMenus.certificationSubMenus.additionalQualification) {
             items.push({
               name: 'Additional Qualification',
