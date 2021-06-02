@@ -1,19 +1,11 @@
 <template>
   <div class="flex h-screen bg-slate-50">
-    <SideNavBar
-      :sidebar-open="sidebarOpen"
-      :filtered-navigation-items="filteredNavigationItems"
-      @toggle-sidebar="toggleSidebar"
-      @logout="handleLogout"
-    />
+    <SideNavBar :sidebar-open="sidebarOpen" :filtered-navigation-items="filteredNavigationItems"
+      @toggle-sidebar="toggleSidebar" @logout="handleLogout" />
 
     <div class="flex-1 flex flex-col overflow-hidden">
-      <TopMenuBar
-        :current-route-name="currentRouteName"
-        :full-name="authStore.fullName"
-        :service-type-label="serviceTypeLabel"
-        @toggle-sidebar="toggleSidebar"
-      />
+      <TopMenuBar :current-route-name="currentRouteName" :full-name="authStore.fullName"
+        :service-type-label="serviceTypeLabel" @toggle-sidebar="toggleSidebar" />
       <MainDisplayArea :current-year="currentYear" />
     </div>
   </div>
@@ -27,10 +19,15 @@ import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
 import { useInstitutionStore } from '@/stores/institutionNavigationStore'
 import { generateNavigationItems } from '@/constants/navMenu'
 import { formatText } from '@/utils/formatText'
+//EPC 
+import { useEngineeringCertificationStore } from '@/stores/engineeringNavigationStore'
 
 import SideNavBar from './components/SideNavBar.vue'
 import TopMenuBar from './components/TopMenuBar.vue'
 import MainDisplayArea from './components/MainDisplayArea.vue'
+
+
+
 
 // State Management
 const authStore = useAuthStore()
@@ -52,6 +49,11 @@ onBeforeMount(async () => {
     await institutionStore.initialize()
   }
 
+  if (authStore.serviceType === 'engineering_certification' && authStore.role === 'user') {
+    const engineeringStore = useEngineeringCertificationStore()
+    await engineeringStore.initialize()
+  }
+
   navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType)
 })
 
@@ -65,6 +67,13 @@ onMounted(async () => {
   if (authStore.serviceType === 'health_certification' && authStore.role === 'institutions') {
     const institutionStore = useInstitutionStore()
     await institutionStore.initialize()
+    navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType)
+  }
+
+  //epc
+  if (authStore.serviceType === 'engineering_certification' && authStore.role === 'user') {
+    const engineeringStore = useEngineeringCertificationStore()
+    await engineeringStore.initialize()
     navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType)
   }
 })

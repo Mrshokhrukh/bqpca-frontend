@@ -96,6 +96,8 @@ const iconMap = {
   // BuildingPlus: BuildingPlus, // Example if you use it
 }
 import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore' // Ensure this path is correct
+import { useEngineeringCertificationStore } from '@/stores/engineeringNavigationStore'
+
 // import { useAuthStore } from '@/stores/authStore'
 // import { useInstitutionStore } from '@/stores/institutionNavigationStore'
 
@@ -130,7 +132,8 @@ const dealingOfficerMenuItems = [
 
 // Service-specific menu items structured as service > role > routes
 const serviceSpecificMenuItems = {
-  roq: { // ... (ROQ section unchanged) ...
+  roq: {
+    // ... (ROQ section unchanged) ...
     user: [
       {
         name: 'Dashboard',
@@ -204,7 +207,8 @@ const serviceSpecificMenuItems = {
       },
     ],
   },
-  ecpf: { // ... (ECPF section unchanged) ...
+  ecpf: {
+    // ... (ECPF section unchanged) ...
     user: [
       {
         name: 'Dashboard',
@@ -603,7 +607,8 @@ const serviceSpecificMenuItems = {
       },
     ],
   },
-  health_certification: { // ... (User, Admin, Dealing Officer, CME/CPD Provider sections for health_certification unchanged) ...
+  health_certification: {
+    // ... (User, Admin, Dealing Officer, CME/CPD Provider sections for health_certification unchanged) ...
     user: [
       {
         name: 'Dashboard',
@@ -979,7 +984,8 @@ const serviceSpecificMenuItems = {
           `/admin/cme_cpd_provider/${serviceType}/cpd_approved_add_participants`,
       },
     ],
-    institutions: [ // MODIFIED SECTION for health_certification.institutions
+    institutions: [
+      // MODIFIED SECTION for health_certification.institutions
       {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
@@ -1044,7 +1050,6 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/institutions/${serviceType}/renewal_teaching_hospital`,
           },
 
-
           {
             name: 'CAPA',
             icon: getIconComponent('ClipboardCheck'),
@@ -1074,38 +1079,74 @@ const serviceSpecificMenuItems = {
       },
     ],
   },
-  engineering_certification: { // ... (User, Admin, Dealing Officer, etc. sections for engineering_certification unchanged) ...
+  engineering_certification: {
+    // ... (User, Admin, Dealing Officer, etc. sections for engineering_certification unchanged) ...
     user: [
       {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
+        hidden: () => {
+          const store = useEngineeringCertificationStore()
+          return !store.visibleMenus.baseMenus.dashboard
+        },
       },
       {
         name: 'Certification',
         icon: getIconComponent('ClipboardCheck'),
-        children: [
-          {
-            name: 'Registration',
-            route: (serviceType) => `/admin/user/${serviceType}/registration`,
-          },
-          {
-            name: 'Renewal',
-            route: (serviceType) => `/admin/user/${serviceType}/renewal`,
-          },
-          {
-            name: 'Additional Qualification',
-            route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
-          },
-          {
-            name: 'My Applications',
-            route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
-          },
-        ],
+        hidden: () => {
+          const store = useEngineeringCertificationStore()
+          return !store.visibleMenus.baseMenus.certification
+        },
+        children: () => {
+          const store = useEngineeringCertificationStore()
+          const items = []
+
+          if (store.visibleMenus.certificationSubMenus.registration) {
+            items.push({
+              name: 'Registration',
+              route: (serviceType) => `/admin/user/${serviceType}/registration`,
+            })
+          }
+
+          if (store.visibleMenus.certificationSubMenus.myApplications) {
+            items.push({
+              name: 'My Applications',
+              route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
+            })
+          }
+
+          if (store.visibleMenus.certificationSubMenus.renewal) {
+            items.push({
+              name: 'Renewal',
+              route: (serviceType) => `/admin/user/${serviceType}/renewal`,
+            })
+          }
+
+          if (store.visibleMenus.certificationSubMenus.reRegistration) {
+            items.push({
+              name: 'Re-Registration',
+              route: (serviceType) => `/admin/user/${serviceType}/re_registration`,
+            })
+          }
+
+          if (store.visibleMenus.certificationSubMenus.additionalQualification) {
+            items.push({
+              name: 'Additional Qualification',
+              route: (serviceType) => `/admin/user/${serviceType}/additional_qualification`,
+            })
+          }
+
+          return items
+        },
       },
       {
         name: 'CPD Management',
         icon: getIconComponent('BookOpen'),
+        hidden: () => {
+          const store = useEngineeringCertificationStore()
+          return !store.visibleMenus.baseMenus.cpdManagement
+        },
         children: [
           {
             name: 'Apply for CPD',
@@ -1120,6 +1161,10 @@ const serviceSpecificMenuItems = {
       {
         name: 'CoGS Management',
         icon: getIconComponent('Award'),
+        hidden: () => {
+          const store = useEngineeringCertificationStore()
+          return !store.visibleMenus.baseMenus.cogsManagement
+        },
         children: [
           {
             name: 'Apply for CoGS',
@@ -1135,6 +1180,10 @@ const serviceSpecificMenuItems = {
         name: 'Profile',
         icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/profile`,
+        hidden: () => {
+          const store = useEngineeringCertificationStore()
+          return !store.visibleMenus.baseMenus.profile
+        },
       },
     ],
     dealing_officer: [
@@ -1349,7 +1398,7 @@ const serviceSpecificMenuItems = {
             name: 'File Types',
             route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
           },
-           {
+          {
             name: 'Fees Associated For',
             route: (serviceType) => `/admin/admin/${serviceType}/fees_associated_for`,
           },
@@ -1412,7 +1461,8 @@ const serviceSpecificMenuItems = {
       //   route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cme_cpd_provider_profile`,
       // },
     ],
-    institutions: [ // MODIFIED SECTION for engineering_certification.institutions
+    institutions: [
+      // MODIFIED SECTION for engineering_certification.institutions
       {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
@@ -1459,12 +1509,14 @@ const serviceSpecificMenuItems = {
           {
             name: 'New Teaching Institute', // R
             icon: getIconComponent('Building2'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_application`,
+            route: (serviceType) =>
+              `/admin/institutions/${serviceType}/teaching_center_application`,
           },
           {
             name: 'Track & Renew Teaching Institute', // Renamed for clarity
             icon: getIconComponent('RefreshCw'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_track_and_renew`,
+            route: (serviceType) =>
+              `/admin/institutions/${serviceType}/teaching_center_track_and_renew`,
           },
           {
             name: 'New Education Program',
@@ -1502,7 +1554,8 @@ const serviceSpecificMenuItems = {
       },
     ],
   },
-  accreditation: { // ... (Accreditation section unchanged) ...
+  accreditation: {
+    // ... (Accreditation section unchanged) ...
     user: [
       {
         name: 'Dashboard',
