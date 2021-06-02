@@ -13,7 +13,7 @@ export const useUserProfileStore = defineStore('userProfile', () => {
     isLoading.value = true
     error.value = null
 
-    try {
+    try {   
       const response = await apiService.getUserDetails(userId)
       userProfile.value = response.data
     } catch (err) {
