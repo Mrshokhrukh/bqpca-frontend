@@ -722,6 +722,7 @@ export default {
   deleteMhpcTeachingCenter(id) {
     return apiClient.delete(`/mhpc/mhpc-teaching-centers/${id}/`)
   },
+  
   // MHPC CPD Records
   getMhpcCpdRecords() {
     return apiClient.get('/mhpc/mhpc-cpd-records/')
