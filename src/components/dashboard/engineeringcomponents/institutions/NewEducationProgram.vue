@@ -6,19 +6,13 @@
     </h2>
 
     <!-- Loading state for Institute Data -->
-    <div
-      v-if="isLoading"
-      class="flex justify-center items-center my-16 bg-white p-10 rounded-xl shadow-sm"
-    >
+    <div v-if="isLoading" class="flex justify-center items-center my-16 bg-white p-10 rounded-xl shadow-sm">
       <Loader class="inline-block animate-spin text-indigo-600 w-8 h-8" />
       <p class="ml-3 text-lg text-gray-600">Loading institute data...</p>
     </div>
 
     <!-- Error state for Institute Data -->
-    <div
-      v-else-if="apiError"
-      class="bg-red-50 border-l-4 border-red-400 text-red-700 p-6 rounded-lg mb-8 shadow-sm"
-    >
+    <div v-else-if="apiError" class="bg-red-50 border-l-4 border-red-400 text-red-700 p-6 rounded-lg mb-8 shadow-sm">
       <div class="flex">
         <AlertCircle class="w-6 h-6 mr-3" />
         <div>
@@ -30,10 +24,8 @@
     </div>
 
     <!-- No institute found -->
-    <div
-      v-else-if="!userInstitute && !isLoading"
-      class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 p-6 rounded-lg mb-8 shadow-sm"
-    >
+    <div v-else-if="!userInstitute && !isLoading"
+      class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 p-6 rounded-lg mb-8 shadow-sm">
       <div class="flex">
         <AlertTriangle class="w-6 h-6 mr-3" />
         <div>
@@ -60,57 +52,43 @@
               <label class="block text-sm font-medium text-gray-600">
                 Training Institute Name
               </label>
-              <div
-                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700 font-medium"
-              >
+              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700 font-medium">
                 {{ userInstitute.name_of_institution || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Country </label>
-              <div
-                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
-              >
+              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
                 {{ userInstitute.country || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Dzongkhag/Throme </label>
-              <div
-                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
-              >
+              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
                 {{ userInstitute.dzongkhag || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> City/Gewog </label>
-              <div
-                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
-              >
+              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
                 {{ userInstitute.gewog || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Address/Location </label>
-              <div
-                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
-              >
+              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
                 {{ userInstitute.address || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Contact No. </label>
-              <div
-                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
-              >
+              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
                 {{ userInstitute.contact_no || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Email Address </label>
-              <div
-                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
-              >
+              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
                 {{ userInstitute.email_address || 'N/A' }}
               </div>
             </div>
@@ -126,25 +104,19 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
             <div>
               <label class="block text-sm font-medium text-gray-600"> Name </label>
-              <div
-                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
-              >
+              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
                 {{ userInstitute.head_of_institution_name || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Mobile Number </label>
-              <div
-                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
-              >
+              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
                 {{ userInstitute.head_of_institution_phone_number || 'N/A' }}
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-600"> Email Address </label>
-              <div
-                class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700"
-              >
+              <div class="mt-2 px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
                 {{ userInstitute.head_of_institution_email || 'N/A' }}
               </div>
             </div>
@@ -167,9 +139,7 @@
 
         <!-- Proposal Details - Editable by user -->
         <section class="p-6 bg-white rounded-xl shadow-md border border-indigo-100">
-          <h3
-            class="text-xl font-semibold text-indigo-700 mb-6 border-b border-indigo-100 pb-2 flex items-center"
-          >
+          <h3 class="text-xl font-semibold text-indigo-700 mb-6 border-b border-indigo-100 pb-2 flex items-center">
             <ClipboardIcon class="w-5 h-5 mr-2 text-indigo-500" />
             Proposal Details
           </h3>
@@ -178,21 +148,11 @@
               <label for="proposalTitle" class="block text-sm font-medium text-gray-700">
                 Proposal Title <span class="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                id="proposalTitle"
-                v-model.trim="formData.proposal_title"
-                required
-                :class="[
-                  'mt-2 block w-full px-4 py-2 bg-white border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-                  validationErrors.proposal_title ? 'border-red-500' : 'border-gray-300',
-                ]"
-                placeholder="Enter proposal title"
-              />
-              <p
-                v-if="validationErrors.proposal_title"
-                class="mt-1 text-sm text-red-600 flex items-center"
-              >
+              <input type="text" id="proposalTitle" v-model.trim="formData.proposal_title" required :class="[
+                'mt-2 block w-full px-4 py-2 bg-white border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                validationErrors.proposal_title ? 'border-red-500' : 'border-gray-300',
+              ]" placeholder="Enter proposal title" />
+              <p v-if="validationErrors.proposal_title" class="mt-1 text-sm text-red-600 flex items-center">
                 <AlertCircle class="w-4 h-4 mr-1" />
                 {{ validationErrors.proposal_title[0] }}
               </p>
@@ -202,24 +162,13 @@
               <label for="duration" class="block text-sm font-medium text-gray-700">
                 Duration (in months) <span class="text-red-500">*</span>
               </label>
-              <input
-                type="number"
-                id="duration"
-                v-model.number="formData.duration_in_months"
-                required
-                min="1"
-                :class="[
-                  'mt-2 block w-full px-4 py-2 bg-white border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-                  validationErrors.duration_in_months ? 'border-red-500' : 'border-gray-300',
-                ]"
-                placeholder="Enter duration"
-              />
-              <p
-                v-if="validationErrors.duration_in_months"
-                class="mt-1 text-sm text-red-600 flex items-center"
-              >
+              <input type="number" id="duration" v-model.number="formData.duration_months" required min="1" :class="[
+                'mt-2 block w-full px-4 py-2 bg-white border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                validationErrors.duration_months ? 'border-red-500' : 'border-gray-300',
+              ]" placeholder="Enter duration" />
+              <p v-if="validationErrors.duration_months" class="mt-1 text-sm text-red-600 flex items-center">
                 <AlertCircle class="w-4 h-4 mr-1" />
-                {{ validationErrors.duration_in_months[0] }}
+                {{ validationErrors.duration_months[0] }}
               </p>
             </div>
 
@@ -227,21 +176,12 @@
               <label for="commencementDate" class="block text-sm font-medium text-gray-700">
                 Commencement Date <span class="text-red-500">*</span>
               </label>
-              <input
-                type="date"
-                id="commencementDate"
-                v-model="formData.commencement_date"
-                required
-                :min="todayDate"
+              <input type="date" id="commencementDate" v-model="formData.commencement_date" required :min="todayDate"
                 :class="[
                   'mt-2 block w-full px-4 py-2 bg-white border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
                   validationErrors.commencement_date ? 'border-red-500' : 'border-gray-300',
-                ]"
-              />
-              <p
-                v-if="validationErrors.commencement_date"
-                class="mt-1 text-sm text-red-600 flex items-center"
-              >
+                ]" />
+              <p v-if="validationErrors.commencement_date" class="mt-1 text-sm text-red-600 flex items-center">
                 <AlertCircle class="w-4 h-4 mr-1" />
                 {{ validationErrors.commencement_date[0] }}
               </p>
@@ -252,13 +192,10 @@
                 Attachments (if any)
               </label>
               <div class="mt-2 flex items-center">
-                <label
-                  for="attachments"
-                  class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
-                >
+                <label for="attachments"
+                  class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                   <div
-                    class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center hover:bg-gray-50 w-full"
-                  >
+                    class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center hover:bg-gray-50 w-full">
                     <UploadIcon class="w-5 h-5 mr-2 text-indigo-500" />
                     <span>Choose file</span>
                   </div>
@@ -269,19 +206,13 @@
                 <InfoIcon class="w-4 h-4 mr-1 text-gray-400" />
                 Max file size: 5MB. Allowed types: PDF, DOC, DOCX, JPG, PNG.
               </p>
-              <p
-                v-if="selectedFileName"
-                class="mt-2 text-sm text-green-700 font-medium flex items-center"
-              >
+              <p v-if="selectedFileName" class="mt-2 text-sm text-green-700 font-medium flex items-center">
                 <CheckCircleIcon class="w-4 h-4 mr-1" />
                 Selected: {{ selectedFileName }}
               </p>
-              <p
-                v-if="validationErrors.institute_attachments"
-                class="mt-1 text-sm text-red-600 flex items-center"
-              >
+              <p v-if="validationErrors.proposal_attachment" class="mt-1 text-sm text-red-600 flex items-center">
                 <AlertCircle class="w-4 h-4 mr-1" />
-                {{ validationErrors.institute_attachments[0] }}
+                {{ validationErrors.proposal_attachment[0] }}
               </p>
             </div>
           </div>
@@ -291,13 +222,9 @@
             <label for="remarks" class="block text-sm font-medium text-gray-700">
               Remarks (Optional)
             </label>
-            <textarea
-              id="remarks"
-              v-model="formData.remarks"
-              rows="4"
+            <textarea id="remarks" v-model="formData.remarks" rows="4"
               class="mt-2 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="Add any additional comments or notes here..."
-            ></textarea>
+              placeholder="Add any additional comments or notes here..."></textarea>
             <p v-if="validationErrors.remarks" class="mt-1 text-sm text-red-600 flex items-center">
               <AlertCircle class="w-4 h-4 mr-1" />
               {{ validationErrors.remarks[0] }}
@@ -308,27 +235,18 @@
         <!-- Declaration -->
         <div class="flex items-start p-6 bg-white rounded-xl shadow border-l-4 border-indigo-400">
           <div class="flex items-center h-5 mt-1">
-            <input
-              id="declaration"
-              aria-describedby="declaration-description"
-              type="checkbox"
-              v-model="formData.ins_declaration"
-              required
-              class="focus:ring-indigo-500 h-5 w-5 text-indigo-600 border-gray-300 rounded"
-            />
+            <input id="declaration" aria-describedby="declaration-description" type="checkbox"
+              v-model="formData.ins_declaration" required
+              class="focus:ring-indigo-500 h-5 w-5 text-indigo-600 border-gray-300 rounded" />
           </div>
           <div class="ml-3 text-sm">
-            <label for="declaration" class="font-medium text-gray-700 text-base"
-              >Declaration <span class="text-red-500">*</span></label
-            >
+            <label for="declaration" class="font-medium text-gray-700 text-base">Declaration <span
+                class="text-red-500">*</span></label>
             <p id="declaration-description" class="text-gray-500 mt-1">
               I hereby declare that the information provided above is true and correct to the best
               of my knowledge and belief.
             </p>
-            <p
-              v-if="validationErrors.ins_declaration"
-              class="mt-1 text-sm text-red-600 flex items-center"
-            >
+            <p v-if="validationErrors.ins_declaration" class="mt-1 text-sm text-red-600 flex items-center">
               <AlertCircle class="w-4 h-4 mr-1" />
               {{ validationErrors.ins_declaration[0] }}
             </p>
@@ -337,49 +255,32 @@
 
         <!-- Buttons -->
         <div class="flex justify-end space-x-4 pt-6 border-t mt-8 items-center">
-          <button
-            type="button"
+          <button type="button"
             class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center"
-            @click="handleCancel"
-            :disabled="isSubmitting"
-          >
+            @click="handleCancel" :disabled="isSubmitting">
             <XIcon class="w-4 h-4 mr-2" />
             Cancel
           </button>
-          <button
-            type="button"
+          <button type="button"
             class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-700 bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 flex items-center"
-            @click="handleSaveDraft"
-            :disabled="isSubmitting"
-          >
+            @click="handleSaveDraft" :disabled="isSubmitting">
             <SaveIcon class="w-4 h-4 mr-2" />
-            <Loader
-              v-if="isSubmitting && draftSaveInProgress"
-              class="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-700"
-            />
+            <Loader v-if="isSubmitting && draftSaveInProgress" class="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-700" />
             {{ isSubmitting && draftSaveInProgress ? 'Saving...' : 'Save as Draft' }}
           </button>
 
-          <button
-            type="submit"
-            :disabled="isSubmitting || !formData.ins_declaration"
+          <button type="submit" :disabled="isSubmitting || !formData.ins_declaration"
             class="inline-flex justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            :class="{ 'opacity-50 cursor-not-allowed': isSubmitting || !formData.ins_declaration }"
-          >
+            :class="{ 'opacity-50 cursor-not-allowed': isSubmitting || !formData.ins_declaration }">
             <SendIcon class="w-4 h-4 mr-2" />
-            <Loader
-              v-if="isSubmitting && !draftSaveInProgress"
-              class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-            />
+            <Loader v-if="isSubmitting && !draftSaveInProgress" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
             {{ isSubmitting && !draftSaveInProgress ? 'Submitting...' : 'Submit Application' }}
           </button>
         </div>
 
         <!-- General Form Errors -->
-        <div
-          v-if="validationErrors.detail || typeof validationErrors === 'string'"
-          class="mt-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-start"
-        >
+        <div v-if="validationErrors.detail || typeof validationErrors === 'string'"
+          class="mt-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-start">
           <AlertOctagonIcon class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" />
           <div>
             <p class="font-medium">Submission Error:</p>
@@ -389,7 +290,7 @@
       </form>
 
       <!-- Application Status Table Section -->
-      <section class="mt-16 p-6 bg-white rounded-xl shadow-md">
+      <section class="mt-16 p-6 bg-white rounded-xl shadow-md" id="statusTableSection">
         <h3 class="text-xl font-semibold text-gray-700 mb-6 border-b pb-3 flex items-center">
           <ListIcon class="w-5 h-5 mr-2 text-indigo-500" />
           Submitted Application Status
@@ -404,13 +305,9 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search class="h-5 w-5 text-gray-400" aria-hidden="true" />
             </div>
-            <input
-              type="text"
-              id="searchApplication"
-              v-model.trim="searchQuery"
+            <input type="text" id="searchApplication" v-model.trim="searchQuery"
               placeholder="Enter proposal title or application ID..."
-              class="block w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
+              class="block w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
           </div>
           <p class="mt-1 text-xs text-gray-500">Search by proposal title or application ID</p>
         </div>
@@ -422,10 +319,7 @@
         </div>
 
         <!-- Error state for Table -->
-        <div
-          v-else-if="tableApiError"
-          class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg text-center"
-        >
+        <div v-else-if="tableApiError" class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg text-center">
           <AlertOctagonIcon class="w-6 h-6 mx-auto mb-2" />
           <p>Could not load application status. Please try again later.</p>
         </div>
@@ -435,28 +329,16 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-100">
               <tr>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   App ID
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Proposal Title
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Submitted Date
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
               </tr>
@@ -469,11 +351,8 @@
                   <div v-else>No educational programme applications submitted yet.</div>
                 </td>
               </tr>
-              <tr
-                v-for="application in filteredApplications"
-                :key="application.id"
-                class="hover:bg-gray-50 transition-colors duration-150"
-              >
+              <tr v-for="application in filteredApplications" :key="application.id"
+                class="hover:bg-gray-50 transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600">
                   {{ application.id }}
                 </td>
@@ -488,20 +367,15 @@
                   }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <span
-                    :class="getStatusClass(application.review_decision)"
-                    class="px-2 py-1 rounded-full text-xs font-medium flex items-center w-fit"
-                  >
-                    <span
-                      class="w-2 h-2 rounded-full mr-1"
-                      :class="{
-                        'bg-green-500': application.review_decision === 'Approved',
-                        'bg-red-500': application.review_decision === 'Rejected',
-                        'bg-yellow-500': application.review_decision === 'Pending',
-                        'bg-blue-500': application.review_decision === 'Under Review',
-                        'bg-gray-500': !application.review_decision,
-                      }"
-                    ></span>
+                  <span :class="getStatusClass(application.review_decision)"
+                    class="px-2 py-1 rounded-full text-xs font-medium flex items-center w-fit">
+                    <span class="w-2 h-2 rounded-full mr-1" :class="{
+                      'bg-green-500': application.review_decision === 'Approved',
+                      'bg-red-500': application.review_decision === 'Rejected',
+                      'bg-yellow-500': application.review_decision === 'Pending',
+                      'bg-blue-500': application.review_decision === 'Under Review',
+                      'bg-gray-500': !application.review_decision,
+                    }"></span>
                     {{ application.review_decision || 'Unknown' }}
                   </span>
                 </td>
@@ -538,14 +412,14 @@ const selectedFile = ref(null)
 const selectedFileName = ref('')
 const formData = ref({
   proposal_title: '',
-  duration_in_months: null,
+  duration_months: null,  // ✅ FIXED: Changed from duration_in_months
   commencement_date: '',
   remarks: '',
   ins_declaration: false,
-  institute_attachments: null,
+  proposal_attachment: null,  // ✅ FIXED: Changed from institute_attachments
   ins_review_decision: 'Pending',
   is_active: true,
-  institute: null,
+  training_institute: null,  // ✅ FIXED: Changed from training_institute_id to training_institute
   institute_name: '',
 })
 
@@ -606,7 +480,7 @@ const fetchInstituteData = async () => {
 
       if (foundInstitute) {
         userInstitute.value = foundInstitute
-        formData.value.institute = userInstitute.value.id
+        formData.value.training_institute = userInstitute.value.id  // ✅ FIXED: Changed to training_institute
         formData.value.institute_name = userInstitute.value.name_of_institution
         await fetchSubmittedApplications()
       } else {
@@ -682,8 +556,10 @@ const validateForm = (isDraft = false) => {
   if (!formData.value.proposal_title?.trim()) errors.proposal_title = ['Proposal title is required']
 
   if (!isDraft) {
-    if (!formData.value.duration_in_months || formData.value.duration_in_months <= 0)
-      errors.duration_in_months = ['Duration must be a positive number']
+    // ✅ FIXED: Changed from duration_in_months to duration_months
+    if (!formData.value.duration_months || formData.value.duration_months <= 0)
+      errors.duration_months = ['Duration must be a positive number']
+    
     if (!formData.value.commencement_date)
       errors.commencement_date = ['Commencement date is required']
     else if (new Date(formData.value.commencement_date) < new Date(todayDate.value))
@@ -703,12 +579,12 @@ const validateForm = (isDraft = false) => {
 const prepareFormData = (status = 'Pending') => {
   const submissionData = new FormData()
   Object.keys(formData.value).forEach((key) => {
-    if (key === 'institute_attachments') return
+    if (key === 'proposal_attachment') return  // ✅ FIXED: Handle file separately
     const value = formData.value[key]
     if (value !== null && value !== undefined) {
       if (typeof value === 'boolean') {
         submissionData.append(key, value ? 'true' : 'false')
-      } else if (key === 'duration_in_months') {
+      } else if (key === 'duration_months') {  // ✅ FIXED: Changed from duration_in_months
         submissionData.append(key, Number(value))
       } else {
         submissionData.append(key, value)
@@ -717,7 +593,7 @@ const prepareFormData = (status = 'Pending') => {
   })
   submissionData.set('ins_review_decision', status)
   if (selectedFile.value) {
-    submissionData.append('institute_attachments', selectedFile.value, selectedFile.value.name)
+    submissionData.append('proposal_attachment', selectedFile.value, selectedFile.value.name)  // ✅ FIXED: Changed from institute_attachments
   }
   return submissionData
 }
@@ -741,12 +617,13 @@ const handleSubmit = async () => {
 
   try {
     const finalFormData = prepareFormData('Pending')
-    await apiService.createEpcproposalDetail(finalFormData)
+    await apiService.createEpcNewEducationProgram(finalFormData)
     toast.success('Educational programme application submitted successfully for review!')
 
+    // ✅ FIXED: Updated form reset to use correct field names
     Object.keys(formData.value).forEach((key) => {
       if (
-        key !== 'institute' &&
+        key !== 'training_institute' &&  // ✅ FIXED: Changed to training_institute
         key !== 'institute_name' &&
         key !== 'ins_review_decision' &&
         key !== 'is_active'
@@ -800,7 +677,7 @@ const handleSaveDraft = async () => {
 
   try {
     const draftFormData = prepareFormData('Draft')
-    await apiService.createEpcproposalDetail(draftFormData)
+    await apiService.createEpcNewEducationProgram(draftFormData)
     toast.success('Draft saved successfully!')
     await fetchSubmittedApplications()
   } catch (error) {
@@ -834,7 +711,7 @@ const handleCancel = () => {
         value !== null &&
         value !== false &&
         !(Array.isArray(value) && value.length === 0) &&
-        !(key === 'institute' && value === null) &&
+        !(key === 'training_institute' && value === null) &&  // ✅ FIXED: Changed to training_institute
         !(key === 'institute_name' && value === '') &&
         !(key === 'ins_review_decision' && value === 'Pending') &&
         !(key === 'is_active' && value === true)
@@ -882,13 +759,16 @@ onMounted(fetchInstituteData)
 label span.text-red-500 {
   margin-left: 2px;
 }
+
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 input[type='file'] {
   color: #64748b;
 }
+
 input[type='file']::file-selector-button {
   margin-right: 1rem;
   padding: 0.5rem 1rem;
@@ -901,12 +781,15 @@ input[type='file']::file-selector-button {
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
 }
+
 input[type='file']::file-selector-button:hover {
   background-color: #e0e7ff;
 }
+
 .border-red-500 {
   border-color: #ef4444;
 }
+
 .border-red-500:focus {
   border-color: #ef4444;
   box-shadow: 0 0 0 1px #ef4444;
