@@ -436,6 +436,7 @@ const initialFormState = () => ({
   faculty_type: '',
   identifier: '',
   application_profile_identifier: null,
+  cid: '', 
   registration_type: '',
   nationality: '',
   staff_name: '',

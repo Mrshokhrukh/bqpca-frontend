@@ -421,6 +421,10 @@ const selectMedicalFaculty = (facultyData) => {
     registration_date: facultyData.registration_date || '',
     expiry_date: facultyData.expiry_date || '',
     education_details: educationDetails,
+    cid: facultyData.cid_no || '',
+    designation: props.form.designation || '',
+    date_of_joining: props.form.date_of_joining || new Date().toISOString().split('T')[0],
+
   };
 
   const isDifferentFacultyInEditMode = props.mode === 'edit' &&
