@@ -853,7 +853,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`,
       },
       {
-        name: 'Initial Applications',
+        name: 'Registration Services',
         icon: getIconComponent('FileText'),
         children: [
           {
@@ -875,7 +875,7 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'CPD Management',
+        name: 'CPD Services',
         icon: getIconComponent('BookOpen'),
         children: [
           {

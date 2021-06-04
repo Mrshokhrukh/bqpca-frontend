@@ -108,18 +108,18 @@ import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'vue-router';
 import apiService from '@/services/services';
 
-import FormHeader from './cpdProviderApplicationComponents/FormHeader.vue';
-import LoadingOverlay from './cpdProviderApplicationComponents/LoadingOverlay.vue';
-import AlertMessage from './cpdProviderApplicationComponents/AlertMessage.vue';
-import ApplicantDetailsForm from './cpdProviderApplicationComponents/ApplicantDetailsForm.vue';
-import ApplicationDetailsForm from './cpdProviderApplicationComponents/ApplicationDetailsForm.vue';
-import CpdProviderForm from './cpdProviderApplicationComponents/CpdProviderForm.vue';
-import ResourcePersonsForm from './cpdProviderApplicationComponents/ResourcePersonsForm.vue';
-import TeachingLearningMethodForm from './cpdProviderApplicationComponents/TeachingLearningMethodForm.vue';
-import ParticipantsDetailsForm from './cpdProviderApplicationComponents/ParticipantsDetailsForm.vue';
-import ApprovedCpdForm from './cpdProviderApplicationComponents/ApprovedCpdForm.vue';
-import FormActions from './cpdProviderApplicationComponents/FormActions.vue';
-import ConfirmationModal from './cpdProviderApplicationComponents/ConfirmationModal.vue';
+import FormHeader from '../../engineeringcomponents/cpdCpdProvider/cpdProviderApplicationComponents/FormHeader.vue';
+import LoadingOverlay from '../../engineeringcomponents/cpdCpdProvider/cpdProviderApplicationComponents/LoadingOverlay.vue';
+import AlertMessage from '../../engineeringcomponents/cpdCpdProvider/cpdProviderApplicationComponents/AlertMessage.vue';
+import ApplicantDetailsForm from '../../engineeringcomponents/cpdCpdProvider/cpdProviderApplicationComponents/ApplicantDetailsForm.vue';
+import ApplicationDetailsForm from '../../engineeringcomponents/cpdCpdProvider/cpdProviderApplicationComponents/ApplicationDetailsForm.vue';
+import CpdProviderForm from '../../engineeringcomponents/cpdCpdProvider/cpdProviderApplicationComponents/CpdProviderForm.vue';
+import ResourcePersonsForm from '../../engineeringcomponents/cpdCpdProvider/cpdProviderApplicationComponents/ResourcePersonsForm.vue';
+import TeachingLearningMethodForm from '../../engineeringcomponents/cpdCpdProvider/cpdProviderApplicationComponents/TeachingLearningMethodForm.vue';
+import ParticipantsDetailsForm from '../../engineeringcomponents/cpdCpdProvider/cpdProviderApplicationComponents/ParticipantsDetailsForm.vue';
+import ApprovedCpdForm from '../../engineeringcomponents/cpdCpdProvider/cpdProviderApplicationComponents/ApprovedCpdForm.vue';
+import FormActions from '../../engineeringcomponents/cpdCpdProvider/cpdProviderApplicationComponents/FormActions.vue';
+import ConfirmationModal from '../../engineeringcomponents/cpdCpdProvider/cpdProviderApplicationComponents/ConfirmationModal.vue';
 
 const props = defineProps({
   modelValue: {

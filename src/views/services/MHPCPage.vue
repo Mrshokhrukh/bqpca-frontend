@@ -405,6 +405,21 @@
 
                   <div>
                     <label
+                      for="cid_number_institution"
+                      class="block text-sm font-medium text-slate-700"
+                      >CID Number</label
+                    >
+                    <input
+                      type="text"
+                      id="cid_number_institution"
+                      v-model="medicalInstitutionForm.cid_number"
+                      required
+                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label
                       for="license_number_institution"
                       class="block text-sm font-medium text-slate-700"
                       >Institute License Number</label
@@ -616,6 +631,7 @@ const handleCPDProviderRegistration = async () => {
 
 const getInitialMedicalInstitutionFormState = () => ({
   institution_name: '',
+  cid_number: '',
   email: '',
   password: '',
   confirm_password: '',
@@ -653,6 +669,8 @@ const handleMedicalInstitutionRegistration = async () => {
       role: 'institutions',
       service_type: serviceType.value,
       cid: medicalInstitutionForm.license_number || null,
+      cid_number: medicalInstitutionForm.cid_number || null,
+      institution_name: medicalInstitutionForm.institution_name,
     }
     await apiService.register(payload)
     toast.success('Medical Institution registration successful! Please login.')
@@ -694,7 +712,7 @@ const fetchComplaintProfessionalCategories = async () => {
       }
     } else {
       throw new Error(
-        'Invalid data structure for complaint professional categories received from API.',
+        'Invalid data structure for complaint professional categories received from API.'
       )
     }
   } catch (error) {

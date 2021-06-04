@@ -438,7 +438,7 @@
             </h3>
           </div>
           <p class="mt-1 text-xs sm:text-sm text-gray-500 ml-7">
-            Minimum 60 points recommended for renewal. Score is based on approved activities.
+            Minimum 30 points recommended for renewal. Score is based on approved activities.
           </p>
           <div class="mt-4">
             <div v-if="isCpdLoading" class="flex justify-center items-center p-8">
@@ -459,7 +459,7 @@
                   <div class="flex justify-between items-start">
                     <div>
                       <h4 class="text-sm font-medium text-gray-900">Total Approved CPD Points</h4>
-                      <p class="text-xs text-gray-500 mt-0.5">Minimum 60 points recommended</p>
+                      <p class="text-xs text-gray-500 mt-0.5">Minimum 30 points recommended</p>
                     </div>
                     <div
                       class="rounded-full h-10 w-10 flex items-center justify-center"
@@ -475,12 +475,12 @@
                           <span
                             class="text-xs font-semibold inline-block py-1 px-2 rounded-full"
                             :class="cpdTextClass"
-                            >{{ getTotalCpdPoints }} / 60 Points</span
+                            >{{ getTotalCpdPoints }} / 30 Points</span
                           >
                         </div>
                         <div class="text-right">
                           <span class="text-xs font-semibold inline-block text-gray-600"
-                            >{{ Math.min(100, Math.round((getTotalCpdPoints / 60) * 100)) }}% of
+                            >{{ Math.min(100, Math.round((getTotalCpdPoints / 30) * 100)) }}% of
                             Recommended</span
                           >
                         </div>
@@ -488,7 +488,7 @@
                       <div class="overflow-hidden h-2 mt-2 text-xs flex rounded bg-gray-200">
                         <div
                           :style="{
-                            width: `${Math.min(100, Math.round((getTotalCpdPoints / 60) * 100))}%`,
+                            width: `${Math.min(100, Math.round((getTotalCpdPoints / 30) * 100))}%`,
                           }"
                           class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center"
                           :class="cpdProgressClass"
@@ -749,7 +749,7 @@
           </div>
         </div>
 
-        <div v-if="!isSubmitting && !isProcessingPayment">
+        <div v-if="!isSubmitting">
           <div
             class="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm:p-6"
           >
@@ -758,7 +758,8 @@
               <h3 class="text-base sm:text-lg font-semibold text-gray-900">Renewal Confirmation</h3>
             </div>
             <p class="mt-1 text-xs sm:text-sm text-gray-500 ml-7">
-              Confirm your application details and submit for renewal.
+              Confirm your application details and submit for renewal. Payment will be handled at a
+              later stage.
             </p>
             <div class="mt-5 p-4 sm:p-5 rounded-lg bg-white border shadow-sm">
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -791,7 +792,7 @@
                     By submitting this renewal application, your qualification will be extended for
                     5 years upon approval (new projected expiry date shown above).
                     <span v-if="cpdStatus === 'below_minimum' || cpdStatus === 'none'">
-                      Note: Your CPD score is below the recommended 60 points, but you can still
+                      Note: Your CPD score is below the recommended 30 points, but you can still
                       proceed with the renewal if other criteria are met.</span
                     >
                   </p>
@@ -836,7 +837,7 @@
           <div class="flex justify-end space-x-4 p-5 sm:p-6 bg-gray-50 border-t">
             <button
               @click="handleCancel"
-              :disabled="isSubmitting || isProcessingPayment"
+              :disabled="isSubmitting"
               class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <X class="h-4 w-4 mr-1.5" />
@@ -844,9 +845,7 @@
             </button>
             <button
               @click="handleSubmit"
-              :disabled="
-                isSubmitting || isProcessingPayment || !declaration || !isEligibleForRenewal
-              "
+              :disabled="isSubmitting || !declaration || !isEligibleForRenewal"
               class="px-4 py-2 bg-blue-600 text-sm font-medium text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <Check class="h-4 w-4 mr-1.5" />
@@ -859,13 +858,7 @@
           <div class="inline-block">
             <Loader class="h-10 w-10 text-blue-500 animate-spin" />
           </div>
-          <p class="mt-4 text-gray-700">
-            {{
-              isProcessingPayment
-                ? 'Processing payment...'
-                : 'Submitting your renewal application...'
-            }}
-          </p>
+          <p class="mt-4 text-gray-700">Submitting your renewal application...</p>
         </div>
       </div>
 
@@ -884,8 +877,8 @@
               >
               <div class="mt-3">
                 <p class="text-sm text-gray-500">
-                  You are about to submit your renewal application. This action cannot be undone.
-                  Are you sure you want to proceed?
+                  You are about to submit your renewal application. Payment will be handled later.
+                  This action cannot be undone. Are you sure you want to proceed?
                 </p>
                 <div class="mt-4 p-3 bg-yellow-50 rounded-lg text-left">
                   <div class="flex">
@@ -923,13 +916,6 @@
           </DialogPanel>
         </div>
       </Dialog>
-
-      <PaymentModal
-        ref="paymentModalRef"
-        :amount="renewalAmount"
-        @payment-completed="handlePaymentCompleted"
-        @close="closePaymentModal"
-      />
     </div>
   </div>
 </template>
@@ -948,7 +934,6 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
 import PageHeader from '@/components/common/MHPC/PageHeader.vue'
-import PaymentModal from '@/components/common/PaymentModal.vue'
 
 import {
   User,
@@ -1021,13 +1006,9 @@ const supervisionLoadError = ref('')
 const showConfirmation = ref(false)
 const isLoading = ref(true)
 const isSubmitting = ref(false)
-const isProcessingPayment = ref(false)
 const loadError = ref('')
 const declaration = ref(false)
 const remarks = ref('')
-const paymentModalRef = ref(null)
-const createdRenewalId = ref(null)
-const renewalAmount = ref(1000)
 
 const today = computed(() => dayjs())
 const expiryDate = computed(() =>
@@ -1076,7 +1057,7 @@ const renewalEligibilityMessage = computed(() => {
   if (!expiryDate.value || !expiryDate.value.isValid())
     return 'Cannot determine eligibility without a valid qualification expiry date.'
 
-  if (isComplaintsLoading.value && complaints.value.length === 0) // Only show loading if no data yet
+  if (isComplaintsLoading.value && complaints.value.length === 0)
     return 'Checking complaints status... Renewal blocked until check is complete.'
   if (complaintsLoadError.value)
     return `Error loading complaints data: ${complaintsLoadError.value}. Renewal blocked.`
@@ -1084,7 +1065,7 @@ const renewalEligibilityMessage = computed(() => {
     return 'Renewal is blocked due to unresolved complaints. Please resolve them before proceeding.'
 
   if (authStore.user?.is_counselor) {
-    if (isSupervisionLoading.value && supervisionApplications.value.length === 0) // Only show loading if no data yet
+    if (isSupervisionLoading.value && supervisionApplications.value.length === 0)
       return 'Checking supervision status... Renewal blocked until check is complete.'
     if (supervisionLoadError.value)
       return `Error loading supervision data: ${supervisionLoadError.value}. Renewal blocked.`
@@ -1120,7 +1101,7 @@ const getTotalCpdPoints = computed(() => {
 })
 const cpdStatus = computed(() => {
   const points = getTotalCpdPoints.value
-  if (points >= 60) return 'met'
+  if (points >= 30) return 'met'
   if (points > 0) return 'below_minimum'
   return 'none'
 })
@@ -1128,11 +1109,11 @@ const cpdMessage = computed(() => {
   const points = getTotalCpdPoints.value
   switch (cpdStatus.value) {
     case 'met':
-      return `Good job! You have ${points} CPD points, meeting or exceeding the recommended 60 points.`
+      return `Good job! You have ${points} CPD points, meeting or exceeding the recommended 30 points.`
     case 'below_minimum':
-      return `Warning: Your CPD score is ${points} points. While the recommended score is 60, you can still proceed with renewal if other criteria are met. We encourage improving your score.`
+      return `Warning: Your CPD score is ${points} points. While the recommended score is 30, you can still proceed with renewal if other criteria are met. We encourage improving your score.`
     case 'none':
-      return `Warning: You currently have 0 approved CPD points. The recommended score is 60. You can still proceed with renewal if other criteria are met, but acquiring CPD points is highly recommended.`
+      return `Warning: You currently have 0 approved CPD points. The recommended score is 30. You can still proceed with renewal if other criteria are met, but acquiring CPD points is highly recommended.`
     default:
       return 'Checking your CPD score status...'
   }
@@ -1316,8 +1297,8 @@ const fetchApplicationData = async () => {
 
     await Promise.all([
       fetchCpdRecords(userCid),
-      fetchComplaints(userCid), // Will use demo data
-      authStore.user?.is_counselor ? fetchSupervisionApplications(userCid) : Promise.resolve(), // Will use demo data
+      fetchComplaints(userCid),
+      authStore.user?.is_counselor ? fetchSupervisionApplications(userCid) : Promise.resolve(),
     ])
   } catch (error) {
     console.error('Error fetching application data:', error)
@@ -1343,9 +1324,8 @@ const fetchCpdRecords = async (cid) => {
   cpdLoadError.value = ''
   cpdRecords.value = []
   try {
-    // Simulating API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    const response = await apiService.getMhpcCpdRecordsByCid(cid) // Keep actual API call for CPD
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    const response = await apiService.getMhpcCpdRecordsByCid(cid)
     cpdRecords.value = response?.data || []
   } catch (error) {
     console.error('Error fetching CPD records:', error)
@@ -1362,15 +1342,13 @@ const fetchComplaints = async () => {
   complaintsLoadError.value = ''
   complaints.value = []
   try {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 700));
-
-    // Demo Data for Complaints
+    await new Promise((resolve) => setTimeout(resolve, 700))
     const demoComplaints = [
       {
         id: 'comp001',
         title: 'Complaint Regarding Professional Conduct',
-        description: 'A formal complaint was filed concerning the practitioners conduct during a session on 2023-03-15.',
+        description:
+          'A formal complaint was filed concerning the practitioners conduct during a session on 2023-03-15.',
         date_filed: '2023-03-20',
         status: 'Resolved',
         status_display: 'Resolved',
@@ -1378,21 +1356,14 @@ const fetchComplaints = async () => {
       {
         id: 'comp002',
         title: 'Billing Discrepancy Reported',
-        description: 'Patient reported a discrepancy in billing for services rendered in January 2023.',
+        description:
+          'Patient reported a discrepancy in billing for services rendered in January 2023.',
         date_filed: '2023-02-10',
         status: 'Resolved',
         status_display: 'Resolved',
       },
-    ];
-    // To test "no complaints" scenario, return an empty array:
-    // complaints.value = [];
-    // To test "unresolved complaint", make sure one has a status other than 'Resolved'
-    // To test "all resolved", make sure all have status 'Resolved'
-    complaints.value = demoComplaints;
-
-    // If you had a real API:
-    // const response = await apiService.getMhpcComplaintsByCid(cid);
-    // complaints.value = response?.data || [];
+    ]
+    complaints.value = demoComplaints
   } catch (error) {
     console.error('Error fetching complaints:', error)
     complaintsLoadError.value =
@@ -1408,10 +1379,7 @@ const fetchSupervisionApplications = async () => {
   supervisionLoadError.value = ''
   supervisionApplications.value = []
   try {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 600));
-
-    // Demo Data for Supervision Applications
+    await new Promise((resolve) => setTimeout(resolve, 600))
     const demoSupervision = [
       {
         id: 'sup001',
@@ -1421,25 +1389,8 @@ const fetchSupervisionApplications = async () => {
         status: 'Approved',
         status_display: 'Approved',
       },
-      // {
-      //   id: 'sup002',
-      //   supervisor_name: 'Dr. John Smith',
-      //   application_date: '2023-01-20',
-      //   expiry_date: null,
-      //   status: 'Pending',
-      //   status_display: 'Pending Review',
-      // }
-    ];
-    // To test "no supervision" scenario, return an empty array:
-    // supervisionApplications.value = [];
-    // To test "pending/rejected supervision", include one with status other than 'Approved'
-    // To test "approved supervision", ensure at least one has status 'Approved'
-    supervisionApplications.value = demoSupervision;
-
-
-    // If you had a real API:
-    // const response = await apiService.getMhpcSupervisionApplicationsByCid(cid);
-    // supervisionApplications.value = response?.data || [];
+    ]
+    supervisionApplications.value = demoSupervision
   } catch (error) {
     console.error('Error fetching supervision applications:', error)
     supervisionLoadError.value =
@@ -1476,7 +1427,6 @@ const handleSubmit = () => {
 const confirmSubmit = async () => {
   showConfirmation.value = false
   isSubmitting.value = true
-  createdRenewalId.value = null
 
   const qualificationIdToRenew = formData.value.qualification_id_to_renew
   if (!qualificationIdToRenew) {
@@ -1504,15 +1454,18 @@ const confirmSubmit = async () => {
     const renewalResponse = await apiService.createMhpcRenewal(renewalPayload)
 
     if (renewalResponse && renewalResponse.data && renewalResponse.data.id) {
-      createdRenewalId.value = renewalResponse.data.id
-      toast.info('Renewal request submitted. Please proceed with the payment.')
-      initiateRenewalPayment()
+      toast.success(
+        'Renewal application submitted successfully! Payment will be processed later. Check "My Applications" for status.'
+      )
+      await healthStore.initialize()
+      router.push('/admin/user/health_certification/my_applications')
     } else {
       console.warn(
-        'Renewal created, but API did not return the new renewal ID. Payment cannot be automatically initiated.'
+        'Renewal created, but API response structure might be unexpected.',
+        renewalResponse
       )
       toast.success(
-        'Renewal application submitted successfully! Check "My Applications" for payment status or contact support.'
+        'Renewal application submitted successfully! Check "My Applications" for status. Payment will be handled later.'
       )
       await healthStore.initialize()
       router.push('/admin/user/health_certification/my_applications')
@@ -1526,93 +1479,9 @@ const confirmSubmit = async () => {
       error.message ||
       'Failed to submit renewal. Please try again.'
     toast.error(`Submission Failed: ${errorMsg}`)
-    createdRenewalId.value = null
   } finally {
     isSubmitting.value = false
   }
-}
-
-const initiateRenewalPayment = () => {
-  if (!createdRenewalId.value) {
-    toast.error('Cannot initiate payment: Renewal ID is missing.')
-    return
-  }
-  if (paymentModalRef.value) {
-    paymentModalRef.value.openModal()
-  } else {
-    console.error('Payment modal reference is not available.')
-    toast.error('Payment modal could not be opened.')
-  }
-}
-
-const handlePaymentCompleted = async (paymentData) => {
-  if (!createdRenewalId.value) {
-    toast.error('Cannot process payment: Renewal ID is missing.')
-    return
-  }
-
-  const paymentId = paymentData.paymentHash
-  const user = authStore.user
-
-  if (!user?.contact_number || !user?.email || !user?.cid || !user?.id) {
-    toast.error('Missing user information. Please update your profile before paying.')
-    return
-  }
-
-  isProcessingPayment.value = true
-
-  try {
-    const paymentInitiationFormData = new FormData()
-    paymentInitiationFormData.append('refNo', paymentId)
-    paymentInitiationFormData.append('serviceCode', '100197')
-    paymentInitiationFormData.append('taxPayerName', user.cid)
-    paymentInitiationFormData.append('taxPayerNo', user.cid)
-    paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
-    paymentInitiationFormData.append('totalPayableAmount', renewalAmount.value)
-    paymentInitiationFormData.append('description', 'MHPC Registration Renewal Fee')
-    paymentInitiationFormData.append('mobileNo', user.contact_number)
-    paymentInitiationFormData.append('payerEmail', user.email)
-    paymentInitiationFormData.append('user', user.id)
-    paymentInitiationFormData.append('payableAmount', renewalAmount.value)
-    paymentInitiationFormData.append('application_no', createdRenewalId.value)
-    paymentInitiationFormData.append('app_type', 'renewal_for_health_certification')
-
-    await apiService.makePayment(paymentInitiationFormData)
-
-    const updatePayload = new FormData()
-    updatePayload.append('payment_id', paymentId)
-    updatePayload.append('payment_status', 'processing_payment')
-
-    await apiService.patchMhpcRenewal(createdRenewalId.value, updatePayload)
-
-    toast.success(
-      `Payment successful (Ref: ${paymentId.substring(0, 8)}...). Your renewal is being processed.`
-    )
-
-    await healthStore.initialize()
-    router.push('/admin/user/health_certification/my_applications')
-  } catch (error) {
-    console.error('Payment handling error:', error.response || error.request || error)
-    let errorMsg = 'An error occurred while confirming the payment.'
-    if (error.response?.data) {
-      const detail = error.response.data.detail || JSON.stringify(error.response.data)
-      errorMsg = `Payment API Error: ${detail}`
-    } else if (error.request) {
-      errorMsg = 'Network Error: Could not reach the server to confirm payment.'
-    }
-    toast.error(`${errorMsg} Contact support with payment ref ${paymentId} if issue persists.`)
-  } finally {
-    isProcessingPayment.value = false
-    createdRenewalId.value = null
-    if (paymentModalRef.value) {
-      paymentModalRef.value.closeModal()
-    }
-  }
-}
-
-const closePaymentModal = () => {
-  console.log('Payment modal closed.')
-  createdRenewalId.value = null
 }
 
 const handleCancel = () => {
