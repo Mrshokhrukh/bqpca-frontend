@@ -1,4 +1,3 @@
-```vue
 <template>
   <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-gray-50 min-h-screen">
     <InstituteHeader
@@ -105,7 +104,6 @@
         </button>
       </div>
 
-      <!-- Loading State -->
       <div
         v-if="isLoading"
         class="flex flex-col items-center justify-center min-h-[400px] bg-white rounded-2xl shadow-lg border border-gray-200 py-16"
@@ -114,7 +112,6 @@
         <p class="mt-4 text-lg font-medium text-gray-700">Loading faculty data...</p>
       </div>
 
-      <!-- Empty State (No Faculty Added Yet) -->
       <div
         v-else-if="!isLoading && filteredFaculty.length === 0 && !searchQuery"
         class="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-200"
@@ -132,7 +129,6 @@
         </div>
       </div>
 
-      <!-- Empty State (No Search Results) -->
       <div
         v-else-if="!isLoading && filteredFaculty.length === 0 && searchQuery"
         class="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-200"
@@ -150,7 +146,6 @@
         </div>
       </div>
 
-      <!-- Faculty Table -->
       <div v-else class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
@@ -222,7 +217,6 @@
           </table>
         </div>
 
-        <!-- Pagination -->
         <div
           v-if="totalFaculty > 0"
           class="bg-white px-4 py-4 flex items-center justify-between border-t border-gray-200 sm:px-6"
@@ -268,7 +262,6 @@
       </div>
     </div>
 
-    <!-- Main Add/Edit/View Modal -->
     <Transition name="modal-fade">
       <div v-if="isModalVisible" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="closeModal" aria-hidden="true"></div>
@@ -320,10 +313,11 @@
               <div v-if="form.faculty_type === 'academic'">
                 <AcademicFacultyForm
                   :form="form" @update:form="updateSharedForm" :mode="modalMode"
-                  :errors="validation.errors" :qualificationOptions="qualificationOptions"
-                  :courseTypeOptions="courseTypeOptions" :minYear="minYear" :currentYear="currentYear"
+                  :errors="validation.errors"
+                  :minYear="minYear" :currentYear="currentYear"
                   @show-notification="showNotification"
                 />
+                 <!-- qualificationOptions and courseTypeOptions removed from props -->
               </div>
               <div v-else-if="form.faculty_type === 'medical'">
                 <MedicalFacultyForm
@@ -352,7 +346,6 @@
       </div>
     </Transition>
 
-    <!-- Delete Confirmation Modal -->
     <Transition name="modal">
       <div v-if="showDeleteModal" class="fixed inset-0 z-[60] flex items-center justify-center sm:p-4">
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="showDeleteModal = false" aria-hidden="true"></div>
@@ -400,6 +393,7 @@ import {
   InformationCircleIcon, ExclamationTriangleIcon, UsersIcon,
   DocumentMagnifyingGlassIcon, UserPlusIcon,
 } from '@heroicons/vue/24/outline';
+// Assuming InstituteHeader is a global component or correctly imported elsewhere if needed.
 
 const toast = useToast();
 const currentYear = new Date().getFullYear();
@@ -420,26 +414,24 @@ const currentPage = ref(1);
 const nextPageUrl = ref(null);
 const previousPageUrl = ref(null);
 const totalFaculty = ref(0);
-const pageSize = ref(10);
+const pageSize = ref(10); // Or your desired page size
 
-const institutePk = ref(null);
+const institutePk = ref(null); // This needs to be set, e.g., from auth store or route params
 
 const isModalVisible = ref(false);
-const modalMode = ref(null);
+const modalMode = ref(null); // 'add', 'edit', 'view'
 const showDeleteModal = ref(false);
 const facultyToDelete = ref(null);
-const qualificationOptions = ref([]);
-const courseTypeOptions = ref([]);
+// Removed qualificationOptions and courseTypeOptions as child component fetches them
 
 const initialFormState = () => ({
   id: null,
-  faculty_type: '',
-  identifier: '',
-  application_profile_identifier: null,
-  cid: '', 
-  registration_type: '',
-  nationality: '',
+  faculty_type: '', // 'academic' or 'medical'
+  identifier: '', // Used for CID (academic) or Registration No (medical)
+  application_profile_identifier: null, // For medical from BHMC
+  // Shared fields (will be in form, but Academic/Medical might not use all)
   staff_name: '',
+  nationality: '',
   date_of_birth: '',
   village: '',
   gewog: '',
@@ -447,21 +439,25 @@ const initialFormState = () => ({
   contact_no: '',
   email_address: '',
   passport_photo: null,
-  passport_photo_name: '',
-  registration_date: '',
-  expiry_date: '',
-  designation: '',
-  date_of_joining: new Date().toISOString().split('T')[0],
-  education_details: [],
+  passport_photo_name: '', // To keep track of existing photo
+  designation: '', // Designation at *this* institute
+  date_of_joining: new Date().toISOString().split('T')[0], // Date of joining *this* institute
+  education_details: [], // Specific to academic
   cv: null,
-  cv_name: '',
+  cv_name: '', // To keep track of existing CV
+  // Medical specific (if not fetched directly into these fields by child component)
+  registration_type: '', // For medical
+  registration_date: '', // For medical
+  expiry_date: '', // For medical
+  // Other specific fields for medical or academic can be added if shared at this level
 });
 
 const form = ref(initialFormState());
 
 const updateSharedForm = (newFormState) => {
-  form.value = { ...newFormState };
+  form.value = { ...form.value, ...newFormState }; // Merge to preserve faculty_type etc.
 };
+
 
 const validation = reactive({
   errors: {},
@@ -472,18 +468,11 @@ const validation = reactive({
       if (facultyType === 'academic' && value && !/^\d{11}$/.test(value)) {
         return 'Academic faculty requires a valid 11-digit CID.';
       }
-      if (facultyType === 'medical' && value && typeof value === 'string' && value.trim().length === 0) {
-        return 'Medical faculty identifier cannot be empty if provided.';
-      }
+      // Add more specific validation for medical identifier if needed
       return null;
     },
-    application_profile_identifier: (value, facultyType, isDataFetched) => {
-      if (facultyType === 'medical' && !isDataFetched && !value && modalMode.value !== 'view') {
-        return 'Application profile is required for medical faculty.';
-      }
-      return null;
-    },
-    registration_type: (value, facultyType, isDataFetched) => (facultyType === 'medical' && !isDataFetched && !value && modalMode.value !== 'view' ? 'Registration type is required.' : null),
+    // Removed application_profile_identifier, registration_type, registration_date, expiry_date
+    // as they are handled within MedicalFacultyForm
     nationality: (value, facultyType, isDataFetched) => (facultyType && !isDataFetched && !value && modalMode.value !== 'view' ? 'Nationality is required.' : null),
     staff_name: (value, facultyType) => (facultyType && !value ? 'Full Name is required.' : null),
     date_of_birth: (value, facultyType, isDataFetched) => (facultyType && !isDataFetched && !value && modalMode.value !== 'view' ? 'Date of birth is required.' : null),
@@ -502,24 +491,23 @@ const validation = reactive({
         return 'Passport photo is required for new faculty.';
       return null;
     },
-    registration_date: (value, facultyType, isDataFetched) => (facultyType === 'medical' && !isDataFetched && !value && modalMode.value !== 'view' ? 'Registration date is required.' : null),
-    expiry_date: (value, facultyType, isDataFetched) => (facultyType === 'medical' && !isDataFetched && !value && modalMode.value !== 'view' ? 'Expiry date is required.' : null),
     designation: (value, facultyType) => (facultyType && !value ? 'Designation at institute is required.' : null),
     date_of_joining: (value, facultyType) => (facultyType && !value ? 'Date of joining at institute is required.' : null),
     cv: (value, currentCvName, facultyType) => {
       if (facultyType && modalMode.value === 'add' && !value && !currentCvName) return 'CV is required for new faculty.';
       return null;
     },
+    // These address fields are primarily for Academic, Medical might fetch them.
     village: (value, facultyType, isDataFetched) => {
-      if (facultyType && !isDataFetched && !value && modalMode.value !== 'view') return 'Village is required.';
+      if (facultyType === 'academic' && !isDataFetched && !value && modalMode.value !== 'view') return 'Village is required.';
       return null;
     },
     gewog: (value, facultyType, isDataFetched) => {
-      if (facultyType && !isDataFetched && !value && modalMode.value !== 'view') return 'Gewog is required.';
+      if (facultyType === 'academic' && !isDataFetched && !value && modalMode.value !== 'view') return 'Gewog is required.';
       return null;
     },
     dzongkhag: (value, facultyType, isDataFetched) => {
-      if (facultyType && !isDataFetched && !value && modalMode.value !== 'view') return 'Dzongkhag is required.';
+      if (facultyType === 'academic' && !isDataFetched && !value && modalMode.value !== 'view') return 'Dzongkhag is required.';
       return null;
     },
   },
@@ -529,33 +517,48 @@ const validateForm = () => {
   validation.errors = {};
   let isValid = true;
   const facultyType = form.value.faculty_type;
-  const isPotentiallyDataFetched = !!(form.value.identifier && form.value.staff_name);
+  // isDataFetched should ideally come from the child form's state if it manages fetching
+  const isPotentiallyDataFetchedByChild = form.value.isDataFetched; // Assuming child emits this
+
 
   for (const field in validation.rules) {
     let error;
     if (field === 'passport_photo') error = validation.rules[field](form.value[field], form.value.passport_photo_name, facultyType);
     else if (field === 'cv') error = validation.rules[field](form.value[field], form.value.cv_name, facultyType);
-    else if (['identifier', 'staff_name', 'designation', 'date_of_joining'].includes(field)) error = validation.rules[field](form.value[field], facultyType);
-    else error = validation.rules[field](form.value[field], facultyType, isPotentiallyDataFetched);
+    // Fields common to both and not typically auto-fetched by child for basic entry
+    else if (['staff_name', 'designation', 'date_of_joining', 'contact_no', 'email_address', 'nationality', 'date_of_birth', 'village', 'gewog', 'dzongkhag', 'identifier'].includes(field)) {
+         error = validation.rules[field](form.value[field], facultyType, isPotentiallyDataFetchedByChild);
+    } else {
+        error = validation.rules[field](form.value[field], facultyType); // For faculty_type itself
+    }
+
 
     if (error) { validation.errors[field] = error; isValid = false; }
   }
 
+  // ** MODIFIED Education Details Validation **
   if (facultyType === 'academic' && modalMode.value !== 'view') {
     (form.value.education_details || []).forEach((edu, index) => {
-      if (!edu.type) { validation.errors[`edu_type_${index}`] = 'Education type is required'; isValid = false; }
-      if (!edu.qualification) { validation.errors[`edu_qualification_${index}`] = 'Qualification is required'; isValid = false; }
-      if (!edu.institute) { validation.errors[`edu_institute_${index}`] = 'Institute/University is required'; isValid = false; }
+      if (!edu.qualification_type_id) { validation.errors[`edu_qualification_type_${index}`] = 'Qualification Type is required'; isValid = false; }
+      if (!edu.qualification_id) { validation.errors[`edu_qualification_name_${index}`] = 'Qualification Name is required'; isValid = false; }
+      if (!edu.institute || String(edu.institute).trim() === '') { validation.errors[`edu_institute_${index}`] = 'Institute/University is required'; isValid = false; }
       const year = parseInt(edu.year_of_completion, 10);
-      if (edu.year_of_completion === undefined || edu.year_of_completion === '' || isNaN(year)) {
+      if (edu.year_of_completion === undefined || String(edu.year_of_completion).trim() === '' || isNaN(year)) {
         validation.errors[`edu_year_${index}`] = 'Year of completion is required and must be a number.'; isValid = false;
       } else if (year < minYear || year > currentYear) {
         validation.errors[`edu_year_${index}`] = `Year must be between ${minYear} and ${currentYear}`; isValid = false;
       }
     });
+    if (!form.value.education_details || form.value.education_details.length === 0) {
+      // Optionally add a general error if at least one education detail is required
+      // validation.errors.education_general = "At least one education detail is required for academic faculty.";
+      // isValid = false;
+    }
   }
+  console.log('Validation Ran. Errors:', JSON.parse(JSON.stringify(validation.errors)));
   return isValid;
 };
+
 
 const notification = ref({ show: false, type: 'info', title: '', message: '', timeoutId: null });
 
@@ -564,7 +567,7 @@ const filteredFaculty = computed(() => {
   const query = searchQuery.value.toLowerCase();
   return facultyList.value.filter((faculty) =>
     (faculty.staff_name && faculty.staff_name.toLowerCase().includes(query)) ||
-    (faculty.identifier && faculty.identifier.toLowerCase().includes(query)) ||
+    (faculty.identifier && String(faculty.identifier).toLowerCase().includes(query)) || // Ensure identifier is string
     (faculty.designation && faculty.designation.toLowerCase().includes(query)) ||
     (faculty.faculty_type && faculty.faculty_type.toLowerCase().includes(query))
   );
@@ -580,39 +583,48 @@ const paginationEnd = computed(() => {
 });
 
 const fetchInstitutePk = async () => {
-  institutePk.value = 1; // REPLACE WITH ACTUAL LOGIC
+  // TODO: Replace with actual logic to get institute PK
+  // This could be from a store, route param, or another API call
+  institutePk.value = 1; // Example: Hardcoded for now
+  console.log('Institute PK set to:', institutePk.value);
   if (!institutePk.value) {
     console.error("CRITICAL: Institute PK could not be determined.");
     showNotification('error', 'System Error', 'Cannot identify the current institute. Please contact support.', 0);
   }
 };
 
-const fetchDropdownOptions = async () => {
-  try {
-    const [qualResp, typeResp] = await Promise.all([
-      apiServices.getMhpcMastersQualifications(),
-      apiServices.getMhpcMastersQualificationTypes(),
-    ]);
-    qualificationOptions.value = (qualResp.data.results || []).map(q => ({ value: q.id, label: q.name }));
-    courseTypeOptions.value = (typeResp.data.results || []).map(t => ({ value: t.id, label: t.name }));
-  } catch (error) {
-    console.error('Error fetching dropdown options:', error);
-    showNotification('error', 'Options Error', 'Failed to load qualifications or course types.');
-  }
-};
+// Removed fetchDropdownOptions as child components handle their specific dropdowns
 
 const fetchFaculty = async (page = 1) => {
   isLoading.value = true;
   try {
-    const response = await apiServices.getMhpcTeachingFaculties({ page, search: searchQuery.value, limit: pageSize.value });
+    // Ensure institutePk is available before fetching
+    if (!institutePk.value) { // Always check for institutePk
+        await fetchInstitutePk(); // Attempt to fetch it if not already set
+        if (!institutePk.value) {
+            showNotification('error', 'Configuration Error', 'Institute not identified. Cannot load faculty.');
+            isLoading.value = false;
+            return;
+        }
+    }
+    const params = {
+        page,
+        search: searchQuery.value,
+        limit: pageSize.value,
+        institute: institutePk.value // Filter by institute
+    };
+
+    const response = await apiServices.getMhpcTeachingFaculties(params);
     if (response?.data) {
       facultyList.value = (response.data.results || []).map(f => ({
         ...f,
-        staff_name: f.faculty_name || 'N/A',
+        staff_name: f.faculty_name || f.staff_name || 'N/A',
         identifier: f.faculty_id || f.registration_no || f.cid || '',
-        application_profile_identifier: f.application_profile || '',
+        application_profile_identifier: f.application_profile || null,
         faculty_type: f.faculty_type || (f.registration_no ? 'medical' : (f.cid ? 'academic' : 'unknown')),
-        education_details: parseEducationDetails(f.education_details),
+        designation: f.designation || null,
+        date_of_joining: f.date_of_joining || null,
+        education_details: parseEducationDetails(f.education_details), 
         cv_name: f.cv && typeof f.cv === 'string' ? f.cv.split('/').pop() : '',
         passport_photo_name: f.passport_photo && typeof f.passport_photo === 'string' ? f.passport_photo.split('/').pop() : '',
       }));
@@ -633,6 +645,7 @@ const fetchFaculty = async (page = 1) => {
   }
 };
 
+
 const extractPageNumber = (url) => {
   if (!url) return null;
   try {
@@ -644,14 +657,15 @@ const extractPageNumber = (url) => {
 const fetchNextPage = () => {
   const pageNum = extractPageNumber(nextPageUrl.value);
   if (pageNum) fetchFaculty(pageNum);
-  else if (hasNextPage.value) fetchFaculty(currentPage.value + 1);
+  else if (hasNextPage.value) fetchFaculty(currentPage.value + 1); // Fallback if URL parsing fails but next is true
 };
 
 const fetchPreviousPage = () => {
   const pageNum = extractPageNumber(previousPageUrl.value);
   if (pageNum) fetchFaculty(pageNum);
-  else if (hasPreviousPage.value && currentPage.value > 1) fetchFaculty(currentPage.value - 1);
+  else if (hasPreviousPage.value && currentPage.value > 1) fetchFaculty(currentPage.value - 1); // Fallback
 };
+
 
 const sortBy = (column) => {
   if (sortColumn.value === column) {
@@ -659,21 +673,36 @@ const sortBy = (column) => {
   } else {
     sortColumn.value = column; sortDirection.value = 'asc';
   }
-  facultyList.value.sort((a, b) => {
+  // Create a new sorted array to trigger reactivity properly
+  facultyList.value = [...facultyList.value].sort((a, b) => {
     let valA = a[column]; let valB = b[column];
+
     if (valA == null && valB == null) return 0;
     if (valA == null) return sortDirection.value === 'asc' ? 1 : -1;
     if (valB == null) return sortDirection.value === 'asc' ? -1 : 1;
+
     if (column === 'date_of_joining') {
-      valA = new Date(valA).getTime();
-      valB = new Date(valB).getTime();
+      // Ensure valid dates before comparing
+      const dateA = new Date(valA).getTime();
+      const dateB = new Date(valB).getTime();
+      if (isNaN(dateA) && isNaN(dateB)) return 0;
+      if (isNaN(dateA)) return sortDirection.value === 'asc' ? 1 : -1;
+      if (isNaN(dateB)) return sortDirection.value === 'asc' ? -1 : 1;
+      valA = dateA;
+      valB = dateB;
     } else if (typeof valA === 'string') {
       valA = valA.toLowerCase();
-      valB = String(valB).toLowerCase();
+      valB = String(valB).toLowerCase(); // Ensure valB is also string for comparison
     }
+    // Handle numeric comparison if applicable
+    if (typeof valA === 'number' && typeof valB === 'number') {
+        return sortDirection.value === 'asc' ? valA - valB : valB - valA;
+    }
+
     return sortDirection.value === 'asc' ? (valA < valB ? -1 : (valA > valB ? 1 : 0)) : (valA > valB ? -1 : (valA < valB ? 1 : 0));
   });
 };
+
 
 const getDesignationPillClass = (designation) => {
   if (!designation) return 'bg-gray-100 text-gray-800';
@@ -690,18 +719,24 @@ const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
   try {
     const date = new Date(dateString);
+    // Check if the date is valid. Invalid dates often result in NaN for getTime()
     if (isNaN(date.getTime())) {
+      // Attempt to re-parse if it's a simple YYYY-MM-DD from input that might be treated as UTC by new Date()
       const parts = dateString.split('-');
       if (parts.length === 3) {
-        const reParsedDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        // new Date(year, monthIndex, day) - monthIndex is 0-based
+        const reParsedDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
         if (!isNaN(reParsedDate.getTime())) {
           return reParsedDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
         }
       }
-      return 'Invalid Date';
+      return 'Invalid Date'; // Original string was not a parsable date
     }
     return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
-  } catch (e) { console.error('Date format error for:', dateString, e); return 'Invalid Date'; }
+  } catch (e) {
+    console.error('Date format error for:', dateString, e);
+    return 'Invalid Date'; // Fallback for any other parsing errors
+  }
 };
 
 const resetForm = () => {
@@ -716,11 +751,29 @@ const openAddFacultyModal = () => {
 };
 
 const parseEducationDetails = (details) => {
+  if (!details) return []; // Handle null or undefined
   if (typeof details === 'string') {
-    try { return JSON.parse(details); }
-    catch (e) { console.error("Parsing education_details failed:", e, "Details:", details); return []; }
+    try {
+      const parsed = JSON.parse(details);
+      // ** Ensure parsed details have the correct structure for AcademicFacultyForm **
+      return Array.isArray(parsed) ? parsed.map(edu => ({
+        qualification_type_id: edu.qualification_type_id || edu.type || '', // Map from old 'type' if necessary
+        qualification_id: edu.qualification_id || edu.qualification || '', // Map from old 'qualification'
+        institute: edu.institute || '',
+        year_of_completion: edu.year_of_completion || ''
+      })) : [];
+    } catch (e) {
+      console.error("Parsing education_details string failed:", e, "Details:", details);
+      return [];
+    }
   }
-  return Array.isArray(details) ? details : [];
+  // If already an array, map to ensure correct structure
+  return Array.isArray(details) ? details.map(edu => ({
+        qualification_type_id: edu.qualification_type_id || edu.type || '',
+        qualification_id: edu.qualification_id || edu.qualification || '',
+        institute: edu.institute || '',
+        year_of_completion: edu.year_of_completion || ''
+      })) : [];
 };
 
 const populateFormForModal = (faculty) => {
@@ -729,9 +782,13 @@ const populateFormForModal = (faculty) => {
     id: faculty.id,
     faculty_type: faculty.faculty_type || (faculty.registration_no ? 'medical' : (faculty.cid ? 'academic' : '')),
     identifier: faculty.faculty_id || faculty.registration_no || faculty.cid || '',
-    application_profile_identifier: faculty.application_profile_identifier || faculty.application_profile || '',
+    application_profile_identifier: faculty.application_profile_identifier || faculty.application_profile || null,
     staff_name: faculty.faculty_name || faculty.staff_name || '',
+    // Medical specific fields that might come from the main faculty list
     registration_type: faculty.registration_type || '',
+    registration_date: faculty.registration_date || '',
+    expiry_date: faculty.expiry_date || '',
+    // Shared fields
     nationality: faculty.nationality || '',
     date_of_birth: faculty.date_of_birth || '',
     village: faculty.village || '',
@@ -739,14 +796,12 @@ const populateFormForModal = (faculty) => {
     dzongkhag: faculty.dzongkhag || '',
     contact_no: faculty.contact_no || '',
     email_address: faculty.email_address || '',
-    registration_date: faculty.registration_date || '',
-    expiry_date: faculty.expiry_date || '',
-    designation: faculty.designation || '',
+    designation: faculty.designation || '', // Designation at *this* institute
     date_of_joining: faculty.date_of_joining || (modalMode.value === 'add' ? new Date().toISOString().split('T')[0] : ''),
-    education_details: educationDetails,
-    cv: null,
+    education_details: educationDetails, // Already parsed
+    cv: null, // File objects are reset
     cv_name: faculty.cv_name || (faculty.cv && typeof faculty.cv === 'string' ? faculty.cv.split('/').pop() : ''),
-    passport_photo: null,
+    passport_photo: null, // File objects are reset
     passport_photo_name: faculty.passport_photo_name || (faculty.passport_photo && typeof faculty.passport_photo === 'string' ? faculty.passport_photo.split('/').pop() : ''),
   };
   validation.errors = {};
@@ -766,30 +821,43 @@ const openViewFacultyModal = (faculty) => {
 
 const closeModal = () => {
   isModalVisible.value = false;
+  // Delay reset to allow modal fade-out animation
   setTimeout(() => {
     resetForm();
     modalMode.value = null;
   }, 300);
 };
 
+
 const handleFacultyTypeChange = () => {
-  const { designation, date_of_joining, faculty_type: newFacultyType } = form.value;
-  resetForm();
+  // Preserve only very basic fields if needed, or reset more thoroughly
+  const { designation, date_of_joining, faculty_type: newFacultyType, staff_name, identifier } = form.value;
+  resetForm(); // Resets to initialFormState which is mostly empty
+
   form.value = {
-    ...form.value,
+    ...initialFormState(), // Start fresh
+    // Restore a few potentially common fields if desired, or let user re-enter
+    staff_name,
+    identifier,
     designation,
-    date_of_joining,
+    date_of_joining: date_of_joining || new Date().toISOString().split('T')[0],
     faculty_type: newFacultyType,
-    education_details: newFacultyType === 'academic' ? [{ type: '', qualification: '', institute: '', year_of_completion: '' }] : [],
+    // ** MODIFIED: Initialize education_details with correct new fields **
+    education_details: newFacultyType === 'academic' ? [{ qualification_type_id: '', qualification_id: '', institute: '', year_of_completion: '' }] : [],
   };
-  validation.errors = {};
+  validation.errors = {}; // Clear errors as the form structure changes
 };
 
+
 const saveFaculty = async () => {
+  console.log('Current form state before validation:', JSON.parse(JSON.stringify(form.value)));
   if (!validateForm()) {
+    console.log('Client-side validation failed. Errors:', JSON.parse(JSON.stringify(validation.errors)));
     showNotification('error', 'Validation Error', 'Please check the form for errors and try again.');
     return;
   }
+  console.log('Client-side validation passed.');
+
   if (!institutePk.value) {
     showNotification('error', 'Configuration Error', 'Institute not identified. Cannot save faculty.', 0);
     console.error("Institute PK is missing. Aborting saveFaculty.");
@@ -799,72 +867,127 @@ const saveFaculty = async () => {
   isSavingFaculty.value = true;
   const formDataPayload = new FormData();
 
-  formDataPayload.append('institute', institutePk.value);
+  formDataPayload.append('institute', institutePk.value); // Add institute PK
 
+  // Append fields carefully
   Object.keys(form.value).forEach(key => {
     const value = form.value[key];
+
     if (key === 'cv' || key === 'passport_photo') {
-      if (value instanceof File) {
+      if (value instanceof File) { // Only append if it's a new file
         formDataPayload.append(key, value, value.name);
       }
+      // If not a File, it means either no file or existing file (don't send for existing, API handles it)
     } else if (key === 'education_details') {
-      formDataPayload.append(key, JSON.stringify(value || []));
+      // Ensure education_details is an array and stringify it
+      const eduDetailsToSend = (Array.isArray(value) ? value : []).map(edu => ({
+          qualification_type_id: edu.qualification_type_id,
+          qualification_id: edu.qualification_id,
+          institute: edu.institute,
+          year_of_completion: edu.year_of_completion
+      }));
+      formDataPayload.append(key, JSON.stringify(eduDetailsToSend));
     } else if (key === 'identifier') {
-      formDataPayload.append('faculty_id', value);
-      if (form.value.faculty_type === 'medical') {
+      // API expects 'faculty_id', and conditionally 'cid' or 'registration_no'
+      if (value) formDataPayload.append('faculty_id', value); // General identifier
+      if (form.value.faculty_type === 'medical' && value) {
         formDataPayload.append('registration_no', value);
-      } else if (form.value.faculty_type === 'academic') {
+      } else if (form.value.faculty_type === 'academic' && value) {
         formDataPayload.append('cid', value);
       }
     } else if (key === 'staff_name') {
-      formDataPayload.append('faculty_name', value);
+      // API expects 'faculty_name'
+      if (value) formDataPayload.append('faculty_name', value);
     } else if (key === 'application_profile_identifier' && form.value.faculty_type === 'medical' && value) {
+      // API expects 'application_profile'
       formDataPayload.append('application_profile', value);
-    } else if (!['id', 'cv_name', 'passport_photo_name'].includes(key) && value !== null && value !== undefined) {
+    }
+    // Exclude id, file name placeholders, and null/undefined values unless specifically handled
+    else if (!['id', 'cv_name', 'passport_photo_name', 'isDataFetched'].includes(key) && value !== null && value !== undefined && value !== '') {
       formDataPayload.append(key, value);
     }
   });
 
-  if (!formDataPayload.has('faculty_type') && form.value.faculty_type) {
-    formDataPayload.append('faculty_type', form.value.faculty_type);
+  // Ensure faculty_type is appended if it's set
+  if (form.value.faculty_type && !formDataPayload.has('faculty_type')) {
+      formDataPayload.append('faculty_type', form.value.faculty_type);
   }
+
+  // Log FormData contents (for debugging)
+  console.log('FormData to be sent:');
+  for (let [key, value] of formDataPayload.entries()) {
+    console.log(key, value);
+  }
+
 
   try {
     if (modalMode.value === 'add') {
       await apiServices.createMhpcTeachingFaculty(formDataPayload);
-      showNotification('success', 'Faculty Added', `${form.value.staff_name} has been successfully added.`);
+      showNotification('success', 'Faculty Added', `${form.value.staff_name || 'New Faculty'} has been successfully added.`);
     } else if (modalMode.value === 'edit' && form.value.id) {
+      // For PATCH/PUT, some backends don't like 'institute' to be sent again if it's not changeable
+      // Or they might expect only changed fields for PATCH.
+      // The current setup sends all fields. Adjust if your API is strict.
+      // If 'institute' is on formDataPayload and shouldn't be for update, you might remove it:
+      // if (formDataPayload.has('institute')) formDataPayload.delete('institute');
       await apiServices.updateMhpcTeachingFaculty(form.value.id, formDataPayload);
       showNotification('success', 'Faculty Updated', `${form.value.staff_name}'s information has been updated.`);
     }
-    fetchFaculty(modalMode.value === 'add' ? 1 : currentPage.value);
+    fetchFaculty(modalMode.value === 'add' ? 1 : currentPage.value); // Refresh list
     closeModal();
   } catch (error) {
-    console.error('Error saving faculty:', error.response?.data || error.message);
-    let errorMessage = 'An unexpected error occurred while saving.';
+    console.error('Error saving faculty:', error.response?.data || error.message || error);
+    let userFriendlyMessage = 'An unexpected error occurred while saving.';
     if (error.response?.data) {
-      const errorData = error.response.data;
-      const serverErrors = {};
-      Object.entries(errorData).forEach(([field, msgs]) => {
-        if (field === 'faculty_name') serverErrors['staff_name'] = msgs;
-        else if (field === 'faculty_id' || field === 'registration_no' || field === 'cid') serverErrors['identifier'] = msgs;
-        else if (field === 'application_profile') serverErrors['application_profile_identifier'] = msgs;
-        else serverErrors[field] = msgs;
-      });
-      validation.errors = { ...validation.errors, ...serverErrors };
-      errorMessage = Object.entries(errorData)
-        .map(([field, msgs]) => {
-          const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-          const msgArray = Array.isArray(msgs) ? msgs : [msgs];
-          if (['non_field_errors', 'detail'].includes(field) && typeof msgArray[0] === 'string') return msgArray[0];
-          return `${fieldName}: ${msgArray.map(m => typeof m === 'object' ? JSON.stringify(m) : m).join(', ')}`;
-        }).join(' \n');
+        const errorData = error.response.data;
+        const serverErrors = {};
+        let messages = [];
+
+        // Iterate over errorData to build messages and map to form fields
+        Object.entries(errorData).forEach(([field, msgs]) => {
+            const fieldNameReadable = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const msgArray = Array.isArray(msgs) ? msgs : [msgs];
+            const joinedMessages = msgArray.map(m => typeof m === 'object' ? JSON.stringify(m) : m).join(', ');
+
+            if (field === 'faculty_name') serverErrors['staff_name'] = joinedMessages;
+            else if (field === 'faculty_id' || field === 'registration_no' || field === 'cid') serverErrors['identifier'] = joinedMessages;
+            else if (field === 'application_profile') serverErrors['application_profile_identifier'] = joinedMessages;
+            else if (field === 'education_details' && Array.isArray(msgArray)) {
+                // Handle nested errors for education_details
+                msgArray.forEach((eduError, index) => {
+                    if (typeof eduError === 'object' && eduError !== null) {
+                        Object.entries(eduError).forEach(([eduField, eduMsgs]) => {
+                            const eduMsgArray = Array.isArray(eduMsgs) ? eduMsgs : [eduMsgs];
+                            const eduJoined = eduMsgArray.join(', ');
+                            if (eduField === 'qualification_type_id') serverErrors[`edu_qualification_type_${index}`] = eduJoined;
+                            else if (eduField === 'qualification_id') serverErrors[`edu_qualification_name_${index}`] = eduJoined;
+                            else serverErrors[`edu_${eduField}_${index}`] = eduJoined;
+                            messages.push(`${fieldNameReadable} #${index + 1} ${eduField.replace(/_/g, ' ')}: ${eduJoined}`);
+                        });
+                    }
+                });
+            }
+             else {
+                 serverErrors[field] = joinedMessages; // Map other errors directly
+            }
+            if (field !== 'education_details') { // Avoid duplicating education detail messages
+                messages.push(`${fieldNameReadable}: ${joinedMessages}`);
+            }
+        });
+        validation.errors = { ...validation.errors, ...serverErrors };
+        userFriendlyMessage = messages.join(' \n') || 'Please check the highlighted fields for errors.';
+        if (messages.length === 0 && errorData.detail) { // Fallback for general detail error
+            userFriendlyMessage = errorData.detail;
+        }
+    } else if (error.message) {
+        userFriendlyMessage = error.message;
     }
-    showNotification('error', 'Save Failed', errorMessage, 10000);
+    showNotification('error', 'Save Failed', userFriendlyMessage, 10000);
   } finally {
     isSavingFaculty.value = false;
   }
 };
+
 
 const confirmDelete = (faculty) => {
   facultyToDelete.value = faculty;
@@ -877,11 +1000,15 @@ const deleteFaculty = async () => {
   try {
     await apiServices.deleteMhpcTeachingFaculty(facultyToDelete.value.id);
     showNotification('success', 'Faculty Deleted', `${facultyToDelete.value.staff_name} has been successfully deleted.`);
+    // Optimistic UI update or fetch
     const newTotal = totalFaculty.value - 1;
     const newTotalPages = Math.ceil(newTotal / pageSize.value);
+
     if (facultyList.value.length === 1 && currentPage.value > 1 && currentPage.value > newTotalPages) {
+      // If last item on a page (and not the first page), go to previous page
       fetchFaculty(currentPage.value - 1);
     } else {
+      // Otherwise, refresh current page
       fetchFaculty(currentPage.value);
     }
     showDeleteModal.value = false;
@@ -894,28 +1021,46 @@ const deleteFaculty = async () => {
   }
 };
 
+
 const showNotification = (type, title, message, duration = 5000) => {
   if (notification.value.timeoutId) clearTimeout(notification.value.timeoutId);
   notification.value = { show: true, type, title, message, timeoutId: null };
-  if (duration > 0 && type !== 'error') {
+
+  // Auto-close logic
+  if (duration > 0 && type !== 'error') { // Standard duration for non-errors
     notification.value.timeoutId = setTimeout(closeNotification, duration);
-  } else if (duration > 0 && type === 'error') {
-    notification.value.timeoutId = setTimeout(closeNotification, Math.max(duration, 10000));
+  } else if (duration > 0 && type === 'error') { // Potentially longer for errors, ensure it's at least a good amount
+    notification.value.timeoutId = setTimeout(closeNotification, Math.max(duration, 10000)); // e.g. 10 seconds for errors
   }
+  // If duration is 0 or less, it won't auto-close (e.g., for critical system errors)
 };
+
 
 const closeNotification = () => {
   notification.value.show = false;
-  if (notification.value.timeoutId) { clearTimeout(notification.value.timeoutId); notification.value.timeoutId = null; }
+  if (notification.value.timeoutId) {
+    clearTimeout(notification.value.timeoutId);
+    notification.value.timeoutId = null;
+  }
 };
 
-watch(searchQuery, () => { currentPage.value = 1; fetchFaculty(1); });
-
-onMounted(() => {
-  fetchInstitutePk();
-  fetchDropdownOptions();
-  fetchFaculty();
+watch(searchQuery, () => {
+  currentPage.value = 1; // Reset to first page on new search
+  fetchFaculty(1);
 });
+
+
+onMounted(async () => {
+  await fetchInstitutePk(); // Ensure PK is available
+  // Dropdown options are fetched by child components now
+  if (institutePk.value) { // Only fetch faculty if institute is identified
+    fetchFaculty();
+  } else {
+    isLoading.value = false; // Stop loading if institute cannot be identified
+    // Notification about missing institute PK is handled in fetchInstitutePk
+  }
+});
+
 </script>
 
 <style scoped>
@@ -925,31 +1070,36 @@ onMounted(() => {
 .btn-primary { @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500; }
 .btn-outline { @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500; }
 .btn-danger { @apply border-transparent bg-red-600 text-white hover:bg-red-700 focus:ring-red-500; }
-.btn-secondary { @apply border-transparent bg-sky-600 text-white hover:bg-sky-700 focus:ring-sky-500; }
+/* .btn-secondary { @apply border-transparent bg-sky-600 text-white hover:bg-sky-700 focus:ring-sky-500; } */
 .table-header-cell { @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150 select-none; }
+
 .notification-slide-enter-active,
 .notification-slide-leave-active { @apply transition-all duration-500 ease-out; }
 .notification-slide-enter-from { @apply opacity-0 translate-x-full -translate-y-2 scale-95; }
 .notification-slide-leave-to { @apply opacity-0 translate-x-full translate-y-2 scale-95; }
+
 .modal-fade-enter-active,
 .modal-fade-leave-active { @apply transition-all duration-300 ease-in-out; }
 .modal-fade-enter-from,
 .modal-fade-leave-to { @apply opacity-0; }
 .modal-fade-enter-from .relative[role="dialog"],
 .modal-fade-leave-to .relative[role="dialog"] { @apply scale-95 translate-y-5; }
+
 .modal-enter-active, .modal-leave-active { @apply transition-opacity duration-300 ease-out; }
 .modal-enter-from, .modal-leave-to { @apply opacity-0; }
 .modal-enter-active .relative[role="dialog"], .modal-leave-active .relative[role="dialog"] { @apply transition-all duration-300 ease-out; }
 .modal-enter-from .relative[role="dialog"], .modal-leave-to .relative[role="dialog"] { @apply opacity-0 scale-95 translate-y-4; }
+
 .loader {
   border: 2px solid currentColor;
   border-right-color: transparent;
   border-radius: 50%;
   display: inline-block;
+  /* Removed width and height, should be controlled by parent or specific usage */
   animation: spin 1s linear infinite;
 }
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 </style>
-```

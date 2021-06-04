@@ -1,6 +1,6 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
-    <!-- Use the DOPageHeader Component -->
+    
     <DOPageHeader
       title="New Applications"
       :description="headerDescription"
