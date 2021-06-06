@@ -99,7 +99,7 @@
         :value="form.email_address"
         @input="updateForm('email_address', $event.target.value)"
         :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.email_address)"
-        required 
+        required
         class="form-input"
         :class="{ 'bg-gray-100 text-gray-500': isDataFetchedFromDCRC && apiProvidedFields.email_address, 'border-red-300 focus:border-red-500 focus:ring-red-500': errors.email_address }"
       />
@@ -319,7 +319,7 @@
 </template>
 
 <script setup>
-import { ref, watch, defineProps, defineEmits, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import UploadFile from '@/components/common/FileUpload.vue';
 import apiServices from '@/services/services';
 import { useToast } from 'vue-toastification';

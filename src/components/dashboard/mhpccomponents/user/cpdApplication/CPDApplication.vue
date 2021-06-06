@@ -18,84 +18,86 @@
       class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100"
     >
       <!-- Section for Displaying Auto-Populated Personal Information -->
-      <div class="bg-gray-50/70 p-6 border-b border-gray-100">
-        <h3 class="text-lg font-semibold text-gray-800">Personal Information</h3>
-        <p class="mt-1 text-gray-500 text-sm">
-          This information is automatically populated. Please verify its accuracy.
-        </p>
-      </div>
-      <div class="p-6 space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6">
-          <div class="space-y-1.5">
-            <label for="display_registration_no_str" class="text-xs font-medium text-gray-700"
-              >Registration Number</label
-            >
-            <p
-              id="display_registration_no_str"
-              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
-            >
-              {{
-                form.display_registration_no || (isLoadingRegistrationNo ? 'Fetching...' : 'N/A')
-              }}
-            </p>
-          </div>
+      <div style="display: none">
+        <div class="bg-gray-50/70 p-6 border-b border-gray-100">
+          <h3 class="text-lg font-semibold text-gray-800">Personal Information</h3>
+          <p class="mt-1 text-gray-500 text-sm">
+            This information is automatically populated. Please verify its accuracy.
+          </p>
+        </div>
+        <div class="p-6 space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6">
+            <div class="space-y-1.5">
+              <label for="display_registration_no_str" class="text-xs font-medium text-gray-700"
+                >Registration Number</label
+              >
+              <p
+                id="display_registration_no_str"
+                class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+              >
+                {{
+                  form.display_registration_no || (isLoadingRegistrationNo ? 'Fetching...' : 'N/A')
+                }}
+              </p>
+            </div>
 
-          <div class="space-y-1.5">
-            <label for="display_cid_no" class="text-xs font-medium text-gray-700"
-              >CID No./Identity/Work Permit No.</label
-            >
-            <p
-              id="display_cid_no"
-              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
-            >
-              {{ form.cid_no || 'N/A' }}
-            </p>
-          </div>
+            <div class="space-y-1.5">
+              <label for="display_cid_no" class="text-xs font-medium text-gray-700"
+                >CID No./Identity/Work Permit No.</label
+              >
+              <p
+                id="display_cid_no"
+                class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+              >
+                {{ form.cid_no || 'N/A' }}
+              </p>
+            </div>
 
-          <div class="space-y-1.5">
-            <label for="display_full_name" class="text-xs font-medium text-gray-700"
-              >Full Name</label
-            >
-            <p
-              id="display_full_name"
-              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
-            >
-              {{ form.full_name || 'N/A' }}
-            </p>
-          </div>
+            <div class="space-y-1.5">
+              <label for="display_full_name" class="text-xs font-medium text-gray-700"
+                >Full Name</label
+              >
+              <p
+                id="display_full_name"
+                class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+              >
+                {{ form.full_name || 'N/A' }}
+              </p>
+            </div>
 
-          <div class="space-y-1.5">
-            <label for="display_gender" class="text-xs font-medium text-gray-700">Gender</label>
-            <p
-              id="display_gender"
-              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm capitalize min-h-[38px] flex items-center"
-            >
-              {{ form.gender || 'N/A' }}
-            </p>
-          </div>
+            <div class="space-y-1.5">
+              <label for="display_gender" class="text-xs font-medium text-gray-700">Gender</label>
+              <p
+                id="display_gender"
+                class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm capitalize min-h-[38px] flex items-center"
+              >
+                {{ form.gender || 'N/A' }}
+              </p>
+            </div>
 
-          <div class="space-y-1.5">
-            <label for="display_personnel_category" class="text-xs font-medium text-gray-700"
-              >Personnel Category</label
-            >
-            <p
-              id="display_personnel_category"
-              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
-            >
-              {{ form.personnel_category_name || 'N/A' }}
-            </p>
-          </div>
+            <div class="space-y-1.5">
+              <label for="display_personnel_category" class="text-xs font-medium text-gray-700"
+                >Personnel Category</label
+              >
+              <p
+                id="display_personnel_category"
+                class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+              >
+                {{ form.personnel_category_name || 'N/A' }}
+              </p>
+            </div>
 
-          <div class="space-y-1.5">
-            <label for="display_personnel_sub_category" class="text-xs font-medium text-gray-700"
-              >Personnel Sub-category</label
-            >
-            <p
-              id="display_personnel_sub_category"
-              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
-            >
-              {{ form.personnel_sub_category_name || 'N/A' }}
-            </p>
+            <div class="space-y-1.5">
+              <label for="display_personnel_sub_category" class="text-xs font-medium text-gray-700"
+                >Personnel Sub-category</label
+              >
+              <p
+                id="display_personnel_sub_category"
+                class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+              >
+                {{ form.personnel_sub_category_name || 'N/A' }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -400,15 +402,19 @@ const validateForm = () => {
   if (!form.personnel_category) {
     // This error won't show on a specific field, so a general toast might be better
     // or you could add a general error display area on your form.
-    toast.error('Personnel Category is missing. Please ensure your registration details are fully loaded.');
-    errors.general_category = 'Personnel Category could not be determined.'; // For internal tracking
-    isValid = false;
+    toast.error(
+      'Personnel Category is missing. Please ensure your registration details are fully loaded.'
+    )
+    errors.general_category = 'Personnel Category could not be determined.' // For internal tracking
+    isValid = false
   }
   // If participant_sub_category is also strictly required by backend:
   if (!form.personnel_sub_category) {
-    toast.error('Personnel Sub-Category is missing. Please ensure your registration details are fully loaded.');
-    errors.general_subcategory = 'Personnel Sub-Category could not be determined.';
-    isValid = false;
+    toast.error(
+      'Personnel Sub-Category is missing. Please ensure your registration details are fully loaded.'
+    )
+    errors.general_subcategory = 'Personnel Sub-Category could not be determined.'
+    isValid = false
   }
   // **END NEW VALIDATION**
 
@@ -417,8 +423,9 @@ const validateForm = () => {
     isValid = false
   }
   if (!form.registration_record_id) {
-    errors.general_registration = 'Registration information (Application ID) is missing. Cannot submit.'
-    toast.error(errors.general_registration);
+    errors.general_registration =
+      'Registration information (Application ID) is missing. Cannot submit.'
+    toast.error(errors.general_registration)
     isValid = false
   }
   return isValid
@@ -430,10 +437,10 @@ const fetchRegistrationDetails = async (cid) => {
   try {
     const response = await apiService.getMhpcFullApplicationListByCid(cid)
     if (response.data?.results?.length > 0) {
-      const mainApplication = response.data.results[0]; // Get the main application object
-      const primaryQual = mainApplication.user_qualifications.find(
-        qual => qual.is_primary_qualification
-      ) || mainApplication.user_qualifications[0]; // Fallback to the first qualification
+      const mainApplication = response.data.results[0] // Get the main application object
+      const primaryQual =
+        mainApplication.user_qualifications.find((qual) => qual.is_primary_qualification) ||
+        mainApplication.user_qualifications[0] // Fallback to the first qualification
 
       if (primaryQual) {
         return {
@@ -443,28 +450,33 @@ const fetchRegistrationDetails = async (cid) => {
           personnelCategory: primaryQual.personnel_category,
           personnelCategoryName: primaryQual.personnel_category_name,
           personnelSubCategory: primaryQual.personnel_sub_category,
-          personnelSubCategoryName: primaryQual.personnel_sub_category_name
+          personnelSubCategoryName: primaryQual.personnel_sub_category_name,
         }
       } else {
         // If no qualifications, still return application ID and its registration_no
-         console.warn(`No qualifications found for application ID: ${mainApplication.id}, CID: ${cid}`);
-         return {
-            recordId: mainApplication.id,
-            displayNo: mainApplication.registration_no || `App. ID: ${mainApplication.id}`,
-            personnelCategory: null, // No primary qual to get this from
-            personnelCategoryName: 'N/A',
-            personnelSubCategory: null,
-            personnelSubCategoryName: 'N/A'
-         }
+        console.warn(
+          `No qualifications found for application ID: ${mainApplication.id}, CID: ${cid}`
+        )
+        return {
+          recordId: mainApplication.id,
+          displayNo: mainApplication.registration_no || `App. ID: ${mainApplication.id}`,
+          personnelCategory: null, // No primary qual to get this from
+          personnelCategoryName: 'N/A',
+          personnelSubCategory: null,
+          personnelSubCategoryName: 'N/A',
+        }
       }
     }
-    console.warn(`No suitable registration record found for CID: ${cid}. API Response:`, response.data);
-    toast.warning('Could not fetch complete registration details.');
+    console.warn(
+      `No suitable registration record found for CID: ${cid}. API Response:`,
+      response.data
+    )
+    toast.warning('Could not fetch complete registration details.')
     return null
   } catch (error) {
-    console.error('Error fetching registration details:', error);
-    if(error.response) console.error("Error response data:", error.response.data);
-    toast.warning('Failed to fetch registration details.');
+    console.error('Error fetching registration details:', error)
+    if (error.response) console.error('Error response data:', error.response.data)
+    toast.warning('Failed to fetch registration details.')
     return null
   } finally {
     isLoadingRegistrationNo.value = false
@@ -482,7 +494,7 @@ const handleSubmit = async () => {
 
   const genderToSend = form.gender ? form.gender.toLowerCase() : 'others'
 
-  formData.append('registration_no', String(form.registration_record_id)) // This should be the Application PK
+  formData.append('registration_no', String(form.display_registration_no)) // This should be the Application PK
   formData.append('cid_no', form.cid_no || '')
   formData.append('full_name', form.full_name || '')
   formData.append('gender', genderToSend)
@@ -504,8 +516,7 @@ const handleSubmit = async () => {
   formData.append('cpd_hours', String(form.cpd_hours))
 
   // Add cpd_credit, using the cpd_hours value as per the requirement to replace credit with hours
-  formData.append('cpd_credit', String(1)); // Or a fixed default like '1' if that's more appropriate
-
+  formData.append('cpd_credit', String(1)) // Or a fixed default like '1' if that's more appropriate
 
   if (form.attachment) {
     formData.append('attachment', form.attachment, form.attachment.name)

@@ -241,7 +241,7 @@
 </template>
 
 <script setup>
-import { ref, watch, defineProps, defineEmits, computed } from 'vue';
+import { ref, watch, computed } from 'vue';
 import UploadFile from '@/components/common/FileUpload.vue';
 import apiServices from '@/services/services';
 import { useToast } from 'vue-toastification';

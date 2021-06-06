@@ -173,8 +173,8 @@
     <!-- Payment Modal -->
     <PaymentModal
       ref="paymentModal"
-      :amount="500"
-      serviceCode="cogs_application_fee"
+      :amount="1000"
+      serviceCode="100247"
       description="CoGS Application Fee"
       appType="certificate_of_good_standing_fee"
       :applicationId="selectedApplication?.id"
@@ -186,9 +186,9 @@
 
 <script setup>
 import { ref, h, defineComponent, onMounted, computed } from 'vue'
-import apiService from '@/services/services'
+import apiService from '@/services/services' // Ensure this path is correct
 import PageHeader from '@/components/common/MHPC/PageHeader.vue'
-import PaymentModal from '@/components/common/PaymentModal.vue'
+import PaymentModal from '@/components/common/PaymentModal.vue' // Ensure this path is correct
 import { useAuthStore } from '@/stores/authStore'
 import { useToast } from 'vue-toastification'
 import {
@@ -208,7 +208,7 @@ import {
   Building,
   Activity,
   MessageSquare,
-  CheckCircle, // Added icons
+  CheckCircle,
 } from 'lucide-vue-next'
 
 const toast = useToast()
@@ -219,24 +219,29 @@ const isLoading = ref(false)
 const apiError = ref(false)
 const paymentModal = ref(null)
 const selectedApplication = ref(null)
-const isLoadingPayment = ref(false) // Specific loading state for payment button
+const isLoadingPayment = ref(false)
+
+const COGS_PAYMENT_AMOUNT = 1000;
+const COGS_SERVICE_CODE = "100247";
+const COGS_DESCRIPTION = "CoGS Application Fee";
+const COGS_APP_TYPE = "certificate_of_good_standing_fee";
+
 
 const filteredApplications = computed(() => {
   if (!authStore.user?.cid) {
     return []
   }
   const userCid = authStore.user.cid
-  // Sort by creation date, newest first
   return applications.value
     .filter((app) => app.cid_no === userCid)
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 })
 
-const fetchApplications = async () => {
+const fetchApplications = async () => { /* ... Sames as before ... */
   isLoading.value = true
   apiError.value = false
   try {
-    const response = await apiService.getMhpcCogs({ limit: 1000 }) // Fetch potentially more records
+    const response = await apiService.getMhpcCogs({ limit: 1000 })
     if (response.data && Array.isArray(response.data.results)) {
       applications.value = response.data.results
     } else {
@@ -253,24 +258,21 @@ const fetchApplications = async () => {
   }
 }
 
-const StatusBadge = defineComponent({
-  props: {
-    status: String,
-  },
+const StatusBadge = defineComponent({ /* ... Sames as before ... */
+  props: { status: String },
   render() {
     const statusClasses = {
       Pending: 'bg-yellow-100 text-yellow-800 border border-yellow-200',
       Approved: 'bg-green-100 text-green-800 border border-green-200',
       Rejected: 'bg-red-100 text-red-800 border border-red-200',
-      'Payment Pending': 'bg-blue-100 text-blue-800 border border-blue-200', // Example for more granular status
+      'Payment Pending': 'bg-blue-100 text-blue-800 border border-blue-200',
     }
-    const currentStatus = this.status || 'Pending' // Default to Pending if null/undefined
-
+    const currentStatus = this.status || 'Pending'
     return h(
       'span',
       {
         class: `inline-flex items-center px-3 py-1 rounded-full text-xs font-medium capitalize shadow-sm ${
-          statusClasses[currentStatus] || 'bg-gray-100 text-gray-800 border border-gray-200' // Fallback style
+          statusClasses[currentStatus] || 'bg-gray-100 text-gray-800 border border-gray-200'
         }`,
       },
       currentStatus,
@@ -278,50 +280,29 @@ const StatusBadge = defineComponent({
   },
 })
 
-const DetailRow = defineComponent({
-  props: {
-    label: String,
-    value: [String, Number],
-    icon: { type: String, default: 'Info' }, // Default icon
-  },
+const DetailRow = defineComponent({ /* ... Sames as before ... */
+  props: { label: String, value: [String, Number], icon: { type: String, default: 'Info' }},
   render() {
-    const icons = {
-      User,
-      IdCard,
-      Phone,
-      Mail,
-      FileText,
-      Target,
-      BookOpen,
-      CreditCard,
-      Info,
-      Contact,
-      Building,
-      Activity,
-    }
-    const IconComponent = icons[this.icon] || icons['Info'] // Fallback to Info icon
-
+    const icons = { User, IdCard, Phone, Mail, FileText, Target, BookOpen, CreditCard, Info, Contact, Building, Activity }
+    const IconComponent = icons[this.icon] || icons['Info']
     return h('div', { class: 'flex items-start space-x-2.5' }, [
       h(IconComponent, { class: 'w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5' }),
       h('div', [
         h('p', { class: 'text-xs text-gray-500' }, this.label),
-        h('p', { class: 'text-sm text-gray-800 font-medium break-words' }, this.value || 'N/A'), // Handle null/empty values
+        h('p', { class: 'text-sm text-gray-800 font-medium break-words' }, this.value || 'N/A'),
       ]),
     ])
   },
 })
 
-const formatDate = (dateString) => {
+const formatDate = (dateString) => { /* ... Sames as before ... */
   if (!dateString) return 'N/A'
   try {
     return new Intl.DateTimeFormat('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
+      day: '2-digit', month: 'short', year: 'numeric',
     }).format(new Date(dateString))
   } catch (e) {
-    console.error('Error formatting date:', dateString, e)
-    return 'Invalid Date'
+    console.error('Error formatting date:', dateString, e); return 'Invalid Date'
   }
 }
 
@@ -338,15 +319,120 @@ const initiatePayment = (application) => {
 
 const closePaymentModal = () => {
   selectedApplication.value = null
+  if (isLoadingPayment.value) {
+    isLoadingPayment.value = false;
+  }
+}
+
+const executeMakePayment = async (clientSidePaymentRef, user, application) => {
+  const paymentInitiationFormData = new FormData();
+  paymentInitiationFormData.append('refNo', clientSidePaymentRef);
+  paymentInitiationFormData.append('serviceCode', COGS_SERVICE_CODE);
+  paymentInitiationFormData.append('taxPayerName', user.cid);
+  paymentInitiationFormData.append('taxPayerNo', user.cid);
+  paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);
+  paymentInitiationFormData.append('totalPayableAmount', COGS_PAYMENT_AMOUNT.toString());
+  paymentInitiationFormData.append('description', COGS_DESCRIPTION);
+  paymentInitiationFormData.append('mobileNo', user.contact_number);
+  paymentInitiationFormData.append('payerEmail', user.email);
+  paymentInitiationFormData.append('user', user.id.toString());
+  paymentInitiationFormData.append('payableAmount', COGS_PAYMENT_AMOUNT.toString());
+  paymentInitiationFormData.append('application_no', application.id.toString());
+  paymentInitiationFormData.append('app_type', COGS_APP_TYPE);
+
+  try {
+    const makePaymentFullApiResponse = await apiService.makePayment(paymentInitiationFormData);
+
+    // CHANGE HERE: Access the data payload correctly
+    const responseData = makePaymentFullApiResponse.data; // Assuming Axios response
+
+    if (!responseData || !responseData.content || !responseData.content.refNo) {
+      console.error('makePayment API response is missing expected content or refNo in responseData:', responseData, 'Full response:', makePaymentFullApiResponse);
+      toast.error('Failed to get a confirmed payment reference from the server during payment submission.');
+      return null;
+    }
+    toast.info(`Payment details submitted to gateway (Client Ref: ${clientSidePaymentRef.substring(0, 8)}). Confirmed Server Ref: ${responseData.content.refNo.substring(0,8)}.`);
+    return responseData.content.refNo;
+
+  } catch (error) {
+    // Log the full error object from Axios if available
+    console.error('Error calling makePayment API:', error.response || error.request || error);
+    let errorMsg = 'An error occurred while submitting payment details to the gateway.';
+    if (error.response?.data?.detail) errorMsg = `Gateway API Error: ${error.response.data.detail}`;
+    else if (typeof error.response?.data === 'string') errorMsg = `Gateway API Error: ${error.response.data}`;
+    else if (error.response?.data?.message) errorMsg = `Gateway API Error: ${error.response.data.message}`; // Check for message property too
+    toast.error(errorMsg);
+    return null;
+  }
+}
+
+const updateCogsApplicationWithPayment = async (applicationId, confirmedPaymentServerRefNo) => {
+  const updateApplicationData = new FormData();
+  updateApplicationData.append('payment_id', confirmedPaymentServerRefNo);
+  updateApplicationData.append('is_payment_complete', 'true');
+
+  try {
+    await apiService.patchMhpcCogs(applicationId, updateApplicationData);
+    return true;
+  } catch (error) {
+    console.error('Error calling patchMhpcCogs API:', error.response || error.request || error);
+    let errorMsg = 'An error occurred while updating the application status after payment.';
+    if (error.response?.data?.detail) errorMsg = `Update API Error: ${error.response.data.detail}`;
+    else if (typeof error.response?.data === 'string') errorMsg = `Update API Error: ${error.response.data}`;
+    else if (error.response?.data?.message) errorMsg = `Update API Error: ${error.response.data.message}`;
+    toast.error(errorMsg);
+    return false;
+  }
 }
 
 const handlePaymentCompleted = async (paymentData) => {
-  // The PaymentModal should now handle the API calls.
-  // This function just needs to refresh the local data after the modal signals success.
-  toast.success(`Payment recorded successfully! ${paymentData.message}`)
-  isLoadingPayment.value = false
-  selectedApplication.value = null // Reset selected app
-  await fetchApplications() // Refresh the list to show updated status
+  // Store application details before it might be nulled
+  const currentApplicationForProcessing = selectedApplication.value;
+  const applicationRegNo = currentApplicationForProcessing?.registration_no; // Safely access
+  const applicationId = currentApplicationForProcessing?.id;
+
+  if (!currentApplicationForProcessing) {
+    toast.error('No application selected for payment update. Please try again.');
+    return;
+  }
+
+  if (!paymentData || !paymentData.paymentHash) {
+    toast.error('Payment reference (paymentHash) not found from modal. Cannot update status.');
+    return;
+  }
+
+  const user = authStore.user;
+  if (!user || !user.contact_number || !user.email || !user.cid || !user.id) {
+    toast.error('User information is incomplete. Please update your profile and try again.');
+    return;
+  }
+
+  isLoadingPayment.value = true;
+  const clientSidePaymentRef = paymentData.paymentHash;
+
+  try {
+    const confirmedServerRefNo = await executeMakePayment(clientSidePaymentRef, user, currentApplicationForProcessing);
+
+    if (confirmedServerRefNo) {
+      toast.info(`Attempting to update application #${applicationRegNo || 'N/A'} with payment ref ${confirmedServerRefNo.substring(0,8)}...`);
+      const updateSuccess = await updateCogsApplicationWithPayment(applicationId, confirmedServerRefNo);
+
+      if (updateSuccess) {
+        toast.success(`Payment for Application #${applicationRegNo || 'N/A'} (Ref: ${confirmedServerRefNo.substring(0,8)}) successful and status updated!`);
+        await fetchApplications();
+      } else {
+        toast.warning(`Application #${applicationRegNo || 'N/A'} status might not be updated. Please check or contact support with payment ref ${confirmedServerRefNo.substring(0,8)}.`);
+      }
+    } else {
+      toast.error(`Payment processing failed for Application #${applicationRegNo || 'N/A'}. Application status not updated. Initial Ref: ${clientSidePaymentRef.substring(0,8)}.`);
+    }
+  } catch (error) {
+    console.error('Unexpected error in handlePaymentCompleted orchestration:', error);
+    toast.error(`An unexpected error occurred during the payment process for Application #${applicationRegNo || 'N/A'}. Please try again.`);
+  } finally {
+    isLoadingPayment.value = false;
+    selectedApplication.value = null; // Clear selected application
+  }
 }
 
 onMounted(() => {

@@ -1442,13 +1442,9 @@ const confirmSubmit = async () => {
     }
 
     const renewalPayload = {
-      user_qualification: qualificationIdToRenew,
-      new_expiry_date: formattedNewExpiryDate,
-      renewal_review_status: 'Pending',
-      renewal_review_remarks: remarks.value || '',
-      renewal_endorsement_decision: 'Pending',
-      payment_status: 'pending',
-      registration_type: 'renewal',
+      user_qualification_id: qualificationIdToRenew,
+      proposed_expiry_date: formattedNewExpiryDate,
+      renewal_remarks: remarks.value || '',
     }
 
     const renewalResponse = await apiService.createMhpcRenewal(renewalPayload)
