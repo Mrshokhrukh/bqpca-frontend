@@ -1,4 +1,3 @@
-```vue
 <template>
   <div class="cpd-provider-application">
     <h1 class="text-2xl font-bold mb-6">CPD Provider Application</h1>
@@ -17,21 +16,26 @@
         <h2 class="text-xl font-semibold text-gray-800 mb-3">Applicant Details</h2>
         <div>
           <label for="registrationNumber" class="block text-sm font-medium text-gray-700">Registration Number</label>
-          <input type="text" id="registrationNumber" v-model="form.registrationNumber" readonly class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm"/>
+          <input type="text" id="registrationNumber" v-model="form.registrationNumber" readonly
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm" />
         </div>
         <div>
           <label for="cidNo" class="block text-sm font-medium text-gray-700">CID No./Identity/Work Permit No.</label>
-          <input type="text" id="cidNo" v-model="form.cidNo" readonly class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm"/>
+          <input type="text" id="cidNo" v-model="form.cidNo" readonly
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm" />
         </div>
         <div>
           <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
-          <input type="text" id="fullName" v-model="form.fullName" readonly class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm"/>
+          <input type="text" id="fullName" v-model="form.fullName" readonly
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm" />
         </div>
         <div>
           <label for="agencyTrainingLocation" class="block text-sm font-medium text-gray-700">
             Agency/Training Location <span class="text-red-500">*</span>
           </label>
-          <input type="text" id="agencyTrainingLocation" v-model="form.agencyTrainingLocation" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter agency or training location"/>
+          <input type="text" id="agencyTrainingLocation" v-model="form.agencyTrainingLocation" required
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            placeholder="Enter agency or training location" />
         </div>
       </section>
 
@@ -39,14 +43,17 @@
       <section class="space-y-4 p-4 border border-gray-200 rounded-md shadow-sm">
         <h2 class="text-xl font-semibold text-gray-800 mb-3">Application Details</h2>
         <div>
-          <label class="block text-sm font-medium text-gray-700">Is CPD validated by KGUMSB or International Organization? <span class="text-red-500">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">Is CPD validated by KGUMSB or International
+            Organization? <span class="text-red-500">*</span></label>
           <div class="mt-2 flex space-x-6">
             <label class="inline-flex items-center">
-              <input type="radio" v-model="form.isCpdValidated" value="true" name="isCpdValidated" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+              <input type="radio" v-model="form.isCpdValidated" value="true" name="isCpdValidated"
+                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
               <span class="ml-2 text-sm text-gray-700">Yes</span>
             </label>
             <label class="inline-flex items-center">
-              <input type="radio" v-model="form.isCpdValidated" value="false" name="isCpdValidated" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+              <input type="radio" v-model="form.isCpdValidated" value="false" name="isCpdValidated"
+                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
               <span class="ml-2 text-sm text-gray-700">No</span>
             </label>
           </div>
@@ -55,31 +62,39 @@
           <label for="titleOfCpd" class="block text-sm font-medium text-gray-700">
             Title of CPD <span class="text-red-500">*</span>
           </label>
-          <input type="text" id="titleOfCpd" v-model="form.titleOfCpd" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter title of CPD"/>
+          <input type="text" id="titleOfCpd" v-model="form.titleOfCpd" required
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            placeholder="Enter title of CPD" />
         </div>
         <div v-if="form.isCpdValidated === 'false'">
           <label for="venue" class="block text-sm font-medium text-gray-700">
             Venue <span class="text-red-500">*</span>
           </label>
-          <input type="text" id="venue" v-model="form.venue" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Enter venue"/>
+          <input type="text" id="venue" v-model="form.venue" required
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            placeholder="Enter venue" />
         </div>
         <div v-if="form.isCpdValidated === 'false'">
           <label for="fromDate" class="block text-sm font-medium text-gray-700">
             From Date <span class="text-red-500">*</span>
           </label>
-          <input type="date" id="fromDate" v-model="form.fromDate" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"/>
+          <input type="date" id="fromDate" v-model="form.fromDate" required
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
         </div>
         <div v-if="form.isCpdValidated === 'false'">
           <label for="toDate" class="block text-sm font-medium text-gray-700">
             To Date <span class="text-red-500">*</span>
           </label>
-          <input type="date" id="toDate" v-model="form.toDate" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"/>
+          <input type="date" id="toDate" v-model="form.toDate" required
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
         </div>
         <div v-if="form.isCpdValidated === 'true'">
           <label for="cpdApprovalLetter" class="block text-sm font-medium text-gray-700">
             Attach Approval Letter <span class="text-red-500">*</span>
           </label>
-          <input type="file" id="cpdApprovalLetter" @change="handleFileUpload($event, 'cpdApprovalLetter')" accept="application/pdf" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+          <input type="file" id="cpdApprovalLetter" @change="handleFileUpload($event, 'cpdApprovalLetter')"
+            accept="application/pdf"
+            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
         </div>
       </section>
 
@@ -90,23 +105,28 @@
           <label for="cpdProvidingAgency" class="block text-sm font-medium text-gray-700">
             CPD Providing Agency <span class="text-red-500">*</span>
           </label>
-          <select id="cpdProvidingAgency" v-model="form.cpdProvidingAgency" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          <select id="cpdProvidingAgency" v-model="form.cpdProvidingAgency" required
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
             <option disabled value="">Select Agency</option>
             <option v-if="cpdAgencyOptions.length === 0" disabled>No agencies available</option>
-            <option v-for="agency in cpdAgencyOptions" :key="agency.value" :value="agency.value">{{ agency.text }}</option>
+            <option v-for="agency in cpdAgencyOptions" :key="agency.value" :value="agency.value">{{ agency.text }}
+            </option>
           </select>
         </div>
         <div v-if="form.cpdProvidingAgency === 'other'">
           <label for="otherCpdProvidingAgency" class="block text-sm font-medium text-gray-700">
             If Others, Specify <span class="text-red-500">*</span>
           </label>
-          <input type="text" id="otherCpdProvidingAgency" v-model="form.otherCpdProvidingAgency" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Specify agency name"/>
+          <input type="text" id="otherCpdProvidingAgency" v-model="form.otherCpdProvidingAgency" required
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            placeholder="Specify agency name" />
         </div>
         <div>
           <label for="reasonForConducting" class="block text-sm font-medium text-gray-700">
             Reason for Conducting <span class="text-red-500">*</span>
           </label>
-          <select id="reasonForConducting" v-model="form.reasonForConducting" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          <select id="reasonForConducting" v-model="form.reasonForConducting" required
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
             <option disabled value="">Select Reason</option>
             <option v-if="reasonOptions.length === 0" disabled>No reasons available</option>
             <option v-for="reason in reasonOptions" :key="reason.value" :value="reason.value">{{ reason.text }}</option>
@@ -116,7 +136,9 @@
           <label for="reasonForConductingDetails" class="block text-sm font-medium text-gray-700">
             Reason Details <span class="text-red-500">*</span>
           </label>
-          <textarea id="reasonForConductingDetails" v-model="form.reasonForConductingDetails" required rows="3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Provide details for the reason"></textarea>
+          <textarea id="reasonForConductingDetails" v-model="form.reasonForConductingDetails" required rows="3"
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            placeholder="Provide details for the reason"></textarea>
         </div>
       </section>
 
@@ -124,12 +146,15 @@
       <section class="space-y-4 p-4 border border-gray-200 rounded-md shadow-sm">
         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 border-b border-gray-200">
           <h2 class="text-xl font-semibold text-gray-800 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
             Resource Persons Details
           </h2>
-          <p class="mt-2 text-sm text-gray-600">Add information about the resource persons who will be conducting or supporting this CPD program.</p>
+          <p class="mt-2 text-sm text-gray-600">Add information about the resource persons who will be conducting or
+            supporting this CPD program.</p>
         </div>
 
         <!-- General Errors -->
@@ -143,53 +168,78 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Registration Number -->
             <div>
-              <label :for="'rpRegNo0'" class="block text-sm font-medium text-gray-700">Registration Number <span class="text-red-500">*</span></label>
-              <select :id="'rpRegNo0'" v-model="form.resourcePersons[0].regNo" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" :class="{ 'border-red-500': resourcePersonErrors[0]?.regNo }">
+              <label :for="'rpRegNo0'" class="block text-sm font-medium text-gray-700">Registration Number <span
+                  class="text-red-500">*</span></label>
+              <select :id="'rpRegNo0'" v-model="form.resourcePersons[0].regNo" required
+                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                :class="{ 'border-red-500': resourcePersonErrors[0]?.regNo }">
                 <option value="" disabled>Select Registration Number</option>
                 <option v-if="availableRegistrations(0).length === 0" disabled>No registrations available</option>
-                <option v-for="reg in availableRegistrations(0)" :key="reg.id" :value="reg.registration_no">{{ reg.registration_no }} ({{ reg.full_name }})</option>
+                <option v-for="reg in availableRegistrations(0)" :key="reg.id" :value="reg.registration_no">{{
+                  reg.registration_no }} ({{ reg.full_name }})</option>
               </select>
-              <p v-if="resourcePersonErrors[0]?.regNo" class="text-red-500 text-sm mt-1">{{ resourcePersonErrors[0].regNo }}</p>
+              <p v-if="resourcePersonErrors[0]?.regNo" class="text-red-500 text-sm mt-1">{{
+                resourcePersonErrors[0].regNo }}</p>
             </div>
             <!-- Certificates -->
             <div>
-              <label :for="'rpCertificates0'" class="block text-sm font-medium text-gray-700">Certificates <span class="text-red-500">*</span></label>
-              <input type="file" :id="'rpCertificates0'" @change="handleResourcePersonFile($event, 0, 'certificate')" accept="application/pdf" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" :class="{ 'border-red-500': resourcePersonErrors[0]?.certificate }" />
-              <p v-if="resourcePersonErrors[0]?.certificate" class="text-red-500 text-sm mt-1">{{ resourcePersonErrors[0].certificate }}</p>
+              <label :for="'rpCertificates0'" class="block text-sm font-medium text-gray-700">Certificates <span
+                  class="text-red-500">*</span></label>
+              <input type="file" :id="'rpCertificates0'" @change="handleResourcePersonFile($event, 0, 'certificate')"
+                accept="application/pdf"
+                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                :class="{ 'border-red-500': resourcePersonErrors[0]?.certificate }" />
+              <p v-if="resourcePersonErrors[0]?.certificate" class="text-red-500 text-sm mt-1">{{
+                resourcePersonErrors[0].certificate }}</p>
             </div>
           </div>
         </div>
 
         <!-- Additional Resource Persons -->
         <div v-if="form.resourcePersons.length > 1" class="space-y-4">
-          <div v-for="(person, index) in form.resourcePersons.slice(1)" :key="`person-${index + 1}`" class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm">
+          <div v-for="(person, index) in form.resourcePersons.slice(1)" :key="`person-${index + 1}`"
+            class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm">
             <div class="flex justify-between items-center mb-3">
               <h3 class="text-md font-medium text-gray-700">Resource Person {{ index + 2 }}</h3>
-              <button @click.prevent="removeResourcePerson(index + 1)" type="button" class="px-2 py-1 text-xs bg-red-500 text-white rounded-md hover:bg-red-600">Remove</button>
+              <button @click.prevent="removeResourcePerson(index + 1)" type="button"
+                class="px-2 py-1 text-xs bg-red-500 text-white rounded-md hover:bg-red-600">Remove</button>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Registration Number -->
               <div>
-                <label :for="'rpRegNo' + (index + 1)" class="block text-sm font-medium text-gray-700">Registration Number <span class="text-red-500">*</span></label>
-                <select :id="'rpRegNo' + (index + 1)" v-model="person.regNo" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" :class="{ 'border-red-500': resourcePersonErrors[index + 1]?.regNo }">
+                <label :for="'rpRegNo' + (index + 1)" class="block text-sm font-medium text-gray-700">Registration
+                  Number <span class="text-red-500">*</span></label>
+                <select :id="'rpRegNo' + (index + 1)" v-model="person.regNo" required
+                  class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  :class="{ 'border-red-500': resourcePersonErrors[index + 1]?.regNo }">
                   <option value="" disabled>Select Registration Number</option>
-                  <option v-if="availableRegistrations(index + 1).length === 0" disabled>No registrations available</option>
-                  <option v-for="reg in availableRegistrations(index + 1)" :key="reg.id" :value="reg.registration_no">{{ reg.registration_no }} ({{ reg.full_name }})</option>
+                  <option v-if="availableRegistrations(index + 1).length === 0" disabled>No registrations available
+                  </option>
+                  <option v-for="reg in availableRegistrations(index + 1)" :key="reg.id" :value="reg.registration_no">{{
+                    reg.registration_no }} ({{ reg.full_name }})</option>
                 </select>
-                <p v-if="resourcePersonErrors[index + 1]?.regNo" class="text-red-500 text-sm mt-1">{{ resourcePersonErrors[index + 1].regNo }}</p>
+                <p v-if="resourcePersonErrors[index + 1]?.regNo" class="text-red-500 text-sm mt-1">{{
+                  resourcePersonErrors[index + 1].regNo }}</p>
               </div>
               <!-- Certificates -->
               <div>
-                <label :for="'rpCertificates' + (index + 1)" class="block text-sm font-medium text-gray-700">Certificates <span class="text-red-500">*</span></label>
-                <input type="file" :id="'rpCertificates' + (index + 1)" @change="handleResourcePersonFile($event, index + 1, 'certificate')" accept="application/pdf" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" :class="{ 'border-red-500': resourcePersonErrors[index + 1]?.certificate }" />
-                <p v-if="resourcePersonErrors[index + 1]?.certificate" class="text-red-500 text-sm mt-1">{{ resourcePersonErrors[index + 1].certificate }}</p>
+                <label :for="'rpCertificates' + (index + 1)"
+                  class="block text-sm font-medium text-gray-700">Certificates <span
+                    class="text-red-500">*</span></label>
+                <input type="file" :id="'rpCertificates' + (index + 1)"
+                  @change="handleResourcePersonFile($event, index + 1, 'certificate')" accept="application/pdf"
+                  class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  :class="{ 'border-red-500': resourcePersonErrors[index + 1]?.certificate }" />
+                <p v-if="resourcePersonErrors[index + 1]?.certificate" class="text-red-500 text-sm mt-1">{{
+                  resourcePersonErrors[index + 1].certificate }}</p>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Add Resource Person Button -->
-        <button @click.prevent="addResourcePerson" type="button" class="mt-4 w-full p-3 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 flex items-center justify-center">
+        <button @click.prevent="addResourcePerson" type="button"
+          class="mt-4 w-full p-3 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 flex items-center justify-center">
           <span class="mr-2">+</span> Add Another Resource Person
         </button>
       </section>
@@ -198,42 +248,62 @@
       <section class="space-y-4 p-4 border border-gray-200 rounded-md shadow-sm">
         <h2 class="text-xl font-semibold text-gray-800 mb-3">Teaching Learning Method</h2>
         <div>
-          <label for="typeOfCpd" class="block text-sm font-medium text-gray-700">Type of CPD <span class="text-red-500">*</span></label>
-          <select id="typeOfCpd" v-model="form.typeOfCpd" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm">
+          <label for="typeOfCpd" class="block text-sm font-medium text-gray-700">Type of CPD <span
+              class="text-red-500">*</span></label>
+          <select id="typeOfCpd" v-model="form.typeOfCpd" required
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm">
             <option disabled value="">Select CPD Type</option>
             <option v-if="cpdTypeOptions.length === 0" disabled>No CPD types available</option>
-            <option v-for="cpdType in cpdTypeOptions" :key="cpdType.value" :value="cpdType.value">{{ cpdType.text }}</option>
+            <option v-for="cpdType in cpdTypeOptions" :key="cpdType.value" :value="cpdType.value">{{ cpdType.text }}
+            </option>
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700">Methodologies (Select multiple) <span class="text-red-500">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">Methodologies (Select multiple) <span
+              class="text-red-500">*</span></label>
           <div class="mt-2 grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
-            <label v-if="methodologyOptions.length === 0" class="text-sm text-gray-500">No methodologies available</label>
+            <label v-if="methodologyOptions.length === 0" class="text-sm text-gray-500">No methodologies
+              available</label>
             <label v-for="method in methodologyOptions" :key="method.value" class="inline-flex items-center">
-              <input type="checkbox" :value="method.value" v-model="form.methodologies" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+              <input type="checkbox" :value="method.value" v-model="form.methodologies"
+                class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
               <span class="ml-2 text-sm text-gray-700">{{ method.text }}</span>
             </label>
           </div>
         </div>
         <div>
-          <label for="expectedOutcome" class="block text-sm font-medium text-gray-700">Expected Outcome <span class="text-red-500">*</span></label>
-          <textarea id="expectedOutcome" v-model="form.expectedOutcome" required rows="3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" placeholder="Describe expected outcome"></textarea>
+          <label for="expectedOutcome" class="block text-sm font-medium text-gray-700">Expected Outcome <span
+              class="text-red-500">*</span></label>
+          <textarea id="expectedOutcome" v-model="form.expectedOutcome" required rows="3"
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+            placeholder="Describe expected outcome"></textarea>
         </div>
         <div>
-          <label for="activity" class="block text-sm font-medium text-gray-700">Activity <span class="text-red-500">*</span></label>
-          <textarea id="activity" v-model="form.activity" required rows="2" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" placeholder="Describe activity"></textarea>
+          <label for="activity" class="block text-sm font-medium text-gray-700">Activity <span
+              class="text-red-500">*</span></label>
+          <textarea id="activity" v-model="form.activity" required rows="2"
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+            placeholder="Describe activity"></textarea>
         </div>
         <div>
-          <label for="duration" class="block text-sm font-medium text-gray-700">Duration (hours) <span class="text-red-500">*</span></label>
-          <input type="number" id="duration" v-model.number="form.duration" required min="1" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" placeholder="Enter duration in hours"/>
+          <label for="duration" class="block text-sm font-medium text-gray-700">Duration (hours) <span
+              class="text-red-500">*</span></label>
+          <input type="number" id="duration" v-model.number="form.duration" required min="1"
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+            placeholder="Enter duration in hours" />
         </div>
         <div>
           <label for="credit" class="block text-sm font-medium text-gray-700">Credit</label>
-          <input type="number" id="credit" :value="credit" readonly class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm" placeholder="Auto-calculated"/>
+          <input type="number" id="credit" :value="credit" readonly
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm"
+            placeholder="Auto-calculated" />
         </div>
         <div>
-          <label for="courseDocument" class="block text-sm font-medium text-gray-700">Course Document <span class="text-red-500">*</span></label>
-          <input type="file" id="courseDocument" @change="handleFileUpload($event, 'courseDocument')" accept="application/pdf" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+          <label for="courseDocument" class="block text-sm font-medium text-gray-700">Course Document <span
+              class="text-red-500">*</span></label>
+          <input type="file" id="courseDocument" @change="handleFileUpload($event, 'courseDocument')"
+            accept="application/pdf"
+            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
         </div>
       </section>
 
@@ -241,72 +311,108 @@
       <section class="space-y-4 p-4 border border-gray-200 rounded-md shadow-sm">
         <h2 class="text-xl font-semibold text-gray-800 mb-3">Participants Details</h2>
         <div>
-          <label class="block text-sm font-medium text-gray-700">Participation Category (Select multiple) <span class="text-red-500">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">Participation Category (Select multiple) <span
+              class="text-red-500">*</span></label>
           <div class="mt-2 grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
-            <label v-if="participationCategoryOptions.length === 0" class="text-sm text-gray-500">No categories available</label>
+            <label v-if="participationCategoryOptions.length === 0" class="text-sm text-gray-500">No categories
+              available</label>
             <label v-for="cat in participationCategoryOptions" :key="cat.value" class="inline-flex items-center">
-              <input type="checkbox" :value="cat.value" v-model="form.participationCategories" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+              <input type="checkbox" :value="cat.value" v-model="form.participationCategories"
+                class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
               <span class="ml-2 text-sm text-gray-700">{{ cat.text }}</span>
             </label>
           </div>
-          <p v-if="participantDetailsErrors.categories" class="text-red-500 text-sm mt-1">{{ participantDetailsErrors.categories }}</p>
+          <p v-if="participantDetailsErrors.categories" class="text-red-500 text-sm mt-1">{{
+            participantDetailsErrors.categories }}</p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700">Participant Sub-Category (Select multiple) <span class="text-red-500">*</span></label>
+          <label class="block text-sm font-medium text-gray-700">Participant Sub-Category (Select multiple) <span
+              class="text-red-500">*</span></label>
           <div class="mt-2 grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
-            <label v-if="participantSubcategoryOptions.length === 0" class="text-sm text-gray-500">No sub-categories available</label>
+            <label v-if="participantSubcategoryOptions.length === 0" class="text-sm text-gray-500">No sub-categories
+              available</label>
             <label v-for="subCat in filteredSubcategories" :key="subCat.value" class="inline-flex items-center">
-              <input type="checkbox" :value="subCat.value" v-model="form.participantSubCategory" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+              <input type="checkbox" :value="subCat.value" v-model="form.participantSubCategory"
+                class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
               <span class="ml-2 text-sm text-gray-700">{{ subCat.text }}</span>
             </label>
           </div>
-          <p v-if="participantDetailsErrors.subcategories" class="text-red-500 text-sm mt-1">{{ participantDetailsErrors.subcategories }}</p>
+          <p v-if="participantDetailsErrors.subcategories" class="text-red-500 text-sm mt-1">{{
+            participantDetailsErrors.subcategories }}</p>
         </div>
         <div>
-          <label for="numberOfParticipants" class="block text-sm font-medium text-gray-700">Number of Participants <span class="text-red-500">*</span></label>
-          <input type="number" id="numberOfParticipants" v-model.number="form.numberOfParticipants" required min="1" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" placeholder="Enter number"/>
-          <p v-if="participantDetailsErrors.number" class="text-red-500 text-sm mt-1">{{ participantDetailsErrors.number }}</p>
+          <label for="numberOfParticipants" class="block text-sm font-medium text-gray-700">Number of Participants <span
+              class="text-red-500">*</span></label>
+          <input type="number" id="numberOfParticipants" v-model.number="form.numberOfParticipants" required min="1"
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+            placeholder="Enter number" />
+          <p v-if="participantDetailsErrors.number" class="text-red-500 text-sm mt-1">{{ participantDetailsErrors.number
+            }}</p>
         </div>
         <div>
-          <label for="relevanceToProfession" class="block text-sm font-medium text-gray-700">Relevance to your profession <span class="text-red-500" v-if="form.participationCategories.length > 1">*</span></label>
-          <textarea id="relevanceToProfession" v-model="form.relevanceToProfession" :required="form.participationCategories.length > 1" rows="3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" placeholder="Describe relevance"></textarea>
-          <p v-if="participantDetailsErrors.relevance" class="text-red-500 text-sm mt-1">{{ participantDetailsErrors.relevance }}</p>
+          <label for="relevanceToProfession" class="block text-sm font-medium text-gray-700">Relevance to your
+            profession <span class="text-red-500" v-if="form.participationCategories.length > 1">*</span></label>
+          <textarea id="relevanceToProfession" v-model="form.relevanceToProfession"
+            :required="form.participationCategories.length > 1" rows="3"
+            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+            placeholder="Describe relevance"></textarea>
+          <p v-if="participantDetailsErrors.relevance" class="text-red-500 text-sm mt-1">{{
+            participantDetailsErrors.relevance }}</p>
         </div>
       </section>
 
       <!-- Approved CPD Participants -->
       <section v-if="form.isCpdValidated === 'true'" class="space-y-4 p-4 border border-gray-200 rounded-md shadow-sm">
         <h2 class="text-xl font-semibold text-gray-800 mb-3">Approved CPD Participants</h2>
-        <div v-for="(participant, index) in form.participants" :key="`participant-${index}`" class="space-y-3 p-3 my-2 border border-gray-200 rounded-md">
+        <div v-for="(participant, index) in form.participants" :key="`participant-${index}`"
+          class="space-y-3 p-3 my-2 border border-gray-200 rounded-md">
           <div class="flex justify-between items-center">
             <h3 class="text-md font-medium text-gray-700">Participant {{ index + 1 }}</h3>
-            <button @click.prevent="removeParticipant(index)" type="button" class="px-2 py-1 text-xs bg-red-500 text-white rounded-md hover:bg-red-600">Remove</button>
+            <button @click.prevent="removeParticipant(index)" type="button"
+              class="px-2 py-1 text-xs bg-red-500 text-white rounded-md hover:bg-red-600">Remove</button>
           </div>
           <div>
-            <label :for="'participantRegNo' + index" class="block text-sm font-medium text-gray-700">Registration Number</label>
-            <input type="text" :id="'participantRegNo' + index" v-model="participant.regNo" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" placeholder="Enter Registration Number"/>
+            <label :for="'participantRegNo' + index" class="block text-sm font-medium text-gray-700">Registration
+              Number</label>
+            <input type="text" :id="'participantRegNo' + index" v-model="participant.regNo"
+              class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+              placeholder="Enter Registration Number" />
           </div>
           <div>
             <label :for="'participantName' + index" class="block text-sm font-medium text-gray-700">Name</label>
-            <input type="text" :id="'participantName' + index" v-model="participant.name" readonly class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm bg-gray-50" placeholder="Auto-populated"/>
+            <input type="text" :id="'participantName' + index" v-model="participant.name" readonly
+              class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm bg-gray-50"
+              placeholder="Auto-populated" />
           </div>
         </div>
-        <button @click.prevent="addParticipant" type="button" class="mt-2 px-3 py-1.5 text-sm bg-green-500 text-white rounded-md hover:bg-green-600">Add Participant</button>
+        <button @click.prevent="addParticipant" type="button"
+          class="mt-2 px-3 py-1.5 text-sm bg-green-500 text-white rounded-md hover:bg-green-600">Add
+          Participant</button>
         <div>
-          <label for="attendanceSheet" class="block text-sm font-medium text-gray-700">Attendance Sheet <span class="text-red-500" v-if="form.participants.length > 0">*</span></label>
-          <input type="file" id="attendanceSheet" @change="handleFileUpload($event, 'attendanceSheet')" accept="application/pdf" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+          <label for="attendanceSheet" class="block text-sm font-medium text-gray-700">Attendance Sheet <span
+              class="text-red-500" v-if="form.participants.length > 0">*</span></label>
+          <input type="file" id="attendanceSheet" @change="handleFileUpload($event, 'attendanceSheet')"
+            accept="application/pdf"
+            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
         </div>
         <div>
-          <label for="attachment" class="block text-sm font-medium text-gray-700">General Attachment <span class="text-red-500">*</span></label>
-          <input type="file" id="attachment" @change="handleFileUpload($event, 'attachment')" accept="application/pdf" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+          <label for="attachment" class="block text-sm font-medium text-gray-700">General Attachment <span
+              class="text-red-500">*</span></label>
+          <input type="file" id="attachment" @change="handleFileUpload($event, 'attachment')" accept="application/pdf"
+            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
         </div>
       </section>
 
       <!-- Form Actions -->
       <div class="flex justify-end pt-4 space-x-4">
-        <button type="button" @click="cancelForm" class="px-6 py-2.5 bg-gray-300 text-gray-700 font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-400">Cancel</button>
-        <button type="button" @click="saveDraft" :disabled="loading" class="px-6 py-2.5 bg-yellow-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-yellow-600">Save Draft</button>
-        <button type="submit" :disabled="loading || !isFormValid" class="px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 disabled:bg-blue-300">Submit Application</button>
+        <button type="button" @click="cancelForm"
+          class="px-6 py-2.5 bg-gray-300 text-gray-700 font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-400">Cancel</button>
+        <button type="button" @click="saveDraft" :disabled="loading"
+          class="px-6 py-2.5 bg-yellow-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-yellow-600">Save
+          Draft</button>
+        <button type="submit" :disabled="loading || !isFormValid"
+          class="px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 disabled:bg-blue-300">Submit
+          Application</button>
       </div>
     </form>
     <div v-else class="bg-white border rounded-xl shadow-sm p-6 text-center my-4">
@@ -396,23 +502,31 @@ export default {
     const fetchApplicantDetails = async () => {
       try {
         loading.value = true;
-        const cid = authStore.user?.cid || '';
+        const cid = authStore.user?.cid;
         if (!cid) {
-          validationErrors.value.push('User CID not found. Please log in again.');
+          // This case should ideally not be hit if the user is logged in,
+          // as onMounted already populates from the store.
           return;
         }
         const response = await apiService.getMhpcFullApplicationListByCid(cid);
         const results = response.data?.results || [];
+
         if (results.length > 0) {
           const userData = results[0];
-          form.value.registrationNumber = userData.registration_no || 'REG12345XYZ';
-          form.value.cidNo = userData.cid_no || 'CID_IDENTITY_WORK_PERMIT_123';
-          form.value.fullName = userData.full_name || 'Applicant Full Name';
+          // Primarily fetch the registration number.
+          // The name and CID are already set from the auth store but can be updated
+          // if the API is considered a more definitive source.
+          form.value.registrationNumber = userData.registration_no || '';
+          form.value.fullName = userData.full_name || form.value.fullName;
+          form.value.cidNo = userData.cid_no || form.value.cidNo;
         } else {
-          validationErrors.value.push('No applicant data found for the provided CID.');
+          // This is a valid scenario for a new applicant, not an error.
+          // The form will retain the details from the auth store.
+          console.log('No existing application found for this user.');
         }
       } catch (error) {
-        validationErrors.value.push('Failed to fetch applicant details: ' + (error.message || 'Unknown error'));
+        // Only show an error if the API call itself fails.
+        validationErrors.value.push('Failed to check for existing registration: ' + (error.message || 'Unknown error'));
         console.error('fetchApplicantDetails error:', error);
       } finally {
         loading.value = false;
@@ -806,7 +920,7 @@ export default {
       } catch (error) {
         validationErrors.value = ['Error submitting form: ' + (error.message || 'Unknown error')];
         if (error.response?.data) {
-          const backendErrors = Object.entries(error.response.data).map(([key, value]) => 
+          const backendErrors = Object.entries(error.response.data).map(([key, value]) =>
             `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
           );
           validationErrors.value.push(...backendErrors);
@@ -836,7 +950,7 @@ export default {
         form.value.attachment = null;
         form.value.attendanceSheet = null;
         form.value.participants = [];
-        const inputs = ['cpdApprovalLetter', 'attachment', 'attendanceSheet'].map(id => 
+        const inputs = ['cpdApprovalLetter', 'attachment', 'attendanceSheet'].map(id =>
           document.querySelector(`#${id}`)
         ).filter(Boolean);
         inputs.forEach(input => { input.value = ''; });
@@ -844,14 +958,17 @@ export default {
     });
 
     onMounted(async () => {
+      // Step 1: Immediately populate details from the auth store for a responsive UI.
       form.value.cidNo = authStore.user?.cid || '';
       form.value.fullName = [
         authStore.user?.first_name,
         authStore.user?.middle_name,
         authStore.user?.last_name
       ].filter(Boolean).join(' ') || '';
+
+      // Step 2: Asynchronously fetch all necessary data in parallel.
       await Promise.all([
-        fetchApplicantDetails(),
+        fetchApplicantDetails(), // Fetches supplementary details like registration number.
         fetchUserRegistrations(),
         fetchDropdownOptions(),
       ]);
@@ -899,7 +1016,7 @@ export default {
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 input[type="file"]::file-selector-button {
@@ -930,4 +1047,3 @@ select {
   padding-bottom: 0.25rem;
 }
 </style>
-```
