@@ -1075,11 +1075,11 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('GraduationCap'),
             route: (serviceType) => `/admin/institutions/${serviceType}/course_management`,
           },
-          {
-            name: 'Department Management',
-            icon: getIconComponent('Layers'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/department_management`,
-          },
+          // {
+          //   name: 'Department Management',
+          //   icon: getIconComponent('Layers'),
+          //   route: (serviceType) => `/admin/institutions/${serviceType}/department_management`,
+          // },
         ],
       },
     ],
