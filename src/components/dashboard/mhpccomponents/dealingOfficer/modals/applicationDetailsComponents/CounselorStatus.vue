@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { Check } from 'lucide-vue-next'
 import apiServices from '@/services/services'
 import { useToast } from 'vue-toastification'
@@ -69,6 +69,13 @@ const props = defineProps({
   }
 })
 
+watchEffect(() => {
+  console.log('%c[CounselorStatus.vue] Data Received:', 'color: #4CAF50; font-weight: bold;', props.application);
+  if (props.application) {
+    console.log('%c[CounselorStatus.vue] Value of is_counselor:', 'color: #03A9F4;', props.application.is_counselor);
+  }
+});
+
 const emit = defineEmits(['update', 'set-loading'])
 const errorMessage = ref('')
 const isSubmitting = ref(false)
@@ -76,19 +83,20 @@ const toast = useToast()
 
 // Helper function to get user ID
 const getUserId = () => {
-  const possibleIds = [
-    props.userId,
-    props.application.user_id,
-    props.application.userId,
-    props.application.id
-  ]
+  // The most reliable source for the user's ID is from the `userDetails` object
+  // we fetched when opening the modal.
+  const userId = props.application?.userDetails?.id;
 
-  for (const id of possibleIds) {
-    if (id) return id
+  if (userId) {
+    return userId;
   }
 
-  console.error('Could not determine user ID', props.application)
-  return null
+  // Fallback if userDetails is missing for some reason
+  const fallbackId = props.application?.user_id;
+  if(fallbackId) return fallbackId;
+
+  console.error('CRITICAL: Could not determine User ID for counselor status update.', props.application);
+  return null;
 }
 
 const registerAsCounselor = async () => {
@@ -110,12 +118,7 @@ const registerAsCounselor = async () => {
     const formData = new FormData()
     formData.append('is_counselor', 'true')
 
-    console.log('Registering user as counselor. User ID:', userId, 'Form data:', {
-      is_counselor: true
-    })
-
     const response = await apiServices.patchUser(userId, formData)
-    console.log('API response:', response)
 
     // Verify the response data
     if (response.data?.is_counselor !== true) {
@@ -123,7 +126,8 @@ const registerAsCounselor = async () => {
     }
 
     toast.success('Successfully registered as a counselor!')
-    emit('update', { ...props.application, is_counselor: true }) // Update parent with new state
+    emit('update');
+
   } catch (error) {
     console.error('Error registering as counselor:', error)
     let apiErrorMessage = 'Failed to register as counselor.'
@@ -146,7 +150,7 @@ const registerAsCounselor = async () => {
     toast.error(apiErrorMessage)
   } finally {
     isSubmitting.value = false
-    emit('set-loading', false) // Notify parent to hide loading state
+    emit('set-loading', false)
   }
 }
 
@@ -168,13 +172,7 @@ const unregisterCounselor = async () => {
   try {
     const formData = new FormData()
     formData.append('is_counselor', 'false')
-
-    console.log('Unregistering user as counselor. User ID:', userId, 'Form data:', {
-      is_counselor: false
-    })
-
     const response = await apiServices.patchUser(userId, formData)
-    console.log('API response:', response)
 
     // Verify the response data
     if (response.data?.is_counselor !== false) {
@@ -182,7 +180,7 @@ const unregisterCounselor = async () => {
     }
 
     toast.success('Successfully unregistered as a counselor.')
-    emit('update', { ...props.application, is_counselor: false }) // Update parent with new state
+    emit('update');
   } catch (error) {
     console.error('Error unregistering as counselor:', error)
     let apiErrorMessage = 'Failed to unregister as counselor.'

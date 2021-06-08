@@ -1,8 +1,8 @@
 <template>
-  <!-- Use a simpler v-if for the entire modal -->
+  <!-- Use the new computed property to control the modal's visibility -->
   <div
-    v-if="application"
-    class="fixed inset-0 overflow-y-auto"
+    v-if="certificateData"
+    class="fixed inset-0 z-[100] overflow-y-auto"
     aria-labelledby="modal-title"
     role="dialog"
     aria-modal="true"
@@ -17,13 +17,10 @@
       ></div>
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
 
-      <!-- Certificate Container -->
       <div
         class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
       >
-        <!-- Certificate Content -->
         <div id="certificate-content" class="bg-white px-8 pt-8 pb-6 relative min-h-[842px]">
-          <!-- A4 proportions -->
           <!-- Watermark -->
           <div
             class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none"
@@ -33,13 +30,10 @@
 
           <!-- Header Section -->
           <div class="flex justify-between items-start mb-8">
-            <!-- Left Logo -->
             <div class="text-center w-32">
               <img src="@/assets/rgob.png" alt="RGOB Logo" class="h-24 mx-auto" />
               <p class="mt-2 text-sm font-semibold">BQPCA</p>
             </div>
-
-            <!-- Center Title -->
             <div class="text-center flex-1 px-8">
               <h3 class="text-lg font-medium text-gray-900 leading-7">
                 Royal Government of Bhutan<br />
@@ -50,8 +44,6 @@
               </h3>
               <h2 class="text-2xl font-bold text-blue-900 mt-6">CERTIFICATE OF REGISTRATION</h2>
             </div>
-
-            <!-- Right Logo -->
             <div class="text-center w-32">
               <img src="@/assets/mhpc-logo.png" alt="MHPC Logo" class="h-24 mx-auto" />
               <p class="mt-2 text-sm font-semibold">MHPC</p>
@@ -60,16 +52,16 @@
 
           <!-- Main Content -->
           <div class="mt-8 relative">
-            <!-- Certificate Details Grid -->
+            <!-- CHANGED: All instances of 'application' are replaced with 'certificateData' -->
             <div class="grid grid-cols-[200px_1fr] gap-y-4 text-sm px-12">
               <div class="font-semibold">Name:</div>
-              <div>{{ application.full_name }}</div>
+              <div>{{ certificateData.full_name }}</div>
 
               <div class="font-semibold">Citizenship ID No.:</div>
-              <div>{{ application.cid_no }}</div>
+              <div>{{ certificateData.cid_no }}</div>
 
               <div class="font-semibold">Registration No.:</div>
-              <div>{{ application.registration_no }}</div>
+              <div>{{ certificateData.registration_no }}</div>
 
               <div class="font-semibold">Category:</div>
               <div>Practitioner in Modern Medicine</div>
@@ -78,10 +70,10 @@
               <div>Ophthalmologist</div>
 
               <div class="font-semibold">Date of Initial Registration:</div>
-              <div>{{ formatDate(application.registration_date) }}</div>
+              <div>{{ formatDate(certificateData.registration_date) }}</div>
 
               <div class="font-semibold">Registration Expiry Date:</div>
-              <div>{{ formatDate(application.expiry_date) }}</div>
+              <div>{{ formatDate(certificateData.expiry_date) }}</div>
 
               <div class="font-semibold">Registration Status:</div>
               <div>Registered</div>
@@ -91,24 +83,22 @@
 
               <div class="font-semibold">Qualification(s):</div>
               <div class="space-y-1">
-                <div v-for="qual in application.user_qualifications" :key="qual.id">
+                <div v-for="qual in certificateData.user_qualifications" :key="qual.id">
                   {{ qual.qualification_type_display }} | {{ qual.qualification_name_display }} |
                   {{ qual.completion_year }}
                 </div>
               </div>
             </div>
 
-            <!-- Passport Photo -->
             <div class="absolute top-0 right-12">
               <img
-                v-if="application.passport_photo"
-                :src="application.passport_photo"
+                v-if="certificateData.passport_photo"
+                :src="certificateData.passport_photo"
                 alt="Passport Photo"
                 class="h-32 w-32 object-cover rounded-md border-2 border-gray-300 shadow-sm"
               />
             </div>
 
-            <!-- Certificate Text -->
             <div class="mt-8 px-12 space-y-4 text-sm">
               <p>
                 Valid till the expiry date until and unless suspend/revoked or de-registered by the
@@ -121,9 +111,7 @@
               </p>
             </div>
 
-            <!-- Footer Section -->
             <div class="mt-12 px-12 flex justify-between items-end">
-              <!-- Signature Section -->
               <div>
                 <img
                   v-if="directorSignature"
@@ -134,31 +122,23 @@
                 <div class="mt-2 text-sm">
                   <p class="font-medium">{{ directorName }}</p>
                   <p>{{ directorDesignation }}</p>
-                  <p class="mt-1">
-                    Dated: {{ formatDate(application.user_qualifications[0].updated_at) }}
+                  <!-- ADDED: Safety check to prevent crash if user_qualifications is empty -->
+                  <p v-if="certificateData.user_qualifications?.length" class="mt-1">
+                    Dated: {{ formatDate(certificateData.user_qualifications[0].updated_at) }}
                   </p>
                 </div>
               </div>
 
-              <!-- QR Code -->
               <div class="text-center">
                 <vue-qrcode
                   :value="qrCodeData"
-                  :options="{
-                    width: 100,
-                    margin: 1,
-                    color: {
-                      dark: '#000000',
-                      light: '#ffffff',
-                    },
-                  }"
+                  :options="{ width: 100, margin: 1, color: { dark: '#000000', light: '#ffffff' } }"
                   class="border-4 border-gray-200 rounded-md p-2"
                 />
                 <p class="mt-2 text-xs text-gray-600">Scan to verify</p>
               </div>
             </div>
 
-            <!-- Disclaimer -->
             <p class="mt-8 text-sm text-gray-600 text-center px-12">
               The information contained in this certificate reflects the information held by Medical
               and Health Professionals Council as at the above dated.
@@ -166,7 +146,6 @@
           </div>
         </div>
 
-        <!-- Modal Footer -->
         <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-2">
           <button
             type="button"
@@ -195,34 +174,37 @@ import html2pdf from 'html2pdf.js'
 import apiServices from '@/services/services'
 
 const props = defineProps({
-  application: {
+  application: { // This prop still receives the { results: [...] } object
     type: Object,
     default: null,
   },
 })
 
 const emit = defineEmits(['close'])
-const directorName = ref('Dr. Ugyen Tshewang') // Default value
-const directorDesignation = ref('Director') // Default value
-const directorSignature = ref(null) // Reference for the signature URL
+const directorName = ref('Dr. Ugyen Tshewang')
+const directorDesignation = ref('Director')
+const directorSignature = ref(null)
 
-// Fetch director information when component is mounted
+// ADDED: Computed property to safely unwrap the application data
+const certificateData = computed(() => {
+  if (props.application && props.application.results && props.application.results.length > 0) {
+    return props.application.results[0];
+  }
+  return null;
+})
+
 onMounted(async () => {
   try {
     const response = await apiServices.getMhpcMastersESignatures()
     if (response.data && response.data.results && response.data.results.length > 0) {
-      // Get the active director (where status is true) or the first one if none are active
       const activeDirector =
         response.data.results.find((dir) => dir.status === true) || response.data.results[0]
-
-      // Update all director information
       directorName.value = activeDirector.name
       directorDesignation.value = activeDirector.designation
-      directorSignature.value = activeDirector.signature // Update the signature URL
+      directorSignature.value = activeDirector.signature
     }
   } catch (error) {
     console.error('Error fetching director information:', error)
-    // Keep default values if API fails
   }
 })
 
@@ -230,10 +212,11 @@ const closeModal = () => {
   emit('close')
 }
 
+// CHANGED: Use the new 'certificateData' computed property
 const qrCodeData = computed(() => {
   const baseUrl = window.location.origin
-  return props.application
-    ? `${baseUrl}/certification-validity/search?service_type=health_certification&cert_number=${props.application.registration_no}`
+  return certificateData.value
+    ? `${baseUrl}/certification-validity/search?service_type=health_certification&cert_number=${certificateData.value.registration_no}`
     : ''
 })
 
@@ -249,11 +232,13 @@ const formatDate = (dateString) => {
     .replace(/\//g, '-')
 }
 
+// CHANGED: Use the new 'certificateData' computed property
 const downloadCertificate = () => {
+  if (!certificateData.value) return; // Add a guard clause
   const element = document.getElementById('certificate-content')
   const opt = {
     margin: 0,
-    filename: `health_certification_${props.application.registration_no}.pdf`,
+    filename: `health_certification_${certificateData.value.registration_no}.pdf`,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2 },
     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },

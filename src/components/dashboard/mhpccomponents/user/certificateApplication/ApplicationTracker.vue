@@ -89,9 +89,8 @@
     </div>
 
     <CertificateModal
-      :qualification="selectedCertificateData"
+      :application="selectedCertificateData" @close="closeCertificateModal"
       :showModal="showCertificateModal"
-      @close="closeCertificateModal"
     />
 
     <PaymentModal
@@ -106,7 +105,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import apiService from '@/services/services'
-import CertificateModal from './CertificateModal.vue' // Assuming it's in the same directory or adjust path
+import CertificateModal from '@/components/common/MHPC/MHPCCertificateModal.vue' // Assuming it's in the same directory or adjust path
 import PaymentModal from '@/components/common/PaymentModal.vue'
 import PageHeader from '@/components/common/MHPC/PageHeader.vue'
 import TrackerTabs from './TrackerTabs.vue'

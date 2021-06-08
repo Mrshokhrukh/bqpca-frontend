@@ -143,7 +143,7 @@
 
 <script setup>
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 import apiServices from '@/services/services'
 import MHPCCertificateModal from '@/components/common/MHPC/MHPCCertificateModal.vue'
 import PersonalInformation from './applicationDetailsComponents/PersonalInformation.vue'
@@ -206,18 +206,20 @@ const overallStatus = computed(() => {
 })
 
 const refreshApplication = async () => {
-  if (!props.application?.id) return
-  isLoading.value = true // Show loader
+  if (!props.application?.id) return;
+  isLoading.value = true;
   try {
-    const response = await apiServices.getMhpcNewApplication(props.application.id)
-    emit('update', response.data)
-    await nextTick()
+    const response = await apiServices.getMhpcNewApplication(props.application.id);
+
+    // CHANGE: Emit the new, full application object to the parent
+    emit('update', response.data);
+
   } catch (error) {
-    console.error('Error refreshing application:', error)
+    console.error('Error refreshing application:', error);
   } finally {
-    isLoading.value = false // Hide loader
+    isLoading.value = false;
   }
-}
+};
 
 const openCertificateModal = () => {
   isCertificateModalOpen.value = true

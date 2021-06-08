@@ -1131,34 +1131,37 @@ const deleteProviderConfirmed = async () => {
 const fetchProviders = async () => {
   isLoading.value = true
   try {
-    // Assuming getAllUsers fetches all users regardless of role initially
-    const response = await apiService.getAllUsers({ role: 'cme_cpd_provider' }) // Filter by role on API if possible
+    const response = await apiService.getAllUsers();
 
     if (response && response.data && Array.isArray(response.data.results)) {
-      // Filter client-side if API doesn't support role filter
+
       providers.value = response.data.results
-        // .filter((user) => user.role === 'cme_cpd_provider') // Uncomment if API fetches all users
+        // 1. First, keep only users with the 'health_certification' service type.
+        .filter((user) => user.service_type === 'health_certification')
+
+        // 2. From that group, keep only users with the 'cme_cpd_provider' role.
+        .filter((user) => user.role === 'cme_cpd_provider')
+
+        // 3. Finally, format the remaining users for display.
         .map((user) => ({
           ...user,
           full_name: `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''}`
             .replace(/\s+/g, ' ')
-            .trim(), // Combine names
-        }))
+            .trim(),
+        }));
+
     } else {
-      console.error('Unexpected API response structure:', response)
-      providers.value = []
+      console.error('Unexpected API response structure:', response);
+      providers.value = [];
     }
   } catch (error) {
-    console.error('Error fetching providers:', error)
-    toast.error('Failed to load providers. Please try again.')
-    providers.value = [] // Reset on error
+    console.error('Error fetching providers:', error);
+    toast.error('Failed to load providers. Please try again.');
+    providers.value = [];
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
-
-// Notification Methods (assuming they exist or you add them)
-// Removed unused showNotification function to fix compile error.
+};
 
 const closeNotification = () => {
   notification.value.show = false

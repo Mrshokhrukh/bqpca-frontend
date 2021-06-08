@@ -1,6 +1,5 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
-    
     <DOPageHeader
       title="New Applications"
       :description="headerDescription"
@@ -195,7 +194,7 @@
       :isOpen="isModalOpen"
       :application="selectedApplication"
       @close="closeModal"
-      @update="handleUpdate"
+      @update="handleApplicationUpdate"
       :personnel-categories="personnelCategories"
       :personnel-subcategories="personnelSubcategories"
       :sectors="sectors"
@@ -237,7 +236,7 @@ const pendingCount = computed(() => {
       (app) =>
         app.registration_type_name !== 'Renewal' &&
         app.registration_type_name !== 'Additional Qualification' &&
-        app.registration_type_name !== 'Re-Registration',
+        app.registration_type_name !== 'Re-Registration'
     )
     .filter((app) => getStatus(app) === 'Pending').length
 })
@@ -253,7 +252,7 @@ const filteredApplications = computed(() => {
       (app) =>
         app.registration_type_name !== 'Renewal' &&
         app.registration_type_name !== 'Additional Qualification' &&
-        app.registration_type_name !== 'Re-Registration',
+        app.registration_type_name !== 'Re-Registration'
     )
     .filter((app) => {
       if (filterStatus.value && filterStatus.value !== 'all') {
@@ -302,7 +301,7 @@ const getStatus = (app) => {
     (q) =>
       q.application_review_status === 'Regretted' ||
       q.physical_review_status === 'Regretted' ||
-      q.endorsement_decision === 'Regretted',
+      q.endorsement_decision === 'Regretted'
   )
   if (isRegretted) {
     return 'Regretted'
@@ -313,7 +312,7 @@ const getStatus = (app) => {
     (q) =>
       q.application_review_status === 'Approved' &&
       q.physical_review_status === 'Approved' &&
-      q.endorsement_decision === 'Approved',
+      q.endorsement_decision === 'Approved'
   )
   if (allApproved) {
     return 'Approved'
@@ -379,44 +378,65 @@ const fetchApplications = async () => {
 }
 
 const viewDetails = async (application) => {
-  selectedApplication.value = { ...application } // Set basic details first
-  isModalOpen.value = true
-
-  // Asynchronously fetch user details if needed, can be done after modal opens
   try {
-    const response = await apiServices.getAllUsers() // Consider filtering API side if possible
-    const users = response.data?.results || []
-    const matchingUser = users.find((user) => user.cid === application.cid_no)
+    const response = await apiServices.getUserDetails(application.cid_no);
+
+    // --- CHANGE IS HERE ---
+    // The API returns the user object directly, not in a 'results' array.
+    // We check if the returned data has an 'id' to confirm it's a valid user.
+    const matchingUser = response.data?.id ? response.data : null;
+    // --- END OF CHANGE ---
 
     if (matchingUser) {
-      // Merge user details into the selected application object
+      // SUCCESS: The user was found.
       selectedApplication.value = {
-        ...selectedApplication.value,
-        is_counselor: matchingUser.is_counselor || false,
-        userDetails: matchingUser,
-      }
+        ...application, // Original data from the list
+        is_counselor: matchingUser.is_counselor, // The correct value
+        userDetails: matchingUser, // The full user object
+      };
     } else {
+      // This block should NOT run anymore, but is kept as a safeguard.
+      console.warn(`Could not retrieve valid user data for CID: ${application.cid_no}`);
       selectedApplication.value = {
-        ...selectedApplication.value,
-        is_counselor: false, // Default if user not found
+        ...application,
+        is_counselor: false,
         userDetails: null,
-      }
+      };
     }
-  } catch (error) {
-    console.error('Error fetching user details:', error)
-    selectedApplication.value = {
-      ...selectedApplication.value, // Keep existing app data
-      is_counselor: false, // Default on error
-      userDetails: null,
-      fetchError: 'Could not load user details.', // Optionally add error info
-    }
-  }
-}
 
-const handleUpdate = async () => {
-  await fetchApplications()
-  closeModal()
-}
+    // Open the modal with the complete, correct data.
+    isModalOpen.value = true;
+
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    // Handle cases where the API call itself fails (e.g., 404, 500 error)
+    selectedApplication.value = {
+      ...application,
+      is_counselor: false,
+      userDetails: null,
+      fetchError: 'Could not load user details.',
+    };
+    isModalOpen.value = true;
+  }
+};
+
+const handleApplicationUpdate = (updatedApplication) => {
+  // Create a completely new object for selectedApplication to ensure reactivity.
+  const newSelectedApplication = {
+    ...selectedApplication.value,
+    ...updatedApplication
+  };
+  selectedApplication.value = newSelectedApplication;
+
+  // Log to confirm the update is received and processed
+  console.log('%c[Parent Component] Application updated:', 'color: #FFC107;', newSelectedApplication);
+
+  const index = applications.value.findIndex(app => app.id === updatedApplication.id);
+  if (index !== -1) {
+    // Also create a new object for the item in the array
+    applications.value[index] = { ...applications.value[index], ...updatedApplication };
+  }
+};
 
 const closeModal = () => {
   isModalOpen.value = false

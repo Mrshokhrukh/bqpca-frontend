@@ -1,99 +1,215 @@
 <template>
-  <div v-if="application" class="bg-white shadow-lg rounded-xl p-6">
-    <!-- Card Header -->
-    <div class="flex items-center space-x-3 mb-4">
-      <div class="bg-purple-100 p-2 rounded-full">
-        <FolderIcon class="w-5 h-5 text-purple-500" />
+  <div
+    v-if="application"
+    class="bg-white shadow-lg rounded-2xl overflow-hidden border border-gray-200/80"
+  >
+    <div
+      class="p-5 bg-gray-50/70 border-b border-gray-200/80 flex justify-between items-start gap-4"
+    >
+      <div>
+        <h3 class="text-xl font-bold text-gray-800">Certificate of Good Standing</h3>
+        <p class="text-sm text-gray-500 mt-1">
+          Status for {{ application.full_name }} ({{ application.registration_no }})
+        </p>
       </div>
-      <h3 class="font-bold text-gray-800 text-xl">Cogs</h3>
+      <div
+        :class="overallStatus.class"
+        class="text-xs font-bold inline-flex items-center px-3 py-1.5 rounded-full"
+      >
+        <component :is="overallStatus.icon" class="w-4 h-4 mr-1.5" />
+        {{ overallStatus.text }}
+      </div>
     </div>
 
-    <!-- Card Body -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div
-        v-for="(value, key) in displayData"
-        :key="key"
-        class="bg-gray-50 p-4 rounded-lg border border-gray-200"
-      >
-        <div class="text-sm font-medium text-gray-500">{{ key }}</div>
-        <!-- Dynamic Styling for Statuses -->
-        <div
-          v-if="
-            key === 'Review Status' || key === 'Endorsement Decision' || key === 'Payment Complete'
-          "
-          :class="getStatusClass(value)"
-          class="text-base mt-1 font-semibold inline-flex items-center px-3 py-1 rounded-full"
-        >
-          {{ value }}
+    <div class="p-6">
+      <h4 class="text-sm font-semibold text-gray-500 mb-5">Application Progress</h4>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-8">
+        <div v-for="step in statusSteps" :key="step.label" class="flex items-start space-x-4">
+          <div
+            :class="[
+              getStatusInfo(step.value).bgClass,
+              'flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ring-4 ring-opacity-50',
+              getStatusInfo(step.value).ringClass
+            ]"
+          >
+            <component
+              :is="step.icon"
+              class="w-6 h-6"
+              :class="getStatusInfo(step.value).textClass"
+            />
+          </div>
+          <div>
+            <p class="font-bold text-gray-800">{{ step.label }}</p>
+            <p class="text-sm font-medium mt-1" :class="getStatusInfo(step.value).textClass">
+              {{ step.value }}
+            </p>
+          </div>
         </div>
-        <div v-else class="text-base text-gray-900 mt-1">{{ value }}</div>
       </div>
     </div>
+
+    <div v-if="detailsToShow.length > 0" class="p-6 bg-gray-50/70 border-t border-gray-200/80">
+      <h4 class="text-sm font-semibold text-gray-500 mb-4">Additional Details</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div
+          v-for="detail in detailsToShow"
+          :key="detail.label"
+          class="bg-white p-4 rounded-xl border border-gray-200/80 flex items-start space-x-3 hover:border-blue-300 hover:shadow-sm transition-all duration-200"
+        >
+          <div class="mt-1">
+            <component :is="detail.icon" class="w-5 h-5 text-gray-400" />
+          </div>
+          <div>
+            <p class="text-xs font-medium text-gray-500">{{ detail.label }}</p>
+            <p class="text-base font-semibold text-gray-900">{{ detail.value }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="px-6 py-3 bg-gray-100/60 text-xs text-gray-500 flex items-center">
+      <ClockIcon class="w-4 h-4 mr-2" />
+      Last Updated: {{ formatDate(application.updated_at) }}
+    </div>
   </div>
-  <div v-else class="bg-white shadow-lg rounded-xl p-6 text-center text-gray-500">
-    No Data to Display
+
+  <div v-else class="bg-white shadow-lg rounded-xl p-8 text-center border">
+    <div class="flex flex-col items-center text-gray-500">
+      <DocumentMagnifyingGlassIcon class="w-12 h-12 text-gray-400" />
+      <h4 class="font-semibold text-lg mt-3">No Application Data</h4>
+      <p class="text-sm mt-1">Could not find any Certificate of Good Standing application.</p>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { FolderIcon } from '@heroicons/vue/24/outline'
 import { ref, onMounted, computed } from 'vue'
+import {
+  DocumentMagnifyingGlassIcon,
+  CheckBadgeIcon,
+  BanknotesIcon,
+  BuildingOffice2Icon,
+  BuildingLibraryIcon,
+  BriefcaseIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  ExclamationCircleIcon,
+  ArrowPathIcon,
+} from '@heroicons/vue/24/outline'
 import apiService from '@/services/services'
 
-const applications = ref([])
 const application = ref(null)
 
-const fetchApplications = async () => {
+onMounted(async () => {
   try {
     const response = await apiService.getMhpcCogs()
-    applications.value = Array.isArray(response.data.results) ? response.data.results : []
-
-    if (applications.value.length > 0) {
-      application.value = applications.value[0] // Use the first application
+    if (response.data.results && response.data.results.length > 0) {
+      application.value = response.data.results[0]
     } else {
-      console.warn('No applications found')
+      console.warn('COGS: No applications found in the API response.')
     }
   } catch (error) {
-    console.error('Error fetching applications:', error)
-    applications.value = []
-  }
-}
-
-onMounted(fetchApplications)
-
-const displayData = computed(() => {
-  if (!application.value) {
-    return {}
-  }
-  return {
-    'Agency :': application.value.agency.name,
-    'Department :': application.value.department.name,
-    'Workplace :': application.value.workplace.name,
-    'Review Status': application.value.review_status,
-    'Endorsement Decision': application.value.endorsement_decision,
-    'Payment Complete': application.value.is_payment_complete ? 'Yes' : 'No',
+    console.error('Error fetching COGS application:', error)
   }
 })
 
-// Helper function to determine status colors
-const getStatusClass = (status) => {
-  switch (status) {
-    case 'Pending':
-      return 'bg-yellow-100 text-yellow-800' // Yellow for pending
-    case 'Approved':
-      return 'bg-green-100 text-green-800' // Green for approved
-    case 'Regretted':
-      return 'bg-red-100 text-red-800' // Red for regretted
-    case 'Yes':
-      return 'bg-green-100 text-green-800' // Green for Yes
-    case 'No':
-      return 'bg-red-100 text-red-800' // Red for No
+const statusSteps = computed(() => {
+  if (!application.value) return []
+  return [
+    {
+      label: 'Application Review',
+      value: application.value.review_status,
+      icon: DocumentMagnifyingGlassIcon,
+    },
+    {
+      label: 'Endorsement',
+      value: application.value.endorsement_decision,
+      icon: CheckBadgeIcon,
+    },
+    {
+      label: 'Payment',
+      value: application.value.is_payment_complete ? 'Complete' : 'Pending',
+      icon: BanknotesIcon,
+    },
+  ]
+})
+
+const additionalDetails = computed(() => {
+  if (!application.value) return []
+  return [
+    { label: 'Agency', value: application.value.agency, icon: BuildingOffice2Icon },
+    { label: 'Department', value: application.value.department, icon: BuildingLibraryIcon },
+    { label: 'Workplace', value: application.value.workplace, icon: BriefcaseIcon },
+  ]
+})
+
+// A new computed property to filter out details that are null or empty
+const detailsToShow = computed(() => {
+  return additionalDetails.value.filter((detail) => detail.value)
+})
+
+const getStatusInfo = (status) => {
+  switch (String(status).toLowerCase()) {
+    case 'approved':
+    case 'complete':
+      return {
+        textClass: 'text-green-700',
+        bgClass: 'bg-green-100',
+        ringClass: 'ring-green-200',
+      }
+    case 'pending':
+      return {
+        textClass: 'text-yellow-700',
+        bgClass: 'bg-yellow-100',
+        ringClass: 'ring-yellow-200',
+      }
+    case 'regretted':
+    case 'rejected':
+      return {
+        textClass: 'text-red-700',
+        bgClass: 'bg-red-100',
+        ringClass: 'ring-red-200',
+      }
     default:
-      return 'bg-gray-100 text-gray-800' // Default color
+      return {
+        textClass: 'text-gray-700',
+        bgClass: 'bg-gray-100',
+        ringClass: 'ring-gray-200',
+      }
   }
 }
-</script>
 
-<style scoped>
-/* No scoped styles needed, everything is handled by Tailwind */
-</style>
+const overallStatus = computed(() => {
+  if (!application.value)
+    return { text: 'Loading', class: 'bg-gray-200 text-gray-800', icon: ArrowPathIcon }
+
+  const app = application.value
+  if (app.review_status === 'Regretted' || app.endorsement_decision === 'Regretted') {
+    return { text: 'Regretted', class: 'bg-red-100 text-red-800', icon: XCircleIcon }
+  }
+  if (app.endorsement_decision === 'Approved' && app.is_payment_complete) {
+    return {
+      text: 'Approved & Complete',
+      class: 'bg-green-100 text-green-800',
+      icon: CheckCircleIcon,
+    }
+  }
+  return {
+    text: 'In Progress',
+    class: 'bg-yellow-100 text-yellow-800',
+    icon: ExclamationCircleIcon,
+  }
+})
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+  return new Date(dateString).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+</script>
