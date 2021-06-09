@@ -246,8 +246,8 @@
               <select v-model="localFormData.nationality"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm">
                 <option value="">SELECT NATIONALITY</option>
-                <option v-for="country in countries" :key="country" :value="country">
-                  {{ country }}
+                <option v-for="country in countries" :key="country.code" :value="country.name">
+                  {{ country.name }}
                 </option>
               </select>
               <span v-if="errors.nationality" class="text-sm text-red-500 mt-1">{{
@@ -260,13 +260,13 @@
               <select v-model="localFormData.country"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm">
                 <option value="">SELECT COUNTRY</option>
-                <option v-for="country in countries" :key="country" :value="country">
-                  {{ country }}
+                <option v-for="country in countries" :key="country.code" :value="country.name">
+                  {{ country.name }}
                 </option>
               </select>
               <span v-if="errors.country" class="text-sm text-red-500 mt-1">{{
                 errors.country
-              }}</span>
+                }}</span>
             </div>
 
             <div class="col-span-1">
