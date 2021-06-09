@@ -6,6 +6,7 @@
       <template v-if="!isLoading">
         <FirstDashboardState v-if="dashboardState.isFirstState" :message="dashboardState.message" />
         <EmptyDashboardState v-else-if="dashboardState.isPending" :qualification-info="dashboardState.qualificationInfo"
+          :message="dashboardState.message"
           :key="dashboardState.qualificationInfo?.qualification?.id + (dashboardState.qualificationInfo?.qualification?.updated_at || '')" />
         <template v-else-if="dashboardState.isApproved">
           <!-- Removed :renewal-message prop since ProfileHeader now calculates its own -->
@@ -62,7 +63,6 @@ const {
   cpdCredits,
   licenseExpiryDate,
   licenseStatus,
-  // Removed renewalMessage since ProfileHeader calculates its own
   recentActivities,
   upcomingDeadlines,
   selectedApplications,
@@ -74,6 +74,50 @@ const {
 
 // Reactive variable to track engineering program enablement (similar to DPR in MHPC)
 const isEngineeringProgramEnabled = ref(false)
+
+// Helper function to determine the status message based on qualification state
+const getQualificationStatusMessage = (qualification) => {
+  const appReviewStatus = qualification.application_review_status
+  const physicalReviewStatus = qualification.physical_review_status
+  const endorsementDecision = qualification.endorsement_decision
+  const paymentStatus = qualification.payment_status
+
+  // Check for rejections/regrets first
+  if (appReviewStatus === 'Rejected' || appReviewStatus === 'Regretted') {
+    return "Your application review has been rejected. Please check the rejection reason and consider reapplying with corrected information."
+  }
+
+  if (physicalReviewStatus === 'Rejected' || physicalReviewStatus === 'Regretted') {
+    return "Your physical verification has been regretted. Please check the remarks and contact the office for further guidance."
+  }
+
+  if (endorsementDecision === 'Rejected' || endorsementDecision === 'Regretted') {
+    return "Your endorsement has been regretted. Please review the feedback provided and contact support if needed."
+  }
+
+  // Check progression states for approved/pending
+  if (appReviewStatus === 'Approved' && (physicalReviewStatus === 'Pending' || !physicalReviewStatus)) {
+    return "Congratulations! Your application review has been approved. Please come for physical verification with all required documents."
+  }
+
+  if (appReviewStatus === 'Approved' && physicalReviewStatus === 'Approved' &&
+    (paymentStatus === 'pending' || !paymentStatus || paymentStatus === 'failed')) {
+    return "Great! Your physical verification is complete. Please proceed to the application tracker to make payment and receive your certificate."
+  }
+
+  if (appReviewStatus === 'Approved' && physicalReviewStatus === 'Approved' &&
+    paymentStatus === 'completed' && endorsementDecision === 'Pending') {
+    return "Payment completed successfully! Your application is now under final endorsement review."
+  }
+
+  if (appReviewStatus === 'Approved' && physicalReviewStatus === 'Approved' &&
+    paymentStatus === 'processing_payment') {
+    return "Your payment is being processed. Once confirmed, your application will proceed to final endorsement."
+  }
+
+  // Default pending state
+  return "Your application is under review. We will notify you once there is an update."
+}
 
 // Advanced dashboard state logic similar to MHPC
 const dashboardState = computed(() => {
@@ -113,14 +157,19 @@ const dashboardState = computed(() => {
 
   // Check for pending primary qualifications
   const qualificationInfo = applications.value.reduce((acc, app) => {
-    const primaryQual = app.user_qualifications?.find(q => q.is_primary_qualification && q.endorsement_decision !== 'Approved')
+    const primaryQual = app.user_qualifications?.find(q =>
+      q.is_primary_qualification && q.endorsement_decision !== 'Approved'
+    )
     return acc || (primaryQual ? { application: app, qualification: primaryQual } : null)
   }, null)
 
   if (qualificationInfo) {
+    const message = getQualificationStatusMessage(qualificationInfo.qualification)
+
     return {
       isPending: true,
-      qualificationInfo
+      qualificationInfo,
+      message
     }
   }
 
