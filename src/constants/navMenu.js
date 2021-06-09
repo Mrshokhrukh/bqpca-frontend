@@ -1107,7 +1107,17 @@ const serviceSpecificMenuItems = {
           const store = useEngineeringCertificationStore()
           const items = []
 
-          // Show registration for new users
+          console.log('Building certification menu. Store state:', {
+            registration: store.visibleMenus.certificationSubMenus.registration,
+            myApplications: store.visibleMenus.certificationSubMenus.myApplications,
+            renewal: store.visibleMenus.certificationSubMenus.renewal,
+            additionalQualification:
+              store.visibleMenus.certificationSubMenus.additionalQualification,
+            hasSubmittedApplication: store.hasSubmittedApplication,
+            hasApprovedQualification: store.hasApprovedQualification,
+          })
+
+          // Show Registration only for new users (before any application submission)
           if (store.visibleMenus.certificationSubMenus.registration) {
             items.push({
               name: 'Registration',
@@ -1115,7 +1125,7 @@ const serviceSpecificMenuItems = {
             })
           }
 
-          // Show applications if user has submitted any
+          // Show My Applications if user has submitted any application
           if (store.visibleMenus.certificationSubMenus.myApplications) {
             items.push({
               name: 'My Applications',
@@ -1123,7 +1133,7 @@ const serviceSpecificMenuItems = {
             })
           }
 
-          // Show renewal option if within renewal period (including expired)
+          // Show Renewal option if within renewal period (including expired)
           if (store.visibleMenus.certificationSubMenus.renewal) {
             const renewalItem = {
               name: 'Renewal',
@@ -1141,7 +1151,7 @@ const serviceSpecificMenuItems = {
             items.push(renewalItem)
           }
 
-          // Show additional qualification only for users with active (non-expired) qualifications
+          // Show Additional Qualification only for users with active (non-expired) qualifications
           if (store.visibleMenus.certificationSubMenus.additionalQualification) {
             items.push({
               name: 'Additional Qualification',
@@ -1149,6 +1159,7 @@ const serviceSpecificMenuItems = {
             })
           }
 
+          console.log('Built certification menu items:', items)
           return items
         },
       },

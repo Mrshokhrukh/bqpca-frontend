@@ -1,4 +1,4 @@
-// Updated engineeringNavigationStore.js with simple expiry logic
+// Fixed engineeringNavigationStore.js with improved logic
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
@@ -13,6 +13,7 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
   })
   const isLoading = ref(false)
   const error = ref(null)
+  const initialized = ref(false)
 
   // Getters (computed)
   const currentUserApplication = computed(() => {
@@ -33,7 +34,11 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
   })
 
   const hasSubmittedApplication = computed(() => {
-    if (!applicationDetails.value?.results || applicationDetails.value.results.length === 0) {
+    if (
+      !initialized.value ||
+      !applicationDetails.value?.results ||
+      applicationDetails.value.results.length === 0
+    ) {
       return false
     }
 
@@ -43,35 +48,48 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
     }
 
     const userCid = authStore.user.cid
+
+    // Check if user has any applications with qualifications
     const applicationsWithQualifications = applicationDetails.value.results.filter(
       (app) =>
         app.cid_no === userCid && app.user_qualifications && app.user_qualifications.length > 0,
     )
 
-    return applicationsWithQualifications.length > 0
+    const hasSubmitted = applicationsWithQualifications.length > 0
+    console.log(
+      'hasSubmittedApplication:',
+      hasSubmitted,
+      'Applications found:',
+      applicationsWithQualifications.length,
+    )
+
+    return hasSubmitted
   })
 
   const hasApprovedQualification = computed(() => {
     const authStore = useAuthStore()
-    if (!applicationDetails.value?.results || !authStore?.user?.cid) {
+    if (!initialized.value || !applicationDetails.value?.results || !authStore?.user?.cid) {
       return false
     }
 
     const userCid = authStore.user.cid
 
-    return applicationDetails.value.results
+    const hasApproved = applicationDetails.value.results
       .filter((app) => app.cid_no === userCid)
       .some(
         (app) =>
           app.user_qualifications &&
           app.user_qualifications.some((qual) => qual.endorsement_decision === 'Approved'),
       )
+
+    console.log('hasApprovedQualification:', hasApproved)
+    return hasApproved
   })
 
-  // NEW: Check if qualification has expired
+  // Check if qualification has expired
   const hasExpiredQualification = computed(() => {
     const authStore = useAuthStore()
-    if (!applicationDetails.value?.results || !authStore?.user?.cid) {
+    if (!initialized.value || !applicationDetails.value?.results || !authStore?.user?.cid) {
       return false
     }
 
@@ -89,16 +107,24 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
     }
 
     // Check if ANY approved qualification has expired
-    return approvedQualifications.some((qual) => {
+    const hasExpired = approvedQualifications.some((qual) => {
       if (!qual.expiry_date) return false
       const expiryDate = dayjs(qual.expiry_date)
       return today.isAfter(expiryDate)
     })
+
+    console.log('hasExpiredQualification:', hasExpired)
+    return hasExpired
   })
 
   const isRenewalPeriod = computed(() => {
     const authStore = useAuthStore()
-    if (!applicationDetails.value?.results || !authStore?.user?.cid || !hasApprovedQualification.value) {
+    if (
+      !initialized.value ||
+      !applicationDetails.value?.results ||
+      !authStore?.user?.cid ||
+      !hasApprovedQualification.value
+    ) {
       return false
     }
 
@@ -123,7 +149,10 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
     const monthsToExpiry = expiryDate.diff(today, 'month', true)
 
     // Within 3 months of expiry but not yet expired, OR already expired (allow renewal for expired)
-    return monthsToExpiry <= 3
+    const inRenewalPeriod = monthsToExpiry <= 3
+    console.log('isRenewalPeriod:', inRenewalPeriod, 'Months to expiry:', monthsToExpiry)
+
+    return inRenewalPeriod
   })
 
   const hasPendingRenewalApplication = computed(() => {
@@ -133,8 +162,17 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
   })
 
   const visibleMenus = computed(() => {
-    // If no application details have been fetched yet, show default menu
-    if (isLoading.value) {
+    console.log('Computing visibleMenus:', {
+      initialized: initialized.value,
+      isLoading: isLoading.value,
+      hasSubmittedApplication: hasSubmittedApplication.value,
+      hasApprovedQualification: hasApprovedQualification.value,
+      hasExpiredQualification: hasExpiredQualification.value,
+      isRenewalPeriod: isRenewalPeriod.value,
+    })
+
+    // If not initialized yet, show loading state with basic menu
+    if (!initialized.value || isLoading.value) {
       return {
         baseMenus: {
           dashboard: true,
@@ -164,14 +202,14 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
 
       let certificationSubMenus = {
         registration: false, // Hide registration after application submitted
-        myApplications: true,
+        myApplications: true, // Show my applications
         renewal: false,
         additionalQualification: false,
       }
 
       // If any qualification is approved, show additional menus
       if (hasApprovedQualification.value) {
-        // If qualification has expired, disable CPD and CoGS management
+        // If qualification is NOT expired, enable CPD, CoGS, and additional qualification
         if (!hasExpiredQualification.value) {
           baseMenus.cpdManagement = true
           baseMenus.cogsManagement = true
@@ -179,15 +217,20 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
         }
 
         // Show renewal option if within renewal period (including expired qualifications)
-        if (isRenewalPeriod.value && !hasPendingRenewalApplication.value) {
+        if (isRenewalPeriod.value) {
           certificationSubMenus.renewal = true
         }
       }
 
+      console.log('User has submitted application - returning menus:', {
+        baseMenus,
+        certificationSubMenus,
+      })
       return { baseMenus, certificationSubMenus }
     }
 
     // Default state - before any application submission
+    console.log('Default state - no application submitted')
     return {
       baseMenus: {
         dashboard: true,
@@ -197,7 +240,7 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
         profile: true,
       },
       certificationSubMenus: {
-        registration: true,
+        registration: true, // Show registration for new users
         myApplications: false,
         renewal: false,
         additionalQualification: false,
@@ -216,16 +259,24 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
       if (!authStore?.user?.cid) {
         console.warn('User CID not available for fetching applications')
         applicationDetails.value = { results: [] }
+        initialized.value = true
         return
       }
 
+      console.log('Fetching application details for CID:', authStore.user.cid)
       const response = await apiServices.getEpcFullApplicationListByCid(authStore.user.cid)
 
       if (response?.data) {
         applicationDetails.value = response.data
         console.log('Fetched application details:', applicationDetails.value)
-        
-        // Log expiry status for debugging
+
+        // Log status for debugging
+        if (hasSubmittedApplication.value) {
+          console.log('User has submitted application(s)')
+        }
+        if (hasApprovedQualification.value) {
+          console.log('User has approved qualification(s)')
+        }
         if (hasExpiredQualification.value) {
           console.log('User has expired qualification(s) - CPD and CoGS disabled')
         }
@@ -241,12 +292,13 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
       applicationDetails.value = { results: [] }
     } finally {
       isLoading.value = false
+      initialized.value = true
     }
   }
 
   const initialize = async () => {
     const authStore = useAuthStore()
-    if (authStore?.isAuthenticated) {
+    if (authStore?.isAuthenticated && !initialized.value) {
       await fetchApplicationDetails()
     }
   }
@@ -255,6 +307,13 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
     applicationDetails.value = { results: [] }
     isLoading.value = false
     error.value = null
+    initialized.value = false
+  }
+
+  // Force refresh method to manually trigger menu updates
+  const refreshMenuState = async () => {
+    console.log('Manually refreshing menu state...')
+    await fetchApplicationDetails()
   }
 
   return {
@@ -262,13 +321,14 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
     applicationDetails,
     isLoading,
     error,
+    initialized,
 
     // Getters
     currentUserApplication,
     hasApplication,
     hasSubmittedApplication,
     hasApprovedQualification,
-    hasExpiredQualification, // NEW
+    hasExpiredQualification,
     isRenewalPeriod,
     hasPendingRenewalApplication,
     visibleMenus,
@@ -277,5 +337,6 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
     fetchApplicationDetails,
     initialize,
     resetStore,
+    refreshMenuState,
   }
 })
