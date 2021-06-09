@@ -53,8 +53,8 @@
                 <span
                   class="px-4 py-1 rounded-full text-sm font-medium inline-flex items-center justify-center w-fit mx-auto md:mx-0"
                   :class="isApplicationActive(application)
-                      ? 'bg-green-100 text-green-800 border border-green-200'
-                      : 'bg-red-100 text-red-800 border border-red-200'
+                    ? 'bg-green-100 text-green-800 border border-green-200'
+                    : 'bg-red-100 text-red-800 border border-red-200'
                     ">
                   <span class="w-2 h-2 rounded-full mr-1.5"
                     :class="isApplicationActive(application) ? 'bg-green-500' : 'bg-red-500'"></span>
@@ -148,18 +148,16 @@
                   <div class="flex flex-col sm:flex-row items-center">
                     <!-- Application Review -->
                     <div class="flex flex-col items-center mb-4 sm:mb-0">
-                      <span class="w-10 h-10 rounded-full flex items-center justify-center shadow-md" :class="[
-                        qualification.application_review_status === 'Approved'
-                          ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
-                          : qualification.application_review_status === 'Rejected'
-                            ? 'bg-red-100 text-red-700 ring-1 ring-red-200'
-                            : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200',
-                      ]">
-                        <CheckCircle v-if="qualification.application_review_status === 'Approved'" class="w-5 h-5" />
-                        <XCircle v-else-if="qualification.application_review_status === 'Rejected'" class="w-5 h-5" />
+                      <span class="w-10 h-10 rounded-full flex items-center justify-center shadow-md"
+                        :class="getStatusClasses(qualification.application_review_status)">
+                        <CheckCircle v-if="isStatusApproved(qualification.application_review_status)" class="w-5 h-5" />
+                        <XCircle v-else-if="isStatusRejected(qualification.application_review_status)"
+                          class="w-5 h-5" />
                         <Clock v-else class="w-5 h-5" />
                       </span>
                       <span class="text-xs font-medium mt-2 text-gray-700">Review</span>
+                      <span class="text-xs text-gray-500 mt-1">{{ getStatusText(qualification.application_review_status)
+                      }}</span>
                     </div>
 
                     <!-- Connecting Line -->
@@ -168,18 +166,15 @@
 
                     <!-- Physical Verification -->
                     <div class="flex flex-col items-center mb-4 sm:mb-0">
-                      <span class="w-10 h-10 rounded-full flex items-center justify-center shadow-md" :class="[
-                        qualification.physical_review_status === 'Approved'
-                          ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
-                          : qualification.physical_review_status === 'Rejected'
-                            ? 'bg-red-100 text-red-700 ring-1 ring-red-200'
-                            : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200',
-                      ]">
-                        <CheckCircle v-if="qualification.physical_review_status === 'Approved'" class="w-5 h-5" />
-                        <XCircle v-else-if="qualification.physical_review_status === 'Rejected'" class="w-5 h-5" />
+                      <span class="w-10 h-10 rounded-full flex items-center justify-center shadow-md"
+                        :class="getStatusClasses(qualification.physical_review_status)">
+                        <CheckCircle v-if="isStatusApproved(qualification.physical_review_status)" class="w-5 h-5" />
+                        <XCircle v-else-if="isStatusRejected(qualification.physical_review_status)" class="w-5 h-5" />
                         <Clock v-else class="w-5 h-5" />
                       </span>
                       <span class="text-xs font-medium mt-2 text-gray-700">Verify</span>
+                      <span class="text-xs text-gray-500 mt-1">{{ getStatusText(qualification.physical_review_status)
+                      }}</span>
                     </div>
 
                     <!-- Connecting Line -->
@@ -188,21 +183,15 @@
 
                     <!-- Payment -->
                     <div class="flex flex-col items-center mb-4 sm:mb-0">
-                      <span class="w-10 h-10 rounded-full flex items-center justify-center shadow-md" :class="{
-                        'bg-green-100 text-green-700 ring-1 ring-green-200':
-                          qualification.payment_status === 'completed',
-                        'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200':
-                          qualification.payment_status === 'processing_payment',
-                        'bg-red-100 text-red-700 ring-1 ring-red-200':
-                          qualification.payment_status === 'failed',
-                        'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200':
-                          qualification.payment_status === 'pending',
-                      }">
+                      <span class="w-10 h-10 rounded-full flex items-center justify-center shadow-md"
+                        :class="getPaymentStatusClasses(qualification.payment_status)">
                         <CheckCircle v-if="qualification.payment_status === 'completed'" class="w-5 h-5" />
                         <XCircle v-else-if="qualification.payment_status === 'failed'" class="w-5 h-5" />
                         <Clock v-else class="w-5 h-5" />
                       </span>
                       <span class="text-xs font-medium mt-2 text-gray-700">Payment</span>
+                      <span class="text-xs text-gray-500 mt-1">{{ getPaymentStatusText(qualification.payment_status)
+                      }}</span>
                     </div>
 
                     <!-- Connecting Line -->
@@ -211,18 +200,15 @@
 
                     <!-- Endorsement -->
                     <div class="flex flex-col items-center">
-                      <span class="w-10 h-10 rounded-full flex items-center justify-center shadow-md" :class="[
-                        qualification.endorsement_decision === 'Approved'
-                          ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
-                          : qualification.endorsement_decision === 'Rejected'
-                            ? 'bg-red-100 text-red-700 ring-1 ring-red-200'
-                            : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200',
-                      ]">
-                        <CheckCircle v-if="qualification.endorsement_decision === 'Approved'" class="w-5 h-5" />
-                        <XCircle v-else-if="qualification.endorsement_decision === 'Rejected'" class="w-5 h-5" />
+                      <span class="w-10 h-10 rounded-full flex items-center justify-center shadow-md"
+                        :class="getStatusClasses(qualification.endorsement_decision)">
+                        <CheckCircle v-if="isStatusApproved(qualification.endorsement_decision)" class="w-5 h-5" />
+                        <XCircle v-else-if="isStatusRejected(qualification.endorsement_decision)" class="w-5 h-5" />
                         <Clock v-else class="w-5 h-5" />
                       </span>
                       <span class="text-xs font-medium mt-2 text-gray-700">Endorse</span>
+                      <span class="text-xs text-gray-500 mt-1">{{ getStatusText(qualification.endorsement_decision)
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -285,25 +271,8 @@
                       <p class="text-sm font-medium text-teal-700">Payment Status</p>
                       <div class="flex items-center space-x-2 mt-2">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium shadow-sm"
-                          :class="{
-                            'bg-green-100 text-green-800 border border-green-200':
-                              qualification.payment_status === 'completed',
-                            'bg-red-100 text-red-800 border border-red-200':
-                              qualification.payment_status === 'failed',
-                            'bg-yellow-100 text-yellow-800 border border-yellow-200':
-                              qualification.payment_status === 'processing_payment', // Correct Order
-                            'bg-yellow-100 text-yellow-800 border border-yellow-200':
-                              qualification.payment_status === 'pending', // Correct Order
-                          }">
-                          {{
-                            qualification.payment_status === 'completed'
-                              ? 'Paid'
-                              : qualification.payment_status === 'processing_payment'
-                                ? 'Processing'
-                                : qualification.payment_status === 'failed'
-                                  ? 'Failed'
-                                  : 'Pending'
-                          }}
+                          :class="getPaymentStatusClasses(qualification.payment_status)">
+                          {{ getPaymentStatusText(qualification.payment_status) }}
                         </span>
                         <span v-if="qualification.payment_id" class="text-xs text-gray-500">
                           #{{ qualification.payment_id }}
@@ -314,6 +283,7 @@
                 </div>
               </div>
 
+              <!-- Payment Button -->
               <button v-if="
                 qualification.physical_review_status === 'Approved' &&
                 qualification.endorsement_decision === 'Pending' &&
@@ -329,6 +299,53 @@
                 <CreditCard class="w-4 h-4 mr-2" />
                 <span>{{ getPaymentButtonText(application, qualification) }}</span>
               </button>
+
+              <!-- Show Rejection/Regret Reasons -->
+              <div v-if="hasRejectionReasons(qualification)" class="mt-6 space-y-3">
+                <!-- Application Review Rejection -->
+                <div
+                  v-if="isStatusRejected(qualification.application_review_status) && qualification.application_review_remark"
+                  class="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div class="flex items-start space-x-3">
+                    <div class="p-1 bg-red-100 rounded">
+                      <XCircle class="w-4 h-4 text-red-600" />
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-red-800">Application Review - Rejected</p>
+                      <p class="text-sm text-red-700 mt-1">{{ qualification.application_review_remark }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Physical Review Rejection -->
+                <div
+                  v-if="isStatusRejected(qualification.physical_review_status) && qualification.physical_review_remark"
+                  class="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div class="flex items-start space-x-3">
+                    <div class="p-1 bg-red-100 rounded">
+                      <XCircle class="w-4 h-4 text-red-600" />
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-red-800">Physical Verification - Regretted</p>
+                      <p class="text-sm text-red-700 mt-1">{{ qualification.physical_review_remark }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Endorsement Rejection -->
+                <div v-if="isStatusRejected(qualification.endorsement_decision) && qualification.endorsement_remarks"
+                  class="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div class="flex items-start space-x-3">
+                    <div class="p-1 bg-red-100 rounded">
+                      <XCircle class="w-4 h-4 text-red-600" />
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-red-800">Endorsement - Regretted</p>
+                      <p class="text-sm text-red-700 mt-1">{{ qualification.endorsement_remarks }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -375,7 +392,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue' // Import onMounted and computed
+import { ref, onMounted, computed } from 'vue'
 import apiService from '@/services/services'
 import CertificateModal from './CertificateModal.vue'
 import PaymentModal from '@/components/common/PaymentModal.vue'
@@ -409,7 +426,7 @@ const hasSearched = ref(false)
 const apiError = ref(false)
 const showCertificateModal = ref(false)
 const selectedApplication = ref(null)
-const paymentModal = ref(null) // Ref for PaymentModal
+const paymentModal = ref(null)
 const selectedQualification = ref(null)
 
 // Computed property for CID
@@ -417,10 +434,87 @@ const userCid = computed(() => {
   return authStore.user?.cid
 })
 
-// Methods
+// Status checking helper functions
+const isStatusApproved = (status) => {
+  return status === 'Approved'
+}
 
+const isStatusRejected = (status) => {
+  return status === 'Rejected' || status === 'Regretted'
+}
+
+const isStatusPending = (status) => {
+  return status === 'Pending' || !status || status === ''
+}
+
+// Get status classes for icons and backgrounds
+const getStatusClasses = (status) => {
+  if (isStatusApproved(status)) {
+    return 'bg-green-100 text-green-700 ring-1 ring-green-200'
+  } else if (isStatusRejected(status)) {
+    return 'bg-red-100 text-red-700 ring-1 ring-red-200'
+  } else {
+    return 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200'
+  }
+}
+
+// Get payment status classes
+const getPaymentStatusClasses = (paymentStatus) => {
+  switch (paymentStatus) {
+    case 'completed':
+      return 'bg-green-100 text-green-800 border border-green-200'
+    case 'failed':
+      return 'bg-red-100 text-red-800 border border-red-200'
+    case 'processing_payment':
+      return 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+    case 'pending':
+    default:
+      return 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+  }
+}
+
+// Get readable status text
+const getStatusText = (status) => {
+  switch (status) {
+    case 'Approved':
+      return 'Approved'
+    case 'Rejected':
+      return 'Rejected'
+    case 'Regretted':
+      return 'Regretted'
+    case 'Pending':
+      return 'Pending'
+    default:
+      return 'Pending'
+  }
+}
+
+// Get readable payment status text
+const getPaymentStatusText = (paymentStatus) => {
+  switch (paymentStatus) {
+    case 'completed':
+      return 'Paid'
+    case 'processing_payment':
+      return 'Processing'
+    case 'failed':
+      return 'Failed'
+    case 'pending':
+    default:
+      return 'Pending'
+  }
+}
+
+// Check if qualification has any rejection reasons to show
+const hasRejectionReasons = (qualification) => {
+  return (
+    (isStatusRejected(qualification.application_review_status) && qualification.application_review_remark) ||
+    (isStatusRejected(qualification.physical_review_status) && qualification.physical_review_remark) ||
+    (isStatusRejected(qualification.endorsement_decision) && qualification.endorsement_remarks)
+  )
+}
+
+// Methods
 const getPaymentButtonText = (application, qualification) => {
-  //check for qualification first, if no qualification is passed, it checks the application
   if (qualification && qualification.payment_status === 'failed') {
     return 'Re-process Payment'
   } else {
@@ -448,7 +542,7 @@ const fetchApplications = async () => {
     console.error('Error fetching applications:', error)
     applications.value = []
     apiError.value = true
-    toast.error('Failed to load application data. Please check your connection or try again later.') // Show a user-friendly error
+    toast.error('Failed to load application data. Please check your connection or try again later.')
   } finally {
     isLoading.value = false
   }
@@ -471,7 +565,6 @@ const closeCertificateModal = () => {
 }
 
 const initiatePayment = (application, qualification) => {
-  // Directly use the passed qualification
   if (qualification) {
     selectedQualification.value = qualification
     paymentModal.value.openModal()
@@ -479,6 +572,7 @@ const initiatePayment = (application, qualification) => {
     toast.error('No pending payment found for this qualification.')
   }
 }
+
 const shouldShowViewCertificateButton = (application) => {
   return application.user_qualifications.some(
     (q) => q.is_primary_qualification && q.endorsement_decision === 'Approved',
@@ -486,10 +580,10 @@ const shouldShowViewCertificateButton = (application) => {
 }
 
 const closePaymentModal = () => {
-  selectedQualification.value = null // Reset on close
+  selectedQualification.value = null
 }
 
-// New method to handle payment completion
+// Handle payment completion
 const handlePaymentCompleted = async (paymentData) => {
   if (!selectedQualification.value) {
     toast.error('No qualification selected for payment.')
@@ -498,9 +592,8 @@ const handlePaymentCompleted = async (paymentData) => {
 
   const qualificationId = selectedQualification.value.id
   const paymentId = paymentData.paymentHash
-  const user = authStore.user // Get user details for convenience
+  const user = authStore.user
 
-  // Check if required user data exists
   if (!user || !user.contact_number || !user.email || !user.cid) {
     toast.error('Missing user information. Please update your profile.')
     return
@@ -509,7 +602,7 @@ const handlePaymentCompleted = async (paymentData) => {
   try {
     isLoading.value = true
 
-    // 1. Initiate Payment (Actual payment processing) - Using FormData
+    // 1. Initiate Payment
     const paymentInitiationFormData = new FormData()
     paymentInitiationFormData.append('refNo', paymentId)
     paymentInitiationFormData.append('serviceCode', '100253')
@@ -528,14 +621,14 @@ const handlePaymentCompleted = async (paymentData) => {
     // Make the payment *before* updating the qualification
     await apiService.makePayment(paymentInitiationFormData)
 
-    // 2. Update MHPC Qualification (payment_id and status) - Using FormData
+    // 2. Update EPC Qualification (payment_id and status)
     const updateFormData = new FormData()
     updateFormData.append('payment_id', paymentId)
     updateFormData.append('payment_status', 'processing_payment')
 
-    await apiService.patchMhpcNewQualification(qualificationId, updateFormData)
+    await apiService.patchEpcNewQualification(qualificationId, updateFormData)
 
-    // 3. Local state update (optional)
+    // 3. Local state update
     selectedQualification.value.payment_id = paymentId
     selectedQualification.value.payment_status = 'processing_payment'
 
@@ -573,7 +666,7 @@ onMounted(() => {
   } else {
     console.warn('User CID not available.')
     toast.warning('Please log in to view your application status.')
-    apiError.value = true // Optionally set an error state
+    apiError.value = true
   }
 })
 </script>
@@ -584,13 +677,11 @@ onMounted(() => {
   0%,
   100% {
     border-color: rgba(20, 184, 166, 0.3);
-    /* Teal with opacity */
     transform: scale(1);
   }
 
   50% {
     border-color: rgba(6, 182, 212, 0.6);
-    /* Cyan with higher opacity */
     transform: scale(1.05);
   }
 }
@@ -598,6 +689,5 @@ onMounted(() => {
 .animate-border-pulse {
   animation: border-pulse 2s ease-in-out infinite;
   border-radius: 0.5rem;
-  /* Match the button's rounded-lg */
 }
 </style>
