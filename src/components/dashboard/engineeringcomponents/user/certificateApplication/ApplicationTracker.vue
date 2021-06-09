@@ -443,9 +443,9 @@ const isStatusRejected = (status) => {
   return status === 'Rejected' || status === 'Regretted'
 }
 
-const isStatusPending = (status) => {
-  return status === 'Pending' || !status || status === ''
-}
+// const isStatusPending = (status) => {
+//   return status === 'Pending' || !status || status === ''
+// }
 
 // Get status classes for icons and backgrounds
 const getStatusClasses = (status) => {
