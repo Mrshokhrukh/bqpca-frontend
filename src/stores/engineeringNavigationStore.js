@@ -207,13 +207,16 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
         additionalQualification: false,
       }
 
+      // Always show additional qualification for users who have submitted applications
+      // This allows them to add more qualifications or resubmit if they forgot documents
+      certificationSubMenus.additionalQualification = true
+
       // If any qualification is approved, show additional menus
       if (hasApprovedQualification.value) {
-        // If qualification is NOT expired, enable CPD, CoGS, and additional qualification
+        // If qualification is NOT expired, enable CPD, CoGS
         if (!hasExpiredQualification.value) {
           baseMenus.cpdManagement = true
           baseMenus.cogsManagement = true
-          certificationSubMenus.additionalQualification = true
         }
 
         // Show renewal option if within renewal period (including expired qualifications)
@@ -225,6 +228,7 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
       console.log('User has submitted application - returning menus:', {
         baseMenus,
         certificationSubMenus,
+        reasoning: 'Additional qualification always shown for submitted applications',
       })
       return { baseMenus, certificationSubMenus }
     }

@@ -1151,7 +1151,8 @@ const serviceSpecificMenuItems = {
             items.push(renewalItem)
           }
 
-          // Show Additional Qualification only for users with active (non-expired) qualifications
+          // Show Additional Qualification for any user who has submitted an application
+          // This allows them to add more qualifications or resubmit if they forgot documents
           if (store.visibleMenus.certificationSubMenus.additionalQualification) {
             items.push({
               name: 'Additional Qualification',
