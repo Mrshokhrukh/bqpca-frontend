@@ -42,13 +42,15 @@
                     class="sr-only peer" @change="() => { validateInput(); emitUpdate(); }"
                     aria-describedby="isApproved-error" />
                   <label for="approvedYes"
-                    class="flex items-center px-5 py-3 bg-white border rounded-lg cursor-pointer transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-blue-300"
-                    :class="{ 'border-red-500': errors.isApproved }">
+                    class="flex items-center px-5 py-3 bg-white border-2 rounded-lg cursor-pointer transition-all duration-200 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:shadow-md hover:border-blue-300 hover:shadow-sm"
+                    :class="{ 'border-red-500': errors.isApproved, 'border-blue-500 bg-blue-50 shadow-md': formData.isApproved === 'true' }">
                     <div
-                      class="h-4 w-4 rounded-full border border-gray-400 flex-shrink-0 flex items-center justify-center peer-checked:bg-blue-500 peer-checked:border-blue-500 mr-2">
+                      class="h-5 w-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center mr-3 transition-all duration-200"
+                      :class="formData.isApproved === 'true' ? 'border-blue-500 bg-blue-500' : 'border-gray-400 bg-white'">
                       <div v-if="formData.isApproved === 'true'" class="w-2 h-2 bg-white rounded-full"></div>
                     </div>
-                    <span class="text-sm font-medium text-gray-700">Yes</span>
+                    <span class="text-sm font-medium"
+                      :class="formData.isApproved === 'true' ? 'text-blue-700' : 'text-gray-700'">Yes</span>
                   </label>
                 </div>
                 <div class="relative">
@@ -56,13 +58,15 @@
                     class="sr-only peer" @change="() => { validateInput(); emitUpdate(); }"
                     aria-describedby="isApproved-error" />
                   <label for="approvedNo"
-                    class="flex items-center px-5 py-3 bg-white border rounded-lg cursor-pointer transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-blue-300"
-                    :class="{ 'border-red-500': errors.isApproved }">
+                    class="flex items-center px-5 py-3 bg-white border-2 rounded-lg cursor-pointer transition-all duration-200 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:shadow-md hover:border-blue-300 hover:shadow-sm"
+                    :class="{ 'border-red-500': errors.isApproved, 'border-blue-500 bg-blue-50 shadow-md': formData.isApproved === 'false' }">
                     <div
-                      class="h-4 w-4 rounded-full border border-gray-400 flex-shrink-0 flex items-center justify-center peer-checked:bg-blue-500 peer-checked:border-blue-500 mr-2">
+                      class="h-5 w-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center mr-3 transition-all duration-200"
+                      :class="formData.isApproved === 'false' ? 'border-blue-500 bg-blue-500' : 'border-gray-400 bg-white'">
                       <div v-if="formData.isApproved === 'false'" class="w-2 h-2 bg-white rounded-full"></div>
                     </div>
-                    <span class="text-sm font-medium text-gray-700">No</span>
+                    <span class="text-sm font-medium"
+                      :class="formData.isApproved === 'false' ? 'text-blue-700' : 'text-gray-700'">No</span>
                   </label>
                 </div>
               </div>
