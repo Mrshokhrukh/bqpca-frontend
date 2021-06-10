@@ -2,9 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <div class="mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <!-- Enhanced Header Section with Gradient -->
-      <div
-        class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md"
-      >
+      <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md">
         <div class="flex justify-between items-center">
           <div>
             <h1 class="text-3xl font-bold text-gray-900">
@@ -14,20 +12,14 @@
           </div>
           <div class="flex space-x-4">
             <div class="relative">
-              <input
-                v-model.trim="searchQuery"
-                type="text"
-                placeholder="Search by name, CID, or registration number..."
-                class="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-80 shadow-sm"
-              />
+              <input v-model.trim="searchQuery" type="text" placeholder="Search by name, CID, or registration number..."
+                class="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-80 shadow-sm" />
               <span class="absolute left-3 top-2.5 text-gray-400">
                 <SearchIcon class="w-5 h-5" />
               </span>
             </div>
-            <select
-              v-model="statusFilter"
-              class="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-            >
+            <select v-model="statusFilter"
+              class="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm">
               <option value="">All Status</option>
               <option value="Pending">Pending</option>
               <option value="Approved">Approved</option>
@@ -89,28 +81,20 @@
       </div>
 
       <!-- Loading State with Improved Animation -->
-      <div
-        v-if="isLoading"
-        class="flex flex-col justify-center items-center py-16 bg-white rounded-xl shadow-md"
-      >
+      <div v-if="isLoading" class="flex flex-col justify-center items-center py-16 bg-white rounded-xl shadow-md">
         <Loader2Icon class="w-12 h-12 animate-spin text-blue-500 mb-4" />
         <p class="text-gray-600 font-medium">Loading applications...</p>
       </div>
 
       <!-- Enhanced Error State -->
-      <div
-        v-else-if="error"
-        class="bg-red-50 border-l-4 border-red-500 rounded-xl p-6 mb-6 shadow-md"
-      >
+      <div v-else-if="error" class="bg-red-50 border-l-4 border-red-500 rounded-xl p-6 mb-6 shadow-md">
         <div class="flex items-center">
           <CircleAlert class="w-8 h-8 text-red-500 mr-4" />
           <div>
             <h3 class="text-lg font-bold text-red-800">An error occurred</h3>
             <p class="text-red-700 mt-1">{{ error }}</p>
-            <button
-              @click="fetchData"
-              class="mt-4 px-4 py-2 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 transition-colors font-medium"
-            >
+            <button @click="fetchData"
+              class="mt-4 px-4 py-2 bg-red-100 text-red-800 rounded-lg hover:bg-red-200 transition-colors font-medium">
               Try Again
             </button>
           </div>
@@ -124,41 +108,29 @@
             <thead class="bg-gray-50">
               <tr>
                 <th
-                  class="group px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                >
+                  class="group px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors">
                   <div class="flex items-center">
                     Registration No.
                     <ArrowUpDownIcon class="ml-1 h-4 w-4 text-gray-400 group-hover:text-gray-600" />
                   </div>
                 </th>
-                <th
-                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Applicant Details
                 </th>
-                <th
-                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Supervisor
                 </th>
-                <th
-                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th
-                  class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr
-                v-for="application in displayedApplications"
-                :key="application.id"
-                class="hover:bg-blue-50 transition-colors duration-150"
-              >
+              <tr v-for="application in displayedApplications" :key="application.id"
+                class="hover:bg-blue-50 transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm font-semibold text-gray-900">
                     {{ application.registration_no }}
@@ -168,8 +140,7 @@
                 <td class="px-6 py-4">
                   <div class="flex items-start">
                     <div
-                      class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold"
-                    >
+                      class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
                       {{ getInitials(application.full_name) }}
                     </div>
                     <div class="ml-4">
@@ -194,59 +165,45 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="space-y-2">
-                    <span
-                      :class="getStatusClass(application.review_status)"
-                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                    >
-                      <span
-                        class="w-2 h-2 rounded-full mr-1 mt-1.5"
-                        :class="getStatusDotClass(application.review_status)"
-                      ></span>
+                    <span :class="getStatusClass(application.review_status)"
+                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
+                      <span class="w-2 h-2 rounded-full mr-1 mt-1.5"
+                        :class="getStatusDotClass(application.review_status)"></span>
                       Review: {{ application.review_status }}
                     </span>
-                    <span
-                      :class="getStatusClass(application.endorsement_decision)"
-                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                    >
-                      <span
-                        class="w-2 h-2 rounded-full mr-1 mt-1.5"
-                        :class="getStatusDotClass(application.endorsement_decision)"
-                      ></span>
-                      Endorsement: {{ application.endorsement_decision }}
-                    </span>
-                    <span
-                      v-if="application.is_payment_complete"
-                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
-                    >
+
+                    <span v-if="application.is_payment_complete"
+                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                       <span class="w-2 h-2 rounded-full bg-green-500 mr-1 mt-1.5"></span>
                       Payment Complete
                     </span>
-                    <span
-                      v-else
-                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800"
-                    >
+                    <span v-else
+                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
                       <span class="w-2 h-2 rounded-full bg-yellow-500 mr-1 mt-1.5"></span>
                       Payment Pending
+                    </span>
+
+                    <span :class="getStatusClass(application.endorsement_decision)"
+                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
+                      <span class="w-2 h-2 rounded-full mr-1 mt-1.5"
+                        :class="getStatusDotClass(application.endorsement_decision)"></span>
+                      Endorsement: {{ application.endorsement_decision }}
                     </span>
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex flex-col space-y-2">
                     <!-- MODIFIED: Removed the restrictive v-if condition -->
-                    <button
-                      @click="reviewApplication(application)"
-                      class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                    >
+                    <button @click="reviewApplication(application)"
+                      class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                       <EyeIcon class="h-4 w-4 mr-1" />
                       View Details
                       <!-- Optional: Changed text slightly -->
                     </button>
                     <!-- Kept the conditional logic for the download button -->
-                    <button
-                      v-if="application.endorsement_decision === 'Approved'"
+                    <button v-if="application.endorsement_decision === 'Approved'"
                       @click="downloadCertificate(application.id)"
-                      class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                    >
+                      class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                       <DownloadIcon class="h-4 w-4 mr-1" />
                       Certificate
                     </button>
@@ -259,9 +216,7 @@
 
         <!-- Empty State with Improved Visual -->
         <div v-if="!displayedApplications.length && !isLoading" class="text-center py-16">
-          <div
-            class="mx-auto h-24 w-24 text-gray-400 bg-gray-100 rounded-full flex items-center justify-center mb-4"
-          >
+          <div class="mx-auto h-24 w-24 text-gray-400 bg-gray-100 rounded-full flex items-center justify-center mb-4">
             <InboxIcon class="h-12 w-12" />
           </div>
           <h3 class="mt-2 text-lg font-medium text-gray-900">No applications found</h3>
@@ -269,20 +224,15 @@
             No COGS applications match your current search criteria. Try adjusting your filters or
             search terms.
           </p>
-          <button
-            @click="resetFilters"
-            class="mt-6 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium"
-          >
+          <button @click="resetFilters"
+            class="mt-6 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium">
             Reset Filters
           </button>
         </div>
       </div>
 
       <!-- Enhanced Pagination -->
-      <div
-        v-if="totalPages > 1"
-        class="mt-6 flex justify-between items-center bg-white p-4 rounded-xl shadow-md"
-      >
+      <div v-if="totalPages > 1" class="mt-6 flex justify-between items-center bg-white p-4 rounded-xl shadow-md">
         <div class="text-sm text-gray-700 flex items-center">
           <span class="font-medium">Page {{ currentPage }}</span> of {{ totalPages }}
           <span class="ml-4 text-gray-500">
@@ -292,34 +242,22 @@
           </span>
         </div>
         <div class="flex space-x-2">
-          <button
-            @click="currentPage = 1"
-            :disabled="currentPage === 1"
-            class="bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          <button @click="currentPage = 1" :disabled="currentPage === 1"
+            class="bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
             <ChevronsLeftIcon class="w-5 h-5" />
           </button>
-          <button
-            @click="currentPage--"
-            :disabled="currentPage === 1"
-            class="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-          >
+          <button @click="currentPage--" :disabled="currentPage === 1"
+            class="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
             <ChevronLeftIcon class="w-5 h-5 mr-1" />
             Prev
           </button>
-          <button
-            @click="currentPage++"
-            :disabled="currentPage === totalPages"
-            class="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-          >
+          <button @click="currentPage++" :disabled="currentPage === totalPages"
+            class="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
             Next
             <ChevronRightIcon class="w-5 h-5 ml-1" />
           </button>
-          <button
-            @click="currentPage = totalPages"
-            :disabled="currentPage === totalPages"
-            class="bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          <button @click="currentPage = totalPages" :disabled="currentPage === totalPages"
+            class="bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
             <ChevronsRightIcon class="w-5 h-5" />
           </button>
         </div>
@@ -327,30 +265,20 @@
     </div>
 
     <!-- Review Modal -->
-    <CogsReviewModal
-      v-if="selectedApplication"
-      :application="selectedApplication"
-      @close="closeReviewModal"
-      @update="handleUpdate"
-    />
+    <CogsReviewModal v-if="selectedApplication" :application="selectedApplication" @close="closeReviewModal"
+      @update="handleUpdate" />
 
     <!-- Enhanced Confirmation Modal -->
-    <CogsConfirmationModal
-      v-if="showConfirmation"
-      :message="confirmationMessage"
-      @confirm="confirmReviewAction"
-      @cancel="cancelReviewAction"
-    />
+    <CogsConfirmationModal v-if="showConfirmation" :message="confirmationMessage" @confirm="confirmReviewAction"
+      @cancel="cancelReviewAction" />
 
     <!-- Success Toast Notification (New Addition) -->
-    <div
-      v-if="showSuccessToast"
+    <div v-if="showSuccessToast"
       class="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center transition-all duration-300"
       :class="{
         'opacity-100 translate-y-0': showSuccessToast,
         'opacity-0 translate-y-8': !showSuccessToast,
-      }"
-    >
+      }">
       <CheckCircleIcon class="w-5 h-5 mr-2" />
       <span>{{ toastMessage }}</span>
       <button @click="showSuccessToast = false" class="ml-4 text-white hover:text-green-200">
@@ -665,7 +593,8 @@ onMounted(fetchData)
 
 /* Optional: Add subtle hover effect to the table rows with a left border indicator */
 tbody tr {
-  position: relative; /* Needed for absolute positioning of the pseudo-element */
+  position: relative;
+  /* Needed for absolute positioning of the pseudo-element */
 }
 
 tbody tr:hover::after {
@@ -673,17 +602,23 @@ tbody tr:hover::after {
   position: absolute;
   left: 0;
   top: 0;
-  bottom: 0; /* Use top/bottom or height */
-  width: 4px; /* Width of the indicator */
-  background-color: #3b82f6; /* Tailwind's blue-500 */
-  border-top-left-radius: 2px; /* Optional: slightly rounded corners */
+  bottom: 0;
+  /* Use top/bottom or height */
+  width: 4px;
+  /* Width of the indicator */
+  background-color: #3b82f6;
+  /* Tailwind's blue-500 */
+  border-top-left-radius: 2px;
+  /* Optional: slightly rounded corners */
   border-bottom-left-radius: 2px;
-  transition: background-color 0.2s ease-in-out; /* Match hover transition */
+  transition: background-color 0.2s ease-in-out;
+  /* Match hover transition */
 }
 
 /* Ensure pagination buttons have clear focus styles for accessibility */
 button:focus-visible {
-  outline: 2px solid #2563eb; /* Tailwind's blue-600 */
+  outline: 2px solid #2563eb;
+  /* Tailwind's blue-600 */
   outline-offset: 2px;
 }
 
@@ -693,15 +628,19 @@ button:focus-visible {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
 }
+
 .opacity-0 {
   opacity: 0;
 }
+
 .opacity-100 {
   opacity: 1;
 }
+
 .translate-y-8 {
   transform: translateY(2rem);
 }
+
 .translate-y-0 {
   transform: translateY(0);
 }
