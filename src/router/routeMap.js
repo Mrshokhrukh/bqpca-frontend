@@ -464,6 +464,7 @@ export default {
       cpd_application_tracker: mhpcDashboard,
       reports: mhpcDashboard,
       cpd_approved_add_participants: mhpcDashboard,
+      cpd_provider_application_form: mhpcDashboard,
     },
   },
 }
