@@ -2,81 +2,102 @@
   <div class="mx-auto py-8">
     <FormHeader />
     <LoadingOverlay :loading="loading" />
-    <AlertMessage :messages="validationErrors" type="error" />
+    <!-- General errors displayed at the top -->
+    <AlertMessage :messages="validationErrors" type="error" v-if="validationErrors.length > 0" />
     <AlertMessage :messages="[successMessage]" type="success" v-if="successMessage" />
 
     <div class="bg-white border rounded-xl shadow-lg p-6">
-      <ApplicantDetailsForm :applicant="applicant" />
-      <ApplicationDetailsForm
-        :application="application"
-        :handle-approval-letter-upload="handleApprovalLetterUpload"
-        @approval-change="toggleApprovedFields"
-      />
-      <CpdProviderForm
-        :cpd-provider="cpdProvider"
-        :agency-options="agencyOptions"
-        :reason-options="reasonOptions"
-      />
-      <ResourcePersonsForm
-        :resource-persons="resourcePersons"
-        :resource-person-certificate="resourcePersonCertificate"
-        :fetch-resource-person-details="fetchResourcePersonDetails"
-        :handle-certificate-upload="handleCertificateUpload"
-        :add-resource-person="addResourcePerson"
-        :remove-resource-person="removeResourcePerson"
-        :user-registrations="userRegistrations"
-      />
-      <TeachingLearningMethodForm
-        :teaching-method="teachingMethod"
-        :cpd-type-options="cpdTypeOptions"
-        :methodology-options="methodologyOptions"
-        :selected-methodologies="selectedMethodologies"
-        :teaching-methods="teachingMethods"
-        :total-hours="totalHours"
-        :course-document="courseDocument"
-        :handle-course-document-upload="handleCourseDocumentUpload"
-        :add-teaching-method="addTeachingMethod"
-        :remove-teaching-method="removeTeachingMethod"
-        :calculate-total-hours="calculateTotalHours"
-      />
-
-      <template v-if="areOptionsLoaded">
-        <ParticipantsDetailsForm
-          :key="participantFormKey"
-          :participant-details="participantDetails"
-          @update:participantDetails="handleParticipantDetailsUpdate"
-          :participation-category-options="participationCategoryOptions"
-          :participant-subcategory-options="participantSubcategoryOptions"
-        />
-      </template>
-      <div v-else class="bg-white border rounded-xl shadow-sm p-6 text-center my-4">
-        <p class="text-gray-600 font-semibold">
-          <svg aria-hidden="true" class="inline w-6 h-6 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-              <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-          </svg>
-          Loading participation options...
-        </p>
+      <div class="space-y-8">
+        <div>
+          <ApplicantDetailsForm
+            :applicant="applicant"
+            @update:applicant="(updatedData) => Object.assign(applicant, updatedData)"
+            :errors="applicantDetailsErrors"
+          />
+        </div>
+        <div>
+          <ApplicationDetailsForm
+            :application="application"
+            :handle-approval-letter-upload="handleApprovalLetterUpload"
+            @update:modelValue="handleApplicationUpdate"
+            @approval-change="toggleApprovedFields"
+            :errors="applicationDetailsErrors"
+          />
+        </div>
+        <div>
+          <CpdProviderForm
+            :cpd-provider="cpdProvider"
+            :agency-options="agencyOptions"
+            :reason-options="reasonOptions"
+            @update:cpdProvider="(updatedData) => Object.assign(cpdProvider, updatedData)"
+            :errors="cpdProviderErrors"
+          />
+        </div>
+        <div>
+          <ResourcePersonsForm
+            v-model:modelValue="resourcePersons"
+            :fetch-resource-person-details="fetchResourcePersonDetails"
+            :user-registrations="userRegistrations"
+            :errors="resourcePersonsErrors"
+          />
+        </div>
+        <div>
+          <TeachingLearningMethodForm
+            :teaching-method="teachingMethod"
+            :cpd-type-options="cpdTypeOptions"
+            :methodology-options="methodologyOptions"
+            v-model:selected-methodologies="selectedMethodologies"
+            v-model:teaching-methods="teachingMethods"
+            :total-hours="totalHours"
+            :course-document="courseDocument"
+            :handle-course-document-upload="handleCourseDocumentUpload"
+            :add-teaching-method="addTeachingMethod"
+            :remove-teaching-method="removeTeachingMethod"
+            :calculate-total-hours="calculateTotalHours"
+            @update-teaching-method-property="handleTeachingMethodPropertyUpdate"
+            :errors="teachingLearningErrors"
+          />
+        </div>
+        <template v-if="areOptionsLoaded">
+          <div>
+            <ParticipantsDetailsForm
+              :key="participantFormKey"
+              :participant-details="participantDetails"
+              @update:participantDetails="handleParticipantDetailsUpdate"
+              :participation-category-options="participationCategoryOptions"
+              :participant-subcategory-options="participantSubcategoryOptions"
+              :errors="participantDetailsErrors"
+            />
+          </div>
+        </template>
+        <div v-else class="bg-white border rounded-xl shadow-sm p-6 text-center my-4">
+          <p class="text-gray-600 font-semibold">Loading participation options...</p>
+        </div>
+        <div>
+          <ApprovedCpdForm
+            :is-cpd-approved="isCpdApproved"
+            :participants="participants"
+            :attendance-sheet="attendanceSheet"
+            :handle-attendance-sheet-upload="handleAttendanceSheetUpload"
+            :add-participant="addParticipant"
+            :remove-participant="removeParticipant"
+            :fetch-participant-name="fetchParticipantName"
+            :attachment="attachment"
+            :handle-attachment-upload="handleAttachmentUpload"
+            :application="application"
+            :errors="approvedCpdErrors"
+          />
+        </div>
+        <div>
+          <FormActions
+            :loading="loading"
+            :save-draft="saveDraft"
+            :handle-submit="handleSubmit"
+            :cancel-form="cancelForm"
+            :is-valid="isFormValid"
+          />
+        </div>
       </div>
-
-      <ApprovedCpdForm
-        :is-cpd-approved="isCpdApproved"
-        :participants="participants"
-        :attendance-sheet="attendanceSheet"
-        :handle-attendance-sheet-upload="handleAttendanceSheetUpload"
-        :add-participant="addParticipant"
-        :remove-participant="removeParticipant"
-        :fetch-participant-name="fetchParticipantName"
-        :attachment="attachment"
-        :handle-attachment-upload="handleAttachmentUpload"
-        :application="application"
-      />
-      <FormActions
-        :loading="loading"
-        :save-draft="saveDraft"
-        :handle-submit="handleSubmit"
-        :cancel-form="cancelForm"
-      />
     </div>
 
     <ConfirmationModal
@@ -153,11 +174,10 @@ const router = useRouter();
 // Reactive States
 const loading = ref(false);
 const showConfirmation = ref(false);
-const validationErrors = ref([]);
 const successMessage = ref('');
 const userRegistrations = ref([]);
 
-// Applicant details
+// State for form data
 const applicant = reactive({
   registrationNumber: '',
   cidNumber: '',
@@ -214,7 +234,7 @@ const courseDocument = ref(null);
 const attendanceSheet = ref(null);
 const attachment = ref(null);
 
-// Options for dropdowns
+// Dropdown options
 const agencyOptions = ref([]);
 const reasonOptions = ref([]);
 const cpdTypeOptions = ref([]);
@@ -222,14 +242,49 @@ const methodologyOptions = ref([]);
 const participationCategoryOptions = ref([]);
 const participantSubcategoryOptions = ref([]);
 const areOptionsLoaded = ref(false);
-const participantFormKey = ref(0); // Key for ParticipantsDetailsForm
+const participantFormKey = ref(0);
+
+// Error state management
+const validationErrors = ref([]);
+const applicantDetailsErrors = ref({});
+const applicationDetailsErrors = ref({});
+const cpdProviderErrors = ref({});
+const resourcePersonsErrors = ref([]);
+const teachingLearningErrors = ref({});
+const participantDetailsErrors = ref({});
+const approvedCpdErrors = ref({});
+
+const updateModelValue = () => {
+  emit('update:modelValue', {
+    isApproved: application.isApproved === 'true',
+    title: application.title,
+    venue: application.venue,
+    fromDate: application.fromDate,
+    toDate: application.toDate,
+    approvalLetter: approvalLetter.value,
+  });
+};
+
+const handleApplicationUpdate = (updatedData) => {
+  console.log('Received application update:', updatedData);
+  Object.assign(application, updatedData);
+  updateModelValue();
+};
 
 const handleParticipantDetailsUpdate = (updatedDetails) => {
-  console.log("PARENT: Received update:participantDetails event with:", safeLogValue(updatedDetails));
-  Object.assign(participantDetails, updatedDetails);
-  console.log("PARENT: participantDetails.category after update:", participantDetails.category);
-  console.log("PARENT: participantDetails.subcategory after update:", participantDetails.subcategory);
+  console.log('Received participantDetails update:', updatedDetails);
+  Object.assign(participantDetails, {
+    category: Array.isArray(updatedDetails.category) ? updatedDetails.category : [],
+    subcategory: Array.isArray(updatedDetails.subcategory) ? updatedDetails.subcategory : [],
+    number: Number.isFinite(updatedDetails.number) ? Number(updatedDetails.number) : null,
+    relevance: updatedDetails.relevance?.trim() || '',
+  });
 };
+function handleTeachingMethodPropertyUpdate({ property, value }) {
+  if (Object.hasOwn(teachingMethod, property)) {
+    teachingMethod[property] = value;
+  }
+}
 
 const toggleApprovedFields = () => {
   application.title = application.isApproved === 'true' ? '' : application.title;
@@ -250,17 +305,9 @@ const handleApprovalLetterUpload = (event) => {
     alert('Please upload a PDF file less than 5MB');
     event.target.value = '';
   }
+  updateModelValue();
 };
 
-const handleCertificateUpload = (event) => {
-  const file = event.target.files[0];
-  if (file && file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
-    resourcePersonCertificate.value = file;
-  } else {
-    alert('Please upload a PDF file less than 5MB');
-    event.target.value = '';
-  }
-};
 const handleCourseDocumentUpload = (event) => {
   const file = event.target.files[0];
   if (file && file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
@@ -292,51 +339,48 @@ const handleAttachmentUpload = (event) => {
 };
 
 const fetchResourcePersonDetails = async (person) => {
-  if (!person.regNo) {
+  if (!person.regNo?.trim()) {
     person.name = '';
+    console.log('fetchResourcePersonDetails: Empty regNo, clearing name');
     return;
   }
   try {
     loading.value = true;
-    // TODO: Replace '' with actual CID or relevant parameter if needed for getMhpcFullApplicationListByCid
-    const response = await apiService.getMhpcFullApplicationListByCid('');
-    if (response.data && response.data.results && Array.isArray(response.data.results)) {
+    console.log('fetchResourcePersonDetails: Fetching for regNo:', person.regNo);
+    let response = await apiService.getMhpcFullApplicationListByCid(person.regNo);
+    console.log('fetchResourcePersonDetails: API response (registration_no):', response.data);
+    if (response.data?.results?.length > 0) {
       const matchingApplication = response.data.results.find(
         (app) => app.registration_no === person.regNo,
       );
-      person.name = matchingApplication ? matchingApplication.full_name || 'Unknown' : '';
-    } else {
-      const manualName = prompt(
-        `Please enter name for resource person with registration number ${person.regNo}:`,
+      if (matchingApplication) {
+        person.name = matchingApplication.full_name || '';
+        console.log('fetchResourcePersonDetails: Found name:', person.name);
+        return;
+      }
+    }
+    console.log('fetchResourcePersonDetails: No results for registration_no, trying cid_no');
+    response = await apiService.getMhpcFullApplicationListByCid(person.regNo, true);
+    console.log('fetchResourcePersonDetails: API response (cid_no):', response.data);
+    if (response.data?.results?.length > 0) {
+      const matchingApplication = response.data.results.find(
+        (app) => app.cid_no === person.regNo
       );
-      person.name = manualName || '';
+      person.name = matchingApplication?.full_name || '';
+      console.log('fetchResourcePersonDetails: Found name (cid_no):', person.name);
+    } else {
+      person.name = ''; // Allow manual entry
+      console.warn('fetchResourcePersonDetails: No records found for:', person.regNo);
     }
   } catch (error) {
-    console.error('Error fetching resource person details:', error);
-    const manualName = prompt(
-      `Could not fetch details for registration number ${person.regNo}. Please enter the name manually:`,
-    );
-    person.name = manualName || '';
+    console.error('fetchResourcePersonDetails: Error:', error);
+    person.name = ''; // Allow manual entry
+    validationErrors.value.push(`Failed to fetch details for '${person.regNo}'. You may enter the name manually.`);
   } finally {
     loading.value = false;
+    console.log('fetchResourcePersonDetails: Completed, loading:', loading.value);
   }
 };
-
-const addResourcePerson = () => {
-  resourcePersons.value.push({ regNo: '', name: '' });
-};
-
-const removeResourcePerson = (index) => {
-  resourcePersons.value.splice(index, 1);
-};
-
-const calculateTotalHours = () => {
-  totalHours.value = teachingMethods.value.reduce((sum, method) => {
-    return sum + (Number(method.duration) || 0);
-  }, 0);
-  calculatedCredits.value = totalHours.value; // Or your specific credit calculation logic
-};
-
 const addTeachingMethod = () => {
   teachingMethods.value.push({ activity: '', duration: null });
 };
@@ -369,78 +413,211 @@ const fetchParticipantName = async (participant) => {
       );
       participant.name = matchingApplication ? matchingApplication.full_name || 'Unknown' : '';
     } else {
-      const manualName = prompt(
-        `Please enter name for participant with registration number ${participant.regNo}:`,
-      );
-      participant.name = manualName || '';
+      participant.name = '';
     }
   } catch (error) {
     console.error('Error fetching participant name:', error);
-    const manualName = prompt(
-      `Could not fetch details for registration number ${participant.regNo}. Please enter the name manually:`,
-    );
-    participant.name = manualName || '';
+    participant.name = '';
   } finally {
     loading.value = false;
   }
 };
 
-const validateForm = () => {
+const validateForm = (forDraft = false) => {
   validationErrors.value = [];
-  // Basic Validations
-  if (!applicant.agencyTrainingLocation) validationErrors.value.push('Agency/Training Location is required.');
+  applicantDetailsErrors.value = {};
+  applicationDetailsErrors.value = {};
+  cpdProviderErrors.value = {};
+  resourcePersonsErrors.value = resourcePersons.value.map(() => ({}));
+  teachingLearningErrors.value = {};
+  participantDetailsErrors.value = {};
+  approvedCpdErrors.value = {};
 
-  // Validations for 'Not Approved' CPD
-  if (application.isApproved === 'false') {
-    if (!application.title) validationErrors.value.push('Title of CPD is required.');
-    if (!application.venue) validationErrors.value.push('Venue is required.');
-    if (!application.fromDate) validationErrors.value.push('From Date is required.');
-    if (!application.toDate) validationErrors.value.push('To Date is required.');
+  let isValid = true;
+
+  console.log('Validating Form State (forDraft:', forDraft, '):', {
+    applicant, application, cpdProvider, resourcePersons: resourcePersons.value,
+    teachingMethod, selectedMethodologies: selectedMethodologies.value, teachingMethods: teachingMethods.value,
+    courseDocument: courseDocument.value, participantDetails, approvalLetter: approvalLetter.value,
+    attachment: attachment.value, attendanceSheet: attendanceSheet.value
+  });
+
+  // --- ApplicantDetailsForm ---
+  if (!forDraft && !applicant.agencyTrainingLocation?.trim()) {
+    applicantDetailsErrors.value.agencyTrainingLocation = 'Agency/Training Location is required.';
+    isValid = false;
+  }
+
+  // --- ApplicationDetailsForm ---
+  if (!forDraft && application.isApproved === 'false') {
+    if (!application.title?.trim()) {
+      applicationDetailsErrors.value.title = 'Title of CPD is required.';
+      isValid = false;
+    }
+    if (!application.venue?.trim()) {
+      applicationDetailsErrors.value.venue = 'Venue is required.';
+      isValid = false;
+    }
+    if (!application.fromDate) {
+      applicationDetailsErrors.value.fromDate = 'From Date is required.';
+      isValid = false;
+    }
+    if (!application.toDate) {
+      applicationDetailsErrors.value.toDate = 'To Date is required.';
+      isValid = false;
+    }
     if (application.fromDate && application.toDate && new Date(application.fromDate) > new Date(application.toDate)) {
-      validationErrors.value.push('From Date cannot be later than To Date.');
+      applicationDetailsErrors.value.toDate = 'To Date must be after From Date.';
+      isValid = false;
     }
-  } else if (application.isApproved === 'true' && !approvalLetter.value) { // Validations for 'Approved' CPD
-    validationErrors.value.push('Approval Letter is required.');
+  } else if (!forDraft && application.isApproved === 'true' && !approvalLetter.value) {
+    applicationDetailsErrors.value.approvalLetter = 'Approval Letter is required for approved CPD.';
+    isValid = false;
   }
 
-  // CPD Provider Validations
-  if (!cpdProvider.agency) validationErrors.value.push('CPD Providing Agency is required.');
-  if (cpdProvider.agency === 'other' && !cpdProvider.otherAgency) validationErrors.value.push('Please specify the Other Agency.');
-  if (!cpdProvider.reason) validationErrors.value.push('Reason for Conducting is required.');
-  if (!cpdProvider.reasonDetails) validationErrors.value.push('Reason Details are required.');
-
-  // Resource Persons Validations
-  if (resourcePersons.value.some((person) => !person.regNo)) validationErrors.value.push('Registration Number is required for all Resource Persons.');
-  if (!resourcePersonCertificate.value) validationErrors.value.push('Document supporting expertise of Resource Persons is required.');
-
-  // Teaching Method Validations
-  if (!teachingMethod.type) validationErrors.value.push('Type of CPD is required.');
-  if (selectedMethodologies.value.length === 0) validationErrors.value.push('At least one Methodology must be selected.');
-  if (!teachingMethod.expectedOutcome) validationErrors.value.push('Expected Outcome is required.');
-  if (!teachingMethods.value.some((method) => method.activity && method.duration > 0)) {
-    validationErrors.value.push('At least one Teaching Method with activity and positive duration is required.');
+  // --- CpdProviderForm ---
+  if (!forDraft && !cpdProvider.agency) {
+    cpdProviderErrors.value.agency = 'CPD Providing Agency is required.';
+    isValid = false;
   }
-  if (!courseDocument.value) validationErrors.value.push('Course Document is required.');
-
-  // Participant Details Validations (only if the section is loaded/visible)
-  if (areOptionsLoaded.value) {
-    if (!participantDetails.category) validationErrors.value.push('Participation Category is required.');
-    if (!participantDetails.subcategory) validationErrors.value.push('Participant Sub-Category is required.');
-    if (!participantDetails.number || participantDetails.number <= 0) validationErrors.value.push('Number of Participants must be a positive number.');
-    if (!participantDetails.relevance) validationErrors.value.push('Relevance to profession is required.');
+  if (!forDraft && cpdProvider.agency === 'other' && !cpdProvider.otherAgency?.trim()) {
+    cpdProviderErrors.value.otherAgency = 'Please specify the Other Agency.';
+    isValid = false;
+  }
+  if (!forDraft && !cpdProvider.reason) {
+    cpdProviderErrors.value.reason = 'Reason for Conducting is required.';
+    isValid = false;
+  }
+  if (!forDraft && !cpdProvider.reasonDetails?.trim()) {
+    cpdProviderErrors.value.reasonDetails = 'Reason Details are required.';
+    isValid = false;
   }
 
-  // Approved CPD Specific Validations
-  if (application.isApproved === 'true') {
-    if (!attachment.value) validationErrors.value.push('General Attachment is required for approved CPD.');
-    // Assuming `isCpdApproved.value` correctly reflects `application.isApproved`
-    // and you want to validate attendance sheet only when participants are added for an approved CPD.
+  // --- ResourcePersonsForm ---
+  if (!forDraft && resourcePersons.value.length === 0) {
+    validationErrors.value.push('At least one Resource Person is required.');
+    isValid = false;
+  } else if (!forDraft) {
+    resourcePersons.value.forEach((person, index) => {
+      let personError = {};
+      if (!person.regNo?.trim()) {
+        personError.regNo = `Registration Number is required.`;
+        isValid = false;
+      }
+      if (!person.certificate) {
+        personError.certificate = `Document supporting expertise is required.`;
+        isValid = false;
+      }
+      if (Object.keys(personError).length > 0) {
+        resourcePersonsErrors.value[index] = { ...resourcePersonsErrors.value[index], ...personError };
+      }
+    });
+  }
+
+  // --- TeachingLearningMethodForm ---
+  if (!forDraft && !teachingMethod.type?.trim()) {
+    teachingLearningErrors.value.type = 'Type of CPD is required.';
+    isValid = false;
+  }
+  if (!forDraft && !selectedMethodologies.value.length) {
+    teachingLearningErrors.value.selectedMethodologies = 'At least one Methodology must be selected.';
+    isValid = false;
+  }
+  if (!forDraft && !teachingMethod.expectedOutcome?.trim()) {
+    teachingLearningErrors.value.expectedOutcome = 'Expected Outcome is required.';
+    isValid = false;
+  }
+  if (!forDraft) {
+    const hasValidTeachingMethod = teachingMethods.value.some(
+      (method) => method.activity?.trim() && method.duration !== null && Number(method.duration) > 0
+    );
+    if (!hasValidTeachingMethod) {
+      teachingLearningErrors.value.teachingMethods = 'At least one Teaching Method with activity and positive duration is required.';
+      isValid = false;
+    }
+  }
+  if (!forDraft && !courseDocument.value) {
+    teachingLearningErrors.value.courseDocument = 'Course Document is required.';
+    isValid = false;
+  }
+
+  // --- ParticipantsDetailsForm ---
+  if (areOptionsLoaded.value && !forDraft) {
+    if (!participantDetails.category?.length) {
+      participantDetailsErrors.value.categories = 'At least one Participation Category is required.';
+      isValid = false;
+    }
+    const selectedCategoriesHaveSubcategories = participantDetails.category.some(catId =>
+      participantSubcategoryOptions.value.some(subOpt => subOpt.categoryId === catId)
+    );
+    if (selectedCategoriesHaveSubcategories && (!participantDetails.subcategory || participantDetails.subcategory.length === 0)) {
+      participantDetailsErrors.value.subcategories = 'At least one Participant Sub-Category is required.';
+      isValid = false;
+    }
+    if (participantDetails.number === null || participantDetails.number === undefined || Number(participantDetails.number) <= 0) {
+      participantDetailsErrors.value.number = 'Number of participants must be a positive number.';
+      isValid = false;
+    }
+    if (participantDetails.category.length > 1 && !participantDetails.relevance?.trim()) {
+      participantDetailsErrors.value.relevance = 'Relevance is required when multiple categories are selected.';
+      isValid = false;
+    }
+  } else if (!forDraft) {
+    validationErrors.value.push('Participation options are still loading.');
+    isValid = false;
+  }
+
+  // --- ApprovedCpdForm ---
+  if (!forDraft && application.isApproved === 'true') {
+    if (!attachment.value) {
+      approvedCpdErrors.value.attachment = 'General Attachment is required for approved CPD.';
+      isValid = false;
+    }
     if (participants.value.length > 0 && !attendanceSheet.value) {
-        validationErrors.value.push('Attendance Sheet is required when participants are listed for an approved CPD.');
+      approvedCpdErrors.value.attendanceSheet = 'Attendance Sheet is required when participants are listed.';
+      isValid = false;
     }
   }
-  return validationErrors.value.length === 0;
+
+  if (!isValid && !forDraft) {
+    validationErrors.value.push('Please correct the errors indicated in the form sections.');
+  }
+
+  console.log('Validation Errors Output:', {
+    general: validationErrors.value,
+    applicant: applicantDetailsErrors.value,
+    application: applicationDetailsErrors.value,
+    cpdProvider: cpdProviderErrors.value,
+    resourcePersons: resourcePersonsErrors.value,
+    teachingLearning: teachingLearningErrors.value,
+    participant: participantDetailsErrors.value,
+    approvedCpd: approvedCpdErrors.value
+  });
+  return isValid;
 };
+const isFormValid = computed(() => {
+  const errors = {
+    general: validationErrors.value.length > 0,
+    applicant: Object.keys(applicantDetailsErrors.value).length > 0,
+    application: Object.keys(applicationDetailsErrors.value).length > 0,
+    cpdProvider: Object.keys(cpdProviderErrors.value).length > 0,
+    resourcePersons: !resourcePersonsErrors.value.every(err => Object.keys(err).length === 0),
+    teachingLearning: Object.keys(teachingLearningErrors.value).length > 0,
+    participantDetails: Object.keys(participantDetailsErrors.value).length > 0,
+    approvedCpd: Object.keys(approvedCpdErrors.value).length > 0,
+  };
+  console.log('isFormValid checks:', errors);
+  return (
+    validationErrors.value.length === 0 &&
+    Object.keys(applicantDetailsErrors.value).length === 0 &&
+    Object.keys(applicationDetailsErrors.value).length === 0 &&
+    Object.keys(cpdProviderErrors.value).length === 0 &&
+    resourcePersonsErrors.value.every(err => Object.keys(err).length === 0) &&
+    Object.keys(teachingLearningErrors.value).length === 0 &&
+    Object.keys(participantDetailsErrors.value).length === 0 &&
+    Object.keys(approvedCpdErrors.value).length === 0
+  );
+});
 
 const prepareFormData = (isDraft = false) => {
   const formData = new FormData();
@@ -473,55 +650,58 @@ const prepareFormData = (isDraft = false) => {
 
   // Resource Persons
   const validResourcePersons = resourcePersons.value
-    .filter(person => person.regNo && person.name)
-    .map(person => ({
+    .filter((person) => person.regNo?.trim() && person.name?.trim() && person.certificate)
+    .map((person) => ({
       resource_person_reg_no: person.regNo,
       resource_person_name: person.name,
       // cpd_task: null, // Add if your backend expects this
     }));
+
   if (validResourcePersons.length > 0) {
-    formData.append('resources', JSON.stringify(validResourcePersons));
+    validResourcePersons.forEach((person, index) => {
+      formData.append(`resources[${index}][resource_person_reg_no]`, person.resource_person_reg_no);
+      formData.append(`resources[${index}][resource_person_name]`, person.resource_person_name);
+      formData.append(`resources[${index}][document_supporting_expertise]`, person.document_supporting_expertise);
+    });
+  } else if (!isDraft && resourcePersons.value.some(p => p.regNo || p.certificate)) { // If not draft and some incomplete RPs exist
+    // This case should be caught by validation, ensures no partial invalid RP data is sent unless drafting
   }
-  if (resourcePersonCertificate.value) formData.append('document_supporting_expertise', resourcePersonCertificate.value);
 
 
-  // Teaching/Learning Methods
-  formData.append('type_of_cpd', teachingMethod.type); // Ensure this is an ID if backend expects ID
-  const validMethodologies = selectedMethodologies.value.map(methodId => ({
-    methodology_name: methodId, // Ensure this is an ID if backend expects ID
-    // cpd_task: null,
-  }));
-  if (validMethodologies.length > 0) {
-    formData.append('methodologies', JSON.stringify(validMethodologies));
+  formData.append('type_of_cpd', teachingMethod.type || '');
+  if (selectedMethodologies.value.length > 0) {
+    formData.append('methodologies', JSON.stringify(
+      selectedMethodologies.value.map((methodId) => ({ methodology_name: methodId }))
+    ));
   }
 
   const validLearningMethods = teachingMethods.value
-    .filter(method => method.activity && method.duration > 0)
-    .map(method => ({
-      activities: method.activity,
-      duration: method.duration,
-      // cpd_task: null,
+    .filter((method) => method.activity?.trim() && method.duration !== null && Number(method.duration) > 0)
+    .map((method) => ({
+      activities: method.activity.trim(),
+      duration: Number(method.duration),
     }));
   if (validLearningMethods.length > 0) {
     formData.append('learning_methods', JSON.stringify(validLearningMethods));
+  } else if (!isDraft && teachingMethods.value.some(m => m.activity || m.duration)) {
+    // caught by validation
   }
-  formData.append('expected_outcome', teachingMethod.expectedOutcome);
+
+  formData.append('expected_outcome', teachingMethod.expectedOutcome?.trim() || '');
   if (courseDocument.value) formData.append('course_document', courseDocument.value);
 
-
-  // Participant Details (if loaded)
-  if (areOptionsLoaded.value) {
-    formData.append('participation_category', participantDetails.category); // Ensure this is an ID
-    formData.append('participant_sub_category', participantDetails.subcategory); // Ensure this is an ID
-    formData.append('number_of_participants', participantDetails.number || 0);
-    formData.append('relevance_to_topic', participantDetails.relevance || '');
+  if (areOptionsLoaded.value || isDraft) {
+    formData.append('participation_category', JSON.stringify(participantDetails.category || []));
+    formData.append('participant_sub_category', JSON.stringify(participantDetails.subcategory || []));
+    formData.append('number_of_participants', (participantDetails.number !== null && participantDetails.number !== undefined) ? participantDetails.number : (isDraft ? '' : 0));
+    formData.append('relevance_to_topic', participantDetails.relevance?.trim() || '');
   }
 
-  // Approved CPD - Participants list
+
   if (isCpdApprovedFlag && participants.value.length > 0) {
     const validParticipants = participants.value
-      .filter(p => p.regNo && p.name)
-      .map(p => ({
+      .filter((p) => p.regNo?.trim() && p.name?.trim())
+      .map((p) => ({
         participant_reg_no: p.regNo,
         // participant_name: p.name, // Backend might fetch name based on reg_no
         cpd_credits: calculatedCredits.value, // Or specific logic
@@ -540,60 +720,69 @@ const prepareFormData = (isDraft = false) => {
 
 
 const saveDraft = async () => {
-  // Basic check, can be expanded
-  if (!applicant.agencyTrainingLocation && !application.title) {
-    validationErrors.value = ["Please fill in at least Agency/Training Location or Title to save a draft."];
+  console.log('SAVE DRAFT: Starting', { agencyTrainingLocation: applicant.agencyTrainingLocation, title: application.title });
+  if (!applicant.agencyTrainingLocation?.trim() && !application.title?.trim()) {
+    console.log('SAVE DRAFT: Validation failed');
+    validationErrors.value = ['Please fill in at least Agency/Training Location or Title to save a draft.'];
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    return;
+    return false;
   }
-  validationErrors.value = []; // Clear previous errors
-
   try {
     loading.value = true;
+    console.log('SAVE DRAFT: Preparing form data');
     const formData = prepareFormData(true);
-    // Log formData entries for debugging
-    // for (let [key, value] of formData.entries()) {
-    //   console.log(`Draft FormData: ${key}: ${value instanceof File ? value.name : value}`);
-    // }
+    console.log('SAVE DRAFT: FormData prepared');
     await apiService.createMhpcCpdTask(formData);
+    console.log('SAVE DRAFT: Success');
     successMessage.value = 'Draft saved successfully!';
-    setTimeout(() => { successMessage.value = ''; }, 3000);
+    validationErrors.value = [];
+    applicantDetailsErrors.value = {};
+    applicationDetailsErrors.value = {};
+    cpdProviderErrors.value = {};
+    resourcePersonsErrors.value = resourcePersons.value.map(() => ({}));
+    teachingLearningErrors.value = {};
+    participantDetailsErrors.value = {};
+    approvedCpdErrors.value = {};
+    setTimeout(() => {
+      successMessage.value = '';
+    }, 3000);
+    return true;
   } catch (error) {
-    console.error('Error saving draft:', error);
+    console.error('SAVE DRAFT: Error:', error);
     validationErrors.value = ['An error occurred while saving the draft.'];
-    if (error.response && error.response.data) {
-      const errorData = error.response.data; const errorMessages = [];
-      const extractErrors = (obj, prefix = '') => {
-        for (const key in obj) {
-          if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-            extractErrors(obj[key], `${prefix}${key}.`);
-          } else if (Array.isArray(obj[key])) {
-             errorMessages.push(`${prefix}${key}: ${obj[key].join(', ')}`);
-          } else {
-            errorMessages.push(`${prefix}${key}: ${obj[key]}`);
-          }
-        }
-      };
-      extractErrors(errorData);
-      if (errorMessages.length > 0) validationErrors.value = errorMessages;
-      else validationErrors.value = ['Error saving draft. Please check your input.'];
+    if (error.response?.data) {
+      const errorMessages = Object.values(error.response.data).flat();
+      validationErrors.value = [...validationErrors.value, ...errorMessages];
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return false;
   } finally {
     loading.value = false;
+    console.log('SAVE DRAFT: Completed, loading:', loading.value);
   }
 };
 
+
 const handleSubmit = () => {
-  if (validateForm()) {
+  console.log('HANDLE SUBMIT CLICKED - Function Entry');
+  const isValidNow = validateForm(false);
+  console.log('HANDLE SUBMIT - isValidNow:', isValidNow);// false means not for draft
+  if (isValidNow) {
+    console.log('HANDLE SUBMIT - Form is valid, showing confirmation');
     showConfirmation.value = true;
   } else {
+    console.log('HANDLE SUBMIT - Form is INVALID');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 };
 
 const confirmSubmit = async () => {
+  console.log('CONFIRM SUBMIT CLICKED - Function Entry');
   showConfirmation.value = false;
-  if (!validateForm()) { // Re-validate before actual submission
+  const isValidNow = validateForm(false);
+  console.log('CONFIRM SUBMIT - isValidNow (re-validation):', isValidNow); // Re-validate before actual submission
+  if (!isValidNow) {
+    console.log('CONFIRM SUBMIT - Form is INVALID on re-validation');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     return;
   }
@@ -608,7 +797,14 @@ const confirmSubmit = async () => {
     const response = await apiService.createMhpcCpdTask(formData);
     console.log('Form submitted successfully', response.data);
     successMessage.value = 'CPD application submitted successfully!';
-    setTimeout(() => { router.push('/health_certification/track_cpd_applications'); }, 2000);
+    validationErrors.value = [];
+    applicantDetailsErrors.value = {}; applicationDetailsErrors.value = {}; cpdProviderErrors.value = {};
+    resourcePersonsErrors.value = []; teachingLearningErrors.value = {}; participantDetailsErrors.value = {};
+    approvedCpdErrors.value = {};
+
+    setTimeout(() => {
+      router.push('/health_certification/track_cpd_applications');
+    }, 2000);
   } catch (error) {
     console.error('Error submitting form:', error);
     validationErrors.value = ['An error occurred while submitting the form.'];
@@ -653,25 +849,20 @@ const fetchUserRegistrations = async () => {
     }
   } catch (error) {
     console.error('Error fetching user registrations:', error);
+    validationErrors.value.push('Error fetching user registrations for lookup.');
   }
 };
 
 const loadDropdownOptions = async () => {
+  console.log('loadDropdownOptions: Starting...');
   loading.value = true;
-  participantFormKey.value++; // Increment key to force re-mount of child if this is called again
   areOptionsLoaded.value = false;
 
-  // Clear existing options
-  agencyOptions.value = [];
-  reasonOptions.value = [];
-  cpdTypeOptions.value = [];
-  methodologyOptions.value = [];
   participationCategoryOptions.value = [];
   participantSubcategoryOptions.value = [];
 
-  console.log("PARENT: loadDropdownOptions START. participantSubcategoryOptions cleared.");
-
   try {
+    console.log('loadDropdownOptions: About to call Promise.all');
     const [
       agencyResponse,
       reasonResponse,
@@ -685,39 +876,60 @@ const loadDropdownOptions = async () => {
       apiService.getMhpcMastersSingleCpdActivity(),
       apiService.getMhpcMastersCpdMethodologies(),
       apiService.getMhpcMasterData('personnel-categories'),
-      apiService.getMhpcMastersSubCategories()
+      apiService.getMhpcMastersSubCategories(),
     ]);
 
-    agencyOptions.value = agencyResponse?.data?.results.map(item => ({ text: item.name, value: item.id })) || [];
-    reasonOptions.value = reasonResponse?.data?.results.map(item => ({ text: item.name, value: item.id })) || [];
-    cpdTypeOptions.value = cpdTypeResponse?.data?.results.map(item => ({ text: item.cme_activity_name, value: item.id })) || [];
-    methodologyOptions.value = methodologyResponse?.data?.results.map(item => ({ text: item.methodology_name, value: item.id })) || [];
+    console.log('loadDropdownOptions: Promise.all resolved.');
+    // console.log('RAW categoriesResponse:', JSON.stringify(categoriesResponse, null, 2));
+    // console.log('RAW subcategoriesResponse:', JSON.stringify(subcategoriesResponse, null, 2));
 
-    if (categoriesResponse?.data?.results) {
-      participationCategoryOptions.value = categoriesResponse.data.results.map(category => ({
+
+    if (categoriesResponse && categoriesResponse.data && categoriesResponse.data.results) {
+      // console.log('categoriesResponse.data.results:', JSON.stringify(categoriesResponse.data.results, null, 2));
+      participationCategoryOptions.value = categoriesResponse.data.results.map((category) => ({
         text: category.category_name,
         value: category.id,
       }));
+      // console.log('MAPPED participationCategoryOptions.value:', JSON.stringify(participationCategoryOptions.value, null, 2));
+    } else {
+      console.error('loadDropdownOptions: categoriesResponse structure is NOT as expected.');
+      participationCategoryOptions.value = [];
     }
 
-    if (subcategoriesApiResponse?.data?.results && Array.isArray(subcategoriesApiResponse.data.results)) {
-      participantSubcategoryOptions.value = subcategoriesApiResponse.data.results.map(subcategory => ({
+    if (subcategoriesResponse && subcategoriesResponse.data && subcategoriesResponse.data.results) {
+      // console.log('subcategoriesResponse.data.results:', JSON.stringify(subcategoriesResponse.data.results, null, 2));
+      participantSubcategoryOptions.value = subcategoriesResponse.data.results.map((subcategory) => ({
         text: subcategory.sub_category_name,
         value: subcategory.id,
-        categoryId: subcategory.category_id || subcategory.category, // Adjust if API field name is different
+        categoryId: subcategory.category_name, // Backend field, maps to category ID
       }));
-      console.log("PARENT: MAPPED participantSubcategoryOptions.value:", safeLogValue(participantSubcategoryOptions.value));
+      // console.log('MAPPED participantSubcategoryOptions.value:', JSON.stringify(participantSubcategoryOptions.value, null, 2));
     } else {
-      console.error("PARENT: No results in subcategoriesApiResponse or not an array. Setting subcategories to empty.");
+      console.error('loadDropdownOptions: subcategoriesResponse structure is NOT as expected.');
       participantSubcategoryOptions.value = [];
     }
 
+    agencyOptions.value =
+      agencyResponse?.data?.results.map((item) => ({ text: item.name, value: item.id })) || [];
+    reasonOptions.value =
+      reasonResponse?.data?.results.map((item) => ({ text: item.name, value: item.id })) || [];
+    cpdTypeOptions.value =
+      cpdTypeResponse?.data?.results.map((item) => ({
+        text: item.cpd_activity_name,
+        value: item.id,
+      })) || [];
+    methodologyOptions.value =
+      methodologyResponse?.data?.results.map((item) => ({
+        text: item.methodology_name,
+        value: item.id,
+      })) || [];
+
   } catch (error) {
-    console.error('PARENT: Error in loadDropdownOptions (Promise.all):', error);
-    validationErrors.value = ['Error loading form data. Please refresh the page.'];
-    // Ensure options are empty on error
+    console.error('loadDropdownOptions: CRITICAL ERROR:', error);
+    validationErrors.value.push('Error loading critical form data. Please refresh.');
+    participationCategoryOptions.value = [];
     participantSubcategoryOptions.value = [];
-    participationCategoryOptions.value = []; // etc. for other options
+    agencyOptions.value = []; reasonOptions.value = []; cpdTypeOptions.value = []; methodologyOptions.value = [];
   } finally {
     console.log("PARENT: loadDropdownOptions FINALLY block. Current participantSubcategoryOptions.value:", safeLogValue(participantSubcategoryOptions.value));
     await nextTick();
@@ -738,39 +950,67 @@ const loadDropdownOptions = async () => {
       safeLogValue(participantSubcategoryOptions.value)
     );
     areOptionsLoaded.value = true;
-    console.log("PARENT: areOptionsLoaded set to true. participantSubcategoryOptions.value still:", safeLogValue(participantSubcategoryOptions.value));
+    console.log('loadDropdownOptions: FINALLY block. areOptionsLoaded:', areOptionsLoaded.value);
+    console.log('------------------- END loadDropdownOptions -------------------');
   }
 };
 
 onMounted(async () => {
-  applicant.cidNumber = authStore.user?.cid || '';
-  applicant.fullName = [authStore.user?.first_name, authStore.user?.middle_name, authStore.user?.last_name].filter(Boolean).join(' ') || '';
+  console.log('onMounted: Initial modelValue:', props.modelValue);
+  // Clear initial errors
+  validationErrors.value = [];
+  applicantDetailsErrors.value = {};
+  applicationDetailsErrors.value = {};
+  cpdProviderErrors.value = {};
+  resourcePersonsErrors.value = resourcePersons.value.map(() => ({}));
+  teachingLearningErrors.value = {};
+  participantDetailsErrors.value = {};
+  approvedCpdErrors.value = {};
 
-  watch(() => participantDetails.category, (newVal, oldVal) => {
-    console.log(`PARENT: participantDetails.category changed from ${safeLogValue(oldVal)} to ${safeLogValue(newVal)}`);
-    // If subcategory depends on category, you might want to clear it here:
-    // if (newVal !== oldVal) {
-    //   participantDetails.subcategory = '';
-    // }
-  }, { deep: true }); // Add deep if category is an object, not needed for simple value
-
-  await fetchUserRegistrations();
-  await loadDropdownOptions(); // This will also increment the key
-
-  // Initialize form from modelValue if provided (e.g., for editing)
-  if (props.modelValue) {
+  if (props.modelValue && Object.keys(props.modelValue).length > 0) {
     application.isApproved = props.modelValue.isApproved ? 'true' : 'false';
     application.title = props.modelValue.title || '';
     application.venue = props.modelValue.venue || '';
     application.fromDate = props.modelValue.fromDate || '';
     application.toDate = props.modelValue.toDate || '';
-    // approvalLetter is a ref, handle its initialization if needed from modelValue
+    if (props.modelValue.approvalLetter instanceof File) {
+      approvalLetter.value = props.modelValue.approvalLetter;
+    }
+  } else {
+    console.warn('No modelValue provided, using default application state');
   }
-  isCpdApproved.value = application.isApproved === 'true'; // Sync based on application state
 
-  watch(() => application.isApproved, (newIsApproved) => {
-    isCpdApproved.value = newIsApproved === 'true';
-    // Potentially reset fields if isApproved changes, handled by toggleApprovedFields
-  }, { immediate: true });
+  applicant.cidNumber = authStore.user?.cid || '';
+  applicant.fullName = [authStore.user?.first_name, authStore.user?.middle_name, authStore.user?.last_name]
+    .filter(Boolean)
+    .join(' ') || '';
+
+  await fetchUserRegistrations();
+  await loadDropdownOptions();
 });
+watch(teachingMethod, (newMethod) => {
+  console.log('teachingMethod:', newMethod);
+}, { deep: true });
+watch(selectedMethodologies, (newMethods) => {
+  console.log('selectedMethodologies:', newMethods);
+}, { deep: true });
+watch(teachingMethods, (newMethods) => {
+  console.log('teachingMethods:', newMethods);
+}, { deep: true });
+console.log('courseDocument:', courseDocument.value);
+watch(applicant, (newApplicant) => {
+  console.log('applicant:', newApplicant);
+}, { deep: true });
+watch(cpdProvider, (newProvider) => {
+  console.log('cpdProvider:', newProvider);
+}, { deep: true });
+watch([loading, isFormValid], ([newLoading, newIsFormValid]) => {
+  console.log('FormActions: loading:', newLoading, 'isValid:', newIsFormValid);
+});
+
+// Optional: If you want initial validation errors to show on load (e.g., for an empty form)
+// Be cautious with this if loading existing data that might initially be invalid before user interaction.
+// if (!props.modelValue || Object.keys(props.modelValue).length === 0) { // Example: only for new forms
+//   validateForm(false);
+// }
 </script>

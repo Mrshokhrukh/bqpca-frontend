@@ -115,6 +115,7 @@ import MHPCUserProfile from '@/components/dashboard/mhpccomponents/user/MHPCUser
 import ProviderDashboard from '@/components/dashboard/mhpccomponents/cpdCpdProvider/ProviderDashboard.vue'
 import CPDApplicationDetails from '@/components/dashboard/mhpccomponents/cpdCpdProvider/CPDApplicationDetails.vue'
 import CPDApplicationTracker from '@/components/dashboard/mhpccomponents/cpdCpdProvider/CPDApplicationTracker.vue'
+import CpdProviderApplicationForm from '@/components/dashboard/mhpccomponents/cpdCpdProvider/CpdProviderApplicationForm.vue'
 
 //institute components
 import InstituteEoiApplication from '@/components/dashboard/mhpccomponents/institutions/InstituteEoiApplication.vue'
@@ -301,6 +302,8 @@ const bmhCmeCpdProviderComponent = computed(() => {
       return CPDApplicationTracker
     case path.endsWith('/health_certification/cpd_approved_add_participants'):
       return CPDapprovedAddParticipants
+    case path.endsWith('/health_certification/cpd_provider_application_form'):  
+      return CpdProviderApplicationForm  
     default:
       return null
   }

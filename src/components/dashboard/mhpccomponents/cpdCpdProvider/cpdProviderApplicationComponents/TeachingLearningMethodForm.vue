@@ -33,9 +33,14 @@
             <label for="typeCPD" class="block text-sm font-medium text-gray-700 mb-1">
               Type of CPD <span class="text-red-500">*</span>
             </label>
+            <div v-if="cpdTypeOptions.length === 0" class="text-red-500 text-sm">
+              No CPD types available. Please try again later.
+            </div>
             <select
+              v-else
               id="typeCPD"
               :value="teachingMethod.type"
+              @change="updateTeachingMethodProperty('type', $event.target.value)"
               class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 bg-white transition-colors duration-200"
             >
               <option value="" disabled>Select Type</option>
@@ -43,6 +48,7 @@
                 {{ type.text }}
               </option>
             </select>
+            <p v-if="errors?.type" class="text-xs text-red-500 mt-1">{{ errors.type }}</p>
           </div>
 
           <!-- Course Document -->
@@ -55,6 +61,7 @@
                 type="file"
                 id="courseDocument"
                 @change="handleCourseDocumentUpload"
+                accept="application/pdf"
                 class="hidden"
               />
               <label
@@ -73,6 +80,7 @@
               </svg>
               Accepted file format: PDF (max 5MB)
             </p>
+            <p v-if="errors?.courseDocument" class="text-xs text-red-500 mt-1">{{ errors.courseDocument }}</p>
           </div>
         </div>
       </div>
@@ -85,10 +93,13 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </span>
-          Teaching Methodologies
+          Teaching Methodologies <span class="text-red-500 ml-1">*</span>
         </h4>
 
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div v-if="methodologyOptions.length === 0" class="text-red-500 text-sm">
+          No methodologies available. Please try again later.
+        </div>
+        <div v-else class="grid grid-cols-2 md:grid-cols-3 gap-3">
           <div
             v-for="method in methodologyOptions"
             :key="method.value"
@@ -97,8 +108,9 @@
             <input
               type="checkbox"
               :id="'method-' + method.value"
-              :model-value="selectedMethodologies"
               :value="method.value"
+              :checked="selectedMethodologies.includes(method.value)"
+              @change="handleMethodologySelection(method.value)"
               class="peer absolute h-0 w-0 opacity-0"
             />
             <label
@@ -114,6 +126,7 @@
             </label>
           </div>
         </div>
+        <p v-if="errors?.selectedMethodologies" class="text-xs text-red-500 mt-1">{{ errors.selectedMethodologies }}</p>
       </div>
 
       <!-- Section 3: Expected Outcome -->
@@ -124,17 +137,19 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </span>
-          Objective & Expected Outcome
+          Objective & Expected Outcome <span class="text-red-500 ml-1">*</span>
         </h4>
 
         <div>
           <textarea
             id="expectedOutcome"
             :value="teachingMethod.expectedOutcome"
+            @input="updateTeachingMethodProperty('expectedOutcome', $event.target.value)"
             class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-3 bg-white transition-colors duration-200"
             rows="4"
             placeholder="Describe the expected outcomes and learning objectives..."
           ></textarea>
+          <p v-if="errors?.expectedOutcome" class="text-xs text-red-500 mt-1">{{ errors.expectedOutcome }}</p>
         </div>
       </div>
 
@@ -168,7 +183,8 @@
                 </label>
                 <input
                   type="text"
-                  v-model="method.activity"
+                  :value="method.activity"
+                  @input="updateTeachingActivity(index, 'activity', $event.target.value)"
                   placeholder="Enter activity name"
                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
                 />
@@ -179,8 +195,8 @@
                 </label>
                 <input
                   type="number"
-                  v-model.number="method.duration"
-                  @input="calculateTotalHours"
+                  :value="method.duration"
+                  @input="updateTeachingActivity(index, 'duration', parseFloat($event.target.value) || null); calculateTotalHours()"
                   min="0"
                   step="0.5"
                   placeholder="0.0"
@@ -200,6 +216,7 @@
               </div>
             </div>
           </div>
+          <p v-if="errors?.teachingMethods" class="text-xs text-red-500 mt-1">{{ errors.teachingMethods }}</p>
 
           <div class="flex justify-between items-center">
             <button
@@ -224,17 +241,56 @@
 </template>
 
 <script setup>
-defineProps({
+import { defineProps, defineEmits } from 'vue';
+
+const props = defineProps({
   teachingMethod: Object,
   cpdTypeOptions: Array,
   methodologyOptions: Array,
-  teachingMethods: Array,
-  selectedMethodologies: Array,
+  teachingMethods: Array,       // Used with v-model:teachingMethods
+  selectedMethodologies: Array, // Used with v-model:selectedMethodologies
   totalHours: Number,
   courseDocument: Object,
   handleCourseDocumentUpload: Function,
   addTeachingMethod: Function,
   removeTeachingMethod: Function,
   calculateTotalHours: Function,
-})
+  // errors: Object, // Uncomment if you pass errors to this component
+});
+
+const emit = defineEmits([
+  'update:selectedMethodologies',
+  'update:teachingMethods',
+  'updateTeachingMethodProperty' // Custom event for properties of teachingMethod object
+]);
+
+// For properties of the `teachingMethod` object (like type, expectedOutcome)
+function updateTeachingMethodProperty(property, value) {
+  emit('updateTeachingMethodProperty', { property, value });
+}
+
+// For the `selectedMethodologies` array (checkbox group)
+function handleMethodologySelection(methodologyId) {
+  const newSelection = [...props.selectedMethodologies];
+  const index = newSelection.indexOf(methodologyId);
+  if (index > -1) {
+    newSelection.splice(index, 1); // Uncheck: remove
+  } else {
+    newSelection.push(methodologyId); // Check: add
+  }
+  emit('update:selectedMethodologies', newSelection);
+}
+
+// For items within the `teachingMethods` array (activities & durations)
+// This makes the v-model:teachingMethods on the parent work correctly
+// if you want to avoid direct prop mutation.
+function updateTeachingActivity(index, property, value) {
+  const newTeachingMethods = props.teachingMethods.map((item, i) => {
+    if (i === index) {
+      return { ...item, [property]: value };
+    }
+    return item;
+  });
+  emit('update:teachingMethods', newTeachingMethods);
+}
 </script>
