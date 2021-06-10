@@ -117,7 +117,7 @@
 
       <div v-if="calculatedTotalHours > 0" class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
         <p class="text-sm text-blue-800 font-medium">
-          Total Hours: {{ calculatedTotalHours }} | Total Credits: {{ calculatedTotalHours }}
+          Total Hours: {{ calculatedTotalHours }}
         </p>
       </div>
     </div>
