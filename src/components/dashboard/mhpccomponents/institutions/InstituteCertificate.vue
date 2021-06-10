@@ -76,9 +76,8 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
 
-const props = defineProps({
+defineProps({
   instituteName: {
     type: String,
     required: true,

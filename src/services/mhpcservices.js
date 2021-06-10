@@ -2,63 +2,63 @@ import apiClient from './apiClient'
 
 export default {
   getMhpcMastersCpdActivities() {
-    return apiClient.get('/mhpc/masters-cpd-activities/')
+    return apiClient.get('/mhpc/masters-cme-activities/')
   },
   createMhpcMastersCpdActivity(data) {
-    return apiClient.post('/mhpc/masters-cpd-activities/', data)
+    return apiClient.post('/mhpc/masters-cme-activities/', data)
   },
   getMhpcMastersCpdActivity(id) {
-    return apiClient.get(`/mhpc/masters-cpd-activities/${id}/`)
+    return apiClient.get(`/mhpc/masters-cme-activities/${id}/`)
   },
   updateMhpcMastersCpdActivity(id, data) {
-    return apiClient.put(`/mhpc/masters-cpd-activities/${id}/`, data)
+    return apiClient.put(`/mhpc/masters-cme-activities/${id}/`, data)
   },
   patchMhpcMastersCpdActivity(id, data) {
-    return apiClient.patch(`/mhpc/masters-cpd-activities/${id}/`, data)
+    return apiClient.patch(`/mhpc/masters-cme-activities/${id}/`, data)
   },
   deleteMhpcMastersCpdActivity(id) {
-    return apiClient.delete(`/mhpc/masters-cpd-activities/${id}/`)
+    return apiClient.delete(`/mhpc/masters-cme-activities/${id}/`)
   },
 
   // Masters CPD Credits
   getMhpcMastersCpdCredits() {
-    return apiClient.get('/mhpc/masters-cpd-credits/')
+    return apiClient.get('/mhpc/masters-cme-credits/')
   },
   createMhpcMastersCpdCredit(data) {
-    return apiClient.post('/mhpc/masters-cpd-credits/', data)
+    return apiClient.post('/mhpc/masters-cme-credits/', data)
   },
 
   getMhpcMastersCpdCredit(id) {
-    return apiClient.get(`/mhpc/masters-cpd-credits/${id}/`)
+    return apiClient.get(`/mhpc/masters-cme-credits/${id}/`)
   },
   updateMhpcMastersCpdCredit(id, data) {
-    return apiClient.put(`/mhpc/masters-cpd-credits/${id}/`, data)
+    return apiClient.put(`/mhpc/masters-cme-credits/${id}/`, data)
   },
   patchMhpcMastersCpdCredit(id, data) {
-    return apiClient.patch(`/mhpc/masters-cpd-credits/${id}/`, data)
+    return apiClient.patch(`/mhpc/masters-cme-credits/${id}/`, data)
   },
   deleteMhpcMastersCpdCredit(id) {
-    return apiClient.delete(`/mhpc/masters-cpd-credits/${id}/`)
+    return apiClient.delete(`/mhpc/masters-cme-credits/${id}/`)
   },
 
   // Masters CPD Methodologies
   getMhpcMastersCpdMethodologies() {
-    return apiClient.get('/mhpc/masters-cpd-methodologies/')
+    return apiClient.get('/mhpc/masters-cpd-task-methodologies/')
   },
   createMhpcMastersCpdMethodology(data) {
-    return apiClient.post('/mhpc/masters-cpd-methodologies/', data)
+    return apiClient.post('/mhpc/masters-cpd-task-methodologies/', data)
   },
   getMhpcMastersCpdMethodology(id) {
-    return apiClient.get(`/mhpc/masters-cpd-methodologies/${id}/`)
+    return apiClient.get(`/mhpc/masters-cpd-task-methodologies/${id}/`)
   },
   updateMhpcMastersCpdMethodology(id, data) {
-    return apiClient.put(`/mhpc/masters-cpd-methodologies/${id}/`, data)
+    return apiClient.put(`/mhpc/masters-cpd-task-methodologies/${id}/`, data)
   },
   patchMhpcMastersCpdMethodology(id, data) {
-    return apiClient.patch(`/mhpc/masters-cpd-methodologies/${id}/`, data)
+    return apiClient.patch(`/mhpc/masters-cpd-task-methodologies/${id}/`, data)
   },
   deleteMhpcMastersCpdMethodology(id) {
-    return apiClient.delete(`/mhpc/masters-cpd-methodologies/${id}/`)
+    return apiClient.delete(`/mhpc/masters-cpd-task-methodologies/${id}/`)
   },
 
   // Masters CPD Single Activity
@@ -722,7 +722,7 @@ export default {
   deleteMhpcTeachingCenter(id) {
     return apiClient.delete(`/mhpc/mhpc-teaching-centers/${id}/`)
   },
-  
+
   // MHPC CPD Records
   getMhpcCpdRecords() {
     return apiClient.get('/mhpc/mhpc-cpd-records/')

@@ -608,12 +608,12 @@ const serviceSpecificMenuItems = {
     ],
   },
   health_certification: {
-    // ... (User, Admin, Dealing Officer, CME/CPD Provider sections for health_certification unchanged) ...
     user: [
       {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
+        // Controlled by: visibleMenus.baseMenus.dashboard
         hidden: () => {
           const store = useHealthCertificationStore()
           return !store.visibleMenus.baseMenus.dashboard
@@ -622,30 +622,45 @@ const serviceSpecificMenuItems = {
       {
         name: 'Registration Services',
         icon: getIconComponent('ClipboardCheck'),
+        // Controlled by: visibleMenus.baseMenus.certification
         hidden: () => {
           const store = useHealthCertificationStore()
           return !store.visibleMenus.baseMenus.certification
         },
+        // The children are dynamically generated based on the user's state
         children: () => {
           const store = useHealthCertificationStore()
           const items = []
+
+          // Shows 'Apply for Registration' based on the corresponding flag.
+          // Visible for new users or users who can add more qualifications.
           if (store.visibleMenus.certificationSubMenus.applyForCertification) {
             items.push({
               name: 'Apply for Registration',
               route: (serviceType) => `/admin/user/${serviceType}/registration`,
             })
           }
+
+          // Shows 'Track My Registration' if the user has a submitted application.
           if (store.visibleMenus.certificationSubMenus.myApplications) {
             items.push({
               name: 'Track My Registration',
               route: (serviceType) => `/admin/user/${serviceType}/my_applications`,
             })
           }
-          items.push({
-            name: 'Registration Renewal',
-            route: (serviceType) => `/admin/user/${serviceType}/renewal`,
-            badge: store.visibleMenus.hasRenewalInProgress ? 'In Progress' : null,
-          })
+
+          // Shows the renewal link only during the renewal period or if expired.
+          if (store.visibleMenus.certificationSubMenus.renewal) {
+            items.push({
+              // DYNAMIC NAME: The text changes based on the 'isExpired' flag.
+              name: store.visibleMenus.isExpired ? 'Re-registration' : 'Registration Renewal',
+              route: (serviceType) => `/admin/user/${serviceType}/renewal`,
+              // DYNAMIC BADGE: Shows an "In Progress" badge if a renewal is pending.
+              badge: store.visibleMenus.hasRenewalInProgress ? 'In Progress' : null,
+            })
+          }
+
+          // Shows 'Additional Qualification' for users with an approved status.
           if (store.visibleMenus.certificationSubMenus.additionalQualification) {
             items.push({
               name: 'Additional Qualification Registration',
@@ -658,6 +673,7 @@ const serviceSpecificMenuItems = {
       {
         name: 'CPD Services',
         icon: getIconComponent('BookOpen'),
+        // Controlled by: visibleMenus.baseMenus.cpdManagement
         hidden: () => {
           const store = useHealthCertificationStore()
           return !store.visibleMenus.baseMenus.cpdManagement
@@ -676,6 +692,7 @@ const serviceSpecificMenuItems = {
       {
         name: 'CoGS Services',
         icon: getIconComponent('Award'),
+        // Controlled by: visibleMenus.baseMenus.cogsManagement
         hidden: () => {
           const store = useHealthCertificationStore()
           return !store.visibleMenus.baseMenus.cogsManagement
@@ -694,9 +711,9 @@ const serviceSpecificMenuItems = {
       {
         name: 'Counselor Services',
         icon: getIconComponent('Users'),
+        // Controlled by: visibleMenus.baseMenus.counselorManagement
         hidden: () => {
           const store = useHealthCertificationStore()
-          // Assuming 'counselorManagement' exists in visibleMenus.baseMenus
           return !store.visibleMenus.baseMenus.counselorManagement
         },
         children: [
@@ -714,6 +731,7 @@ const serviceSpecificMenuItems = {
         name: 'Profile',
         icon: getIconComponent('UserCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/user_profile`,
+        // Controlled by: visibleMenus.baseMenus.profile
         hidden: () => {
           const store = useHealthCertificationStore()
           return !store.visibleMenus.baseMenus.profile

@@ -269,7 +269,7 @@ const paginatedCpdActivities = computed(() => {
 const handleSubmit = async () => {
   try {
     if (isEditing.value) {
-      const response = await apiServices.updateMhpcMastersCpdActivity(
+      const response = await apiServices.updateMhpcMastersSingleCpdActivity(
         formData.value.id,
         formData.value,
       )
@@ -278,7 +278,7 @@ const handleSubmit = async () => {
         cpdActivities.value[index] = response.data
       }
     } else {
-      const response = await apiServices.createMhpcMastersCpdActivity(formData.value)
+      const response = await apiServices.createMhpcMastersSingleCpdActivity(formData.value)
       cpdActivities.value.push(response.data)
     }
     resetForm()
@@ -310,7 +310,7 @@ const confirmDelete = async () => {
   if (!cpdActivityToDelete.value) return
 
   try {
-    await apiServices.deleteMhpcMastersCpdActivity(cpdActivityToDelete.value.id)
+    await apiServices.deleteMhpcMastersSingleCpdActivity(cpdActivityToDelete.value.id)
     const index = cpdActivities.value.findIndex((dt) => dt.id === cpdActivityToDelete.value.id)
     if (index !== -1) {
       cpdActivities.value.splice(index, 1)

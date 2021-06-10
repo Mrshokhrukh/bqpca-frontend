@@ -164,8 +164,8 @@ const iconMap = {
   cogsManagement: Briefcase,
 }
 
-// Base path for admin engineering routes
-const basePath = '/admin/admin/engineering_certification'
+// Base path for admin MHPC routes
+const basePath = '/admin/admin/MHPC_certification'
 
 // --- Configuration Cards Data ---
 const configurationCards = [
@@ -224,7 +224,7 @@ const configurationCards = [
   {
     id: 'documentManagement',
     title: 'Document Management',
-    description: 'Manage engineering document types and configurations',
+    description: 'Manage MHPC document types and configurations',
     countLabel: 'Total Types',
     countRef: 'documentTypes',
     countSuffix: 'types',
@@ -255,7 +255,7 @@ const configurationCards = [
   {
     id: 'feeManagement',
     title: 'Fee Management',
-    description: 'Configure engineering fee structures and settings',
+    description: 'Configure MHPC fee structures and settings',
     countLabel: 'Fee Structures',
     countRef: 'feeStructures',
     countSuffix: 'structures',
@@ -281,7 +281,7 @@ const configurationCards = [
   {
     id: 'participation',
     title: 'Participation',
-    description: 'Manage engineering participation categories',
+    description: 'Manage MHPC participation categories',
     countLabel: 'Categories',
     countRef: 'participationCategories',
     countSuffix: 'categories',
@@ -307,7 +307,7 @@ const configurationCards = [
   {
     id: 'personnel',
     title: 'Personnel',
-    description: 'Manage engineering personnel categories and qualifications',
+    description: 'Manage MHPC personnel categories and qualifications',
     countLabel: 'Categories',
     countRef: 'personnelCategories',
     countSuffix: 'categories',
@@ -338,7 +338,7 @@ const configurationCards = [
   {
     id: 'registration',
     title: 'Registration',
-    description: 'Manage engineering registration types and settings',
+    description: 'Manage MHPC registration types and settings',
     countLabel: 'Types',
     countRef: 'registrationTypes',
     countSuffix: 'types',
@@ -369,7 +369,7 @@ const configurationCards = [
   {
     id: 'university',
     title: 'University',
-    description: 'Manage engineering universities and institutions',
+    description: 'Manage MHPC universities and institutions',
     countLabel: 'Universities',
     countRef: 'universities',
     countSuffix: 'institutions',
@@ -390,7 +390,7 @@ const configurationCards = [
   {
     id: 'cogsManagement',
     title: 'COGS Management',
-    description: 'Manage engineering COGS agencies and workplaces',
+    description: 'Manage MHPC COGS agencies and workplaces',
     countLabel: 'Agencies',
     countRef: 'cogsAgencies',
     countSuffix: 'agencies',

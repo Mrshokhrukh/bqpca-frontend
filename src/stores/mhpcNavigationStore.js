@@ -27,10 +27,6 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
     return userApplications[0] || null
   })
 
-  const hasApplication = computed(() => {
-    return Boolean(currentUserApplication.value)
-  })
-
   const hasSubmittedApplication = computed(() => {
     const application = currentUserApplication.value
     return Boolean(application?.user_qualifications?.length)
@@ -46,53 +42,98 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
     const application = currentUserApplication.value
     if (!application?.expiry_date || !hasApprovedQualification.value) return false
 
-    // Use dayjs for more accurate date calculations
     const expiryDate = dayjs(application.expiry_date)
     const today = dayjs()
-
-    // Check if we're within 3 months of expiry
     const threeMonthsBefore = expiryDate.subtract(3, 'month')
 
-    // Return true if today is after or equal to threeMonthsBefore AND before expiry date
     return (
       (today.isAfter(threeMonthsBefore) || today.isSame(threeMonthsBefore, 'day')) &&
       today.isBefore(expiryDate)
     )
   })
 
+  const isExpired = computed(() => {
+    const application = currentUserApplication.value
+    if (!application?.expiry_date || !hasApprovedQualification.value) return false
+    return dayjs().isAfter(dayjs(application.expiry_date), 'day')
+  })
+
   const hasPendingRenewalApplication = computed(() => {
     if (!applicationDetails.value?.results || applicationDetails.value.results.length === 0) {
       return false
     }
-
-    // Filter applications to find renewals that are pending review
     const pendingRenewals = applicationDetails.value.results.filter((app) => {
-      // Check if this is a renewal application
       const isRenewalType = app.registration_type?.name?.toLowerCase().includes('renewal')
-
-      // Check if it's still under review (not approved/rejected)
       const isPending = app.user_qualifications?.some(
         (qual) =>
           qual.application_review_status === 'Pending' ||
           qual.physical_review_status === 'Pending' ||
           qual.endorsement_decision === 'Pending',
       )
-
       return isRenewalType && isPending
     })
-
     return pendingRenewals.length > 0
   })
 
+  // =================================================================
+  // MODIFIED SECTION: The entire visibleMenus logic is restructured.
+  // =================================================================
   const visibleMenus = computed(() => {
-    // 1. After Registration (but before application):
-    if (!hasSubmittedApplication.value) {
+    const authStore = useAuthStore()
+    const isCounselor = authStore.user?.is_counselor || false
+
+    // State 3: User has an Approved Qualification (active, in renewal, or expired)
+    if (hasApprovedQualification.value) {
       return {
         baseMenus: {
           dashboard: true,
-          certification: true,
+          certification: true, // ALWAYS true for qualified users
+          cpdManagement: true,
+          cogsManagement: true,
+          counselorManagement: isCounselor,
+          profile: true,
+        },
+        certificationSubMenus: {
+          applyForCertification: true,
+          myApplications: true,
+          // Show renewal link if in renewal period OR if it's expired
+          renewal: isRenewalPeriod.value || isExpired.value,
+          additionalQualification: true,
+        },
+        hasRenewalInProgress: hasPendingRenewalApplication.value,
+        isExpired: isExpired.value,
+      }
+    }
+    // State 2: User has submitted but is not yet approved
+    else if (hasSubmittedApplication.value) {
+      return {
+        baseMenus: {
+          dashboard: true,
+          certification: true, // True, so they can track it
           cpdManagement: false,
           cogsManagement: false,
+          counselorManagement: isCounselor,
+          profile: true,
+        },
+        certificationSubMenus: {
+          applyForCertification: true,
+          myApplications: true, // Main difference is this is now true
+          renewal: false,
+          additionalQualification: false,
+        },
+        hasRenewalInProgress: false,
+        isExpired: false,
+      }
+    }
+    // State 1: New user or any other case (default)
+    else {
+      return {
+        baseMenus: {
+          dashboard: true,
+          certification: true, // True, so they can apply
+          cpdManagement: false,
+          cogsManagement: false,
+          counselorManagement: isCounselor,
           profile: true,
         },
         certificationSubMenus: {
@@ -102,80 +143,8 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
           additionalQualification: false,
         },
         hasRenewalInProgress: false,
+        isExpired: false,
       }
-    }
-
-    // 2. Once Application is Applied (but not yet approved):
-    if (hasSubmittedApplication.value && !hasApprovedQualification.value) {
-      return {
-        baseMenus: {
-          dashboard: true,
-          certification: true,
-          cpdManagement: false,
-          cogsManagement: false,
-          profile: true,
-        },
-        certificationSubMenus: {
-          applyForCertification: true,
-          myApplications: true,
-          renewal: false,
-          additionalQualification: false,
-        },
-        hasRenewalInProgress: false,
-      }
-    }
-
-    // 3. Once Application is Approved:
-    if (hasApprovedQualification.value) {
-      let baseMenus = {
-        dashboard: true,
-        certification: true,
-        cpdManagement: true,
-        cogsManagement: true,
-        profile: true,
-      }
-
-      let certificationSubMenus = {
-        applyForCertification: true,
-        myApplications: true,
-        renewal: false,
-        additionalQualification: true,
-      }
-
-      // 4. Renewal Period:
-      if (isRenewalPeriod.value) {
-        // Add the hasPendingRenewalApplication check here
-        if (!hasPendingRenewalApplication.value) {
-          certificationSubMenus.renewal = true
-        } else {
-          // Still set to true but will be handled in the UI with a message
-          certificationSubMenus.renewal = true
-        }
-      }
-
-      return {
-        baseMenus,
-        certificationSubMenus,
-        hasRenewalInProgress: hasPendingRenewalApplication.value,
-      }
-    }
-
-    //default menus incase of an error
-    return {
-      baseMenus: {
-        dashboard: true,
-        certification: false,
-        cpdManagement: false,
-        cogsManagement: false,
-        profile: true,
-      },
-      certificationSubMenus: {
-        applyForCertification: false,
-        myApplications: false,
-        renewal: false,
-        additionalQualification: false,
-      },
-      hasRenewalInProgress: false,
     }
   })
 
@@ -183,7 +152,6 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
   const fetchApplicationDetails = async () => {
     isLoading.value = true
     error.value = null
-
     try {
       const response = await apiServices.getMhpcNewApplications()
       if (response?.data) {
@@ -218,16 +186,14 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
     applicationDetails,
     isLoading,
     error,
-
     // Getters
     currentUserApplication,
-    hasApplication,
     hasSubmittedApplication,
     hasApprovedQualification,
     isRenewalPeriod,
+    isExpired,
     hasPendingRenewalApplication,
     visibleMenus,
-
     // Actions
     fetchApplicationDetails,
     initialize,
