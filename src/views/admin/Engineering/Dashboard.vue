@@ -43,13 +43,8 @@
 
     <!-- Default Section (fallback) -->
     <template v-else>
-      <ApplicationTable
-        :applications="paginatedApplications"
-        :current-page="currentPage"
-        :total-results="filteredTotal"
-        :per-page="perPage"
-        @page-change="handlePageChange"
-      />
+      <ApplicationTable :applications="paginatedApplications" :current-page="currentPage" :total-results="filteredTotal"
+        :per-page="perPage" @page-change="handlePageChange" />
     </template>
   </div>
 </template>
@@ -160,6 +155,8 @@ import MastersUniversity from '@/components/dashboard/engineeringcomponents/admi
 import CogsAgency from '@/components/dashboard/engineeringcomponents/admin/CogsAgency.vue'
 import CogsDepartment from '@/components/dashboard/engineeringcomponents/admin/CogsDepartment.vue'
 import CogsWorkplace from '@/components/dashboard/engineeringcomponents/admin/CogsWorkplace.vue'
+import MasterCpdReasonforConducting from '@/components/dashboard/engineeringcomponents/admin/MasterCpdReasonforConducting.vue'
+import MasterCpdProvidingAgency from '@/components/dashboard/engineeringcomponents/admin/MasterCpdProvidingAgency.vue'
 
 const { role, user } = useAuthStore()
 const route = useRoute()
@@ -217,6 +214,10 @@ const engineeringAdminComponent = computed(() => {
       return CogsDepartment
     case path.endsWith('/engineering_certification/cogs_workplace'):
       return CogsWorkplace
+    case path.endsWith('/engineering_certification/master_cpd_reason_for_conducting'):
+      return MasterCpdReasonforConducting
+    case path.endsWith('/engineering_certification/master_cpd_providing_agency'):
+      return MasterCpdProvidingAgency
     default:
       return null
   }

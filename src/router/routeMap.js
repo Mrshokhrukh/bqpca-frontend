@@ -86,6 +86,8 @@ export default {
       cogs_agency: engineeringDashboard,
       cogs_dept: engineeringDashboard,
       cogs_workplace: engineeringDashboard,
+      master_cpd_reason_for_conducting: engineeringDashboard,
+      master_cpd_providing_agency: engineeringDashboard,
     },
     health_certification: {
       dashboard: mhpcDashboard,

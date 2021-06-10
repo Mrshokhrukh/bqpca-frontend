@@ -993,7 +993,8 @@ const serviceSpecificMenuItems = {
       {
         name: 'Apply New CPD Test',
         icon: getIconComponent('FilePlus'),
-        route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cpd_provider_application_form`,
+        route: (serviceType) =>
+          `/admin/cme_cpd_provider/${serviceType}/cpd_provider_application_form`,
       },
       {
         name: 'Track Applications',
@@ -1378,6 +1379,14 @@ const serviceSpecificMenuItems = {
           {
             name: 'CPD Activity',
             route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
+          },
+          {
+            name: 'Reason for Conducting CPD',
+            route: (serviceType) => `/admin/admin/${serviceType}/master_cpd_reason_for_conducting`,
+          },
+          {
+            name: 'CPD Providing Agency',
+            route: (serviceType) => `/admin/admin/${serviceType}/master_cpd_providing_agency`,
           },
         ],
       },
