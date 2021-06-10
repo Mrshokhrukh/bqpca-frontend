@@ -238,24 +238,6 @@
                     <p v-else class="mt-2 text-sm italic text-gray-500">No remarks</p>
                   </div>
 
-                  <!-- Endorsement Status -->
-                  <div class="rounded-lg bg-gray-50 p-4 mb-4">
-                    <div class="flex justify-between items-center">
-                      <span class="text-sm font-medium text-gray-700">Endorsement</span>
-                      <span :class="[
-                        'px-3 py-1 rounded-full text-xs font-medium',
-                        getStatusClass(application.endorsement_decision),
-                      ]">
-                        {{ application.endorsement_decision }}
-                      </span>
-                    </div>
-                    <p v-if="application.endorsement_remark"
-                      class="mt-2 text-sm text-gray-700 p-2 bg-white rounded border border-gray-100">
-                      {{ application.endorsement_remark }}
-                    </p>
-                    <p v-else class="mt-2 text-sm italic text-gray-500">No remarks</p>
-                  </div>
-
                   <!-- Payment Status -->
                   <div class="rounded-lg bg-gray-50 p-4 mb-6">
                     <div class="flex justify-between items-center">
@@ -273,6 +255,24 @@
                       Payment ID:
                       <span class="font-medium">{{ application.payment_id }}</span>
                     </p>
+                  </div>
+
+                  <!-- Endorsement Status -->
+                  <div class="rounded-lg bg-gray-50 p-4 mb-4">
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm font-medium text-gray-700">Endorsement</span>
+                      <span :class="[
+                        'px-3 py-1 rounded-full text-xs font-medium',
+                        getStatusClass(application.endorsement_decision),
+                      ]">
+                        {{ application.endorsement_decision }}
+                      </span>
+                    </div>
+                    <p v-if="application.endorsement_remark"
+                      class="mt-2 text-sm text-gray-700 p-2 bg-white rounded border border-gray-100">
+                      {{ application.endorsement_remark }}
+                    </p>
+                    <p v-else class="mt-2 text-sm italic text-gray-500">No remarks</p>
                   </div>
 
                   <!-- Payment Warning for Endorsement (NEW) -->
