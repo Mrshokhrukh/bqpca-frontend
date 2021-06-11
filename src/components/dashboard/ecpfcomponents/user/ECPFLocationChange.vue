@@ -1,15 +1,46 @@
 <!-- EcpfLocationChange.vue -->
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
-    <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
+    <!-- Page Header -->
+    <div class="bg-white rounded-xl p-8 mb-6 shadow-sm border border-gray-100">
       <h1 class="text-4xl font-bold text-gray-900 mb-3">ECPF Location Change</h1>
       <p class="text-gray-600">
         Please provide the current location details and the proposed new location for the ECPF.
       </p>
     </div>
 
+    <!-- Head Office / Branch Office Toggle Buttons -->
+    <div class="flex justify-center mb-6">
+      <div class="inline-flex rounded-md shadow-sm" role="group">
+        <button
+          @click="selectOfficeType('head_office')"
+          type="button"
+          :class="[
+            'px-6 py-2 text-sm font-medium rounded-l-lg border',
+            activeOfficeType === 'head_office'
+              ? 'bg-indigo-600 text-white border-indigo-600 z-10'
+              : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100',
+          ]"
+        >
+          Head Office
+        </button>
+        <button
+          @click="selectOfficeType('branch_office')"
+          type="button"
+          :class="[
+            'px-6 py-2 text-sm font-medium rounded-r-md border-t border-b border-r',
+            activeOfficeType === 'branch_office'
+              ? 'bg-indigo-600 text-white border-indigo-600 z-10'
+              : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100',
+          ]"
+        >
+          Branch Office
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
     <div v-if="loading" class="text-center py-10">
-      <!-- Loading Spinner -->
       <div class="flex flex-col items-center space-y-3">
         <svg
           class="animate-spin h-8 w-8 text-indigo-600"
@@ -31,11 +62,36 @@
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           ></path>
         </svg>
-        <p class="text-gray-600 font-medium">Loading current ECPF details...</p>
+        <p class="text-gray-600 font-medium">Loading details...</p>
       </div>
     </div>
 
+    <!-- Form Content -->
     <div v-else class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+      <!-- Branch Selector Dropdown -->
+      <div v-if="activeOfficeType === 'branch_office'" class="mb-6">
+        <label for="branchSelector" class="block text-sm font-medium text-gray-700"
+          >Select Branch</label
+        >
+        <select
+          id="branchSelector"
+          v-model="selectedBranchId"
+          @change="handleBranchSelection"
+          class="mt-1 block w-full md:w-1/2 px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          :disabled="isFetchingBranches"
+        >
+          <option value="">
+            {{ isFetchingBranches ? 'Loading branches...' : '--- Please select a branch ---' }}
+          </option>
+          <option v-for="branch in branchList" :key="branch.id" :value="branch.id">
+            {{ branch.institute_name }} - ({{ branch.location }})
+          </option>
+        </select>
+        <p v-if="!isFetchingBranches && branchList.length === 0" class="mt-2 text-sm text-gray-500">
+          No branches found for this account.
+        </p>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
         <!-- Current Details (Readonly Inputs) -->
         <div class="space-y-4">
@@ -130,7 +186,7 @@
             >
             <select
               id="newGewogThrom"
-              v-model="newLocationDetails.gewog_throm"
+              v-model="newLocationDetails.permanent_gewog"
               :disabled="!newLocationDetails.dzongkhag_thromde || filteredGewogOptions.length === 0"
               class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             >
@@ -143,25 +199,28 @@
                 {{ option.label }}
               </option>
             </select>
-            <p
-              v-if="
-                newLocationDetails.dzongkhag_thromde &&
-                filteredGewogOptions.length === 0
-              "
-              class="mt-1 text-xs text-gray-500"
-            >
-              No Gewogs/Throms available for the selected Dzongkhag/Thromde or select a Dzongkhag first.
-            </p>
           </div>
           <div>
             <label for="newVillage" class="block text-sm font-medium text-gray-700"
-              >New Village/Street Address <span class="text-red-500">*</span></label
+              >New Village <span class="text-red-500">*</span></label
             >
             <input
               type="text"
               id="newVillage"
-              v-model="newLocationDetails.village_street"
+              v-model="newLocationDetails.permanent_village"
               placeholder="e.g., Changzamtog, Thimphu"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+          <div>
+            <label for="newLocation" class="block text-sm font-medium text-gray-700"
+              >Location <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="newLocation"
+              v-model="newLocationDetails.location"
+              placeholder="e.g., place that is known by"
               class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
@@ -209,17 +268,17 @@
       <div class="mt-8 flex flex-wrap justify-end space-x-0 sm:space-x-3 space-y-2 sm:space-y-0">
         <button
           @click="saveAsDraft"
-          :disabled="isSubmitting"
+          :disabled="isSubmitting || !ecpfProfileId"
           class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50"
         >
           Save as Draft
         </button>
         <button
           @click="handleFinalSubmit"
-          :disabled="isSubmitting || !isFormValidForSubmission()" 
+          :disabled="isSubmitting || !isFormValidForSubmission()"
           class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Submit Application <!-- CHANGED: Button text -->
+          Submit Application
         </button>
       </div>
     </div>
@@ -227,7 +286,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted, computed, nextTick } from 'vue'
+import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 import apiServices from '@/services/services'
@@ -250,6 +309,10 @@ const isSubmitting = ref(false)
 const validationErrors = ref([])
 const draftId = ref(null)
 
+const activeOfficeType = ref('head_office') // 'head_office' or 'branch_office'
+const branchList = ref([])
+const selectedBranchId = ref('')
+const isFetchingBranches = ref(false)
 let ecpfProfileId = null
 
 const currentDetails = reactive({
@@ -263,14 +326,125 @@ const currentDetails = reactive({
 
 const newLocationDetails = reactive({
   dzongkhag_thromde: '',
-  gewog_throm: '',
-  village_street: '',
+  permanent_gewog: '',
+  permanent_village: '',
+  location: '',
 })
 
 const locationChangeDeclaration = ref(false)
 const locationChangeRemarks = ref('')
 
-const emit = defineEmits(['submit-success', 'save-draft-success']) // REMOVED: 'payment-initiated'
+const emit = defineEmits(['submit-success', 'save-draft-success'])
+
+const resetCurrentDetails = () => {
+  ecpfProfileId = null
+  Object.keys(currentDetails).forEach((key) => (currentDetails[key] = ''))
+}
+
+const populateDetails = (data) => {
+  if (!data) return
+  ecpfProfileId = data.id
+
+  // Use a chain of fallbacks to find the correct field name from different API responses
+  currentDetails.ecpfName =
+    data.institute_name || data.proposed_firm_branch_name || data.name || data.firm_name || 'N/A'
+
+  // Construct a detailed location string from available fields
+  const locationParts = [
+    data.dzongkhag || data.dzongkhag_thromde,
+    data.gewog || data.gewog_throm,
+    data.village || data.location,
+  ]
+    .filter(Boolean)
+    .join(', ')
+  currentDetails.location = locationParts || 'N/A'
+
+  currentDetails.proprietorName =
+    data.proprietor_name || data.applicants_name || authStore.fullName || 'N/A'
+  currentDetails.cid = data.cid || data.applicant_cid_no || authStore.user.cid || 'N/A'
+  currentDetails.contactNo = data.contact_no || authStore.contactNumber || 'N/A'
+  currentDetails.emailAddress = data.email || data.email_address || authStore.email || 'N/A'
+}
+
+const fetchHeadOfficeDetails = async () => {
+  loading.value = true
+  resetCurrentDetails()
+  try {
+    const response = await apiServices.getEcpfDetailsByCID(authStore.user.cid)
+    if (response.data) {
+      populateDetails(response.data)
+    } else {
+      toast.error('Could not fetch Head Office details.')
+      Object.keys(currentDetails).forEach((key) => (currentDetails[key] = 'N/A (Error)'))
+    }
+  } catch (error) {
+    console.error('Error fetching Head Office details:', error)
+    toast.error('Failed to load Head Office details.')
+    Object.keys(currentDetails).forEach((key) => (currentDetails[key] = 'N/A (Error)'))
+  } finally {
+    loading.value = false
+  }
+}
+
+const fetchBranchList = async () => {
+  isFetchingBranches.value = true
+  branchList.value = []
+  resetCurrentDetails()
+  try {
+    // Calling the actual API service provided
+    const response = await apiServices.getEcpfBranches()
+
+    // The API returns data inside a 'results' array
+    if (response.data && response.data.results) {
+      branchList.value = response.data.results
+    } else {
+      branchList.value = []
+      console.warn(
+        'Branch API response was successful but did not contain a results array.',
+        response.data,
+      )
+      toast.info('No branches found.')
+    }
+  } catch (error) {
+    console.error('Error fetching branch list:', error)
+    toast.error('Failed to load branch list. Please try again.')
+  } finally {
+    isFetchingBranches.value = false
+  }
+}
+
+const selectOfficeType = async (type) => {
+  if (activeOfficeType.value === type) return // Do nothing if already selected
+
+  activeOfficeType.value = type
+  selectedBranchId.value = '' // Reset branch selection
+  resetCurrentDetails() // Clear the form
+
+  if (type === 'head_office') {
+    await fetchHeadOfficeDetails()
+  } else if (type === 'branch_office') {
+    loading.value = false // Main loader is not needed here, only the dropdown's loader
+    await fetchBranchList()
+  }
+}
+
+const handleBranchSelection = () => {
+  resetCurrentDetails()
+  const selectedBranch = branchList.value.find((b) => b.id === selectedBranchId.value)
+  if (selectedBranch) {
+    populateDetails(selectedBranch)
+  }
+}
+
+onMounted(async () => {
+  if (!authStore.isAuthenticated || !authStore.user) {
+    toast.error('Authentication required. Please log in.')
+    router.push('/login')
+    return
+  }
+  // Load Head Office details by default when the component mounts
+  await fetchHeadOfficeDetails()
+})
 
 const dzongkhagOptions = computed(() => {
   if (!bhutanDzongkhagsGewogs || bhutanDzongkhagsGewogs.length === 0) {
@@ -299,193 +473,95 @@ const filteredGewogOptions = computed(() => {
 })
 
 const handleDzongkhagChange = () => {
-  newLocationDetails.gewog_throm = ''
+  newLocationDetails.permanent_gewog = ''
 }
-
-onMounted(async () => {
-  loading.value = true
-  try {
-    if (!authStore.isAuthenticated || !authStore.user) {
-      toast.error('Authentication required. Please log in.')
-      router.push('/login')
-      loading.value = false
-      return
-    }
-    if (!authStore.user.cid) {
-      toast.error('User CID not found. Cannot fetch ECPF details.')
-      Object.keys(currentDetails).forEach((key) => (currentDetails[key] = 'N/A'))
-      currentDetails.cid = 'N/A'
-      loading.value = false
-      return
-    }
-
-    const response = await apiServices.getEcpfDetailsByCID(authStore.user.cid)
-    const fetchedEcpfData = response.data
-
-    if (fetchedEcpfData) {
-      ecpfProfileId = fetchedEcpfData.id
-      currentDetails.ecpfName =
-        fetchedEcpfData.institute_name || fetchedEcpfData.name || fetchedEcpfData.firm_name || 'N/A'
-      const locationParts = [
-        fetchedEcpfData.dzongkhag,
-        fetchedEcpfData.gewog,
-        fetchedEcpfData.village,
-      ]
-        .filter(Boolean)
-        .join(', ') || fetchedEcpfData.location || 'N/A'
-      currentDetails.location = locationParts
-      currentDetails.proprietorName = fetchedEcpfData.proprietor_name || authStore.fullName || 'N/A'
-      currentDetails.cid = fetchedEcpfData.cid || authStore.user.cid || 'N/A'
-      currentDetails.contactNo = fetchedEcpfData.contact_no || authStore.contactNumber || 'N/A'
-      currentDetails.emailAddress = fetchedEcpfData.email_address || authStore.email || 'N/A'
-    } else {
-      toast.error('Could not fetch ECPF details.')
-      Object.keys(currentDetails).forEach((key) => (currentDetails[key] = 'N/A (Error)'))
-      currentDetails.cid = authStore.user.cid || 'N/A (Error)'
-    }
-  } catch (error) {
-    console.error('Error fetching ECPF details:', error)
-    toast.error('Failed to load ECPF details. Please try again.')
-    Object.keys(currentDetails).forEach((key) => (currentDetails[key] = 'N/A (Error)'))
-    if (authStore.user) currentDetails.cid = authStore.user.cid || 'N/A (Error)'
-  } finally {
-    loading.value = false
-  }
-})
-
-watch(
-  () => props.initialData,
-  async (newData) => {
-    if (newData && Object.keys(newData).length > 0 && !loading.value) {
-      draftId.value = newData.id || null
-      newLocationDetails.dzongkhag_thromde = newData.new_dzongkhag_throm || newData.new_dzongkhag || ''
-      await nextTick()
-      newLocationDetails.gewog_throm = newData.new_geowg_throm || newData.new_gewog || ''
-      newLocationDetails.village_street = newData.new_location || newData.new_village_street || ''
-      locationChangeDeclaration.value = newData.declaration === true
-      locationChangeRemarks.value = newData.remarks || ''
-    }
-  },
-  { deep: true, immediate: true },
-)
 
 const validateForm = (isDraft = false) => {
   validationErrors.value = []
   if (!ecpfProfileId) {
-    validationErrors.value.push('ECPF Profile ID is missing. Cannot proceed.')
+    validationErrors.value.push('Please select a Head Office or a Branch to proceed.')
   }
-  // For final submission (not draft), all fields are required
   if (!isDraft) {
     if (!newLocationDetails.dzongkhag_thromde) {
       validationErrors.value.push('New Dzongkhag/Thromde is required.')
     }
-    if (!newLocationDetails.gewog_throm) {
+    if (!newLocationDetails.permanent_gewog) {
       validationErrors.value.push('New Gewog/Throm is required.')
     }
-    if (!newLocationDetails.village_street.trim()) {
-      validationErrors.value.push('New Village/Street Address is required.')
+    if (!newLocationDetails.permanent_village.trim()) {
+      validationErrors.value.push('New Village is required.')
     }
     if (!locationChangeDeclaration.value) {
       validationErrors.value.push('You must agree to the declaration.')
-    }
-  } else { // Lenient validation for draft
-    if (
-      !newLocationDetails.dzongkhag_thromde &&
-      !newLocationDetails.gewog_throm &&
-      !newLocationDetails.village_street.trim() &&
-      !locationChangeRemarks.value.trim() &&
-      !locationChangeDeclaration.value
-    ) {
-      validationErrors.value.push(
-        'Please enter at least one field for the new location, remarks, or check the declaration to save a draft.',
-      )
     }
   }
   return validationErrors.value.length === 0
 }
 
-// RENAMED and SIMPLIFIED: No payment specific logic needed
 const isFormValidForSubmission = () => {
-  // This is essentially the same as non-draft validation
   return (
     ecpfProfileId &&
     newLocationDetails.dzongkhag_thromde &&
-    newLocationDetails.gewog_throm &&
-    newLocationDetails.village_street.trim() &&
+    newLocationDetails.permanent_gewog &&
+    newLocationDetails.permanent_village.trim() &&
     locationChangeDeclaration.value === true
   )
 }
 
-// MODIFIED: Removed paymentInfo parameter
 const preparePayload = (isDraft = false) => {
   const payload = {
     ecpf_profile: ecpfProfileId,
     current_location_summary: currentDetails.location,
     new_dzongkhag_throm: newLocationDetails.dzongkhag_thromde,
-    new_geowg_throm: newLocationDetails.gewog_throm,
-    new_location: newLocationDetails.village_street.trim(),
+    new_geowg_throm: newLocationDetails.permanent_gewog,
+    new_location: newLocationDetails.permanent_village.trim(),
     declaration: locationChangeDeclaration.value,
     remarks: locationChangeRemarks.value.trim(),
-  };
+    changed_entity_type: activeOfficeType.value,
+  }
 
   if (isDraft) {
-    payload.status = 'Draft';
-    payload.is_draft = true;
+    payload.status = 'Draft'
+    payload.is_draft = true
   } else {
-    payload.status = 'Submitted';
-    payload.is_draft = false;
-    // REMOVED: paymentInfo related fields
+    payload.status = 'Submitted'
+    payload.is_draft = false
   }
-  return payload;
-};
+  return payload
+}
 
-// This function will now be called directly for final submission
-// MODIFIED: Removed paymentInfo parameter
 const submitApplicationToServer = async () => {
-  // Validation should be done by handleFinalSubmit before calling this
   isSubmitting.value = true
-
-  const payload = preparePayload(false) // isDraft = false, no paymentInfo
+  const payload = preparePayload(false)
   console.log('Submitting ECPF Location Change payload:', JSON.stringify(payload, null, 2))
 
   try {
-    let response;
-    response = await apiServices.createEcpfLocationChange(payload)
-
+    const response = await apiServices.createEcpfLocationChange(payload)
     if (response.status === 201 || response.status === 200) {
       toast.success(response.data.message || 'Location change application submitted successfully!')
       emit('submit-success', response.data)
+      // Reset form fields after successful submission
       Object.assign(newLocationDetails, {
         dzongkhag_thromde: '',
-        gewog_throm: '',
-        village_street: '',
+        permanent_gewog: '',
+        permanent_village: '',
+        location: '',
       })
       locationChangeDeclaration.value = false
       locationChangeRemarks.value = ''
       validationErrors.value = []
       draftId.value = null
     } else {
-      const errorData = response.data;
-      if (errorData && typeof errorData === 'object') {
-        const messages = Object.values(errorData).flat().join(' ');
-        toast.error(messages || 'Failed to submit application.');
-      } else {
-        toast.error(errorData?.detail || errorData?.message || 'Failed to submit application.');
-      }
+      throw new Error('Submission failed with status: ' + response.status)
     }
   } catch (error) {
-    console.error('Error submitting location change application:', error);
-    if (error.response && error.response.data) {
-        const errorData = error.response.data;
-        if (typeof errorData === 'object') {
-            const messages = Object.entries(errorData).map(([field, errs]) => `${field}: ${Array.isArray(errs) ? errs.join(', ') : errs}`).join('; ');
-            validationErrors.value = Object.entries(errorData).map(([field, errs]) => `${field}: ${Array.isArray(errs) ? errs.join(', ') : errs}`);
-            toast.error('Please correct the validation errors: ' + messages);
-        } else {
-            toast.error(errorData.detail || errorData.message || 'An error occurred while submitting the application.');
-        }
+    console.error('Error submitting location change application:', error)
+    const errorData = error.response?.data
+    if (errorData && typeof errorData === 'object') {
+      const messages = Object.values(errorData).flat().join(' ')
+      toast.error(messages || 'Failed to submit application.')
     } else {
-        toast.error('An network error or unexpected issue occurred while submitting the application.');
+      toast.error(errorData?.detail || errorData?.message || 'An error occurred.')
     }
   } finally {
     isSubmitting.value = false
@@ -493,13 +569,12 @@ const submitApplicationToServer = async () => {
 }
 
 const saveAsDraft = async () => {
-  if (!validateForm(true)) { // true for lenient draft validation
+  if (!validateForm(true)) {
     toast.error(validationErrors.value.join(' ') || 'Cannot save an empty draft.')
     return
   }
   isSubmitting.value = true
-
-  const draftPayload = preparePayload(true) // isDraft = true
+  const draftPayload = preparePayload(true)
   console.log('Saving ECPF Location Change as draft:', JSON.stringify(draftPayload, null, 2))
 
   try {
@@ -517,49 +592,29 @@ const saveAsDraft = async () => {
       }
       emit('save-draft-success', response.data)
     } else {
-      const errorData = response.data;
-      if (errorData && typeof errorData === 'object') {
-        const messages = Object.values(errorData).flat().join(' ');
-        toast.error(messages || 'Failed to save draft.');
-      } else {
-        toast.error(errorData?.detail || errorData?.message || 'Failed to save draft.');
-      }
+      throw new Error('Failed to save draft.')
     }
   } catch (error) {
     console.error('Error saving as draft:', error)
-     if (error.response && error.response.data) {
-        const errorData = error.response.data;
-        if (typeof errorData === 'object') {
-            const messages = Object.entries(errorData).map(([field, errs]) => `${field}: ${Array.isArray(errs) ? errs.join(', ') : errs}`).join('; ');
-            validationErrors.value = Object.entries(errorData).map(([field, errs]) => `${field}: ${Array.isArray(errs) ? errs.join(', ') : errs}`);
-            toast.error('Validation errors: ' + messages);
-        } else {
-            toast.error(errorData.detail || errorData.message || 'Failed to save as draft.');
-        }
+    const errorData = error.response?.data
+    if (errorData && typeof errorData === 'object') {
+      const messages = Object.values(errorData).flat().join(' ')
+      toast.error(messages || 'Failed to save draft.')
     } else {
-        toast.error('An network error or unexpected issue occurred while saving draft.');
+      toast.error(errorData?.detail || errorData?.message || 'Failed to save draft.')
     }
   } finally {
     isSubmitting.value = false
   }
 }
 
-// NEW: Handler for the "Submit Application" button
 const handleFinalSubmit = async () => {
-  if (!validateForm(false)) { // false for strict final submission validation
+  if (!validateForm(false)) {
     toast.error('Please fill all required fields correctly before submitting.')
     return
   }
-  // Optional: Add a confirmation dialog here if needed
-  // const confirmed = confirm("Are you sure you want to submit this application?");
-  // if (!confirmed) {
-  //   return;
-  // }
-  await submitApplicationToServer(); // Call the actual submission logic
+  await submitApplicationToServer()
 }
-
-// REMOVED: initiatePayment function entirely
-
 </script>
 
 <style scoped>

@@ -9,7 +9,7 @@
         <option value="fair">Participation in Education Fair</option>
         <option value="inHouse">Promotional Event - In-House</option>
         <option value="massMedia">Promotional Event - Mass Media</option>
-        <option value="heiVisit">Promotional Event - HEI Visit</option>
+        <option value="heiVisit">Promotional Event - HEI Representative Visit</option>
       </select>
     </div>
 
@@ -30,12 +30,7 @@
       </div>
       <div>
         <label for="fairDescription">Fair Description:</label>
-        <textarea
-          id="fairDescription"
-          v-model="formData.fair.fairDescription"
-          rows="3"
-          required
-        ></textarea>
+        <textarea id="fairDescription" v-model="formData.fair.fairDescription" rows="3" required></textarea>
       </div>
       <div>
         <label for="fairLocation">Fair Location:</label>
@@ -140,14 +135,10 @@
           </div>
           <div>
             <label for="authorizationLetter">Authorization Letter:</label>
-            <input
-              type="file"
-              id="authorizationLetter"
-              @change="handleFairFileChange(index, 'authLetter', $event, cIndex)"
-            />
-            <span v-if="course.authLetterFile && course.authLetterFile.name"
-              >Selected: {{ course.authLetterFile.name }}</span
-            >
+            <input type="file" id="authorizationLetter"
+              @change="handleFairFileChange(index, 'authLetter', $event, cIndex)" />
+            <span v-if="course.authLetterFile && course.authLetterFile.name">Selected: {{ course.authLetterFile.name
+              }}</span>
           </div>
           <button @click.prevent="removeFairCourse(index, cIndex)">Remove Course</button>
         </div>
@@ -198,30 +189,15 @@
       </div>
       <div>
         <label for="eventDescriptionInHouse">Event Description:</label>
-        <textarea
-          id="eventDescriptionInHouse"
-          v-model="formData.inHouse.eventDescription"
-          rows="3"
-          required
-        ></textarea>
+        <textarea id="eventDescriptionInHouse" v-model="formData.inHouse.eventDescription" rows="3" required></textarea>
       </div>
       <div>
         <label for="eventPurposeInHouse">Event Purpose:</label>
-        <textarea
-          id="eventPurposeInHouse"
-          v-model="formData.inHouse.eventPurpose"
-          rows="3"
-          required
-        ></textarea>
+        <textarea id="eventPurposeInHouse" v-model="formData.inHouse.eventPurpose" rows="3" required></textarea>
       </div>
       <div>
         <label for="eventLocationInHouse">Event Location:</label>
-        <input
-          type="text"
-          id="eventLocationInHouse"
-          v-model="formData.inHouse.eventLocation"
-          required
-        />
+        <input type="text" id="eventLocationInHouse" v-model="formData.inHouse.eventLocation" required />
       </div>
 
       <h3>Representative Details (Maximum 2)</h3>
@@ -253,34 +229,21 @@
         </div>
         <div>
           <label for="repCVInHouse">CV of Representative:</label>
-          <input
-            type="file"
-            id="repCVInHouse"
-            @change="handleInHouseFileChange(index, 'cv', $event)"
-          />
+          <input type="file" id="repCVInHouse" @change="handleInHouseFileChange(index, 'cv', $event)" />
           <span v-if="rep.cvFile && rep.cvFile.name">Selected: {{ rep.cvFile.name }}</span>
         </div>
         <div>
-          <label for="repAffiliationLetterInHouse">Affiliation Letter:</label>
-          <input
-            type="file"
-            id="repAffiliationLetterInHouse"
-            @change="handleInHouseFileChange(index, 'affiliation', $event)"
-          />
-          <span v-if="rep.affiliationFile && rep.affiliationFile.name"
-            >Selected: {{ rep.affiliationFile.name }}</span
-          >
+          <label for="repAffiliationLetterInHouse">Passport copy or Identification Document:</label>
+          <input type="file" id="repAffiliationLetterInHouse"
+            @change="handleInHouseFileChange(index, 'affiliation', $event)" />
+          <span v-if="rep.affiliationFile && rep.affiliationFile.name">Selected: {{ rep.affiliationFile.name }}</span>
         </div>
         <div>
           <label for="repAuthorizationLetterInHouse">Authorization Letter:</label>
-          <input
-            type="file"
-            id="repAuthorizationLetterInHouse"
-            @change="handleInHouseFileChange(index, 'authorization', $event)"
-          />
-          <span v-if="rep.authorizationFile && rep.authorizationFile.name"
-            >Selected: {{ rep.authorizationFile.name }}</span
-          >
+          <input type="file" id="repAuthorizationLetterInHouse"
+            @change="handleInHouseFileChange(index, 'authorization', $event)" />
+          <span v-if="rep.authorizationFile && rep.authorizationFile.name">Selected: {{ rep.authorizationFile.name
+            }}</span>
         </div>
         <button @click.prevent="removeInHouseRepresentative(index)">Remove Representative</button>
       </div>
@@ -327,50 +290,27 @@
       <h3>Proposed Promotion Event - Mass Media</h3>
       <div>
         <label for="promotionNameMassMedia">Mass Media Promotional Name:</label>
-        <input
-          type="text"
-          id="promotionNameMassMedia"
-          v-model="formData.massMedia.massMediaPromotionalName"
-          required
-        />
+        <input type="text" id="promotionNameMassMedia" v-model="formData.massMedia.massMediaPromotionalName" required />
       </div>
       <div>
         <label for="descriptionMassMedia">Description:</label>
-        <textarea
-          id="descriptionMassMedia"
-          v-model="formData.massMedia.description"
-          rows="3"
-          required
-        ></textarea>
+        <textarea id="descriptionMassMedia" v-model="formData.massMedia.description" rows="3" required></textarea>
       </div>
       <div>
         <label for="purposeMassMedia">Purpose:</label>
-        <textarea
-          id="purposeMassMedia"
-          v-model="formData.massMedia.purpose"
-          rows="3"
-          required
-        ></textarea>
+        <textarea id="purposeMassMedia" v-model="formData.massMedia.purpose" rows="3" required></textarea>
       </div>
       <div>
         <label for="promotionalChannelMassMedia">Promotional Channel:</label>
-        <input
-          type="text"
-          id="promotionalChannelMassMedia"
-          v-model="formData.massMedia.promotionalChannel"
-          required
-        />
+        <input type="text" id="promotionalChannelMassMedia" v-model="formData.massMedia.promotionalChannel" required />
       </div>
       <div>
         <label for="promotionalContentsMassMedia">Promotional Contents:</label>
         <input type="file" id="promotionalContentsMassMedia" @change="handleMassMediaFileChange" />
-        <span
-          v-if="
+        <span v-if="
             formData.massMedia.promotionalContentsFile &&
             formData.massMedia.promotionalContentsFile.name
-          "
-          >Selected: {{ formData.massMedia.promotionalContentsFile.name }}</span
-        >
+          ">Selected: {{ formData.massMedia.promotionalContentsFile.name }}</span>
       </div>
       <div>
         <label for="othersMassMedia">Others (specify):</label>
@@ -385,7 +325,7 @@
 
     <!-- HEI Visit Form -->
     <div v-if="eventType === 'heiVisit'" class="form-container">
-      <h2>Promotional Event - HEI Visit</h2>
+      <h2>Promotional Event - HEI Representative Visit</h2>
 
       <h3>Current ECPF Details</h3>
       <div v-for="(value, key) in ecpfDetails" :key="key">
@@ -411,33 +351,18 @@
         </select>
       </div>
 
-      <h3>Proposed Promotion Event - HEI Visit</h3>
+      <h3>Proposed Promotion Event - HEI Representative Visit</h3>
       <div>
         <label for="programmeDetailHeiVisit">Programme Detail (visit detail):</label>
-        <input
-          type="text"
-          id="programmeDetailHeiVisit"
-          v-model="formData.heiVisit.programmeDetail"
-          required
-        />
+        <input type="text" id="programmeDetailHeiVisit" v-model="formData.heiVisit.programmeDetail" required />
       </div>
       <div>
         <label for="descriptionHeiVisit">Description:</label>
-        <textarea
-          id="descriptionHeiVisit"
-          v-model="formData.heiVisit.description"
-          rows="3"
-          required
-        ></textarea>
+        <textarea id="descriptionHeiVisit" v-model="formData.heiVisit.description" rows="3" required></textarea>
       </div>
       <div>
         <label for="purposeHeiVisit">Purpose:</label>
-        <textarea
-          id="purposeHeiVisit"
-          v-model="formData.heiVisit.purpose"
-          rows="3"
-          required
-        ></textarea>
+        <textarea id="purposeHeiVisit" v-model="formData.heiVisit.purpose" rows="3" required></textarea>
       </div>
       <div>
         <label for="fromDateHeiVisit">From Date:</label>
@@ -460,13 +385,10 @@
       <div>
         <label for="supportingDocumentHeiVisit">Supporting Document:</label>
         <input type="file" id="supportingDocumentHeiVisit" @change="handleHeiVisitFileChange" />
-        <span
-          v-if="
+        <span v-if="
             formData.heiVisit.supportingDocumentFile &&
             formData.heiVisit.supportingDocumentFile.name
-          "
-          >Selected: {{ formData.heiVisit.supportingDocumentFile.name }}</span
-        >
+          ">Selected: {{ formData.heiVisit.supportingDocumentFile.name }}</span>
       </div>
     </div>
 

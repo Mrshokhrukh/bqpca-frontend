@@ -8,6 +8,7 @@
       </p>
     </div>
 
+
     <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
       <form @submit.prevent="submitApplication">
         <!-- ECPF Details (Read-Only) - Remains the same -->
@@ -258,6 +259,61 @@
           </button>
         </div>
 
+        <!-- Program/Course Details Section - Added -->
+        <section class="mb-8">
+          <h2 class="text-lg font-medium mb-4 text-gray-700">Program/Course Details</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 required-field"
+                >Name of Programme</label
+              >
+              <input
+                type="text"
+                v-model="programDetails.name_of_programme"
+                required
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 required-field">Level</label>
+              <input
+                type="text"
+                v-model="programDetails.level"
+                required
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 required-field"
+                >Minimum Credit</label
+              >
+              <input
+                type="number"
+                v-model.number="programDetails.minimum_credit"
+                required
+                min="0"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 required-field"
+                >Qualification Type</label
+              >
+              <select
+                v-model="programDetails.qualification_type"
+                required
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              >
+                <option disabled value="">Select Qualification Type</option>
+                <option v-for="q in qualificationTypes" :key="q.id" :value="q.id">
+  {{ q.qualification_name }}
+</option>
+              </select>
+            </div>
+
+          </div>
+        </section>
+
         <!-- Remarks (Overall Application) - Added -->
         <div class="mb-6">
           <label for="applicationRemarks" class="block text-sm font-medium text-gray-700"
@@ -335,6 +391,7 @@ import apiService from '@/services/services'
 import { useAuthStore } from '@/stores/authStore'
 import { countryData } from '@/constants/countries.js'
 
+
 const toast = useToast()
 const authStore = useAuthStore()
 
@@ -358,6 +415,13 @@ const linkages = ref([])
 const countryOptions = ref([])
 const declarationAccepted = ref(false)
 const applicationRemarks = ref('') // Added state for overall remarks
+const programDetails = reactive({
+  name_of_programme: '',
+  level: '',
+  minimum_credit: null,
+  qualification_type: '', // Will hold the selected ID
+})
+const qualificationTypes = ref([]) // For dropdown options
 
 // --- Updated Linkage Object Structure based on new requirements ---
 const createNewLinkageEntry = () => ({
@@ -437,6 +501,16 @@ onMounted(async () => {
     toast.error('Failed country load.')
     countryOptions.value = []
   }
+
+  // Load qualification types for dropdown
+  try {
+  const res = await apiService.getMastersEcpfQualifications()
+  qualificationTypes.value = res.data.results || []
+} catch (error) {
+  console.error('Error loading qualification types:', error)
+  toast.error('Failed to load qualification types.')
+  qualificationTypes.value = []
+}
 
   // Initial setup
   if (props.applicationIdToEdit) {

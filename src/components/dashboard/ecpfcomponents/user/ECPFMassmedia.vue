@@ -103,16 +103,7 @@
             Proposed Promotion Event - Mass Media
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >Mass Media Promotional Name</label
-              >
-              <input
-                type="text"
-                v-model="eventDetails.name"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              />
-            </div>
+
             <div>
               <label class="block text-sm font-medium text-gray-700">Description</label>
               <textarea
@@ -129,14 +120,7 @@
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Promotional Channel</label>
-              <input
-                type="text"
-                v-model="eventDetails.channel"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              />
-            </div>
+
             <div>
               <label class="block text-sm font-medium text-gray-700">Promotional Contents</label>
               <div class="flex items-center space-x-2">
@@ -267,10 +251,10 @@ const submitForm = async () => {
     await apiService.createEcpfPromotionalMassMedia(formData)
     toast.success('Mass media promotion registered successfully!')
     // Reset form or redirect as needed
-    eventDetails.name = ''
+    // eventDetails.name = ''
     eventDetails.description = ''
     eventDetails.purpose = ''
-    eventDetails.channel = ''
+    // eventDetails.channel = ''
     eventDetails.content = null
     eventDetails.others = ''
     remarks.value = ''

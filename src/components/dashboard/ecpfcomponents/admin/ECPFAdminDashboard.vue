@@ -126,8 +126,8 @@ const counts = ref({
 const configurationCards = [
   {
     id: 'complianceActions',
-    title: 'Compliance Actions',
-    description: 'Manage master compliance actions',
+    title: 'Non-Compliance',
+    description: 'Manage master Non-Compliance',
     countLabel: 'Total Actions',
     countRef: 'complianceActions',
     countSuffix: 'actions',
@@ -146,7 +146,7 @@ const configurationCards = [
   },
   {
     id: 'complianceActionsTaken',
-    title: 'Compliance Actions Taken',
+    title: 'Non-Compliance Taken',
     description: 'Manage actions taken for compliance',
     countLabel: 'Actions Taken',
     countRef: 'complianceActionsTaken',

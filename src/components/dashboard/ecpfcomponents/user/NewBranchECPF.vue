@@ -427,7 +427,7 @@
               <input
                 :id="`quantity_${index}`"
                 type="number"
-                min="1"
+                :min="isRoomItem(infra.particulars) ? 2 : 1"
                 v-model.number="infra.quantity"
                 required
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -956,6 +956,17 @@ const formatDateForDisplay = (dateString) => {
   }
 }
 
+// ++++++++++++++++ START: ADDED THIS FUNCTION ++++++++++++++++
+const isRoomItem = (particularsId) => {
+  // Check if the master data has loaded and the ID was found
+  if (!roomParticularsId.value) {
+    return false;
+  }
+  // Compare the current item's ID with the stored room ID
+  return particularsId === roomParticularsId.value;
+};
+// +++++++++++++++++ END: ADDED THIS FUNCTION +++++++++++++++++
+
 const getHrFileState = (index) => {
   const hrItem = formData.humanResources[index];
   if (!hrItem) return { fileName: '', hasExistingFile: false };
@@ -1310,9 +1321,6 @@ const submitForm = async () => {
         }
       }
     }
-    // Alternative Option (if backend expects one 'data' field for all JSON):
-    // payload.append('data', JSON.stringify(jsonData));
-
 
     for (const key in fileObjects) {
       if (Object.prototype.hasOwnProperty.call(fileObjects, key) && fileObjects[key] instanceof File) {

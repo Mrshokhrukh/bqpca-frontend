@@ -1,8 +1,8 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">HEI Visit Promotion Registration</h1>
-      <p class="text-gray-600">Register for an HEI visit promotional event.</p>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">HEI Representative Visit Promotion Registration</h1>
+      <p class="text-gray-600">Register for an HEI Representative Visit promotional event.</p>
     </div>
     <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
       <form @submit.prevent="submitForm">
@@ -11,12 +11,8 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700">Promotional Event Type</label>
-              <input
-                type="text"
-                v-model="eventType"
-                readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="text" v-model="eventType" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
             </div>
           </div>
         </section>
@@ -26,57 +22,33 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700">ECPF Name</label>
-              <input
-                type="text"
-                :value="ecpfDetails.name"
-                readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="text" :value="ecpfDetails.name" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Location</label>
-              <input
-                type="text"
-                :value="ecpfDetails.location"
-                readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="text" :value="ecpfDetails.location" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Name of Proprietor</label>
-              <input
-                type="text"
-                :value="ecpfDetails.proprietor"
-                readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="text" :value="ecpfDetails.proprietor" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">CID</label>
-              <input
-                type="text"
-                :value="ecpfDetails.cid"
-                readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="text" :value="ecpfDetails.cid" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Contact No.</label>
-              <input
-                type="text"
-                :value="ecpfDetails.contactNo"
-                readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="text" :value="ecpfDetails.contactNo" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Email Address</label>
-              <input
-                type="email"
-                :value="ecpfDetails.email"
-                readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="email" :value="ecpfDetails.email" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
             </div>
           </div>
         </section>
@@ -84,91 +56,60 @@
         <!-- Proposed Promotion Event - HEI Visit -->
         <section class="mb-8">
           <h2 class="text-lg font-medium mb-4 text-gray-700">
-            Proposed Promotion Event - HEI Visit
+            Proposed Promotion Event - HEI Representative Visit
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700">Institute</label>
-              <select
-                v-model="selectedInstitute"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              >
+              <select v-model="selectedInstitute"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                 <option value="" disabled>Select an institute</option>
-                <option
-                  v-for="institute in availableInstitutes"
-                  :key="institute.id"
-                  :value="institute.id"
-                >
+                <option v-for="institute in availableInstitutes" :key="institute.id" :value="institute.id">
                   {{ institute.name }}
                 </option>
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >Programme Detail (visit detail)</label
-              >
-              <input
-                type="text"
-                v-model="eventDetails.programDetail"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              />
+              <label class="block text-sm font-medium text-gray-700">Programme Detail (visit detail)</label>
+              <input type="text" v-model="eventDetails.programDetail"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Description</label>
-              <textarea
-                v-model="eventDetails.description"
-                rows="3"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              ></textarea>
+              <textarea v-model="eventDetails.description" rows="3"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Purpose</label>
-              <input
-                type="text"
-                v-model="eventDetails.purpose"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="text" v-model="eventDetails.purpose"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">From Date</label>
-              <input
-                type="date"
-                v-model="eventDetails.fromDate"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="date" v-model="eventDetails.fromDate"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">To Date</label>
-              <input
-                type="date"
-                v-model="eventDetails.toDate"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="date" v-model="eventDetails.toDate"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Others (specify)</label>
-              <input
-                type="text"
-                v-model="eventDetails.others"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="text" v-model="eventDetails.others"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Supporting Document</label>
               <div class="flex items-center space-x-2">
-                <input
-                  type="text"
-                  :value="
+                <input type="text" :value="
                     eventDetails.supportingDocument
                       ? eventDetails.supportingDocument
                       : 'No file chosen'
-                  "
-                  readonly
-                  class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                />
+                  " readonly
+                  class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
                 <label
-                  class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                >
+                  class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
                   <input type="file" @change="handleSupportingDocumentUpload" class="hidden" />
                   <span>Upload</span>
                 </label>
@@ -180,19 +121,14 @@
         <!-- Remarks -->
         <section class="mb-8">
           <h2 class="text-lg font-medium mb-4 text-gray-700">Remarks</h2>
-          <textarea
-            v-model="remarks"
-            rows="4"
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-          ></textarea>
+          <textarea v-model="remarks" rows="4"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea>
         </section>
 
         <!-- Submit Button -->
         <div class="mt-6 flex justify-end">
-          <button
-            type="submit"
-            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
-          >
+          <button type="submit"
+            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
             Register Event
           </button>
         </div>
@@ -208,7 +144,7 @@ import apiServices from '@/services/services' // Import your API service
 
 const toast = useToast()
 
-const eventType = ref('HEI Visit') // Set the fixed event type
+const eventType = ref('HEI Representative Visit') // Set the fixed event type
 
 // --- Data ---
 const ecpfDetails = reactive({
@@ -292,7 +228,7 @@ const submitForm = async () => {
   try {
     const response = await apiServices.createEcpfPromotionalHeiVisit(formData)
     console.log('Registration successful:', response.data)
-    toast.success('HEI visit promotion registered successfully!')
+    toast.success('HEI Representative Visit promotion registered successfully!')
     // Reset form or redirect as needed
     // Reset form example:
     selectedInstitute.value = ''
@@ -307,7 +243,7 @@ const submitForm = async () => {
     remarks.value = ''
   } catch (error) {
     console.error('Error submitting form:', error)
-    toast.error('Failed to register the HEI visit promotion.')
+    toast.error('Failed to register the HEI Representative Visit promotion.')
     if (error.response) {
       console.error('Error details:', error.response.data) // Log detailed error from backend
       toast.error(`Error: ${error.response.data.message || 'Please check the form data'}`) // Display backend error message if available

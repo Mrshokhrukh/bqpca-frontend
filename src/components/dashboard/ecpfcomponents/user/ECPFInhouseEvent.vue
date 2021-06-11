@@ -2,218 +2,155 @@
   <div class="p-8 min-h-screen bg-gray-50">
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
       <h1 class="text-4xl font-bold text-gray-900 mb-3">In-House Event Registration</h1>
-      <p class="text-gray-600">Register for an in-house promotional event.</p>
+      <p class="text-gray-600">Register for one or more in-house promotional events, with one institute and one representative per event.</p>
     </div>
 
     <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
       <form @submit.prevent="submitForm">
-        <!-- Current ECPF Details -->
+        <!-- Current ECPF Details (Remains the same) -->
         <section class="mb-8">
           <h2 class="text-lg font-medium mb-4 text-gray-700">Current ECPF Details</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700">ECPF Name</label>
-              <input
-                type="text"
-                :value="ecpfDetails.name"
-                readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="text" :value="ecpfDetails.name" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Location</label>
-              <input
-                type="text"
-                :value="ecpfDetails.location"
-                readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="text" :value="ecpfDetails.location" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Name of Proprietor</label>
-              <input
-                type="text"
-                :value="ecpfDetails.proprietor"
-                readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="text" :value="ecpfDetails.proprietor" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">CID</label>
-              <input
-                type="text"
-                :value="ecpfDetails.cid"
-                readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="text" :value="ecpfDetails.cid" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Contact No.</label>
-              <input
-                type="text"
-                :value="ecpfDetails.contactNo"
-                readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-              />
+              <input type="text" :value="ecpfDetails.contactNo" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Email Address</label>
-              <input
-                type="email"
-                :value="ecpfDetails.email"
-                readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Institute</label>
-              <select
-                v-model="selectedInstitute"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              >
-                <option value="">Select Institute</option>
-                <option
-                  v-for="institute in availableInstitutes"
-                  :key="institute.id"
-                  :value="institute.id"
-                >
-                  {{ institute.name }}
-                </option>
-              </select>
+              <input type="email" :value="ecpfDetails.email" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
             </div>
           </div>
         </section>
 
-        <!-- Proposed In-House Event Details -->
-        <section class="mb-8">
-          <h2 class="text-lg font-medium mb-4 text-gray-700">Proposed In-House Event Details</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Event Name</label>
-              <input
-                type="text"
-                v-model="eventDetails.name"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Event Description</label>
-              <textarea
-                v-model="eventDetails.description"
-                rows="3"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              ></textarea>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Event Purpose</label>
-              <input
-                type="text"
-                v-model="eventDetails.purpose"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Event Location</label>
-              <input
-                type="text"
-                v-model="eventDetails.location"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              />
-            </div>
-          </div>
-        </section>
+        <!-- Spacer -->
+        <hr class="my-8"/>
 
-        <!-- Representative Details -->
-        <section class="mb-8">
-          <h2 class="text-lg font-medium mb-4 text-gray-700">Representative Details (Maximum 2)</h2>
-          <div
-            v-for="(rep, index) in representatives"
-            :key="index"
-            class="mb-4 p-4 border border-gray-200 rounded-md"
-          >
+        <!-- NEW: Repeating section for each Institute -->
+        <div v-for="(instituteEvent, index) in instituteEvents" :key="instituteEvent.id"
+          class="mb-6 p-6 border border-gray-300 rounded-xl relative bg-gray-50/50">
+
+          <!-- Block Header with Remove Button -->
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800">Institute & Event #{{ index + 1 }}</h2>
+            <button v-if="instituteEvents.length > 1" type="button" @click="removeInstituteEvent(index)"
+              class="px-3 py-1.5 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
+              Remove
+            </button>
+          </div>
+
+          <!-- Proposed In-House Event Details -->
+          <section class="mb-8">
+            <h3 class="text-lg font-medium mb-4 text-gray-700">Proposed In-House Event Details</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700">Institute</label>
+                <select v-model="instituteEvent.instituteId"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                  <option value="">Select Institute</option>
+                  <option v-for="institute in availableInstitutes" :key="institute.id" :value="institute.id">
+                    {{ institute.InstituteCollegeUniversityName }}
+                  </option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Event Name</label>
+                <input type="text" v-model="instituteEvent.eventDetails.name"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Event Description</label>
+                <textarea v-model="instituteEvent.eventDetails.description" rows="3"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Event Purpose</label>
+                <input type="text" v-model="instituteEvent.eventDetails.purpose"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Event Location</label>
+                <input type="text" v-model="instituteEvent.eventDetails.location"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+              </div>
+            </div>
+          </section>
+
+          <!-- Representative Details (One per institute) -->
+          <section>
+            <h3 class="text-lg font-medium mb-4 text-gray-700">Representative Details</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label class="block text-sm font-medium text-gray-700">Name</label>
-                <input
-                  type="text"
-                  v-model="rep.name"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                />
+                <input type="text" v-model="instituteEvent.representative.name"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Passport No.</label>
-                <input
-                  type="text"
-                  v-model="rep.passport_no"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                />
+                <input type="text" v-model="instituteEvent.representative.passport_no"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Nationality</label>
-                <select
-                  v-model="rep.nationality"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                >
+                <select v-model="instituteEvent.representative.nationality"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                   <option value="">Select Nationality</option>
-                  <option
-                    v-for="country in countryOptions"
-                    :key="country.code"
-                    :value="country.code"
-                  >
+                  <option v-for="country in countryOptions" :key="country.code" :value="country.code">
                     {{ country.name }}
                   </option>
                 </select>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Arrival Date</label>
-                <input
-                  type="date"
-                  v-model="rep.arrival_date"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                />
+                <input type="date" v-model="instituteEvent.representative.arrival_date"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Departure Date</label>
-                <input
-                  type="date"
-                  v-model="rep.departure_date"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                />
+                <input type="date" v-model="instituteEvent.representative.departure_date"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">CV of Representative</label>
                 <div class="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    :value="rep.cv ? rep.cv : 'No file chosen'"
-                    readonly
-                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                  />
+                  <input type="text" :value="instituteEvent.representative.cv || 'No file chosen'" readonly
+                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
                   <label
-                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                  >
+                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
                     <input type="file" @change="handleCvUpload($event, index)" class="hidden" />
                     <span>Upload</span>
                   </label>
                 </div>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Affiliation Letter</label>
+                <label class="block text-sm font-medium text-gray-700">Passport copy or Identification Document</label>
                 <div class="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    :value="rep.affiliationLetter ? rep.affiliationLetter : 'No file chosen'"
-                    readonly
-                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                  />
+                  <input type="text" :value="instituteEvent.representative.affiliation_letter || 'No file chosen'" readonly
+                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
                   <label
-                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                  >
-                    <input
-                      type="file"
-                      @change="handleAffiliationLetterUpload($event, index)"
-                      class="hidden"
-                    />
+                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                    <input type="file" @change="handleAffiliationLetterUpload($event, index)" class="hidden" />
                     <span>Upload</span>
                   </label>
                 </div>
@@ -221,61 +158,41 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700">Authorization Letter</label>
                 <div class="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    :value="rep.authorizationLetter ? rep.authorizationLetter : 'No file chosen'"
+                  <input type="text" :value="instituteEvent.representative.authorization_letter || 'No file chosen'"
                     readonly
-                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                  />
+                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
                   <label
-                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                  >
-                    <input
-                      type="file"
-                      @change="handleAuthorizationLetterUpload($event, index)"
-                      class="hidden"
-                    />
+                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                    <input type="file" @change="handleAuthorizationLetterUpload($event, index)" class="hidden" />
                     <span>Upload</span>
                   </label>
                 </div>
               </div>
             </div>
-            <button
-              v-if="representatives.length > 1"
-              type="button"
-              @click="removeRepresentative(index)"
-              class="mt-2 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
-            >
-              Remove
+          </section>
+
+        </div>
+
+        <!-- NEW: Add Institute Button -->
+        <div class="mt-8 mb-8">
+            <button type="button" @click="addInstituteEvent"
+              class="w-full px-6 py-3 text-base font-medium text-white bg-green-600 rounded-md hover:bg-green-700 border-2 border-dashed border-green-700 hover:border-green-800">
+              + Add Another Institute
             </button>
-          </div>
-          <button
-            type="button"
-            @click="addRepresentative"
-            :disabled="representatives.length >= 2"
-            class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Add Representative
-          </button>
-        </section>
+        </div>
 
         <!-- Remarks -->
         <section class="mb-8">
           <h2 class="text-lg font-medium mb-4 text-gray-700">Remarks</h2>
-          <textarea
-            v-model="remarks"
-            rows="4"
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-          ></textarea>
+          <textarea v-model="remarks" rows="4"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea>
         </section>
 
         <!-- Submit Button -->
         <div class="mt-6 flex justify-end">
-          <button
-            type="submit"
-            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
-          >
-            Register Event
+          <button type="submit"
+            class="px-6 py-3 text-base font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
+            Register All Events
           </button>
         </div>
       </form>
@@ -286,192 +203,130 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
 import { useToast } from 'vue-toastification'
-import apiService from '@/services/services' // Import the service
+import apiService from '@/services/ecpfServices.js'
 
 const toast = useToast()
 
-// --- Data ---
+// --- Static Data ---
 const ecpfDetails = reactive({
-  // Initialize as empty, will be fetched
-  name: '',
-  location: '',
-  proprietor: '',
-  cid: '',
-  contactNo: '',
-  email: '',
+  name: '', location: '', proprietor: '', cid: '', contactNo: '', email: '',
 })
-
-const selectedInstitute = ref('')
 const availableInstitutes = ref([])
 const countryOptions = ref([])
+const remarks = ref('')
 
-const eventDetails = reactive({
-  name: '',
-  description: '',
-  purpose: '',
-  location: '',
+// --- NEW: Dynamic Data for multiple institutes ---
+let nextInstituteId = 1
+const createNewInstituteEvent = () => ({
+  id: nextInstituteId++,
+  instituteId: '',
+  eventDetails: { name: '', description: '', purpose: '', location: '' },
+  representative: {
+    name: '', passport_no: '', nationality: '', arrival_date: '', departure_date: '',
+    cv: '', affiliation_letter: '', authorization_letter: '',
+  },
 })
 
-const representatives = reactive([
-  {
-    name: '',
-    passport_no: '',
-    nationality: '',
-    arrival_date: '',
-    departure_date: '',
-    cv: null,
-    affiliation_letter: null,
-    authorization_letter: null,
-  }, // Backend field names likely snake_case
-])
-
-const remarks = ref('')
+const instituteEvents = reactive([createNewInstituteEvent()])
 
 // --- Methods ---
 
-// Representatives
-const addRepresentative = () => {
-  if (representatives.length < 2) {
-    representatives.push({
-      name: '',
-      passport_no: '',
-      nationality: '',
-      arrival_date: '',
-      departure_date: '',
-      cv: null,
-      affiliation_letter: null,
-      authorization_letter: null,
-    })
+// Institute & Event Management
+const addInstituteEvent = () => {
+  instituteEvents.push(createNewInstituteEvent())
+}
+
+const removeInstituteEvent = (index) => {
+  if (instituteEvents.length > 1) {
+    instituteEvents.splice(index, 1)
+  } else {
+    toast.warning('You must register at least one institute.')
   }
 }
 
-const removeRepresentative = (index) => {
-  representatives.splice(index, 1)
-}
-
+// File Handlers (updated to work with the new data structure)
 const handleCvUpload = (event, index) => {
   const file = event.target.files[0]
-  if (file) {
-    representatives[index].cv = file.name // Store filename
-    // In real application, you'd likely upload the file to backend here
-    // and store a URL or file path in representatives[index].cv
-  } else {
-    representatives[index].cv = null
-  }
+  instituteEvents[index].representative.cv = file ? file.name : ''
 }
 
 const handleAffiliationLetterUpload = (event, index) => {
   const file = event.target.files[0]
-  if (file) {
-    representatives[index].affiliation_letter = file.name
-  } else {
-    representatives[index].affiliation_letter = null
-  }
+  instituteEvents[index].representative.affiliation_letter = file ? file.name : ''
 }
 const handleAuthorizationLetterUpload = (event, index) => {
   const file = event.target.files[0]
-  if (file) {
-    representatives[index].authorization_letter = file.name
-  } else {
-    representatives[index].authorization_letter = null
-  }
+  instituteEvents[index].representative.authorization_letter = file ? file.name : ''
 }
 
+// Form Submission (updated to handle the array of events)
 const submitForm = async () => {
-  // Basic validation
-  if (!eventDetails.name || !eventDetails.location || !selectedInstitute.value) {
-    toast.error('Please fill in all required event details.')
-    return
-  }
-  if (representatives.some((rep) => !rep.name || !rep.passport_no || !rep.nationality)) {
-    // Backend field name likely snake_case
-    toast.error('Please fill in all required representative details.')
-    return
+  // Basic validation loop
+  for (const [index, event] of instituteEvents.entries()) {
+    if (!event.instituteId || !event.eventDetails.name || !event.eventDetails.location) {
+      toast.error(`Please fill in all required event details for Institute #${index + 1}.`)
+      return
+    }
+    if (!event.representative.name || !event.representative.passport_no || !event.representative.nationality) {
+      toast.error(`Please fill in all required representative details for Institute #${index + 1}.`)
+      return
+    }
   }
 
-  const formData = {
-    ecpf_details: ecpfDetails, // Backend field names likely snake_case
-    institute: selectedInstitute.value,
-    event_details: {
-      // Backend field names likely snake_case
-      name: eventDetails.name,
-      description: eventDetails.description,
-      purpose: eventDetails.purpose,
-      location: eventDetails.location,
-    },
-    representatives: representatives.map((rep) => ({
-      // Map representatives array
-      name: rep.name,
-      passport_no: rep.passport_no, // Backend field name likely snake_case
-      nationality: rep.nationality,
-      arrival_date: rep.arrival_date, // Backend field name likely snake_case
-      departure_date: rep.departure_date, // Backend field name likely snake_case
-      cv: rep.cv, // Filename or URL
-      affiliation_letter: rep.affiliation_letter, // Filename or URL
-      authorization_letter: rep.authorization_letter, // Filename or URL
+  // NOTE: The payload structure is now different.
+  // Your backend API will need to be adjusted to accept an array of 'events'.
+  const payload = {
+    ecpf_details: ecpfDetails,
+    events: instituteEvents.map(event => ({
+      institute: event.instituteId,
+      event_details: event.eventDetails,
+      representative: event.representative,
     })),
     remarks: remarks.value,
   }
 
-  console.log('Submitting form:', formData)
+  console.log('Submitting form:', payload)
 
   // API call
   try {
-    await apiService.createEcpfPromotionalInhouseEvent(formData)
-    toast.success('In-house event registered successfully!')
-    // Reset form
-    eventDetails.name = ''
-    eventDetails.description = ''
-    eventDetails.purpose = ''
-    eventDetails.location = ''
-    representatives.splice(0, representatives.length) // Clear representatives array
-    representatives.push({
-      name: '',
-      passport_no: '',
-      nationality: '',
-      arrival_date: '',
-      departure_date: '',
-      cv: null,
-      affiliation_letter: null,
-      authorization_letter: null,
-    }) // Add back initial representative
+    // You might need a new API endpoint or to update the existing one for this payload
+    await apiService.createEcpfPromotionalInhouseEvent(payload)
+    toast.success('In-house events registered successfully!')
+
+    // Reset form to its initial state
+    instituteEvents.splice(0, instituteEvents.length, createNewInstituteEvent())
     remarks.value = ''
-    selectedInstitute.value = ''
+
   } catch (error) {
     console.error('Error submitting form:', error)
-    toast.error('Failed to register the in-house event.')
+    toast.error('Failed to register the in-house events.')
     if (error.response) {
       console.error('Error details:', error.response.data)
-      toast.error(`Error: ${JSON.stringify(error.response.data)}`) // Display backend errors for debugging
+      toast.error(`Error: ${JSON.stringify(error.response.data)}`)
     }
   }
 }
 
+// Fetch initial data on component mount
 onMounted(async () => {
   try {
-    // Fetch available institutes from your API
-    const institutesResponse = await apiService.getInstitutes()
-    availableInstitutes.value = institutesResponse.data
+    const [institutesResponse, countriesResponse, ecpfResponse] = await Promise.all([
+      apiService.getMasterInstitutesCollegesUniversities(),
+      apiService.getCountries(),
+      apiService.getEcpfDetails()
+    ]);
 
-    // Fetch countries
-    const countriesResponse = await apiService.getCountries()
+    availableInstitutes.value = institutesResponse.data.results
     countryOptions.value = countriesResponse.data
 
-    // Fetch ECPF details
-    const ecpfResponse = await apiService.getEcpfDetails()
     if (ecpfResponse.data) {
-      ecpfDetails.name = ecpfResponse.data.name
-      ecpfDetails.location = ecpfResponse.data.location
-      ecpfDetails.proprietor = ecpfResponse.data.proprietor
-      ecpfDetails.cid = ecpfResponse.data.cid
-      ecpfDetails.contactNo = ecpfResponse.data.contact_no
-      ecpfDetails.email = ecpfResponse.data.email
+      Object.assign(ecpfDetails, ecpfResponse.data)
     } else {
       toast.error('Failed to load ECPF details.')
     }
   } catch (error) {
-    console.error('Error fetching data:', error)
-    toast.error('Failed to load data. Please try again.')
+    console.error('Error fetching initial data:', error)
+    toast.error('Failed to load required data. Please refresh the page.')
   }
 })
 </script>

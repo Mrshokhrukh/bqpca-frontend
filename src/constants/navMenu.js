@@ -307,7 +307,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/upload_trade_license`,
       },
       {
-        name: 'Non Compliance Records',
+        name: 'Non-Compliance Records',
         icon: getIconComponent('XCircle'),
         route: (serviceType) => `/admin/user/${serviceType}/non_compliance_records`,
       },
@@ -319,12 +319,12 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
       },
       {
-        name: 'Compliance Action',
+        name: 'Non-Compliance',
         icon: getIconComponent('ClipboardList'),
         route: (serviceType) => `/admin/admin/${serviceType}/compliance_action`,
       },
       {
-        name: 'Compliance Action Taken',
+        name: 'Non-Compliance Admin Action Taken',
         icon: getIconComponent('CheckSquare'),
         route: (serviceType) => `/admin/admin/${serviceType}/compliance_action_taken`,
       },

@@ -260,7 +260,7 @@ const applicationTypes = reactive([
     subItems: [
       { id: 'inHouseEvent', label: 'In-house Event' },
       { id: 'massMediaEvent', label: 'Mass Media Event' },
-      { id: 'heiVisit', label: 'HEI Visit' },
+      { id: 'heiVisit', label: 'HEI Representative Visit' },
     ],
   },
   // REMOVE Site Visits Category:

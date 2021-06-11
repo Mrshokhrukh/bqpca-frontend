@@ -9,7 +9,7 @@
       <form @submit.prevent="submitForm">
         <!-- Current ECPF Details (Read-Only) -->
         <section class="mb-8">
-          <h2 class="text-lg font-medium mb-4 text-gray-700">Current ECPF Details</h2>
+          <h2 class="text-xl font-bold mb-4 text-gray-700">Current ECPF Details</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700">ECPF Name</label>
@@ -80,122 +80,13 @@
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Fair Description</label>
-              <textarea
-                v-model="fairDetails.description"
-                rows="3"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              ></textarea>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Fair Location</label>
-              <input
-                type="text"
-                v-model="fairDetails.location"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              />
-            </div>
+
+
           </div>
         </section>
-
-        <!-- Representative Details -->
-        <section class="mb-8">
-          <h2 class="text-lg font-medium mb-4 text-gray-700">Representative Details (Maximum 2)</h2>
-          <div
-            v-for="(rep, index) in representatives"
-            :key="index"
-            class="mb-4 p-4 border border-gray-200 rounded-md"
-          >
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Name</label>
-                <input
-                  type="text"
-                  v-model="rep.name"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Passport No.</label>
-                <input
-                  type="text"
-                  v-model="rep.passportNo"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Nationality</label>
-                <select
-                  v-model="rep.nationality"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                >
-                  <option value="">Select Nationality</option>
-                  <option
-                    v-for="country in countryOptions"
-                    :key="country.code"
-                    :value="country.code"
-                  >
-                    {{ country.name }}
-                  </option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Arrival Date</label>
-                <input
-                  type="date"
-                  v-model="rep.arrivalDate"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Departure Date</label>
-                <input
-                  type="date"
-                  v-model="rep.departureDate"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">CV of Representative</label>
-                <div class="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    :value="rep.cvFileName ? rep.cvFileName : 'No file chosen'"
-                    readonly
-                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                  />
-                  <label
-                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                  >
-                    <input type="file" @change="handleCvUpload($event, index)" class="hidden" />
-                    <span>Upload</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-            <button
-              v-if="representatives.length > 1"
-              type="button"
-              @click="removeRepresentative(index)"
-              class="mt-2 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
-            >
-              Remove
-            </button>
-          </div>
-          <button
-            type="button"
-            @click="addRepresentative"
-            :disabled="representatives.length >= 2"
-            class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Add Representative
-          </button>
-        </section>
-
         <!-- Participating Institute Details -->
-        <section class="mb-8">
-          <h2 class="text-lg font-medium mb-4 text-gray-700">Participating Institute Details</h2>
+        <section class="mb-8 bg-gray-300">
+          <h2 class="text-xl font-bold mb-4 text-gray-700">Participating Institute Details</h2>
           <div
             v-for="(institute, index) in participatingInstitutes"
             :key="index"
@@ -203,19 +94,12 @@
           >
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Name of the Institution</label
-                >
-                <select
+                <label class="block text-sm font-medium text-gray-700">Name of the Institution</label>
+                <input
+                  type="text"
                   v-model="institute.instituteId"
-                  @change="onInstituteSelect(index)"
                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                >
-                  <option value="">Select Institution</option>
-                  <option v-for="inst in availableInstitutes" :key="inst.id" :value="inst.id">
-                    {{ inst.name }}
-                  </option>
-                </select>
+                />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Location</label>
@@ -254,9 +138,7 @@
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Contact (focal person)</label
-                >
+                <label class="block text-sm font-medium text-gray-700" >Contact (focal person)</label>
                 <input
                   type="text"
                   v-model="institute.contact"
@@ -274,15 +156,11 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Type of University</label>
-                <select
+                <input
+                  type="text"
                   v-model="institute.universityType"
                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                >
-                  <option value="">Select Type</option>
-                  <option v-for="type in universityTypes" :key="type" :value="type">
-                    {{ type }}
-                  </option>
-                </select>
+                />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700"
@@ -303,77 +181,173 @@
                   class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
                 />
               </div>
-              <!-- Course Offered Details -->
-              <div
-                v-for="(course, courseIndex) in institute.courses"
-                :key="courseIndex"
-                class="nested-form"
-              >
-                <label class="block text-sm font-medium text-gray-700"
-                  >Course Offered (intend to admit student course only)</label
-                >
-                <div class="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    v-model="course.name"
-                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                  />
-                  <button
-                    v-if="institute.courses.length > 1"
-                    type="button"
-                    @click="removeCourse(index, courseIndex)"
-                    class="mt-2 px-2 py-1 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
-                  >
-                    Remove Course
-                  </button>
-                </div>
-              </div>
-              <button
-                type="button"
-                @click="addCourse(index)"
-                class="mt-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-              >
-                Add Course
-              </button>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Authorization Letter</label>
-                <div class="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    :value="
-                      institute.authorizationLetterFileName
-                        ? institute.authorizationLetterFileName
-                        : 'No file chosen'
-                    "
-                    readonly
-                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                  />
-                  <label
-                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                  >
-                    <input
-                      type="file"
-                      @change="handleAuthorizationUpload($event, index)"
-                      class="hidden"
-                    />
-                    <span>Upload</span>
-                  </label>
-                </div>
-              </div>
-              <button
-                v-if="participatingInstitutes.length > 1"
-                type="button"
-                @click="removeInstitute(index)"
-                class="mt-2 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
-              >
-                Remove Institute
-              </button>
             </div>
+
+            <!-- Representative Details (inside each institute) -->
+            <section class="mb-8">
+              <h2 class="text-lg font-bold mb-4 text-gray-700 mt-2">Representative Details (Maximum 2)</h2>
+              <div
+                v-for="(rep, repIndex) in institute.representatives"
+                :key="repIndex"
+                class="mb-4 p-4 border border-gray-200 rounded-md"
+              >
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Name</label>
+                    <input
+                      type="text"
+                      v-model="rep.name"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Passport No.</label>
+                    <input
+                      type="text"
+                      v-model="rep.passportNo"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Nationality</label>
+                    <select
+                      v-model="rep.nationality"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                    >
+                      <option value="">Select Nationality</option>
+                      <option
+                        v-for="country in countryOptions"
+                        :key="country.code"
+                        :value="country.code"
+                      >
+                        {{ country.name }}
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Arrival Date</label>
+                    <input
+                      type="date"
+                      v-model="rep.arrivalDate"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Departure Date</label>
+                    <input
+                      type="date"
+                      v-model="rep.departureDate"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">CV of Representative</label>
+                    <div class="flex items-center space-x-2">
+                      <input
+                        type="text"
+                        :value="rep.cvFileName ? rep.cvFileName : 'No file chosen'"
+                        readonly
+                        class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                      />
+                      <label
+                        class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                      >
+                        <input type="file" @change="handleCvUpload($event, index, repIndex)" class="hidden" />
+                        <span>Upload</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  v-if="institute.representatives.length > 1"
+                  type="button"
+                  @click="removeRepresentative(index, repIndex)"
+                  class="mt-2 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+                >
+                  Remove
+                </button>
+              </div>
+              <button
+                type="button"
+                @click="addRepresentative(index)"
+                :disabled="institute.representatives.length >= 2"
+                class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Add Representative
+              </button>
+            </section>
+
+            <!-- Course Offered Details -->
+            <div
+              v-for="(course, courseIndex) in institute.courses"
+              :key="courseIndex"
+              class="nested-form"
+            >
+              <label class="block text-sm font-medium text-gray-700"
+                >Course Offered (intend to admit student course only)</label
+              >
+              <div class="flex items-center space-x-2">
+                <input
+                  type="text"
+                  v-model="course.name"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                />
+                <button
+                  v-if="institute.courses.length > 1"
+                  type="button"
+                  @click="removeCourse(index, courseIndex)"
+                  class="mt-2 px-2 py-1 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+                >
+                  Remove Course
+                </button>
+              </div>
+            </div>
+            <button
+              type="button"
+              @click="addCourse(index)"
+              class="mt-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+            >
+              Add Course
+            </button>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Authorization Letter</label>
+              <div class="flex items-center space-x-2">
+                <input
+                  type="text"
+                  :value="
+                    institute.authorizationLetterFileName
+                      ? institute.authorizationLetterFileName
+                      : 'No file chosen'
+                  "
+                  readonly
+                  class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                />
+                <label
+                  class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                >
+                  <input
+                    type="file"
+                    @change="handleAuthorizationUpload($event, index)"
+                    class="hidden"
+                  />
+                  <span>Upload</span>
+                </label>
+              </div>
+            </div>
+            <button
+              v-if="participatingInstitutes.length > 1"
+              type="button"
+              @click="removeInstitute(index)"
+              class="mt-2 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+            >
+              Remove Institute
+            </button>
           </div>
+          <hr class="mx-6">
           <button
             type="button"
             @click="addInstitute"
-            class="mt-4 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700"
+            class="mx-4 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700"
           >
             Add Institute
           </button>
@@ -412,19 +386,18 @@ const toast = useToast()
 
 // --- Data ---
 const ecpfDetails = reactive({
-  // Replace with actual data fetching if needed from backend based on logged in ECPF
-  name: 'Example ECPF', // Static example data, replace with dynamic data if needed
-  location: 'Thimphu',
-  proprietor: 'John Doe',
-  cid: '1234567890',
-  contactNo: '+975-17123456',
-  email: 'john.doe@example.com',
+  name: '',
+  location: '',
+  proprietor: '',
+  cid: '',
+  contactNo: '',
+  email: '',
 })
 
 const fairDetails = reactive({
   name: '',
-  description: '',
-  location: '',
+  // description: '',
+  // location: '',
 })
 
 const representatives = reactive([
@@ -440,8 +413,6 @@ const representatives = reactive([
 ])
 const countryOptions = ref([])
 
-const availableInstitutes = ref([])
-const universityTypes = ref(['Public', 'Private', 'Deemed'])
 const participatingInstitutes = reactive([
   {
     instituteId: '',
@@ -455,8 +426,19 @@ const participatingInstitutes = reactive([
     recognitionCode: '',
     courses: [{ name: '' }],
     accreditedBy: '',
-    authorizationLetterFile: null, // Store the actual file
-    authorizationLetterFileName: null, // Store filename for display
+    authorizationLetterFile: null,
+    authorizationLetterFileName: null,
+    representatives: [
+      {
+        name: '',
+        passportNo: '',
+        nationality: '',
+        arrivalDate: '',
+        departureDate: '',
+        cvFile: null,
+        cvFileName: null,
+      },
+    ],
   },
 ])
 
@@ -465,9 +447,9 @@ const remarks = ref('')
 // --- Methods ---
 
 // Representatives
-const addRepresentative = () => {
-  if (representatives.length < 2) {
-    representatives.push({
+const addRepresentative = (instituteIndex) => {
+  if (participatingInstitutes[instituteIndex].representatives.length < 2) {
+    participatingInstitutes[instituteIndex].representatives.push({
       name: '',
       passportNo: '',
       nationality: '',
@@ -479,18 +461,18 @@ const addRepresentative = () => {
   }
 }
 
-const removeRepresentative = (index) => {
-  representatives.splice(index, 1)
+const removeRepresentative = (instituteIndex, repIndex) => {
+  participatingInstitutes[instituteIndex].representatives.splice(repIndex, 1)
 }
 
-const handleCvUpload = (event, index) => {
+const handleCvUpload = (event, instituteIndex, repIndex) => {
   const file = event.target.files[0]
   if (file) {
-    representatives[index].cvFile = file // Store the file object
-    representatives[index].cvFileName = file.name // Store file name for display
+    participatingInstitutes[instituteIndex].representatives[repIndex].cvFile = file
+    participatingInstitutes[instituteIndex].representatives[repIndex].cvFileName = file.name
   } else {
-    representatives[index].cvFileName = null
-    representatives[index].cvFile = null
+    participatingInstitutes[instituteIndex].representatives[repIndex].cvFile = null
+    participatingInstitutes[instituteIndex].representatives[repIndex].cvFileName = null
   }
 }
 
@@ -510,6 +492,17 @@ const addInstitute = () => {
     accreditedBy: '',
     authorizationLetterFile: null,
     authorizationLetterFileName: null,
+    representatives: [
+      {
+        name: '',
+        passportNo: '',
+        nationality: '',
+        arrivalDate: '',
+        departureDate: '',
+        cvFile: null,
+        cvFileName: null,
+      },
+    ],
   })
 }
 
@@ -630,6 +623,16 @@ const submitForm = async () => {
         inst.authorizationLetterFile,
       ) // Send file object
     }
+    inst.representatives.forEach((rep, repIndex) => {
+      formData.append(`participating_institutes[${index}][representatives][${repIndex}][name]`, rep.name)
+      formData.append(`participating_institutes[${index}][representatives][${repIndex}][passport_no]`, rep.passportNo)
+      formData.append(`participating_institutes[${index}][representatives][${repIndex}][nationality]`, rep.nationality)
+      formData.append(`participating_institutes[${index}][representatives][${repIndex}][arrival_date]`, rep.arrivalDate)
+      formData.append(`participating_institutes[${index}][representatives][${repIndex}][departure_date]`, rep.departureDate)
+      if (rep.cvFile) {
+        formData.append(`participating_institutes[${index}][representatives][${repIndex}][cv]`, rep.cvFile)
+      }
+    })
   })
 
   // Remarks
@@ -684,13 +687,36 @@ const submitForm = async () => {
 
 onMounted(async () => {
   try {
+    // 1. Get logged-in user from localStorage
+    const user = JSON.parse(localStorage.getItem('user'))
+    if (!user || !user.cid) {
+      toast.error('User not found in local storage.')
+      return
+    }
+
+    // 2. Fetch ECPF profiles
+    const profilesResponse = await apiService.getEcpfProfiles()
+    // If your API returns { results: [...] }
+    const profiles = profilesResponse.data.results || profilesResponse.data
+
+    // 3. Find profile matching user's cid
+    const matched = profiles.find(profile => profile.cid_no === user.cid)
+    if (matched) {
+      // 4. Set ecpfDetails fields
+      ecpfDetails.name = matched.applicants_name || ''
+      ecpfDetails.location = matched.location || ''
+      ecpfDetails.proprietor = '' // Let user fill this manually
+      ecpfDetails.cid = matched.cid_no || ''
+      ecpfDetails.contactNo = matched.contact_no || ''
+      ecpfDetails.email = matched.email || ''
+    } else {
+      toast.error('No matching ECPF profile found.')
+    }
+
     // Fetch countries
     const countriesResponse = await apiService.getCountries()
     countryOptions.value = countriesResponse.data
-
-    //Fetch Available institute
-    const institutesResponse = await apiService.getAvailableInstitutes()
-    availableInstitutes.value = institutesResponse.data
+  
   } catch (error) {
     console.error('Error fetching data:', error)
     toast.error('Failed to load initial data.')

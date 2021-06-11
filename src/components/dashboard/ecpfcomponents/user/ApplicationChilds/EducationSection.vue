@@ -48,7 +48,7 @@
       <!-- Added University Name Input -->
       <div>
         <label for="university" class="block text-sm font-medium text-gray-700"
-          >University Name <span class="text-red-500">*</span></label
+          >Name of University /School</label
         >
         <input
           type="text"

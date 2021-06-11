@@ -247,9 +247,9 @@
                     />
                   </div>
                   <div>
-                    <label for="ecpfLinkageName" class="block text-sm font-medium text-gray-700"
+                    <!-- <label for="ecpfLinkageName" class="block text-sm font-medium text-gray-700"
                       >Name of ECPF with linkage (if B2B)</label
-                    >
+                    > -->
                     <select
                       id="ecpfLinkageName"
                       v-model="formData.ecpfLinkageName"

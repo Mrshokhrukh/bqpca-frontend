@@ -291,7 +291,7 @@ export default {
     return apiClient.delete(`/ecpf/master-compliance-action/${id}/`)
   },
 
-  // Master Compliance Action Taken
+  // Master Non-Compliance Admin Action Taken
   getMasterComplianceActionsTaken() {
     return apiClient.get('/ecpf/master-compliance-action-taken/')
   },
@@ -312,6 +312,7 @@ export default {
   },
 
   // Master Institute/College/University
+  
   getMasterInstitutesCollegesUniversities() {
     return apiClient.get('/ecpf/master-institute-college-university/')
   },
