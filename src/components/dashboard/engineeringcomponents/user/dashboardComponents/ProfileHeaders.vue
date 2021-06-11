@@ -1,4 +1,4 @@
-<!-- Updated ProfileHeader Component with certificate modal and dynamic button behavior -->
+<!-- Production Ready ProfileHeader Component with certificate modal and dynamic button behavior -->
 <template>
   <div class="bg-white rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
     :class="{ 'animate-pulse': isExpiringSoon }">
@@ -104,7 +104,6 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  // Keep qualifications prop for backward compatibility
   qualifications: {
     type: Array,
     default: () => [],
@@ -145,12 +144,27 @@ const getStatusDotClass = (message) => {
 
 // Get qualifications from the correct location in your data structure
 const userQualifications = computed(() => {
-  // First try to get from userDetail.user_qualifications (your actual data structure)
+  // First try the qualifications prop (this comes from dashboardState.primaryQualifications)
+  if (props.qualifications?.length > 0) {
+    return props.qualifications
+  }
+
+  // Then try userDetail.user_qualifications
   if (props.userDetail?.user_qualifications?.length > 0) {
     return props.userDetail.user_qualifications
   }
-  // Fallback to props.qualifications for backward compatibility
-  return props.qualifications || []
+
+  return []
+})
+
+// Create a synthetic userDetail that includes the qualifications for the certificate modal
+const enhancedUserDetail = computed(() => {
+  if (!props.userDetail) return null
+
+  return {
+    ...props.userDetail,
+    user_qualifications: userQualifications.value
+  }
 })
 
 const firstApprovedQualification = computed(() => {
@@ -251,7 +265,7 @@ const statusIconClass = computed(() => {
   return classes[firstApprovedQualificationStatus.value] || 'text-gray-500'
 })
 
-// Fixed: Only show warning if within 3 months (90 days) OR already expired
+// Only show warning if within 3 months (90 days) OR already expired
 const isExpiringSoon = computed(() => {
   if (!firstApprovedQualificationExpiryDate.value) return false
 
@@ -342,8 +356,9 @@ const calculatedRenewalMessage = computed(() => {
 
 // Dynamic action button logic
 const shouldShowActionButton = computed(() => {
-  // Always show button if there's an approved qualification
-  return firstApprovedQualification.value && firstApprovedQualificationStatus.value === 'Approved'
+  return userQualifications.value?.some(
+    (q) => q && q.endorsement_decision === 'Approved'
+  )
 })
 
 const actionButtonText = computed(() => {
@@ -417,11 +432,35 @@ const handleActionButtonClick = () => {
 }
 
 const openCertificateModal = () => {
-  // Prepare certificate data in the format expected by the modal
-  // The modal expects a structure with 'results' array containing the user data
-  certificateData.value = {
-    results: [props.userDetail]
+  // Map the enhancedUserDetail to the format expected by the certificate modal
+  const mappedUserDetail = {
+    // Basic user info
+    full_name: enhancedUserDetail.value?.name || enhancedUserDetail.value?.username,
+    cid_no: enhancedUserDetail.value?.id,
+    registration_no: enhancedUserDetail.value?.registration_no,
+    email_address: enhancedUserDetail.value?.email,
+    contact_no: enhancedUserDetail.value?.phone,
+    passport_photo: enhancedUserDetail.value?.photo,
+
+    // Registration info - get from qualification data
+    registration_date: enhancedUserDetail.value?.user_qualifications?.[0]?.registration_date,
+    expiry_date: enhancedUserDetail.value?.user_qualifications?.[0]?.expiry_date,
+    is_active: enhancedUserDetail.value?.user_qualifications?.[0]?.is_active,
+
+    // Category info - get from qualification
+    category_display: enhancedUserDetail.value?.user_qualifications?.[0]?.personnel_category_name || 'Professional Engineer',
+    subcategory_display: enhancedUserDetail.value?.user_qualifications?.[0]?.personnel_sub_category_name,
+    registration_type_display: enhancedUserDetail.value?.registrationType || 'Full Registration',
+
+    // Include the complete user_qualifications array
+    user_qualifications: enhancedUserDetail.value?.user_qualifications || [],
+
+    // Additional fields that might be needed
+    updated_at: enhancedUserDetail.value?.user_qualifications?.[0]?.updated_at
   }
+
+  // Use the mapped data for the certificate modal
+  certificateData.value = { results: [mappedUserDetail] }
   showCertificateModal.value = true
 }
 
