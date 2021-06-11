@@ -1,24 +1,25 @@
 <template>
-  <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
-    <div class="flex border-b border-gray-200">
-      <button @click="changeTab('single')" :class="getTabClasses('single')">
-        <UserIcon class="h-5 w-5 inline-block mr-2" />
-        Single Entry
-      </button>
-      <button @click="changeTab('bulk')" :class="getTabClasses('bulk')">
-        <UsersIcon class="h-5 w-5 inline-block mr-2" />
-        Bulk Upload
-      </button>
-      <button @click="changeTab('photo')" :class="getTabClasses('photo')">
-        <CameraIcon class="h-5 w-5 inline-block mr-2" />
-        Attendance Photo
-      </button>
-    </div>
+  <div
+    class="flex space-x-2 bg-slate-200/70 p-1.5 rounded-xl backdrop-blur-sm"
+    :class="{ 'cursor-not-allowed opacity-70': disabled }"
+  >
+    <button @click="changeTab('single')" :class="getTabClasses('single')" :disabled="disabled">
+      <UserIcon class="h-5 w-5 mr-2" />
+      Single Entry
+    </button>
+    <button @click="changeTab('bulk')" :class="getTabClasses('bulk')" :disabled="disabled">
+      <UsersIcon class="h-5 w-5 mr-2" />
+      Bulk Upload
+    </button>
+    <button @click="changeTab('photo')" :class="getTabClasses('photo')" :disabled="disabled">
+      <CameraIcon class="h-5 w-5 mr-2" />
+      Attendance Photo
+    </button>
   </div>
 </template>
 
 <script setup>
-import { UserIcon, UsersIcon, CameraIcon } from '@heroicons/vue/24/outline'
+import { UserIcon, UsersIcon, CameraIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
   activeTab: {
@@ -26,20 +27,26 @@ const props = defineProps({
     required: true,
     validator: (value) => ['single', 'bulk', 'photo'].includes(value),
   },
-})
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+});
 
-const emit = defineEmits(['tab-change'])
+const emit = defineEmits(['tab-change']);
 
 function changeTab(tab) {
-  emit('tab-change', tab)
+  if (props.disabled) return;
+  emit('tab-change', tab);
 }
 
 function getTabClasses(tab) {
+  const isActive = props.activeTab === tab;
   return [
-    'flex-1 py-3 font-medium text-center focus:outline-none transition-colors',
-    props.activeTab === tab
-      ? 'text-green-600 border-b-2 border-green-500 bg-green-50'
-      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50',
-  ]
+    'flex-1 flex items-center justify-center text-center whitespace-nowrap py-3 px-4 font-semibold text-sm rounded-lg transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-200/70',
+    isActive
+      ? 'bg-white text-blue-600 shadow-md'
+      : 'text-slate-600 hover:bg-slate-300/50 hover:text-slate-800',
+  ];
 }
 </script>

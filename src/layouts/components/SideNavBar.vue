@@ -17,8 +17,8 @@
         </div>
         <span
           class="font-semibold text-lg tracking-wide text-slate-100 group-hover:text-primary transition-colors"
-          >BQPCA Admin</span
-        >
+        >BQPCA Console</span>
+
       </router-link>
       <button
         @click="toggleSidebar"

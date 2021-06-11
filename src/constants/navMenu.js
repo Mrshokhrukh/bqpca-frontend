@@ -991,12 +991,6 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cpd_application_details`,
       },
       {
-        name: 'Apply New CPD Test',
-        icon: getIconComponent('FilePlus'),
-        route: (serviceType) =>
-          `/admin/cme_cpd_provider/${serviceType}/cpd_provider_application_form`,
-      },
-      {
         name: 'Track Applications',
         icon: getIconComponent('FileSearch'),
         route: (serviceType) => `/admin/cme_cpd_provider/${serviceType}/cpd_application_tracker`,

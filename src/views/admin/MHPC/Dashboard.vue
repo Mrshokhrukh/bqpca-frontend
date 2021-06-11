@@ -113,7 +113,7 @@ import CogsWorkplace from '@/components/dashboard/mhpccomponents/admin/CogsWorkp
 import CounselorForm from '@/components/dashboard/mhpccomponents/dealingOfficer/CounselorForm.vue'
 import MHPCUserProfile from '@/components/dashboard/mhpccomponents/user/MHPCUserProfile.vue'
 import ProviderDashboard from '@/components/dashboard/mhpccomponents/cpdCpdProvider/ProviderDashboard.vue'
-import CPDApplicationDetails from '@/components/dashboard/mhpccomponents/cpdCpdProvider/CPDApplicationDetails.vue'
+// import CPDApplicationDetails from '@/components/dashboard/mhpccomponents/cpdCpdProvider/CPDApplicationDetails.vue'
 import CPDApplicationTracker from '@/components/dashboard/mhpccomponents/cpdCpdProvider/CPDApplicationTracker.vue'
 import CpdProviderApplicationForm from '@/components/dashboard/mhpccomponents/cpdCpdProvider/CpdProviderApplicationForm.vue'
 
@@ -297,13 +297,13 @@ const bmhCmeCpdProviderComponent = computed(() => {
     case path.endsWith('/health_certification/dashboard'):
       return ProviderDashboard
     case path.endsWith('/health_certification/cpd_application_details'):
-      return CPDApplicationDetails
+      return CpdProviderApplicationForm
     case path.endsWith('/health_certification/cpd_application_tracker'):
       return CPDApplicationTracker
     case path.endsWith('/health_certification/cpd_approved_add_participants'):
       return CPDapprovedAddParticipants
-    case path.endsWith('/health_certification/cpd_provider_application_form'):  
-      return CpdProviderApplicationForm  
+    case path.endsWith('/health_certification/cpd_provider_application_form'):
+      return CpdProviderApplicationForm
     default:
       return null
   }

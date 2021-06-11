@@ -43,22 +43,22 @@ export default {
 
   // Masters CPD Methodologies
   getMhpcMastersCpdMethodologies() {
-    return apiClient.get('/mhpc/masters-cpd-task-methodologies/')
+    return apiClient.get('/mhpc/masters-cme-methodologies/')
   },
   createMhpcMastersCpdMethodology(data) {
-    return apiClient.post('/mhpc/masters-cpd-task-methodologies/', data)
+    return apiClient.post('/mhpc/masters-cme-methodologies/', data)
   },
   getMhpcMastersCpdMethodology(id) {
-    return apiClient.get(`/mhpc/masters-cpd-task-methodologies/${id}/`)
+    return apiClient.get(`/mhpc/masters-cme-methodologies/${id}/`)
   },
   updateMhpcMastersCpdMethodology(id, data) {
-    return apiClient.put(`/mhpc/masters-cpd-task-methodologies/${id}/`, data)
+    return apiClient.put(`/mhpc/masters-cme-methodologies/${id}/`, data)
   },
   patchMhpcMastersCpdMethodology(id, data) {
-    return apiClient.patch(`/mhpc/masters-cpd-task-methodologies/${id}/`, data)
+    return apiClient.patch(`/mhpc/masters-cme-methodologies/${id}/`, data)
   },
   deleteMhpcMastersCpdMethodology(id) {
-    return apiClient.delete(`/mhpc/masters-cpd-task-methodologies/${id}/`)
+    return apiClient.delete(`/mhpc/masters-cme-methodologies/${id}/`)
   },
 
   // Masters CPD Single Activity

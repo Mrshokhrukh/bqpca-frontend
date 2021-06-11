@@ -1,256 +1,301 @@
 <template>
-  <div class="w-full mx-auto px-4 py-8">
-    <!-- Application Tracking Header -->
-    <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
-      <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">CPD Application Trackings</h2>
-      <p class="text-gray-600 text-center max-w-2xl mx-auto">
-        Track the status of your CPD applications.
+  <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-800 tracking-tight">
+        CPD Application Tracking
+      </h1>
+      <p class="mt-3 max-w-2xl mx-auto text-lg text-slate-500">
+        Monitor the status and progress of all your submitted applications in one place.
       </p>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="loading" class="flex justify-center items-center py-8">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      <span class="ml-3 text-lg text-gray-700">Loading applications...</span>
+    <div v-if="loading" class="text-center py-16">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+      <p class="mt-4 text-lg font-medium text-slate-600">Loading Applications...</p>
     </div>
 
-    <!-- Error Message -->
-    <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-      <p class="font-bold">Error loading applications</p>
-      <p>{{ error }}</p>
+    <div v-if="error" class="bg-white rounded-2xl shadow-lg p-8 text-center border border-red-200">
+      <div class="mx-auto h-12 w-12 text-red-400">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+          />
+        </svg>
+      </div>
+      <h3 class="mt-3 text-2xl font-bold text-slate-800">An Error Occurred</h3>
+      <p class="mt-2 text-slate-500">{{ error }}</p>
       <button
         @click="fetchApplications"
-        class="mt-2 bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
+        class="mt-6 inline-flex items-center px-5 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
       >
         Retry
       </button>
     </div>
 
-    <!-- Approved Applications Notice -->
-    <div
-      v-if="hasApprovedApplicationsWithoutParticipants"
-      class="bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-lg mb-6"
-    >
-      <div class="flex items-start">
-        <div class="shrink-0">
-          <svg class="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-            <path
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <h3 class="text-sm font-medium">Attention: Approved CPD Applications Ready</h3>
-          <div class="mt-1 text-sm">
-            <p>
+    <div v-if="!loading && !error" class="space-y-8">
+      <div
+        v-if="hasApprovedApplicationsWithoutParticipants"
+        class="bg-white border-l-4 border-yellow-400 p-5 rounded-r-lg shadow-md"
+      >
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg
+              class="h-6 w-6 text-yellow-500"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="ml-4">
+            <h3 class="text-base font-bold text-yellow-800">Action Required</h3>
+            <p class="mt-1 text-sm text-yellow-700">
               You have {{ approvedApplicationsWithoutParticipants.length }} approved CPD
-              application(s) that need participants. Click "Add Participants" under Actions to
-              complete these applications.
+              application(s) ready for participant enrollment.
             </p>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Empty State -->
-    <div
-      v-if="!loading && !error && applications.length === 0 && filteredApplications.length === 0"
-      class="bg-blue-50 border border-blue-200 text-blue-800 px-6 py-4 rounded-lg text-center"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-12 w-12 mx-auto text-blue-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
+      <div
+        v-if="applications.length === 0"
+        class="bg-white rounded-2xl shadow-lg p-12 text-center border"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-        />
-      </svg>
-      <h3 class="mt-2 text-lg font-medium text-blue-900">No applications found</h3>
-      <p class="mt-1 text-blue-600">
-        There seems to be no application under your user name. Please proceed and apply for a new application.
-      </p>
-      <button
-        @click="createNewApplication"
-        class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-      >
-        Apply Now
-      </button>
-    </div>
-
-    <!-- No applications match filter state -->
-    <div
-      v-if="!loading && !error && applications.length > 0 && filteredApplications.length === 0"
-      class="bg-gray-50 rounded-xl p-8 text-center"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 10l4 4m0-4l-4 4" />
-      </svg>
-      <h3 class="mt-2 text-lg font-medium text-gray-900">No applications match your search</h3>
-      <p class="mt-1 text-gray-500">Try adjusting your search term or status filter.</p>
-    </div>
-
-    <!-- Search and Filter Controls -->
-    <div
-      v-if="!loading && !error && applications.length > 0"
-      class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center"
-    >
-      <div class="flex items-center mb-4 sm:mb-0">
-        <label for="search" class="mr-3 text-sm font-medium text-gray-700">Search:</label>
-        <input
-          type="text"
-          id="search"
-          v-model="searchTerm"
-          class="block w-full sm:w-64 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-          placeholder="Enter CPD title or ID"
-        />
-      </div>
-
-      <div class="flex items-center">
-        <label for="statusFilter" class="mr-3 text-sm font-medium text-gray-700">Status:</label>
-        <select
-          id="statusFilter"
-          v-model="statusFilter"
-          class="block w-full sm:w-auto rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-        >
-          <option value="">All Statuses</option>
-          <option value="Approved">Approved (Overall)</option>
-          <option value="Needs Participants">Needs Participants</option>
-          <option value="Completed">Completed</option>
-          <option value="Pending">Pending</option>
-          <option value="Rejected">Rejected</option>
-          <option value="Draft">Draft</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Application Table -->
-    <div
-      v-if="!loading && !error && filteredApplications.length > 0"
-      class="bg-white border rounded-xl shadow-sm overflow-x-auto"
-    >
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              ID
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Title of CPD
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Submission Date
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Type
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Status
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr
-            v-for="application in filteredApplications"
-            :key="application.id"
-            :class="{ 'bg-green-50': isApprovedWithoutParticipants(application) }"
+        <div class="mx-auto h-16 w-16 text-slate-400">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1"
+            stroke="currentColor"
           >
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ application.id }}
-            </td>
-            <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
-              {{ application.title_of_cpd || 'N/A' }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ formatDate(application.created_at || application.status_last_updated) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ application.is_cpd_approved ? 'Approved CPD' : 'New CPD' }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              <span
-                :class="[
-                  'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                  getStatusClass(application),
-                ]"
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+            />
+          </svg>
+        </div>
+        <h3 class="mt-4 text-2xl font-bold text-slate-800">No Applications Yet</h3>
+        <p class="mt-2 text-slate-500">
+          It looks like you haven't created any CPD applications. Get started now!
+        </p>
+        <button
+          @click="createNewApplication"
+          class="mt-6 inline-flex items-center px-5 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Apply Now
+        </button>
+      </div>
+
+      <div v-if="applications.length > 0" class="bg-white rounded-2xl shadow-lg border">
+        <div class="p-6 border-b flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="relative w-full md:w-auto">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg
+                class="h-5 w-5 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
               >
-                {{ getComprehensiveStatus(application) }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-              <button
-                @click="viewApplication(application)"
-                class="text-blue-600 hover:text-blue-900 focus:outline-none"
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <input
+              type="text"
+              v-model="searchTerm"
+              class="block w-full md:w-80 pl-10 pr-4 py-2.5 rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition"
+              placeholder="Search by title or ID..."
+            />
+          </div>
+          <div class="relative w-full md:w-auto">
+            <select
+              v-model="statusFilter"
+              class="w-full appearance-none pl-4 pr-10 py-2.5 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+            >
+              <option value="">All Statuses</option>
+              <option value="Approved">Approved (Overall)</option>
+              <option value="Needs Participants">Needs Participants</option>
+              <option value="Completed">Completed</option>
+              <option value="Pending">Pending</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Draft">Draft</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <svg
+                class="h-5 w-5 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
               >
-                View
-              </button>
-              <button
-                v-if="getComprehensiveStatus(application) === 'Draft'"
-                @click="editApplication(application)"
-                class="text-green-600 hover:text-green-900 focus:outline-none"
+                <path
+                  fill-rule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="filteredApplications.length === 0" class="text-center p-12">
+          <div class="mx-auto h-16 w-16 text-slate-400">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 10l4 4m0-4l-4 4"
+              />
+            </svg>
+          </div>
+          <h3 class="mt-4 text-2xl font-bold text-slate-800">No Matches Found</h3>
+          <p class="mt-2 text-slate-500">
+            No applications match your current search and filter combination.
+          </p>
+        </div>
+
+        <div v-else class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+              <tr>
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  ID
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  CPD Title
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  Submission Date
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  Status
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider text-right"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-slate-200">
+              <tr
+                v-for="application in filteredApplications"
+                :key="application.id"
+                class="hover:bg-slate-50 transition-colors duration-200"
               >
-                Edit
-              </button>
-              <button
-                v-if="isApprovedWithoutParticipants(application)"
-                @click="addParticipants(application)"
-                class="text-purple-600 hover:text-purple-900 focus:outline-none font-medium"
-              >
-                Add Participants
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
+                  {{ application.id }}
+                </td>
+                <td class="px-6 py-4 text-sm text-slate-700 max-w-sm">
+                  <div class="truncate font-medium">{{ application.title_of_cpd || 'N/A' }}</div>
+                  <div class="text-xs text-slate-500">
+                    {{ application.is_cpd_approved ? 'Approved CPD' : 'New CPD' }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                  {{ formatDate(application.created_at || application.status_last_updated) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <span
+                    :class="[
+                      'px-2.5 py-1 inline-flex text-xs leading-5 font-bold rounded-full',
+                      getStatusClass(application),
+                    ]"
+                  >
+                    {{ getComprehensiveStatus(application) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right space-x-4">
+                  <button
+                    @click="viewApplication(application)"
+                    class="text-slate-600 hover:text-slate-900"
+                  >
+                    View
+                  </button>
+                  <button
+                    v-if="getComprehensiveStatus(application) === 'Draft'"
+                    @click="editApplication(application)"
+                    class="text-blue-600 hover:text-blue-900"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    v-if="isApprovedWithoutParticipants(application)"
+                    @click="addParticipants(application)"
+                    class="text-green-600 hover:text-green-900 font-bold"
+                  >
+                    Add Participants
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-4 border-t flex justify-end">
+          <button
+            @click="createNewApplication"
+            class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Create New Application
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- New Application Button -->
-    <div v-if="!loading && applications.length > 0" class="mt-6 flex justify-end">
-      <button
-        @click="createNewApplication"
-        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-      >
-        Create New Application
-      </button>
-    </div>
-
-    <!-- Application View Modal -->
     <div
       v-if="showViewModal && selectedApplication"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      @click.self="closeViewModal"
     >
-      <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold text-gray-900">CPD Application Details</h2>
-          <button @click="closeViewModal" class="text-gray-500 hover:text-gray-700">
+      <div class="bg-slate-50 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+        <div
+          class="flex-shrink-0 px-6 py-5 border-b border-slate-200 flex justify-between items-center"
+        >
+          <h2 class="text-xl font-bold text-slate-800">Application Details</h2>
+          <button
+            @click="closeViewModal"
+            class="p-1 rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-800"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-6 w-6"
@@ -268,227 +313,80 @@
           </button>
         </div>
 
-        <!-- Application Details -->
-        <div class="space-y-6">
-          <!-- Status Banner -->
+        <div class="flex-grow p-6 space-y-6 overflow-y-auto">
           <div
-            v-if="isApprovedWithoutParticipants(selectedApplication)"
-            class="bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-lg"
+            v-for="(section, s_idx) in modalSections"
+            :key="s_idx"
+            class="bg-white p-5 rounded-xl border border-slate-200"
           >
-            <div class="flex items-center">
-              <svg class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              <p>
-                <strong>This application has been approved!</strong> You can now add participants to
-                complete the process.
-              </p>
-            </div>
-            <div class="mt-2 text-right">
-              <button
-                @click="addParticipants(selectedApplication)"
-                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-              >
-                Add Participants
-              </button>
-            </div>
-          </div>
-
-          <!-- Basic Info -->
-          <div class="bg-gray-50 p-4 rounded-lg">
-            <h3 class="text-lg font-semibold mb-3">Basic Information</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p class="text-sm font-medium text-gray-500">Application ID</p>
-                <p class="text-sm">{{ selectedApplication.id }}</p>
+            <h3 class="text-lg font-bold text-slate-800 mb-4 border-b pb-3">{{ section.title }}</h3>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-5 text-sm">
+              <div v-for="(item, i_idx) in section.items" :key="i_idx" :class="item.span">
+                <dt class="font-semibold text-slate-500">{{ item.label }}</dt>
+                <dd class="mt-1 text-slate-900" v-html="item.value"></dd>
               </div>
-              <div>
-                <p class="text-sm font-medium text-gray-500">Status</p>
-                <span
-                  :class="[
-                    'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
-                    getStatusClass(selectedApplication),
-                  ]"
-                >
-                  {{ getComprehensiveStatus(selectedApplication) }}
-                </span>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-gray-500">Title of CPD</p>
-                <p class="text-sm">{{ selectedApplication.title_of_cpd || 'N/A' }}</p>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-gray-500">Type</p>
-                <p class="text-sm">
-                  {{ selectedApplication.is_cpd_approved ? 'Approved CPD' : 'New CPD' }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-gray-500">Venue</p>
-                <p class="text-sm">{{ selectedApplication.venue || 'N/A' }}</p>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-gray-500">Duration</p>
-                <p class="text-sm">
-                  {{ formatDateRange(selectedApplication.from_date, selectedApplication.to_date) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-gray-500">Reason for Conducting</p>
-                <p class="text-sm">{{ selectedApplication.reason_for_conducting || 'N/A' }}</p>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-gray-500">Type of CPD</p>
-                <p class="text-sm">{{ selectedApplication.type_of_cpd || 'N/A' }}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Applicant Details -->
-          <div class="bg-gray-50 p-4 rounded-lg">
-            <h3 class="text-lg font-semibold mb-3">Applicant Details</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p class="text-sm font-medium text-gray-500">Registration Number</p>
-                <p class="text-sm">{{ selectedApplication.registration_no || 'N/A' }}</p>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-gray-500">Full Name</p>
-                <p class="text-sm">{{ selectedApplication.full_name || 'N/A' }}</p>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-gray-500">CID Number</p>
-                <p class="text-sm">{{ selectedApplication.cid_no || 'N/A' }}</p>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-gray-500">Agency/Training Location</p>
-                <p class="text-sm">{{ selectedApplication.proposed_training_location || 'N/A' }}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- CPD Details -->
-          <div class="bg-gray-50 p-4 rounded-lg">
-            <h3 class="text-lg font-semibold mb-3">CPD Details</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p class="text-sm font-medium text-gray-500">CPD Credits</p>
-                <p class="text-sm">{{ selectedApplication.credit || '0' }}</p>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-gray-500">Number of Participants</p>
-                <p class="text-sm">{{ selectedApplication.number_of_participants || '0' }}</p>
-              </div>
-              <div class="col-span-2">
-                <p class="text-sm font-medium text-gray-500">Objective/Expected Outcome</p>
-                <p class="text-sm">{{ selectedApplication.expected_outcome || 'N/A' }}</p>
-              </div>
-              <div class="col-span-2">
-                <p class="text-sm font-medium text-gray-500">Relevance to Profession</p>
-                <p class="text-sm">{{ selectedApplication.relevance_to_topic || 'N/A' }}</p>
-              </div>
-              <div class="col-span-2">
-                <p class="text-sm font-medium text-gray-500">Reason for Details</p>
-                <p class="text-sm">{{ selectedApplication.reason_for_details || 'N/A' }}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Participant Section for Approved Applications -->
-          <div
-            v-if="selectedApplication.participants && selectedApplication.participants.length > 0"
-            class="bg-gray-50 p-4 rounded-lg"
-          >
-            <h3 class="text-lg font-semibold mb-3">
-              Participants ({{ selectedApplication.participants.length }})
-            </h3>
-            <div class="overflow-x-auto">
-              <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-100">
+            </dl>
+            <div
+              v-if="
+                section.title === 'Resource Persons' &&
+                selectedApplication.resources &&
+                selectedApplication.resources.length > 0 &&
+                selectedApplication.resources[0].resource_person_name
+              "
+              class="mt-4 -mx-5"
+            >
+              <table class="min-w-full">
+                <thead class="bg-slate-50 text-xs text-slate-500 uppercase">
                   <tr>
-                    <th
-                      scope="col"
-                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Reg No
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Name
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Credits
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Status
-                    </th>
+                    <th class="px-5 py-3 text-left font-semibold">Name</th>
+                    <th class="px-5 py-3 text-left font-semibold">Reg No.</th>
+                    <th class="px-5 py-3 text-left font-semibold">Expertise Doc</th>
                   </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="(participant, index) in selectedApplication.participants" :key="index">
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      {{ participant.participant_reg_no }}
-                    </td>
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      {{ participant.participant_name || 'N/A' }}
-                    </td>
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      {{ participant.cpd_credits }}
-                    </td>
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      <span
-                        :class="[
-                          'px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full',
-                          participant.review_status === 'Approved'
-                            ? 'bg-green-100 text-green-800'
-                            : participant.review_status === 'Rejected'
-                              ? 'bg-red-100 text-red-800'
-                              : 'bg-yellow-100 text-yellow-800',
-                        ]"
+                <tbody class="divide-y divide-slate-200 text-sm">
+                  <tr v-for="resource in selectedApplication.resources" :key="resource.id">
+                    <td class="px-5 py-3">{{ resource.resource_person_name || 'N/A' }}</td>
+                    <td class="px-5 py-3">{{ resource.resource_person_reg_no || 'N/A' }}</td>
+                    <td class="px-5 py-3">
+                      <a
+                        v-if="resource.document_supporting_expertise"
+                        :href="resource.document_supporting_expertise"
+                        target="_blank"
+                        class="text-blue-600 hover:underline"
+                        >View Document</a
                       >
-                        {{ participant.review_status }}
-                      </span>
+                      <span v-else class="text-slate-400">Not Provided</span>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
+        </div>
 
-          <!-- If there are any comments from reviewers -->
-          <div v-if="selectedApplication.status_remarks" class="bg-gray-50 p-4 rounded-lg">
-            <h3 class="text-lg font-semibold mb-3">Reviewer Comments</h3>
-            <p class="text-sm">{{ selectedApplication.status_remarks }}</p>
-          </div>
-
-          <!-- Buttons -->
-          <div class="flex justify-end space-x-4 mt-6">
-            <button
-              @click="closeViewModal"
-              class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-            >
-              Close
-            </button>
-            <button
-              v-if="getComprehensiveStatus(selectedApplication) === 'Draft'"
-              @click="editApplication(selectedApplication)"
-              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-            >
-              Edit Application
-            </button>
-          </div>
+        <div
+          class="flex-shrink-0 bg-white/70 backdrop-blur-sm px-6 py-4 border-t border-slate-200 flex justify-end space-x-3"
+        >
+          <button
+            @click="closeViewModal"
+            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-medium"
+          >
+            Close
+          </button>
+          <button
+            v-if="getComprehensiveStatus(selectedApplication) === 'Draft'"
+            @click="editApplication(selectedApplication)"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+          >
+            Edit Application
+          </button>
+          <button
+            v-if="isApprovedWithoutParticipants(selectedApplication)"
+            @click="addParticipants(selectedApplication)"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-bold"
+          >
+            Add Participants
+          </button>
         </div>
       </div>
     </div>
@@ -496,224 +394,293 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import apiServices from '@/services/services';
-import { useToast } from 'vue-toastification';
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import apiServices from '@/services/services'
+import { useToast } from 'vue-toastification'
 
-const router = useRouter();
-const toast = useToast();
+const router = useRouter()
+const toast = useToast()
 
 // Reactive state
-const applications = ref([]);
-const loading = ref(false);
-const error = ref(null);
-const searchTerm = ref('');
-const statusFilter = ref('');
-const showViewModal = ref(false);
-const selectedApplication = ref(null);
+const applications = ref([])
+const loading = ref(false)
+const error = ref(null)
+const searchTerm = ref('')
+const statusFilter = ref('')
+const showViewModal = ref(false)
+const selectedApplication = ref(null)
 
 // Helper function to check if an application is approved but needs participants
 const isApprovedWithoutParticipants = (application) => {
   return (
     application.application_status === 'APPROVED' &&
     (!application.participants || application.participants.length === 0)
-  );
-};
+  )
+}
 
 // Centralized function to determine the comprehensive status of an application
 const getComprehensiveStatus = (application) => {
-  if (!application) return 'N/A';
+  if (!application) return 'N/A'
 
   if (application.is_draft) {
-    return 'Draft';
+    return 'Draft'
   }
 
   const status = application.application_status
-    ? application.application_status.charAt(0).toUpperCase() + application.application_status.slice(1).toLowerCase()
-    : null;
+    ? application.application_status.charAt(0).toUpperCase() +
+      application.application_status.slice(1).toLowerCase()
+    : null
 
   if (status === 'Approved') {
     if (isApprovedWithoutParticipants(application)) {
-      return 'Needs Participants';
+      return 'Needs Participants'
     } else {
-      return 'Completed';
+      return 'Completed'
     }
   }
 
   if (status) {
-    return status;
+    return status
   }
 
-  return 'Pending';
-};
+  return 'Pending'
+}
+
+const modalSections = computed(() => {
+    if (!selectedApplication.value) return [];
+    const app = selectedApplication.value;
+    const na = '<span class="text-slate-400">N/A</span>'; // Not available string
+    return [
+        {
+            title: 'Key Information',
+            items: [
+                { label: 'Application ID', value: app.id || na, span: 'sm:col-span-1' },
+                { label: 'Status', value: `<span class="px-2.5 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${getStatusClass(app)}">${getComprehensiveStatus(app)}</span>`, span: 'sm:col-span-2' },
+                { label: 'CPD Title', value: app.title_of_cpd || na, span: 'sm:col-span-3' },
+                { label: 'Applicant Name', value: app.full_name || na, span: 'sm:col-span-1' },
+                { label: 'Applicant CID', value: app.cid_no || na, span: 'sm:col-span-1' },
+                { label: 'Registration No', value: app.registration_no || na, span: 'sm:col-span-1' },
+            ]
+        },
+        {
+            title: 'Dates & Location',
+            items: [
+                { label: 'Training Dates', value: formatDateRange(app.from_date, app.to_date), span: 'sm:col-span-1' },
+                { label: 'Duration (Hours)', value: app.duration_in_hours || na, span: 'sm:col-span-1' },
+                { label: 'Proposed Location', value: app.proposed_training_location || na, span: 'sm:col-span-1' },
+                { label: 'Venue Details', value: app.venue || na, span: 'sm:col-span-3' },
+            ]
+        },
+        {
+            title: 'CPD Details',
+            items: [
+                { label: 'CPD Type', value: app.type_of_cpd || na, span: 'sm:col-span-1' },
+                { label: 'CPD Credits', value: app.credit || '<span class="text-slate-400">Not Assigned</span>', span: 'sm:col-span-1' },
+                { label: 'Participants', value: app.number_of_participants || na, span: 'sm:col-span-1' },
+                { label: 'Reason for Conducting', value: app.reason_for_conducting || na, span: 'sm:col-span-3' },
+                { label: 'Expected Outcome', value: app.expected_outcome || na, span: 'sm:col-span-3' },
+                { label: 'Relevance to Topic', value: app.relevance_to_topic || na, span: 'sm:col-span-3' },
+                ...(app.if_others_specify ? [{ label: 'Other Specifications', value: app.if_others_specify, span: 'sm:col-span-3' }] : []),
+            ]
+        },
+        {
+            title: 'Teaching & Learning',
+            items: [
+                 ...(app.methodologies?.length > 0 ? [{ label: 'Methodologies', value: `<ul>${app.methodologies.map(m => `<li class="list-disc list-inside">${m.name}</li>`).join('')}</ul>`, span: 'sm:col-span-1' }] : []),
+                 ...(app.learning_methods?.length > 0 ? [{ label: 'Learning Methods', value: `<ul>${app.learning_methods.map(m => `<li class="list-disc list-inside">${m.name}</li>`).join('')}</ul>`, span: 'sm:col-span-1' }] : []),
+            ]
+        },
+        {
+            title: 'Resource Persons',
+            items: (app.resources && app.resources.length > 0 && app.resources[0].resource_person_name) ? [] : [{label: '', value: '<span class="text-slate-500">No resource persons listed for this application.</span>', span: 'sm:col-span-3'}],
+        },
+        {
+            title: 'Attachments',
+            items: [
+                { label: 'Course Document', value: app.course_document ? `<a href="${app.course_document}" target="_blank" class="text-blue-600 hover:underline">View Document</a>` : na, span: 'sm:col-span-1' },
+                { label: 'Attendance Sheet', value: app.attendance_sheet_attachment ? `<a href="${app.attendance_sheet_attachment}" target="_blank" class="text-blue-600 hover:underline">View Sheet</a>` : na, span: 'sm:col-span-1' },
+                { label: 'Other Attachments', value: app.attachment ? `<a href="${app.attachment}" target="_blank" class="text-blue-600 hover:underline">View Attachment</a>` : na, span: 'sm:col-span-1' },
+            ]
+        },
+         {
+            title: 'Administrative Details',
+            items: [
+                { label: 'CPD Providing Agency', value: app.cpd_providing_agency || na, span: 'sm:col-span-2' },
+                { label: 'Last Updated', value: formatDate(app.status_last_updated), span: 'sm:col-span-1' },
+                ...(app.status_remarks ? [{ label: 'Reviewer Remarks', value: `<div class="bg-yellow-50 text-yellow-800 p-3 rounded-md border border-yellow-200">${app.status_remarks}</div>`, span: 'sm:col-span-3' }] : []),
+            ]
+        }
+    ];
+});
 
 // Computed properties for filtering applications
 const filteredApplications = computed(() => {
-  const term = searchTerm.value.toLowerCase().trim();
-  const statusTerm = statusFilter.value;
+  const term = searchTerm.value.toLowerCase().trim()
+  const statusTerm = statusFilter.value
 
-  if (!applications.value) return [];
+  if (!applications.value) return []
 
   return applications.value.filter((app) => {
-    const appComprehensiveStatus = getComprehensiveStatus(app);
+    const appComprehensiveStatus = getComprehensiveStatus(app)
 
     // Search term matching (title or ID)
-    const titleMatch = app.title_of_cpd ? app.title_of_cpd.toLowerCase().includes(term) : false;
-    const idMatch = app.id ? app.id.toString().toLowerCase().includes(term) : false;
-    const searchCriteriaMet = term === '' || titleMatch || idMatch;
+    const titleMatch = app.title_of_cpd ? app.title_of_cpd.toLowerCase().includes(term) : false
+    const idMatch = app.id ? app.id.toString().toLowerCase().includes(term) : false
+    const searchCriteriaMet = term === '' || titleMatch || idMatch
 
     if (!searchCriteriaMet) {
-      return false;
+      return false
     }
 
     // Status filter matching
-    let statusFilterMet = true;
+    let statusFilterMet = true
     if (statusTerm) {
       if (statusTerm === 'Approved') {
-        statusFilterMet = app.application_status === 'APPROVED';
+        statusFilterMet = app.application_status === 'APPROVED'
       } else {
-        statusFilterMet = appComprehensiveStatus === statusTerm;
+        statusFilterMet = appComprehensiveStatus === statusTerm
       }
     }
 
     if (!statusFilterMet) {
-      return false;
+      return false
     }
 
     // Hide empty drafts in default view
     if (appComprehensiveStatus === 'Draft' && !app.title_of_cpd) {
       if (term === '' && statusTerm !== 'Draft') {
-        return false;
+        return false
       }
     }
 
-    return true;
-  });
-});
+    return true
+  })
+})
 
 // Computed properties for approved applications notice
 const approvedApplicationsWithoutParticipants = computed(() => {
-  if (!applications.value) return [];
-  return applications.value.filter((app) => isApprovedWithoutParticipants(app));
-});
+  if (!applications.value) return []
+  return applications.value.filter((app) => isApprovedWithoutParticipants(app))
+})
 
 const hasApprovedApplicationsWithoutParticipants = computed(() => {
-  return approvedApplicationsWithoutParticipants.value.length > 0;
-});
+  return approvedApplicationsWithoutParticipants.value.length > 0
+})
 
 // Fetch all CPD applications
 const fetchApplications = async () => {
   try {
-    loading.value = true;
-    error.value = null;
-    const response = await apiServices.getMhpcCpdTask();
+    loading.value = true
+    error.value = null
+    const response = await apiServices.getMhpcCpdTask()
     if (response.data && Array.isArray(response.data.results)) {
-      applications.value = response.data.results;
+      applications.value = response.data.results
     } else {
-      applications.value = [];
-      error.value = 'There seems to be no application under your user name. Please proceed and apply for a new application.';
+      applications.value = []
+      error.value =
+        'There seems to be no application under your user name. Please proceed and apply for a new application.'
     }
   } catch (err) {
-    console.error('Error fetching applications:', err);
-    applications.value = [];
+    console.error('Error fetching applications:', err)
+    applications.value = []
     if (err.response && err.response.status === 404) {
-      error.value = 'There seems to be no application under your user name. Please proceed and apply for a new application.';
+      error.value =
+        'There seems to be no application under your user name. Please proceed and apply for a new application.'
     } else {
-      error.value = err.message || 'Failed to load applications';
+      error.value = err.message || 'Failed to load applications'
     }
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 // Helper functions
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A';
+  if (!dateString) return 'N/A'
   try {
-    const date = new Date(dateString);
+    const date = new Date(dateString)
     return date.toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-    });
+    })
   } catch (err) {
-    console.error('Error formatting date:', err);
-    return dateString;
+    console.error('Error formatting date:', err)
+    return dateString
   }
-};
+}
 
 const formatDateRange = (startDate, endDate) => {
-  if (!startDate || !endDate) return 'N/A';
-  return `${formatDate(startDate)} to ${formatDate(endDate)}`;
-};
+  if (!startDate || !endDate) return 'N/A'
+  return `${formatDate(startDate)} to ${formatDate(endDate)}`
+}
 
 const getStatusClass = (applicationOrStatusString) => {
-  const status = typeof applicationOrStatusString === 'string'
-    ? applicationOrStatusString
-    : getComprehensiveStatus(applicationOrStatusString);
+  const status =
+    typeof applicationOrStatusString === 'string'
+      ? applicationOrStatusString
+      : getComprehensiveStatus(applicationOrStatusString)
 
   switch (status) {
     case 'Completed':
-      return 'bg-green-100 text-green-800';
+      return 'bg-green-100 text-green-800'
     case 'Needs Participants':
-      return 'bg-yellow-100 text-yellow-800';
+      return 'bg-yellow-100 text-yellow-800'
     case 'Approved':
-      return 'bg-green-100 text-green-800';
+      return 'bg-green-100 text-green-800'
     case 'Rejected':
-      return 'bg-red-100 text-red-800';
+      return 'bg-red-100 text-red-800'
     case 'Pending':
-      return 'bg-yellow-100 text-yellow-800';
+      return 'bg-yellow-100 text-yellow-800'
     case 'Draft':
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-gray-100 text-gray-800'
     default:
-      return 'bg-gray-200 text-gray-700';
+      return 'bg-gray-200 text-gray-700'
   }
-};
+}
 
 // View application details
 const viewApplication = (application) => {
-  selectedApplication.value = application;
-  showViewModal.value = true;
-};
+  selectedApplication.value = application
+  showViewModal.value = true
+}
 
 const closeViewModal = () => {
-  showViewModal.value = false;
-  selectedApplication.value = null;
-};
+  showViewModal.value = false
+  selectedApplication.value = null
+}
 
 // Edit application (navigate to edit page)
 const editApplication = (application) => {
-  showViewModal.value = false;
-  toast.info('Navigating to edit application...');
+  showViewModal.value = false
+  toast.info('Navigating to edit application...')
   router.push(
-    `/admin/cme_cpd_provider/health_certification/cpd_application_details?id=${application.id}`,
-  );
-};
+    `/admin/cme_cpd_provider/health_certification/cpd_application_details?id=${application.id}`
+  )
+}
 
 // Add participants to an approved application
 const addParticipants = (application) => {
   if (showViewModal.value) {
-    showViewModal.value = false;
+    showViewModal.value = false
   }
   if (application.application_status !== 'APPROVED') {
-    toast.error('Participants can only be added to applications with an "Approved" status.');
-    return;
+    toast.error('Participants can only be added to applications with an "Approved" status.')
+    return
   }
-  toast.info('Navigating to add participants...');
-  router.push(
-    `/admin/cme_cpd_provider/health_certification/cpd_approved_add_participants`,
-  );
-};
+  toast.info('Navigating to add participants...')
+  router.push(`/admin/cme_cpd_provider/health_certification/cpd_approved_add_participants`)
+}
 
 // Create new application (navigate to CPD provider form)
 const createNewApplication = () => {
-  toast.info('Navigating to create a new application...');
-  router.push('/admin/cme_cpd_provider/health_certification/cpd_application_details');
-};
+  toast.info('Navigating to create a new application...')
+  router.push('/admin/cme_cpd_provider/health_certification/cpd_application_details')
+}
 
 // Fetch applications when component mounts
 onMounted(() => {
-  fetchApplications();
-});
+  fetchApplications()
+})
 </script>
