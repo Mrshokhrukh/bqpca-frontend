@@ -422,10 +422,12 @@
           >
             <div class="flex items-center space-x-2">
               <RefreshCw class="h-5 w-5 text-blue-600" />
-              <h3 class="text-base sm:text-lg font-semibold text-gray-900">Renewal Confirmation</h3>
+              <h3 class="text-base sm:text-lg font-semibold text-gray-900">
+                {{ hasExpired ? 'Re-registration' : 'Renewal' }} Confirmation
+              </h3>
             </div>
             <p class="mt-1 text-xs sm:text-sm text-gray-500 ml-7">
-              Confirm your application details and submit for renewal.
+              Confirm your application details and submit for {{ hasExpired ? 're-registration' : 'renewal' }}.
             </p>
             <div class="mt-5 p-4 sm:p-5 rounded-lg bg-white border shadow-sm">
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -451,11 +453,25 @@
                   <p class="font-medium text-sm">12 Months</p>
                 </div>
               </div>
+              <!-- Fee Information -->
+              <div class="mt-4 p-3 rounded-lg border border-green-100 bg-green-50">
+                <div class="flex items-center">
+                  <CreditCard class="h-5 w-5 text-green-600 mr-2 flex-shrink-0" />
+                  <div>
+                    <p class="text-sm font-medium text-green-800">
+                      {{ hasExpired ? 'Re-registration' : 'Renewal' }} Fee: Nu. {{ renewalAmount }}
+                    </p>
+                    <p class="text-xs text-green-700">
+                      Service Code: {{ serviceCode }}
+                    </p>
+                  </div>
+                </div>
+              </div>
               <div class="mt-4 p-3 rounded-lg border border-blue-100 bg-blue-50">
                 <div class="flex">
                   <AlertCircle class="h-5 w-5 text-blue-600 mr-2 flex-shrink-0" />
                   <p class="text-xs text-blue-700">
-                    By submitting this renewal application, your qualification will be extended for
+                    By submitting this {{ hasExpired ? 're-registration' : 'renewal' }} application, your qualification will be extended for
                     12 months upon approval (new projected expiry date shown above).
                   </p>
                 </div>
@@ -473,7 +489,7 @@
                   v-model="remarks"
                   rows="3"
                   class="block w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                  placeholder="Enter any additional information or remarks for your renewal application"
+                  :placeholder="`Enter any additional information or remarks for your ${hasExpired ? 're-registration' : 'renewal'} application`"
                 ></textarea>
               </div>
             </div>
@@ -490,7 +506,7 @@
                 <label for="declaration" class="text-sm text-gray-700"
                   >I hereby declare that all the information provided is true and correct to the
                   best of my knowledge. I understand that any false statements may result in the
-                  rejection of my renewal application.</label
+                  rejection of my {{ hasExpired ? 're-registration' : 'renewal' }} application.</label
                 >
               </div>
             </div>
@@ -513,7 +529,7 @@
               class="px-4 py-2 bg-blue-600 text-sm font-medium text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <Check class="h-4 w-4 mr-1.5" />
-              Submit Renewal
+              Submit {{ hasExpired ? 'Re-registration' : 'Renewal' }}
             </button>
           </div>
         </div>
@@ -526,7 +542,7 @@
             {{
               isProcessingPayment
                 ? 'Processing payment...'
-                : 'Submitting your renewal application...'
+                : `Submitting your ${hasExpired ? 're-registration' : 'renewal'} application...`
             }}
           </p>
         </div>
@@ -543,11 +559,11 @@
                 <RefreshCw class="h-6 w-6 text-blue-600" />
               </div>
               <DialogTitle as="h3" class="text-lg font-medium text-gray-900 mt-4"
-                >Confirm Renewal Application</DialogTitle
+                >Confirm {{ hasExpired ? 'Re-registration' : 'Renewal' }} Application</DialogTitle
               >
               <div class="mt-3">
                 <p class="text-sm text-gray-500">
-                  You are about to submit your renewal application. This action cannot be undone.
+                  You are about to submit your {{ hasExpired ? 're-registration' : 'renewal' }} application. This action cannot be undone.
                   Are you sure you want to proceed?
                 </p>
                 <div class="mt-4 p-3 bg-yellow-50 rounded-lg text-left">
@@ -557,6 +573,9 @@
                       <p class="text-xs text-yellow-700">
                         Upon approval, your new expiry date will be around
                         <span class="font-medium">{{ formatDisplayDate(getNewExpiryDate) }}</span>.
+                      </p>
+                      <p class="text-xs text-yellow-700 mt-1">
+                        Fee: Nu. {{ renewalAmount }} ({{ hasExpired ? 'Re-registration' : 'Renewal' }})
                       </p>
                     </div>
                   </div>
@@ -671,7 +690,6 @@ const declaration = ref(false)
 const remarks = ref('')
 const paymentModalRef = ref(null)
 const createdRenewalId = ref(null)
-const renewalAmount = ref(1000)
 const hasRenewalInProgress = ref(false)
 
 const today = computed(() => dayjs())
@@ -687,7 +705,14 @@ const isExpiringWithin3Months = computed(() => {
   return expiryDate.value.isBetween(today.value, threeMonthsFromNow.value, 'day', '[]')
 })
 
+// Dynamic renewal amount and service code based on expiry status
+const renewalAmount = computed(() => {
+  return hasExpired.value ? 1500 : 1000 // Re-registration: 1500, Renewal: 1000
+})
 
+const serviceCode = computed(() => {
+  return hasExpired.value ? '100254' : '100256' // Re-registration: 100254, Renewal: 100256
+})
 
 const isEligibleForRenewal = computed(() => {
   if (isLoading.value || loadError.value) return false
@@ -838,27 +863,6 @@ const fetchUserQualificationDetails = async (applicationId) => {
   }
 }
 
-// const fetchLatestRenewalDetails = async (applicationId) => {
-//   try {
-//     const renewalsResponse = await apiService.getEpcRenewals()
-//     let renewals = renewalsResponse.data?.results || renewalsResponse.data || []
-//     const userRenewals = renewals.filter((renewal) => renewal.application === applicationId)
-//     if (userRenewals.length > 0) {
-//       userRenewals.sort((a, b) => new Date(b.registration_date) - new Date(a.registration_date))
-//       const latestRenewal = userRenewals[0]
-//       if (!registrationDetails.value.registration_no)
-//         registrationDetails.value.registration_no = latestRenewal.registration_no
-//       if (!registrationDetails.value.registration_date)
-//         registrationDetails.value.registration_date = latestRenewal.registration_date
-//       if (!registrationDetails.value.expiry_date)
-//         registrationDetails.value.expiry_date = latestRenewal.expiry_date
-//     }
-//   } catch (error) {
-//     console.error('Error fetching renewal details fallback:', error)
-//   }
-// }
-
-
 const formatDisplayDate = (dateString) => {
   if (!dateString) return 'N/A'
   const date = dayjs(dateString)
@@ -884,13 +888,28 @@ const handleSubmit = () => {
 
 const confirmSubmit = async () => {
   showConfirmation.value = false
+  
+  // Validate required data before proceeding to payment
+  if (!formData.value.user_qualification_id) {
+    toast.error('User qualification ID is missing. Cannot proceed.')
+    return
+  }
+
+  const user = authStore.user
+  if (!user?.contact_number || !user?.email || !user?.cid || !user?.id) {
+    toast.error('Missing user information. Please update your profile before proceeding.')
+    return
+  }
+
+  // Open payment modal first
+  toast.info(`Please complete the payment of Nu. ${renewalAmount.value} to proceed with your ${hasExpired.value ? 're-registration' : 'renewal'}.`)
+  initiateRenewalPayment()
+}
+
+const submitRenewalAfterPayment = async (paymentId) => {
   isSubmitting.value = true
 
   try {
-    if (!formData.value.user_qualification_id) {
-      throw new Error('User qualification ID is missing. Cannot submit renewal.')
-    }
-
     const today = new Date()
     const newExpiryDate = new Date(today)
     newExpiryDate.setMonth(today.getMonth() + 12) // Add 12 months
@@ -898,7 +917,7 @@ const confirmSubmit = async () => {
 
     if (!formattedNewExpiry) {
       toast.error('Date calculation error.')
-      return
+      return false
     }
 
     // Based on the EnggRenewal model, it expects 'user_qualification' field
@@ -908,37 +927,34 @@ const confirmSubmit = async () => {
       renewal_review_status: 'Pending',
       renewal_review_remarks: remarks.value || null,
       renewal_endorsement_decision: 'Pending',
+      payment_reference: paymentId, // Add payment reference
     }
 
     const renewalResponse = await apiService.createEpcRenewal(renewalData)
 
     if (renewalResponse && renewalResponse.data && renewalResponse.data.id) {
       createdRenewalId.value = renewalResponse.data.id
-      toast.info('Renewal request submitted. Please proceed with the payment.')
-      initiateRenewalPayment()
+      return true
     } else {
-      toast.success('Renewal application submitted successfully!')
-      router.push('/admin/user/engineering_certification/dashboard')
+      toast.error('Failed to submit renewal data after payment.')
+      return false
     }
   } catch (error) {
-    console.error('Error submitting renewal:', error)
+    console.error('Error submitting renewal after payment:', error)
     const errorMsg =
       error.response?.data?.new_expiry_date?.[0] ||
       error.response?.data?.detail ||
       error.response?.data?.message ||
       error.message ||
-      'Submission failed.'
+      'Submission failed after payment.'
     toast.error(`Submission Failed: ${errorMsg}`)
+    return false
   } finally {
     isSubmitting.value = false
   }
 }
 
 const initiateRenewalPayment = () => {
-  if (!createdRenewalId.value) {
-    toast.error('Cannot initiate payment: Renewal ID is missing.')
-    return
-  }
   if (paymentModalRef.value) {
     paymentModalRef.value.openModal()
   } else {
@@ -948,58 +964,56 @@ const initiateRenewalPayment = () => {
 }
 
 const handlePaymentCompleted = async (paymentData) => {
-  if (!createdRenewalId.value) {
-    toast.error('Cannot process payment: Renewal ID is missing.')
-    return
-  }
-
   const paymentId = paymentData.paymentHash
   const user = authStore.user
 
   if (!user?.contact_number || !user?.email || !user?.cid || !user?.id) {
-    toast.error('Missing user information. Please update your profile before paying.')
+    toast.error('Missing user information. Please update your profile before proceeding.')
     return
   }
 
   isProcessingPayment.value = true
 
   try {
+    // First, submit the renewal data to API after successful payment
+    const renewalSubmitted = await submitRenewalAfterPayment(paymentId)
+    
+    if (!renewalSubmitted) {
+      toast.error('Failed to submit renewal data. Please contact support.')
+      return
+    }
+
+    // Then process the payment record
     const paymentInitiationFormData = new FormData()
     paymentInitiationFormData.append('refNo', paymentId)
-    paymentInitiationFormData.append('serviceCode', '100198') // Different service code for EPC
+    paymentInitiationFormData.append('serviceCode', serviceCode.value) // Dynamic service code
     paymentInitiationFormData.append('taxPayerName', user.cid)
     paymentInitiationFormData.append('taxPayerNo', user.cid)
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
-    paymentInitiationFormData.append('totalPayableAmount', renewalAmount.value)
-    paymentInitiationFormData.append('description', 'EPC Registration Renewal Fee')
+    paymentInitiationFormData.append('totalPayableAmount', renewalAmount.value) // Dynamic amount
+    paymentInitiationFormData.append('description', `EPC ${hasExpired.value ? 'Re-registration' : 'Renewal'} Fee`)
     paymentInitiationFormData.append('mobileNo', user.contact_number)
     paymentInitiationFormData.append('payerEmail', user.email)
     paymentInitiationFormData.append('user', user.id)
-    paymentInitiationFormData.append('payableAmount', renewalAmount.value)
+    paymentInitiationFormData.append('payableAmount', renewalAmount.value) // Dynamic amount
     paymentInitiationFormData.append('application_no', createdRenewalId.value)
-    paymentInitiationFormData.append('app_type', 'renewal_for_engineering_certification')
+    paymentInitiationFormData.append('app_type', hasExpired.value ? 're_registration_for_engineering_professional' : 'renewal_for_engineering_professional') // Dynamic app type
 
     await apiService.makePayment(paymentInitiationFormData)
 
-    // Update renewal with payment details - you may need to add this API endpoint
-    // const updatePayload = new FormData()
-    // updatePayload.append('payment_id', paymentId)
-    // updatePayload.append('payment_status', 'processing_payment')
-    // await apiService.patchEpcRenewal(createdRenewalId.value, updatePayload)
-
     toast.success(
-      `Payment successful (Ref: ${paymentId.substring(0, 8)}...). Your renewal is being processed.`
+      `Payment successful! Your ${hasExpired.value ? 're-registration' : 'renewal'} application has been submitted and is being processed.`
     )
 
     router.push('/admin/user/engineering_certification/dashboard')
   } catch (error) {
     console.error('Payment handling error:', error.response || error.request || error)
-    let errorMsg = 'An error occurred while confirming the payment.'
+    let errorMsg = 'An error occurred while processing the payment and renewal.'
     if (error.response?.data) {
       const detail = error.response.data.detail || JSON.stringify(error.response.data)
       errorMsg = `Payment API Error: ${detail}`
     } else if (error.request) {
-      errorMsg = 'Network Error: Could not reach the server to confirm payment.'
+      errorMsg = 'Network Error: Could not reach the server to process payment.'
     }
     toast.error(`${errorMsg} Contact support with payment ref ${paymentId} if issue persists.`)
   } finally {
