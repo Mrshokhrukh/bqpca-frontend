@@ -1,4 +1,4 @@
-<!-- Final ProfileHeader Component with correct data access and renewal message calculation -->
+<!-- Updated ProfileHeader Component with certificate modal and dynamic button behavior -->
 <template>
   <div class="bg-white rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
     :class="{ 'animate-pulse': isExpiringSoon }">
@@ -50,7 +50,7 @@
                 Status:
                 <span :class="statusClass">{{
                   firstApprovedQualificationStatus || 'Loading...'
-                  }}</span>
+                }}</span>
               </div>
               <div class="text-xs">
                 Days Remaining: <span :class="daysRemainingClass">{{ daysRemaining }}</span>
@@ -72,20 +72,28 @@
             <span class="w-2 h-2 rounded-full" :class="getStatusDotClass(calculatedRenewalMessage)"></span>
             {{ calculatedRenewalMessage }}
           </div>
-          <button v-if="shouldShowViewCertificateButton" @click="$emit('view-certificate')"
-            class="relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-2.5 px-6 rounded-full transition-all duration-300 hover:shadow-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:-translate-y-0.5">
-            <span class="relative z-10">View Certificate</span>
+
+          <!-- Dynamic Action Button -->
+          <button v-if="shouldShowActionButton" @click="handleActionButtonClick" :class="actionButtonClass"
+            class="relative overflow-hidden font-semibold py-2.5 px-6 rounded-full transition-all duration-300 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:-translate-y-0.5">
+            <span class="relative z-10">{{ actionButtonText }}</span>
           </button>
         </div>
       </div>
     </div>
+
+    <!-- Certificate Modal -->
+    <EPCCertificateModal :qualification="certificateData" :showModal="showCertificateModal"
+      @close="closeCertificateModal" />
   </div>
 </template>
 
 <script setup>
 import { UserIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
+import EPCCertificateModal from '@/components/common/EPC/EPCCertificateModal.vue'
 
 const props = defineProps({
   userDetail: {
@@ -102,6 +110,10 @@ const props = defineProps({
     default: () => [],
   },
 })
+
+const router = useRouter()
+const showCertificateModal = ref(false)
+const certificateData = ref(null)
 
 defineEmits(['view-certificate'])
 
@@ -139,14 +151,6 @@ const userQualifications = computed(() => {
   }
   // Fallback to props.qualifications for backward compatibility
   return props.qualifications || []
-})
-
-const shouldShowViewCertificateButton = computed(() => {
-  if (!userQualifications.value || userQualifications.value.length === 0) return false
-
-  return userQualifications.value.some(
-    (q) => q && q.endorsement_decision === 'Approved'
-  )
 })
 
 const firstApprovedQualification = computed(() => {
@@ -335,4 +339,94 @@ const calculatedRenewalMessage = computed(() => {
     return ''
   }
 })
+
+// Dynamic action button logic
+const shouldShowActionButton = computed(() => {
+  // Always show button if there's an approved qualification
+  return firstApprovedQualification.value && firstApprovedQualificationStatus.value === 'Approved'
+})
+
+const actionButtonText = computed(() => {
+  if (!firstApprovedQualificationExpiryDate.value) return 'View Certificate'
+
+  try {
+    const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
+    const now = dayjs()
+
+    if (!expiry.isValid()) return 'View Certificate'
+
+    const daysUntilExpiry = expiry.diff(now, 'day')
+
+    if (daysUntilExpiry < 0) {
+      // License is expired
+      return 'Re-register'
+    } else if (daysUntilExpiry <= 90) {
+      // License expires within 3 months
+      return 'Renew Certificate'
+    } else {
+      // License is valid for more than 3 months
+      return 'View Certificate'
+    }
+  } catch (error) {
+    console.error('Error determining action button text:', error)
+    return 'View Certificate'
+  }
+})
+
+const actionButtonClass = computed(() => {
+  if (!firstApprovedQualificationExpiryDate.value) {
+    return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 focus:ring-blue-500'
+  }
+
+  try {
+    const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
+    const now = dayjs()
+
+    if (!expiry.isValid()) {
+      return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 focus:ring-blue-500'
+    }
+
+    const daysUntilExpiry = expiry.diff(now, 'day')
+
+    if (daysUntilExpiry < 0) {
+      // License is expired - red button for re-register
+      return 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:ring-red-500'
+    } else if (daysUntilExpiry <= 90) {
+      // License expires within 3 months - orange button for renewal
+      return 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 focus:ring-orange-500'
+    } else {
+      // License is valid for more than 3 months - blue button for view certificate
+      return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 focus:ring-blue-500'
+    }
+  } catch (error) {
+    console.error('Error determining action button class:', error)
+    return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 focus:ring-blue-500'
+  }
+})
+
+const handleActionButtonClick = () => {
+  const buttonText = actionButtonText.value
+
+  if (buttonText === 'View Certificate') {
+    // Show certificate modal
+    openCertificateModal()
+  } else if (buttonText === 'Renew Certificate' || buttonText === 'Re-register') {
+    // Redirect to renewal/registration page
+    router.push('/admin/user/engineering_certification/renewal')
+  }
+}
+
+const openCertificateModal = () => {
+  // Prepare certificate data in the format expected by the modal
+  // The modal expects a structure with 'results' array containing the user data
+  certificateData.value = {
+    results: [props.userDetail]
+  }
+  showCertificateModal.value = true
+}
+
+const closeCertificateModal = () => {
+  showCertificateModal.value = false
+  certificateData.value = null
+}
 </script>
