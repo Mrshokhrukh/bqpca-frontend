@@ -226,7 +226,7 @@
                 id="university_name"
                 type="text"
                 v-model="formData.university_name"
-                required
+
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -330,21 +330,18 @@
             </div>
             <div>
               <label for="proposed_firm_location" class="block text-sm font-medium text-gray-700"
-                >Location (Dzongkhag/Thromde) of Proposed Branch:<span class="text-red-500"
+                >Location of Proposed Branch:<span class="text-red-500"
                   >*</span
                 ></label
               >
-              <select
+              <input
                 id="proposed_firm_location"
+                type="text"
                 v-model="formData.proposed_firm_location"
                 required
+                placeholder="Enter location"
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option disabled :value="null">-- Select Dzongkhag/Thromde --</option>
-                <option v-for="loc in dzongkhagThromdes" :key="loc.id" :value="loc.id">
-                  {{ loc.name }}
-                </option>
-              </select>
+              />
             </div>
             <div>
               <label for="firm_type" class="block text-sm font-medium text-gray-700"
@@ -884,7 +881,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import apiServices from '@/services/services'
 import { useAuthStore } from '@/stores/authStore'
-import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js'
+// import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js'
 
 const authStore = useAuthStore()
 
@@ -1192,7 +1189,7 @@ const validateForm = () => {
   if (!formData.university_name) errors.push('University Name is required.');
   if (!formData.proposed_firm_branch_name) errors.push('Proposed Name for New Branch is required.');
   if (!formData.proposed_firm_address) errors.push('Proposed Branch Address is required.');
-  if (formData.proposed_firm_location === null) errors.push('Proposed Branch Location (Dzongkhag/Thromde) is required.');
+  if (formData.proposed_firm_location === null) errors.push('Proposed Branch Location  is required.');
   if (formData.firm_type === null) errors.push('Type of Firm for the New Branch is required.');
 
   if (formData.infrastructure.length === 0) {
@@ -1454,16 +1451,7 @@ const saveAsDraft = async () => {
 // --- API Interaction (fetchMasterData, populateFromEcpfProfile, loadDraft, editDraft, resetForm are mostly unchanged) ---
 const fetchMasterData = async () => {
   try {
-    const dzongkhagsData = bhutanDzongkhagsGewogs.map((item, index) => ({ id: String(index + 1), name: item.dzongkhag }));
-    const uniqueDzongkhags = [];
-    const map = new Map();
-    for (const item of dzongkhagsData) {
-        if(!map.has(item.name)){
-            map.set(item.name, true);
-            uniqueDzongkhags.push({ id: item.id, name: item.name });
-        }
-    }
-    dzongkhagThromdes.value = uniqueDzongkhags;
+
 
     const apiCalls = [
       apiServices.getMastersTypesOfFirm ? apiServices.getMastersTypesOfFirm() : Promise.resolve({ data: { results: [] } }),

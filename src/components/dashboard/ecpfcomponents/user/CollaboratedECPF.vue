@@ -235,7 +235,7 @@
                 id="education_institute_name"
                 type="text"
                 v-model="formData.institute_name"
-                required
+               
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -247,7 +247,7 @@
                 id="university_name"
                 type="text"
                 v-model="formData.university_name"
-                required
+
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>

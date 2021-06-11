@@ -301,8 +301,8 @@
                             {{ applicationData['Recognition/Accreditation'] || 'N/A' }}
                           </p>
                           <p>
-                            Approval from University:
-                            {{ applicationData['Approval from University'] || 'N/A' }}
+                            Probable Linkages:
+                            {{ applicationData['Probable Linkages'] || 'N/A' }}
                           </p>
                         </div>
 
@@ -647,7 +647,7 @@ watch(
         'Linkage Location': 'Thimphu',
         'Linkage Country': 'Bhutan',
         'Recognition/Accreditation': 'Accredited',
-        'Approval from University': 'Approved',
+        'Probable Linkages': 'Approved',
         // ... populate other fields as needed based on requirements and sample data
       }
     } else {

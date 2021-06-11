@@ -54,7 +54,6 @@
           type="text"
           id="university"
           :value="educationData.universityName"
-          required
           @input="
             $emit('update:educationData', { ...educationData, universityName: $event.target.value })
           "

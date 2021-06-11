@@ -463,7 +463,7 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700"
-                  >Approval from University</label
+                  >Probable Linkages</label
                 >
                 <div class="flex items-center space-x-2">
                   <input
