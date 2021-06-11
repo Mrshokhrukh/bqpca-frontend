@@ -113,7 +113,7 @@ import Reports from '@/components/dashboard/engineeringcomponents/dealingOfficer
 
 // CPD Provider Components
 import EngineeringProviderDashboard from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/EngineeringCpdCpdProviderDashboard.vue'
-import CPDApplicationDetails from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDApplicationDetails.vue'
+import CPDApplicationDetails from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/EngineeringCpdProviderApplicationForm.vue'
 import CPDApplicationTracker from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CPDApplicationTracker.vue'
 import CPDapprovedAddParticipants from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/Participantscomponents/CPDapprovedAddParticipants.vue'
 import CpdProviderProfile from '@/components/dashboard/engineeringcomponents/cpdCpdProvider/CpdProviderProfile.vue'
