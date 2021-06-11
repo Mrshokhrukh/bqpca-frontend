@@ -176,7 +176,7 @@
 
           <!-- CPD/CME Credits Section -->
           <div class="mb-8 p-6 bg-white rounded-lg border border-gray-200">
-            <h4 class="text-lg font-medium text-gray-900 mb-4">CPD/CME Credits</h4>
+            <h4 class="text-lg font-medium text-gray-900 mb-4">CPD Credits</h4>
             <div v-if="isCpdLoading" class="text-center py-4">
               <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
               <p class="mt-2 text-sm text-gray-600">Loading CPD records...</p>
