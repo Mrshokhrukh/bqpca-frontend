@@ -1445,10 +1445,6 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/e_signatures`,
           },
           {
-            name: 'File Types',
-            route: (serviceType) => `/admin/admin/${serviceType}/file_types`,
-          },
-          {
             name: 'Fees Associated For',
             route: (serviceType) => `/admin/admin/${serviceType}/fees_associated_for`,
           },
