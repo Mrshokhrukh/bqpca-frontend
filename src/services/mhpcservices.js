@@ -723,6 +723,7 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-teaching-centers/${id}/`)
   },
 
+
   // MHPC CPD Records
   getMhpcCpdRecords() {
     return apiClient.get('/mhpc/mhpc-cpd-records/')
@@ -813,15 +814,10 @@ export default {
    * @returns {Promise} - The promise from the API call.
    */
   bulkCreateMhpcCpdTaskParticipants(formData) {
-    // The URL should match the `url_path` defined in your ViewSet's @action
-    // e.g., if your router base is '/mhpc/mhpc-cpd-task-participants/' and url_path is 'bulk-upload'
-    // then the full path is '/mhpc/mhpc-cpd-task-participants/bulk-upload/'
+
     return apiClient.post('/mhpc/mhpc-cpd-task-participants/bulk-upload/', formData, {
       headers: {
-        // Axios (which apiClient likely uses) should automatically set
-        // 'Content-Type': 'multipart/form-data' when a FormData object is passed.
-        // If you encounter issues, you can explicitly set it, but it's often not needed.
-        // 'Content-Type': 'multipart/form-data',
+
       }
     })
   },
@@ -913,6 +909,7 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-program-master/${id}/`)
   },
 
+
   // --- MHPC Program Offered Endpoints ---
   getMhpcProgramsOffered() {
     return apiClient.get('/mhpc/mhpc-program-offered/')
@@ -932,6 +929,7 @@ export default {
   deleteMhpcProgramOffered(id) {
     return apiClient.delete(`/mhpc/mhpc-program-offered/${id}/`)
   },
+
 
   // --- MHPC Semester Endpoints ---
   getMhpcSemesters() {
@@ -972,7 +970,26 @@ export default {
   deleteMhpcTeachingFaculty(id) {
     return apiClient.delete(`/mhpc/mhpc-teaching-faculty/${id}/`)
   },
-
+  getMhpcClinicalPreceptors(params = {}) {
+    return apiClient.get('/mhpc/mhpc-clinical-preceptors/', { params });
+  },
+  createMhpcClinicalPreceptor(data) {
+    // Data should be an object like:
+    // { teaching_center: ID, faculty: ID, designation: "String" }
+    return apiClient.post('/mhpc/mhpc-clinical-preceptors/', data);
+  },
+  getMhpcClinicalPreceptor(id) {
+    return apiClient.get(`/mhpc/mhpc-clinical-preceptors/${id}/`);
+  },
+  updateMhpcClinicalPreceptor(id, data) {
+    return apiClient.put(`/mhpc/mhpc-clinical-preceptors/${id}/`, data);
+  },
+  patchMhpcClinicalPreceptor(id, data) {
+    return apiClient.patch(`/mhpc/mhpc-clinical-preceptors/${id}/`, data);
+  },
+  deleteMhpcClinicalPreceptor(id) {
+    return apiClient.delete(`/mhpc/mhpc-clinical-preceptors/${id}/`);
+  },
   // --- MHPC Term Endpoints ---
   getMhpcTerms() {
     return apiClient.get('/mhpc/mhpc-term/')

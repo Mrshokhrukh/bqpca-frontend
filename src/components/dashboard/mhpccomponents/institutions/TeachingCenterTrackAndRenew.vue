@@ -524,6 +524,28 @@ const instituteTeachingCenters = computed(() => {
   );
 });
 
+const fetchData = async () => {
+  if (!authStore.user?.cid) {
+    isLoading.value = false;
+    initialAuthCheckPending.value = false;
+    return;
+  }
+
+  isLoading.value = true;
+  apiError.value = false;
+  initialAuthCheckPending.value = false;
+
+  try {
+    const response = await apiServices.getMhpcTeachingCenters();
+    teachingCenters.value = response.data?.results || [];
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    errorMessage.value = error.response?.data?.message || 'Error fetching data. Please try again.';
+    apiError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 const dzongkhagOptions = computed(() => {
   if (!instituteTeachingCenters.value || instituteTeachingCenters.value.length === 0) {
@@ -571,28 +593,6 @@ watch(() => authStore.user, (newUser) => {
   }
 }, { deep: true, immediate: true });
 
-const fetchData = async () => {
-  if (!authStore.user?.cid) {
-    isLoading.value = false;
-    initialAuthCheckPending.value = false;
-    return;
-  }
-
-  isLoading.value = true;
-  apiError.value = false;
-  initialAuthCheckPending.value = false;
-
-  try {
-    const response = await apiServices.getMhpcTeachingCenters();
-    teachingCenters.value = response.data?.results || [];
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    errorMessage.value = error.response?.data?.message || 'Error fetching data. Please try again.';
-    apiError.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
 
 onMounted(async () => {
   if (authStore.user?.cid && teachingCenters.value.length === 0 && isLoading.value) {

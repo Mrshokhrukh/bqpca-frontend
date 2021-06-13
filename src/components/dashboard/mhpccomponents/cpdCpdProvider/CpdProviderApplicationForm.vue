@@ -1845,6 +1845,9 @@ const loadDropdownOptions = async () => {
 // --- Lifecycle Hooks ---
 onMounted(async () => {
   if (authStore.user) {
+    applicant.cidNumber = authStore.user.cid || '';
+    applicant.fullName = [authStore.user.first_name, authStore.user.middle_name, authStore.user.last_name]
+      .filter(Boolean).join(' ') || '';
     applicant.cidNumber = authStore.user.cid || ''
     applicant.fullName =
       [authStore.user.first_name, authStore.user.middle_name, authStore.user.last_name]

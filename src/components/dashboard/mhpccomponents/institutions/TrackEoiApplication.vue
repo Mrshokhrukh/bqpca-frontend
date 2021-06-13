@@ -150,6 +150,7 @@ const fetchApplications = async () => {
 
     if (response && response.data && Array.isArray(response.data.results)) {
       const userCid = authStore.user.cid
+      console.log("Auth Store User CID for filtering (authStore.user.cid):", userCid);
       applications.value = response.data.results.filter(
         (app) => app.CID && app.CID.toLowerCase() === userCid.toLowerCase(),
       )

@@ -1,291 +1,275 @@
 <template>
-  <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-gray-50 min-h-screen">
-    <InstituteHeader
-      title="Educational Programme Applications"
-      subtitle="Manage and view applications for new educational programmes."
-      :show-actions="false"
-    />
-
-    <div class="mt-8">
-      <div class="flex justify-end mb-6">
-        <button @click="openAddProgrammeModal" type="button" class="btn btn-primary">
-          <PlusIcon class="h-5 w-5 mr-2" />
-          Add New Programme
-        </button>
-      </div>
-
-      <!-- Table display -->
-      <div v-if="isLoading" class="flex flex-col items-center justify-center min-h-[300px]">
-        <Loader class="animate-spin text-indigo-600 w-10 h-10" />
-        <p class="mt-4 text-lg font-medium text-gray-700">Loading applications...</p>
-      </div>
-      <div v-else-if="apiError" class="text-center py-12 rounded-2xl border shadow-sm bg-red-50 border-red-200">
-        <ExclamationTriangleIcon class="mx-auto h-12 w-12 text-red-400" />
-        <h3 class="mt-2 text-lg font-medium text-red-900">Error Loading Applications</h3>
-        <p class="mt-1 text-sm text-red-700">{{ errorMessage }}</p>
-      </div>
-      <div v-else-if="applications.length === 0" class="text-center py-12 rounded-2xl border shadow-sm bg-white">
-        <DocumentMagnifyingGlassIcon class="mx-auto h-12 w-12 text-gray-400" />
-        <h3 class="mt-2 text-lg font-medium text-gray-900">No Applications Found</h3>
-        <p class="mt-1 text-sm text-gray-500">
-          There are currently no educational programme applications.
-        </p>
-        <div class="mt-6">
-            <button @click="openAddProgrammeModal" type="button" class="btn btn-primary">
-              <PlusIcon class="h-5 w-5 mr-2" />
-              Submit First Application
-            </button>
-        </div>
-      </div>
-      <div v-else class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-200">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Proposal Title
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Institute
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Duration
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Commencement
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Applied On
-                </th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="app in applications" :key="app.id" class="hover:bg-gray-50 transition-colors">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ app.course_title }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ app.institute_name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ app.duration_in_months }} months</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(app.commencement_date) }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span :class="getStatusClass(app.ins_review_decision)" class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
-                    {{ app.ins_review_decision }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(app.created_at) }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                  <button @click="viewApplication(app.id)" class="text-indigo-600 hover:text-indigo-900">View</button>
-                  <button v-if="canEdit(app)" @click="openEditProgrammeModal(app.id)" class="text-yellow-600 hover:text-yellow-900">Edit</button>
-                  <button v-if="canDelete(app)" @click="confirmDeleteApplication(app.id)" class="text-red-600 hover:text-red-900">Delete</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Add/Edit Programme Modal -->
-    <div v-if="showProgrammeModal" class="fixed inset-0 z-50 overflow-y-auto bg-gray-600 bg-opacity-75 transition-opacity flex items-center justify-center p-4">
-      <div
-        class="bg-transparent rounded-xl shadow-xl transform transition-all sm:w-full sm:max-w-3xl"
-        role="dialog" aria-modal="true" aria-labelledby="modal-headline"
+  <div class="container mx-auto p-4 md:p-8">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-gray-800">Education Programs</h1>
+      <button
+        @click="openAddProgramModal"
+        class="px-6 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-md"
+        :disabled="isLoadingCurrentUserInstitute || !currentUserInstitute?.id"
       >
-         <NewProgrammeForm 
-            v-if="showProgrammeModal"
-            :key="formInstanceKey"
-            :application-id="currentApplicationId"
-            :is-modal-mode="true"
-            @programme-saved="handleProgrammeSaved"
-            @draft-saved="handleProgrammeSaved"
-            @close-modal="closeProgrammeModal"
-            @load-error="handleFormLoadError"
-            ref="programmeFormRef"
-          />
-      </div>
+        <span class="mr-2">+</span> Add New Program
+      </button>
+      <p v-if="!currentUserInstitute?.id && !isLoadingCurrentUserInstitute" class="text-sm text-red-500 ml-4">
+        Cannot add programs: User's institute information is unavailable.
+      </p>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity flex items-center justify-center z-[60]">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-            <h3 class="text-lg font-medium text-gray-900">Confirm Deletion</h3>
-            <p class="mt-2 text-sm text-gray-500">Are you sure you want to delete this application? This action cannot be undone.</p>
-            <div class="mt-4 flex justify-end space-x-3">
-                <button @click="showDeleteModal = false" type="button" class="btn btn-outline">Cancel</button>
-                <button @click="deleteApplication" type="button" class="btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500">Delete</button>
-            </div>
-        </div>
+    <div v-if="isLoadingCurrentUserInstitute" class="text-center text-gray-500 py-10">
+      <p class="text-xl">Loading user institute information...</p>
+    </div>
+    <div v-else-if="isLoading" class="text-center text-gray-500 py-10">
+      <p class="text-xl">Loading programs...</p>
+    </div>
+    <div v-else-if="educationPrograms.length === 0" class="text-center text-gray-500 py-10">
+      <p class="text-xl">No education programs added yet for {{ currentUserInstitute?.name || 'your institute' }}.</p>
+      <p class="mt-2" v-if="currentUserInstitute?.id">Click "Add New Program" to get started.</p>
     </div>
 
+    <div v-else class="overflow-x-auto bg-white shadow-lg rounded-lg">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-100">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Program Name
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Institute
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Semesters
+            </th>
+             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Total Modules
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Status
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <template v-for="program in educationPrograms" :key="program.id">
+            <tr @click="toggleExpand(program.id)" class="hover:bg-gray-50 cursor-pointer">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">{{ program.program_master_details?.name || program.program_master?.name || 'N/A' }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <!-- Display name from fetched currentUserInstitute or from program data if available -->
+                <div class="text-sm text-gray-700">{{ program.institute_details?.name || currentUserInstitute?.name || 'N/A' }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                {{ program.number_of_semesters }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                {{ getTotalModules(program) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span :class="getStatusClass(program.status)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                  {{ program.status || 'N/A' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button @click.stop="viewDetails(program)" class="text-indigo-600 hover:text-indigo-900 mr-2">View</button>
+                <button @click.stop="editProgram(program)" class="text-yellow-600 hover:text-yellow-900 mr-2 disabled:opacity-50" disabled>Edit</button>
+                <button @click.stop="deleteProgram(program.id)" class="text-red-600 hover:text-red-900">Delete</button>
+              </td>
+            </tr>
+            <tr v-if="expandedRows.includes(program.id)">
+              <td colspan="6" class="p-0">
+                <div class="p-4 bg-gray-50 border-t border-l-4 border-l-indigo-500">
+                  <h4 class="text-md font-semibold text-gray-800 mb-2">Program Details: {{ program.program_master_details?.name || 'N/A' }}</h4>
+                  <div v-for="semester in (program.semesters_details || program.semesters || [])" :key="semester.id || semester.semester_number" class="mb-3 pl-2">
+                    <p class="font-medium text-gray-700">Semester {{ semester.semester_number }}:</p>
+                    <ul class="list-disc list-inside ml-4 text-sm text-gray-600 space-y-1">
+                      <li v-for="(assignment, index) in (semester.module_assignments || semester.faculty_assignments || [])" :key="assignment.id || index">
+                        {{ assignment.module_details?.module_master?.module_name || assignment.module?.module_master?.module_name || 'N/A' }}
+                        - Faculty: {{ assignment.teaching_faculty_details?.faculty_name || assignment.teaching_faculty?.faculty_name || 'N/A' }}
+                        (Students: {{ assignment.number_of_students }})
+                      </li>
+                      <li v-if="!(semester.module_assignments || semester.faculty_assignments || []).length">No modules assigned to this semester.</li>
+                    </ul>
+                  </div>
+                   <div v-if="!(program.semesters_details || program.semesters || []).length">No semester details available.</div>
+                </div>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
+    <NewEducationProgramModal
+      :is-open="isModalOpen"
+      :current-user-institute-id="currentUserInstitute?.id"
+      :current-institute-name="currentUserInstitute?.name"
+      @close="closeAddProgramModal"
+      @program-added="handleProgramAdded"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
-import { useToast } from 'vue-toastification'
-import apiServices from '@/services/services' // Ensure this path is correct
-import { Loader } from 'lucide-vue-next'
-import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
-import NewProgrammeForm from './NewEducationProgramModal.vue' // This is the modal form component
-import {
-    PlusIcon,
-    ExclamationTriangleIcon,
-    DocumentMagnifyingGlassIcon
-} from '@heroicons/vue/24/outline'
+import { ref, onMounted, watch } from 'vue';
+import NewEducationProgramModal from './NewEducationProgramModal.vue';
+import apiServices from '@/services/services';
 
-const toast = useToast()
+const isModalOpen = ref(false);
+const isLoading = ref(false);
+const isLoadingCurrentUserInstitute = ref(false);
+const educationPrograms = ref([]);
+const expandedRows = ref([]);
 
-const applications = ref([])
-const isLoading = ref(true)
-const apiError = ref(false)
-const errorMessage = ref('')
+const currentUserInstitute = ref(null); // To store { id: ..., name: ... }
 
-const showProgrammeModal = ref(false)
-const currentApplicationId = ref(null) // Used to pass to the modal for ADD (null) or EDIT (id)
-const programmeFormRef = ref(null)
-const formInstanceKey = ref(0); // To re-render the form component
-
-const showDeleteModal = ref(false);
-const applicationToDeleteId = ref(null);
-
-const fetchApplications = async () => {
-  isLoading.value = true
-  apiError.value = false
-  try {
-    // MODIFIED: Changed to use getMhpcProgramsOffered
-    const response = await apiServices.getMhpcProgramsOffered({ params: { ordering: '-created_at' } })
-    applications.value = response.data?.results || response.data || []
-    // Ensure field names match what ProgramOfferedSerializer returns
-    // e.g., if it's 'program_title' instead of 'course_title', adjust the template <td>{{ app.program_title }}</td>
-  } catch (error) {
-    console.error('Error fetching applications:', error)
-    errorMessage.value = error.response?.data?.message || 'Failed to load applications. Please try again.'
-    apiError.value = true
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  const options = { year: 'numeric', month: 'short', day: 'numeric' }
-  return new Date(dateString).toLocaleDateString(undefined, options)
-}
-
-const getStatusClass = (status) => {
-  const s = status?.toLowerCase();
-  if (s === 'pending') return 'bg-yellow-100 text-yellow-800';
-  if (s === 'approved') return 'bg-green-100 text-green-800';
-  if (s === 'rejected') return 'bg-red-100 text-red-800';
-  if (s === 'draft') return 'bg-gray-100 text-gray-800';
-  return 'bg-blue-100 text-blue-800'; // Default or other statuses
-}
-
-const openAddProgrammeModal = async () => {
-  currentApplicationId.value = null; // Important for distinguishing Add from Edit
-  formInstanceKey.value++; // Force re-render of the modal form component
-  showProgrammeModal.value = true;
-  await nextTick();
-  if (programmeFormRef.value && typeof programmeFormRef.value.initializeForm === 'function') {
-    // The modal form should have an initializeForm method to reset/prepare itself
-    programmeFormRef.value.initializeForm(); // Call if 'add' mode
-  } else {
-    console.warn("programmeFormRef or initializeForm not available on NewProgrammeForm for 'add'");
-  }
-}
-
-const openEditProgrammeModal = async (id) => {
-  currentApplicationId.value = id; // Set the ID for edit mode
-  formInstanceKey.value++; // Force re-render of the modal form component
-  showProgrammeModal.value = true;
-  await nextTick();
-  // The modal form component should fetch its own data if currentApplicationId is set
-  if (programmeFormRef.value && typeof programmeFormRef.value.initializeForm === 'function') {
-     // initializeForm should ideally check currentApplicationId and fetch data if it's an edit
-    programmeFormRef.value.initializeForm();
-  } else {
-     console.warn("programmeFormRef or initializeForm not available on NewProgrammeForm for 'edit'");
-  }
-}
-
-const closeProgrammeModal = () => {
-  showProgrammeModal.value = false
-  currentApplicationId.value = null // Reset ID on close
-}
-
-const handleProgrammeSaved = () => {
-  closeProgrammeModal()
-  fetchApplications() // Refresh the list
-}
-
-const handleFormLoadError = (errorMsg) => {
-    toast.error(`Error preparing form: ${errorMsg}. Please try again.`);
-    closeProgrammeModal();
-}
-
-const viewApplication = (id) => {
-  // Typically, "View" might open a read-only display or the edit modal.
-  // Here it reuses the edit modal logic.
-  openEditProgrammeModal(id);
-}
-
-const canEdit = (application) => {
-  // Adjust based on your status field from ProgramOffered model
-  const status = application.ins_review_decision?.toLowerCase();
-  return ['draft', 'pending'].includes(status); // Example editable statuses
-}
-
-const canDelete = (application) => {
-  // Adjust based on your status field
-  return application.ins_review_decision?.toLowerCase() === 'draft'; // Example deletable status
-}
-
-const confirmDeleteApplication = (id) => {
-    applicationToDeleteId.value = id;
-    showDeleteModal.value = true;
-}
-
-const deleteApplication = async () => {
-    if (!applicationToDeleteId.value) return;
-
-    const deletingToastId = toast.info("Deleting application...", { timeout: false });
+// Simulate fetching logged-in user's institute info
+// In a real app, this would come from an auth store or a profile API call
+const fetchCurrentUserInstitute = async () => {
+    isLoadingCurrentUserInstitute.value = true;
     try {
-        // MODIFIED: Changed to use deleteMhpcProgramOffered
-        await apiServices.deleteMhpcProgramOffered(applicationToDeleteId.value);
-        toast.dismiss(deletingToastId);
-        toast.success('Application deleted successfully!');
-        fetchApplications(); // Refresh the list
-    } catch (error) {
-        toast.dismiss(deletingToastId);
-        console.error('Error deleting application:', error);
-        toast.error(error.response?.data?.message || 'Failed to delete application.');
-    } finally {
-        showDeleteModal.value = false;
-        applicationToDeleteId.value = null;
-    }
-}
+        // OPTION 1: If you have a dedicated endpoint like /api/auth/me/ or /api/user-profile/
+        // const response = await apiClient.get('/auth/me/'); // Replace with your actual endpoint
+        // currentUserInstitute.value = response.data.institute; // Assuming response has { ..., institute: {id: 1, name: 'My Uni'} }
 
-onMounted(fetchApplications)
+        // OPTION 2: Simulate or hardcode for now if no direct endpoint for user's institute
+        // This is a placeholder. Replace with actual logic.
+        // For example, if all institutes are in getMhpcInstitutes and you know which one the user belongs to.
+        // Or, if the institute ID is stored in localStorage after login.
+        const institutesResponse = await apiServices.getMhpcInstitutes();
+        const allInstitutes = institutesResponse.data.results || institutesResponse.data;
+        if (allInstitutes && allInstitutes.length > 0) {
+            // For DEMO: picking the first institute as the "current user's institute"
+            // REPLACE THIS with actual logic to identify the current user's institute
+            currentUserInstitute.value = allInstitutes.find(inst => inst.id === 1); // Example: user belongs to institute with ID 1
+            if (!currentUserInstitute.value && allInstitutes.length > 0) {
+                 currentUserInstitute.value = allInstitutes[0]; // Fallback to first if ID 1 not found
+                 console.warn("Using fallback institute. Implement proper current user institute fetching.");
+            }
+        }
+        if (!currentUserInstitute.value) {
+            console.error("Could not determine current user's institute.");
+            // alert("Error: Could not determine your institute. Please contact support.");
+        }
+
+    } catch (error) {
+        console.error("Error fetching current user's institute:", error);
+        // alert("Failed to load your institute information.");
+    } finally {
+        isLoadingCurrentUserInstitute.value = false;
+    }
+};
+
+
+const openAddProgramModal = () => {
+  if (!currentUserInstitute.value?.id) {
+    alert("Cannot add program: Your institute information is not available. Please try refreshing or contact support.");
+    return;
+  }
+  isModalOpen.value = true;
+};
+
+const closeAddProgramModal = () => {
+  isModalOpen.value = false;
+};
+
+const handleProgramAdded = () => {
+  fetchEducationPrograms(); // Re-fetch list
+};
+
+const fetchEducationPrograms = async () => {
+  // Only fetch if currentUserInstitute.id is available, as programs are likely filtered by institute
+  if (!currentUserInstitute.value?.id && !isLoadingCurrentUserInstitute.value) {
+    // Wait for institute info to load or if it failed, don't attempt to load programs
+    educationPrograms.value = []; // Clear programs if no institute
+    return;
+  }
+  // If still loading institute info, wait for it
+  if (isLoadingCurrentUserInstitute.value) {
+    // Could use a watcher or re-call after institute info is fetched
+    return;
+  }
+
+  isLoading.value = true;
+  try {
+    // Adjust API call if it needs to be filtered by institute_id on the frontend,
+    // though backend should ideally handle this based on authenticated user.
+    // For now, assuming getMhpcProgramsOffered() returns programs for the logged-in user's institute.
+    const response = await apiServices.getMhpcProgramsOffered({ institute: currentUserInstitute.value?.id }); // Example: if API supports institute filter
+    educationPrograms.value = response.data.results || response.data;
+  } catch (error) {
+    console.error('Error fetching education programs:', error);
+    alert('Failed to load education programs.');
+    educationPrograms.value = [];
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(async () => {
+  await fetchCurrentUserInstitute(); // Fetch institute info first
+  if (currentUserInstitute.value?.id) { // Then fetch programs if institute info is available
+    fetchEducationPrograms();
+  }
+});
+
+// Watch for currentUserInstitute to change (e.g., after async fetch) and then load programs
+watch(currentUserInstitute, (newInstitute) => {
+    if (newInstitute?.id && educationPrograms.value.length === 0 && !isLoading.value) {
+        fetchEducationPrograms();
+    }
+}, { immediate: false }); // immediate:false because onMounted handles initial load
+
+const getStatusClass = (status) => { /* ... (same as before) ... */
+  if (!status) return 'bg-gray-100 text-gray-800';
+  status = status.toLowerCase();
+  if (status.includes('active')) return 'bg-green-100 text-green-800';
+  if (status.includes('pending')) return 'bg-yellow-100 text-yellow-800';
+  if (status.includes('inactive') || status.includes('rejected')) return 'bg-red-100 text-red-800';
+  return 'bg-gray-100 text-gray-800';
+};
+const getTotalModules = (program) => { /* ... (same as before, but check paths) ... */
+  if (!program || !(program.semesters_details || program.semesters)) return 0;
+  const semestersArray = program.semesters_details || program.semesters;
+  return semestersArray.reduce((total, semester) => {
+    const assignmentsArray = semester.module_assignments || semester.faculty_assignments || [];
+    return total + assignmentsArray.length;
+  }, 0);
+};
+const toggleExpand = (programId) => { /* ... (same as before) ... */
+  const index = expandedRows.value.indexOf(programId);
+  if (index > -1) {
+    expandedRows.value.splice(index, 1);
+  } else {
+    expandedRows.value.push(programId);
+  }
+};
+const viewDetails = (program) => { /* ... (same as before, check paths in console) ... */
+  console.log("Program Details:", program);
+  if (!expandedRows.value.includes(program.id)) {
+    expandedRows.value.push(program.id);
+  }
+};
+const editProgram = () => {
+  // TODO: Implement edit functionality
+  console.log('Edit functionality not implemented yet');
+};
+const deleteProgram = async (programId) => { /* ... (same as before) ... */
+  if (confirm('Are you sure you want to delete this program? This action cannot be undone.')) {
+    try {
+      await apiServices.deleteMhpcProgramOffered(programId);
+      alert('Program deleted successfully.');
+      fetchEducationPrograms();
+      const index = expandedRows.value.indexOf(programId);
+      if (index > -1) expandedRows.value.splice(index, 1);
+    } catch (error) {
+      console.error('Error deleting program:', error);
+      alert('Failed to delete program.');
+    }
+  }
+};
 </script>
 
 <style scoped>
-.btn {
-  @apply inline-flex items-center justify-center rounded-lg border py-2.5 px-5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed;
-}
-.btn-primary {
-  @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
-}
-.btn-outline {
-  @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500;
-}
-th, td {
-  vertical-align: middle;
-}
-.fixed.inset-0 .sm\:max-w-3xl {
-    max-height: 90vh; /* Ensure modal is scrollable if content is too long */
-}
+.container { max-width: 1200px; }
 </style>

@@ -84,6 +84,8 @@ import InstituteProfiles from '@/components/dashboard/mhpccomponents/dealingOffi
 import InstituteRenewals from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/InstituteRenewals.vue'
 import TeachingHospitalRenewals from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/TeachingHospitalRenewals.vue'
 import Complaints from '@/components/dashboard/mhpccomponents/dealingOfficer/Complaints.vue'
+import ModuleManagement from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/ModuleManagement.vue'
+import EducationProgram from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/EducationProgram.vue'
 
 //MHPC masters components
 import MastersCpdActivities from '@/components/dashboard/mhpccomponents/admin/MastersCpdActivities.vue'
@@ -124,7 +126,7 @@ import TrackEoiApplication from '@/components/dashboard/mhpccomponents/instituti
 import TrackDPRApplication from '@/components/dashboard/mhpccomponents/institutions/TrackDPRApplication.vue'
 import ViewCertificates from '@/components/dashboard/mhpccomponents/institutions/ViewCertificates.vue'
 import InstituteProfile from '@/components/dashboard/mhpccomponents/institutions/InstitutionProfile.vue'
-import TeachingCenter from '@/components/dashboard/mhpccomponents/institutions/TeachingCenterApplication.vue'
+import TeachingCenter from '@/components/dashboard/mhpccomponents/institutions/TeachingCenterApplicationModal.vue'
 import TeachingCenterRenewal from '@/components/dashboard/mhpccomponents/institutions/TeachingCenterTrackAndRenew.vue'
 import NewEducationProgram from '@/components/dashboard/mhpccomponents/institutions/NewEducationProgram.vue'
 import MyApplications from '@/components/dashboard/mhpccomponents/institutions/MyApplications.vue'
@@ -136,6 +138,7 @@ import DepartmentManagement from '@/components/dashboard/mhpccomponents/institut
 import CPDapprovedAddParticipants from '@/components/dashboard/mhpccomponents/cpdCpdProvider/Participantscomponents/CPDapprovedAddParticipants.vue'
 import PhysicalVerification from '@/components/dashboard/mhpccomponents/institutions/PhysicalVerification.vue'
 import TeachingCenterTracking from '@/components/dashboard/mhpccomponents/institutions/TeachingCenterTracking.vue'
+import NewEducationProgramApplication from '@/components/dashboard/mhpccomponents/institutions/NewEducationProgramApplication.vue'
 
 const { role } = useAuthStore()
 const route = useRoute()
@@ -285,6 +288,11 @@ const bmhDealingOfficerComponent = computed(() => {
       return InstituteProfiles
     case path.endsWith('/health_certification/complaints'):
       return Complaints
+    case path.endsWith('/health_certification/module_management'):
+      return ModuleManagement
+    case path.endsWith('/health_certification/education_program_management'):
+      return EducationProgram
+
     default:
       return null
   }
@@ -304,6 +312,9 @@ const bmhCmeCpdProviderComponent = computed(() => {
       return CPDapprovedAddParticipants
     case path.endsWith('/health_certification/cpd_provider_application_form'):
       return CpdProviderApplicationForm
+    case path.endsWith('/health_certification/cpd_provider_application_form'):
+      return CpdProviderApplicationForm
+
     default:
       return null
   }
@@ -351,6 +362,8 @@ const bmhInstitutionsComponent = computed(() => {
       return PhysicalVerification
     case path.endsWith('/health_certification/teaching_center_tracking'):
       return TeachingCenterTracking
+    case path.endsWith('/health_certification/new_education_program_application'):
+      return NewEducationProgramApplication
 
     default:
       return null

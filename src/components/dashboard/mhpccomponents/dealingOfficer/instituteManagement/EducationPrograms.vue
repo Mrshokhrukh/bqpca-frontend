@@ -1,442 +1,392 @@
-<!-- EducationPrograms.vue -->
 <template>
-  <div class="p-8 min-h-screen bg-gray-50">
-    <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Education Programs</h1>
-      <div class="flex items-center text-gray-600">
-        <span class="flex items-center">
-          <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-          Total: {{ educationPrograms.length }}
-        </span>
-      </div>
+  <div class="max-w-7xl mx-auto p-6">
+    <!-- Header -->
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-gray-900">Program Applications</h2>
+      <p class="text-gray-600">Review and manage education program applications</p>
     </div>
 
-    <!-- Alert for Success/Error Messages -->
-    <div
-      v-if="alert.show"
-      :class="`mb-4 p-4 rounded-md ${alert.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`"
-    >
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg
-            v-if="alert.type === 'success'"
-            class="h-5 w-5 text-green-400"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <svg v-else class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <p class="text-sm font-medium">{{ alert.message }}</p>
-        </div>
-        <div class="ml-auto pl-3">
-          <div class="-mx-1.5 -my-1.5">
-            <button
-              @click="alert.show = false"
-              class="inline-flex rounded-md p-1.5"
-              :class="
-                alert.type === 'success'
-                  ? 'text-green-500 hover:bg-green-100'
-                  : 'text-red-500 hover:bg-red-100'
-              "
-            >
-              <span class="sr-only">Dismiss</span>
-              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fill-rule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
+    <!-- Loading / Error / No Data -->
+    <div v-if="loading || loadingTeachingCenters" class="flex justify-center items-center py-8">
+      <div class="w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+      <span class="ml-3 text-gray-600">Loading...</span>
+    </div>
+    <div v-else-if="error" class="p-4 bg-red-50 border-l-4 border-red-400 rounded-r-md">
+      <p class="text-red-800">{{ error }}</p>
+    </div>
+    <div v-else-if="applications.length === 0" class="p-4 bg-gray-50 border-l-4 border-gray-400 rounded-r-md">
+      <p class="text-gray-800">No applications found.</p>
     </div>
 
-    <div v-if="loading" class="flex justify-center my-8">
-      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    <!-- Applications Table -->
+    <div v-else class="overflow-x-auto bg-white rounded-xl shadow-lg">
+      <table class="min-w-full border border-gray-200">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ID</th>
+            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Institute</th>
+            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Program Name</th>
+            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Program Title</th>
+            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Teaching Center</th>
+            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Status</th>
+            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Submission Date</th>
+            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="app in applications" :key="app.id" class="hover:bg-gray-50">
+            <td class="py-3 px-4 border-b text-gray-800">{{ app.id }}</td>
+            <td class="py-3 px-4 border-b text-gray-800">{{ app.institute_details?.name_of_institution || 'N/A' }}</td>
+            <td class="py-3 px-4 border-b text-gray-800">{{ app.program_master?.program_name || 'N/A' }}</td>
+            <td class="py-3 px-4 border-b text-gray-800">{{ app.specific_program_title || 'N/A' }}</td>
+            <td class="py-3 px-4 border-b text-gray-800">{{ getTeachingCenterName(app.teaching_center) || 'N/A' }}</td>
+            <td class="py-3 px-4 border-b">
+              <span
+                :class="{
+                  'px-2 py-1 rounded-full text-xs font-medium': true,
+                  'bg-blue-100 text-blue-800': app.status === 'Pending',
+                  'bg-green-100 text-green-800': app.status === 'Approved',
+                  'bg-red-100 text-red-800': app.status === 'Rejected'
+                }"
+              >
+                {{ app.status || 'Unknown' }}
+              </span>
+            </td>
+            <td class="py-3 px-4 border-b text-gray-800">{{ formatDate(app.created_at) }}</td>
+            <td class="py-3 px-4 border-b text-gray-800 whitespace-nowrap">
+              <button
+                @click.stop="openViewModal(app)"
+                class="text-blue-600 hover:text-blue-800 font-medium text-sm"
+                title="View Application"
+              >
+                View
+              </button>
+              <!-- DELETE BUTTON ADDED HERE -->
+              <button
+                @click.stop="promptDelete(app)"
+                class="ml-2 text-red-600 hover:text-red-800 font-medium text-sm"
+                title="Delete Application"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <div
-      v-else-if="educationPrograms.length === 0"
-      class="bg-white p-8 text-center text-gray-500 rounded-xl shadow-sm border border-gray-100"
-    >
-      <p>No education programs found</p>
-    </div>
-
-    <div v-else class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Institute
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Course Title
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Duration
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Commencement Date
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Status
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr
-              v-for="program in educationPrograms"
-              :key="program.id"
-              class="hover:bg-gray-50 transition-colors"
-            >
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ program.institute_name || program.institute }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ program.course_title }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ program.duration_in_months }} Months</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(program.commencement_date) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  class="px-3 py-1 rounded-full text-xs font-medium"
-                  :class="{
-                    'bg-yellow-100 text-yellow-800': program.ins_review_decision === 'Pending',
-                    'bg-green-100 text-green-800': program.ins_review_decision === 'Approved',
-                    'bg-red-100 text-red-800': program.ins_review_decision === 'Regretted',
-                  }"
-                >
-                  {{ program.ins_review_decision }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div class="flex space-x-3">
-                  <button
-                    @click="openModal(program)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                  >
-                    View
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
+    <!-- View Modal -->
     <EducationProgramDetailsModal
-      :is-open="isModalOpen"
-      :program-details="selectedProgram"
-      @close-modal="closeModal"
-      @approve="handleApprove"
-      @regret="handleRegret"
+      v-if="isViewModalOpen && selectedApplication"
+      :isVisible="isViewModalOpen"
+      :application="selectedApplication"
+      :teachingCenterName="selectedApplication ? getTeachingCenterName(selectedApplication.teaching_center) : 'N/A'"
+      @close="closeViewModal"
+      @approve="promptApprove"
+      @reject="promptReject"
+      @delete="promptDelete" 
     />
 
-    <!-- Confirmation Modal - Now using Teleport to ensure it appears on top -->
-    <Teleport to="body">
-      <div v-if="confirmModal.show" class="fixed z-50 inset-0 overflow-y-auto">
-        <div
-          class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
-        >
-          <div
-            class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-            @click="confirmModal.show = false"
-          ></div>
-          <span class="hidden sm:inline-block sm:align-middle sm:h-screen"></span>
-          <div
-            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-          >
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-              <div class="sm:flex sm:items-start">
-                <div
-                  class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
-                >
-                  <svg
-                    class="h-6 w-6 text-red-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                </div>
-                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                  <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    {{ confirmModal.title }}
-                  </h3>
-                  <div class="mt-2">
-                    <p class="text-sm text-gray-500">
-                      {{ confirmModal.message }}
-                    </p>
-                  </div>
-                  <div v-if="confirmModal.action === 'regret'" class="mt-3">
-                    <label for="regret-reason" class="block text-sm font-medium text-gray-700"
-                      >Reason for Regret</label
-                    >
-                    <textarea
-                      id="regret-reason"
-                      v-model="regretReason"
-                      rows="3"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      placeholder="Please provide a reason for regret"
-                    ></textarea>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-              <button
-                type="button"
-                @click="confirmAction"
-                :class="`inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm
-                  ${confirmModal.action === 'approve' ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' : 'bg-red-600 hover:bg-red-700 focus:ring-red-500'}`"
-              >
-                {{ confirmModal.action === 'approve' ? 'Approve' : 'Regret' }}
-              </button>
-              <button
-                type="button"
-                @click="confirmModal.show = false"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <!-- Confirm Dialog -->
+    <ConfirmDialog
+      v-if="isConfirmModalOpen && actionContext"
+      :isVisible="isConfirmModalOpen"
+      :title="confirmDialog.title"
+      :message="confirmDialog.message"
+      :confirmButtonText="confirmDialog.confirmButtonText"
+      :confirmButtonClass="confirmDialog.confirmButtonClass"
+      :showRemarks="actionContext.type === 'approve' || actionContext.type === 'reject'"
+      v-model:remarks="actionContext.remarks"
+      @confirm="executeAction"
+      @cancel="closeConfirmModal"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import EducationProgramDetailsModal from '../modals/EducationProgramDetailsModal.vue'
-import apiServices from '@/services/services'
+import { ref, onMounted } from 'vue';
+import { useToast } from 'vue-toastification';
+import apiServices from '@/services/services';
+import EducationProgramDetailsModal from '../modals/NewEducationProgramDetailsModal.vue';
+import ConfirmDialog from '../modals/ConfirmDialog.vue';
 
-const educationPrograms = ref([])
-const isModalOpen = ref(false)
-const selectedProgram = ref({})
-const loading = ref(false)
-const regretReason = ref('')
+const toast = useToast();
+const applications = ref([]);
+const allTeachingCenters = ref([]);
+const loading = ref(true);
+const loadingTeachingCenters = ref(true);
+const error = ref(null);
 
-// Alert system for success/error messages
-const alert = ref({
-  show: false,
-  type: 'success',
-  message: '',
-})
-
-// Confirmation modal
-const confirmModal = ref({
-  show: false,
+// Modal states
+const isViewModalOpen = ref(false);
+const selectedApplication = ref(null);
+const isConfirmModalOpen = ref(false);
+const actionContext = ref(null); // { type: 'approve' | 'reject' | 'delete', application: object, remarks: string }
+const confirmDialog = ref({
   title: '',
   message: '',
-  action: '',
-  programId: null,
-})
+  confirmButtonText: '',
+  confirmButtonClass: '',
+});
 
-onMounted(async () => {
-  await fetchEducationPrograms()
-})
-
-const fetchEducationPrograms = async () => {
+// Fetch data
+const fetchAllData = async () => {
+  loading.value = true;
+  loadingTeachingCenters.value = true;
+  error.value = null;
   try {
-    loading.value = true
-
-    // Fetch Education Programs from the API
-    const response = await apiServices.getMhpcCourseDetails()
-    console.log('API Response:', response)
-
-    // Extract data from response based on structure
-    if (response && response.data && response.data.results) {
-      educationPrograms.value = response.data.results
-    } else if (response && response.results) {
-      educationPrograms.value = response.results
-    } else if (Array.isArray(response)) {
-      educationPrograms.value = response
-    } else if (response && Array.isArray(response.data)) {
-      educationPrograms.value = response.data
-    } else {
-      console.error('Unexpected API response structure:', response)
-      showAlert('error', 'Failed to load education programs data')
-    }
-
-    console.log('Education programs loaded:', educationPrograms.value)
-  } catch (error) {
-    console.error('Error fetching data:', error)
-    showAlert('error', 'Failed to load education programs data')
-  } finally {
-    loading.value = false
+    await Promise.all([fetchTeachingCenters(), fetchApplications()]);
+  } catch (err) {
+    console.error('Error fetching data:', err);
+    error.value = 'Failed to fetch data.';
+    toast.error(error.value);
   }
-}
+};
 
-const openModal = (program) => {
-  selectedProgram.value = program
-  isModalOpen.value = true
-}
+const fetchTeachingCenters = async () => {
+  loadingTeachingCenters.value = true;
+  try {
+    const response = await apiServices.getMhpcTeachingCenters();
+    allTeachingCenters.value = response.data.results || response.data || [];
+  } catch (err) {
+    console.error('Error fetching teaching centers:', err);
+    toast.error('Failed to load teaching centers.');
+  } finally {
+    loadingTeachingCenters.value = false;
+  }
+};
 
-const closeModal = () => {
-  isModalOpen.value = false
-  selectedProgram.value = {} // Clear selected program data when closing
-}
+const fetchApplications = async () => {
+  loading.value = true;
+  try {
+    const response = await apiServices.getMhpcProgramsOffered();
+    applications.value = (response.data.results || response.data || []).map(app => {
+      // console.log('Processing application:', app); // Keep for debugging if needed
+      return {
+        ...app,
+        institute_details: app.institute || { name_of_institution: 'N/A' }, // Ensure institute_details exists
+        curriculum_validation_letter: app.curriculum_validation_letter || null,
+        curriculum_document: app.curriculum_document || null,
+      };
+    });
+  } catch (err) {
+    console.error('Error fetching applications:', err);
+    error.value = 'Failed to load applications.';
+    toast.error(error.value);
+  } finally {
+    loading.value = false;
+  }
+};
 
-const formatDate = (date) => {
-  if (!date) return ''
-  return new Date(date).toLocaleDateString('en-US', {
+// Helpers
+const getTeachingCenterName = (tcId) => {
+  if (!tcId || !allTeachingCenters.value.length) {
+    return null;
+  }
+  const center = allTeachingCenters.value.find((tc) => tc.id === tcId);
+  if (center) {
+    return `${center.center_name}${center.center_location ? ` - ${center.center_location}` : ''}`;
+  }
+  return `ID: ${tcId}`; // Fallback if center not found
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
-  })
-}
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
 
-const handleApprove = () => {
-  confirmModal.value = {
-    show: true,
-    title: 'Approve Education Program',
-    message: `Are you sure you want to approve "${selectedProgram.value.course_title}"?`,
-    action: 'approve',
-    programId: selectedProgram.value.id,
-  }
-}
+// View Modal
+const openViewModal = (app) => {
+  console.log('Opening modal with application:', app);
+  selectedApplication.value = { // Create a deep enough copy for editing files
+    ...app,
+    // Ensure files are handled correctly if they are File objects vs strings
+    curriculum_validation_letter: app.curriculum_validation_letter,
+    curriculum_document: app.curriculum_document,
+  };
+  isViewModalOpen.value = true;
+};
 
-const handleRegret = () => {
-  confirmModal.value = {
-    show: true,
-    title: 'Regret Education Program',
-    message: `Are you sure you want to regret "${selectedProgram.value.course_title}"?`,
-    action: 'regret',
-    programId: selectedProgram.value.id,
-  }
-  regretReason.value = '' // Reset regret reason
-}
+const closeViewModal = () => {
+  isViewModalOpen.value = false;
+  selectedApplication.value = null;
+};
 
-const confirmAction = async () => {
+// Confirm Actions
+const promptDelete = (app) => {
+  actionContext.value = {
+    type: 'delete',
+    application: { ...app }, // Pass a copy
+    remarks: '', // Not used for delete but part of the structure
+  };
+  confirmDialog.value = {
+    title: 'Confirm Deletion',
+    message: `Are you sure you want to delete application for '${app.specific_program_title || `ID: ${app.id}`}'? This cannot be undone.`,
+    confirmButtonText: 'Delete',
+    confirmButtonClass: 'bg-red-600 hover:bg-red-700',
+  };
+  isConfirmModalOpen.value = true;
+};
+
+const promptApprove = (appFromModal) => { // appFromModal might have updated files
+  actionContext.value = {
+    type: 'approve',
+    application: { ...appFromModal },
+    remarks: '',
+  };
+  confirmDialog.value = {
+    title: 'Approve Application',
+    message: `You are about to approve '${appFromModal.specific_program_title || `ID: ${appFromModal.id}`}'. Provide remarks (optional).`,
+    confirmButtonText: 'Approve',
+    confirmButtonClass: 'bg-green-600 hover:bg-green-700',
+  };
+  isConfirmModalOpen.value = true;
+};
+
+const promptReject = (appFromModal) => { // appFromModal might have updated files
+  actionContext.value = {
+    type: 'reject',
+    application: { ...appFromModal },
+    remarks: '',
+  };
+  confirmDialog.value = {
+    title: 'Reject Application',
+    message: `You are about to reject '${appFromModal.specific_program_title || `ID: ${appFromModal.id}`}'. Provide remarks (required).`,
+    confirmButtonText: 'Reject',
+    confirmButtonClass: 'bg-red-600 hover:bg-red-700',
+  };
+  isConfirmModalOpen.value = true;
+};
+
+const closeConfirmModal = () => {
+  isConfirmModalOpen.value = false;
+  actionContext.value = null;
+};
+
+const executeAction = async () => {
+  if (!actionContext.value) return;
+  const { type, application, remarks } = actionContext.value;
+
   try {
-    loading.value = true
-    const id = confirmModal.value.programId
-
-    if (!id) {
-      throw new Error('Education program ID is missing')
-    }
-
-    // Create the update data object with the ins_review_decision field
-    const updateData = {
-      ins_review_decision: confirmModal.value.action === 'approve' ? 'Approved' : 'Regretted',
-    }
-
-    // Add reason if rejecting
-    if (confirmModal.value.action === 'regret') {
-      if (!regretReason.value.trim()) {
-        showAlert('error', 'Please provide a reason for regret')
-        loading.value = false
-        return
-      }
-      updateData.ins_reason_if_rejected = regretReason.value.trim()
-    }
-
-    console.log('Updating program with data:', updateData)
-
-    // Update the education program via API
-    const response = await apiServices.patchMhpcCourseDetail(id, updateData)
-    console.log('API update response:', response)
-
-    // Update local data to reflect the change
-    const index = educationPrograms.value.findIndex((program) => program.id === id)
-    if (index !== -1) {
-      educationPrograms.value[index].ins_review_decision = updateData.ins_review_decision
-      if (updateData.ins_reason_if_rejected) {
-        educationPrograms.value[index].ins_reason_if_rejected = updateData.ins_reason_if_rejected
+    if (type === 'delete') {
+      await apiServices.deleteMhpcProgramOffered(application.id);
+      applications.value = applications.value.filter((app) => app.id !== application.id);
+      toast.success(`Application '${application.specific_program_title || application.id}' deleted.`);
+    } else if (type === 'approve' || type === 'reject') {
+      if (type === 'reject' && !remarks.trim()) {
+        toast.error('Remarks are required for rejection.');
+        // Do not close confirm modal on validation error
+        isConfirmModalOpen.value = true; // Keep it open
+        return;
       }
 
-      // Also update the selected program if it's currently being viewed
-      if (selectedProgram.value.id === id) {
-        selectedProgram.value.ins_review_decision = updateData.ins_review_decision
-        if (updateData.ins_reason_if_rejected) {
-          selectedProgram.value.ins_reason_if_rejected = updateData.ins_reason_if_rejected
-        }
+      const formData = new FormData();
+      // Ensure IDs are present and valid
+      if (!application.institute_details?.id) {
+          toast.error('Institute ID is missing.');
+          closeConfirmModal(); // Close confirm modal on critical error
+          return;
       }
+      formData.append('institute_id', application.institute_details.id);
+
+      if (!application.program_master?.id) {
+          toast.error('Program Master ID is missing.');
+          closeConfirmModal();
+          return;
+      }
+      formData.append('program_master_id', application.program_master.id);
+
+      formData.append('specific_program_title', application.specific_program_title || '');
+      if (application.teaching_center) { // Ensure it's not null/undefined before appending
+        formData.append('teaching_center', application.teaching_center);
+      }
+
+      // Handle file uploads: only append if it's a File object (newly uploaded)
+      if (application.curriculum_validation_letter instanceof File) {
+        formData.append('curriculum_validation_letter', application.curriculum_validation_letter);
+      }
+      if (application.curriculum_document instanceof File) {
+        formData.append('curriculum_document', application.curriculum_document);
+      }
+
+      formData.append('terms', JSON.stringify(application.terms || [])); // Ensure terms is an array
+      formData.append('is_payment_complete', application.is_payment_complete ? 'true' : 'false');
+      if (application.payment_id) { // Ensure it's not null/undefined
+        formData.append('payment_id', application.payment_id);
+      }
+      formData.append('status', type === 'approve' ? 'Approved' : 'Rejected');
+      if (remarks && remarks.trim()) { // Only append if remarks are provided
+        formData.append('status_remarks', remarks.trim());
+      }
+
+      // Log formData for debugging
+      // for (let [key, value] of formData.entries()) {
+      //   console.log(`${key}: ${value instanceof File ? value.name : value}`);
+      // }
+
+
+      await apiServices.updateMhpcProgramOffered(application.id, formData);
+
+      // Update local state
+      const appIndex = applications.value.findIndex((app) => app.id === application.id);
+      if (appIndex !== -1) {
+        applications.value[appIndex].status = formData.get('status');
+        applications.value[appIndex].status_remarks = formData.get('status_remarks') || applications.value[appIndex].status_remarks; // Keep old if not updated
+         // If files were uploaded, their string URLs won't be immediately available without a re-fetch
+        // For now, status and remarks update is the most important for UI feedback
+      }
+      toast.success(`Application '${application.specific_program_title || application.id}' ${type === 'approve' ? 'approved' : 'rejected'}.`);
+      // Optionally re-fetch the specific application or all applications if file URLs need to be updated in the view
+      // await fetchApplications(); // Or a more targeted fetch
     }
-
-    // Show success message
-    showAlert(
-      'success',
-      `Education program ${confirmModal.value.action === 'approve' ? 'approved' : 'regretted'} successfully`,
-    )
-
-    // Close modals
-    confirmModal.value.show = false
-    closeModal() // Close the details modal as well after successful action
-
-    // Optionally refresh data from the server to ensure we have the latest state
-    await fetchEducationPrograms()
-  } catch (error) {
-    console.error('Error updating education program:', error)
-    showAlert('error', `Failed to ${confirmModal.value.action} education program: ${error.message}`)
+  } catch (err) {
+    console.error(`Error executing ${type}:`, err);
+    const errorData = err.response?.data;
+    let errorMessage = `Failed to ${type} application.`;
+    if (errorData && typeof errorData === 'object') {
+      const fieldErrors = Object.entries(errorData)
+        .map(([field, fieldErrorMessages]) => {
+          const messages = Array.isArray(fieldErrorMessages) ? fieldErrorMessages.join(', ') : fieldErrorMessages;
+          return `${field}: ${messages}`;
+        })
+        .join('; ');
+      if (fieldErrors) errorMessage += ` Details: ${fieldErrors}`;
+    } else if (typeof errorData === 'string') {
+        errorMessage += ` Server says: ${errorData}`;
+    }
+    toast.error(errorMessage, { timeout: 7000 });
   } finally {
-    loading.value = false
+    // Only close confirm modal if not a validation error that keeps it open
+    if (!(type === 'reject' && !remarks.trim())) {
+        closeConfirmModal();
+    }
+    if (isViewModalOpen.value && selectedApplication.value?.id === application.id) {
+      closeViewModal(); // Close the details modal if it was for the acted-upon application
+    }
   }
-}
+};
 
-const showAlert = (type, message) => {
-  alert.value = {
-    show: true,
-    type,
-    message,
-  }
-
-  // Auto-hide alert after 5 seconds
-  setTimeout(() => {
-    alert.value.show = false
-  }, 5000)
-}
+onMounted(() => {
+  fetchAllData();
+});
 </script>
+
+<style scoped>
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+td.whitespace-nowrap {
+  white-space: nowrap;
+}
+</style>

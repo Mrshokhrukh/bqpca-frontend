@@ -288,6 +288,9 @@ export default {
       teaching_hospital_renewals: mhpcDashboard,
       institute_profiles: mhpcDashboard,
       complaints: mhpcDashboard,
+      module_management: mhpcDashboard,
+      education_program_management: mhpcDashboard,
+
     },
   },
   chief: {
@@ -434,6 +437,7 @@ export default {
       department_management: mhpcDashboard,
       site_visit_schedule: mhpcDashboard,
       teaching_center_tracking: mhpcDashboard,
+      new_education_program_application : mhpcDashboard,
 
       // ... other Health Certification routes for director
     },

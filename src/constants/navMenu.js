@@ -948,6 +948,16 @@ const serviceSpecificMenuItems = {
               `/admin/dealing_officer/${serviceType}/teaching_hospital_renewals`,
           },
           {
+            name: 'Module Management',
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/module_management`,
+          },
+          {
+            name: 'Program Management',
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/education_program_management`,
+          },
+          {
             name: 'Reports',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_report`,
           },
@@ -1051,12 +1061,17 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('RefreshCw'),
             route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
           },
-
           {
-            name: 'New Teaching Hospital',
-            icon: getIconComponent('Heart'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/new_teaching_hospital`,
+            name: 'Teaching Hospital',
+            icon: getIconComponent('RefreshCw'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_tracking`,
           },
+
+          // {
+          //   name: 'New Teaching Hospital',
+          //   icon: getIconComponent('Heart'),
+          //   route: (serviceType) => `/admin/institutions/${serviceType}/new_teaching_hospital`,
+          // },
           {
             name: 'Site Visit Schedule',
             icon: getIconComponent('Heart'),
@@ -1067,11 +1082,7 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('RefreshCw'),
             route: (serviceType) => `/admin/institutions/${serviceType}/renewal_teaching_hospital`,
           },
-          {
-            name: 'Teaching Hospital Tracking',
-            icon: getIconComponent('RefreshCw'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_tracking`,
-          },
+
 
           {
             name: 'CAPA',
@@ -1079,7 +1090,12 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
           },
           {
-            name: 'New Education Program',
+            name: 'Apply New Education Program ',
+            icon: getIconComponent('BookOpen'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/new_education_program_application`,
+          },
+          {
+            name: 'Education Program Management',
             icon: getIconComponent('BookOpen'),
             route: (serviceType) => `/admin/institutions/${serviceType}/new_education_program`,
           },
