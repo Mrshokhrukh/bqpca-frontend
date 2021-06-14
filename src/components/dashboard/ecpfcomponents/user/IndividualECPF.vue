@@ -67,6 +67,14 @@
         :budget-plan-file-name="formData.budgetPlanFile?.name"
         @update:file="handleChildFileUpload"
       />
+      <!-- services Category -->
+      <ServicesCategory
+  :serviceCategories="serviceCategories"
+  :selectedCategory="selectedCategory"
+  :details="details"
+  @update:selectedCategory="selectedCategory = $event"
+  @update:details="details = $event"
+/>
 
       <!-- SWOT Analysis Section -->
       <SwotAnalysisSection v-model:swot-data="formData.swot" />
@@ -157,6 +165,7 @@ import ProposalDetailsSection from './ApplicationChilds/ProposalDetailsSection.v
 import PurposeSection from './ApplicationChilds/PurposeSection.vue'
 import LinkagesSection from './ApplicationChilds/LinkagesSection.vue'
 import FinancialCapacitySection from './ApplicationChilds/FinancialCapacitySection.vue'
+import ServicesCategory from './ApplicationChilds/ServicesCategory.vue'
 import SwotAnalysisSection from './ApplicationChilds/SwotAnalysisSection.vue'
 import FeesChargesSection from './ApplicationChilds/FeesChargesSection.vue'
 import GuarantorDetailsSection from './ApplicationChilds/GuarantorDetailsSection.vue'
@@ -232,6 +241,7 @@ const formData = reactive(getInitialFormData())
 const masterData = reactive({
   firmTypes: [],
 })
+
 
 // --- Computed Properties ---
 const totalFeeAmount = computed(() => {

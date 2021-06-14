@@ -242,13 +242,10 @@
               <p class="mt-1 text-xs text-gray-500">Upload if available.</p>
             </div>
 
-            <!-- REMOVED: Approval Document Input -->
-            <!-- REMOVED: MoU Document Input -->
-            <!-- REMOVED: MoU Validity Input -->
           </div>
         </div>
 
-        <!-- Add More Button -->
+
         <div class="mt-6 mb-8">
           <button
             type="button"
@@ -259,7 +256,7 @@
           </button>
         </div>
 
-        <!-- Program/Course Details Section - Added -->
+
         <section class="mb-8">
           <h2 class="text-lg font-medium mb-4 text-gray-700">Program/Course Details</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -575,83 +572,86 @@ const submitApplication = async () => {
     return
   }
   if (!isFormValid()) {
-    toast.error('Please fill all required fields for each linkage.')
+    // This now covers the declaration checkbox and required HEI fields
+    toast.error('Please accept the declaration and fill all required fields for each linkage.')
+    return
+  }
+  // --- ADDED: Validation for the Program/Course Details section ---
+  if (
+    !programDetails.name_of_programme ||
+    !programDetails.level ||
+    programDetails.minimum_credit === null || // Explicitly check for null
+    !programDetails.qualification_type
+  ) {
+    toast.error('Please fill all required Program/Course Details fields.')
     return
   }
 
   let allSubmissionsSuccessful = true
 
-  // Use a single FormData for the whole application if backend supports it,
-  // otherwise loop as before. Assuming loop for now based on previous structure.
-  // If submitting as one, create FormData outside the loop and append remarks once.
-
   for (const [index, linkage] of linkages.value.entries()) {
-    // Use index if needed for nested form data keys
     const formData = new FormData()
 
-    // --- Updated FormData Appending based on new requirements ---
-    formData.append('ecpf_profile', ecpfDetails.id) // Still needed to associate
+    // --- Append ECPF and Linkage Details (Your existing code) ---
+    formData.append('ecpf_profile', ecpfDetails.id)
     formData.append('name_of_hei', linkage.name_of_hei)
     formData.append('official_website', linkage.official_website)
     formData.append('location', linkage.location)
     formData.append('country', linkage.country)
-    // Ensure year is sent correctly (as number or string based on backend)
-    if (linkage.year_of_establishment)
+    if (linkage.year_of_establishment) {
       formData.append('year_of_establishment', linkage.year_of_establishment)
+    }
     formData.append('recognised_by', linkage.recognised_by)
     formData.append('accreditated_by', linkage.accreditated_by)
-
-    // Append optional fields only if they have value
-    if (linkage.affiliation) formData.append('affiliation', linkage.affiliation)
-    if (linkage.professional_body_approval)
-      formData.append('professional_body_approval', linkage.professional_body_approval)
-
-    // Append optional file
-    if (linkage.reportDoc) formData.append('report', linkage.reportDoc) // Using 'report' as likely backend key
-
-    // Append overall remarks *if* submitting each linkage separately
-    // It might be better to send remarks once with the overall application if possible
-    if (applicationRemarks.value)
-      formData.append(`linkage_${index}_remarks`, applicationRemarks.value) // Example key, adjust as needed
-
+    if (linkage.affiliation) {
+      formData.append('affiliation', linkage.affiliation)
+    }
+    if (linkage.reportDoc) {
+      formData.append('report', linkage.reportDoc)
+    }
+    if (applicationRemarks.value) {
+      // NOTE: Your backend must be configured to handle a 'remarks' field
+      // associated with the main linkage object.
+      formData.append('remarks', applicationRemarks.value)
+    }
     formData.append('status', 'submitted')
 
-    // REMOVED Appends: approval, mou, mou_validity
-    // --- End Updated Appending ---
+    // --- THE FIX: Append the Program/Course Details as a nested array object ---
+    // The [0] tells the backend to create an array named 'courses' and put this object at index 0.
+    formData.append('courses[0][name_of_programme]', programDetails.name_of_programme)
+    formData.append('courses[0][level]', programDetails.level)
+    formData.append('courses[0][minimum_credit]', programDetails.minimum_credit)
+    formData.append('courses[0][qualification_type]', programDetails.qualification_type)
+    // --- END OF FIX ---
 
     try {
-      // Submit logic remains similar, adjust API call if needed
-      console.log(`Submitting Linkage ${index + 1}:`, Object.fromEntries(formData)) // For debugging
+      console.log(`Submitting Linkage ${index + 1}:`, Object.fromEntries(formData.entries())) // For debugging
       await apiService.createEcpfLinkageEstablishment(formData)
     } catch (error) {
       allSubmissionsSuccessful = false
       console.error(`Error submitting linkage for ${linkage.name_of_hei}:`, error)
-      let errorMsg = `Failed: ${linkage.name_of_hei}.`
+      let errorMsg = `Failed to submit: ${linkage.name_of_hei}.`
       if (error.response && error.response.data) {
+        // This formats backend validation errors nicely
         const backendErrors = Object.entries(error.response.data)
-          .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+          .map(([field, messages]) => {
+             // Handle nested course errors like "courses.0.name_of_programme"
+             const cleanField = field.replace(/courses\.\d+\./, 'Course ');
+             return `${cleanField}: ${Array.isArray(messages) ? messages.join(', ') : messages}`;
+          })
           .join('; ')
-        errorMsg += backendErrors
-          ? ` Details: ${backendErrors}`
-          : ` ${error.response.data.detail || 'Unknown error.'}`
+        errorMsg += backendErrors ? ` Details: ${backendErrors}` : ` ${error.response.data.detail || 'An unknown error occurred.'}`
       }
-      toast.error(errorMsg, { timeout: 7000 })
-      break
+      toast.error(errorMsg, { timeout: 8000 })
+      break // Stop processing further linkages if one fails
     }
   }
-  // If submitting as ONE application, append remarks outside the loop:
-  // const mainFormData = new FormData();
-  // // ... append ecpf_profile ...
-  // linkages.value.forEach((linkage, index) => { /* append linkage fields with indexed keys */ });
-  // if (applicationRemarks.value) mainFormData.append('remarks', applicationRemarks.value);
-  // // ... submit mainFormData ...
 
   if (allSubmissionsSuccessful) {
     toast.success('Application submitted successfully!')
     resetForm()
-    // Handle potential payment redirection here if needed
   } else {
-    toast.warning('Some linkages failed. Please review errors.')
+    toast.warning('Submission process stopped due to an error. Please review the message.')
   }
 }
 
@@ -661,67 +661,71 @@ const saveApplicationAsDraft = async () => {
     return
   }
   if (!atLeastOneLinkageIsValidForDraft()) {
-    toast.error('Please provide identifying info for at least one linkage.')
+    toast.error('Please provide identifying info (like a name) for at least one linkage to save a draft.')
     return
   }
 
   let allDraftsSuccessful = true
 
-  // Similar logic to submit, but status is 'draft' and optional fields are sent if present
   for (const [index, linkage] of linkages.value.entries()) {
-    if (!linkage.name_of_hei && !linkage.location && !linkage.country && !linkage.official_website)
-      continue // Skip empty drafts
+    // Skip saving completely empty linkage forms
+    if (!linkage.name_of_hei && !linkage.location && !linkage.country && !linkage.official_website) {
+      continue
+    }
 
     const formData = new FormData()
+
+    // --- Append ECPF and Linkage Details ---
     formData.append('ecpf_profile', ecpfDetails.id)
     formData.append('name_of_hei', linkage.name_of_hei || '')
     formData.append('official_website', linkage.official_website || '')
     formData.append('location', linkage.location || '')
     formData.append('country', linkage.country || '')
-    if (linkage.year_of_establishment)
+    if (linkage.year_of_establishment) {
       formData.append('year_of_establishment', linkage.year_of_establishment)
+    }
     formData.append('recognised_by', linkage.recognised_by || '')
     formData.append('accreditated_by', linkage.accreditated_by || '')
-    if (linkage.affiliation) formData.append('affiliation', linkage.affiliation)
-    if (linkage.professional_body_approval)
-      formData.append('professional_body_approval', linkage.professional_body_approval)
-    if (linkage.reportDoc) formData.append('report', linkage.reportDoc)
-    // Append remarks if needed per linkage for draft
-    if (applicationRemarks.value)
-      formData.append(`linkage_${index}_remarks`, applicationRemarks.value)
-
+    if (linkage.affiliation) {
+      formData.append('affiliation', linkage.affiliation)
+    }
+    if (linkage.reportDoc) {
+      formData.append('report', linkage.reportDoc)
+    }
+     if (applicationRemarks.value) {
+      formData.append('remarks', applicationRemarks.value)
+    }
     formData.append('status', 'draft')
 
-    // REMOVED Appends: approval, mou, mou_validity
+    // --- THE FIX: Append any available Program/Course Details for the draft ---
+    if (programDetails.name_of_programme) {
+      formData.append('courses[0][name_of_programme]', programDetails.name_of_programme)
+    }
+    if (programDetails.level) {
+      formData.append('courses[0][level]', programDetails.level)
+    }
+    if (programDetails.minimum_credit !== null) {
+      formData.append('courses[0][minimum_credit]', programDetails.minimum_credit)
+    }
+    if (programDetails.qualification_type) {
+      formData.append('courses[0][qualification_type]', programDetails.qualification_type)
+    }
+    // --- END OF FIX ---
 
     try {
-      let response
-      if (linkage.id) {
-        // Update existing draft
-        console.warn('Update logic for draft needs confirmation.')
-        response = await apiService.createEcpfLinkageEstablishment(formData) // Placeholder
-      } else {
-        // Create new draft
-        response = await apiService.createEcpfLinkageEstablishment(formData)
-      }
-      // Store returned ID
-      if (response.data && response.data.id && !linkage.id) {
-        const originalLinkage = linkages.value.find((l) => l === linkage)
-        if (originalLinkage) originalLinkage.id = response.data.id
-      }
+      // The API endpoint should handle both create and update based on if an ID is sent
+      // This assumes createEcpfLinkageEstablishment is the correct endpoint for both
+      await apiService.createEcpfLinkageEstablishment(formData)
     } catch (error) {
       allDraftsSuccessful = false
-      console.error(`Error saving draft:`, error)
-      toast.error(
-        `Failed draft save for ${linkage.name_of_hei || 'Unnamed'}. ${error.response?.data?.detail || ''}`,
-      )
+      console.error(`Error saving draft for ${linkage.name_of_hei || 'Unnamed'}:`, error)
+      toast.error(`Failed to save draft for ${linkage.name_of_hei || 'Unnamed'}. ${error.response?.data?.detail || ''}`)
       break
     }
   }
-  // Handle single form data for draft save if applicable (similar to submit)
 
   if (allDraftsSuccessful) {
-    toast.info('Application saved as draft!')
+    toast.info('Application saved as draft successfully!')
   } else {
     toast.error('Some drafts failed to save.')
   }

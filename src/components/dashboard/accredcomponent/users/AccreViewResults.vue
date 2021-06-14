@@ -81,7 +81,7 @@
             <tr v-if="filteredApplications.length === 0">
               <td colspan="5" class="py-4 px-4 text-center border border-gray-200">
                 No applications found.
-              </td>
+               </td>
             </tr>
             <tr
               v-for="application in filteredApplications"
@@ -304,7 +304,7 @@ const isRejected = (status) => {
 // Load initial data
 onMounted(async () => {
   try {
-    const response = await apiService.getInstitutionProfiles()
+    const response = await apiService.getInstituteProfiles()
     console.log('Institution Profiles Response:', response)
     backendApplications.value = response.data.results || []
     filterApplications()
