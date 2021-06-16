@@ -1,7 +1,7 @@
 <template>
   <div class="application-tracking max-w-7xl mx-auto p-4 md:p-6 bg-white/80 backdrop-blur-md rounded-xl md:rounded-2xl shadow-lg">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8">
-      <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Track Your Teaching Center Applications</h1>
+      <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Track Your Learning Center Applications</h1>
       <button
         @click="openApplicationFormModal"
         class="mt-4 sm:mt-0 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 flex items-center text-sm font-medium"
@@ -12,7 +12,7 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading && !applications.length" class="text-center py-8"> <!-- Show initial load spinner only if no apps -->
+    <div v-if="isLoading && !applications.length" class="text-center py-8">
       <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
@@ -47,7 +47,7 @@
         <div class="relative w-full sm:w-40 md:w-48">
           <select
             v-model="filterGewog"
-            class="block w-full px-4 py-2.5 border rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white/50 backdrop-sm bg-gray-ify backdrop-blur-sm appearance-none"
+            class="block w-full px-4 py-2.5 border rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white/50 backdrop-blur-sm appearance-none"
             :disabled="!filterDzongkhag"
           >
             <option value="">{{ filterDzongkhag ? 'All Gewogs' : 'Select Dzongkhag' }}</option>
@@ -74,15 +74,15 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-if="isLoading && applications.length" > <!-- Show spinner overlay on table if loading more -->
-             <td colspan="6" class="text-center py-8 relative">
-                <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
-                    <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                    </svg>
-                </div>
-             </td>
+          <tr v-if="isLoading && applications.length">
+            <td colspan="6" class="text-center py-8 relative">
+              <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
+                <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+              </div>
+            </td>
           </tr>
           <tr v-for="application in filteredApplications" :key="application.id" class="hover:bg-gray-50/50 transition-colors duration-150">
             <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ application.center_name }}</td>
@@ -111,8 +111,16 @@
                 v-if="canAddPreceptor(application)"
                 @click="openAddPreceptorModal(application)"
                 class="px-3 py-1.5 bg-green-500 text-white rounded-md shadow-sm hover:bg-green-600 text-xs font-medium transition-colors"
+                :disabled="application.isPreceptorAdded"
               >
-                Add Clinical Preceptor
+                {{ application.isPreceptorAdded ? 'Preceptor Added' : 'Add Clinical Preceptor' }}
+              </button>
+              <button
+                v-if="canDownloadCertificate(application)"
+                @click="openCertificateModal(application)"
+                class="px-3 py-1.5 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 text-xs font-medium transition-colors"
+              >
+                Download Certificate
               </button>
               <button
                 @click="viewDetails(application)"
@@ -144,6 +152,28 @@
       @close="closePreceptorModal"
       @submit-success="handlePreceptorSubmitSuccess"
     />
+
+    <!-- Certificate Modal -->
+    <teleport to="body">
+      <transition name="modal-certificate-fade">
+        <div
+          v-if="showCertificateModal"
+          class="fixed inset-0 z-[60] bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
+          @click.self="closeCertificateModal"
+        >
+          <!--
+            The CertificateModal component itself should be styled as the main modal content box.
+            Adjust max-w- and max-h- as needed for certificate display.
+            overflow-auto allows scrolling if the certificate content is larger than the modal box.
+          -->
+          <CertificateModal
+            :application="selectedCertificateData"
+            @close="closeCertificateModal"
+            class="certificate-modal-content mx-auto w-full max-w-4xl max-h-[90vh] bg-white rounded-lg shadow-xl overflow-auto flex flex-col"
+          />
+        </div>
+      </transition>
+    </teleport>
 
     <!-- Application Details Modal -->
     <teleport to="body">
@@ -188,6 +218,10 @@
                   <label class="block font-semibold text-gray-700">Valid Till:</label>
                   <p class="text-gray-600 mt-0.5">{{ formatDate(selectedApplication.valid_till) }}</p>
                 </div>
+                <div>
+                  <label class="block font-semibold text-gray-700">Preceptor Status:</label>
+                  <p class="text-gray-600 mt-0.5">{{ selectedApplication.isPreceptorAdded ? 'Preceptor Added' : 'No Preceptor Added' }}</p>
+                </div>
               </div>
             </div>
             <div class="flex justify-end mt-6 pt-4 border-t">
@@ -231,6 +265,8 @@ import ClinicalPreceptorModal from './modals/ClinicalPreceptorModal.vue';
 import TeachingCenterApplication from './TeachingCenterApplicationModal.vue';
 import PaymentModal from '@/components/common/PaymentModal.vue';
 
+import CertificateModal from '@/components/common/mhpc/MHPCCertificateModal.vue';
+
 const toast = useToast();
 const authStore = useAuthStore();
 const applications = ref([]);
@@ -240,6 +276,8 @@ const filterGewog = ref('');
 
 const isPreceptorModalOpen = ref(false);
 const selectedApplicationForPreceptor = ref(null);
+const showCertificateModal = ref(false);
+const selectedCertificateData = ref(null);
 
 const isDetailsModalOpen = ref(false);
 const selectedApplication = ref(null);
@@ -247,10 +285,12 @@ const isLoading = ref(false);
 const isPaymentProcessing = ref(false);
 
 const isApplicationFormModalOpen = ref(false);
-
-const teaching_hospital_registration = 100; // This is your fee amount
+const teaching_hospital_registration = 100;
 const teachingCenterPaymentModalRef = ref(null);
 const selectedApplicationForPayment = ref(null);
+
+// Local storage for preceptor status fallback
+const preceptorStatus = ref(new Set(JSON.parse(localStorage.getItem('preceptorAddedCenters') || '[]')));
 
 const dzongkhagOptionsForCenter = computed(() => bhutanDzongkhagsGewogs.map(d => ({ value: d.dzongkhag, label: d.dzongkhag })));
 const gewogOptionsForCenter = computed(() => {
@@ -313,6 +353,24 @@ const formatDate = (date) => {
   return new Date(date).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: '2-digit' });
 };
 
+const fetchPreceptorStatus = async (teachingCenterId) => {
+  if (!teachingCenterId || isNaN(teachingCenterId)) {
+    console.warn(`Invalid teaching center ID: ${teachingCenterId}`);
+    return preceptorStatus.value.has(teachingCenterId?.toString()); // Fallback to localStorage
+  }
+
+  try {
+    const params = { teaching_center: teachingCenterId };
+    const response = await apiServices.getMhpcClinicalPreceptors(params);
+    const preceptors = response.data?.results || response.data || [];
+    return Array.isArray(preceptors) && preceptors.length > 0;
+  } catch (error) {
+    console.error(`Error fetching preceptor status for teaching center ${teachingCenterId}:`, error.message);
+    // Fallback to localStorage
+    return preceptorStatus.value.has(teachingCenterId.toString());
+  }
+};
+
 const fetchApplications = async () => {
   if (!authStore.userId) {
     console.warn('User not authenticated for fetching applications.');
@@ -328,38 +386,35 @@ const fetchApplications = async () => {
       console.error('Expected an array of applications, received:', fetchedApplications);
       fetchedApplications = [];
     } else {
-      fetchedApplications = fetchedApplications.map(app => {
-        let derivedPaymentStatus = 'not_paid'; // Default status
-
+      fetchedApplications = await Promise.all(fetchedApplications.map(async (app) => {
+        let derivedPaymentStatus = 'not_paid';
         const currentClientApp = applications.value.find(existing => existing.id === app.id);
 
         if (app.is_payment_complete) {
           derivedPaymentStatus = 'paid';
-        } else if (app.payment_id) { // A payment has been initiated or recorded on the server
+        } else if (app.payment_id) {
           if (currentClientApp && currentClientApp.payment_status === 'processing_payment' && !app.is_payment_complete) {
             derivedPaymentStatus = 'processing_payment';
           } else {
-            derivedPaymentStatus = 'pending_payment'; // Server has payment_id, not complete -> pending
+            derivedPaymentStatus = 'pending_payment';
           }
-        } else if (currentClientApp) { // No payment_id on server, check client state
-            if (currentClientApp.payment_status === 'failed') {
-                 derivedPaymentStatus = 'failed';
-            } else if (currentClientApp.payment_status === 'processing_payment') {
-                // Client thought it was processing, but server has no payment_id.
-                // This could be a very early failure before payment_id was stored, or a race.
-                // Reverting to 'pending_payment' or 'failed' might be safer than 'not_paid' if user interaction occurred.
-                 derivedPaymentStatus = 'pending_payment'; // Or 'failed'
-            }
-            // If currentClientApp.payment_status was 'not_paid' or something else, and server has no payment_id, it remains 'not_paid' (default)
+        } else if (currentClientApp) {
+          if (currentClientApp.payment_status === 'failed') {
+            derivedPaymentStatus = 'failed';
+          } else if (currentClientApp.payment_status === 'processing_payment') {
+            derivedPaymentStatus = 'pending_payment';
+          }
         }
-        // 'not_paid' is the fallback.
+
+        const hasPreceptor = await fetchPreceptorStatus(app.id);
 
         return {
           ...app,
           tc_review_decision: app.tc_review_decision || (app.is_draft ? 'Draft' : 'Pending'),
-          payment_status: derivedPaymentStatus
+          payment_status: derivedPaymentStatus,
+          isPreceptorAdded: hasPreceptor
         };
-      });
+      }));
     }
     applications.value = fetchedApplications;
   } catch (error) {
@@ -373,7 +428,19 @@ const fetchApplications = async () => {
 const canMakePayment = (application) => {
   const status = application.payment_status ? application.payment_status.toLowerCase() : 'not_paid';
   return application.tc_review_decision?.toLowerCase() === 'approved' &&
-         (status === 'not_paid' || status === 'failed' || status === 'pending_payment'); // Allow retry for pending
+         (status === 'not_paid' || status === 'failed' || status === 'pending_payment');
+};
+
+const canAddPreceptor = (application) => {
+  const status = application.payment_status ? application.payment_status.toLowerCase() : '';
+  return application.tc_review_decision?.toLowerCase() === 'approved' &&
+         (status === 'paid' || status === 'completed' || status === 'success');
+};
+
+const canDownloadCertificate = (application) => {
+  const status = application.payment_status ? application.payment_status.toLowerCase() : '';
+  return application.tc_review_decision?.toLowerCase() === 'approved' &&
+         (status === 'paid' || status === 'completed' || status === 'success');
 };
 
 const initiateTeachingCenterPayment = (application) => {
@@ -385,6 +452,16 @@ const initiateTeachingCenterPayment = (application) => {
     console.error('Teaching Center Payment modal reference is not available.');
     toast.error('Payment modal could not be opened.');
   }
+};
+
+const openCertificateModal = (application) => {
+  selectedCertificateData.value = { results: [application] };
+  showCertificateModal.value = true;
+};
+
+const closeCertificateModal = () => {
+  showCertificateModal.value = false;
+  selectedCertificateData.value = null;
 };
 
 const closeTeachingCenterPaymentModal = () => {
@@ -440,7 +517,7 @@ const handleTeachingCenterPaymentCompleted = async (paymentData) => {
 
     const updatePayload = new FormData();
     updatePayload.append('payment_id', paymentId);
-    updatePayload.append('payment_status', 'processing_payment'); // Or derive from makePayment response if available
+    updatePayload.append('payment_status', 'processing_payment');
     await apiServices.patchMhpcTeachingCenter(applicationToUpdate.id, updatePayload);
 
     toast.success(`Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`);
@@ -463,19 +540,13 @@ const handleTeachingCenterPaymentCompleted = async (paymentData) => {
 
     const appIdx = applications.value.findIndex(app => app.id === applicationToUpdate.id);
     if (appIdx > -1 && applications.value[appIdx].payment_status !== 'paid') {
-        applications.value[appIdx].payment_status = 'failed';
+      applications.value[appIdx].payment_status = 'failed';
     }
   } finally {
     isLoading.value = false;
     isPaymentProcessing.value = false;
-    selectedApplicationForPayment.value = null; // Clear regardless of outcome, as processing is done
+    selectedApplicationForPayment.value = null;
   }
-};
-
-const canAddPreceptor = (application) => {
-  const status = application.payment_status ? application.payment_status.toLowerCase() : '';
-  return application.tc_review_decision?.toLowerCase() === 'approved' &&
-         (status === 'paid' || status === 'completed' || status === 'success');
 };
 
 const openAddPreceptorModal = (application) => {
@@ -488,10 +559,16 @@ const closePreceptorModal = () => {
   selectedApplicationForPreceptor.value = null;
 };
 
-const handlePreceptorSubmitSuccess = (message) => {
-  toast.success(message);
+const handlePreceptorSubmitSuccess = async () => {
+  const appIndex = applications.value.findIndex(app => app.id === selectedApplicationForPreceptor.value?.id);
+  if (appIndex > -1) {
+    applications.value[appIndex].isPreceptorAdded = true;
+    preceptorStatus.value.add(applications.value[appIndex].id.toString());
+    localStorage.setItem('preceptorAddedCenters', JSON.stringify([...preceptorStatus.value]));
+  }
+  toast.success('Clinical Preceptor added successfully.');
   closePreceptorModal();
-  fetchApplications();
+  await fetchApplications(); // Refresh to sync with backend
 };
 
 const viewDetails = (application) => {
@@ -531,6 +608,8 @@ table th {
 select:focus, input[type="text"]:focus {
   box-shadow: 0 0 0 2px theme('colors.indigo.300');
 }
+
+/* Details Modal Transition */
 .modal-details-fade-enter-active,
 .modal-details-fade-leave-active {
   transition: opacity 0.3s ease-in-out;
@@ -539,12 +618,31 @@ select:focus, input[type="text"]:focus {
 .modal-details-fade-leave-to {
   opacity: 0;
 }
-.modal-details-fade-enter-active .bg-white,
+.modal-details-fade-enter-active .bg-white, /* Target the content box for transform */
 .modal-details-fade-leave-active .bg-white {
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 .modal-details-fade-enter-from .bg-white,
 .modal-details-fade-leave-to .bg-white {
+  opacity: 0;
+  transform: scale(0.95) translateY(-20px);
+}
+
+/* Certificate Modal Transition */
+.modal-certificate-fade-enter-active,
+.modal-certificate-fade-leave-active {
+  transition: opacity 0.3s ease-in-out;
+}
+.modal-certificate-fade-enter-from,
+.modal-certificate-fade-leave-to {
+  opacity: 0;
+}
+.modal-certificate-fade-enter-active .certificate-modal-content, /* Target the content box for transform */
+.modal-certificate-fade-leave-active .certificate-modal-content {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.modal-certificate-fade-enter-from .certificate-modal-content,
+.modal-certificate-fade-leave-to .certificate-modal-content {
   opacity: 0;
   transform: scale(0.95) translateY(-20px);
 }

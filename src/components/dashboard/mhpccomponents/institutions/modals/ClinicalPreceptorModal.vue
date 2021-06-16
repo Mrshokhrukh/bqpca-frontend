@@ -25,6 +25,7 @@
           >
             <option disabled value="">-- Select Professional --</option>
             <option v-if="isLoadingProfessionals" value="" disabled>Loading professionals...</option>
+            <!-- prof.system_id will now hold the User ID -->
             <option v-for="prof in eligibleProfessionalsList" :key="prof.system_id" :value="prof.system_id">
               {{ prof.registration_no }} - {{ prof.full_name }}
             </option>
@@ -59,7 +60,7 @@
               />
             </div>
           </div>
-          <div class="mt-4"> <!-- Added mt-4 for spacing if details are on multiple lines -->
+          <div class="mt-4">
             <label for="qualificationDisplay" class="block text-xs font-medium text-gray-500">Qualification</label>
             <input
               type="text"
@@ -73,8 +74,6 @@
          <div v-else-if="selectedProfessionalSystemId && !isLoadingProfessionals && eligibleProfessionalsList.length > 0" class="text-sm text-gray-500 italic">
             Loading professional details...
         </div>
-
-        <!-- Designation field has been removed -->
 
         <div class="pt-4 flex justify-end space-x-3 border-t border-gray-200">
           <button
@@ -107,7 +106,7 @@ import apiServices from '@/services/services'; // Ensure this path is correct
 import { useToast } from 'vue-toastification';
 
 const props = defineProps({
-  applicationId: { // This is likely the ID of the teaching center/hospital
+  applicationId: { // This is the ID of the teaching center
     type: [String, Number],
     required: true,
   }
@@ -115,9 +114,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'submit-success']);
 const toast = useToast();
 
-const selectedProfessionalSystemId = ref(''); // Stores the system_id (prof.id)
-// const designation = ref(''); // Removed
-
+const selectedProfessionalSystemId = ref(''); // Will store the professional's application ID (e.g., 10)
 const isLoadingProfessionals = ref(false);
 const initialLoadDone = ref(false);
 const formAttempted = ref(false);
@@ -130,62 +127,38 @@ const selectedProfessionalDetails = computed(() => {
   return eligibleProfessionalsList.value.find(p => p.system_id === selectedProfessionalSystemId.value);
 });
 
+// Computed properties to display details of the selected professional
 const displayCid = computed(() => selectedProfessionalDetails.value?.cid || 'N/A');
 const displayName = computed(() => selectedProfessionalDetails.value?.full_name || 'N/A');
-const displayQualification = computed(() => {
-    if (!selectedProfessionalDetails.value || !selectedProfessionalDetails.value.user_qualifications) return 'N/A';
-    const userQualifications = selectedProfessionalDetails.value.user_qualifications;
-    let qualToDisplay = null;
-    if (userQualifications.length > 0) {
-        qualToDisplay = userQualifications.find(uq =>
-            uq.is_primary_qualification === true &&
-            typeof uq.endorsement_decision === 'string' &&
-            uq.endorsement_decision.toLowerCase() === 'approved'
-        );
-        if (!qualToDisplay) {
-            qualToDisplay = userQualifications.find(uq =>
-                typeof uq.endorsement_decision === 'string' &&
-                uq.endorsement_decision.toLowerCase() === 'approved'
-            );
-        }
-        if (!qualToDisplay && userQualifications.length > 0) {
-            qualToDisplay = userQualifications[0];
-        }
-    }
-    if (qualToDisplay) {
-        return qualToDisplay.qualification_name_display ||
-               qualToDisplay.actual_qualification_name_display ||
-               qualToDisplay.qualification_name_text ||
-               'Qualification details not available';
-    }
-    return 'N/A';
-});
-
+const displayQualification = computed(() => selectedProfessionalDetails.value?.qualification_string_for_display || 'N/A');
 
 const fetchEligibleProfessionals = async () => {
   isLoadingProfessionals.value = true;
   initialLoadDone.value = false;
   try {
     const response = await apiServices.getMhpcNewApplications();
-    const rawProfessionals = response.data?.results || [];
+    const rawProfessionals = response.data?.results || response.data || [];
+
     if (!Array.isArray(rawProfessionals)) {
-        console.warn('Fetched professionals data is not an array:', rawProfessionals);
-        eligibleProfessionalsList.value = [];
+      console.warn('Fetched professionals data is not an array:', rawProfessionals);
+      eligibleProfessionalsList.value = [];
     } else {
-        eligibleProfessionalsList.value = rawProfessionals
-            .filter(prof =>
-                prof.user_qualifications && prof.user_qualifications.some(uq =>
-                    typeof uq.endorsement_decision === 'string' &&
-                    uq.endorsement_decision.toLowerCase() === 'approved'
-                )
-            )
-            .map(prof => ({
-                system_id: prof.id,
-                registration_no: prof.registration_no || 'N/A',
-                cid: prof.cid_no || 'N/A',
-                full_name: prof.full_name || 'Unknown Professional',
-                user_qualifications: prof.user_qualifications || []
-            }));
+      // **FIX:** Correctly parse the provided API response structure
+      eligibleProfessionalsList.value = rawProfessionals.map(prof => {
+        // Find the primary qualification from the nested 'user_qualifications' array
+        const primaryQualification = prof.user_qualifications?.find(q => q.is_primary_qualification);
+
+        return {
+          // Use the top-level 'id' as the unique identifier for the dropdown value
+          system_id: prof.id,
+          application_id: prof.id,
+          registration_no: prof.registration_no || 'N/A',
+          cid: prof.cid_no || 'N/A',
+          full_name: prof.full_name || 'Unknown Professional',
+          // Get the qualification name from the nested primary qualification object
+          qualification_string_for_display: primaryQualification?.qualification_name_display || 'N/A'
+        };
+      });
     }
   } catch (error) {
     console.error('Error fetching professionals list:', error.response?.data || error.message);
@@ -195,7 +168,7 @@ const fetchEligibleProfessionals = async () => {
     isLoadingProfessionals.value = false;
     initialLoadDone.value = true;
     if (eligibleProfessionalsList.value.length === 0) {
-        toast.info('No professionals with an approved qualification endorsement found.');
+      toast.info('No eligible professionals were found.');
     }
   }
 };
@@ -206,7 +179,6 @@ onMounted(() => {
 
 const resetFormFields = () => {
     selectedProfessionalSystemId.value = '';
-    // designation.value = ''; // Removed
     formAttempted.value = false;
 };
 
@@ -215,57 +187,38 @@ const close = () => {
 };
 
 const submitPreceptor = async () => {
-  formAttempted.value = true;
-
-  if (!selectedProfessionalSystemId.value) {
-    toast.error('Please select an eligible professional.');
-    return;
-  }
-  // Designation validation removed
-
-  isSubmitting.value = true;
-
-  const preceptorData = {
-    teaching_center: props.applicationId,
-    faculty: selectedProfessionalSystemId.value,
-    // designation: designation.value.trim(), // Removed from payload
-  };
-
-  try {
-    // IMPORTANT: Ensure your API `createMhpcClinicalPreceptor` can handle
-    // the absence of the 'designation' field if it was previously required.
-    await apiServices.createMhpcClinicalPreceptor(preceptorData);
-
-    const professionalName = displayName.value !== 'N/A' ? displayName.value : `Professional (ID: ${selectedProfessionalSystemId.value})`;
-    toast.success(`Clinical Preceptor "${professionalName}" added successfully.`); // Updated toast message
-    emit('submit-success', preceptorData);
-
-    resetFormFields();
-  } catch (error) {
-    console.error('Error adding preceptor:', error.response?.data || error.message || error);
-    let errorMessage = 'Failed to add clinical preceptor.';
-    if (error.response?.data) {
-        const errors = error.response.data;
-        if (typeof errors === 'string') errorMessage += ` ${errors}`;
-        else if (errors.detail) errorMessage += ` ${errors.detail}`;
-        else if (errors.non_field_errors) errorMessage += ` ${errors.non_field_errors.join(' ')}`;
-        else if (errors.faculty && Array.isArray(errors.faculty) && errors.faculty.some(e => e.includes("already exists"))) {
-             errorMessage = `This professional is already assigned as a preceptor for this teaching center.`;
-        } else if (Array.isArray(errors) && errors.every(e => typeof e === 'string')) errorMessage += ` ${errors.join(' ')}`;
-        else if (typeof errors === 'object') {
-            const fieldErrors = Object.entries(errors).map(([key, value]) => {
-                const fieldName = key.replace(/_/g, ' ');
-                // Exclude 'faculty' if it's the "already exists" error handled above
-                if (key === 'faculty' && Array.isArray(value) && value.some(e => e.includes("already exists"))) return null;
-                return `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}: ${Array.isArray(value) ? value.join(', ') : value}`;
-            }).filter(Boolean).join('; ');
-            if (fieldErrors) errorMessage += ` Details: ${fieldErrors}`;
-        }
+    formAttempted.value = true;
+    if (!selectedProfessionalSystemId.value) {
+        toast.error('Please select an eligible professional.');
+        return;
     }
-    toast.error(errorMessage);
-  } finally {
-    isSubmitting.value = false;
-  }
+
+    isSubmitting.value = true;
+    // **FIX:** The backend likely expects the ID of the professional's record/application.
+    // 'selectedProfessionalSystemId' now correctly holds this ID (e.g., 10).
+    // Assuming this ID can be sent as the 'user'. If the backend strictly requires a Django User ID
+    // that is not present in this API response, the backend API will need to be adjusted to include it.
+    const preceptorData = {
+        teaching_center: props.applicationId,
+        application: selectedProfessionalSystemId.value,
+    };
+
+    try {
+        await apiServices.createMhpcClinicalPreceptor(preceptorData);
+        toast.success(`Clinical Preceptor "${displayName.value}" added successfully.`);
+        emit('submit-success', preceptorData);
+        resetFormFields();
+        close(); // Close modal on success
+    } catch (error) {
+        // Log the full error for better debugging
+        console.error('Error submitting preceptor:', error.response?.data || error.message);
+
+        // Provide more specific feedback if possible, e.g., from the error response
+        const errorMessage = error.response?.data?.detail || 'Failed to add clinical preceptor due to a server error.';
+        toast.error(errorMessage);
+    } finally {
+        isSubmitting.value = false;
+    }
 };
 </script>
 
@@ -274,7 +227,6 @@ select:disabled, input:read-only {
   background-color: #f3f4f6;
   cursor: not-allowed;
 }
-/* Optional: If you want more vertical space within the larger modal */
 .space-y-6 > div:not(:first-child) {
     margin-top: 1.5rem;
 }
@@ -282,6 +234,6 @@ select:disabled, input:read-only {
     margin-top: 1rem;
 }
 .grid.gap-4 {
-    gap: 1rem; /* Tailwind class for gap */
+    gap: 1rem;
 }
 </style>
