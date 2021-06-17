@@ -4,11 +4,11 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8">
       <h1
         class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-        Track Your Learning Center Applications</h1>
+        Track Your Learning Hospital Applications</h1>
       <button @click="openApplicationFormModal"
         class="mt-4 sm:mt-0 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 flex items-center text-sm font-medium">
         <PlusIcon class="w-5 h-5 mr-2" />
-        Add New Center
+        Add New Hospital
       </button>
     </div>
 
@@ -63,7 +63,7 @@
           <tr>
             <th
               class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              Center Name</th>
+              Hospital Name</th>
             <th
               class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
               Location</th>

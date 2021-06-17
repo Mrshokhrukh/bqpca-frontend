@@ -1,48 +1,127 @@
 <template>
   <div class="container mx-auto p-4 md:p-8">
+    <!-- Toast Notifications -->
+    <div v-if="notifications.length > 0" class="fixed top-4 right-4 z-50 space-y-2">
+      <div
+        v-for="notification in notifications"
+        :key="notification.id"
+        :class="[
+          'px-6 py-4 rounded-lg shadow-lg text-white font-medium transition-all duration-300 transform',
+          notification.type === 'success' ? 'bg-green-500' :
+          notification.type === 'error' ? 'bg-red-500' :
+          notification.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+        ]"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <span v-if="notification.type === 'success'" class="mr-2">✓</span>
+            <span v-else-if="notification.type === 'error'" class="mr-2">✗</span>
+            <span v-else-if="notification.type === 'warning'" class="mr-2">⚠</span>
+            <span v-else class="mr-2">ℹ</span>
+            {{ notification.message }}
+          </div>
+          <button @click="removeNotification(notification.id)" class="ml-4 text-white hover:text-gray-200">
+            ×
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold text-gray-800">Education Programs</h1>
+      <h1 class="text-3xl font-bold text-gray-800">
+        Module Faculty Assignments
+        <span v-if="instituteName" class="text-xl text-gray-600">for {{ instituteName }}</span>
+      </h1>
       <button
         @click="openAddProgramModal"
-        class="px-6 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-md"
-        :disabled="isLoadingCurrentUserInstitute || !currentUserInstitute?.id"
+        class="px-6 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+        :disabled="isLoadingInstitute || !currentUserInstitute?.id || isPerformingAction"
       >
-        <span class="mr-2">+</span> Add New Program
+        <span v-if="isPerformingAction" class="mr-2">⏳</span>
+        <span v-else class="mr-2">+</span>
+        {{ isPerformingAction ? 'Processing...' : 'Configure Program & Assign Faculty' }}
       </button>
-      <p v-if="!currentUserInstitute?.id && !isLoadingCurrentUserInstitute" class="text-sm text-red-500 ml-4">
-        Cannot add programs: User's institute information is unavailable.
+      <p v-if="!currentUserInstitute?.id && !isLoadingInstitute" class="text-sm text-red-500 ml-4">
+        Cannot manage assignments: Institute (ID: {{ SPECIFIC_INSTITUTE_ID }}) could not be loaded.
       </p>
     </div>
 
-    <div v-if="isLoadingCurrentUserInstitute" class="text-center text-gray-500 py-10">
-      <p class="text-xl">Loading user institute information...</p>
+    <!-- Loading Institute State -->
+    <div v-if="isLoadingInstitute" class="text-center text-gray-500 py-10">
+      <div class="animate-spin inline-block w-8 h-8 border-4 border-gray-300 border-t-indigo-600 rounded-full mb-4"></div>
+      <p class="text-xl">Loading institute profile (ID: {{ SPECIFIC_INSTITUTE_ID }})...</p>
+      <p class="text-sm mt-2">Please wait while we fetch your institute information.</p>
     </div>
-    <div v-else-if="isLoading" class="text-center text-gray-500 py-10">
-      <p class="text-xl">Loading programs...</p>
+    <!-- Institute Not Found -->
+    <div v-else-if="!currentUserInstitute?.id" class="text-center text-gray-500 py-10">
+      <div class="text-6xl mb-4">🏫</div>
+      <p class="text-xl font-semibold">Institute Not Found</p>
+      <p class="mt-2 text-sm">Institute profile (ID: {{ SPECIFIC_INSTITUTE_ID }}) could not be loaded.</p>
+      <p class="mt-1 text-sm">Please check the API connection and ensure the institute exists.</p>
+      <button @click="fetchInstitute" class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+        Retry Loading Institute
+      </button>
     </div>
-    <div v-else-if="educationPrograms.length === 0" class="text-center text-gray-500 py-10">
-      <p class="text-xl">No education programs added yet for {{ currentUserInstitute?.name || 'your institute' }}.</p>
-      <p class="mt-2" v-if="currentUserInstitute?.id">Click "Add New Program" to get started.</p>
+    <!-- Loading Assignments State -->
+    <div v-else-if="isLoadingAssignments" class="text-center text-gray-500 py-10">
+      <div class="animate-spin inline-block w-8 h-8 border-4 border-gray-300 border-t-indigo-600 rounded-full mb-4"></div>
+      <p class="text-xl">Loading module faculty assignments...</p>
+      <p class="text-sm mt-2">Fetching the latest assignment data for your institute.</p>
     </div>
-
+    <!-- Error State -->
+    <div v-else-if="fetchError" class="text-center text-red-500 py-10">
+      <div class="text-6xl mb-4">⚠️</div>
+      <p class="text-xl font-semibold">Failed to Load Assignments</p>
+      <p class="mt-2">{{ fetchError }}</p>
+      <div class="mt-4 space-x-2">
+        <button @click="fetchAssignments" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+          Retry Loading
+        </button>
+        <button @click="fetchInstitute" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+          Reload Institute
+        </button>
+      </div>
+    </div>
+    <!-- Empty State -->
+    <div v-else-if="moduleFacultyAssignments.length === 0" class="text-center text-gray-500 py-10">
+      <div class="text-6xl mb-4">📚</div>
+      <p class="text-xl font-semibold">No Faculty Assignments Found</p>
+      <p class="mt-2">You haven't created any module faculty assignments yet.</p>
+      <p class="mt-1 text-sm">Get started by configuring a program and assigning faculty members to modules.</p>
+      <button
+        @click="openAddProgramModal"
+        class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+        :disabled="!currentUserInstitute?.id"
+      >
+        Create Your First Assignment
+      </button>
+    </div>
+    <!-- Table -->
     <div v-else class="overflow-x-auto bg-white shadow-lg rounded-lg">
+      <div v-if="isPerformingAction" class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-lg">
+        <div class="text-center">
+          <div class="animate-spin inline-block w-8 h-8 border-4 border-gray-300 border-t-indigo-600 rounded-full mb-2"></div>
+          <p class="text-gray-600">{{ actionMessage }}</p>
+        </div>
+      </div>
+
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-100">
           <tr>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-              Program Name
+              Program Offering
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-              Institute
+              Semester
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-              Semesters
-            </th>
-             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-              Total Modules
+              Module
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-              Status
+              Assigned Faculty
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Number of Students
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
               Actions
@@ -50,120 +129,216 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <template v-for="program in educationPrograms" :key="program.id">
-            <tr @click="toggleExpand(program.id)" class="hover:bg-gray-50 cursor-pointer">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ program.program_master_details?.name || program.program_master?.name || 'N/A' }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <!-- Display name from fetched currentUserInstitute or from program data if available -->
-                <div class="text-sm text-gray-700">{{ program.institute_details?.name || currentUserInstitute?.name || 'N/A' }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {{ program.number_of_semesters }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {{ getTotalModules(program) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="getStatusClass(program.status)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                  {{ program.status || 'N/A' }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button @click.stop="viewDetails(program)" class="text-indigo-600 hover:text-indigo-900 mr-2">View</button>
-                <button @click.stop="editProgram(program)" class="text-yellow-600 hover:text-yellow-900 mr-2 disabled:opacity-50" disabled>Edit</button>
-                <button @click.stop="deleteProgram(program.id)" class="text-red-600 hover:text-red-900">Delete</button>
-              </td>
-            </tr>
-            <tr v-if="expandedRows.includes(program.id)">
-              <td colspan="6" class="p-0">
-                <div class="p-4 bg-gray-50 border-t border-l-4 border-l-indigo-500">
-                  <h4 class="text-md font-semibold text-gray-800 mb-2">Program Details: {{ program.program_master_details?.name || 'N/A' }}</h4>
-                  <div v-for="semester in (program.semesters_details || program.semesters || [])" :key="semester.id || semester.semester_number" class="mb-3 pl-2">
-                    <p class="font-medium text-gray-700">Semester {{ semester.semester_number }}:</p>
-                    <ul class="list-disc list-inside ml-4 text-sm text-gray-600 space-y-1">
-                      <li v-for="(assignment, index) in (semester.module_assignments || semester.faculty_assignments || [])" :key="assignment.id || index">
-                        {{ assignment.module_details?.module_master?.module_name || assignment.module?.module_master?.module_name || 'N/A' }}
-                        - Faculty: {{ assignment.teaching_faculty_details?.faculty_name || assignment.teaching_faculty?.faculty_name || 'N/A' }}
-                        (Students: {{ assignment.number_of_students }})
-                      </li>
-                      <li v-if="!(semester.module_assignments || semester.faculty_assignments || []).length">No modules assigned to this semester.</li>
-                    </ul>
-                  </div>
-                   <div v-if="!(program.semesters_details || program.semesters || []).length">No semester details available.</div>
-                </div>
-              </td>
-            </tr>
-          </template>
+          <tr v-for="assignment in moduleFacultyAssignments" :key="assignment.id" class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+              {{ assignment.module?.semester?.program_name || 'Program ID: ' + (assignment.module?.semester?.program_offered || 'N/A') }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+              {{ assignment.module?.semester?.name || 'N/A' }}
+              <div v-if="assignment.module?.semester?.academic_year" class="text-xs text-gray-500">
+                (AY: {{ assignment.module.semester.academic_year }})
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+              {{ assignment.module?.module_master?.module_name || 'N/A' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+              {{ assignment.faculty?.faculty_name || 'N/A' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+              {{ assignment.module?.student_count ?? 'N/A' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <button
+                @click="openEditModal(assignment)"
+                class="text-indigo-600 hover:text-indigo-900 mr-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                :disabled="isPerformingAction"
+              >
+                Edit
+              </button>
+              <button
+                @click="confirmDeleteAssignment(assignment)"
+                class="text-red-600 hover:text-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                :disabled="isPerformingAction"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
 
+    <!-- Confirmation Modal -->
+    <div v-if="showConfirmModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+            <span class="text-red-600 text-2xl">⚠️</span>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mt-4">Confirm Deletion</h3>
+          <div class="mt-2 px-7 py-3">
+            <p class="text-sm text-gray-500">
+              Are you sure you want to delete the assignment for:
+            </p>
+            <div class="mt-2 p-3 bg-gray-50 rounded">
+              <p class="font-medium">{{ confirmData?.module?.module_master?.module_name || 'Unknown Module' }}</p>
+              <p class="text-sm text-gray-600">Faculty: {{ confirmData?.faculty?.faculty_name || 'Unknown Faculty' }}</p>
+            </div>
+            <p class="text-sm text-red-600 mt-2">This action cannot be undone.</p>
+          </div>
+          <div class="items-center px-4 py-3">
+            <button
+              @click="executeDelete"
+              class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-red-700 disabled:opacity-50"
+              :disabled="isPerformingAction"
+            >
+              {{ isPerformingAction ? '...' : 'Delete' }}
+            </button>
+            <button
+              @click="cancelDelete"
+              class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-24 hover:bg-gray-400"
+              :disabled="isPerformingAction"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Adding New Assignment -->
     <NewEducationProgramModal
       :is-open="isModalOpen"
       :current-user-institute-id="currentUserInstitute?.id"
-      :current-institute-name="currentUserInstitute?.name"
+      :current-institute-name="instituteName"
       @close="closeAddProgramModal"
-      @program-added="handleProgramAdded"
+      @program-configured="handleProgramConfigured"
+    />
+
+    <!-- Modal for Editing Assignment -->
+    <EditFacultyAssignmentModal
+      :is-open="isEditModalOpen"
+      :assignment="selectedAssignment"
+      :faculty-list="facultyList"
+      @close="closeEditModal"
+      @save="saveAssignment"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import NewEducationProgramModal from './NewEducationProgramModal.vue';
+import { ref, onMounted } from 'vue';
 import apiServices from '@/services/services';
+import NewEducationProgramModal from './NewEducationProgramModal.vue';
+import EditFacultyAssignmentModal from './EditFacultyAssignmentModal.vue';
 
+const SPECIFIC_INSTITUTE_ID = 3;
+const currentUserInstitute = ref(null);
+const instituteName = ref('');
+const isLoadingInstitute = ref(true);
+const isLoadingAssignments = ref(false);
+const fetchError = ref(null);
+const moduleFacultyAssignments = ref([]);
 const isModalOpen = ref(false);
-const isLoading = ref(false);
-const isLoadingCurrentUserInstitute = ref(false);
-const educationPrograms = ref([]);
-const expandedRows = ref([]);
+const isEditModalOpen = ref(false);
+const selectedAssignment = ref(null);
+const facultyList = ref([]);
+const isPerformingAction = ref(false);
+const actionMessage = ref('');
+const showConfirmModal = ref(false);
+const confirmData = ref(null);
+const notifications = ref([]);
 
-const currentUserInstitute = ref(null); // To store { id: ..., name: ... }
+// Notification system
+const addNotification = (message, type = 'info', duration = 5000) => {
+  const id = Date.now() + Math.random();
+  const notification = { id, message, type };
+  notifications.value.push(notification);
 
-// Simulate fetching logged-in user's institute info
-// In a real app, this would come from an auth store or a profile API call
-const fetchCurrentUserInstitute = async () => {
-    isLoadingCurrentUserInstitute.value = true;
-    try {
-        // OPTION 1: If you have a dedicated endpoint like /api/auth/me/ or /api/user-profile/
-        // const response = await apiClient.get('/auth/me/'); // Replace with your actual endpoint
-        // currentUserInstitute.value = response.data.institute; // Assuming response has { ..., institute: {id: 1, name: 'My Uni'} }
-
-        // OPTION 2: Simulate or hardcode for now if no direct endpoint for user's institute
-        // This is a placeholder. Replace with actual logic.
-        // For example, if all institutes are in getMhpcInstitutes and you know which one the user belongs to.
-        // Or, if the institute ID is stored in localStorage after login.
-        const institutesResponse = await apiServices.getMhpcInstitutes();
-        const allInstitutes = institutesResponse.data.results || institutesResponse.data;
-        if (allInstitutes && allInstitutes.length > 0) {
-            // For DEMO: picking the first institute as the "current user's institute"
-            // REPLACE THIS with actual logic to identify the current user's institute
-            currentUserInstitute.value = allInstitutes.find(inst => inst.id === 1); // Example: user belongs to institute with ID 1
-            if (!currentUserInstitute.value && allInstitutes.length > 0) {
-                 currentUserInstitute.value = allInstitutes[0]; // Fallback to first if ID 1 not found
-                 console.warn("Using fallback institute. Implement proper current user institute fetching.");
-            }
-        }
-        if (!currentUserInstitute.value) {
-            console.error("Could not determine current user's institute.");
-            // alert("Error: Could not determine your institute. Please contact support.");
-        }
-
-    } catch (error) {
-        console.error("Error fetching current user's institute:", error);
-        // alert("Failed to load your institute information.");
-    } finally {
-        isLoadingCurrentUserInstitute.value = false;
-    }
+  setTimeout(() => {
+    removeNotification(id);
+  }, duration);
 };
 
+const removeNotification = (id) => {
+  const index = notifications.value.findIndex(n => n.id === id);
+  if (index > -1) {
+    notifications.value.splice(index, 1);
+  }
+};
+
+const fetchInstitute = async () => {
+  isLoadingInstitute.value = true;
+  try {
+    const response = await apiServices.getMhpcInstitute(SPECIFIC_INSTITUTE_ID);
+    if (response.data) {
+      currentUserInstitute.value = {
+        id: response.data.id,
+        name: response.data.name_of_institution,
+      };
+      instituteName.value = response.data.name_of_institution || 'Unknown Institute';
+    } else {
+      throw new Error('Institute data not found in response');
+    }
+  } catch (error) {
+    console.error('Error fetching institute:', error);
+    currentUserInstitute.value = null;
+    instituteName.value = 'Unknown Institute';
+    fetchError.value = 'Failed to load institute profile';
+    addNotification(`Failed to load institute (ID: ${SPECIFIC_INSTITUTE_ID}). Please check your connection.`, 'error');
+  } finally {
+    isLoadingInstitute.value = false;
+  }
+};
+
+const fetchFacultyList = async () => {
+  try {
+    const response = await apiServices.getMhpcTeachingFaculties({ institute: SPECIFIC_INSTITUTE_ID });
+    facultyList.value = response.data.results || response.data || [];
+  } catch (error) {
+    console.error('Error fetching faculty list:', error);
+    facultyList.value = [{ id: 13, faculty_name: 'Good Faculty' }]; // Fallback
+    addNotification('Failed to load faculty list. Using fallback data.', 'warning');
+  }
+};
+
+const fetchAssignments = async () => {
+  if (!currentUserInstitute.value?.id) {
+    console.log('Skipping fetchAssignments: Institute not loaded');
+    return;
+  }
+  isLoadingAssignments.value = true;
+  fetchError.value = null;
+  try {
+    const params = {
+      expand: 'module.semester.program_offered.program_master,module.semester.program_offered.institute,module.module_master,faculty',
+    };
+    const response = await apiServices.getMhpcFacultyAssignments(params);
+    const allAssignments = response.data.results || response.data || [];
+
+    moduleFacultyAssignments.value = allAssignments.filter(
+      asgn => {
+        const instituteId = asgn.module?.semester?.program_offered?.institute?.id;
+        const programOfferedId = asgn.module?.semester?.program_offered;
+        return instituteId === SPECIFIC_INSTITUTE_ID || programOfferedId === 7;
+      }
+    );
+
+    console.log('Filtered Assignments:', moduleFacultyAssignments.value);
+  } catch (error) {
+    console.error('Error fetching assignments:', error);
+    fetchError.value = error.message || 'Failed to load assignments';
+    moduleFacultyAssignments.value = [];
+    addNotification('Failed to load faculty assignments. Please try again.', 'error');
+  } finally {
+    isLoadingAssignments.value = false;
+  }
+};
 
 const openAddProgramModal = () => {
   if (!currentUserInstitute.value?.id) {
-    alert("Cannot add program: Your institute information is not available. Please try refreshing or contact support.");
+    addNotification(`Cannot configure program: Institute profile (ID: ${SPECIFIC_INSTITUTE_ID}) not loaded.`, 'error');
     return;
   }
   isModalOpen.value = true;
@@ -173,103 +348,118 @@ const closeAddProgramModal = () => {
   isModalOpen.value = false;
 };
 
-const handleProgramAdded = () => {
-  fetchEducationPrograms(); // Re-fetch list
+const handleProgramConfigured = (event) => {
+  console.log('Program configuration saved/updated:', event);
+  addNotification('Program configured successfully! Refreshing assignments...', 'success');
+  fetchAssignments();
 };
 
-const fetchEducationPrograms = async () => {
-  // Only fetch if currentUserInstitute.id is available, as programs are likely filtered by institute
-  if (!currentUserInstitute.value?.id && !isLoadingCurrentUserInstitute.value) {
-    // Wait for institute info to load or if it failed, don't attempt to load programs
-    educationPrograms.value = []; // Clear programs if no institute
-    return;
+const openEditModal = async (assignment) => {
+  selectedAssignment.value = { ...assignment };
+  if (facultyList.value.length === 0) {
+    isPerformingAction.value = true;
+    actionMessage.value = 'Loading faculty list...';
+    await fetchFacultyList();
+    isPerformingAction.value = false;
   }
-  // If still loading institute info, wait for it
-  if (isLoadingCurrentUserInstitute.value) {
-    // Could use a watcher or re-call after institute info is fetched
-    return;
-  }
+  isEditModalOpen.value = true;
+};
 
-  isLoading.value = true;
+const closeEditModal = () => {
+  isEditModalOpen.value = false;
+  selectedAssignment.value = null;
+};
+
+const saveAssignment = async (updatedData) => {
+  isPerformingAction.value = true;
+  actionMessage.value = 'Saving assignment changes...';
+
   try {
-    // Adjust API call if it needs to be filtered by institute_id on the frontend,
-    // though backend should ideally handle this based on authenticated user.
-    // For now, assuming getMhpcProgramsOffered() returns programs for the logged-in user's institute.
-    const response = await apiServices.getMhpcProgramsOffered({ institute: currentUserInstitute.value?.id }); // Example: if API supports institute filter
-    educationPrograms.value = response.data.results || response.data;
+    const payload = {
+      faculty: updatedData.faculty_id,
+      module: updatedData.module_id,
+    };
+    await apiServices.patchMhpcFacultyAssignment(updatedData.id, payload);
+
+    // Update module.student_count if changed
+    if (updatedData.student_count !== selectedAssignment.value.module.student_count) {
+      try {
+        actionMessage.value = 'Updating student count...';
+        await apiServices.patchMhpcModule(selectedAssignment.value.module.id, {
+          student_count: updatedData.student_count,
+        });
+        addNotification('Assignment and student count updated successfully!', 'success');
+      } catch (error) {
+        console.warn('Module update not supported; student_count not updated:', error);
+        addNotification('Assignment saved successfully, but student count update failed.', 'warning');
+      }
+    } else {
+      addNotification('Assignment updated successfully!', 'success');
+    }
+
+    closeEditModal();
+    await fetchAssignments();
   } catch (error) {
-    console.error('Error fetching education programs:', error);
-    alert('Failed to load education programs.');
-    educationPrograms.value = [];
+    console.error('Error saving assignment:', error);
+    addNotification('Failed to save assignment. Please try again.', 'error');
   } finally {
-    isLoading.value = false;
+    isPerformingAction.value = false;
+    actionMessage.value = '';
   }
 };
+
+const confirmDeleteAssignment = (assignment) => {
+  confirmData.value = assignment;
+  showConfirmModal.value = true;
+};
+
+const cancelDelete = () => {
+  showConfirmModal.value = false;
+  confirmData.value = null;
+};
+
+const executeDelete = async () => {
+  if (!confirmData.value) return;
+
+  isPerformingAction.value = true;
+  actionMessage.value = 'Deleting assignment...';
+
+  try {
+    await apiServices.deleteMhpcFacultyAssignment(confirmData.value.id);
+    addNotification(
+      `Successfully deleted assignment for ${confirmData.value.module?.module_master?.module_name || 'module'}`,
+      'success'
+    );
+    showConfirmModal.value = false;
+    confirmData.value = null;
+    await fetchAssignments();
+  } catch (error) {
+    console.error('Error deleting assignment:', error);
+    addNotification('Failed to delete assignment. Please try again.', 'error');
+  } finally {
+    isPerformingAction.value = false;
+    actionMessage.value = '';
+  }
+};
+
+
 
 onMounted(async () => {
-  await fetchCurrentUserInstitute(); // Fetch institute info first
-  if (currentUserInstitute.value?.id) { // Then fetch programs if institute info is available
-    fetchEducationPrograms();
+  await fetchInstitute();
+  if (currentUserInstitute.value?.id) {
+    await Promise.all([fetchFacultyList(), fetchAssignments()]);
   }
 });
-
-// Watch for currentUserInstitute to change (e.g., after async fetch) and then load programs
-watch(currentUserInstitute, (newInstitute) => {
-    if (newInstitute?.id && educationPrograms.value.length === 0 && !isLoading.value) {
-        fetchEducationPrograms();
-    }
-}, { immediate: false }); // immediate:false because onMounted handles initial load
-
-const getStatusClass = (status) => { /* ... (same as before) ... */
-  if (!status) return 'bg-gray-100 text-gray-800';
-  status = status.toLowerCase();
-  if (status.includes('active')) return 'bg-green-100 text-green-800';
-  if (status.includes('pending')) return 'bg-yellow-100 text-yellow-800';
-  if (status.includes('inactive') || status.includes('rejected')) return 'bg-red-100 text-red-800';
-  return 'bg-gray-100 text-gray-800';
-};
-const getTotalModules = (program) => { /* ... (same as before, but check paths) ... */
-  if (!program || !(program.semesters_details || program.semesters)) return 0;
-  const semestersArray = program.semesters_details || program.semesters;
-  return semestersArray.reduce((total, semester) => {
-    const assignmentsArray = semester.module_assignments || semester.faculty_assignments || [];
-    return total + assignmentsArray.length;
-  }, 0);
-};
-const toggleExpand = (programId) => { /* ... (same as before) ... */
-  const index = expandedRows.value.indexOf(programId);
-  if (index > -1) {
-    expandedRows.value.splice(index, 1);
-  } else {
-    expandedRows.value.push(programId);
-  }
-};
-const viewDetails = (program) => { /* ... (same as before, check paths in console) ... */
-  console.log("Program Details:", program);
-  if (!expandedRows.value.includes(program.id)) {
-    expandedRows.value.push(program.id);
-  }
-};
-const editProgram = () => {
-  // TODO: Implement edit functionality
-  console.log('Edit functionality not implemented yet');
-};
-const deleteProgram = async (programId) => { /* ... (same as before) ... */
-  if (confirm('Are you sure you want to delete this program? This action cannot be undone.')) {
-    try {
-      await apiServices.deleteMhpcProgramOffered(programId);
-      alert('Program deleted successfully.');
-      fetchEducationPrograms();
-      const index = expandedRows.value.indexOf(programId);
-      if (index > -1) expandedRows.value.splice(index, 1);
-    } catch (error) {
-      console.error('Error deleting program:', error);
-      alert('Failed to delete program.');
-    }
-  }
-};
 </script>
 
 <style scoped>
-.container { max-width: 1200px; }
+.container {
+  max-width: 1400px;
+}
+.disabled\:opacity-50:disabled {
+  opacity: 0.5;
+}
+.disabled\:cursor-not-allowed:disabled {
+  cursor: not-allowed;
+}
 </style>
