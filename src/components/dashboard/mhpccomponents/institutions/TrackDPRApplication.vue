@@ -1,16 +1,17 @@
 <template>
   <div class="min-h-screen py-8">
     <InstituteHeader
-      title="Your DPR Applications"
-      subtitle="Manage and track your Detailed Project Report applications for MHPC accreditation."
+      title="DPR Applications Management"
+      subtitle="Manage and track Detailed Project Report applications for MHPC accreditation."
       :show-actions="false"
       class="mx-4"
     />
 
     <div class="sticky top-0 bg-white shadow-sm z-10 p-4 mx-4 rounded-lg mb-6">
       <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div class="flex gap-4 w-full md:w-auto">
-          <div class="relative w-full md:w-64">
+        <!-- Filters and Sort -->
+        <div class="flex gap-4 w-full md:w-auto flex-wrap">
+          <div class="relative w-full sm:w-auto md:w-64">
             <input
               type="text"
               v-model="searchQuery"
@@ -34,7 +35,7 @@
           </div>
           <select
             v-model="filterStatus"
-            class="w-full md:w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2"
+            class="w-full sm:w-auto md:w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2"
             aria-label="Filter by status"
           >
             <option value="">All Statuses</option>
@@ -44,7 +45,7 @@
           </select>
           <select
             v-model="filterDzongkhag"
-            class="w-full md:w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2"
+            class="w-full sm:w-auto md:w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2"
             aria-label="Filter by Dzongkhag"
           >
             <option value="">All Dzongkhags</option>
@@ -52,8 +53,6 @@
               {{ dzongkhag }}
             </option>
           </select>
-        </div>
-        <div class="flex gap-4">
           <button
             @click="sortApplications"
             class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
@@ -71,6 +70,9 @@
               />
             </svg>
           </button>
+        </div>
+        <!-- Actions -->
+        <div class="flex gap-4 w-full sm:w-auto justify-end">
           <button
             @click="fetchApplications"
             class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
@@ -78,37 +80,33 @@
           >
             Refresh
           </button>
+          <button
+            @click="openNewApplicationModal"
+            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
+            aria-label="Add New DPR Application"
+          >
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Add New DPR
+          </button>
         </div>
       </div>
     </div>
 
     <div class="mx-4">
-      <!-- Loading Skeleton -->
-      <div v-if="isLoading" class="space-y-6">
-        <div v-for="n in 3" :key="n" class="bg-white rounded-xl shadow-lg p-6 animate-pulse">
-          <div class="flex justify-between mb-4">
-            <div class="space-y-2">
-              <div class="h-6 bg-gray-200 rounded w-3/4"></div>
-              <div class="h-4 bg-gray-200 rounded w-1/2"></div>
-            </div>
-            <div class="space-y-2">
-              <div class="h-4 bg-gray-200 rounded w-24"></div>
-              <div class="h-4 bg-gray-200 rounded w-32"></div>
-            </div>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="space-y-2">
-              <div class="h-4 bg-gray-200 rounded w-20"></div>
-              <div class="h-4 bg-gray-200 rounded w-28"></div>
-            </div>
-            <div class="space-y-2">
-              <div class="h-4 bg-gray-200 rounded w-20"></div>
-              <div class="h-4 bg-gray-200 rounded w-24"></div>
-            </div>
-            <div class="space-y-2">
-              <div class="h-4 bg-gray-200 rounded w-20"></div>
-              <div class="h-4 bg-gray-200 rounded w-28"></div>
-            </div>
+      <!-- Loading Skeleton for Table -->
+      <div v-if="isLoading">
+        <div class="bg-white rounded-xl shadow-lg p-6 animate-pulse">
+          <div class="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div v-for="n in 5" :key="n" class="flex items-center space-x-4 py-3 border-b border-gray-200">
+            <div class="h-4 bg-gray-200 rounded w-1/12"></div>
+            <div class="h-4 bg-gray-200 rounded w-2/12"></div>
+            <div class="h-4 bg-gray-200 rounded w-2/12"></div>
+            <div class="h-4 bg-gray-200 rounded w-2/12"></div>
+            <div class="h-4 bg-gray-200 rounded w-1/12"></div>
+            <div class="h-4 bg-gray-200 rounded w-2/12"></div>
+            <div class="h-4 bg-gray-200 rounded w-2/12"></div>
           </div>
         </div>
       </div>
@@ -128,244 +126,61 @@
         </button>
       </div>
 
-      <!-- Applications List -->
-      <div v-else-if="filteredApplications.length > 0" class="space-y-6">
-        <div
-          v-for="application in paginatedApplications"
-          :key="application.id"
-          class="bg-white rounded-xl shadow-lg border border-gray-200 hover:border-blue-300 transition-all duration-300"
-        >
-          <div class="p-6 md:p-8">
-            <div class="flex flex-col sm:flex-row items-start justify-between mb-4">
-              <div class="mb-4 sm:mb-0">
-                <h3 class="text-xl font-semibold text-gray-900 mb-1">
-                  {{ application.name_of_institution }}
-                </h3>
-                <p class="text-sm text-gray-500 mb-2">
-                  CID: {{ application.CID }} | DPR Name: {{ application.dpr_name }}
-                </p>
+      <!-- Applications Table -->
+      <div v-else-if="filteredApplications.length > 0" class="bg-white rounded-xl shadow-lg overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">S.N.</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institution Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DPR Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dzongkhag</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted On</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr v-for="(application, index) in paginatedApplications" :key="application.id">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ application.name_of_institution }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ application.dpr_name }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ application.dzongkhag }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
                 <span
-                  :class="[
-                    'px-2.5 py-1 text-xs font-medium rounded-full cursor-help',
-                    getStatusColor(application.do_dpr_review_decision),
-                  ]"
+                  :class="['px-2.5 py-0.5 text-xs font-medium rounded-full', getStatusColor(application.do_dpr_review_decision)]"
                   :title="getStatusTooltip(application.do_dpr_review_decision)"
                 >
                   {{ application.do_dpr_review_decision || 'N/A' }}
                 </span>
-              </div>
-              <div class="text-left sm:text-right w-full sm:w-auto">
-                <p class="text-sm font-medium text-gray-800">Head of Institution</p>
-                <p class="text-sm text-gray-600">{{ application.head_of_institution_name }}</p>
-                <p class="text-sm text-gray-600">{{ application.head_of_institution_email }}</p>
-              </div>
-            </div>
-
-            <button
-              @click="toggleDetails(application.id)"
-              class="w-full flex items-center justify-between text-sm font-medium text-blue-600 hover:text-blue-800 mb-4"
-              :aria-expanded="expandedApplications[application.id]"
-              :aria-controls="'details-' + application.id"
-            >
-              {{ expandedApplications[application.id] ? 'Hide Details' : 'Show Details' }}
-              <svg
-                class="w-5 h-5 transform transition-transform"
-                :class="{ 'rotate-180': expandedApplications[application.id] }"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            <div
-              v-if="expandedApplications[application.id]"
-              :id="'details-' + application.id"
-              class="space-y-6"
-            >
-              <!-- ... details content ... -->
-              <div
-                class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 pt-4 border-t border-gray-100"
-              >
-                <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contact Details
-                  </p>
-                  <p class="text-sm text-gray-700">{{ application.contact_no }}</p>
-                  <p class="text-sm text-gray-700">{{ application.email_address }}</p>
-                </div>
-                <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Location</p>
-                  <p class="text-sm text-gray-700">
-                    {{ application.dzongkhag }}, {{ application.gewog || 'N/A' }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Course Start Date
-                  </p>
-                  <p class="text-sm text-gray-700">
-                    {{ formatDate(application.commencement_date) }}
-                  </p>
-                </div>
-              </div>
-
-              <div class="pt-4 border-t border-gray-100">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
-                  DPR Details
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <p class="text-sm font-semibold text-gray-800 mb-1">Executive Summary</p>
-                    <p class="text-sm text-gray-600">
-                      {{ application.executive_summary || 'Not provided' }}
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-sm font-semibold text-gray-800 mb-1">DPR Review Summary</p>
-                    <p class="text-sm text-gray-600">
-                      {{ application.do_dpr_review_summary || 'Pending Review' }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="pt-4 border-t border-gray-100">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
-                  Program Information
-                </p>
-                <div class="flex flex-wrap gap-x-6 gap-y-4">
-                  <div>
-                    <p class="text-sm font-semibold text-gray-800">Program Type</p>
-                    <p class="text-sm text-gray-600">
-                      {{
-                        application.type_of_programme === 'D'
-                          ? 'Diploma'
-                          : application.type_of_programme === 'B'
-                            ? 'Bachelor'
-                            : 'Other'
-                      }}
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-sm font-semibold text-gray-800">Duration</p>
-                    <p class="text-sm text-gray-600">{{ application.course_duration }} months</p>
-                  </div>
-                  <div
-                    v-if="
-                      application.do_dpr_review_decision === STATUS_REJECTED &&
-                      application.do_dpr_reason_if_rejected
-                    "
-                  >
-                    <p class="text-sm font-semibold text-red-700">Rejection Reason</p>
-                    <p class="text-sm text-red-600">{{ application.do_dpr_reason_if_rejected }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="pt-4 border-t border-gray-100">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
-                  Application Timeline
-                </p>
-                <div class="relative pl-6">
-                  <div class="absolute left-2 top-0 h-full w-0.5 bg-gray-200"></div>
-                  <div
-                    v-for="(event, index) in getTimeline(application)"
-                    :key="index"
-                    class="mb-4 relative"
-                  >
-                    <div
-                      class="absolute left-[-20px] top-1 w-4 h-4 bg-blue-600 rounded-full border-2 border-white"
-                    ></div>
-                    <p class="text-sm font-medium text-gray-800">{{ event.status }}</p>
-                    <p class="text-xs text-gray-500">{{ formatDate(event.date) }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Payment and Certificate Actions -->
-            <div
-              v-if="isPaymentPending(application) || isPaymentCompleted(application)"
-              class="mt-6 pt-4 border-t border-gray-100"
-            >
-              <div class="flex flex-col sm:flex-row items-center justify-end gap-3">
-                <p
-                  v-if="isPaymentPending(application)"
-                  class="text-sm text-yellow-800 bg-yellow-100 px-3 py-1.5 rounded-md font-medium mr-0 sm:mr-auto text-center sm:text-left w-full sm:w-auto"
-                >
-                  <span class="font-semibold">Action Required:</span> Payment pending for approved
-                  application.
-                </p>
-                <button
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(application.created_at || application.commencement_date) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                <button @click="viewApplicationDetails(application)" class="text-indigo-600 hover:text-indigo-900" title="View Details">View</button>
+                 <button
                   v-if="isPaymentPending(application)"
                   @click="openPaymentConfirmationModal(application)"
                   :disabled="isActionLoading[application.id]"
-                  class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors w-full sm:w-auto disabled:opacity-50"
+                  class="text-blue-600 hover:text-blue-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Make Payment"
                 >
-                  <svg
-                    v-if="isActionLoading[application.id]"
-                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Make Payment
+                  Pay
                 </button>
                 <button
                   v-if="isPaymentCompleted(application)"
                   @click="openCertificateModal(application)"
                   :disabled="isActionLoading[application.id]"
-                  class="inline-flex items-center justify-center px-4 py-2 border border-green-600 text-sm font-medium rounded-md text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors w-full sm:w-auto disabled:opacity-50"
+                  class="text-green-600 hover:text-green-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="View Certificate"
                 >
-                  <svg
-                    v-if="isActionLoading[application.id]"
-                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-green-700"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  View Certificate
+                  Certificate
                 </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pagination -->
-        <div class="flex justify-between items-center mt-6">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+         <!-- Pagination -->
+        <div class="flex justify-between items-center p-4 border-t border-gray-200">
           <div class="text-sm text-gray-600">
             Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
             {{ Math.min(currentPage * itemsPerPage, filteredApplications.length) }} of
@@ -428,7 +243,7 @@
           You currently don't have any DPR applications matching your records in the system.
         </p>
         <button
-          @click="startNewApplication"
+          @click="openNewApplicationModal"
           class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
         >
           Start New Application
@@ -439,7 +254,7 @@
     <!-- Payment Confirmation Modal -->
     <div
       v-if="showPaymentConfirmModal"
-      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50 p-4"
     >
       <div class="bg-white rounded-lg p-6 max-w-md w-full">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirm Payment</h3>
@@ -467,18 +282,17 @@
     <!-- Certificate Modal -->
     <div
       v-if="showCertificateModal"
-      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50 p-4"
     >
       <div class="bg-white rounded-lg p-6 max-w-md w-full">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">View Certificate</h3>
         <p class="text-sm text-gray-600 mb-6">
           View the certificate for "{{ selectedApplication?.name_of_institution }}" (DPR:
-          {{ selectedApplication?.dpr_name }}). The certificate will be watermarked with the BHMC
-          logo.
+          {{ selectedApplication?.dpr_name }}).
         </p>
         <div class="flex justify-end gap-4">
           <button
-            @click="showCertificateModal = false"
+            @click="showCertificateModal = false, selectedApplication = null"
             class="inline-flex items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
           >
             Cancel
@@ -500,48 +314,130 @@
       @payment-completed="handleDPRPaymentCompleted"
       @close="closeDPRPaymentModal"
     />
+
+    <!-- New DPR Application Modal -->
+    <DPRApplicationFormModal
+      :is-visible="showAddApplicationModal"
+      @close="closeNewApplicationModal"
+      @application-submitted="handleApplicationSubmitted"
+    />
+
+    <!-- Application Details Modal (Placeholder) -->
+     <div v-if="showDetailsModal && viewingApplication" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gray-900">Application Details</h3>
+                <button @click="closeDetailsModal" class="text-gray-400 hover:text-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-6">
+                <div class="pb-4 border-b border-gray-100">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-1">{{ viewingApplication.name_of_institution }}</h4>
+                    <p class="text-sm text-gray-500 mb-2">CID: {{ viewingApplication.CID }} | DPR Name: {{ viewingApplication.dpr_name }}</p>
+                    <span :class="['px-2.5 py-1 text-xs font-medium rounded-full', getStatusColor(viewingApplication.do_dpr_review_decision)]" :title="getStatusTooltip(viewingApplication.do_dpr_review_decision)">
+                        {{ viewingApplication.do_dpr_review_decision || 'N/A' }}
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Head of Institution</p>
+                        <p class="text-sm text-gray-700">{{ viewingApplication.head_of_institution_name }}</p>
+                        <p class="text-sm text-gray-700">{{ viewingApplication.head_of_institution_email }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Details</p>
+                        <p class="text-sm text-gray-700">{{ viewingApplication.contact_no }}</p>
+                        <p class="text-sm text-gray-700">{{ viewingApplication.email_address }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Location</p>
+                        <p class="text-sm text-gray-700">{{ viewingApplication.dzongkhag }}, {{ viewingApplication.gewog || 'N/A' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Course Start Date</p>
+                        <p class="text-sm text-gray-700">{{ formatDate(viewingApplication.commencement_date) }}</p>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-gray-100">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">DPR Details</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800 mb-1">Executive Summary</p>
+                            <p class="text-sm text-gray-600 break-words">{{ viewingApplication.executive_summary || 'Not provided' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800 mb-1">DPR Review Summary</p>
+                            <p class="text-sm text-gray-600 break-words">{{ viewingApplication.do_dpr_review_summary || 'Pending Review' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-gray-100">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Program Information</p>
+                    <div class="flex flex-wrap gap-x-6 gap-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800">Program Type</p>
+                            <p class="text-sm text-gray-600">{{ viewingApplication.type_of_programme === 'D' ? 'Diploma' : viewingApplication.type_of_programme === 'B' ? 'Bachelor' : 'Other' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800">Duration</p>
+                            <p class="text-sm text-gray-600">{{ viewingApplication.course_duration }} months</p>
+                        </div>
+                        <div v-if="viewingApplication.do_dpr_review_decision === STATUS_REJECTED && viewingApplication.do_dpr_reason_if_rejected">
+                            <p class="text-sm font-semibold text-red-700">Rejection Reason</p>
+                            <p class="text-sm text-red-600 break-words">{{ viewingApplication.do_dpr_reason_if_rejected }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-gray-100">
+                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Application Timeline</p>
+                  <div class="relative pl-6">
+                      <div class="absolute left-2 top-0 h-full w-0.5 bg-gray-200"></div>
+                      <div v-for="(event, index) in getTimeline(viewingApplication)" :key="index" class="mb-4 relative">
+                          <div class="absolute left-[-20px] top-1 w-4 h-4 bg-blue-600 rounded-full border-2 border-white"></div>
+                          <p class="text-sm font-medium text-gray-800">{{ event.status }}</p>
+                          <p class="text-xs text-gray-500">{{ formatDate(event.date) }}</p>
+                      </div>
+                  </div>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button @click="closeDetailsModal" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Close</button>
+            </div>
+        </div>
+    </div>
+
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
+// Removed useRouter as startNewApplication now opens a modal
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
 import debounce from 'lodash/debounce'
-import apiServices from '@/services/services' // Assuming your services are here
+import apiServices from '@/services/services'
 import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
-import PaymentModal from '@/components/common/PaymentModal.vue' // IMPORT PAYMENT MODAL
+import PaymentModal from '@/components/common/PaymentModal.vue'
+import DPRApplicationFormModal from './InstituteDPRApplication.vue'
 
-const router = useRouter()
 const toast = useToast()
 const authStore = useAuthStore()
 
 const STATUS_APPROVED = 'Approved'
 const STATUS_REJECTED = 'Rejected'
-const STATUS_PENDING = 'Pending'
+const STATUS_PENDING = 'Pending' // Could add more like 'In Review', 'Submitted'
 const statusOptions = [STATUS_APPROVED, STATUS_REJECTED, STATUS_PENDING, 'In Review', 'Submitted']
 const dzongkhagOptions = [
-  'Bumthang',
-  'Chukha',
-  'Dagana',
-  'Gasa',
-  'Haa',
-  'Lhuntse',
-  'Mongar',
-  'Paro',
-  'Pemagatshel',
-  'Punakha',
-  'Samdrup Jongkhar',
-  'Samtse',
-  'Sarpang',
-  'Thimphu',
-  'Trashigang',
-  'Trashiyangtse',
-  'Trongsa',
-  'Tsirang',
-  'Wangdue Phodrang',
-  'Zhemgang',
+  'Bumthang', 'Chukha', 'Dagana', 'Gasa', 'Haa', 'Lhuntse', 'Mongar', 'Paro',
+  'Pemagatshel', 'Punakha', 'Samdrup Jongkhar', 'Samtse', 'Sarpang', 'Thimphu',
+  'Trashigang', 'Trashiyangtse', 'Trongsa', 'Tsirang', 'Wangdue Phodrang', 'Zhemgang',
 ]
 
 const applications = ref([])
@@ -551,19 +447,29 @@ const errorMessage = ref('')
 const searchQuery = ref('')
 const filterStatus = ref('')
 const filterDzongkhag = ref('')
-const sortOrder = ref('desc')
+const sortOrder = ref('desc') // 'desc' for newest first
 const currentPage = ref(1)
-const itemsPerPage = 10
-const expandedApplications = ref({})
-const isActionLoading = ref({}) // For individual application buttons
+const itemsPerPage = ref(10) // Made this a ref in case you want to change it
+
+const isActionLoading = ref({}) // For individual application buttons loading state
+
 const showPaymentConfirmModal = ref(false)
 const showCertificateModal = ref(false)
-const selectedApplication = ref(null) // For confirmation modal and certificate modal
+const selectedApplication = ref(null) // For payment/certificate modals
 
-// --- Payment Modal Refs ---
 const paymentModalRef = ref(null)
-const selectedApplicationForPayment = ref(null) // Specifically for the PaymentModal
-const dprPaymentAmount = ref(1500) // Example: DPR Payment Amount (can be dynamic)
+const selectedApplicationForPayment = ref(null)
+const dprPaymentAmount = ref(1500) // Example DPR Payment Amount
+const paymentOutcomeHandled = ref(false);
+
+
+// For New Application Modal
+const showAddApplicationModal = ref(false)
+
+// For Details Modal
+const showDetailsModal = ref(false)
+const viewingApplication = ref(null)
+
 
 const filteredApplications = computed(() => {
   let result = applications.value
@@ -572,7 +478,8 @@ const filteredApplications = computed(() => {
     result = result.filter(
       (app) =>
         app.name_of_institution?.toLowerCase().includes(query) ||
-        app.dpr_name?.toLowerCase().includes(query),
+        app.dpr_name?.toLowerCase().includes(query)  ||
+        app.CID?.toLowerCase().includes(query)
     )
   }
   if (filterStatus.value) {
@@ -581,53 +488,41 @@ const filteredApplications = computed(() => {
   if (filterDzongkhag.value) {
     result = result.filter((app) => app.dzongkhag === filterDzongkhag.value)
   }
+  // Sorting by created_at or commencement_date as fallback
   return result.sort((a, b) => {
-    const dateA = new Date(a.commencement_date || a.created_at || 0)
-    const dateB = new Date(b.commencement_date || b.created_at || 0)
+    const dateA = new Date(a.created_at || a.commencement_date || 0)
+    const dateB = new Date(b.created_at || b.commencement_date || 0)
     return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB
   })
 })
 
-const totalPages = computed(() => Math.ceil(filteredApplications.value.length / itemsPerPage))
+const totalPages = computed(() => Math.ceil(filteredApplications.value.length / itemsPerPage.value))
 
 const paginatedApplications = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  const end = start + itemsPerPage
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
   return filteredApplications.value.slice(start, end)
 })
 
 const getStatusColor = (status) => {
   switch (status) {
-    case STATUS_APPROVED:
-      return 'bg-green-100 text-green-700'
-    case STATUS_REJECTED:
-      return 'bg-red-100 text-red-700'
-    case STATUS_PENDING:
-      return 'bg-yellow-100 text-yellow-700'
-    case 'In Review':
-      return 'bg-blue-100 text-blue-700'
-    case 'Submitted':
-      return 'bg-gray-100 text-gray-700'
-    default:
-      return 'bg-gray-100 text-gray-700'
+    case STATUS_APPROVED: return 'bg-green-100 text-green-700'
+    case STATUS_REJECTED: return 'bg-red-100 text-red-700'
+    case STATUS_PENDING: return 'bg-yellow-100 text-yellow-700'
+    case 'In Review': return 'bg-blue-100 text-blue-700'
+    case 'Submitted': return 'bg-gray-100 text-gray-700'
+    default: return 'bg-gray-100 text-gray-700'
   }
 }
 
 const getStatusTooltip = (status) => {
-  // ... (same as before)
   switch (status) {
-    case STATUS_APPROVED:
-      return 'Application has been approved. Proceed to payment if pending.'
-    case STATUS_REJECTED:
-      return 'Application was rejected. Review the reason for rejection.'
-    case STATUS_PENDING:
-      return 'Application is awaiting review by the dealing officer.'
-    case 'In Review':
-      return 'Application is currently under review.'
-    case 'Submitted':
-      return 'Application has been submitted and is pending processing.'
-    default:
-      return 'Status not available.'
+    case STATUS_APPROVED: return 'Application has been approved. Proceed to payment if pending.'
+    case STATUS_REJECTED: return 'Application was rejected. Review the reason for rejection.'
+    case STATUS_PENDING: return 'Application is awaiting review.'
+    case 'In Review': return 'Application is currently under review.'
+    case 'Submitted': return 'Application has been submitted and is pending processing.'
+    default: return 'Status not available.'
   }
 }
 
@@ -635,46 +530,34 @@ const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   try {
     const date = new Date(dateString)
-    if (isNaN(date.getTime())) {
-      console.warn(`Invalid date string received: ${dateString}`)
-      return 'Invalid Date'
-    }
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    if (isNaN(date.getTime())) return 'Invalid Date'
+    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) // dd-mmm-yyyy
   } catch (e) {
-    console.error(`Error formatting date: ${dateString}`, e)
+    console.error('Error formatting date:', e, dateString) // Log the error for debugging
+    
     return 'Date Error'
   }
 }
 
 const isApplicationApproved = (app) => app.do_dpr_review_decision === STATUS_APPROVED
-const isPaymentPending = (app) => isApplicationApproved(app) && app.is_payment_complete === false
+const isPaymentPending = (app) => isApplicationApproved(app) && !app.is_payment_complete
 const isPaymentCompleted = (app) => isApplicationApproved(app) && app.is_payment_complete === true
 
-const getTimeline = (app) => {
-  return [
-    { status: 'Submitted', date: app.created_at || new Date().toISOString() },
-    {
-      status: app.do_dpr_review_decision || 'Pending',
-      date: app.updated_at || new Date().toISOString(),
-    },
-  ]
-}
-
-const toggleDetails = (id) => {
-  expandedApplications.value[id] = !expandedApplications.value[id]
-}
 
 const sortApplications = () => {
   sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc'
+  currentPage.value = 1 // Reset to first page after sorting
 }
 
 const debouncedSearch = debounce(() => {
-  currentPage.value = 1
+  currentPage.value = 1 // Reset to first page on search
 }, 300)
 
-watch(searchQuery, () => {
-  debouncedSearch()
+watch(searchQuery, debouncedSearch)
+watch([filterStatus, filterDzongkhag], () => {
+  currentPage.value = 1 // Reset to first page on filter change
 })
+
 
 const fetchApplications = async () => {
   if (!authStore.user || !authStore.user.cid) {
@@ -683,32 +566,24 @@ const fetchApplications = async () => {
     isLoading.value = false
     return
   }
-
   isLoading.value = true
   apiError.value = false
   errorMessage.value = ''
-
   try {
-    // Assuming 'is_payment_complete' is part of your application data model.
-    // If not, you might need to initialize it (e.g., to false) when fetching.
-    const response = await apiServices.getMhpcInstitutes()
+    const response = await apiServices.getMhpcInstitutes() // Ensure this API fetches relevant fields
     if (response && response.data && Array.isArray(response.data.results)) {
-      const userCid = authStore.user.cid.toLowerCase()
+      const userCid = authStore.user.cid.toLowerCase();
       applications.value = response.data.results
-        .filter((app) => app && typeof app.CID === 'string' && app.CID.toLowerCase() === userCid)
-        .map((app) => ({ ...app, is_payment_complete: app.is_payment_complete || false })) // Ensure is_payment_complete exists
+        .filter(app => app && typeof app.CID === 'string' && app.CID.toLowerCase() === userCid)
+        .map(app => ({ ...app, is_payment_complete: app.is_payment_complete || false }));
     } else {
-      console.warn('Unexpected API response structure:', response)
       applications.value = []
     }
   } catch (error) {
     console.error('Error fetching DPR applications:', error)
     applications.value = []
     apiError.value = true
-    errorMessage.value =
-      error.response?.data?.message || error.request
-        ? 'Network error. Please check your connection and try again.'
-        : 'An unexpected error occurred while fetching applications. Please try again.'
+    errorMessage.value = error.response?.data?.message || 'Failed to fetch applications.'
     toast.error(errorMessage.value)
   } finally {
     isLoading.value = false
@@ -716,151 +591,172 @@ const fetchApplications = async () => {
 }
 
 // --- Payment Flow Functions ---
-
-// Step 1: User clicks "Make Payment" on an application card
 const openPaymentConfirmationModal = (application) => {
   selectedApplication.value = application
-  isActionLoading.value[application.id] = true // Set loading for the card button
+  paymentOutcomeHandled.value = false;
+  if (application && application.id) isActionLoading.value[application.id] = true
   showPaymentConfirmModal.value = true
 }
 
-// Step 1b: User cancels the confirmation modal
 const cancelPaymentConfirmation = () => {
   showPaymentConfirmModal.value = false
   if (selectedApplication.value && selectedApplication.value.id) {
-    isActionLoading.value[selectedApplication.value.id] = false // Reset loading for card button
-  }
-  selectedApplication.value = null
-}
-
-// Step 2: User clicks "Proceed" on the confirmation modal
-const handleProceedWithPaymentFlow = async () => {
-  if (!selectedApplication.value || !selectedApplication.value.id) {
-    toast.error('No application selected to proceed with payment.')
-    return
-  }
-
-  const appId = selectedApplication.value.id
-  showPaymentConfirmModal.value = false // Close confirmation modal
-  selectedApplicationForPayment.value = selectedApplication.value // Set for the actual PaymentModal
-
-  if (paymentModalRef.value) {
-    paymentModalRef.value.openModal() // Open the imported PaymentModal
-  } else {
-    console.error('Payment modal reference is not available.')
-    toast.error('Could not open payment window. Please try again.')
-    if (isActionLoading.value[appId] !== undefined) {
-      isActionLoading.value[appId] = false // Reset loading for card button if modal fails to open
-    }
-  }
-  // Note: isActionLoading[appId] remains true; it will be reset by handleDPRPaymentCompleted or closeDPRPaymentModal
-}
-
-// Step 3: PaymentModal emits 'payment-completed'
-const handleDPRPaymentCompleted = async (paymentData) => {
-  if (!selectedApplicationForPayment.value) {
-    toast.error('Error: No application was associated with this payment.')
-    if (
-      selectedApplication.value &&
-      selectedApplication.value.id &&
-      isActionLoading.value[selectedApplication.value.id]
-    ) {
-      isActionLoading.value[selectedApplication.value.id] = false // Reset loading on card button
-    }
-    return
-  }
-
-  const appBeingPaid = selectedApplicationForPayment.value
-  // isActionLoading[appBeingPaid.id] is already true from openPaymentConfirmationModal
-
-  try {
-    console.log('DPR Payment completed event received:', paymentData)
-    console.log('For application:', appBeingPaid.name_of_institution, appBeingPaid.dpr_name)
-
-    // --- TODO: API CALL TO UPDATE PAYMENT STATUS ON BACKEND ---
-    // Example: Replace with your actual API call
-    // const payload = {
-    //   is_payment_complete: true,
-    //   payment_reference: paymentData.paymentHash || paymentData.transactionId // Or whatever PaymentModal provides
-    // };
-    // await apiServices.updateDprApplicationPaymentStatus(appBeingPaid.id, payload);
-    // For simulation:
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    // --- END TODO ---
-
-    // Update local application data
-    const appIndex = applications.value.findIndex((a) => a.id === appBeingPaid.id)
-    if (appIndex !== -1) {
-      // Ensure you're creating a new object for reactivity if just updating a property
-      applications.value[appIndex] = { ...applications.value[appIndex], is_payment_complete: true }
-    }
-
-    toast.success(`Payment for "${appBeingPaid.dpr_name}" completed successfully!`)
-
-    if (paymentModalRef.value) {
-      paymentModalRef.value.closeModal() // Ask PaymentModal to close itself
-    }
-  } catch (error) {
-    console.error('Error updating DPR application after payment:', error)
-    toast.error('Failed to update application after payment. Please contact support.')
-  } finally {
-    isActionLoading.value[appBeingPaid.id] = false // Reset loading for the card button
-    selectedApplicationForPayment.value = null
-    selectedApplication.value = null // Clear general selection as well
-  }
-}
-
-// Step 3b: PaymentModal emits 'close' (user cancelled payment in PaymentModal)
-const closeDPRPaymentModal = () => {
-  toast.info('Payment process cancelled.')
-  if (selectedApplicationForPayment.value && selectedApplicationForPayment.value.id) {
-    isActionLoading.value[selectedApplicationForPayment.value.id] = false // Reset loading for card button
-  } else if (selectedApplication.value && selectedApplication.value.id) {
-    // Fallback if selectedApplicationForPayment was not set but general selection exists
     isActionLoading.value[selectedApplication.value.id] = false
   }
-  selectedApplicationForPayment.value = null
   selectedApplication.value = null
 }
 
-// --- End Payment Flow Functions ---
+const handleProceedWithPaymentFlow = async () => {
+  if (!selectedApplication.value || !selectedApplication.value.id) {
+    toast.error('No application selected for payment.')
+    if(selectedApplication.value?.id) isActionLoading.value[selectedApplication.value.id] = false;
+    return
+  }
+  showPaymentConfirmModal.value = false
+  selectedApplicationForPayment.value = selectedApplication.value
 
+  if (paymentModalRef.value && typeof paymentModalRef.value.openModal === 'function') {
+    paymentModalRef.value.openModal()
+  } else {
+    console.error('Payment modal or openModal method not available.')
+    toast.error('Could not open payment window.')
+    if(selectedApplication.value?.id) isActionLoading.value[selectedApplication.value.id] = false;
+    selectedApplication.value = null;
+    selectedApplicationForPayment.value = null;
+  }
+}
+
+const handleDPRPaymentCompleted = async (paymentData) => {
+  paymentOutcomeHandled.value = true;
+  if (!selectedApplicationForPayment.value) {
+    toast.error('Error: No application associated with this payment.')
+    const initialAppId = selectedApplication.value?.id;
+    if (initialAppId && isActionLoading.value[initialAppId]) {
+        isActionLoading.value[initialAppId] = false;
+    }
+    return
+  }
+  const appBeingPaid = selectedApplicationForPayment.value
+  try {
+    // --- TODO: API CALL TO UPDATE PAYMENT STATUS ON BACKEND ---
+    // Example: await apiServices.updateDprApplicationPaymentStatus(appBeingPaid.id, { is_payment_complete: true, payment_reference: paymentData.transactionId });
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+    console.log('Simulated payment update for:', appBeingPaid.dpr_name, paymentData)
+
+    const appIndex = applications.value.findIndex((a) => a.id === appBeingPaid.id)
+    if (appIndex !== -1) {
+      applications.value[appIndex] = { ...applications.value[appIndex], is_payment_complete: true }
+    }
+    toast.success(`Payment for "${appBeingPaid.dpr_name}" completed.`)
+    // PaymentModal will emit 'close', which calls closeDPRPaymentModal
+  } catch (error) {
+    console.error('Error updating DPR application after payment:', error)
+    toast.error('Failed to update application after payment.')
+  } finally {
+     if (appBeingPaid && appBeingPaid.id) {
+        isActionLoading.value[appBeingPaid.id] = false
+     }
+    // selectedApplicationForPayment.value = null // Done in closeDPRPaymentModal
+    // selectedApplication.value = null; // Done in closeDPRPaymentModal
+  }
+}
+
+const closeDPRPaymentModal = () => {
+    if (!paymentOutcomeHandled.value) { // Only show 'cancelled' if not completed
+        toast.info('Payment process cancelled.')
+    }
+    paymentOutcomeHandled.value = false; // Reset for next time
+
+    const appForLoadingReset = selectedApplicationForPayment.value || selectedApplication.value;
+    if (appForLoadingReset && appForLoadingReset.id && isActionLoading.value[appForLoadingReset.id] !== undefined) {
+        isActionLoading.value[appForLoadingReset.id] = false;
+    }
+    selectedApplicationForPayment.value = null
+    selectedApplication.value = null
+}
+
+// --- Certificate Flow ---
 const openCertificateModal = (application) => {
   selectedApplication.value = application
+  if (application && application.id) isActionLoading.value[application.id] = true;
   showCertificateModal.value = true
 }
 
 const handleViewCertificate = async (application) => {
-  if (!application || !application.id) return
-  isActionLoading.value[application.id] = true
-  try {
-    console.log('Viewing certificate for application ID:', application.id, application.dpr_name)
-    // Simulate certificate generation/fetch
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    toast.success(`Certificate for "${application.dpr_name}" opened in new tab (simulated).`)
-    // In a real app, you'd open a URL or display a PDF:
-    // window.open(`/api/certificate/${application.id}`, '_blank');
-    showCertificateModal.value = false
-    selectedApplication.value = null
-  } catch (error) {
-    console.error('Error viewing certificate:', error)
-    toast.error('Failed to view certificate. Please try again.')
-  } finally {
-    if (application && application.id) {
-      isActionLoading.value[application.id] = false
+  if (!application || !application.id) {
+    const currentSelectedAppId = selectedApplication.value?.id;
+    if (currentSelectedAppId && isActionLoading.value[currentSelectedAppId]) {
+        isActionLoading.value[currentSelectedAppId] = false;
     }
+    selectedApplication.value = null;
+    return;
+  }
+  try {
+    // Simulate certificate generation/fetch
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    toast.info(`Certificate for "${application.dpr_name}" would open here (simulated).`);
+    // window.open(`/api/certificate/${application.id}`, '_blank');
+    showCertificateModal.value = false;
+  } catch (error) {
+    console.error('Error viewing certificate:', error);
+    toast.error('Failed to view certificate.');
+  } finally {
+    if (application && application.id) isActionLoading.value[application.id] = false;
+    selectedApplication.value = null;
   }
 }
 
-const startNewApplication = () => {
-  router.push('/eoi-form') // Or your relevant route for new DPR application
+// --- New Application Modal ---
+const openNewApplicationModal = () => {
+  showAddApplicationModal.value = true
 }
+
+const closeNewApplicationModal = () => {
+  showAddApplicationModal.value = false
+}
+
+const handleApplicationSubmitted = (newApplicationData) => {
+  // Assuming the form modal returns the newly created application data
+  // or just signals success, requiring a refetch.
+  toast.success(`New DPR Application "${newApplicationData?.dpr_name || 'Application'}" submitted successfully!`);
+  fetchApplications(); // Refresh the list
+  closeNewApplicationModal();
+}
+
+// --- View Details Modal ---
+const viewApplicationDetails = (application) => {
+    viewingApplication.value = application;
+    showDetailsModal.value = true;
+}
+const closeDetailsModal = () => {
+    showDetailsModal.value = false;
+    viewingApplication.value = null;
+}
+
+const getTimeline = (app) => {
+  // This function is now used by the details modal
+  if (!app) return [];
+  return [
+    { status: 'Submitted', date: app.created_at || new Date().toISOString() },
+    // Add more timeline events if available in your data model
+    {
+      status: `Status: ${app.do_dpr_review_decision || 'Pending'}`,
+      date: app.updated_at || app.created_at || new Date().toISOString(),
+    },
+     ...(app.is_payment_complete ? [{ status: 'Payment Completed', date: app.payment_completed_at || app.updated_at }] : []) // Assuming you have payment_completed_at
+  ].sort((a,b) => new Date(a.date) - new Date(b.date));
+}
+
 
 onMounted(fetchApplications)
 </script>
 
 <style scoped>
-.cursor-help:hover {
-  opacity: 0.8;
+/* Additional scoped styles if needed */
+.disabled\:opacity-50:disabled {
+  opacity: 0.5;
+}
+.disabled\:cursor-not-allowed:disabled {
+  cursor: not-allowed;
 }
 </style>

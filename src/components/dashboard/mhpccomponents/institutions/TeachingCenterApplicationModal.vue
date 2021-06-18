@@ -109,8 +109,7 @@
                         </div>
                       </div>
                     </div>
-                    <!-- Other proponent fields... (ensure unique IDs if necessary, e.g., prefix with "modal-") -->
-                     <!-- Country -->
+                    <!-- Country -->
                     <div>
                         <label for="modal-country" class="form-label">Country</label>
                         <input type="text" id="modal-country" v-model="formData.country" disabled class="form-input disabled-input"/>
@@ -220,28 +219,6 @@
                             <label for="modal-validTill" class="form-label required-label">Valid Till</label>
                             <input type="date" id="modal-validTill" v-model="formData.valid_till" class="form-input" required :min="todayDate"/>
                         </div>
-                        <!-- Attachments -->
-                        <div class="lg:col-span-2">
-                            <label for="modal-tcAttachments" class="form-label required-label">Attachments</label>
-                            <div class="relative">
-                                <input type="file" id="modal-tcAttachments" @change="handleAttachmentChange" multiple required class="form-file-input"/>
-                                <p class="mt-1.5 text-xs text-slate-500 flex items-center">
-                                    <svg class="w-3.5 h-3.5 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
-                                    Attach relevant documents. Multiple files can be selected.
-                                </p>
-                            </div>
-                        </div>
-                        <!-- Report File -->
-                        <div class="lg:col-span-2">
-                            <label for="modal-tcReportFile" class="form-label required-label">Report File</label>
-                            <div class="relative">
-                                <input type="file" id="modal-tcReportFile" @change="handleReportFileChange" class="form-file-input" required/>
-                                <p class="mt-1.5 text-xs text-slate-500 flex items-center">
-                                    <svg class="w-3.5 h-3.5 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                    Attach the main report file.
-                                </p>
-                            </div>
-                        </div>
                         <!-- Teaching Center Remarks -->
                         <div class="lg:col-span-2">
                             <label for="modal-tcRemarks" class="form-label required-label">Teaching Center Remarks</label>
@@ -337,14 +314,14 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed, defineProps, defineEmits } from 'vue' // Added defineProps, defineEmits
+import { ref, watch, onMounted, computed, defineProps, defineEmits } from 'vue'
 import apiServices from '@/services/services'
 
-import PaymentModal from '@/components/common/PaymentModal.vue' // Ensure this path is correct relative to this file
+import PaymentModal from '@/components/common/PaymentModal.vue'
 import { BuildingOffice2Icon, AcademicCapIcon } from '@heroicons/vue/24/outline'
 import { Loader } from 'lucide-vue-next'
-import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js' // Ensure this path is correct
-import { useAuthStore } from '@/stores/authStore' // Ensure this path is correct
+import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js'
+import { useAuthStore } from '@/stores/authStore'
 
 const props = defineProps({
   isOpen: Boolean
@@ -375,8 +352,8 @@ const initialFormData = {
   city_gewog: '',
   state_dzongkhag: '',
   target_category: '',
-  tc_attachments: null,
-  tc_report: null,
+  // tc_attachments: null, // REMOVED
+  // tc_report: null,      // REMOVED
   remarks: '',
   tc_remarks: '',
   tc_renewal_review_name: '',
@@ -440,8 +417,6 @@ const fetchInstituteOptions = async () => {
   } catch (error) {
       console.error('Error fetching institute options:', error.response || error.message || error);
       instituteOptions.value = [];
-      // Avoid alert in modal context
-      // alert('Failed to load institute options. Please check the console for details.')
   } finally {
       isLoadingOptions.value = false
   }
@@ -450,15 +425,13 @@ const fetchInstituteOptions = async () => {
 watch(() => props.isOpen, (newVal) => {
   if (newVal) {
     document.body.style.overflow = 'hidden';
-    resetForm(); // Reset form when modal opens
+    resetForm();
     isShowingSuccessMessage.value = false;
-    if (instituteOptions.value.length === 0) { // Fetch options only if not already fetched
+    if (instituteOptions.value.length === 0) {
         fetchInstituteOptions();
     }
   } else {
-    // Small delay to prevent scrollbar flicker if another modal opens quickly
     setTimeout(() => {
-        // Check if any other modal is still open before restoring scroll
         const anyModalOpen = document.querySelector('.fixed.inset-0.z-50[style*="display: block"], .fixed.inset-0.z-50.modal-fade-enter-active');
         if (!anyModalOpen) {
             document.body.style.overflow = '';
@@ -468,12 +441,9 @@ watch(() => props.isOpen, (newVal) => {
 });
 
 onMounted(() => {
-  // Initial fetch if the component is mounted and intended to be shown immediately (less likely for a modal)
-  // The watch on `isOpen` is more reliable for modal re-openings.
-  // If isOpen is true on mount (e.g. parent sets it), fetch options.
   if (props.isOpen) {
     fetchInstituteOptions();
-    document.body.style.overflow = 'hidden'; // Ensure overflow hidden if mounted open
+    document.body.style.overflow = 'hidden';
   }
 });
 
@@ -491,7 +461,6 @@ watch(
           formData.value.contactNo = instData.contact_no || ''
           formData.value.emailAddress = instData.email_address || ''
       } else {
-          // Reset if no institute selected or data missing
           formData.value.country = 'Bhutan'
           formData.value.dzongkhag = ''
           formData.value.cityGewog = ''
@@ -502,19 +471,15 @@ watch(
   }
 )
 
-const handleAttachmentChange = (event) => {
-  formData.value.tc_attachments = event.target.files
-}
-
-const handleReportFileChange = (event) => {
-  formData.value.tc_report = event.target.files[0]
-}
+// REMOVED handleAttachmentChange
+// REMOVED handleReportFileChange
 
 const resetForm = () => {
   formData.value = { ...initialFormData }
-  // More robust way to reset file inputs for modals
-  const formElement = document.querySelector('form[enctype="multipart/form-data"]'); // Be more specific if multiple forms exist
+  const formElement = document.querySelector('form[enctype="multipart/form-data"]');
   if (formElement) {
+    // This will reset any remaining file inputs if there were any, but now there are none.
+    // It's good practice to keep it generic if other file inputs might be added later.
     const fileInputs = formElement.querySelectorAll('input[type="file"]');
     fileInputs.forEach(input => {
         if (input) input.value = '';
@@ -537,19 +502,23 @@ const createPayload = (isDraft = false) => {
 
     Object.keys(dataToSubmit).forEach((key) => {
         if (key === 'payment_id') return;
+        // The following keys are no longer part of formData, so these checks are effectively removed
+        // if (key === 'tc_attachments') return;
+        // if (key === 'tc_report') return;
+
         const value = dataToSubmit[key];
 
+        // The following blocks for tc_attachments and tc_report are now effectively removed
+        // as these keys won't be in dataToSubmit (initialFormData doesn't have them)
+        /*
         if (key === 'tc_attachments' && value) {
-            if (value.length > 0) {
-                for (let i = 0; i < value.length; i++) {
-                    formPayload.append('tc_attachments', value[i]);
-                }
-            }
+            // ...
         }
         else if (key === 'tc_report' && value) {
-            formPayload.append('tc_report', value);
+            // ...
         }
-        else if (value !== null && value !== undefined) {
+        */
+        if (value !== null && value !== undefined) { // This will handle all other fields
             const backendKey = (key === 'institute_id') ? 'institute' : key;
             if (typeof value === 'boolean') {
                  formPayload.append(backendKey, value.toString());
@@ -563,8 +532,6 @@ const createPayload = (isDraft = false) => {
 
 
 const validateForm = () => {
-    // Consider using a less obtrusive validation feedback for modals, e.g., inline messages or a summary.
-    // Alerts can be disruptive in a modal flow. For now, keeping alerts.
     if (!formData.value.institute_id) { alert('Please select Training Institute Name.'); return false; }
     if (!formData.value.center_name.trim()) { alert('Please enter Center Name.'); return false; }
     if (!formData.value.center_location.trim()) { alert('Please enter Center Location.'); return false; }
@@ -574,8 +541,10 @@ const validateForm = () => {
     if (!formData.value.tc_renewal_review_name.trim()) { alert('Please enter Renewal Review Name.'); return false; }
     if (!formData.value.tc_review_summary.trim()) { alert('Please enter Review Summary.'); return false; }
     if (!formData.value.valid_till) { alert('Please select Valid Till date.'); return false; }
-    if (!formData.value.tc_attachments || formData.value.tc_attachments.length === 0) { alert('Please attach required documents.'); return false; }
-    if (!formData.value.tc_report) { alert('Please attach the report file.'); return false; }
+    // REMOVED Attachment validation
+    // if (!formData.value.tc_attachments || formData.value.tc_attachments.length === 0) { alert('Please attach required documents.'); return false; }
+    // REMOVED Report file validation
+    // if (!formData.value.tc_report) { alert('Please attach the report file.'); return false; }
     if (!formData.value.tc_remarks.trim()) { alert('Please enter Teaching Center Remarks.'); return false; }
     if (!formData.value.declaration) { alert('Please accept the declaration.'); return false; }
     return true;
@@ -586,7 +555,6 @@ const handleFormSubmit = async () => {
       return;
   }
   isSubmitting.value = true;
-  // isShowingSuccessMessage.value = false; // Will be set to true on success
 
   try {
       const formPayloadForApp = createPayload(false);
@@ -596,13 +564,9 @@ const handleFormSubmit = async () => {
       await apiServices.createMhpcTeachingCenter(formPayloadForApp);
 
       isShowingSuccessMessage.value = true;
-      // Don't resetForm() here immediately if you want user to see populated fields with success msg.
-      // But for modal, usually reset and close.
       setTimeout(() => {
-        emit('form-submitted'); // Parent will close the modal and refresh
-        // isShowingSuccessMessage.value = false; // This will be handled by watch(isOpen) on next open
-        // resetForm(); // Also handled by watch(isOpen) on next open
-      }, 3000); // Auto-close/emit after 3 seconds
+        emit('form-submitted');
+      }, 3000);
 
   } catch (error) {
       console.error('Error during submission process:', error.response?.data || error.message || error);
@@ -640,9 +604,6 @@ const onPaymentCompleted = async ({ paymentHash }) => {
 }
 
 const handleCancel = () => {
-    // No confirmation, just close. User can reopen.
-    // resetForm(); // This will be handled by watch(isOpen) when it reopens
-    // isShowingSuccessMessage.value = false; // Also handled
     emit('close');
 }
 
@@ -659,8 +620,6 @@ const handleSaveDraft = async () => {
   try {
       await apiServices.createMhpcTeachingCenter(formPayload)
       alert('Draft saved successfully!')
-      // Optionally emit a 'draft-saved' event if parent needs to know
-      // For now, modal stays open.
   } catch (error) {
       console.error('Error saving draft:', error.response?.data || error.message || error)
       let errorMessage = 'Error saving draft. ';
@@ -730,6 +689,7 @@ const handleSaveDraft = async () => {
   @apply bg-slate-100/80 text-slate-500 cursor-not-allowed ring-slate-100;
 }
 
+/* .form-file-input class is kept for potential future use or consistency, though no file inputs currently use it */
 .form-file-input {
   @apply block w-full text-xs text-slate-600 bg-white/60 backdrop-blur-sm rounded-lg border-0 shadow-md ring-1 ring-slate-200/50 transition-all duration-300 hover:shadow-sm hover:ring-slate-300/50 focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-0
     file:mr-3 file:py-2.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-gradient-to-r file:from-indigo-50 file:to-purple-50 file:text-indigo-700 file:shadow-sm
@@ -771,7 +731,4 @@ const handleSaveDraft = async () => {
 .form-textarea:focus {
   @apply shadow-sm ring-2 ring-indigo-500/50;
 }
-
-/* Ensure IDs are unique for form elements if this component could appear multiple times, or rely on Vue's scoping */
-/* I've prefixed form element IDs with "modal-" as an example. */
 </style>

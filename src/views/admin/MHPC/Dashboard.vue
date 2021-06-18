@@ -44,7 +44,7 @@ import MhpcAdminDashboard from '@/components/dashboard/mhpccomponents/admin/Mhpc
 import MhpcUserManagement from '@/components/dashboard/mhpccomponents/admin/MhpcUserManagement.vue'
 import MhpcUserDashboard from '@/components/dashboard/mhpccomponents/user/UserMhpcDashboard.vue'
 import MhpcDealingOfficerDashboard from '@/components/dashboard/mhpccomponents/dealingOfficer/DashboardComponent.vue'
-import MhpcInstitutionsDashboard from '@/components/dashboard/mhpccomponents/institutions/InstitutionsDashboard.vue'
+
 import MhpcSuperAdminDashboard from '@/components/dashboard/mhpccomponents/superAdmin/MhpcSuperAdminDashboard.vue'
 
 // BMH user
@@ -139,6 +139,8 @@ import CPDapprovedAddParticipants from '@/components/dashboard/mhpccomponents/cp
 import PhysicalVerification from '@/components/dashboard/mhpccomponents/institutions/PhysicalVerification.vue'
 import TeachingCenterTracking from '@/components/dashboard/mhpccomponents/institutions/TeachingCenterTracking.vue'
 import NewEducationProgramApplication from '@/components/dashboard/mhpccomponents/institutions/NewEducationProgramApplication.vue'
+
+import InstituteDashboard from '@/components/dashboard/mhpccomponents/institutions/InstituteDashboard.vue'
 
 const { role } = useAuthStore()
 const route = useRoute()
@@ -312,8 +314,7 @@ const bmhCmeCpdProviderComponent = computed(() => {
       return CPDapprovedAddParticipants
     case path.endsWith('/health_certification/cpd_provider_application_form'):
       return CpdProviderApplicationForm
-    case path.endsWith('/health_certification/cpd_provider_application_form'):
-      return CpdProviderApplicationForm
+
 
     default:
       return null
@@ -325,7 +326,7 @@ const bmhInstitutionsComponent = computed(() => {
   const path = route.path
   switch (true) {
     case path.endsWith('/health_certification/dashboard'):
-      return MhpcInstitutionsDashboard
+      return InstituteDashboard
 
     case path.endsWith('/health_certification/apply_for_eoi'):
       return InstituteEoiApplication
@@ -346,8 +347,7 @@ const bmhInstitutionsComponent = computed(() => {
       return TeachingCenterRenewal
     case path.endsWith('/health_certification/new_education_program'):
       return NewEducationProgram
-    case path.endsWith('/health_certification/my_applications'): // My Applications
-      return MyApplications
+    case path.endsWith('/health_certification/my_applications'): 
     case path.endsWith('/health_certification/institutes_renewal'):
       return InstitutesRenewal
     case path.endsWith('/health_certification/my_capa'):
@@ -364,6 +364,7 @@ const bmhInstitutionsComponent = computed(() => {
       return TeachingCenterTracking
     case path.endsWith('/health_certification/new_education_program_application'):
       return NewEducationProgramApplication
+
 
     default:
       return null

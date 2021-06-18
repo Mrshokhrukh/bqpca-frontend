@@ -1,733 +1,444 @@
 <template>
-  <div class="min-h-screen py-8">
-    <InstituteHeader title="Your DPR Applications"
-      subtitle="Manage and track your Detailed Project Report applications for MHPC accreditation."
-      :show-actions="false" class="mx-4" />
-
-    <div class="sticky top-0 bg-white shadow-sm z-10 p-4 mx-4 rounded-lg mb-6">
-      <!-- Filter and Sort Controls -->
-      <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div class="flex gap-4 w-full md:w-auto">
-          <div class="relative w-full md:w-64">
-            <input type="text" v-model="searchQuery" placeholder="Search by institution or DPR name..."
-              class="w-full pl-10 pr-4 py-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
-              aria-label="Search applications" />
-            <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <select v-model="filterStatus"
-            class="w-full md:w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2"
-            aria-label="Filter by status">
-            <option value="">All Statuses</option>
-            <option v-for="status in statusOptions" :key="status" :value="status">
-              {{ status }}
-            </option>
-          </select>
-          <select v-model="filterDzongkhag"
-            class="w-full md:w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2"
-            aria-label="Filter by Dzongkhag">
-            <option value="">All Dzongkhags</option>
-            <option v-for="dzongkhag in dzongkhagOptions" :key="dzongkhag" :value="dzongkhag">
-              {{ dzongkhag }}
-            </option>
-          </select>
-        </div>
-        <div class="flex gap-4">
-          <button @click="sortApplications"
-            class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-            aria-label="Sort applications">
-            Sort by {{ sortOrder === 'desc' ? 'Newest' : 'Oldest' }}
-            <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="sortOrder === 'desc' ? 'M19 14l-7 7m0 0l-7-7m7 7V3' : 'M5 10l7-7m0 0l7 7m-7-7v18'
-                " />
-            </svg>
-          </button>
-          <button @click="fetchApplications"
-            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
-            aria-label="Refresh applications">
-            Refresh
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="mx-4">
-      <!-- Loading Skeleton -->
-      <div v-if="isLoading" class="space-y-6">
-        <div v-for="n in 3" :key="n" class="bg-white rounded-xl shadow-lg p-6 animate-pulse">
-          <div class="flex justify-between mb-4">
-            <div class="space-y-2">
-              <div class="h-6 bg-gray-200 rounded w-3/4"></div>
-              <div class="h-4 bg-gray-200 rounded w-1/2"></div>
-            </div>
-            <div class="space-y-2">
-              <div class="h-4 bg-gray-200 rounded w-24"></div>
-              <div class="h-4 bg-gray-200 rounded w-32"></div>
-            </div>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="space-y-2">
-              <div class="h-4 bg-gray-200 rounded w-20"></div>
-              <div class="h-4 bg-gray-200 rounded w-28"></div>
-            </div>
-            <div class="space-y-2">
-              <div class="h-4 bg-gray-200 rounded w-20"></div>
-              <div class="h-4 bg-gray-200 rounded w-24"></div>
-            </div>
-            <div class="space-y-2">
-              <div class="h-4 bg-gray-200 rounded w-20"></div>
-              <div class="h-4 bg-gray-200 rounded w-28"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- API Error -->
-      <div v-else-if="apiError" class="text-center py-12 bg-red-50 rounded-xl border border-red-200">
-        <h3 class="text-xl font-semibold text-red-700 mb-2">Oops! Something went wrong.</h3>
-        <p class="text-red-600">{{ errorMessage }}</p>
-        <button @click="fetchApplications"
-          class="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
-          Try Again
+  <div
+    v-if="isVisible"
+    class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full flex items-center justify-center z-50 p-4"
+    @click.self="closeModal"
+  >
+    <div class="bg-white rounded-lg shadow-xl p-6 md:p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-semibold text-gray-900">Add New DPR Application</h3>
+        <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
       </div>
 
-      <!-- Applications List -->
-      <div v-else-if="filteredApplications.length > 0" class="space-y-6">
-        <div v-for="application in paginatedApplications" :key="application.id"
-          class="bg-white rounded-xl shadow-lg border border-gray-200 hover:border-blue-300 transition-all duration-300">
-          <div class="p-6 md:p-8">
-            <div class="flex flex-col sm:flex-row items-start justify-between mb-4">
-              <div class="mb-4 sm:mb-0">
-                <h3 class="text-xl font-semibold text-gray-900 mb-1">
-                  {{ application.name_of_institution }}
-                </h3>
-                <p class="text-sm text-gray-500 mb-2">
-                  CID: {{ application.CID }} | DPR Name: {{ application.dpr_name }}
-                </p>
-                <span :class="[
-                  'px-2.5 py-1 text-xs font-medium rounded-full cursor-help',
-                  getStatusColor(application.do_dpr_review_decision),
-                ]" :title="getStatusTooltip(application.do_dpr_review_decision)">
-                  {{ application.do_dpr_review_decision || 'N/A' }}
-                </span>
-              </div>
-              <div class="text-left sm:text-right w-full sm:w-auto">
-                <p class="text-sm font-medium text-gray-800">Head of Institution</p>
-                <p class="text-sm text-gray-600">{{ application.head_of_institution_name }}</p>
-                <p class="text-sm text-gray-600">{{ application.head_of_institution_email }}</p>
-              </div>
-            </div>
-
-            <button @click="toggleDetails(application.id)"
-              class="w-full flex items-center justify-between text-sm font-medium text-blue-600 hover:text-blue-800 mb-4"
-              :aria-expanded="expandedApplications[application.id]" :aria-controls="'details-' + application.id">
-              {{ expandedApplications[application.id] ? 'Hide Details' : 'Show Details' }}
-              <svg class="w-5 h-5 transform transition-transform"
-                :class="{ 'rotate-180': expandedApplications[application.id] }" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            <div v-if="expandedApplications[application.id]" :id="'details-' + application.id" class="space-y-6">
-              <!-- Details Content -->
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 pt-4 border-t border-gray-100">
-                <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contact Details
-                  </p>
-                  <p class="text-sm text-gray-700">{{ application.contact_no }}</p>
-                  <p class="text-sm text-gray-700">{{ application.email_address }}</p>
-                </div>
-                <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Location</p>
-                  <p class="text-sm text-gray-700">
-                    {{ application.dzongkhag }}, {{ application.gewog || 'N/A' }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Course Start Date
-                  </p>
-                  <p class="text-sm text-gray-700">
-                    {{ formatDate(application.commencement_date) }}
-                  </p>
-                </div>
-              </div>
-
-              <div class="pt-4 border-t border-gray-100">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
-                  DPR Details
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <p class="text-sm font-semibold text-gray-800 mb-1">Executive Summary</p>
-                    <p class="text-sm text-gray-600">
-                      {{ application.executive_summary || 'Not provided' }}
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-sm font-semibold text-gray-800 mb-1">DPR Review Summary</p>
-                    <p class="text-sm text-gray-600">
-                      {{ application.do_dpr_review_summary || 'Pending Review' }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="pt-4 border-t border-gray-100">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
-                  Program Information
-                </p>
-                <div class="flex flex-wrap gap-x-6 gap-y-4">
-                  <div>
-                    <p class="text-sm font-semibold text-gray-800">Program Type</p>
-                    <p class="text-sm text-gray-600">
-                      {{
-                        application.type_of_programme === 'D'
-                          ? 'Diploma'
-                          : application.type_of_programme === 'B'
-                            ? 'Bachelor'
-                            : 'Other'
-                      }}
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-sm font-semibold text-gray-800">Duration</p>
-                    <p class="text-sm text-gray-600">{{ application.course_duration }} months</p>
-                  </div>
-                  <div v-if="
-                    application.do_dpr_review_decision === STATUS_REJECTED &&
-                    application.do_dpr_reason_if_rejected
-                  ">
-                    <p class="text-sm font-semibold text-red-700">Rejection Reason</p>
-                    <p class="text-sm text-red-600">{{ application.do_dpr_reason_if_rejected }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="pt-4 border-t border-gray-100">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
-                  Application Timeline
-                </p>
-                <div class="relative pl-6">
-                  <div class="absolute left-2 top-0 h-full w-0.5 bg-gray-200"></div>
-                  <div v-for="(event, index) in getTimeline(application)" :key="index" class="mb-4 relative">
-                    <div class="absolute left-[-20px] top-1 w-4 h-4 bg-blue-600 rounded-full border-2 border-white">
-                    </div>
-                    <p class="text-sm font-medium text-gray-800">{{ event.status }}</p>
-                    <p class="text-xs text-gray-500">{{ formatDate(event.date) }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Payment and Certificate Actions -->
-            <div v-if="isPaymentPending(application) || isPaymentCompleted(application)"
-              class="mt-6 pt-4 border-t border-gray-100">
-              <div class="flex flex-col sm:flex-row items-center justify-end gap-3">
-                <p v-if="isPaymentPending(application)"
-                  class="text-sm text-yellow-800 bg-yellow-100 px-3 py-1.5 rounded-md font-medium mr-0 sm:mr-auto text-center sm:text-left w-full sm:w-auto">
-                  <span class="font-semibold">Action Required:</span> Payment pending for approved
-                  application.
-                </p>
-                <button v-if="isPaymentPending(application)" @click="openPaymentConfirmationModal(application)"
-                  :disabled="isActionLoading[application.id]"
-                  class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors w-full sm:w-auto disabled:opacity-50">
-                  <svg v-if="isActionLoading[application.id]" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                    </path>
-                  </svg>
-                  Make Payment
-                </button>
-                <button v-if="isPaymentCompleted(application)" @click="openCertificateModal(application)"
-                  :disabled="isActionLoading[application.id]"
-                  class="inline-flex items-center justify-center px-4 py-2 border border-green-600 text-sm font-medium rounded-md text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors w-full sm:w-auto disabled:opacity-50">
-                  <svg v-if="isActionLoading[application.id]" class="animate-spin -ml-1 mr-3 h-5 w-5 text-green-700"
-                    fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                    </path>
-                  </svg>
-                  View Certificate
-                </button>
-              </div>
-            </div>
-          </div>
+      <form @submit.prevent="submitForm" class="space-y-6">
+        <!-- ... other form fields ... -->
+        <div>
+          <label for="institutionName" class="block text-sm font-medium text-gray-700">Proposed Name of the College/institution *</label>
+          <input type="text" v-model="formData.name_of_institution" id="institutionName" required
+                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          <p class="mt-1 text-xs text-gray-500">Avoid using “Royal”, “National”, etc. Final name subject to approval by Registrar of Companies.</p>
         </div>
 
-        <!-- Pagination -->
-        <div class="flex justify-between items-center mt-6">
-          <div class="text-sm text-gray-600">
-            Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
-            {{ Math.min(currentPage * itemsPerPage, filteredApplications.length) }} of
-            {{ filteredApplications.length }} applications
-          </div>
-          <div class="flex gap-2">
-            <button @click="currentPage--" :disabled="currentPage === 1"
-              class="px-3 py-1 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-              aria-label="Previous page">
-              Previous
-            </button>
-            <button v-for="page in totalPages" :key="page" @click="currentPage = page" :class="[
-              'px-3 py-1 rounded-md border text-sm font-medium',
-              currentPage === page
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
-            ]" :aria-label="'Page ' + page">
-              {{ page }}
-            </button>
-            <button @click="currentPage++" :disabled="currentPage === totalPages"
-              class="px-3 py-1 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-              aria-label="Next page">
-              Next
-            </button>
-          </div>
+        <div>
+          <label for="cid" class="block text-sm font-medium text-gray-700">Promoter's CID *</label>
+          <input type="text" v-model="formData.CID" id="cid" required :placeholder="authStore.user?.cid || 'Enter CID'" disabled
+                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50">
         </div>
-      </div>
 
-      <!-- No Applications Found -->
-      <div v-else class="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-          aria-hidden="true">
-          <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-        </svg>
-        <h3 class="mt-2 text-lg font-medium text-gray-900">No DPR Applications Found</h3>
-        <p class="mt-1 text-sm text-gray-500">
-          You currently don't have any DPR applications matching your records in the system.
-        </p>
-        <button @click="startNewApplication"
-          class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-          Start New Application
-        </button>
-      </div>
-    </div>
+        <div>
+          <label for="dprName" class="block text-sm font-medium text-gray-700">DPR Name / Primary Course Title *</label>
+          <input type="text" v-model="formData.dpr_name" id="dprName" required
+                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
 
-    <!-- Payment Confirmation Modal -->
-    <div v-if="showPaymentConfirmModal"
-      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg p-6 max-w-md w-full">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirm Payment</h3>
-        <p class="text-sm text-gray-600 mb-6">
-          You are about to initiate payment for "{{ selectedApplication?.name_of_institution }}"
-          (DPR: {{ selectedApplication?.dpr_name }}). Proceed to the payment gateway?
-        </p>
-        <div class="flex justify-end gap-4">
-          <button @click="cancelPaymentConfirmation"
-            class="inline-flex items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="headName" class="block text-sm font-medium text-gray-700">Head of Institution Name *</label>
+              <input type="text" v-model="formData.head_of_institution_name" id="headName" required
+                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            <div>
+              <label for="headEmail" class="block text-sm font-medium text-gray-700">Head of Institution Email *</label>
+              <input type="email" v-model="formData.head_of_institution_email" id="headEmail" required
+                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+        </div>
+
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="contactNo" class="block text-sm font-medium text-gray-700">Institution Contact No *</label>
+              <input type="tel" v-model="formData.contact_no" id="contactNo" required
+                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            <div>
+              <label for="emailAddress" class="block text-sm font-medium text-gray-700">Institution Official Email Address *</label>
+              <input type="email" v-model="formData.email_address" id="emailAddress" required
+                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+        </div>
+
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="dzongkhag" class="block text-sm font-medium text-gray-700">Proposed Dzongkhag *</label>
+                <select v-model="formData.dzongkhag" id="dzongkhag" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <option value="" disabled>Select Dzongkhag</option>
+                    <option v-for="dzo in dzongkhagOptions" :key="dzo" :value="dzo">{{ dzo }}</option>
+                </select>
+            </div>
+            <div>
+                <label for="gewog" class="block text-sm font-medium text-gray-700">Proposed Gewog</label>
+                <input type="text" v-model="formData.gewog" id="gewog"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+        </div>
+
+        <div>
+          <label for="commencementDate" class="block text-sm font-medium text-gray-700">Proposed Commencement Date *</label>
+          <input type="date" v-model="formData.commencement_date" id="commencementDate" required
+                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+                <label for="programType" class="block text-sm font-medium text-gray-700">Type of Programme *</label>
+                <select v-model="formData.type_of_programme" id="programType" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <option value="" disabled>Select Type</option>
+                    <option v-if="isLoadingProgramTypes" value="" disabled>Loading types...</option>
+                    <option v-else-if="programTypesError" value="" disabled>{{ programTypesError }}</option>
+
+                    <option v-for="programMaster in programMasterOptions" :key="programMaster.id" :value="programMaster.id">
+                        {{ programMaster.program_name }}
+                    </option>
+                </select>
+            </div>
+            <div>
+                <label for="courseDuration" class="block text-sm font-medium text-gray-700">Course Duration (Months) *</label>
+                <input type="number" v-model.number="formData.course_duration" id="courseDuration" required min="1"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+        </div>
+
+        <div>
+          <label for="executiveSummary" class="block text-sm font-medium text-gray-700">Executive Summary *</label>
+          <textarea v-model="formData.executive_summary" id="executiveSummary" rows="4" required
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <hr class="my-8 border-gray-300">
+        <h4 class="text-lg font-medium text-gray-800 mb-4">Detailed Project Proposal Sections</h4>
+
+        <div>
+          <label for="visionMissionStrategies" class="block text-sm font-medium text-gray-700">Vision, Mission and Implementation Strategies *</label>
+          <textarea v-model="formData.vision_mission_strategies" id="visionMissionStrategies" rows="5" required
+                    placeholder="Clearly mention strategies, envisaged obstacles, and how to overcome them."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="projectSchedulingManagement" class="block text-sm font-medium text-gray-700">Project Scheduling, Implementation and Management *</label>
+          <textarea v-model="formData.project_scheduling_management" id="projectSchedulingManagement" rows="5" required
+                    placeholder="Specify timelines, major milestones, projected student numbers, etc."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="gnhValues" class="block text-sm font-medium text-gray-700">Contribution to Gross National Happiness & Values *</label>
+          <textarea v-model="formData.gnh_values_ict_excellence" id="gnhValues" rows="5" required
+                    placeholder="How the institution will contribute to GNH, instill values, promote ICT, and quest for excellence."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="landDetails" class="block text-sm font-medium text-gray-700">Land Details *</label>
+          <textarea v-model="formData.land_details" id="landDetails" rows="3" required
+                    placeholder="Details of land as required by relevant rules and regulations."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="conceptualMasterPlan" class="block text-sm font-medium text-gray-700">Conceptual Master Plan *</label>
+          <textarea v-model="formData.conceptual_master_plan" id="conceptualMasterPlan" rows="5" required
+                    placeholder="Encompass all aspects of physical infrastructure (academic, residential, auditorium, dining, parking, playfields, etc.). Note: No shift systems for multiple institutions on one premise."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="academicPlanProfile" class="block text-sm font-medium text-gray-700">Academic Plan/Profile *</label>
+          <textarea v-model="formData.academic_plan_profile" id="academicPlanProfile" rows="6" required
+                    placeholder="Intent and purpose, academic character, justifications for programs (market trends, existing institutes), research facilities, credit transfer plans, part-time/exchange programs, internship plans, in-campus recruitment potential."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="affiliationDetails" class="block text-sm font-medium text-gray-700">Affiliation Details *</label>
+          <textarea v-model="formData.affiliation_details" id="affiliationDetails" rows="4" required
+                    placeholder="Details on affiliation with a recognized university. Approach university for affiliation in the same academic year permission is granted."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="teachingHospitalDetails" class="block text-sm font-medium text-gray-700">Teaching Hospital Details (Mandatory for Medical/Health courses) *</label>
+          <textarea v-model="formData.teaching_hospital_details" id="teachingHospitalDetails" rows="4" required
+                    placeholder="Identification of teaching hospital for clinical skills. Cannot be shared for same program. Signed agreements with MoH/University for clinical facilities."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="researchPolicy" class="block text-sm font-medium text-gray-700">Research Policy *</label>
+          <textarea v-model="formData.research_policy" id="researchPolicy" rows="4" required
+                    placeholder="Policy to promote research activities by faculty, students, and the institution."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="humanResourcePlan" class="block text-sm font-medium text-gray-700">Human Resource Plan *</label>
+          <textarea v-model="formData.human_resource_plan" id="humanResourcePlan" rows="5" required
+                    placeholder="Faculty recruitment (teaching/non-teaching), relevant qualifications (at least one level higher than course taught), research/publication/consultancy encouragement, number required, future expansion, expatriate personnel."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="qualityAssuranceSystem" class="block text-sm font-medium text-gray-700">Quality Assurance System *</label>
+          <textarea v-model="formData.quality_assurance_system" id="qualityAssuranceSystem" rows="5" required
+                    placeholder="Internal QA mechanism, provision for external QA. Evidence of clear description of academic quality, standards, policies, expectations, and student achievement."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="governanceStructure" class="block text-sm font-medium text-gray-700">Governance Structure *</label>
+          <textarea v-model="formData.governance_structure" id="governanceStructure" rows="5" required
+                    placeholder="Proposed governance policy, organizational structure (Board of Directors, committees, TORs), reporting arrangements, delegations, inter-relationships. Section on planning, stakeholder coordination, resource mobilization."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="businessPlan" class="block text-sm font-medium text-gray-700">Business Plan *</label>
+          <textarea v-model="formData.business_plan" id="businessPlan" rows="5" required
+                    placeholder="Financial viability, promoter's capacity to sustain operations, financial indicators, source of funds (equity/debt), detailed project costing, financial analysis, projected tuition levels. Management and administrative systems, policies, procedures timeline."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="projectCostAnalysis" class="block text-sm font-medium text-gray-700">Project Cost and Analysis *</label>
+          <textarea v-model="formData.project_cost_analysis" id="projectCostAnalysis" rows="5" required
+                    placeholder="Detailed project costing (land, site dev, civil construction, infrastructure, equipment, pollution control, technical know-how, pre-operating expenses, contingencies, FX if any). Fixed investment and working capital."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="facilitiesStudentServices" class="block text-sm font-medium text-gray-700">Facilities and Student Services *</label>
+          <textarea v-model="formData.facilities_student_services" id="facilitiesStudentServices" rows="5" required
+                    placeholder="Mechanisms for enhancing student learning outcomes: quality facilities, inclusive practices, learning/information resources (library, infirmary, ICT), support services (cafeteria, transport, counseling)."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="admissionPolicyScholarships" class="block text-sm font-medium text-gray-700">Admission Policy and Scholarships *</label>
+          <textarea v-model="formData.admission_policy_scholarships" id="admissionPolicyScholarships" rows="4" required
+                    placeholder="Clear policy on admission, eligibility criteria, selection procedures, fee structure, scholarship provisions."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="serviceConditions" class="block text-sm font-medium text-gray-700">Service Conditions *</label>
+          <textarea v-model="formData.service_conditions" id="serviceConditions" rows="5" required
+                    placeholder="Clear policies on recruitment, professional development, remuneration (PF, retirement benefits), leave, staff welfare, student representation, other support services."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="safetySecurityPlan" class="block text-sm font-medium text-gray-700">Safety and Security Plan *</label>
+          <textarea v-model="formData.safety_security_plan" id="safetySecurityPlan" rows="4" required
+                    placeholder="Mechanisms for staff and student safety/security. Provisions for course continuation by learners in case of unforeseen college closure."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="publicInformationSystem" class="block text-sm font-medium text-gray-700">Public Information System Plan *</label>
+          <textarea v-model="formData.public_information_system" id="publicInformationSystem" rows="4" required
+                    placeholder="Plan to create/maintain a system for transparency (student fees, licensing/accreditation status, course details, etc.)."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <div>
+          <label for="otherDetails" class="block text-sm font-medium text-gray-700">Others *</label>
+          <textarea v-model="formData.other_details" id="otherDetails" rows="4" required
+                    placeholder="Issues like market analysis, ownership, sustainability, enrolment projection (beginning & onwards), approvals from respective organizations, etc., supported by justifications."
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+
+        <!-- ... other form fields and submission button ... -->
+
+        <div v-if="formError" class="text-red-600 text-sm p-3 bg-red-50 rounded-md">
+            {{ formError }}
+        </div>
+
+        <div class="pt-4 flex justify-end gap-4">
+          <button type="button" @click="closeModal"
+                  class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
             Cancel
           </button>
-          <button @click="handleProceedWithPaymentFlow"
-            class="inline-flex items-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700">
-            Proceed
+          <button type="submit" :disabled="isSubmitting"
+                  class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
+            <svg v-if="isSubmitting" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
           </button>
         </div>
-      </div>
+      </form>
     </div>
-
-    <!-- Certificate Modal -->
-    <div v-if="showCertificateModal"
-      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg p-6 max-w-md w-full">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">View Certificate</h3>
-        <p class="text-sm text-gray-600 mb-6">
-          View the certificate for "{{ selectedApplication?.name_of_institution }}" (DPR:
-          {{ selectedApplication?.dpr_name }}). The certificate will be watermarked with the BHMC
-          logo.
-        </p>
-        <div class="flex justify-end gap-4">
-          <button @click="
-            showCertificateModal = false,
-            selectedApplication = null
-            "
-            class="inline-flex items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
-            Cancel
-          </button>
-          <button @click="handleViewCertificate(selectedApplication)"
-            class="inline-flex items-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700">
-            View Certificate
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Actual Payment Modal (Imported) -->
-    <PaymentModal ref="paymentModalRef" :amount="dprPaymentAmount" @payment-completed="handleDPRPaymentCompleted"
-      @close="closeDPRPaymentModal" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useToast } from 'vue-toastification'
-import { useAuthStore } from '@/stores/authStore'
-import debounce from 'lodash/debounce'
-import apiServices from '@/services/services'
-import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
-import PaymentModal from '@/components/common/PaymentModal.vue'
+import { ref, watch } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
+import { useToast } from 'vue-toastification';
+import apiServices from '@/services/services'; // Ensure this path is correct
 
-const router = useRouter()
-const toast = useToast()
-const authStore = useAuthStore()
+const props = defineProps({
+  isVisible: Boolean,
+});
+const emit = defineEmits(['close', 'application-submitted']);
 
-const STATUS_APPROVED = 'Approved'
-const STATUS_REJECTED = 'Rejected'
-const STATUS_PENDING = 'Pending'
-const statusOptions = [STATUS_APPROVED, STATUS_REJECTED, STATUS_PENDING, 'In Review', 'Submitted']
+const authStore = useAuthStore();
+const toast = useToast();
+
+const initialFormData = () => ({
+  name_of_institution: '',
+  CID: authStore.user?.cid || '',
+  dpr_name: '',
+  head_of_institution_name: '',
+  head_of_institution_email: '',
+  contact_no: '',
+  email_address: '',
+  dzongkhag: '',
+  gewog: '',
+  commencement_date: '',
+  type_of_programme: '', 
+  course_duration: null,
+  executive_summary: '',
+  vision_mission_strategies: '',
+  project_scheduling_management: '',
+  gnh_values_ict_excellence: '',
+  land_details: '',
+  conceptual_master_plan: '',
+  academic_plan_profile: '',
+  affiliation_details: '',
+  teaching_hospital_details: '',
+  research_policy: '',
+  human_resource_plan: '',
+  quality_assurance_system: '',
+  governance_structure: '',
+  business_plan: '',
+  project_cost_analysis: '',
+  facilities_student_services: '',
+  admission_policy_scholarships: '',
+  service_conditions: '',
+  safety_security_plan: '',
+  public_information_system: '',
+  other_details: '',
+  do_dpr_review_decision: 'Submitted',
+  is_payment_complete: false,
+});
+
+const formData = ref(initialFormData());
+const isSubmitting = ref(false);
+const formError = ref('');
+
 const dzongkhagOptions = [
-  'Bumthang',
-  'Chukha',
-  'Dagana',
-  'Gasa',
-  'Haa',
-  'Lhuntse',
-  'Mongar',
-  'Paro',
-  'Pemagatshel',
-  'Punakha',
-  'Samdrup Jongkhar',
-  'Samtse',
-  'Sarpang',
-  'Thimphu',
-  'Trashigang',
-  'Trashiyangtse',
-  'Trongsa',
-  'Tsirang',
-  'Wangdue Phodrang',
-  'Zhemgang',
-]
+  'Bumthang', 'Chukha', 'Dagana', 'Gasa', 'Haa', 'Lhuntse', 'Mongar', 'Paro',
+  'Pemagatshel', 'Punakha', 'Samdrup Jongkhar', 'Samtse', 'Sarpang', 'Thimphu',
+  'Trashigang', 'Trashiyangtse', 'Trongsa', 'Tsirang', 'Wangdue Phodrang', 'Zhemgang',
+];
 
-const applications = ref([])
-const isLoading = ref(false)
-const apiError = ref(false)
-const errorMessage = ref('')
-const searchQuery = ref('')
-const filterStatus = ref('')
-const filterDzongkhag = ref('')
-const sortOrder = ref('desc')
-const currentPage = ref(1)
-const itemsPerPage = 10
-const expandedApplications = ref({})
-const isActionLoading = ref({})
-const showPaymentConfirmModal = ref(false)
-const showCertificateModal = ref(false)
-const selectedApplication = ref(null)
+// For Program Master Options
+const programMasterOptions = ref([]);
+const isLoadingProgramTypes = ref(false);
+const programTypesError = ref('');
 
-const paymentModalRef = ref(null)
-const selectedApplicationForPayment = ref(null)
-const dprPaymentAmount = ref(1500)
-
-const paymentOutcomeHandled = ref(false)
-
-const filteredApplications = computed(() => {
-  let result = applications.value
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    result = result.filter(
-      (app) =>
-        app.name_of_institution?.toLowerCase().includes(query) ||
-        app.dpr_name?.toLowerCase().includes(query),
-    )
-  }
-  if (filterStatus.value) {
-    result = result.filter((app) => app.do_dpr_review_decision === filterStatus.value)
-  }
-  if (filterDzongkhag.value) {
-    result = result.filter((app) => app.dzongkhag === filterDzongkhag.value)
-  }
-  return result.sort((a, b) => {
-    const dateA = new Date(a.commencement_date || a.created_at || 0)
-    const dateB = new Date(b.commencement_date || b.created_at || 0)
-    return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB
-  })
-})
-
-const totalPages = computed(() => Math.ceil(filteredApplications.value.length / itemsPerPage))
-
-const paginatedApplications = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  const end = start + itemsPerPage
-  return filteredApplications.value.slice(start, end)
-})
-
-const getStatusColor = (status) => {
-  switch (status) {
-    case STATUS_APPROVED:
-      return 'bg-green-100 text-green-700'
-    case STATUS_REJECTED:
-      return 'bg-red-100 text-red-700'
-    case STATUS_PENDING:
-      return 'bg-yellow-100 text-yellow-700'
-    case 'In Review':
-      return 'bg-blue-100 text-blue-700'
-    case 'Submitted':
-      return 'bg-gray-100 text-gray-700'
-    default:
-      return 'bg-gray-100 text-gray-700'
-  }
-}
-
-const getStatusTooltip = (status) => {
-  switch (status) {
-    case STATUS_APPROVED:
-      return 'Application has been approved. Proceed to payment if pending.'
-    case STATUS_REJECTED:
-      return 'Application was rejected. Review the reason for rejection.'
-    case STATUS_PENDING:
-      return 'Application is awaiting review by the dealing officer.'
-    case 'In Review':
-      return 'Application is currently under review.'
-    case 'Submitted':
-      return 'Application has been submitted and is pending processing.'
-    default:
-      return 'Status not available.'
-  }
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
+const fetchProgramMasters = async () => {
+  isLoadingProgramTypes.value = true;
+  programTypesError.value = '';
   try {
-    const date = new Date(dateString)
-    if (isNaN(date.getTime())) {
-      console.warn(`Invalid date string received: ${dateString}`)
-      return 'Invalid Date'
-    }
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-  } catch (e) {
-    console.error(`Error formatting date: ${dateString}`, e)
-    return 'Date Error'
-  }
-}
-
-const isApplicationApproved = (app) => app.do_dpr_review_decision === STATUS_APPROVED
-const isPaymentPending = (app) => isApplicationApproved(app) && app.is_payment_complete === false
-const isPaymentCompleted = (app) => isApplicationApproved(app) && app.is_payment_complete === true
-
-const getTimeline = (app) => {
-  return [
-    { status: 'Submitted', date: app.created_at || new Date().toISOString() },
-    {
-      status: app.do_dpr_review_decision || 'Pending',
-      date: app.updated_at || new Date().toISOString(),
-    },
-  ]
-}
-
-const toggleDetails = (id) => {
-  expandedApplications.value[id] = !expandedApplications.value[id]
-}
-
-const sortApplications = () => {
-  sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc'
-}
-
-const debouncedSearch = debounce(() => {
-  currentPage.value = 1
-}, 300)
-
-watch(searchQuery, () => {
-  debouncedSearch()
-})
-
-const fetchApplications = async () => {
-  if (!authStore.user || !authStore.user.cid) {
-    errorMessage.value = 'User information not available. Please log in again.'
-    apiError.value = true
-    isLoading.value = false
-    return
-  }
-
-  isLoading.value = true
-  apiError.value = false
-  errorMessage.value = ''
-
-  try {
-    const response = await apiServices.getMhpcInstitutes()
-    if (response && response.data && Array.isArray(response.data.results)) {
-      const userCid = authStore.user.cid.toLowerCase()
-      applications.value = response.data.results
-        .filter((app) => app && typeof app.CID === 'string' && app.CID.toLowerCase() === userCid)
-        .map((app) => ({ ...app, is_payment_complete: app.is_payment_complete || false }))
+    const response = await apiServices.getMhpcProgramMasters();
+    // Assuming the API returns data in a structure like:
+    // response.data or response.data.results = [{ id: 1, code: 'D', name: 'Diploma' }, { id: 2, code: 'B', name: 'Bachelor' }, ...]
+    // Adjust based on your actual API response structure
+    if (response.data && Array.isArray(response.data.results)) {
+        programMasterOptions.value = response.data.results;
+    } else if (response.data && Array.isArray(response.data)) { // If API directly returns an array
+        programMasterOptions.value = response.data;
     } else {
-      console.warn('Unexpected API response structure:', response)
-      applications.value = []
+        programMasterOptions.value = [];
+        console.warn('Unexpected program types API response structure:', response.data);
+        programTypesError.value = 'Could not load program types (unexpected format).';
     }
   } catch (error) {
-    console.error('Error fetching DPR applications:', error)
-    applications.value = []
-    apiError.value = true
-    errorMessage.value =
-      error.response?.data?.message ||
-      (error.request
-        ? 'Network error. Please check your connection and try again.'
-        : 'An unexpected error occurred while fetching applications. Please try again.')
-    toast.error(errorMessage.value)
+    console.error('Error fetching program masters:', error);
+    programTypesError.value = 'Failed to load program types.';
+    toast.error(programTypesError.value);
+    programMasterOptions.value = []; // Clear options on error
   } finally {
-    isLoading.value = false
+    isLoadingProgramTypes.value = false;
   }
-}
+};
 
-// --- Payment Flow Functions ---
-
-const openPaymentConfirmationModal = (application) => {
-  selectedApplication.value = application
-  paymentOutcomeHandled.value = false
-  if (application && application.id) {
-    isActionLoading.value[application.id] = true
-  }
-  showPaymentConfirmModal.value = true
-}
-
-const cancelPaymentConfirmation = () => {
-  showPaymentConfirmModal.value = false
-  if (selectedApplication.value && selectedApplication.value.id) {
-    isActionLoading.value[selectedApplication.value.id] = false
-  }
-  selectedApplication.value = null
-}
-
-const handleProceedWithPaymentFlow = async () => {
-  if (!selectedApplication.value || !selectedApplication.value.id) {
-    toast.error('No application selected to proceed with payment.')
-    if (selectedApplication.value?.id && isActionLoading.value[selectedApplication.value.id]) {
-      isActionLoading.value[selectedApplication.value.id] = false
+watch(() => props.isVisible, (newValue) => {
+  if (newValue) {
+    formData.value = initialFormData();
+    formError.value = '';
+    if (authStore.user?.cid) {
+        formData.value.CID = authStore.user.cid;
     }
-    return
-  }
-
-  const appId = selectedApplication.value.id
-  showPaymentConfirmModal.value = false
-  selectedApplicationForPayment.value = selectedApplication.value
-
-  if (paymentModalRef.value && typeof paymentModalRef.value.openModal === 'function') {
-    paymentModalRef.value.openModal()
-  } else {
-    console.error('Payment modal reference or openModal method is not available.')
-    toast.error('Could not open payment window. Please try again.')
-    if (isActionLoading.value[appId] !== undefined) {
-      isActionLoading.value[appId] = false
+    // Fetch program masters when modal becomes visible
+    if (programMasterOptions.value.length === 0) { // Fetch only if not already loaded
+        fetchProgramMasters();
     }
-    selectedApplication.value = null
-    selectedApplicationForPayment.value = null
   }
-}
+});
 
-const handleDPRPaymentCompleted = async (paymentData) => {
-  paymentOutcomeHandled.value = true
+const closeModal = () => {
+  emit('close');
+};
 
-  if (!selectedApplicationForPayment.value) {
-    toast.error('Error: No application was associated with this payment.')
-    const initialAppId = selectedApplication.value?.id
-    if (initialAppId && isActionLoading.value[initialAppId]) {
-      isActionLoading.value[initialAppId] = false
+const submitForm = async () => {
+  formError.value = '';
+  if (!formData.value.CID && authStore.user?.cid) {
+    formData.value.CID = authStore.user.cid;
+  } else if (!formData.value.CID) {
+    formError.value = 'CID is missing. Please ensure you are logged in correctly.';
+    toast.error(formError.value);
+    return;
+  }
+
+  const requiredNewFields = [
+    'vision_mission_strategies', 'project_scheduling_management', 'gnh_values_ict_excellence',
+    'land_details', 'conceptual_master_plan', 'academic_plan_profile', 'affiliation_details',
+    'teaching_hospital_details', 'research_policy', 'human_resource_plan', 'quality_assurance_system',
+    'governance_structure', 'business_plan', 'project_cost_analysis', 'facilities_student_services',
+    'admission_policy_scholarships', 'service_conditions', 'safety_security_plan',
+    'public_information_system', 'other_details'
+  ];
+
+  for (const field of requiredNewFields) {
+    // Check if formData.value[field] exists and is not just whitespace
+    if (!formData.value[field] || String(formData.value[field]).trim() === '') {
+        const labelElement = document.querySelector(`label[for="${field.replace(/_([a-z])/g, (g) => g[1].toUpperCase())}"]`);
+        const fieldName = labelElement ? labelElement.textContent.replace(/\s*\*$/, '').trim() : field.replace(/_/g, ' ');
+        formError.value = `${fieldName} is required. Please fill in all sections.`;
+        toast.error(formError.value);
+        return;
     }
-    return
   }
 
-  const appBeingPaid = selectedApplicationForPayment.value
-
+  isSubmitting.value = true;
   try {
-    console.log('DPR Payment completed event received:', paymentData)
-    console.log('For application:', appBeingPaid.name_of_institution, appBeingPaid.dpr_name)
+    const payload = { ...formData.value };
 
-    // Simulate API call to update payment status
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // TODO: Replace with your actual API call:
+    // const response = await apiServices.createYourDprApplicationEndpoint(payload);
+    console.log('Submitting DPR Application:', payload);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const mockResponse = { data: { ...payload, id: Date.now(), created_at: new Date().toISOString(), updated_at: new Date().toISOString() } };
 
-    // Update the application in the local state
-    const appIndex = applications.value.findIndex((a) => a.id === appBeingPaid.id)
-    if (appIndex !== -1) {
-      applications.value[appIndex] = { ...applications.value[appIndex], is_payment_complete: true }
-    } else {
-      throw new Error('Application not found in local state.')
-    }
-
-    // Show success message only after successful update
-    toast.success(`Payment for "${appBeingPaid.dpr_name}" completed successfully!`)
-
-    // Rely on PaymentModal to emit 'close' event, which triggers closeDPRPaymentModal
+    emit('application-submitted', mockResponse.data);
+    // closeModal(); // Parent will close it
   } catch (error) {
-    console.error('Error updating DPR application after payment:', error)
-    toast.error(
-      `Failed to update application for "${appBeingPaid.dpr_name}" after payment. Please contact support.`,
-    )
+    console.error('Error submitting DPR application:', error);
+    formError.value = error.response?.data?.message || error.message || 'Failed to submit application. Please try again.';
+    toast.error(formError.value);
   } finally {
-    if (appBeingPaid && appBeingPaid.id) {
-      isActionLoading.value[appBeingPaid.id] = false
-    }
-    selectedApplicationForPayment.value = null
-    // The modal should close itself and emit 'close', which calls closeDPRPaymentModal
+    isSubmitting.value = false;
   }
-}
-
-const closeDPRPaymentModal = () => {
-  if (!paymentOutcomeHandled.value) {
-    toast.info('Payment process cancelled.')
-  }
-  paymentOutcomeHandled.value = false
-
-  const initialAppId = selectedApplication.value?.id || selectedApplicationForPayment.value?.id
-  if (initialAppId && isActionLoading.value[initialAppId] !== undefined) {
-    isActionLoading.value[initialAppId] = false
-  }
-
-  selectedApplicationForPayment.value = null
-  selectedApplication.value = null
-}
-// --- End Payment Flow Functions ---
-
-const openCertificateModal = (application) => {
-  selectedApplication.value = application
-  if (application && application.id) {
-    isActionLoading.value[application.id] = true
-  }
-  showCertificateModal.value = true
-}
-
-const handleViewCertificate = async (application) => {
-  if (!application || !application.id) {
-    const currentSelectedAppId = selectedApplication.value?.id
-    if (currentSelectedAppId && isActionLoading.value[currentSelectedAppId]) {
-      isActionLoading.value[currentSelectedAppId] = false
-    }
-    selectedApplication.value = null
-    return
-  }
-
-  try {
-    console.log('Viewing certificate for application ID:', application.id, application.dpr_name)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    toast.success(`Certificate for "${application.dpr_name}" opened in new tab (simulated).`)
-    showCertificateModal.value = false
-  } catch (error) {
-    console.error('Error viewing certificate:', error)
-    toast.error('Failed to view certificate. Please try again.')
-  } finally {
-    if (application && application.id) {
-      isActionLoading.value[application.id] = false
-    }
-    selectedApplication.value = null
-  }
-}
-
-const startNewApplication = () => {
-  router.push('/eoi-form')
-}
-
-onMounted(fetchApplications)
+};
 </script>
-
-<style scoped>
-.cursor-help:hover {
-  opacity: 0.8;
-}
-</style>

@@ -125,13 +125,26 @@
                       <dt class="font-medium text-gray-600">Proposed Valid Till:</dt>
                       <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.valid_till ? formatDate(hospitalDetails.valid_till) : 'N/A' }}</dd>
                     </div>
+                    <!-- Note: Applicant's attachments are shown here, DO's attachments will be in the DO section if needed for display after upload -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded bg-gray-50">
                         <dt class="font-medium text-gray-600">Attachments (Applicant):</dt>
                         <dd class="md:col-span-2 text-gray-800">
-                            <a v-if="hospitalDetails.tc_attachments" :href="ensureAbsoluteUrl(hospitalDetails.tc_attachments)" target="_blank" class="text-blue-600 hover:underline" :download="getFileNameFromUrl(hospitalDetails.tc_attachments)">
-                            {{ getFileNameFromUrl(hospitalDetails.tc_attachments) || 'View Attachment' }}
-                            </a>
-                            <span v-else>No attachments</span>
+                            <!-- This logic assumes tc_attachments might be a single URL or an array of URLs/objects -->
+                            <div v-if="hospitalDetails.tc_attachments && Array.isArray(hospitalDetails.tc_attachments) && hospitalDetails.tc_attachments.length > 0">
+                                <ul class="list-disc list-inside">
+                                    <li v-for="(file, index) in hospitalDetails.tc_attachments" :key="index">
+                                        <a :href="ensureAbsoluteUrl(typeof file === 'string' ? file : file.url)" target="_blank" class="text-blue-600 hover:underline" :download="getFileNameFromUrl(typeof file === 'string' ? file : file.url)">
+                                            {{ getFileNameFromUrl(typeof file === 'string' ? file : file.url) || `Attachment ${index + 1}` }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div v-else-if="hospitalDetails.tc_attachments && typeof hospitalDetails.tc_attachments === 'string'">
+                                <a :href="ensureAbsoluteUrl(hospitalDetails.tc_attachments)" target="_blank" class="text-blue-600 hover:underline" :download="getFileNameFromUrl(hospitalDetails.tc_attachments)">
+                                    {{ getFileNameFromUrl(hospitalDetails.tc_attachments) || 'View Attachment' }}
+                                </a>
+                            </div>
+                            <span v-else>No attachments from applicant</span>
                         </dd>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded">
@@ -140,7 +153,7 @@
                             <a v-if="hospitalDetails.tc_report" :href="ensureAbsoluteUrl(hospitalDetails.tc_report)" target="_blank" class="text-blue-600 hover:underline" :download="getFileNameFromUrl(hospitalDetails.tc_report)">
                             {{ getFileNameFromUrl(hospitalDetails.tc_report) || 'View Report' }}
                             </a>
-                            <span v-else>No report file</span>
+                            <span v-else>No report file from applicant</span>
                         </dd>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded bg-gray-50">
@@ -153,7 +166,7 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded bg-gray-50">
                       <dt class="font-medium text-gray-600">Declaration Accepted (Applicant):</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.tc_declaration ? 'Yes' : 'No' }}</dd>
+                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.declaration || hospitalDetails.tc_declaration ? 'Yes' : 'No' }}</dd> <!-- Adjusted for tc_declaration too -->
                     </div>
                   </dl>
                 </section>
@@ -181,6 +194,7 @@
                           <p class="text-blue-700 text-sm mt-1">Date: {{ formatDate(hospitalDetails.physical_verification_date) }}</p>
                           <p class="text-blue-700 text-sm">Status: {{ formattedVerificationStatus(hospitalDetails.physical_verification_status) }}</p>
                           <p class="text-blue-700 text-sm">Remarks: {{ hospitalDetails.physical_verification_remarks || 'N/A' }}</p>
+                          <!-- TODO: Add display for DO's uploaded attachments and report file here if needed after they are submitted and fetched -->
                         </div>
                     </div>
                   </div>
@@ -197,7 +211,6 @@
                         </div>
                      </div>
                    </div>
-
 
                   <!-- Physical Verification Form Section -->
                   <div v-if="canRecordVerification" class="mb-8 p-6 border-2 border-dashed border-blue-300 rounded-xl bg-blue-50">
@@ -218,7 +231,7 @@
                           type="date"
                           id="verificationDate"
                           v-model="localVerificationData.date"
-                          :min="todayDate()" 
+                          :min="todayDate()"
                           class="w-full rounded-lg border-2 border-blue-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-3"
                         >
                       </div>
@@ -251,6 +264,48 @@
                           placeholder="Enter notes regarding the scheduled verification, agenda, or initial plan. After verification, update with findings, facilities, staff, equipment, compliance, concerns, recommendations..."
                         ></textarea>
                       </div>
+
+                      <!-- File Uploads for Dealing Officer -->
+                      <div class="lg:col-span-2 space-y-4 pt-4 border-t border-blue-200">
+                         <h6 class="text-md font-semibold text-blue-700">Upload Verification Documents (Optional)</h6>
+                        <div>
+                          <label for="modal-tcAttachments-do" class="block text-sm font-medium text-blue-700 mb-1">
+                            Supporting Attachments (Multiple)
+                          </label>
+                          <input
+                            type="file"
+                            id="modal-tcAttachments-do"
+                            ref="attachmentsInputRef"
+                            multiple
+                            @change="handleAttachmentsChange"
+                            class="block w-full text-sm text-gray-900 border border-blue-300 rounded-lg cursor-pointer bg-blue-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-200 file:text-blue-700 hover:file:bg-blue-300"
+                          />
+                          <div v-if="selectedAttachments && selectedAttachments.length > 0" class="mt-1 text-xs text-gray-500">
+                            Selected for upload:
+                            <ul class="list-disc list-inside">
+                              <li v-for="file in Array.from(selectedAttachments)" :key="file.name">{{ file.name }} ({{ (file.size / 1024).toFixed(1) }} KB)</li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label for="modal-tcReportFile-do" class="block text-sm font-medium text-blue-700 mb-1">
+                            Main Report File (Single)
+                          </label>
+                          <input
+                            type="file"
+                            id="modal-tcReportFile-do"
+                            ref="reportFileInputRef"
+                            @change="handleReportFileChange"
+                            class="block w-full text-sm text-gray-900 border border-blue-300 rounded-lg cursor-pointer bg-blue-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-200 file:text-blue-700 hover:file:bg-blue-300"
+                          />
+                           <div v-if="selectedReportFile" class="mt-1 text-xs text-gray-500">
+                            Selected for upload: {{ selectedReportFile.name }} ({{ (selectedReportFile.size / 1024).toFixed(1) }} KB)
+                          </div>
+                        </div>
+                      </div>
+                      <!-- End File Uploads -->
+
                       <div class="lg:col-span-2 bg-white p-4 rounded-lg border border-blue-200">
                         <div class="flex items-start">
                           <div class="flex items-center h-5">
@@ -391,8 +446,8 @@ const props = defineProps({
     type: Object,
     default: () => ({
         institute_details: {},
-        tc_attachments: null,
-        tc_report: null,
+        tc_attachments: null, // Applicant's attachments
+        tc_report: null,      // Applicant's report
         physical_verification_date: null,
         physical_verification_remarks: null,
         physical_verification_status: null,
@@ -409,21 +464,38 @@ const props = defineProps({
         valid_till: null,
         tc_remarks: '',
         remarks: '',
-        tc_declaration: false,
+        tc_declaration: false, // Changed from declaration
+        // Potentially add fields for DO's uploaded files if they need to be displayed
+        // e.g., do_tc_attachments: null, do_tc_report: null
     }),
   },
 })
 
 const emit = defineEmits(['close-modal', 'approve', 'reject', 'submit-verification'])
 
+// Refs for file inputs
+const attachmentsInputRef = ref(null);
+const reportFileInputRef = ref(null);
+
+// Refs to store selected files by DO
+const selectedAttachments = ref(null); // FileList
+const selectedReportFile = ref(null);  // File
+
 const localVerificationData = ref({
-  date: '', // Will hold the "YYYY-MM-DD" string from date picker
+  date: '',
   report: '',
-  status: 'PENDING_PV', // Sensible default for scheduling
+  status: 'PENDING_PV',
   sendToUser: false,
 })
 const rejectionReason = ref('')
-const actionAttempt = ref(null); // 'reject' or null
+const actionAttempt = ref(null);
+
+const resetFileInputs = () => {
+  if (attachmentsInputRef.value) attachmentsInputRef.value.value = null;
+  if (reportFileInputRef.value) reportFileInputRef.value.value = null;
+  selectedAttachments.value = null;
+  selectedReportFile.value = null;
+};
 
 watch(() => props.hospitalDetails, (newDetails) => {
   if (newDetails && props.isOpen) {
@@ -431,14 +503,16 @@ watch(() => props.hospitalDetails, (newDetails) => {
       date: newDetails.physical_verification_date ? new Date(newDetails.physical_verification_date).toISOString().split('T')[0] : '',
       report: newDetails.physical_verification_remarks || '',
       status: newDetails.physical_verification_status || 'PENDING_PV',
-      sendToUser: newDetails.send_to_user || false, // Keep the DO's previous choice for sendToUser
+      sendToUser: newDetails.send_to_user || false,
     };
     rejectionReason.value = newDetails.tc_reason_if_rejected || '';
     actionAttempt.value = null;
-  } else if (!props.isOpen) { // Reset when modal is closed
+    resetFileInputs(); // Reset file inputs when new details are loaded or modal opens
+  } else if (!props.isOpen) {
     localVerificationData.value = { date: '', report: '', status: 'PENDING_PV', sendToUser: false };
     rejectionReason.value = '';
     actionAttempt.value = null;
+    resetFileInputs(); // Also reset on close
   }
 }, { immediate: true, deep: true })
 
@@ -451,8 +525,8 @@ const formatDate = (dateString) => {
     const date = new Date(dateString);
     return isNaN(date.getTime()) ? dateString : date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
   } catch (e) {
-    console.error('Error formatting date:', e, dateString);
-     return dateString; }
+    console.error('Error formatting date:', e);
+    return dateString; }
 };
 
 const formattedStatus = (statusKey) => {
@@ -478,12 +552,13 @@ const ensureAbsoluteUrl = (url) => {
         return url;
     }
     const backendBaseUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin;
+    // Check if the URL is already a full path from the backend (e.g., /media/...)
     if (url.startsWith('/media/') || url.startsWith('/static/')) {
-        return `${backendBaseUrl}${url}`;
+         // Assuming backendBaseUrl does not end with a slash and url starts with one.
+        return `${backendBaseUrl.replace(/\/$/, '')}${url}`;
     }
-    // This assumes relative paths from the backend need /media/ prepended.
-    // For robustness, ensure backend serializer returns full URLs.
-    return `${backendBaseUrl}/media/${url.startsWith('/') ? url.substring(1) : url}`;
+    // If it's just a filename or relative path not starting with /media/
+    return `${backendBaseUrl.replace(/\/$/, '')}/media/${url.startsWith('/') ? url.substring(1) : url}`;
 }
 
 const getFileNameFromUrl = (url) => {
@@ -491,9 +566,9 @@ const getFileNameFromUrl = (url) => {
   try {
     const decodedUrl = decodeURIComponent(url);
     const name = decodedUrl.substring(decodedUrl.lastIndexOf('/') + 1);
-    return name.split('?')[0]; // Remove query params if any
+    return name.split('?')[0];
   } catch (e) {
-    console.error('Error getting filename from URL:', e, url);
+    console.error('Error extracting file name from URL:', e);
     return 'attachment';
   }
 };
@@ -504,7 +579,7 @@ const statusBadgeClass = computed(() => {
   const sLower = String(status).toLowerCase();
   if (sLower === 'approved') return 'bg-green-100 text-green-800';
   if (sLower === 'rejected' || sLower === 'regretted') return 'bg-red-100 text-red-800';
-  if (sLower === 'verification_completed' || sLower === 'verified_pv') return 'bg-blue-100 text-blue-800';
+  if (sLower === 'verification_completed' || sLower === 'verified_pv' || sLower.includes('pv')) return 'bg-blue-100 text-blue-800';
   return 'bg-yellow-100 text-yellow-800';
 });
 
@@ -515,29 +590,36 @@ const isEffectivelyRejected = computed(() => {
 });
 
 const canRecordVerification = computed(() => {
-  // Allow recording/updating verification if not yet finally approved or rejected
   return !isEffectivelyApproved.value && !isEffectivelyRejected.value;
 });
 
 const isVerificationSufficientForApproval = computed(() => {
     const pvStatus = props.hospitalDetails?.physical_verification_status;
-    // Allow approval if verification is done and positive, or if it's not required
     return pvStatus === 'VERIFIED_PV' || pvStatus === 'NOT_REQUIRED_PV';
 });
 
 const canDecide = computed(() => {
-  // Officer can make a final decision (Approve/Reject) if the application is not already finalized
   return !isEffectivelyApproved.value && !isEffectivelyRejected.value;
 });
 
 const closeModal = () => {
   emit('close-modal');
-  actionAttempt.value = null; // Reset action when closing
-  rejectionReason.value = ''; // Clear reason
+  actionAttempt.value = null;
+  rejectionReason.value = '';
+  resetFileInputs(); // Ensure files are cleared on close
 }
 
+// File handling methods for DO
+const handleAttachmentsChange = (event) => {
+  selectedAttachments.value = event.target.files; // FileList
+};
+
+const handleReportFileChange = (event) => {
+  selectedReportFile.value = event.target.files[0]; // Single File
+};
+
+
 const submitVerificationHandler = () => {
-  // Validate required fields for scheduling/verification
   if (!localVerificationData.value.date) {
     alert('Please provide the Scheduled Verification Date.');
     return;
@@ -546,27 +628,24 @@ const submitVerificationHandler = () => {
     alert('Please select a Physical Verification Status.');
     return;
   }
-  // Report/Notes might be optional for initial scheduling (PENDING_PV) but required for VERIFIED_PV/NOT_VERIFIED_PV
   if ((localVerificationData.value.status === 'VERIFIED_PV' || localVerificationData.value.status === 'NOT_VERIFIED_PV') && !localVerificationData.value.report.trim()) {
     alert('Verification Report/Notes are required for Verified or Not Verified statuses.');
     return;
   }
-   if (!localVerificationData.value.report.trim() && localVerificationData.value.status !== 'PENDING_PV' && localVerificationData.value.status !== 'IN_PROGRESS_PV' && localVerificationData.value.status !== 'NOT_REQUIRED_PV') {
-    // A general check if report is empty for statuses that usually require it.
-    // You can refine this condition.
-    alert('Please provide Verification Notes/Plan, especially if status is not just Pending/Scheduled.');
-    // return; // Make this a soft warning or hard block as needed
-  }
-
 
   const payloadToEmit = {
-    verificationDate: localVerificationData.value.date, // This is "YYYY-MM-DD"
+    verificationDate: localVerificationData.value.date,
     verificationReport: localVerificationData.value.report,
     verificationStatus: localVerificationData.value.status,
-    sendToUser: localVerificationData.value.sendToUser, // Crucial for user visibility
+    sendToUser: localVerificationData.value.sendToUser,
+    // Add the selected files to the payload
+    tc_attachments: selectedAttachments.value, // This will be a FileList or null
+    tc_report: selectedReportFile.value        // This will be a File object or null
   };
-  console.log('MODAL: Emitting submit-verification with payload:', JSON.stringify(payloadToEmit));
+  console.log('MODAL: Emitting submit-verification with payload (including files if any):', payloadToEmit);
   emit('submit-verification', payloadToEmit);
+  // Do not reset file inputs here immediately; parent might need them if submission fails and modal stays open.
+  // Files will be reset if modal closes or new data is loaded.
 }
 
 const handleApprove = () => {
@@ -574,22 +653,16 @@ const handleApprove = () => {
         alert("Physical verification must be recorded as 'Physically Verified & Recommended' or 'Not Required' before approving.");
         return;
     }
-    actionAttempt.value = null; // Clear any pending 'reject' action
-    emit('approve'); // Parent will trigger confirmation
+    actionAttempt.value = null;
+    emit('approve');
 }
 
 const prepareReject = () => {
     if (actionAttempt.value === 'reject' && rejectionReason.value.trim()) {
-        // If already in 'reject' mode and reason is filled, emit to parent
         emit('reject', { rejectionReason: rejectionReason.value.trim() });
-        actionAttempt.value = null; // Reset after emitting
-        // rejectionReason.value = ''; // Parent's confirm modal will handle this now
+        actionAttempt.value = null;
     } else {
-        // First click on Reject, or reason is not yet filled
-        actionAttempt.value = 'reject'; // Set mode to show textarea
-        // Do not emit yet. User fills reason, then clicks "Confirm Rejection" (button text changes)
-        // OR the parent's confirmation modal will gather the reason.
-        // For simplicity here, let's assume the button text change to "Confirm Rejection" is handled by the presence of `actionAttempt === 'reject'` and `rejectionReason.trim()`
+        actionAttempt.value = 'reject';
     }
 }
 

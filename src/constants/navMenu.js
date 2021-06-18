@@ -1014,38 +1014,28 @@ const serviceSpecificMenuItems = {
     ],
     institutions: [
       // MODIFIED SECTION for health_certification.institutions
+      // {
+      //   name: 'Dashboard',
+      //   icon: getIconComponent('LayoutDashboard'),
+      //   route: (serviceType) => `/admin/institutions/${serviceType}/dashboard`,
+      // },
       {
-        name: 'Dashboard',
+        name: 'Dashboard New',
         icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/institutions/${serviceType}/dashboard`,
       },
+
       {
         name: 'EOI Management',
         icon: getIconComponent('FileText'),
-        children: [
-          {
-            name: 'Apply for EOI',
-            route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_eoi`,
-          },
-          {
-            name: 'Track EOI',
-            route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
-          },
-        ],
+        route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
+
       },
       {
         name: 'DPR Management',
         icon: getIconComponent('FileText'),
-        children: [
-          {
-            name: 'Apply for DPR',
-            route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_dpr`,
-          },
-          {
-            name: 'Track DPR',
-            route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
-          },
-        ],
+        route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
+        
       },
       {
         name: 'Institute Profile',
