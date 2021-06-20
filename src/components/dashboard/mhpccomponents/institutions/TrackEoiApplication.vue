@@ -22,71 +22,86 @@
           <thead class="bg-gray-50">
             <tr>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Institution Name
+                Institution / Course
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Course Title
+                Submitted
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Commencement
+                Application Status
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Program Type (ID)
+                Physical Verification
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Duration (Mths)
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Remarks / Reason
+                Remarks / Decision
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="application in applications" :key="application.id" class="hover:bg-gray-50 transition-colors">
+            <tr v-for="application in applications" :key="application.CID || application.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium text-gray-900">{{ application.name_of_institution || 'N/A' }}</div>
-                <div class="text-xs text-gray-500">License: {{ application.CID || 'N/A' }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ application.title_of_course || 'N/A' }}
-                </div>
+                <div class="text-xs text-gray-500">Course: {{ application.title_of_course || 'N/A' }}</div>
+                 <div class="text-xs text-gray-500 mt-0.5">License: {{ application.CID || 'N/A' }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ application.commencement_date ? new Date(application.commencement_date).toLocaleDateString() : 'N/A' }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                <!-- Displays Program Master ID. For name, API needs to provide it or another lookup is needed -->
-                {{ application.type_of_programme || 'N/A' }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ application.course_duration ? `${application.course_duration}` : 'N/A' }}
+                {{ application.created_at ? formatDate(application.created_at, true) : 'N/A' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
                   :class="[
                     'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                    getStatusColor(application.review_decision),
+                    getApplicationStatusColor(application.application_status),
                   ]"
                 >
-                  {{ application.review_decision || 'N/A' }}
+                  {{ mapApplicationStatus(application.application_status) }}
                 </span>
               </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <div v-if="isPhysicalVerificationRelevant(application.application_status)">
+                  <div>
+                    Date: {{ application.physical_verification_date ? formatDate(application.physical_verification_date) : 'Not Scheduled' }}
+                  </div>
+                  <div class="mt-1">
+                    Status:
+                    <span
+                      :class="[
+                        'px-1.5 py-0.5 inline-flex text-xs leading-4 font-semibold rounded-full',
+                        application.is_physical_verification ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                      ]"
+                    >
+                      {{ application.is_physical_verification ? 'Completed' : (application.physical_verification_date ? 'Scheduled' : 'Pending') }}
+                    </span>
+                  </div>
+                  <div v-if="application.physical_verification_remarks && application.is_physical_verification"
+                       class="mt-1 text-xs text-gray-500 italic truncate hover:whitespace-normal hover:overflow-visible"
+                       :title="application.physical_verification_remarks">
+                    Officer Remarks: {{ application.physical_verification_remarks }}
+                  </div>
+                </div>
+                <div v-else class="text-xs text-gray-400 italic">
+                  N/A
+                </div>
+              </td>
               <td class="px-6 py-4 whitespace-normal text-sm text-gray-600 max-w-xs break-words">
-                 <div v-if="application.review_decision === 'Rejected'" class="text-red-600">
-                    {{ application.reason_if_rejected || 'Reason not specified' }}
+                 <div v-if="application.application_status === 'EOI Rejected'" class="text-red-600">
+                    Reason: {{ application.reason_if_rejected || 'Reason not specified.' }}
                   </div>
-                  <div v-else-if="application.review_decision === 'Approved'" class="text-green-700 font-medium">
-                    {{ application.remarks || 'Approved, proceed with DPR.' }}
+                  <div v-else-if="application.application_status === 'EOI Approved'" class="text-green-700 font-medium">
+                    EOI Approved. {{ application.remarks || 'You may now proceed to prepare and submit the Detailed Project Report (DPR).' }}
                   </div>
-                   <div v-else-if="application.review_decision === 'Pending'" class="text-yellow-700 font-medium">
-                    {{ application.remarks || 'Application is pending review.' }}
+                   <div v-else-if="application.application_status && application.application_status.toLowerCase().includes('pending')" class="text-yellow-700 font-medium">
+                    {{ application.remarks || 'Application is under review.' }}
+                  </div>
+                   <div v-else-if="application.application_status === 'DPR Submitted' || application.application_status === 'DPR Approved' || application.application_status === 'DPR Rejected'" class="text-blue-700 font-medium">
+                     {{ application.remarks || 'DPR stage in progress.'}}
+                   </div>
+                  <div v-else-if="application.remarks" class="text-gray-500">
+                    {{ application.remarks }}
                   </div>
                   <div v-else class="text-gray-500 italic">
-                    {{ application.remarks || 'No remarks.'}}
+                    No specific remarks.
                   </div>
               </td>
             </tr>
@@ -120,6 +135,11 @@
       </svg>
       <h3 class="mt-2 text-lg font-medium text-red-800">Error Fetching Applications</h3>
       <p class="mt-1 text-sm text-red-600">{{ errorMessage }}</p>
+       <div class="mt-6">
+        <button @click="fetchApplications" class="btn btn-outline"> <!-- Added retry button -->
+          Try Again
+        </button>
+      </div>
     </div>
 
     <!-- EOI Application Modal -->
@@ -134,9 +154,9 @@
 import { ref, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import apiServices from '@/services/services';
-import { Loader, PlusIcon } from 'lucide-vue-next'; // Assuming lucide-vue-next icons
-import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'; // Adjust path if needed
-import InstituteEoiApplication from './InstituteEoiApplication.vue'; // Adjust path if needed
+import { Loader, PlusIcon } from 'lucide-vue-next';
+import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'; // Adjust path
+import InstituteEoiApplication from './InstituteEoiApplication.vue'; // Adjust path
 
 const applications = ref([]);
 const isLoading = ref(false);
@@ -146,13 +166,77 @@ const showEoiModal = ref(false);
 
 const authStore = useAuthStore();
 
-const getStatusColor = (status) => {
+const formatDate = (dateString, includeTime = false) => {
+  if (!dateString) return 'N/A';
+  try {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    if (includeTime) {
+      options.hour = '2-digit';
+      options.minute = '2-digit';
+    }
+
+    // For "YYYY-MM-DD" strings, ensure they are treated as UTC to avoid off-by-one errors
+    if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      const [year, month, day] = dateString.split('-').map(Number);
+      const dateObj = new Date(Date.UTC(year, month - 1, day));
+      if (isNaN(dateObj.getTime())) return 'Invalid Date';
+      options.timeZone = 'UTC'; // Format in UTC
+      return new Intl.DateTimeFormat('en-US', options).format(dateObj);
+    }
+
+    // For full ISO strings or other date objects
+    const dateObj = new Date(dateString);
+    if (isNaN(dateObj.getTime())) return 'Invalid Date';
+    return new Intl.DateTimeFormat('en-US', options).format(dateObj);
+  } catch (error) {
+    console.error('Error formatting date:', dateString, error);
+    return 'Invalid Date';
+  }
+};
+
+const mapApplicationStatus = (status) => {
+  if (!status) return 'Unknown';
+  const statusMap = {
+    'Draft': 'Draft',
+    'EOI Submitted': 'EOI Submitted',
+    'EOI Pending Review': 'Pending EOI Review',
+    'EOI Pending Physical Verification': 'Pending Verification',
+    'EOI Approved': 'EOI Approved',
+    'EOI Rejected': 'EOI Rejected',
+    'DPR Submitted': 'DPR Submitted',
+    'DPR Pending Review': 'Pending DPR Review',
+    'DPR Approved': 'DPR Approved',
+    'DPR Rejected': 'DPR Rejected',
+    'Payment Pending': 'Payment Pending',
+    'Fully Approved': 'Accredited', // Changed for user clarity
+    'Final Rejected': 'Application Rejected', // Changed for user clarity
+  };
+  return statusMap[status] || status;
+};
+
+const getApplicationStatusColor = (status) => {
   if (!status) return 'bg-gray-100 text-gray-800';
-  const lowerStatus = status.toLowerCase();
-  if (lowerStatus.includes('approved')) return 'bg-green-100 text-green-800';
-  if (lowerStatus.includes('rejected')) return 'bg-red-100 text-red-800';
-  if (lowerStatus.includes('pending') || lowerStatus.includes('submitted')) return 'bg-yellow-100 text-yellow-800';
-  return 'bg-blue-100 text-blue-800'; // Default for other statuses
+  const s = status.toLowerCase();
+
+  if (s === 'eoi approved' || s === 'dpr approved' || s === 'fully approved' || s === 'accredited') return 'bg-green-100 text-green-800';
+  if (s.includes('rejected')) return 'bg-red-100 text-red-800';
+  if (s.includes('pending') || s.includes('submitted') || s.includes('draft')) return 'bg-yellow-100 text-yellow-800';
+  if (s.includes('dpr')) return 'bg-blue-100 text-blue-800';
+  return 'bg-gray-100 text-gray-800';
+};
+
+const isPhysicalVerificationRelevant = (appStatus) => {
+    if (!appStatus) return false;
+    const relevantStatuses = [
+        'EOI Pending Physical Verification',
+        'EOI Approved', // Relevant to show it was completed
+        'DPR Submitted', // Still relevant
+        'DPR Pending Review',
+        'DPR Approved',
+        'Payment Pending',
+        'Fully Approved'
+    ];
+    return relevantStatuses.includes(appStatus);
 };
 
 const fetchApplications = async () => {
@@ -160,7 +244,7 @@ const fetchApplications = async () => {
     errorMessage.value = 'User information not available. Please log in again.';
     apiError.value = true;
     isLoading.value = false;
-    applications.value = []; // Clear applications on auth error
+    applications.value = [];
     return;
   }
 
@@ -169,39 +253,57 @@ const fetchApplications = async () => {
   errorMessage.value = '';
 
   try {
-    // This API endpoint should ideally return data that includes fields from the EOI form.
-    // e.g., name_of_institution, title_of_course, commencement_date, type_of_programme (ID),
-    // course_duration, review_decision, reason_if_rejected, remarks.
-    const response = await apiServices.getMhpcInstitutes(); // Or a specific EOI listing endpoint
+    const response = await apiServices.getMhpcInstitutes();
 
     if (response && response.data && Array.isArray(response.data.results)) {
       const userCid = authStore.user.cid.toLowerCase();
-      // Filter applications submitted by the current user based on CID
       applications.value = response.data.results.filter(
-        (app) => app.CID && app.CID.toLowerCase() === userCid,
+        (app) => app.CID && app.CID.toLowerCase() === userCid && app.application_status
       );
-      // Sort by creation date or ID if available, newest first
+      // Sort by last updated date, then creation date
       applications.value.sort((a, b) => {
-          const dateA = a.created_at ? new Date(a.created_at) : (a.id || 0);
-          const dateB = b.created_at ? new Date(b.created_at) : (b.id || 0);
+          const dateA = a.updated_at ? new Date(a.updated_at) : (a.created_at ? new Date(a.created_at) : 0);
+          const dateB = b.updated_at ? new Date(b.updated_at) : (b.created_at ? new Date(b.created_at) : 0);
+
           if (dateA instanceof Date && dateB instanceof Date) {
               return dateB - dateA; // Newest first
           }
-          return (dateB || 0) - (dateA || 0); // Fallback to ID or 0
+          // Fallback if dates are not valid Date objects or are missing
+          return (b.id || (dateB || 0)) - (a.id || (dateA || 0));
       });
 
     } else {
       applications.value = [];
-      console.warn('Expected results to be an array or data structure not as expected:', response?.data);
-      // Optional: Set a gentle error if data format is unexpected but not a server error
-      // errorMessage.value = 'Received unexpected data format for applications.';
-      // apiError.value = true; // Or handle as an empty list
+      // console.warn('Expected results to be an array or data structure not as expected:', response?.data);
+      // No explicit error message here, just an empty list.
     }
   } catch (error) {
     console.error('Error fetching EOI applications:', error);
     applications.value = [];
     apiError.value = true;
-    errorMessage.value = error.response?.data?.detail || error.response?.data?.message || 'Error fetching your applications. Please try again.';
+    let detail = "An unexpected error occurred.";
+    if (error.response) {
+        if (error.response.data) {
+            if (typeof error.response.data.detail === 'string') {
+                detail = error.response.data.detail;
+            } else if (typeof error.response.data.message === 'string') {
+                detail = error.response.data.message;
+            } else if (typeof error.response.data === 'string') {
+                detail = error.response.data;
+            } else {
+                // Try to extract from nested errors if any
+                const firstErrorKey = Object.keys(error.response.data)[0];
+                if (firstErrorKey && Array.isArray(error.response.data[firstErrorKey])) {
+                    detail = `${firstErrorKey}: ${error.response.data[firstErrorKey][0]}`;
+                }
+            }
+        } else if (error.response.statusText) {
+            detail = error.response.statusText;
+        }
+    } else if (error.message) {
+        detail = error.message;
+    }
+    errorMessage.value = `Failed to fetch applications: ${detail}`;
   } finally {
     isLoading.value = false;
   }
@@ -212,8 +314,7 @@ const openEoiModal = () => {
 };
 
 const handleApplicationSubmitted = () => {
-  fetchApplications(); // Refresh the list of applications
-  // The modal will close itself via its internal logic (emit('update:modelValue', false))
+  fetchApplications();
 };
 
 onMounted(() => {
@@ -222,16 +323,21 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Ensure btn styles are available or define them here if not globally available */
 .btn {
-  @apply inline-flex items-center justify-center rounded-lg border py-2.5 px-5 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply inline-flex items-center justify-center rounded-lg border py-2 px-4 sm:py-2.5 sm:px-5 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
 }
 .btn-primary {
   @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
 }
-
-/* Add any other specific styles for this dashboard page */
+.btn-outline {
+  @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500;
+}
 .max-w-xs {
-  max-width: 20rem; /* Adjust as needed for remarks column */
+  max-width: 20rem; /* For remarks column */
+}
+.truncate { /* Default truncation */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 </style>

@@ -25,9 +25,8 @@
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Search by App ID or Institute Name..."
+          placeholder="Search by App ID, Institute Name, or Program..."
           class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          @input="debouncedSearch"
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -51,6 +50,9 @@
       <div v-if="loading" class="flex justify-center items-center py-12">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
+      <div v-else-if="!filteredEois.length && !loading" class="text-center py-12 text-gray-500">
+          No applications found matching your criteria.
+      </div>
       <div v-else class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
@@ -58,7 +60,7 @@
               <th
                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
               >
-                Application ID
+                App ID (CID)
               </th>
               <th
                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
@@ -88,36 +90,31 @@
               <th
                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
               >
-                Notes
+                Notes / Reason
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <tr
               v-for="institute in filteredEois"
-              :key="institute.id"
+              :key="institute.id" 
               class="hover:bg-gray-50 transition-colors"
             >
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 {{ institute.CID }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {{ institute.full_name }}
+                {{ institute.name_of_institution }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {{ institute.type_of_programme }}
+                {{ institute.program_type ? institute.program_type.program_name : 'N/A' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ formatDate(institute.commencement_date) }}
+                {{ formatDate(institute.created_at) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(institute)">
-                  {{ institute.review_decision }}
-                  <span
-                    v-if="institute.review_decision === 'Regretted' && institute.reason_if_rejected"
-                  >
-                    (Reason: {{ institute.reason_if_rejected }})
-                  </span>
+                  {{ institute.application_status || 'N/A' }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -126,12 +123,20 @@
                     @click="openModal(institute)"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
                   >
-                    View
+                    View / Manage
                   </button>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                <span v-if="institute.approvalNotes">{{ institute.approvalNotes }}</span>
+              <td class="px-6 py-4 text-sm text-gray-700 break-words max-w-xs">
+                <!-- This part still uses do_dpr_review_decision. Confirm if this is intended or if it should also use application_status -->
+                <span v-if="institute.do_dpr_review_decision === 'Approved' && institute.do_dpr_review_summary">
+                  Approval: {{ institute.do_dpr_review_summary }}
+                </span>
+                <span v-else-if="institute.do_dpr_review_decision === 'Regretted' && institute.do_dpr_reason_if_rejected">
+                  Rejection: {{ institute.do_dpr_reason_if_rejected }}
+                </span>
+                <span v-else-if="institute.do_dpr_review_decision === 'Approved'">Approved (No notes)</span>
+                <span v-else>N/A</span>
               </td>
             </tr>
           </tbody>
@@ -139,13 +144,12 @@
       </div>
     </div>
 
-    <!-- EOI Application Modal with approval and rejection handlers -->
     <EoiApplicationsModal
       :isOpen="isModalOpen"
       :application="selectedInstitute"
       @close="closeModal"
       @application-updated="handleApplicationUpdated"
-      :key="selectedInstitute ? selectedInstitute.id : 'no-institute'"
+      :key="modalKey"
     />
   </div>
 </template>
@@ -154,9 +158,8 @@
 import { ref, onMounted, computed } from 'vue'
 import { RefreshCw } from 'lucide-vue-next'
 import { useToast } from 'vue-toastification'
-import EoiApplicationsModal from './EoiApplicationsModal.vue'
-import { debounce } from 'lodash'
-import apiService from '@/services/services'
+import EoiApplicationsModal from './EoiApplicationsModal.vue' // Adjust path as necessary
+import apiService from '@/services/services' // Adjust path as necessary
 
 const toast = useToast()
 
@@ -165,20 +168,26 @@ const isModalOpen = ref(false)
 const selectedInstitute = ref(null)
 const loading = ref(false)
 const searchQuery = ref('')
+const modalKey = ref(0) // For re-rendering the modal
 
 const fetchInstitutes = async () => {
   loading.value = true
   try {
     const response = await apiService.getMhpcInstitutes()
-    if (response && response.data && response.data.results) {
-      institutes.value = response.data.results // Extract the "results" array
+    if (response && response.data && Array.isArray(response.data.results)) {
+      institutes.value = response.data.results.map(item => ({
+        ...item,
+        id: item.CID
+      }));
     } else {
-      console.error('Invalid API response:', response)
-      toast.error('Failed to fetch institute applications: Invalid API response.')
+      console.error('Invalid API response structure:', response)
+      institutes.value = [];
+      toast.error('Failed to fetch applications: Invalid API response.')
     }
   } catch (error) {
     console.error('Error fetching institutes:', error)
-    toast.error('Failed to fetch institute applications.')
+    institutes.value = [];
+    toast.error(`Failed to fetch applications: ${error.message}`)
   } finally {
     loading.value = false
   }
@@ -186,66 +195,128 @@ const fetchInstitutes = async () => {
 
 onMounted(fetchInstitutes)
 
-const debouncedSearch = debounce(fetchInstitutes, 300)
-
 const openModal = (institute) => {
-  selectedInstitute.value = { ...institute }
+  selectedInstitute.value = JSON.parse(JSON.stringify(institute));
+  modalKey.value++;
   isModalOpen.value = true
 }
 
 const closeModal = () => {
   isModalOpen.value = false
-  selectedInstitute.value = null
 }
 
-const handleApplicationUpdated = (updatedApplication) => {
-  // Update the institutes array with the new application data
-  institutes.value = institutes.value.map((institute) => {
-    if (institute.id === updatedApplication.id) {
-      return updatedApplication // Replace with updated data
+const handleApplicationUpdated = (updatedApplicationData) => {
+  const applicationToUpdate = {
+    ...updatedApplicationData,
+    id: updatedApplicationData.id || updatedApplicationData.CID
+  };
+
+  if (!applicationToUpdate || typeof applicationToUpdate.id === 'undefined') {
+    console.error('Received invalid updatedApplication data (missing id/CID field):', updatedApplicationData);
+    toast.error('Update failed: Invalid data from server (missing identifier).');
+    fetchInstitutes();
+    return;
+  }
+
+  const index = institutes.value.findIndex(inst => inst.id === applicationToUpdate.id);
+
+  if (index !== -1) {
+    // Ensure the updatedApplicationData (and thus applicationToUpdate) contains the LATEST application_status
+    institutes.value.splice(index, 1, JSON.parse(JSON.stringify(applicationToUpdate)));
+    toast.success(`Application ${applicationToUpdate.CID} updated successfully!`);
+
+    if (isModalOpen.value && selectedInstitute.value && selectedInstitute.value.id === applicationToUpdate.id) {
+       selectedInstitute.value = JSON.parse(JSON.stringify(applicationToUpdate));
+       modalKey.value++;
     }
-    return institute
-  })
-
-  // Optionally, re-fetch the institutes to ensure data is up-to-date
-  // fetchInstitutes();
+  } else {
+    console.warn(`Updated application ID ${applicationToUpdate.id} (original CID: ${applicationToUpdate.CID}) not found in local list. Refreshing list.`);
+    fetchInstitutes();
+  }
 }
+
 
 const filteredEois = computed(() => {
-  const query = searchQuery.value.toLowerCase()
+  const query = searchQuery.value.toLowerCase().trim()
+  if (!query) {
+    return institutes.value
+  }
   return institutes.value.filter((institute) => {
+    const appIDCID = String(institute.CID || '').toLowerCase()
+    const instituteName = String(institute.name_of_institution || '').toLowerCase()
+    const programName = String(institute.program_type?.program_name || '').toLowerCase()
+    // Optionally, you could also search by application_status:
+    // const status = String(institute.application_status || '').toLowerCase();
+    // return appIDCID.includes(query) || instituteName.includes(query) || programName.includes(query) || status.includes(query);
+
     return (
-      String(institute.CID).toLowerCase().includes(query) ||
-      institute.full_name.toLowerCase().includes(query)
+      appIDCID.includes(query) ||
+      instituteName.includes(query) ||
+      programName.includes(query)
     )
   })
 })
 
-const formatDate = (date) => {
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
   try {
-    return new Date(date).toLocaleDateString('en-US', {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const parsedDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        if (!isNaN(parsedDate.getTime())) {
+          return parsedDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC'
+          });
+        }
+      }
+      return 'Invalid Date';
+    }
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-    })
+      timeZone: 'UTC'
+    });
   } catch (error) {
-    console.error('Error formatting date:', date, error)
-    return 'Invalid Date'
+    console.error('Error formatting date:', dateString, error);
+    return 'Invalid Date';
   }
 }
 
 const getStatusClasses = (institute) => {
+  const statusText = institute.application_status ? institute.application_status.toLowerCase() : '';
+  let statusColorClasses = 'bg-yellow-100 text-yellow-800'; // Default
+
+  if (statusText.includes('approved')) {
+    statusColorClasses = 'bg-green-100 text-green-800';
+  } else if (statusText.includes('regretted') || statusText.includes('rejected')) {
+    statusColorClasses = 'bg-red-100 text-red-800';
+  } else if (statusText.includes('pending') || statusText.includes('submitted') || statusText.includes('verification') || !statusText) {
+    statusColorClasses = 'bg-yellow-100 text-yellow-800';
+  }
+  // Add more specific conditions if needed:
+  // else if (statusText.includes('under review')) {
+  //   statusColorClasses = 'bg-blue-100 text-blue-800';
+  // }
+
   return [
-    'px-3 py-1 rounded-full text-xs font-medium',
-    {
-      'bg-yellow-100 text-yellow-800': institute.review_decision === 'Pending',
-      'bg-green-100 text-green-800': institute.review_decision === 'Approved',
-      'bg-red-100 text-red-800': institute.review_decision === 'Regretted',
-    },
-  ]
-}
+    'px-3 py-1 rounded-full text-xs font-medium inline-block',
+    statusColorClasses,
+  ];
+};
 </script>
 
 <style scoped>
-/* Tailwind styles - no need for custom styles here, Tailwind classes are used */
+.max-w-xs {
+  max-width: 20rem;
+}
+.break-words {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
 </style>
