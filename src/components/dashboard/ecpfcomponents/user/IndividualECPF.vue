@@ -5,27 +5,18 @@
     </h1>
 
     <!-- Loading Indicator -->
-    <div
-      v-if="isLoading"
-      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
-    >
+    <div v-if="isLoading" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
       <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
       <p class="ml-4 text-white text-xl">Processing...</p>
     </div>
 
     <!-- Error Message -->
-    <div
-      v-if="errorMessage"
-      class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded break-words"
-    >
+    <div v-if="errorMessage" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded break-words">
       <p><strong>Error:</strong> {{ errorMessage }}</p>
     </div>
 
     <!-- Success Message -->
-    <div
-      v-if="successMessage"
-      class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded"
-    >
+    <div v-if="successMessage" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
       <p>{{ successMessage }}</p>
     </div>
 
@@ -36,23 +27,16 @@
 
       <!-- Contact & Address Section -->
       <!-- Use v-model to enable two-way binding -->
-      <ContactAddressSection
-        v-model:contact-data="formData.contact"
-        v-model:present-address="formData.presentAddress"
-        v-model:permanent-address="formData.permanentAddress"
-        :dzongkhag-options="dzongkhagOptions"
-      />
+      <ContactAddressSection v-model:contact-data="formData.contact" v-model:present-address="formData.presentAddress"
+        v-model:permanent-address="formData.permanentAddress" :dzongkhag-options="dzongkhagOptions" />
 
       <!-- Education Section -->
       <!-- Use v-model for two-way binding -->
       <EducationSection v-model:education-data="formData.education" />
 
       <!-- Proposal Details Section -->
-      <ProposalDetailsSection
-        v-model:proposal-data="formData.proposal"
-        :dzongkhag-options="dzongkhagOptions"
-        :firm-type-options="masterData.firmTypes"
-      />
+      <ProposalDetailsSection v-model:proposal-data="formData.proposal" :dzongkhag-options="dzongkhagOptions"
+        :firm-type-options="masterData.firmTypes" />
 
       <!-- Purpose Section -->
       <PurposeSection v-model:purpose-data="formData.purpose" />
@@ -61,20 +45,13 @@
       <LinkagesSection v-model:linkages="formData.linkages" />
 
       <!-- Financial Capacity Section -->
-      <FinancialCapacitySection
-        v-model:financial-data="formData.financial"
+      <FinancialCapacitySection v-model:financial-data="formData.financial"
         :financial-statement-file-name="formData.financialStatementFile?.name"
-        :budget-plan-file-name="formData.budgetPlanFile?.name"
-        @update:file="handleChildFileUpload"
-      />
+        :budget-plan-file-name="formData.budgetPlanFile?.name" @update:file="handleChildFileUpload" />
+
       <!-- services Category -->
-      <ServicesCategory
-  :serviceCategories="serviceCategories"
-  :selectedCategory="selectedCategory"
-  :details="details"
-  @update:selectedCategory="selectedCategory = $event"
-  @update:details="details = $event"
-/>
+      <ServicesCategory :serviceCategories="serviceCategories" :selectedCategory="selectedCategory" :details="details"
+        @update:selectedCategory="selectedCategory = $event" @update:details="details = $event" />
 
       <!-- SWOT Analysis Section -->
       <SwotAnalysisSection v-model:swot-data="formData.swot" />
@@ -83,38 +60,25 @@
       <FeesChargesSection v-model:fees="formData.fees" :total-fee-amount="totalFeeAmount" />
 
       <!-- Guarantor Details Section -->
-      <GuarantorDetailsSection
-        v-model:guarantor-data="formData.guarantor"
-        :cid-copy-file-name="formData.guarantorCidCopyFile?.name"
-        @update:file="handleChildFileUpload"
-      />
+      <GuarantorDetailsSection v-model:guarantor-data="formData.guarantor"
+        :cid-copy-file-name="formData.guarantorCidCopyFile?.name" @update:file="handleChildFileUpload" />
 
       <!-- Supporting Documents Section -->
-      <SupportingDocumentsSection
-        :cv-file-name="formData.cvFile?.name"
-        @update:file="handleChildFileUpload"
-      />
+      <SupportingDocumentsSection :cv-file-name="formData.cvFile?.name" @update:file="handleChildFileUpload" />
 
       <!-- Declaration -->
       <section class="p-6 bg-white rounded-lg shadow">
         <h2 class="text-xl font-semibold mb-4 text-blue-700">Declaration</h2>
         <div class="flex items-start">
           <div class="flex items-center h-5">
-            <input
-              id="declaration"
-              name="declaration"
-              type="checkbox"
-              v-model="formData.declarationAgreed"
-              required
-              class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-            />
+            <input id="declaration" name="declaration" type="checkbox" v-model="formData.declarationAgreed" required
+              class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" />
           </div>
           <div class="ml-3 text-sm">
-            <label for="declaration" class="font-medium text-gray-700"
-              >I hereby declare that the information provided above is true and correct to the best
+            <label for="declaration" class="font-medium text-gray-700">I hereby declare that the information provided
+              above is true and correct to the best
               of my knowledge and I agree to the terms and conditions.
-              <span class="text-red-500">*</span></label
-            >
+              <span class="text-red-500">*</span></label>
             <p class="text-gray-500">Agreeing to this declaration is mandatory for submission.</p>
           </div>
         </div>
@@ -122,27 +86,18 @@
 
       <!-- Action Buttons -->
       <div
-        class="pt-6 border-t border-gray-200 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4"
-      >
-        <button
-          type="button"
-          @click="handleSaveDraft"
-          :disabled="isLoading"
-          class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        class="pt-6 border-t border-gray-200 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
+        <button type="button" @click="handleSaveDraft" :disabled="isLoading"
+          class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
           {{ isLoading ? 'Saving...' : 'Save as Draft' }}
         </button>
-        <button
-          type="submit"
-          :disabled="!formData.declarationAgreed || isLoading"
-          :class="[
-            'inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white',
-            formData.declarationAgreed && !isLoading
-              ? 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer'
-              : 'bg-blue-300 cursor-not-allowed',
-            'disabled:opacity-50 disabled:cursor-not-allowed',
-          ]"
-        >
+        <button type="submit" :disabled="!formData.declarationAgreed || isLoading" :class="[
+          'inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white',
+          formData.declarationAgreed && !isLoading
+            ? 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer'
+            : 'bg-blue-300 cursor-not-allowed',
+          'disabled:opacity-50 disabled:cursor-not-allowed',
+        ]">
           {{ isLoading ? 'Submitting...' : 'Submit Application' }}
         </button>
       </div>
@@ -176,6 +131,7 @@ const isLoading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
 const draftId = ref(null)
+const serviceCategories = ref([]) // <-- Add this
 
 // --- Instantiate Auth Store ---
 const router = useRouter()
@@ -279,6 +235,21 @@ onMounted(async () => {
     console.error('Error fetching firm types:', error)
     toast.error(`Failed to load firm types: ${error.message || 'Unknown error'}.`) // <-- Use toast for errors
     masterData.firmTypes = []
+  }
+
+  // Fetch Service Categories
+  try {
+    if (typeof apiServices.getMastersServiceCategories === 'function') {
+      const res = await apiServices.getMastersServiceCategories()
+      serviceCategories.value = res?.data?.results || []
+    } else {
+      serviceCategories.value = []
+      console.warn('apiServices.getMastersServiceCategories not found.')
+    }
+  } catch (error) {
+    console.error('Error fetching service categories:', error)
+    toast.error(`Failed to load service categories: ${error.message || 'Unknown error'}.`)
+    serviceCategories.value = []
   } finally {
     isLoading.value = false
   }
@@ -357,6 +328,8 @@ const prepareFormData = (status) => {
   submissionData.append('guarantor_contact', formData.guarantor.contactNumber)
   submissionData.append('linkages', JSON.stringify(formData.linkages))
   submissionData.append('fees', JSON.stringify(formData.fees))
+  submissionData.append('service_category', formData.serviceCategory) // or whatever your field is
+  submissionData.append('service_category_details', formData.serviceCategoryDetails) // if needed
 
   // Append Files (USING BACKEND EXPECTED KEYS)
   if (formData.financialStatementFile) {
