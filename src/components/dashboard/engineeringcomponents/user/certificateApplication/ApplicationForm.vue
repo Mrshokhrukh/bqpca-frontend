@@ -812,6 +812,7 @@
 
 <script setup>
 import { ref, reactive, watch, computed, onMounted } from 'vue'
+import { countryData } from '@/constants/countries'
 import apiService from '@/services/services'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
@@ -870,7 +871,7 @@ const submissionProgress = ref(0)
 
 // ADD these handler functions
 const handleQualificationNameChange = () => {
-  console.log('Qualification selection changed to:', qualificationNameSelection.value)
+  // console.log('Qualification selection changed to:', qualificationNameSelection.value)
 
   // Clear previous errors
   delete errors.qualification_name
@@ -887,11 +888,11 @@ const handleQualificationNameChange = () => {
     newQualificationName.value = ''
   }
 
-  console.log('localFormData.qualification_name set to:', localFormData.qualification_name)
+  // console.log('localFormData.qualification_name set to:', localFormData.qualification_name)
 }
 
 const handleInstituteChange = () => {
-  console.log('Institute selection changed to:', instituteSelection.value)
+  // console.log('Institute selection changed to:', instituteSelection.value)
 
   // Clear previous errors
   delete errors.institute
@@ -917,7 +918,7 @@ const handleInstituteChange = () => {
     newInstitute.country = ''
   }
 
-  console.log('localFormData.institute set to:', localFormData.institute)
+  // console.log('localFormData.institute set to:', localFormData.institute)
 }
 
 // ADD function to create new qualification in master data
@@ -930,7 +931,7 @@ const createNewQualification = async () => {
       qualification_type: Number(localFormData.qualification_type)
     }
 
-    console.log('Creating new qualification with data:', qualificationData)
+    // console.log('Creating new qualification with data:', qualificationData)
 
     // Validate the data before sending
     if (!qualificationData.qualification || qualificationData.qualification.length < 3) {
@@ -944,8 +945,8 @@ const createNewQualification = async () => {
     // Use the API service to create the qualification
     const response = await apiService.createEpcMastersQualification(qualificationData)
 
-    console.log('Create qualification response:', response)
-    console.log('Response data:', response.data)
+    // console.log('Create qualification response:', response)
+    // console.log('Response data:', response.data)
 
     if (response.data && response.data.id) {
       const newQualId = response.data.id
@@ -953,7 +954,7 @@ const createNewQualification = async () => {
       // Add to local qualifications array for immediate use
       qualifications.value.push(response.data)
 
-      console.log('Successfully created qualification with ID:', newQualId)
+      // console.log('Successfully created qualification with ID:', newQualId)
       toast.success(`New qualification "${newQualificationName.value}" added successfully!`)
 
       return newQualId
@@ -1003,9 +1004,9 @@ const createNewInstitute = async () => {
       country: newInstitute.country // This is already the country code from the dropdown value
     }
 
-    console.log('Creating new institute with data:', instituteData)
-    console.log('Country code being sent:', instituteData.country)
-    console.log('Country name (for display):', getCountryName(instituteData.country))
+    // console.log('Creating new institute with data:', instituteData)
+    // console.log('Country code being sent:', instituteData.country)
+    // console.log('Country name (for display):', getCountryName(instituteData.country))
 
     // Validate that we have a country code (not name)
     if (!instituteData.country || instituteData.country.length > 3) {
@@ -1015,8 +1016,8 @@ const createNewInstitute = async () => {
     // Use your existing createEpcMastersUniversity method
     const response = await apiService.createEpcMastersUniversity(instituteData)
 
-    console.log('Create institute response:', response)
-    console.log('Response data:', response.data)
+    // console.log('Create institute response:', response)
+    // console.log('Response data:', response.data)
 
     if (response.data && response.data.id) {
       const newInstId = response.data.id
@@ -1162,9 +1163,10 @@ const getSubmissionProgressText = () => {
       return 'Step 1: Creating new qualification in system'
     case 'institute':
       return hasNewQualification() ? 'Step 2: Creating new institute in system' : 'Step 1: Creating new institute in system'
-    case 'application':
+    case 'application': {
       const stepNum = (hasNewQualification() ? 1 : 0) + (hasNewInstitute() ? 1 : 0) + 1
       return `Step ${stepNum}: Submitting your application`
+    }
     default:
       return 'Processing your submission...'
   }
@@ -1243,200 +1245,7 @@ const filteredQualifications = computed(() => {
   )
 })
 
-// List of countries
-const countries = ref([
-  { name: 'Afghanistan', code: 'AF' },
-  { name: 'Albania', code: 'AL' },
-  { name: 'Algeria', code: 'DZ' },
-  { name: 'Andorra', code: 'AD' },
-  { name: 'Angola', code: 'AO' },
-  { name: 'Antigua and Barbuda', code: 'AG' },
-  { name: 'Argentina', code: 'AR' },
-  { name: 'Armenia', code: 'AM' },
-  { name: 'Australia', code: 'AU' },
-  { name: 'Austria', code: 'AT' },
-  { name: 'Azerbaijan', code: 'AZ' },
-  { name: 'Bahamas', code: 'BS' },
-  { name: 'Bahrain', code: 'BH' },
-  { name: 'Bangladesh', code: 'BD' },
-  { name: 'Barbados', code: 'BB' },
-  { name: 'Belarus', code: 'BY' },
-  { name: 'Belgium', code: 'BE' },
-  { name: 'Belize', code: 'BZ' },
-  { name: 'Benin', code: 'BJ' },
-  { name: 'Bhutan', code: 'BT' },
-  { name: 'Bolivia', code: 'BO' },
-  { name: 'Bosnia and Herzegovina', code: 'BA' },
-  { name: 'Botswana', code: 'BW' },
-  { name: 'Brazil', code: 'BR' },
-  { name: 'Brunei', code: 'BN' },
-  { name: 'Bulgaria', code: 'BG' },
-  { name: 'Burkina Faso', code: 'BF' },
-  { name: 'Burundi', code: 'BI' },
-  { name: 'Cambodia', code: 'KH' },
-  { name: 'Cameroon', code: 'CM' },
-  { name: 'Canada', code: 'CA' },
-  { name: 'Cape Verde', code: 'CV' },
-  { name: 'Central African Republic', code: 'CF' },
-  { name: 'Chad', code: 'TD' },
-  { name: 'Chile', code: 'CL' },
-  { name: 'China', code: 'CN' },
-  { name: 'Colombia', code: 'CO' },
-  { name: 'Comoros', code: 'KM' },
-  { name: 'Congo', code: 'CG' },
-  { name: 'Costa Rica', code: 'CR' },
-  { name: 'Croatia', code: 'HR' },
-  { name: 'Cuba', code: 'CU' },
-  { name: 'Cyprus', code: 'CY' },
-  { name: 'Czech Republic', code: 'CZ' },
-  { name: 'Denmark', code: 'DK' },
-  { name: 'Djibouti', code: 'DJ' },
-  { name: 'Dominica', code: 'DM' },
-  { name: 'Dominican Republic', code: 'DO' },
-  { name: 'East Timor', code: 'TL' },
-  { name: 'Ecuador', code: 'EC' },
-  { name: 'Egypt', code: 'EG' },
-  { name: 'El Salvador', code: 'SV' },
-  { name: 'Equatorial Guinea', code: 'GQ' },
-  { name: 'Eritrea', code: 'ER' },
-  { name: 'Estonia', code: 'EE' },
-  { name: 'Ethiopia', code: 'ET' },
-  { name: 'Fiji', code: 'FJ' },
-  { name: 'Finland', code: 'FI' },
-  { name: 'France', code: 'FR' },
-  { name: 'Gabon', code: 'GA' },
-  { name: 'Gambia', code: 'GM' },
-  { name: 'Georgia', code: 'GE' },
-  { name: 'Germany', code: 'DE' },
-  { name: 'Ghana', code: 'GH' },
-  { name: 'Greece', code: 'GR' },
-  { name: 'Grenada', code: 'GD' },
-  { name: 'Guatemala', code: 'GT' },
-  { name: 'Guinea', code: 'GN' },
-  { name: 'Guinea-Bissau', code: 'GW' },
-  { name: 'Guyana', code: 'GY' },
-  { name: 'Haiti', code: 'HT' },
-  { name: 'Honduras', code: 'HN' },
-  { name: 'Hungary', code: 'HU' },
-  { name: 'Iceland', code: 'IS' },
-  { name: 'India', code: 'IN' },
-  { name: 'Indonesia', code: 'ID' },
-  { name: 'Iran', code: 'IR' },
-  { name: 'Iraq', code: 'IQ' },
-  { name: 'Ireland', code: 'IE' },
-  { name: 'Israel', code: 'IL' },
-  { name: 'Italy', code: 'IT' },
-  { name: 'Ivory Coast', code: 'CI' },
-  { name: 'Jamaica', code: 'JM' },
-  { name: 'Japan', code: 'JP' },
-  { name: 'Jordan', code: 'JO' },
-  { name: 'Kazakhstan', code: 'KZ' },
-  { name: 'Kenya', code: 'KE' },
-  { name: 'Kiribati', code: 'KI' },
-  { name: 'Korea, North', code: 'KP' },
-  { name: 'Korea, South', code: 'KR' },
-  { name: 'Kuwait', code: 'KW' },
-  { name: 'Kyrgyzstan', code: 'KG' },
-  { name: 'Laos', code: 'LA' },
-  { name: 'Latvia', code: 'LV' },
-  { name: 'Lebanon', code: 'LB' },
-  { name: 'Lesotho', code: 'LS' },
-  { name: 'Liberia', code: 'LR' },
-  { name: 'Libya', code: 'LY' },
-  { name: 'Liechtenstein', code: 'LI' },
-  { name: 'Lithuania', code: 'LT' },
-  { name: 'Luxembourg', code: 'LU' },
-  { name: 'Madagascar', code: 'MG' },
-  { name: 'Malawi', code: 'MW' },
-  { name: 'Malaysia', code: 'MY' },
-  { name: 'Maldives', code: 'MV' },
-  { name: 'Mali', code: 'ML' },
-  { name: 'Malta', code: 'MT' },
-  { name: 'Marshall Islands', code: 'MH' },
-  { name: 'Mauritania', code: 'MR' },
-  { name: 'Mauritius', code: 'MU' },
-  { name: 'Mexico', code: 'MX' },
-  { name: 'Micronesia', code: 'FM' },
-  { name: 'Moldova', code: 'MD' },
-  { name: 'Monaco', code: 'MC' },
-  { name: 'Mongolia', code: 'MN' },
-  { name: 'Montenegro', code: 'ME' },
-  { name: 'Morocco', code: 'MA' },
-  { name: 'Mozambique', code: 'MZ' },
-  { name: 'Myanmar', code: 'MM' },
-  { name: 'Namibia', code: 'NA' },
-  { name: 'Nauru', code: 'NR' },
-  { name: 'Nepal', code: 'NP' },
-  { name: 'Netherlands', code: 'NL' },
-  { name: 'New Zealand', code: 'NZ' },
-  { name: 'Nicaragua', code: 'NI' },
-  { name: 'Niger', code: 'NE' },
-  { name: 'Nigeria', code: 'NG' },
-  { name: 'Norway', code: 'NO' },
-  { name: 'Oman', code: 'OM' },
-  { name: 'Pakistan', code: 'PK' },
-  { name: 'Palau', code: 'PW' },
-  { name: 'Panama', code: 'PA' },
-  { name: 'Papua New Guinea', code: 'PG' },
-  { name: 'Paraguay', code: 'PY' },
-  { name: 'Peru', code: 'PE' },
-  { name: 'Philippines', code: 'PH' },
-  { name: 'Poland', code: 'PL' },
-  { name: 'Portugal', code: 'PT' },
-  { name: 'Qatar', code: 'QA' },
-  { name: 'Romania', code: 'RO' },
-  { name: 'Russia', code: 'RU' },
-  { name: 'Saint Kitts and Nevis', code: 'KN' },
-  { name: 'Saint Lucia', code: 'LC' },
-  { name: 'Saint Vincent and the Grenadines', code: 'VC' },
-  { name: 'Samoa', code: 'WS' },
-  { name: 'San Marino', code: 'SM' },
-  { name: 'Sao Tome and Principe', code: 'ST' },
-  { name: 'Saudi Arabia', code: 'SA' },
-  { name: 'Senegal', code: 'SN' },
-  { name: 'Serbia', code: 'RS' },
-  { name: 'Seychelles', code: 'SC' },
-  { name: 'Sierra Leone', code: 'SL' },
-  { name: 'Singapore', code: 'SG' },
-  { name: 'Slovakia', code: 'SK' },
-  { name: 'Slovenia', code: 'SI' },
-  { name: 'Solomon Islands', code: 'SB' },
-  { name: 'Somalia', code: 'SO' },
-  { name: 'South Africa', code: 'ZA' },
-  { name: 'South Sudan', code: 'SS' },
-  { name: 'Spain', code: 'ES' },
-  { name: 'Sri Lanka', code: 'LK' },
-  { name: 'Sudan', code: 'SD' },
-  { name: 'Suriname', code: 'SR' },
-  { name: 'Sweden', code: 'SE' },
-  { name: 'Switzerland', code: 'CH' },
-  { name: 'Syria', code: 'SY' },
-  { name: 'Taiwan', code: 'TW' },
-  { name: 'Tajikistan', code: 'TJ' },
-  { name: 'Tanzania', code: 'TZ' },
-  { name: 'Thailand', code: 'TH' },
-  { name: 'Togo', code: 'TG' },
-  { name: 'Tonga', code: 'TO' },
-  { name: 'Trinidad and Tobago', code: 'TT' },
-  { name: 'Tunisia', code: 'TN' },
-  { name: 'Turkey', code: 'TR' },
-  { name: 'Turkmenistan', code: 'TM' },
-  { name: 'Tuvalu', code: 'TV' },
-  { name: 'Uganda', code: 'UG' },
-  { name: 'Ukraine', code: 'UA' },
-  { name: 'United Arab Emirates', code: 'AE' },
-  { name: 'United Kingdom', code: 'GB' },
-  { name: 'United States', code: 'US' },
-  { name: 'Uruguay', code: 'UY' },
-  { name: 'Uzbekistan', code: 'UZ' },
-  { name: 'Vanuatu', code: 'VU' },
-  { name: 'Vatican City', code: 'VA' },
-  { name: 'Venezuela', code: 'VE' },
-  { name: 'Vietnam', code: 'VN' },
-  { name: 'Yemen', code: 'YE' },
-  { name: 'Zambia', code: 'ZM' },
-  { name: 'Zimbabwe', code: 'ZW' }
-])
+const countries = ref(countryData)
 
 // ADD these helper functions for country code conversion
 const getCountryName = (countryCode) => {
@@ -1444,24 +1253,6 @@ const getCountryName = (countryCode) => {
   return country ? country.name : countryCode
 }
 
-const getCountryCode = (countryName) => {
-  const country = countries.value.find(c => c.name === countryName)
-  return country ? country.code : countryName
-}
-
-// Helper functions
-// const addDocument = () => {
-//   supportingDocuments.value.push({ type: '', files: [], description: '' })
-// }
-
-// const removeDocument = (index) => {
-//   if (supportingDocuments.value.length > 1) {
-//     supportingDocuments.value.splice(index, 1)
-//     updateFormDocuments()
-//   } else {
-//     toast.warning('At least one document entry is required.')
-//   }
-// }
 
 const handleFileSelect = (event, index) => {
   const files = Array.from(event.target.files)
@@ -1504,7 +1295,7 @@ const updateFormDocuments = () => {
     return acc
   }, [])
   localFormData.documents = documents
-  console.log('Updated localFormData.documents:', localFormData.documents)
+  // console.log('Updated localFormData.documents:', localFormData.documents)
 }
 
 // NOW define all the functions that use localFormData
@@ -1527,7 +1318,7 @@ const checkExistingApplication = async () => {
                 qual => qual.application === applicationId
               )
             }
-          } catch (qualError) {
+          } catch {
             console.log('No existing qualification found - this is okay')
           }
 
@@ -1561,7 +1352,7 @@ const checkExistingApplication = async () => {
                 qual => qual.application === userApp.id
               )
             }
-          } catch (qualError) {
+          } catch {
             console.log('No existing qualification found - this is okay')
           }
 
@@ -1610,7 +1401,7 @@ const populateFormFromExistingData = () => {
 
   if (existingQualification.value) {
     const qual = existingQualification.value
-    console.log('Populating from existing qualification:', qual)
+    // console.log('Populating from existing qualification:', qual)
 
     localFormData.qualification_type = qual.qualification_type || ''
 
@@ -1621,10 +1412,10 @@ const populateFormFromExistingData = () => {
         // Found in current list, set both form data and selection
         localFormData.qualification_name = Number(qual.qualification_name)
         qualificationNameSelection.value = String(qual.qualification_name)
-        console.log('Found existing qualification:', existingQual.qualification)
+        // console.log('Found existing qualification:', existingQual.qualification)
       } else {
         // Not in current list, might be a new qualification that was created
-        console.log('Qualification not found in current list, keeping ID:', qual.qualification_name)
+        // console.log('Qualification not found in current list, keeping ID:', qual.qualification_name)
         localFormData.qualification_name = Number(qual.qualification_name)
         qualificationNameSelection.value = String(qual.qualification_name)
       }
@@ -1637,10 +1428,10 @@ const populateFormFromExistingData = () => {
         // Found in current list, set both form data and selection
         localFormData.institute = Number(qual.institute_university)
         instituteSelection.value = String(qual.institute_university)
-        console.log('Found existing institute:', existingInstitute.institute_name)
+        // console.log('Found existing institute:', existingInstitute.institute_name)
       } else {
         // Not in current list, might be a new institute that was created
-        console.log('Institute not found in current list, keeping ID:', qual.institute_university)
+        // console.log('Institute not found in current list, keeping ID:', qual.institute_university)
         localFormData.institute = Number(qual.institute_university)
         instituteSelection.value = String(qual.institute_university)
       }
@@ -1668,23 +1459,23 @@ const populateFormFromExistingData = () => {
 }
 
 // ADD function to clear new entry data when switching back to existing options
-const clearNewEntryData = () => {
-  newQualificationName.value = ''
-  newInstitute.institute_name = ''
-  newInstitute.university = ''
-  newInstitute.country = ''
-}
+// const clearNewEntryData = () => {
+//   newQualificationName.value = ''
+//   newInstitute.institute_name = ''
+//   newInstitute.university = ''
+//   newInstitute.country = ''
+// }
 
-// ADD function to reset form to clean state
-const resetFormToCleanState = () => {
-  qualificationNameSelection.value = ''
-  instituteSelection.value = ''
-  clearNewEntryData()
+// // ADD function to reset form to clean state
+// const resetFormToCleanState = () => {
+//   qualificationNameSelection.value = ''
+//   instituteSelection.value = ''
+//   clearNewEntryData()
 
-  // Reset form data to default values
-  localFormData.qualification_name = ''
-  localFormData.institute = ''
-}
+//   // Reset form data to default values
+//   localFormData.qualification_name = ''
+//   localFormData.institute = ''
+// }
 
 // ADD a helper function to handle document validation errors
 const getDocumentValidationSummary = () => {
@@ -1971,7 +1762,7 @@ const validateFormStageTwo = () => {
   // Document validation
   const missingDocuments = []
 
-  supportingDocuments.value.forEach((doc, index) => {
+  supportingDocuments.value.forEach((doc) => {
     if (!doc.files || doc.files.length === 0) {
       const docTypeName = getDocumentTypeName(doc.type)
       doc.error = `${docTypeName} is required`
@@ -2013,7 +1804,7 @@ const initializeSupportingDocuments = () => {
       description: '',
       error: null // For individual document validation errors
     }))
-    console.log('Initialized supporting documents with all types:', supportingDocuments.value)
+    // console.log('Initialized supporting documents with all types:', supportingDocuments.value)
   }
 }
 // Helper functions for API
@@ -2231,7 +2022,7 @@ const handleNext = async () => {
     apiFormData.append('passport_photo', localFormData.passport_photo)
   }
 
-  console.log('Submitting Stage 1 Data:')
+  // console.log('Submitting Stage 1 Data:')
   for (let pair of apiFormData.entries()) {
     console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]))
   }
@@ -2300,11 +2091,11 @@ const handleSubmitActual = async () => {
     if (hasNewQualification()) totalSteps++
     if (hasNewInstitute()) totalSteps++
 
-    console.log('Starting submission process...')
-    console.log('Has new qualification:', hasNewQualification())
-    console.log('Has new institute:', hasNewInstitute())
-    console.log('Initial qualification ID:', finalQualificationId)
-    console.log('Initial institute ID:', finalInstituteId)
+    // console.log('Starting submission process...')
+    // console.log('Has new qualification:', hasNewQualification())
+    // console.log('Has new institute:', hasNewInstitute())
+    // console.log('Initial qualification ID:', finalQualificationId)
+    // console.log('Initial institute ID:', finalInstituteId)
 
     // Step 1: Create new qualification if needed
     if (hasNewQualification()) {
@@ -2315,7 +2106,7 @@ const handleSubmitActual = async () => {
       try {
         const newQualId = await createNewQualification()
         finalQualificationId = Number(newQualId) // Ensure it's a number
-        console.log('Created new qualification with ID:', finalQualificationId)
+        // console.log('Created new qualification with ID:', finalQualificationId)
         currentStep++
         submissionProgress.value = (currentStep / totalSteps) * 100
       } catch (error) {
@@ -2332,7 +2123,7 @@ const handleSubmitActual = async () => {
       try {
         const newInstId = await createNewInstitute()
         finalInstituteId = Number(newInstId) // Ensure it's a number
-        console.log('Created new institute with ID:', finalInstituteId)
+        // console.log('Created new institute with ID:', finalInstituteId)
         currentStep++
         submissionProgress.value = (currentStep / totalSteps) * 100
       } catch (error) {
@@ -2363,6 +2154,26 @@ const handleSubmitActual = async () => {
     if (completionYear) {
       apiFormData.append('completion_year', completionYear)
     }
+    // Find registration type by name (case-insensitive, allow typo)
+    const getNewRegistrationTypeId = () => {
+      const match = registrationTypes.value.find(
+        t => t.name && t.name.toLowerCase().replace(/[^a-z]/g, '') === 'newregistration'
+      )
+      return match ? match.id : null
+    }
+
+    // Add registration_type for user_qualifications
+    const regTypeId = getNewRegistrationTypeId()
+    if (regTypeId) {
+      apiFormData.append('registration_type', regTypeId)
+    }
+    // ADD registration_date as today (YYYY-MM-DD)
+    const today = new Date()
+    const yyyy = today.getFullYear()
+    const mm = String(today.getMonth() + 1).padStart(2, '0')
+    const dd = String(today.getDate()).padStart(2, '0')
+    const todayStr = `${yyyy}-${mm}-${dd}`
+    apiFormData.append('registration_date', todayStr)
 
     // Add other required fields
     apiFormData.append('is_primary_qualification', 'True')
@@ -2380,14 +2191,14 @@ const handleSubmitActual = async () => {
       }
     })
 
-    console.log('Final submission data:')
-    console.log('- Qualification Type:', Number(localFormData.qualification_type))
-    console.log('- Qualification ID (final):', finalQualificationId)
-    console.log('- Institute ID (final):', finalInstituteId)
-    console.log('- Application ID:', localFormData.application)
+    // console.log('Final submission data:')
+    // console.log('- Qualification Type:', Number(localFormData.qualification_type))
+    // console.log('- Qualification ID (final):', finalQualificationId)
+    // console.log('- Institute ID (final):', finalInstituteId)
+    // console.log('- Application ID:', localFormData.application)
 
     // Log FormData contents for debugging
-    console.log('FormData contents:')
+    // console.log('FormData contents:')
     for (let pair of apiFormData.entries()) {
       console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]))
     }
@@ -2538,11 +2349,11 @@ onMounted(async () => {
     // IMPORTANT: Initialize supporting documents AFTER fetching document types
     initializeSupportingDocuments()
 
-    console.log('Master data fetched successfully')
-    console.log('Qualification Types:', qualificationTypes.value)
-    console.log('Qualifications:', qualifications.value)
-    console.log('Universities:', universities.value)
-    console.log('Document Types:', fetchedDocumentTypes.value)
+    // console.log('Master data fetched successfully')
+    // console.log('Qualification Types:', qualificationTypes.value)
+    // console.log('Qualifications:', qualifications.value)
+    // console.log('Universities:', universities.value)
+    // console.log('Document Types:', fetchedDocumentTypes.value)
 
     const newRegistration = registrationTypes.value.find(
       type => type.name.toLowerCase() === 'new registration'
@@ -2550,7 +2361,7 @@ onMounted(async () => {
 
     if (newRegistration) {
       localFormData.registration_type = newRegistration.id
-      console.log('Auto-selected registration type:', newRegistration.name, newRegistration.id)
+      // console.log('Auto-selected registration type:', newRegistration.name, newRegistration.id)
     }
 
     if (user && user.email) {
