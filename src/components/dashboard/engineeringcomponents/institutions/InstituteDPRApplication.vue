@@ -1,11 +1,8 @@
 <template>
   <div class="mx-auto px-4 py-8">
     <!-- Not Available Status -->
-    <div
-      v-if="reviewDecision === 'Regretted'"
-      class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4"
-      role="alert"
-    >
+    <div v-if="reviewDecision === 'Regretted'" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4"
+      role="alert">
       <p class="font-bold">Application Status: Not Available</p>
       <p>You cannot submit a DPR until your EOI application has been approved.</p>
     </div>
@@ -14,11 +11,8 @@
     <div v-if="isLoading">Loading...</div>
 
     <!-- Pending Status -->
-    <div
-      v-else-if="reviewDecision === 'Pending'"
-      class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4"
-      role="alert"
-    >
+    <div v-else-if="reviewDecision === 'Pending'" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4"
+      role="alert">
       <p class="font-bold">Application Status: Pending</p>
       <p>
         Your application is currently under review. You will be notified once a decision has been
@@ -46,55 +40,31 @@
         <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label for="cid" class="block text-sm font-medium text-gray-700">CID:</label>
-            <input
-              type="text"
-              id="cid"
-              v-model="formData.cid"
+            <input type="text" id="cid" v-model="formData.cid"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              disabled
-            />
+              disabled />
           </div>
           <div>
             <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name:</label>
-            <input
-              type="text"
-              id="fullName"
-              v-model="formData.full_name"
+            <input type="text" id="fullName" v-model="formData.full_name"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              disabled
-            />
+              disabled />
           </div>
           <div>
             <label for="gender" class="block text-sm font-medium text-gray-700">Gender:</label>
-            <input
-              type="text"
-              id="gender"
-              v-model="formData.gender"
+            <input type="text" id="gender" v-model="formData.gender"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              disabled
-            />
+              disabled />
           </div>
           <div>
-            <label for="contactNo" class="block text-sm font-medium text-gray-700"
-              >Contact No.:</label
-            >
-            <input
-              type="text"
-              id="contactNo"
-              v-model="formData.contact_no"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
+            <label for="contactNo" class="block text-sm font-medium text-gray-700">Contact No.:</label>
+            <input type="text" id="contactNo" v-model="formData.contact_no"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
           </div>
           <div>
-            <label for="emailAddress" class="block text-sm font-medium text-gray-700"
-              >Email Address:</label
-            >
-            <input
-              type="email"
-              id="emailAddress"
-              v-model="formData.email_address"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            />
+            <label for="emailAddress" class="block text-sm font-medium text-gray-700">Email Address:</label>
+            <input type="email" id="emailAddress" v-model="formData.email_address"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5" />
           </div>
         </div>
 
@@ -107,110 +77,58 @@
         </div>
         <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="institutionName" class="block text-sm font-medium text-gray-700"
-              >Name of Institution:</label
-            >
-            <input
-              type="text"
-              id="institutionName"
-              v-model="formData.institution_name"
+            <label for="institutionName" class="block text-sm font-medium text-gray-700">Name of Institution:</label>
+            <input type="text" id="institutionName" v-model="formData.institution_name"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              disabled
-            />
+              disabled />
           </div>
           <div>
             <label for="country" class="block text-sm font-medium text-gray-700">Country:</label>
-            <input
-              type="text"
-              id="country"
-              v-model="formData.country"
+            <input type="text" id="country" v-model="formData.country"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              disabled
-            />
+              disabled />
           </div>
           <div>
-            <label for="gewogState" class="block text-sm font-medium text-gray-700"
-              >Gewog/State:</label
-            >
-            <input
-              type="text"
-              id="gewogState"
-              v-model="formData.gewog_state"
+            <label for="gewogState" class="block text-sm font-medium text-gray-700">Gewog/State:</label>
+            <input type="text" id="gewogState" v-model="formData.gewog"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              disabled
-            />
+              disabled />
           </div>
           <div>
-            <label for="chiwog" class="block text-sm font-medium text-gray-700"
-              >Chiwog/Chiwog:</label
-            >
-            <input
-              type="text"
-              id="chiwog"
-              v-model="formData.chiwog"
+            <label for="chiwog" class="block text-sm font-medium text-gray-700">Chiwog/Chiwog:</label>
+            <input type="text" id="chiwog" v-model="formData.chiwog"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              disabled
-            />
+              disabled />
           </div>
           <div>
-            <label for="teachingInstitute" class="block text-sm font-medium text-gray-700"
-              >Teaching Institute:</label
-            >
-            <input
-              type="text"
-              id="teachingInstitute"
-              v-model="formData.teaching_institute"
+            <label for="teachingInstitute" class="block text-sm font-medium text-gray-700">Teaching Institute:</label>
+            <input type="text" id="teachingInstitute" v-model="formData.teaching_institute"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              disabled
-            />
+              disabled />
           </div>
           <div>
-            <label for="courseTitle" class="block text-sm font-medium text-gray-700"
-              >Title of the Course:</label
-            >
-            <input
-              type="text"
-              id="courseTitle"
-              v-model="formData.course_title"
+            <label for="courseTitle" class="block text-sm font-medium text-gray-700">Title of the Course:</label>
+            <input type="text" id="courseTitle" v-model="formData.title_of_course"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              disabled
-            />
+              disabled />
           </div>
           <div>
-            <label for="courseDuration" class="block text-sm font-medium text-gray-700"
-              >Course Duration:</label
-            >
-            <input
-              type="text"
-              id="courseDuration"
-              v-model="formData.course_duration"
+            <label for="courseDuration" class="block text-sm font-medium text-gray-700">Course Duration:</label>
+            <input type="text" id="courseDuration" v-model="formData.course_duration"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              disabled
-            />
+              disabled />
           </div>
           <div>
-            <label for="commencementDate" class="block text-sm font-medium text-gray-700"
-              >Commencement Date:</label
-            >
-            <input
-              type="text"
-              id="commencementDate"
-              v-model="formData.commencement_date"
+            <label for="commencementDate" class="block text-sm font-medium text-gray-700">Commencement Date:</label>
+            <input type="text" id="commencementDate" v-model="formData.commencement_date"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              disabled
-            />
+              disabled />
           </div>
           <div>
-            <label for="programmeType" class="block text-sm font-medium text-gray-700"
-              >Type of Programme:</label
-            >
-            <input
-              type="text"
-              id="programmeType"
-              v-model="formData.programme_type"
+            <label for="programmeType" class="block text-sm font-medium text-gray-700">Type of Programme:</label>
+            <input type="text" id="programmeType" v-model="formData.type_of_programme"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              disabled
-            />
+              disabled />
           </div>
         </div>
 
@@ -224,47 +142,27 @@
         <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label for="headName" class="block text-sm font-medium text-gray-700">Name:</label>
-            <input
-              type="text"
-              id="headName"
-              v-model="formData.head_name"
+            <input type="text" id="headName" v-model="formData.head_name"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              required
-            />
+              required />
           </div>
           <div>
             <label for="headGender" class="block text-sm font-medium text-gray-700">Gender:</label>
-            <input
-              type="text"
-              id="headGender"
-              v-model="formData.head_gender"
+            <input type="text" id="headGender" v-model="formData.head_gender"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              required
-            />
+              required />
           </div>
           <div>
-            <label for="headPhone" class="block text-sm font-medium text-gray-700"
-              >Phone Number:</label
-            >
-            <input
-              type="text"
-              id="headPhone"
-              v-model="formData.head_phone"
+            <label for="headPhone" class="block text-sm font-medium text-gray-700">Phone Number:</label>
+            <input type="text" id="headPhone" v-model="formData.head_phone"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              required
-            />
+              required />
           </div>
           <div>
-            <label for="headEmail" class="block text-sm font-medium text-gray-700"
-              >Email Address:</label
-            >
-            <input
-              type="email"
-              id="headEmail"
-              v-model="formData.head_email"
+            <label for="headEmail" class="block text-sm font-medium text-gray-700">Email Address:</label>
+            <input type="email" id="headEmail" v-model="formData.head_email"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              required
-            />
+              required />
           </div>
         </div>
 
@@ -276,77 +174,48 @@
         <div class="p-8 grid grid-cols-1 gap-6">
           <div>
             <label for="dprName" class="block text-sm font-medium text-gray-700">DPR Name:</label>
-            <input
-              id="dprName"
-              v-model="formData.dpr_name"
+            <input id="dprName" v-model="formData.dpr_name"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              required
-            />
+              required />
           </div>
           <div>
-            <label for="executiveSummary" class="block text-sm font-medium text-gray-700"
-              >Executive Summary:</label
-            >
-            <textarea
-              id="executiveSummary"
-              v-model="formData.executive_summary"
-              rows="5"
+            <label for="executiveSummary" class="block text-sm font-medium text-gray-700">Executive Summary:</label>
+            <textarea id="executiveSummary" v-model="formData.executive_summary" rows="5"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              required
-            ></textarea>
+              required></textarea>
           </div>
           <div>
-            <label for="supportingDocuments" class="block text-sm font-medium text-gray-700"
-              >Supporting Documents (PDF only):</label
-            >
-            <input
-              type="file"
-              id="supportingDocuments"
-              @change="handleFileUpload('supporting_documents')"
+            <label for="supportingDocuments" class="block text-sm font-medium text-gray-700">Supporting Documents (PDF
+              only):</label>
+            <input type="file" id="supportingDocuments" @change="handleFileUpload('supporting_documents')"
               accept="application/pdf"
-              class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-            />
+              class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
           </div>
           <div>
             <label for="remarks" class="block text-sm font-medium text-gray-700">Remarks:</label>
-            <textarea
-              id="remarks"
-              v-model="formData.remarks"
-              rows="3"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            ></textarea>
+            <textarea id="remarks" v-model="formData.remarks" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
           </div>
         </div>
 
         <!-- Declaration Checkbox -->
         <div class="p-8">
           <label class="flex items-center">
-            <input
-              type="checkbox"
-              v-model="formData.declaration"
-              class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <span class="ml-2 text-sm text-gray-700"
-              >I declare that all information provided is accurate.</span
-            >
+            <input type="checkbox" v-model="formData.declaration"
+              class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+            <span class="ml-2 text-sm text-gray-700">I declare that all information provided is accurate.</span>
           </label>
         </div>
 
         <!-- Action Buttons -->
         <div class="mt-12 flex justify-end space-x-4 p-8">
-          <button
-            type="button"
-            @click="handleSaveDraft"
-            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-          >
+          <button type="button" @click="handleSaveDraft"
+            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
             Save as Draft
           </button>
-          <button
-            type="button"
-            @click="handleSubmit"
+          <button type="button" @click="handleSubmit"
             class="px-6 py-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-            :disabled="!formData.declaration"
-          >
+            :disabled="!formData.declaration">
             Submit Application
           </button>
         </div>
@@ -378,13 +247,13 @@ const formData = ref({
   email_address: '',
   institution_name: '',
   country: '',
-  gewog_state: '',
+  gewog: '',
   chiwog: '',
   teaching_institute: '',
-  course_title: '',
+  title_of_course: '',
   course_duration: '',
   commencement_date: '',
-  programme_type: '',
+  type_of_programme: '',
   head_name: '',
   head_gender: '',
   head_phone: '',
@@ -456,13 +325,13 @@ const fetchInstituteData = async () => {
       formData.value.email_address = response.data.email_address || ''
       formData.value.institution_name = response.data.name_of_institution || ''
       formData.value.country = response.data.country || ''
-      formData.value.gewog_state = response.data.gewog_state || ''
+      formData.value.gewog = response.data.gewog || ''
       formData.value.chiwog = response.data.chiwog || ''
       formData.value.teaching_institute = response.data.teaching_institute || ''
-      formData.value.course_title = response.data.course_title || ''
+      formData.value.title_of_course = response.data.title_of_course || ''
       formData.value.course_duration = response.data.course_duration || ''
       formData.value.commencement_date = response.data.commencement_date || ''
-      formData.value.programme_type = response.data.programme_type || ''
+      formData.value.type_of_programme = response.data.type_of_programme || ''
       formData.value.head_name = response.data.head_name || ''
       formData.value.head_gender = response.data.head_gender || ''
       formData.value.head_phone = response.data.head_phone || ''
@@ -513,13 +382,13 @@ const handleSubmit = async () => {
   submitData.append('email_address', formData.value.email_address)
   submitData.append('name_of_institution', formData.value.institution_name)
   submitData.append('country', formData.value.country)
-  submitData.append('gewog_state', formData.value.gewog_state)
+  submitData.append('gewog', formData.value.gewog)
   submitData.append('chiwog', formData.value.chiwog)
   submitData.append('teaching_institute', formData.value.teaching_institute)
-  submitData.append('course_title', formData.value.course_title)
+  submitData.append('title_of_course', formData.value.title_of_course)
   submitData.append('course_duration', formData.value.course_duration)
   submitData.append('commencement_date', formData.value.commencement_date)
-  submitData.append('programme_type', formData.value.programme_type)
+  submitData.append('type_of_programme', formData.value.type_of_programme)
   submitData.append('head_name', formData.value.head_name)
   submitData.append('head_gender', formData.value.head_gender)
   submitData.append('head_phone', formData.value.head_phone)
@@ -564,13 +433,13 @@ const handleSaveDraft = async () => {
   draftData.append('email_address', formData.value.email_address)
   draftData.append('name_of_institution', formData.value.institution_name)
   draftData.append('country', formData.value.country)
-  draftData.append('gewog_state', formData.value.gewog_state)
+  draftData.append('gewog', formData.value.gewog)
   draftData.append('chiwog', formData.value.chiwog)
   draftData.append('teaching_institute', formData.value.teaching_institute)
-  draftData.append('course_title', formData.value.course_title)
+  draftData.append('title_of_course', formData.value.title_of_course)
   draftData.append('course_duration', formData.value.course_duration)
   draftData.append('commencement_date', formData.value.commencement_date)
-  draftData.append('programme_type', formData.value.programme_type)
+  draftData.append('type_of_programme', formData.value.type_of_programme)
   draftData.append('head_name', formData.value.head_name)
   draftData.append('head_gender', formData.value.head_gender)
   draftData.append('head_phone', formData.value.head_phone)
