@@ -117,6 +117,18 @@
                 <input type="url" id="website" v-model.trim="formData.website" placeholder="https://example.com"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
               </div>
+              <div>
+                <label for="country" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                  Country
+                </label>
+                <select id="country" v-model="formData.country"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
+                  <option value="">Select Country</option>
+                  <option v-for="c in countryData" :key="c.code" :value="c.name">
+                    {{ c.name }}
+                  </option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -267,6 +279,7 @@ import { useRouter } from 'vue-router'
 import apiService from '@/services/services'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
+import { countryData } from '@/constants/countries.js'
 
 const router = useRouter()
 const toast = useToast()
@@ -290,7 +303,7 @@ const formData = ref({
 
   // Institution Details
   name_of_institution: '',
-  country: 'BT',
+  country: 'Bhutan', // Default to Bhutan (or any country name)
   gewog: '',
   dzongkhag: '',
   village: '',
@@ -370,6 +383,7 @@ const validateForm = () => {
     { field: 'head_of_institution_gender', label: 'Head of Institution Gender' },
     { field: 'head_of_institution_phone_number', label: 'Head of Institution Phone Number' },
     { field: 'head_of_institution_email', label: 'Head of Institution Email' },
+    { field: 'country', label: 'Country' },
   ]
 
   for (const { field, label } of requiredFields) {
@@ -580,4 +594,3 @@ onMounted(() => {
   margin-left: 2px;
 }
 </style>
-```

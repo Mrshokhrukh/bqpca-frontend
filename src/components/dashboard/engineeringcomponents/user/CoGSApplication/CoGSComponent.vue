@@ -41,7 +41,7 @@
                 placeholder="Enter supervisor's full name" />
               <span v-if="errors.supervisor_name" class="error-message">{{
                 errors.supervisor_name
-              }}</span>
+                }}</span>
             </div>
 
             <!-- Supervisor Designation -->
@@ -52,7 +52,7 @@
                 placeholder="e.g., Head of Department" />
               <span v-if="errors.supervisor_designation" class="error-message">{{
                 errors.supervisor_designation
-              }}</span>
+                }}</span>
             </div>
 
             <!-- Agency / Organization -->
@@ -181,7 +181,7 @@
                 placeholder="Enter your workplace name" />
               <span v-if="errors.custom_workplace_name" class="error-message">{{
                 errors.custom_workplace_name
-                }}</span>
+              }}</span>
               <p class="text-xs text-gray-500">
                 This will create a new workplace entry in our system.
               </p>
@@ -195,7 +195,7 @@
                 placeholder="Enter 8-digit mobile number" />
               <span v-if="errors.contact_number" class="error-message">{{
                 errors.contact_number
-              }}</span>
+                }}</span>
             </div>
 
             <!-- Supervisor Email -->
@@ -206,7 +206,7 @@
                 placeholder="Enter valid official email" />
               <span v-if="errors.email_address" class="error-message">{{
                 errors.email_address
-              }}</span>
+                }}</span>
             </div>
 
             <!-- Reason for Application -->
@@ -217,7 +217,7 @@
                 placeholder="Briefly state why you need this certificate"></textarea>
               <span v-if="errors.reason_for_application" class="error-message">{{
                 errors.reason_for_application
-              }}</span>
+                }}</span>
             </div>
           </div>
         </div>
@@ -287,7 +287,7 @@
                   placeholder="Enter recipient's full name" :disabled="isRecipientSelf" />
                 <span v-if="errors.recipient_name" class="error-message">{{
                   errors.recipient_name
-                }}</span>
+                  }}</span>
               </div>
 
               <!-- Recipient Contact Number -->
@@ -299,7 +299,7 @@
                   class="form-input" placeholder="Enter recipient's contact no." :disabled="isRecipientSelf" />
                 <span v-if="errors.recipient_contact_number" class="error-message">{{
                   errors.recipient_contact_number
-                }}</span>
+                  }}</span>
               </div>
 
               <!-- Recipient Email -->
@@ -310,7 +310,7 @@
                   placeholder="Enter recipient's email address" :disabled="isRecipientSelf" />
                 <span v-if="errors.recipient_email" class="error-message">{{
                   errors.recipient_email
-                }}</span>
+                  }}</span>
               </div>
 
               <!-- Recipient Address -->
@@ -385,7 +385,7 @@
           </div>
           <span v-if="errors.declaration" class="error-message block mt-2">{{
             errors.declaration
-          }}</span>
+            }}</span>
         </div>
       </div>
 
@@ -663,7 +663,7 @@ onMounted(async () => {
 const validateForm = () => {
   Object.keys(errors).forEach((key) => delete errors[key])
   let isValid = true
-  const phoneRegex = /^(17|77)\d{6}$/
+  const phoneRegex = /^(17|77|16)\d{6}$/
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
   if (!form.reason_for_application?.trim()) {
@@ -708,7 +708,7 @@ const validateForm = () => {
       isValid = false
     } else if (!phoneRegex.test(form.recipient_contact_number)) {
       errors.recipient_contact_number =
-        'Please enter a valid 8-digit Bhutanese mobile number (starting with 17 or 77)'
+        'Please enter a valid 8-digit Bhutanese mobile number (starting with 17 or 77 or 16)'
       isValid = false
     }
     if (!form.recipient_email?.trim()) {
