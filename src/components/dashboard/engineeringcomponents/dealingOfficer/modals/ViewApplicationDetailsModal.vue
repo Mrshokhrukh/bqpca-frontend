@@ -2,37 +2,19 @@
 <template>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModalHandler" class="relative z-50">
-      <TransitionChild
-        as="template"
-        enter="duration-300 ease-out"
-        enter-from="opacity-0"
-        enter-to="opacity-100"
-        leave="duration-200 ease-in"
-        leave-from="opacity-100"
-        leave-to="opacity-0"
-      >
+      <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
+        leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" />
       </TransitionChild>
 
       <div class="fixed inset-0 overflow-y-auto">
         <div class="flex min-h-full items-start justify-center p-4 sm:pt-12">
-          <TransitionChild
-            as="template"
-            enter="duration-300 ease-out"
-            enter-from="opacity-0 scale-95"
-            enter-to="opacity-100 scale-100"
-            leave="duration-200 ease-in"
-            leave-from="opacity-100 scale-100"
-            leave-to="opacity-0 scale-95"
-          >
+          <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95">
             <DialogPanel
-              class="w-full w-full transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all max-h-screen sm:max-h-[calc(100vh-80px)] overflow-y-auto"
-            >
-              <ApplicationStatus
-                v-if="application"
-                :overallStatus="overallStatus"
-                @close="closeModal"
-              />
+              class="w-full w-full transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all max-h-screen sm:max-h-[calc(100vh-80px)] overflow-y-auto">
+              <ApplicationStatus v-if="application" :overallStatus="overallStatus" @close="closeModal" />
 
               <div v-if="application" class="px-8 py-6 bg-white">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -62,45 +44,29 @@
 
                   <!-- Right Column -->
                   <div class="lg:col-span-2 space-y-6">
-                    <ApplicationDetailsSection
-                      :application="application"
-                      :personnelCategories="personnelCategories"
-                      :personnelSubcategories="personnelSubcategories"
-                      :sectors="sectors"
-                      @update="refreshApplication"
-                    />
-                    <QualificationList
-                      :qualifications="application.user_qualifications"
-                      :applicationId="application.id"
-                      @update="refreshApplication"
-                    />
+                    <ApplicationDetailsSection :application="application" :personnelCategories="personnelCategories"
+                      :personnelSubcategories="personnelSubcategories" :sectors="sectors"
+                      @update="refreshApplication" />
+                    <QualificationList :qualifications="application.user_qualifications" :applicationId="application.id"
+                      :registrationTypes="registrationTypes" @update="refreshApplication" />
                   </div>
                 </div>
               </div>
-              <FooterButtons
-                v-if="application"
-                :application="application"
-                @open-certificate-modal="openCertificateModal"
-                @update="refreshApplication"
-                :is-loading="isLoading"
-                @close="closeModal"
-              />
+              <FooterButtons v-if="application" :application="application"
+                @open-certificate-modal="openCertificateModal" @update="refreshApplication" :is-loading="isLoading"
+                @close="closeModal" />
             </DialogPanel>
           </TransitionChild>
         </div>
       </div>
     </Dialog>
   </TransitionRoot>
-  <EPCCertificateModal
-    v-if="isCertificateModalOpen"
-    :application="application"
-    @close="closeCertificateModal"
-  />
+  <EPCCertificateModal v-if="isCertificateModalOpen" :application="application" @close="closeCertificateModal" />
 </template>
 
 <script setup>
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, } from 'vue'
 import apiServices from '@/services/services'
 import EPCCertificateModal from '@/components/common/EPC/EPCCertificateModal.vue'
 import PersonalInformation from './applicationDetailsComponents/PersonalInformation.vue'
@@ -126,6 +92,10 @@ const props = defineProps({
     default: () => [],
   },
   sectors: {
+    type: Array,
+    default: () => [],
+  },
+  registrationTypes: {
     type: Array,
     default: () => [],
   },
@@ -181,6 +151,8 @@ const openCertificateModal = () => {
 const closeCertificateModal = () => {
   isCertificateModalOpen.value = false
 }
+
+
 </script>
 
 <style scoped>
@@ -226,6 +198,7 @@ const closeCertificateModal = () => {
 
 /* Status indicator animations */
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;

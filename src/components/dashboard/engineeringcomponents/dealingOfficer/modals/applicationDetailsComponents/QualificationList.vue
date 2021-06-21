@@ -6,22 +6,23 @@
         <span>Qualification Details</span>
       </h4>
 
+      <!-- i want to show Qualificatio type  Name here by registration type here -->
+
       <div v-if="qualifications && qualifications.length > 0" class="space-y-8">
-        <div
-          v-for="qualification in qualifications"
-          :key="qualification.id"
-          class="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden"
-        >
+        <div v-for="qualification in qualifications" :key="qualification.id"
+          class="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
+
           <div class="border-b border-gray-200">
+            <div class="px-6 py-2 text-sm text-gray-700">
+              <span class="font-semibold text-2xl px-4">Registration Type:</span>
+              {{ getRegistrationTypeName(qualification.registration_type) }}
+            </div>
             <QualificationDetails :qualification="qualification" class="bg-white" />
           </div>
 
           <div class="p-6">
-            <ApplicationReview
-              :qualification="qualification"
-              :applicationId="applicationId"
-              @update="$emit('update')"
-            />
+            <ApplicationReview :qualification="qualification" :applicationId="applicationId"
+              @update="$emit('update')" />
           </div>
         </div>
       </div>
@@ -41,7 +42,7 @@ import { GraduationCap, CircleAlert } from 'lucide-vue-next'
 import QualificationDetails from './QualificationDetails.vue'
 import ApplicationReview from './ApplicationReview.vue'
 
-defineProps({
+const props = defineProps({
   qualifications: {
     type: Array,
     default: () => [],
@@ -50,8 +51,16 @@ defineProps({
     type: Number,
     required: true,
   },
+  registrationTypes: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 defineEmits(['update'])
+
+const getRegistrationTypeName = (id) => {
+  const type = props.registrationTypes.find(rt => rt.id === id)
+  return type ? type.name : 'N/A'
+}
 </script>
-../ApplicationReview.vue
