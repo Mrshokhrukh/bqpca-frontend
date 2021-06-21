@@ -78,8 +78,8 @@
             </label>
             <input type="text" id="application"
               class="block w-full rounded-lg border-gray-300 shadow-sm bg-gray-100 py-2 px-3 text-sm" :value="applications.length >= 1
-                  ? `${applications[0].registration_no} - ${applications[0].full_name}`
-                  : 'Loading or No Application Found...'
+                ? `${applications[0].registration_no} - ${applications[0].full_name}`
+                : 'Loading or No Application Found...'
                 " readonly disabled />
             <p class="text-xs text-gray-500 mt-1">
               This additional qualification will be linked to your primary registration above.
@@ -87,7 +87,7 @@
           </div>
           <span v-if="errors.application" class="text-sm text-red-500 mt-1 block">{{
             errors.application
-          }}</span>
+            }}</span>
         </div>
       </div>
 
@@ -110,7 +110,7 @@
               </select>
               <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
                 errors.qualification_type
-              }}</span>
+                }}</span>
             </div>
 
             <!-- Qualification Name -->
@@ -127,22 +127,73 @@
               </select>
               <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
                 errors.qualification_name
-              }}</span>
+                }}</span>
             </div>
 
-            <!-- Institute/University -->
+            <!-- Institute/University with Add New Option -->
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Institute/University</label>
-              <select v-model="localFormData.institute"
+              <select v-model="instituteSelection"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm">
                 <option value="">Select Institute/University</option>
                 <option v-for="university in universities" :key="university.id" :value="university.id">
                   {{ getUniversityDisplayText(university) }}
                 </option>
+                <option value="add_new" class="text-blue-600 font-medium">+ Add New Institute/University</option>
               </select>
+
+              <!-- Show custom institute inputs if "add_new" is selected -->
+              <div v-if="instituteSelection === 'add_new'" class="mt-2 space-y-2">
+                <div>
+                  <input v-model="newInstitute.institute_name" type="text" placeholder="Institute/College Name"
+                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
+                    maxlength="200" @input="delete errors.institute" />
+                  <p class="text-xs text-gray-500 mt-1">
+                    {{ (newInstitute.institute_name || '').length }}/200 characters
+                  </p>
+                </div>
+
+                <div>
+                  <input v-model="newInstitute.university" type="text" placeholder="University Name"
+                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
+                    maxlength="200" @input="delete errors.institute" />
+                  <p class="text-xs text-gray-500 mt-1">
+                    {{ (newInstitute.university || '').length }}/200 characters
+                  </p>
+                </div>
+
+                <!-- Country dropdown shows names but stores codes -->
+                <div>
+                  <select v-model="newInstitute.country"
+                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
+                    @change="delete errors.institute">
+                    <option value="">Select Country</option>
+                    <option v-for="country in countries" :key="country.code" :value="country.code">
+                      {{ country.name }}
+                    </option>
+                  </select>
+                  <p class="text-xs text-gray-500 mt-1">
+                    Selected: {{ getCountryName(newInstitute.country) || 'None' }}
+                  </p>
+                </div>
+
+                <!-- Preview shows country name but form stores country code -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p class="text-xs text-blue-700">
+                    <strong>Preview:</strong> {{ newInstitute.institute_name || 'Institute Name' }}
+                    ({{ newInstitute.university || 'University Name' }}, {{ getCountryName(newInstitute.country) ||
+                      'Country' }})
+                  </p>
+                  <p class="text-xs text-blue-600 mt-1">This institute will be added to the system for future use</p>
+                  <p class="text-xs text-gray-500 mt-1">
+                    Country code to be sent: {{ newInstitute.country || 'None selected' }}
+                  </p>
+                </div>
+              </div>
+
               <span v-if="errors.institute" class="text-sm text-red-500 mt-1">{{
                 errors.institute
-              }}</span>
+                }}</span>
             </div>
 
             <!-- Year of Completion -->
@@ -154,7 +205,7 @@
               <span class="text-xs text-gray-500">Select month and year</span>
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
                 errors.year_of_completion
-              }}</span>
+                }}</span>
             </div>
           </div>
         </div>
@@ -314,7 +365,7 @@
           </div>
           <span v-if="errors.declaration" class="text-sm text-red-500 mt-1">{{
             errors.declaration
-          }}</span>
+            }}</span>
         </div>
       </div>
 
@@ -364,11 +415,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import apiService from '@/services/services'
+import { countryData } from '@/constants/countries'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
 defineProps({
@@ -395,208 +447,23 @@ const registrationTypes = ref([])
 const errors = reactive({})
 const fetchedDocumentTypes = ref([])
 const isConfirmationModalOpen = ref(false)
+const countries = ref(countryData)
 
-// List of countries for country code to name conversion
-const countries = ref([
-  { name: 'Afghanistan', code: 'AF' },
-  { name: 'Albania', code: 'AL' },
-  { name: 'Algeria', code: 'DZ' },
-  { name: 'Andorra', code: 'AD' },
-  { name: 'Angola', code: 'AO' },
-  { name: 'Antigua and Barbuda', code: 'AG' },
-  { name: 'Argentina', code: 'AR' },
-  { name: 'Armenia', code: 'AM' },
-  { name: 'Australia', code: 'AU' },
-  { name: 'Austria', code: 'AT' },
-  { name: 'Azerbaijan', code: 'AZ' },
-  { name: 'Bahamas', code: 'BS' },
-  { name: 'Bahrain', code: 'BH' },
-  { name: 'Bangladesh', code: 'BD' },
-  { name: 'Barbados', code: 'BB' },
-  { name: 'Belarus', code: 'BY' },
-  { name: 'Belgium', code: 'BE' },
-  { name: 'Belize', code: 'BZ' },
-  { name: 'Benin', code: 'BJ' },
-  { name: 'Bhutan', code: 'BT' },
-  { name: 'Bolivia', code: 'BO' },
-  { name: 'Bosnia and Herzegovina', code: 'BA' },
-  { name: 'Botswana', code: 'BW' },
-  { name: 'Brazil', code: 'BR' },
-  { name: 'Brunei', code: 'BN' },
-  { name: 'Bulgaria', code: 'BG' },
-  { name: 'Burkina Faso', code: 'BF' },
-  { name: 'Burundi', code: 'BI' },
-  { name: 'Cambodia', code: 'KH' },
-  { name: 'Cameroon', code: 'CM' },
-  { name: 'Canada', code: 'CA' },
-  { name: 'Cape Verde', code: 'CV' },
-  { name: 'Central African Republic', code: 'CF' },
-  { name: 'Chad', code: 'TD' },
-  { name: 'Chile', code: 'CL' },
-  { name: 'China', code: 'CN' },
-  { name: 'Colombia', code: 'CO' },
-  { name: 'Comoros', code: 'KM' },
-  { name: 'Congo', code: 'CG' },
-  { name: 'Costa Rica', code: 'CR' },
-  { name: 'Croatia', code: 'HR' },
-  { name: 'Cuba', code: 'CU' },
-  { name: 'Cyprus', code: 'CY' },
-  { name: 'Czech Republic', code: 'CZ' },
-  { name: 'Denmark', code: 'DK' },
-  { name: 'Djibouti', code: 'DJ' },
-  { name: 'Dominica', code: 'DM' },
-  { name: 'Dominican Republic', code: 'DO' },
-  { name: 'East Timor', code: 'TL' },
-  { name: 'Ecuador', code: 'EC' },
-  { name: 'Egypt', code: 'EG' },
-  { name: 'El Salvador', code: 'SV' },
-  { name: 'Equatorial Guinea', code: 'GQ' },
-  { name: 'Eritrea', code: 'ER' },
-  { name: 'Estonia', code: 'EE' },
-  { name: 'Ethiopia', code: 'ET' },
-  { name: 'Fiji', code: 'FJ' },
-  { name: 'Finland', code: 'FI' },
-  { name: 'France', code: 'FR' },
-  { name: 'Gabon', code: 'GA' },
-  { name: 'Gambia', code: 'GM' },
-  { name: 'Georgia', code: 'GE' },
-  { name: 'Germany', code: 'DE' },
-  { name: 'Ghana', code: 'GH' },
-  { name: 'Greece', code: 'GR' },
-  { name: 'Grenada', code: 'GD' },
-  { name: 'Guatemala', code: 'GT' },
-  { name: 'Guinea', code: 'GN' },
-  { name: 'Guinea-Bissau', code: 'GW' },
-  { name: 'Guyana', code: 'GY' },
-  { name: 'Haiti', code: 'HT' },
-  { name: 'Honduras', code: 'HN' },
-  { name: 'Hungary', code: 'HU' },
-  { name: 'Iceland', code: 'IS' },
-  { name: 'India', code: 'IN' },
-  { name: 'Indonesia', code: 'ID' },
-  { name: 'Iran', code: 'IR' },
-  { name: 'Iraq', code: 'IQ' },
-  { name: 'Ireland', code: 'IE' },
-  { name: 'Israel', code: 'IL' },
-  { name: 'Italy', code: 'IT' },
-  { name: 'Ivory Coast', code: 'CI' },
-  { name: 'Jamaica', code: 'JM' },
-  { name: 'Japan', code: 'JP' },
-  { name: 'Jordan', code: 'JO' },
-  { name: 'Kazakhstan', code: 'KZ' },
-  { name: 'Kenya', code: 'KE' },
-  { name: 'Kiribati', code: 'KI' },
-  { name: 'Korea, North', code: 'KP' },
-  { name: 'Korea, South', code: 'KR' },
-  { name: 'Kuwait', code: 'KW' },
-  { name: 'Kyrgyzstan', code: 'KG' },
-  { name: 'Laos', code: 'LA' },
-  { name: 'Latvia', code: 'LV' },
-  { name: 'Lebanon', code: 'LB' },
-  { name: 'Lesotho', code: 'LS' },
-  { name: 'Liberia', code: 'LR' },
-  { name: 'Libya', code: 'LY' },
-  { name: 'Liechtenstein', code: 'LI' },
-  { name: 'Lithuania', code: 'LT' },
-  { name: 'Luxembourg', code: 'LU' },
-  { name: 'Madagascar', code: 'MG' },
-  { name: 'Malawi', code: 'MW' },
-  { name: 'Malaysia', code: 'MY' },
-  { name: 'Maldives', code: 'MV' },
-  { name: 'Mali', code: 'ML' },
-  { name: 'Malta', code: 'MT' },
-  { name: 'Marshall Islands', code: 'MH' },
-  { name: 'Mauritania', code: 'MR' },
-  { name: 'Mauritius', code: 'MU' },
-  { name: 'Mexico', code: 'MX' },
-  { name: 'Micronesia', code: 'FM' },
-  { name: 'Moldova', code: 'MD' },
-  { name: 'Monaco', code: 'MC' },
-  { name: 'Mongolia', code: 'MN' },
-  { name: 'Montenegro', code: 'ME' },
-  { name: 'Morocco', code: 'MA' },
-  { name: 'Mozambique', code: 'MZ' },
-  { name: 'Myanmar', code: 'MM' },
-  { name: 'Namibia', code: 'NA' },
-  { name: 'Nauru', code: 'NR' },
-  { name: 'Nepal', code: 'NP' },
-  { name: 'Netherlands', code: 'NL' },
-  { name: 'New Zealand', code: 'NZ' },
-  { name: 'Nicaragua', code: 'NI' },
-  { name: 'Niger', code: 'NE' },
-  { name: 'Nigeria', code: 'NG' },
-  { name: 'Norway', code: 'NO' },
-  { name: 'Oman', code: 'OM' },
-  { name: 'Pakistan', code: 'PK' },
-  { name: 'Palau', code: 'PW' },
-  { name: 'Panama', code: 'PA' },
-  { name: 'Papua New Guinea', code: 'PG' },
-  { name: 'Paraguay', code: 'PY' },
-  { name: 'Peru', code: 'PE' },
-  { name: 'Philippines', code: 'PH' },
-  { name: 'Poland', code: 'PL' },
-  { name: 'Portugal', code: 'PT' },
-  { name: 'Qatar', code: 'QA' },
-  { name: 'Romania', code: 'RO' },
-  { name: 'Russia', code: 'RU' },
-  { name: 'Rwanda', code: 'RW' },
-  { name: 'Saint Kitts and Nevis', code: 'KN' },
-  { name: 'Saint Lucia', code: 'LC' },
-  { name: 'Saint Vincent and the Grenadines', code: 'VC' },
-  { name: 'Samoa', code: 'WS' },
-  { name: 'San Marino', code: 'SM' },
-  { name: 'Sao Tome and Principe', code: 'ST' },
-  { name: 'Saudi Arabia', code: 'SA' },
-  { name: 'Senegal', code: 'SN' },
-  { name: 'Serbia', code: 'RS' },
-  { name: 'Seychelles', code: 'SC' },
-  { name: 'Sierra Leone', code: 'SL' },
-  { name: 'Singapore', code: 'SG' },
-  { name: 'Slovakia', code: 'SK' },
-  { name: 'Slovenia', code: 'SI' },
-  { name: 'Solomon Islands', code: 'SB' },
-  { name: 'Somalia', code: 'SO' },
-  { name: 'South Africa', code: 'ZA' },
-  { name: 'South Sudan', code: 'SS' },
-  { name: 'Spain', code: 'ES' },
-  { name: 'Sri Lanka', code: 'LK' },
-  { name: 'Sudan', code: 'SD' },
-  { name: 'Suriname', code: 'SR' },
-  { name: 'Sweden', code: 'SE' },
-  { name: 'Switzerland', code: 'CH' },
-  { name: 'Syria', code: 'SY' },
-  { name: 'Taiwan', code: 'TW' },
-  { name: 'Tajikistan', code: 'TJ' },
-  { name: 'Tanzania', code: 'TZ' },
-  { name: 'Thailand', code: 'TH' },
-  { name: 'Togo', code: 'TG' },
-  { name: 'Tonga', code: 'TO' },
-  { name: 'Trinidad and Tobago', code: 'TT' },
-  { name: 'Tunisia', code: 'TN' },
-  { name: 'Turkey', code: 'TR' },
-  { name: 'Turkmenistan', code: 'TM' },
-  { name: 'Tuvalu', code: 'TV' },
-  { name: 'Uganda', code: 'UG' },
-  { name: 'Ukraine', code: 'UA' },
-  { name: 'United Arab Emirates', code: 'AE' },
-  { name: 'United Kingdom', code: 'GB' },
-  { name: 'United States', code: 'US' },
-  { name: 'Uruguay', code: 'UY' },
-  { name: 'Uzbekistan', code: 'UZ' },
-  { name: 'Vanuatu', code: 'VU' },
-  { name: 'Vatican City', code: 'VA' },
-  { name: 'Venezuela', code: 'VE' },
-  { name: 'Vietnam', code: 'VN' },
-  { name: 'Yemen', code: 'YE' },
-  { name: 'Zambia', code: 'ZM' },
-  { name: 'Zimbabwe', code: 'ZW' }
-])
+// Institute selection state
+const instituteSelection = ref('')
+
+// Define newInstitute for "Add New Institute/University" option
+const newInstitute = reactive({
+  institute_name: '',
+  university: '',
+  country: ''
+})
 
 // Form data with hidden registration_type field
 const localFormData = reactive({
   qualification_type: '',
   qualification_name: '',
-  institute: '',
+  institute: '', // THIS WILL BE POPULATED WITH THE FINAL ID AT SUBMISSION
   year_of_completion: '',
   remarks: '',
   declaration: false,
@@ -605,6 +472,26 @@ const localFormData = reactive({
   is_primary_qualification: false, // This is additional, not primary
 })
 
+const createNewInstitute = async () => {
+  try {
+    const instituteData = {
+      institute_name: newInstitute.institute_name.trim(),
+      university: newInstitute.university.trim(),
+      country: newInstitute.country
+    }
+    const response = await apiService.createEpcMastersUniversity(instituteData)
+    if (response.data && response.data.id) {
+      universities.value.push(response.data)
+      toast.success(`New institute "${newInstitute.institute_name}" added successfully!`)
+      return response.data.id
+    } else {
+      throw new Error('Failed to create institute - no ID returned')
+    }
+  } catch (error) {
+    toast.error('Failed to create new institute. Please check your input or try again.')
+    throw error
+  }
+}
 // Store documents separately for easier management (initialize as empty, will be populated from API)
 const supportingDocuments = ref([])
 
@@ -618,11 +505,12 @@ const filteredQualifications = computed(() => {
   )
 })
 
-// Helper function to get country name from code
+// ADD these helper functions for country code conversion
 const getCountryName = (countryCode) => {
   const country = countries.value.find(c => c.code === countryCode)
-  return country ? country.name : countryCode || 'Unknown'
+  return country ? country.name : countryCode
 }
+
 
 // Helper function to display university with country name instead of code
 const getUniversityDisplayText = (university) => {
@@ -653,6 +541,15 @@ const getDocumentValidationSummary = () => {
     totalUploaded: uploadedDocs.length
   }
 }
+
+// CHANGED: Simplified watcher. It now only clears the "add new" form when the user switches away.
+watch(instituteSelection, (newValue) => {
+  if (newValue !== 'add_new') {
+    newInstitute.institute_name = ''
+    newInstitute.university = ''
+    newInstitute.country = ''
+  }
+})
 
 // Initialize supporting documents based on fetched document types
 const initializeSupportingDocuments = () => {
@@ -691,13 +588,13 @@ const fetchApplications = async () => {
 
     console.log('Fetched applications (results array):', applications.value)
 
-    if (applications.value.length === 1) {
+    if (applications.value.length >= 1) { // Accept one or more applications
       localFormData.application = applications.value[0].id
       console.log('Assigned application ID:', localFormData.application)
-    } else if (applications.value.length > 1) {
-      localFormData.application = applications.value[0].id
-      console.warn('Multiple applications found, using the first one:', applications.value[0])
-      toast.info('Multiple applications found. Using the primary one.')
+      if (applications.value.length > 1) {
+        console.warn('Multiple applications found, using the first one:', applications.value[0])
+        toast.info('Multiple applications found. Using the primary one.')
+      }
     } else {
       errors.application = 'No existing application found for this user.'
       console.log('No applications found in the results array.')
@@ -756,7 +653,7 @@ const formatDateForAPI = (date) => {
   return `${year}-${month}-${day}`
 }
 
-// Form validation
+// FIXED: The validation function is now aware of the "add_new" option
 const validateForm = () => {
   Object.keys(errors).forEach((key) => delete errors[key])
   let isValid = true
@@ -781,9 +678,16 @@ const validateForm = () => {
     isValid = false
   }
 
-  if (!localFormData.institute) {
-    errors.institute = 'Institute/University is required.'
-    isValid = false
+  // FIXED: Institute validation logic
+  if (!instituteSelection.value) {
+    errors.institute = 'Institute/University is required.';
+    isValid = false;
+  } else if (instituteSelection.value === 'add_new') {
+    // If 'add_new' is selected, validate the new institute fields
+    if (!newInstitute.institute_name.trim() || !newInstitute.university.trim() || !newInstitute.country) {
+      errors.institute = 'Please fill all new institute fields.';
+      isValid = false;
+    }
   }
 
   if (!localFormData.year_of_completion) {
@@ -808,7 +712,7 @@ const validateForm = () => {
   // Document validation
   const missingDocuments = []
 
-  supportingDocuments.value.forEach((doc, index) => {
+  supportingDocuments.value.forEach((doc) => {
     if (!doc.files || doc.files.length === 0) {
       const docTypeName = getDocumentTypeName(doc.type)
       doc.error = `${docTypeName} is required`
@@ -841,7 +745,7 @@ const handleSubmit = (event) => {
   }
 }
 
-// Actual submission logic after confirmation
+// FIXED: The actual submission logic now handles creating the institute first.
 const handleSubmitActual = async () => {
   if (isSubmitting.value) return
 
@@ -849,7 +753,25 @@ const handleSubmitActual = async () => {
   isSubmitting.value = true
 
   try {
-    // Prepare FormData
+    // Step 1: Handle new institute creation if selected
+    if (instituteSelection.value === 'add_new') {
+      const newId = await createNewInstitute()
+      // Set the final institute ID in our form data
+      localFormData.institute = newId
+    } else {
+      // If an existing institute was selected, use its ID
+      localFormData.institute = instituteSelection.value
+    }
+
+    // Step 2: Now that institute ID is set, validate the entire form
+    if (!validateForm()) {
+      isSubmitting.value = false
+      // If creation succeeded but other fields fail, we stop.
+      // The user can fix the other fields and submit again without re-creating the institute.
+      return
+    }
+
+    // Step 3: Prepare FormData for submission
     const formData = new FormData()
 
     // Extract year from YYYY-MM format
@@ -868,12 +790,13 @@ const handleSubmitActual = async () => {
     )
     formData.append('payment_id', '')
     formData.append('is_active', 'False')
-    formData.append('is_primary_qualification', 'False') // This is additional qualification
+    formData.append('is_primary_qualification', 'False')
     formData.append('application', String(localFormData.application))
     formData.append('qualification_name', String(localFormData.qualification_name))
     formData.append('qualification_type', String(localFormData.qualification_type))
+    // Use the final, correct institute ID
     formData.append('institute_university', String(localFormData.institute))
-    
+
     // Add the hidden registration_type for "Additional Certificate"
     formData.append('registration_type', String(localFormData.registration_type))
 
@@ -905,11 +828,11 @@ const handleSubmitActual = async () => {
     }
   } catch (error) {
     console.error('Error submitting additional qualification:', error)
-    
+
     if (error.response && error.response.data) {
       const responseData = error.response.data
       let errorMessage = 'Submission failed. '
-      
+
       if (typeof responseData === 'object') {
         Object.keys(responseData).forEach((field) => {
           if (Array.isArray(responseData[field])) {
@@ -919,7 +842,7 @@ const handleSubmitActual = async () => {
             errorMessage += `${field}: ${responseData[field]} `
           }
         })
-        
+
         if (Object.keys(errors).length > 0) {
           toast.error('Please correct the errors highlighted by the server.')
         } else {
@@ -968,16 +891,15 @@ onMounted(async () => {
 
     // Find and set the "Additional Certificate" registration type
     const additionalCertificateType = registrationTypes.value.find(
-      type => type.name.toLowerCase().includes('additional') || 
-              type.name.toLowerCase().includes('certificate')
+      type => type.name.toLowerCase().includes('additional') ||
+        type.name.toLowerCase().includes('certificate')
     )
-    
+
     if (additionalCertificateType) {
       localFormData.registration_type = additionalCertificateType.id
       console.log('Set registration_type to Additional Certificate:', additionalCertificateType)
     } else {
       console.warn('Additional Certificate registration type not found')
-      // Fallback - you might want to handle this case
       toast.warning('Additional Certificate registration type not found. Please contact support.')
     }
 
@@ -985,7 +907,6 @@ onMounted(async () => {
     initializeSupportingDocuments()
 
     console.log('Master data fetched successfully.')
-    console.log('Registration types:', registrationTypes.value)
   } catch (error) {
     console.error('Error fetching master data:', error)
     toast.error('Failed to load necessary selection options. Please refresh or try again later.')
