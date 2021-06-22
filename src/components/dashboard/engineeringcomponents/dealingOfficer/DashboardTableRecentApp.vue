@@ -10,24 +10,16 @@
       <table class="min-w-full">
         <thead class="bg-gray-50">
           <tr>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Applicant / Institute
             </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Type
             </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Status
             </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Submitted/Updated
             </th>
           </tr>
@@ -40,18 +32,14 @@
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <span
-                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                :class="getApplicationTypeClass(application.type)"
-              >
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                :class="getApplicationTypeClass(application.type)">
                 {{ application.type }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <span
-                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                :class="getStatusClass(application.status)"
-              >
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                :class="getStatusClass(application.status)">
                 {{ getStatusText(application.status) }}
               </span>
             </td>
@@ -63,19 +51,13 @@
       </table>
       <!-- Pagination Controls -->
       <div v-if="viewAll" class="mt-4 flex justify-center">
-        <button
-          :disabled="currentPage === 1"
-          @click="currentPage--"
-          class="px-4 py-2 mx-1 text-gray-700 bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <button :disabled="currentPage === 1" @click="currentPage--"
+          class="px-4 py-2 mx-1 text-gray-700 bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
           Previous
         </button>
         <span class="px-4 py-2 text-gray-700">Page {{ currentPage }} of {{ totalPages }}</span>
-        <button
-          :disabled="currentPage === totalPages"
-          @click="currentPage++"
-          class="px-4 py-2 mx-1 text-gray-700 bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <button :disabled="currentPage === totalPages" @click="currentPage++"
+          class="px-4 py-2 mx-1 text-gray-700 bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
           Next
         </button>
       </div>
@@ -96,13 +78,23 @@ const allApplications = ref([]) //Store all applications
 
 onMounted(async () => {
   try {
+    const New_Reg_applicantsResponse = await apiService.getEpcNewApplications()
+    const NewReg_applicantsData = New_Reg_applicantsResponse.data.results || []
+    const NewReg_appedApplicants = NewReg_applicantsData.map((app) => ({
+      id: app.id,
+      name: app?.application?.full_name,
+      type: app.registration_type?.name || 'Registration',
+      status: app.user_qualifications?.[0]?.endorsement_decision || 'Pending',
+      date: app.user_qualifications?.[0]?.updated_at || app.created_at,
+    }))
+
     const applicantsResponse = await apiService.getEpcNewQualifications()
     const applicantsData = applicantsResponse.data.results || []
     const mappedApplicants = applicantsData.map((app) => ({
       id: app.id,
-      name: app.application.full_name,
-      type: app.registration_type?.name || 'Registration',
-      status: app.user_qualifications?.[0]?.endorsement_decision || 'Pending',
+      name: app?.application_display?.full_name,
+      type: app.registration_type?.name || 'Additional Qualification',
+      status: app?.endorsement_decision || 'Pending',
       date: app.user_qualifications?.[0]?.updated_at || app.created_at,
     }))
 
@@ -137,7 +129,7 @@ onMounted(async () => {
       date: capa.updated_at,
     }))
 
-    allApplications.value = [...mappedApplicants, ...mappedCpd, ...mappedCogs, ...mappedcapa]
+    allApplications.value = [...NewReg_appedApplicants, ...mappedApplicants, ...mappedCpd, ...mappedCogs, ...mappedcapa]
     allApplications.value.sort((a, b) => new Date(b.date) - new Date(a.date))
     recentApplications.value = allApplications.value.slice(0, 5)
   } catch (error) {
