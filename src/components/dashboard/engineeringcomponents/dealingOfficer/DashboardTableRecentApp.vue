@@ -123,7 +123,7 @@ onMounted(async () => {
     const capaData = capaRecordsResponse.data.results || []
     const mappedcapa = capaData.map((capa) => ({
       id: capa.id,
-      name: capa.teaching_center.institute_name,
+      name: capa?.teaching_center?.institute?.name_of_institution,
       type: 'CAPA',
       status: capa.status,
       date: capa.updated_at,
