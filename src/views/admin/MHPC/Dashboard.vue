@@ -336,7 +336,7 @@ const bmhLegalOfficersComponent = computed(() => {
   switch (true) {
     case path.endsWith('/health_certification/dashboard'):
       return LegalDashboard
-    case path.endsWith('/health_certification/cpd_application_details'):
+    case path.endsWith('/health_certification/manage_complaints'):
       return ComplaintManagement
 
     default:
