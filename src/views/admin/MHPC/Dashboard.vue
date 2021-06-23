@@ -30,6 +30,11 @@
     <template v-else-if="role === 'institutions'">
       <component :is="bmhInstitutionsComponent" />
     </template>
+
+    <!-- Legal Officer Section -->
+    <template v-else-if="role === 'legal_officer'">
+      <component :is="bmhLegalOfficersComponent" />
+    </template>
   </div>
 </template>
 
@@ -129,7 +134,7 @@ import InstituteProfile from '@/components/dashboard/mhpccomponents/institutions
 import TeachingCenter from '@/components/dashboard/mhpccomponents/institutions/TeachingCenterApplicationModal.vue'
 import TeachingCenterRenewal from '@/components/dashboard/mhpccomponents/institutions/TeachingCenterTrackAndRenew.vue'
 import NewEducationProgram from '@/components/dashboard/mhpccomponents/institutions/NewEducationProgram.vue'
-import MyApplications from '@/components/dashboard/mhpccomponents/institutions/MyApplications.vue'
+// import MyApplications from '@/components/dashboard/mhpccomponents/institutions/MyApplications.vue'
 import InstitutesRenewal from '@/components/dashboard/mhpccomponents/institutions/InstitutesRenewal.vue'
 import MyCapa from '@/components/dashboard/mhpccomponents/institutions/MyCapa.vue'
 import StaffManagement from '@/components/dashboard/mhpccomponents/institutions/StaffManagement.vue'
@@ -141,6 +146,10 @@ import TeachingCenterTracking from '@/components/dashboard/mhpccomponents/instit
 import NewEducationProgramApplication from '@/components/dashboard/mhpccomponents/institutions/NewEducationProgramApplication.vue'
 
 import InstituteDashboard from '@/components/dashboard/mhpccomponents/institutions/InstituteDashboard.vue'
+
+// Legal Officer Components
+import LegalDashboard from '@/components/dashboard/mhpccomponents/legalOfficers/LegalDashboard.vue'
+import ComplaintManagement from '@/components/dashboard/mhpccomponents/legalOfficers/ComplaintManagement.vue'
 
 const { role } = useAuthStore()
 const route = useRoute()
@@ -321,6 +330,20 @@ const bmhCmeCpdProviderComponent = computed(() => {
   }
 })
 
+// MHPC Legal Officer Route-Based Components
+const bmhLegalOfficersComponent = computed(() => {
+  const path = route.path
+  switch (true) {
+    case path.endsWith('/health_certification/dashboard'):
+      return LegalDashboard
+    case path.endsWith('/health_certification/cpd_application_details'):
+      return ComplaintManagement
+
+    default:
+      return null
+  }
+})
+
 // MHPC Institutions Route-Based Components
 const bmhInstitutionsComponent = computed(() => {
   const path = route.path
@@ -347,7 +370,7 @@ const bmhInstitutionsComponent = computed(() => {
       return TeachingCenterRenewal
     case path.endsWith('/health_certification/new_education_program'):
       return NewEducationProgram
-    case path.endsWith('/health_certification/my_applications'): 
+    case path.endsWith('/health_certification/my_applications'):
     case path.endsWith('/health_certification/institutes_renewal'):
       return InstitutesRenewal
     case path.endsWith('/health_certification/my_capa'):

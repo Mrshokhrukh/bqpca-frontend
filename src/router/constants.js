@@ -7,6 +7,7 @@ export const ROLE_CHOICES = [
   { key: 'super_admin', label: 'Super Admin' },
   { key: 'cme_cpd_provider', label: 'CMD/CPD Provider' },
   { key: 'institutions', label: 'Medical Institutions' },
+  { key: 'legal_officer', label: 'Legal Officer' },
 ]
 
 export const SERVICE_TYPE_CHOICES = [

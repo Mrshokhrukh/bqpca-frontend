@@ -1013,12 +1013,6 @@ const serviceSpecificMenuItems = {
       },
     ],
     institutions: [
-      // MODIFIED SECTION for health_certification.institutions
-      // {
-      //   name: 'Dashboard',
-      //   icon: getIconComponent('LayoutDashboard'),
-      //   route: (serviceType) => `/admin/institutions/${serviceType}/dashboard`,
-      // },
       {
         name: 'Dashboard New',
         icon: getIconComponent('LayoutDashboard'),
@@ -1035,7 +1029,7 @@ const serviceSpecificMenuItems = {
         name: 'DPR Management',
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
-        
+
       },
       {
         name: 'Institute Profile',
@@ -1057,11 +1051,6 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_tracking`,
           },
 
-          // {
-          //   name: 'New Teaching Hospital',
-          //   icon: getIconComponent('Heart'),
-          //   route: (serviceType) => `/admin/institutions/${serviceType}/new_teaching_hospital`,
-          // },
           {
             name: 'Site Visit Schedule',
             icon: getIconComponent('Heart'),
@@ -1099,12 +1088,19 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('GraduationCap'),
             route: (serviceType) => `/admin/institutions/${serviceType}/course_management`,
           },
-          // {
-          //   name: 'Department Management',
-          //   icon: getIconComponent('Layers'),
-          //   route: (serviceType) => `/admin/institutions/${serviceType}/department_management`,
-          // },
         ],
+      },
+    ],
+    legal_officer: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/legal_officer/${serviceType}/dashboard`,
+      },
+      {
+        name: 'Manage Compliants',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/legal_officer/${serviceType}/manage_complaints`,
       },
     ],
   },

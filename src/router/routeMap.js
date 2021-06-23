@@ -474,4 +474,10 @@ export default {
       cpd_provider_application_form: mhpcDashboard,
     },
   },
+  legal_officer: {
+    health_certification: {
+      dashboard: mhpcDashboard,
+      manage_complaints: mhpcDashboard,
+    }
+  },
 }
