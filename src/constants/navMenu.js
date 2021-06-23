@@ -16,7 +16,8 @@ import {
   FileSearch,
   CreditCard,
   Heart, // Used for Teaching Hospital child
-  Wrench, // Used for Maintenance section items (alternative)
+  Wrench,
+   // Used for Maintenance section items (alternative)
   Award,
   FilePlus,
   List,
@@ -43,7 +44,7 @@ import {
   GraduationCap, // Used for Course Management
   Sliders,
   Activity,
-  // Add any other icons you use like 'Certificate', 'BuildingPlus' if they are from lucide-vue-next
+
 } from 'lucide-vue-next'
 
 // Icon mapping for dynamic icon selection
@@ -92,14 +93,12 @@ const iconMap = {
   GraduationCap,
   Sliders,
   Activity,
-  // Certificate: Certificate, // Example if you use it
-  // BuildingPlus: BuildingPlus, // Example if you use it
+
 }
 import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore' // Ensure this path is correct
 import { useEngineeringCertificationStore } from '@/stores/engineeringNavigationStore'
 
-// import { useAuthStore } from '@/stores/authStore'
-// import { useInstitutionStore } from '@/stores/institutionNavigationStore'
+
 
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
@@ -736,6 +735,12 @@ const serviceSpecificMenuItems = {
           const store = useHealthCertificationStore()
           return !store.visibleMenus.baseMenus.profile
         },
+
+      },
+      {
+        name: 'Complaints',
+        icon: getIconComponent('ExclamationCircle'),
+        route: (serviceType) => `/admin/user/${serviceType}/complains`,
       },
     ],
     admin: [

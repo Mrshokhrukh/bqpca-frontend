@@ -43,7 +43,7 @@
             </div>
             <div>
               <h3 class="text-sm font-medium text-gray-500">Programs Offered</h3>
-              <p class="text-3xl font-bold text-indigo-700 mt-1">{{ institute.programs_offered_by_institute.length }}</p>
+              <p class="text-3xl font-bold text-indigo-700 mt-1">{{ institute.programs_offered_by_institute?.length || 0 }}</p>
             </div>
           </div>
           <div class="bg-white p-6 shadow-lg rounded-xl flex items-center space-x-4 border border-gray-100 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 transform">
@@ -52,7 +52,7 @@
             </div>
             <div>
               <h3 class="text-sm font-medium text-gray-500">Teaching Hospitals</h3>
-              <p class="text-3xl font-bold text-green-700 mt-1">{{ institute.teaching_centers.length }}</p>
+              <p class="text-3xl font-bold text-green-700 mt-1">{{ institute.teaching_centers?.length || 0 }}</p>
             </div>
           </div>
           <div class="bg-white p-6 shadow-lg rounded-xl flex items-center space-x-4 border border-gray-100 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 transform">
@@ -138,15 +138,15 @@
         ---
 
         <div class="bg-white shadow-lg rounded-xl p-6 md:p-8 border border-gray-100">
-          <h2 class="text-3xl font-semibold text-gray-800 mb-6 pb-4 border-b border-gray-200">Programs Offered by Institute ({{ institute.programs_offered_by_institute.length }})</h2>
-          <div v-if="institute.programs_offered_by_institute.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <h2 class="text-3xl font-semibold text-gray-800 mb-6 pb-4 border-b border-gray-200">Programs Offered by Institute ({{ institute.programs_offered_by_institute?.length || 0 }})</h2>
+          <div v-if="institute.programs_offered_by_institute?.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div v-for="program in institute.programs_offered_by_institute" :key="program.id"
                  class="border border-blue-200 p-6 rounded-xl hover:shadow-lg hover:border-blue-400 transition-all duration-300 bg-blue-50/20">
-              <h3 class="font-bold text-2xl text-blue-800 mb-2">{{ program.program_master.program_name }}</h3>
-              <p class="text-md text-gray-700 mb-1"><span class="font-medium">Specific Title:</span> {{ program.specific_program_title }}</p>
-              <p class="text-md text-gray-700 mb-1"><span class="font-medium">Duration:</span> {{ program.program_master.duration_years }} years</p>
+              <h3 class="font-bold text-2xl text-blue-800 mb-2">{{ program.program_master?.program_name || 'N/A' }}</h3>
+              <p class="text-md text-gray-700 mb-1"><span class="font-medium">Specific Title:</span> {{ program.specific_program_title || 'N/A' }}</p>
+              <p class="text-md text-gray-700 mb-1"><span class="font-medium">Duration:</span> {{ program.program_master?.duration_years || 'N/A' }} years</p>
               <p class="text-md mb-3">
-                <span class="font-medium">Status:</span> <span :class="statusClass(program.status, true)" class="font-semibold text-sm">{{ program.status }}</span>
+                <span class="font-medium">Status:</span> <span :class="statusClass(program.status, true)" class="font-semibold text-sm">{{ program.status || 'N/A' }}</span>
               </p>
               <div class="mt-4 flex flex-wrap gap-3">
                 <a v-if="program.curriculum_validation_letter" :href="program.curriculum_validation_letter" target="_blank"
@@ -206,15 +206,15 @@
         ---
 
         <div class="bg-white shadow-lg rounded-xl p-6 md:p-8 border border-gray-100">
-          <h2 class="text-3xl font-semibold text-gray-800 mb-6 pb-4 border-b border-gray-200">Teaching Hospitals ({{ institute.teaching_centers.length }})</h2>
-          <div v-if="institute.teaching_centers.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <h2 class="text-3xl font-semibold text-gray-800 mb-6 pb-4 border-b border-gray-200">Teaching Hospitals ({{ institute.teaching_centers?.length || 0 }})</h2>
+          <div v-if="institute.teaching_centers?.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div v-for="center in institute.teaching_centers" :key="center.id"
                  class="border border-green-200 p-6 rounded-xl hover:shadow-lg hover:border-green-400 transition-all duration-300 bg-green-50/20">
               <h3 class="font-bold text-2xl text-green-800 mb-2">{{ center.center_name }}</h3>
               <p class="text-md text-gray-700 mb-3"><span class="font-medium">Location:</span> {{ center.center_location }} ({{center.city_gewog}}, {{ center.state_dzongkhag }})</p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mt-2 text-md">
-                <p><span class="font-medium">Status:</span> <span :class="statusClass(center.tc_review_decision_display, true)" class="font-semibold text-sm">{{ center.tc_review_decision_display }}</span></p>
-                <p><span class="font-medium">Verification:</span> <span :class="statusClass(center.physical_verification_status_display, true)" class="font-semibold text-sm">{{ center.physical_verification_status_display }}</span></p>
+                <p><span class="font-medium">Status:</span> <span :class="statusClass(center.tc_review_decision_display, true)" class="font-semibold text-sm">{{ center.tc_review_decision_display || 'N/A' }}</span></p>
+                <p><span class="font-medium">Verification:</span> <span :class="statusClass(center.physical_verification_status_display, true)" class="font-semibold text-sm">{{ center.physical_verification_status_display || 'N/A' }}</span></p>
                 <p><span class="font-medium">Active:</span> <span :class="statusClass(center.is_active ? 'Active' : 'Inactive', true)" class="font-semibold text-sm">{{ center.is_active ? 'Yes' : 'No' }}</span></p>
                 <p class="text-gray-600"><span class="font-medium">Valid:</span> {{ formatDate(center.valid_since) }} to {{ formatDate(center.valid_till) }}</p>
               </div>
@@ -307,33 +307,38 @@ const errorCapas = ref(null)
 
 
 const fetchInstituteData = async () => {
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
   try {
-    const response = await apiService.getMhpcInstitutes()
+    const response = await apiService.getMhpcInstitutes();
+    console.log('Full API Response:', response);
+    console.log('Response Data:', response.data);
     if (response.data && response.data.results && response.data.results.length > 0) {
-      institute.value = response.data.results[0]
+      institute.value = response.data.results[0];
+      if (institute.value && !Array.isArray(institute.value.programs_offered_by_institute)) {
+        institute.value.programs_offered_by_institute = [];
+      }
+      if (institute.value && !Array.isArray(institute.value.teaching_centers)) {
+        institute.value.teaching_centers = [];
+      }
       if (institute.value && institute.value.id) {
-        // Fetch related data only if institute is found
         await Promise.all([
           fetchTeachingFaculties(institute.value.id),
-          fetchCapas(institute.value.id) // New: Fetch CAPA data
+          fetchCapas(institute.value.id)
         ]);
       }
-    } else if (response.data && response.data.count === 0) {
-      console.log('No institutes found.')
-      error.value = 'No institute found for your account.'
     } else {
-      console.warn('No institute data in results or unexpected format:', response.data)
-      error.value = 'No institute data found in the expected format.'
+      console.warn('No institutes found in response:', response.data);
+      error.value = 'No institute found for your account.';
     }
   } catch (err) {
-    console.error('Error fetching institute data:', err)
-    error.value = err.response?.data?.detail || err.message || 'Failed to load institute data due to a network or server error.'
+    console.error('Error fetching institute data:', err);
+    console.error('Error Response:', err.response?.data);
+    error.value = err.response?.data?.detail || err.message || 'Failed to load institute data.';
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const fetchTeachingFaculties = async (instituteId) => {
   if (!instituteId) return;

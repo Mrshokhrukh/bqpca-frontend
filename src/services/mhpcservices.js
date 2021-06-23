@@ -608,23 +608,24 @@ export default {
 
   // MHPC Institutes
   getMhpcInstitutes() {
-    return apiClient.get('/mhpc/mhpc-institutes/')
-  },
-  createMhpcInstitute(data) {
-    return apiClient.post('/mhpc/mhpc-institutes/', data)
+    console.log('Fetching MHPC institutes');
+    return apiClient.get('/mhpc/mhpc-institutes/');
   },
   getMhpcInstitute(id) {
-    return apiClient.get(`/mhpc/mhpc-institutes/${id}/`)
+    console.log('Fetching MHPC institute with ID:', id);
+    return apiClient.get(`/mhpc/mhpc-institutes/${id}/`);
+  },
+  createMhpcInstitute(data) {
+    return apiClient.post('/mhpc/mhpc-institutes/', data);
   },
   updateMhpcInstitute(id, data) {
-    return apiClient.put(`/mhpc/mhpc-institutes/${id}/`, data)
+    return apiClient.put(`/mhpc/mhpc-institutes/${id}/`, data);
   },
   patchMhpcInstitute(id, data) {
-    return apiClient.patch(`/mhpc/mhpc-institutes/${id}/`, data)
+    return apiClient.patch(`/mhpc/mhpc-institutes/${id}/`, data);
   },
-
   deleteMhpcInstitute(id) {
-    return apiClient.delete(`/mhpc/mhpc-institutes/${id}/`)
+    return apiClient.delete(`/mhpc/mhpc-institutes/${id}/`);
   },
   //MHPC COUrses api
   getMhpcCourseDetails() {

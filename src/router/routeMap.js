@@ -189,6 +189,7 @@ export default {
       track_cogs_applications: mhpcDashboard,
       counselor_application: mhpcDashboard,
       track_counselor_application: mhpcDashboard,
+      complains: mhpcDashboard,
     },
   },
   dealing_officer: {

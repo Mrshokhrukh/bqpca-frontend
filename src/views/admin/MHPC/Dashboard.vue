@@ -64,6 +64,7 @@ import AdditionalQualification from '@/components/dashboard/mhpccomponents/user/
 import MHPCUserReports from '@/components/dashboard/mhpccomponents/user/ReportsComponent.vue'
 import CounselorApplicationFrom from '@/components/dashboard/mhpccomponents/user/counselorApplication/CounselorApplicationFrom.vue'
 import CounselorApplicationTracker from '@/components/dashboard/mhpccomponents/user/counselorApplication/CounselorApplicationTracker.vue'
+import Complaints from '@/components/dashboard/mhpccomponents/user/certificateapplication/Complaints.vue'
 
 // Dealing Officer Components
 import ApplicationLists from '@/components/dashboard/mhpccomponents/dealingOfficer/userApplications/ApplicationLists.vue'
@@ -88,7 +89,7 @@ import EducationPrograms from '@/components/dashboard/mhpccomponents/dealingOffi
 import InstituteProfiles from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/InstituteProfiles.vue'
 import InstituteRenewals from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/InstituteRenewals.vue'
 import TeachingHospitalRenewals from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/TeachingHospitalRenewals.vue'
-import Complaints from '@/components/dashboard/mhpccomponents/dealingOfficer/Complaints.vue'
+
 import ModuleManagement from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/ModuleManagement.vue'
 import EducationProgram from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/EducationProgram.vue'
 
@@ -239,6 +240,8 @@ const bmhUserComponent = computed(() => {
       return MHPCUserProfile
     case path.endsWith('/health_certification/track_counselor_application'):
       return CounselorApplicationTracker
+    case path.endsWith('/health_certification/complains'):
+      return Complaints
 
     default:
       return null
@@ -297,8 +300,6 @@ const bmhDealingOfficerComponent = computed(() => {
       return TeachingHospitalRenewals
     case path.endsWith('/health_certification/institute_profiles'):
       return InstituteProfiles
-    case path.endsWith('/health_certification/complaints'):
-      return Complaints
     case path.endsWith('/health_certification/module_management'):
       return ModuleManagement
     case path.endsWith('/health_certification/education_program_management'):
