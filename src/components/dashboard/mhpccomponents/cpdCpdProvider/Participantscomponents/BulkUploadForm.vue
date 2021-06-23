@@ -374,11 +374,6 @@ function downloadTemplate() {
 }
 
 onMounted(() => {
-  console.log('Props received:', {
-    cpdTasks: props.cpdTasks,
-    currentProviderCid: props.currentProviderCid,
-    preselectedTaskId: props.preselectedTaskId,
-  })
   if (!props.cpdTasks || props.cpdTasks.length === 0) {
     fetchCpdTasks()
   }

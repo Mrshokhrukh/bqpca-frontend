@@ -194,27 +194,26 @@
                 class="hover:bg-gray-50 transition-colors"
               >
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">{{ app.id }}</div>
-                </td>
-
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900 font-medium">{{ app.applicantName }}</div>
-                  <div class="text-xs text-gray-500">CID: {{ app.cidNumber }}</div>
+                  <div class="text-sm text-gray-900 font-medium">{{ app.full_name }}</div>
+                  <div class="text-xs text-gray-500">CID: {{ app.cid_no }}</div>
                   <div class="text-xs text-gray-500">
-                    Reg. ID: {{ app.registrationNumber || 'N/A' }}
+                    Reg. ID: {{ app.registration_no || 'N/A' }}
                   </div>
-                  <div class="text-xs text-gray-500">Gender: {{ app.gender }}</div>
                 </td>
                 <td class="px-6 py-4">
-                  <div class="text-sm text-gray-900 font-medium">{{ app.title }}</div>
+                  <div class="text-sm text-gray-900 font-medium">{{ app.title_of_cpd }}</div>
                   <div class="text-xs text-gray-500 mt-1">
-                    Category: {{ app.participationCategory }}
+                    Type: {{ app.type_of_cpd?.cpd_activity_name || 'N/A' }}
                   </div>
-                  <div class="text-xs text-gray-500">
-                    Sub-Category: {{ app.participantSubCategory }}
-                  </div>
-                  <div class="text-xs text-gray-500">Activity Type: {{ app.activityType }}</div>
-                  <div class="text-xs text-gray-500">Credits: {{ app.cpdCredits }}</div>
+                  <div class="text-xs text-gray-500">Credits: {{ app.credit }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span :class="[getStatusColor(app.application_status)]">
+                    {{ app.application_status }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">{{ formatDate(app.status_last_updated) }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span
@@ -378,18 +377,20 @@ const statusFilterOptions = ref([
 ])
 
 const filteredApplications = computed(() => {
-  let filtered = applications.value.filter((app) => app.status !== 'Draft')
+  let filtered = applications.value.filter((app) => !app.is_draft)
+
   if (statusFilter.value) {
-    filtered = filtered.filter((app) => app.status === statusFilter.value)
+    filtered = filtered.filter((app) => app.application_status === statusFilter.value)
   }
+
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase().trim()
     filtered = filtered.filter(
       (app) =>
-        app.applicantName?.toLowerCase().includes(query) ||
-        app.cidNumber?.toString().includes(query) ||
-        app.title?.toLowerCase().includes(query) ||
-        (app.registrationNumber && app.registrationNumber.toString().toLowerCase().includes(query))
+        app.full_name?.toLowerCase().includes(query) ||
+        app.cid_no?.toString().includes(query) ||
+        app.title_of_cpd?.toLowerCase().includes(query) ||
+        app.registration_no?.toString().toLowerCase().includes(query)
     )
   }
   return filtered
@@ -437,15 +438,17 @@ const closeNotification = () => {
     notification.value.timeout = null
   }
 }
+
 const getStatusColor = (status) =>
   ({
-    Pending: 'bg-yellow-100 text-yellow-800',
-    Approved: 'bg-green-100 text-green-800',
-    Rejected: 'bg-red-100 text-red-800',
-    Draft: 'bg-gray-100 text-gray-800',
+    PENDING: 'bg-yellow-100 text-yellow-800',
+    APPROVED: 'bg-green-100 text-green-800',
+    REJECTED: 'bg-red-100 text-red-800',
+    DRAFT: 'bg-gray-100 text-gray-800',
   }[status] || 'bg-gray-100 text-gray-800')
 
 const openViewModal = (app) => {
+  // Pass the raw, unmodified application object to the modal
   selectedApplication.value = app
   isViewModalOpen.value = true
 }
@@ -457,89 +460,87 @@ const closeViewModal = () => {
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   return new Date(dateString).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
+    day: '2-digit', month: 'short', year: 'numeric',
   })
 }
 
-// --- UPDATED: processApiResponse to be more comprehensive ---
-const processApiResponse = (results) => {
-  if (!Array.isArray(results)) {
-    applications.value = []
-    return
-  }
-  applications.value = results.map((item) => ({
-    // Personal & Basic Info
-    id: item.id,
-    applicantName: item.full_name,
-    fullName: item.full_name,
-    cidNumber: item.cid_no,
-    registrationNumber: item.registration_no || 'N/A',
-    gender: item.gender || 'Not specified',
+// // --- UPDATED: processApiResponse to be more comprehensive ---
+// const processApiResponse = (results) => {
+//   if (!Array.isArray(results)) {
+//     applications.value = []
+//     return
+//   }
+//   applications.value = results.map((item) => ({
+//     // Personal & Basic Info
+//     id: item.id,
+//     applicantName: item.full_name,
+//     fullName: item.full_name,
+//     cidNumber: item.cid_no,
+//     registrationNumber: item.registration_no || 'N/A',
+//     gender: item.gender || 'Not specified',
 
-    // Status & Dates
-    status: getTaskStatus(item),
-    date: formatDate(item.status_last_updated),
-    fromDate: formatDate(item.from_date),
-    toDate: formatDate(item.to_date),
+//     // Status & Dates
+//     status: getTaskStatus(item),
+//     date: formatDate(item.status_last_updated),
+//     fromDate: formatDate(item.from_date),
+//     toDate: formatDate(item.to_date),
 
-    // CPD Core Details
-    title: item.title_of_cpd,
-    cpdTitle: item.title_of_cpd,
-    venue: item.venue || 'Not specified',
-    cpdProvider: item.cpd_providing_agency?.name || 'N/A',
-    durationInHours: item.duration_in_hours || 0,
-    numberOfParticipants: item.number_of_participants || 0,
-    relevance: item.relevance_to_topic,
-    expectedOutcome: item.expected_outcome || 'N/A',
-    activityType: item.type_of_cpd?.cpd_activity_name || 'N/A',
+//     // CPD Core Details
+//     title: item.title_of_cpd,
+//     cpdTitle: item.title_of_cpd,
+//     venue: item.venue || 'Not specified',
+//     cpdProvider: item.cpd_providing_agency?.name || 'N/A',
+//     durationInHours: item.duration_in_hours || 0,
+//     numberOfParticipants: item.number_of_participants || 0,
+//     relevance: item.relevance_to_topic,
+//     expectedOutcome: item.expected_outcome || 'N/A',
+//     activityType: item.type_of_cpd?.cpd_activity_name || 'N/A',
 
-    // Categories & Methodologies
-    participationCategory:
-      item.target_participant_categories?.map((cat) => cat.category_name).join(', ') || 'N/A',
-    participantSubCategory:
-      item.target_participant_subcategories?.map((sub) => sub.sub_category_name).join(', ') ||
-      'N/A',
-    methodologies:
-      item.methodologies
-        ?.map((m) => m.methodology_name.methodology_name)
-        .filter(Boolean)
-        .join(', ') || 'N/A',
-    learningMethods: item.learning_methods || [], // Keep as array
+//     // Categories & Methodologies
+//     participationCategory:
+//       item.target_participant_categories?.map((cat) => cat.category_name).join(', ') || 'N/A',
+//     participantSubCategory:
+//       item.target_participant_subcategories?.map((sub) => sub.sub_category_name).join(', ') ||
+//       'N/A',
+//     methodologies:
+//       item.methodologies
+//         ?.map((m) => m.methodology_name.methodology_name)
+//         .filter(Boolean)
+//         .join(', ') || 'N/A',
+//     learningMethods: item.learning_methods || [], // Keep as array
 
-    // Attachments
-    attachment: item.attachment
-      ? { name: item.attachment.split('/').pop(), url: item.attachment }
-      : null,
-    courseDocument: item.course_document
-      ? { name: item.course_document.split('/').pop(), url: item.course_document }
-      : null,
+//     // Attachments
+//     attachment: item.attachment
+//       ? { name: item.attachment.split('/').pop(), url: item.attachment }
+//       : null,
+//     courseDocument: item.course_document
+//       ? { name: item.course_document.split('/').pop(), url: item.course_document }
+//       : null,
 
-    // Review & Credit Info
-    cpdCredits: item.credit,
-    reviewStatus: item.application_status,
-    remarks: item.status_remarks,
+//     // Review & Credit Info
+//     cpdCredits: item.credit,
+//     reviewStatus: item.application_status,
+//     remarks: item.status_remarks,
 
-    // Raw data for reference if needed
-    resources: item.resources || [], // Keep as array
-    isDraft: item.is_draft,
-    rawItem: item,
-  }))
-}
+//     // Raw data for reference if needed
+//     resources: item.resources || [], // Keep as array
+//     isDraft: item.is_draft,
+//     rawItem: item,
+//   }))
+// }
 
-const getTaskStatus = (item) => {
-  if (item.is_draft) return 'Draft'
-  const statusMap = {
-    SUBMITTED: 'Pending',
-    UNDER_REVIEW: 'Pending',
-    PENDING_CLARIFICATION: 'Pending',
-    APPROVED: 'Approved',
-    REGRETTED: 'Rejected',
-    WITHDRAWN: 'Withdrawn',
-  }
-  return statusMap[item.application_status] || 'Unknown'
-}
+// const getTaskStatus = (item) => {
+//   if (item.is_draft) return 'Draft'
+//   const statusMap = {
+//     SUBMITTED: 'Pending',
+//     UNDER_REVIEW: 'Pending',
+//     PENDING_CLARIFICATION: 'Pending',
+//     APPROVED: 'Approved',
+//     REGRETTED: 'Rejected',
+//     WITHDRAWN: 'Withdrawn',
+//   }
+//   return statusMap[item.application_status] || 'Unknown'
+// }
 
 // --- FIXED ACTION HANDLERS (Unchanged) ---
 const saveApplication = async (payload) => {
@@ -564,6 +565,7 @@ const saveApplication = async (payload) => {
 }
 
 const approveApplication = async (payload) => {
+  // Logic remains the same
   try {
     loading.value = true
     const patchData = {
@@ -593,10 +595,11 @@ const approveApplication = async (payload) => {
 }
 
 const rejectApplication = async (payload) => {
+  // Logic remains the same
   try {
     loading.value = true
     const patchData = {
-      application_status: 'REGRETTED',
+      application_status: 'REJECTED', // Use REJECTED as per API
       status_remarks: payload.status_remarks,
       is_cpd_approved: false,
     }
@@ -624,7 +627,8 @@ const fetchApplications = async () => {
   try {
     loading.value = true
     const response = await apiServices.getMhpcCpdTask()
-    processApiResponse(response.data?.results || [])
+    // Directly assign the raw results from the API
+    applications.value = response.data?.results || []
   } catch (err) {
     console.error('Failed to fetch applications:', err)
     showNotification('error', 'Load Failed', 'Error loading CPD applications.')

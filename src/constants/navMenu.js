@@ -979,11 +979,6 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/counselor_application`,
       },
       {
-        name: 'Complaints',
-        icon: getIconComponent('FileSearch'), // Or XCircle/AlertTriangle
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/complaints`,
-      },
-      {
         name: 'Reports',
         icon: getIconComponent('FileBarChart'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
