@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <div class="course-management p-6">
     <h1 class="text-2xl font-bold mb-4">EPC Course Management</h1>
@@ -376,7 +376,7 @@ const submitCourse = async () => {
     formData.append(
       'institute_attachments',
       formState.attachmentFile,
-      formState.attachmentFile.name,
+      formState.attachmentFile.name
     )
   }
 
@@ -446,7 +446,9 @@ const submitCourse = async () => {
         modalError.value = 'An unknown validation error occurred.'
       }
     } else {
-      modalError.value = `Failed to submit course: ${err.response?.data?.detail || err.message || 'Unknown error'}`
+      modalError.value = `Failed to submit course: ${
+        err.response?.data?.detail || err.message || 'Unknown error'
+      }`
     }
   } finally {
     isSubmitting.value = false
@@ -493,4 +495,4 @@ textarea:focus {
   background: #718096;
 }
 </style>
-```
+

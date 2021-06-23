@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <div
     v-if="isVisible"
@@ -30,7 +30,10 @@
         </button>
         <button
           @click="handleConfirm"
-          :class="['px-4 py-2 text-white rounded-md transition-colors', confirmButtonClass || 'bg-blue-600 hover:bg-blue-700']"
+          :class="[
+            'px-4 py-2 text-white rounded-md transition-colors',
+            confirmButtonClass || 'bg-blue-600 hover:bg-blue-700',
+          ]"
           :disabled="title.includes('Reject') && !remarks.trim()"
         >
           {{ confirmButtonText }}
@@ -41,7 +44,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue';
+import { defineProps, defineEmits, computed } from 'vue'
 
 const props = defineProps({
   isVisible: {
@@ -72,24 +75,24 @@ const props = defineProps({
     type: String,
     default: '',
   },
-});
+})
 
-const emit = defineEmits(['update:remarks', 'confirm', 'cancel']);
+const emit = defineEmits(['update:remarks', 'confirm', 'cancel'])
 
 const remarks = computed({
   get: () => props.remarks,
   set: (value) => emit('update:remarks', value),
-});
+})
 
 const handleConfirm = () => {
-  console.log('ConfirmDialog confirm called');
-  emit('confirm');
-};
+  console.log('ConfirmDialog confirm called')
+  emit('confirm')
+}
 
 const handleCancel = () => {
-  console.log('ConfirmDialog cancel called');
-  emit('cancel');
-};
+  console.log('ConfirmDialog cancel called')
+  emit('cancel')
+}
 </script>
 
 <style scoped>
@@ -97,4 +100,3 @@ const handleCancel = () => {
   z-index: 70 !important;
 }
 </style>
-```

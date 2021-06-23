@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-    <!-- Inline Notification -->
     <Transition name="notification">
       <div
         v-if="notification.show"
@@ -9,8 +8,8 @@
           notification.type === 'success'
             ? 'bg-green-50 border-l-4 border-green-500'
             : notification.type === 'error'
-              ? 'bg-red-50 border-l-4 border-red-500'
-              : 'bg-blue-50 border-l-4 border-blue-500',
+            ? 'bg-red-50 border-l-4 border-red-500'
+            : 'bg-blue-50 border-l-4 border-blue-500',
         ]"
       >
         <div
@@ -19,8 +18,8 @@
             notification.type === 'success'
               ? 'text-green-500'
               : notification.type === 'error'
-                ? 'text-red-500'
-                : 'text-blue-500',
+              ? 'text-red-500'
+              : 'text-blue-500',
           ]"
         >
           <svg
@@ -67,8 +66,8 @@
               notification.type === 'success'
                 ? 'text-green-800'
                 : notification.type === 'error'
-                  ? 'text-red-800'
-                  : 'text-blue-800',
+                ? 'text-red-800'
+                : 'text-blue-800',
             ]"
           >
             {{ notification.title }}
@@ -79,8 +78,8 @@
               notification.type === 'success'
                 ? 'text-green-700'
                 : notification.type === 'error'
-                  ? 'text-red-700'
-                  : 'text-blue-700',
+                ? 'text-red-700'
+                : 'text-blue-700',
             ]"
           >
             {{ notification.message }}
@@ -150,12 +149,42 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CPD Details</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted</th>
-                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  ID
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Applicant
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  CPD Details
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Status
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Submitted
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -167,16 +196,23 @@
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm font-medium text-gray-900">{{ app.id }}</div>
                 </td>
+
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm text-gray-900 font-medium">{{ app.applicantName }}</div>
                   <div class="text-xs text-gray-500">CID: {{ app.cidNumber }}</div>
-                  <div class="text-xs text-gray-500">Reg. ID: {{ app.registrationNumber || 'N/A' }}</div>
+                  <div class="text-xs text-gray-500">
+                    Reg. ID: {{ app.registrationNumber || 'N/A' }}
+                  </div>
                   <div class="text-xs text-gray-500">Gender: {{ app.gender }}</div>
                 </td>
                 <td class="px-6 py-4">
                   <div class="text-sm text-gray-900 font-medium">{{ app.title }}</div>
-                  <div class="text-xs text-gray-500 mt-1">Category: {{ app.participationCategory }}</div>
-                  <div class="text-xs text-gray-500">Sub-Category: {{ app.participantSubCategory }}</div>
+                  <div class="text-xs text-gray-500 mt-1">
+                    Category: {{ app.participationCategory }}
+                  </div>
+                  <div class="text-xs text-gray-500">
+                    Sub-Category: {{ app.participantSubCategory }}
+                  </div>
                   <div class="text-xs text-gray-500">Activity Type: {{ app.activityType }}</div>
                   <div class="text-xs text-gray-500">Credits: {{ app.cpdCredits }}</div>
                 </td>
@@ -206,27 +242,82 @@
           </table>
         </div>
 
-        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+        <div
+          class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
+        >
           <div class="flex-1 flex justify-between sm:hidden">
-            <button @click="prevPage" :disabled="currentPage === 1" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
-            <button @click="nextPage" :disabled="currentPage === totalPages" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+            <button
+              @click="prevPage"
+              :disabled="currentPage === 1"
+              class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <button
+              @click="nextPage"
+              :disabled="currentPage === totalPages"
+              class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
           </div>
           <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p class="text-sm text-gray-700">
-                Showing <span class="font-medium">{{ paginationStart + 1 }}</span> to <span class="font-medium">{{ paginationEnd }}</span> of <span class="font-medium">{{ filteredApplications.length }}</span> results
+                Showing <span class="font-medium">{{ paginationStart + 1 }}</span> to
+                <span class="font-medium">{{ paginationEnd }}</span> of
+                <span class="font-medium">{{ filteredApplications.length }}</span> results
               </p>
             </div>
             <div>
-              <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                <button @click="prevPage" :disabled="currentPage === 1" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+              <nav
+                class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                aria-label="Pagination"
+              >
+                <button
+                  @click="prevPage"
+                  :disabled="currentPage === 1"
+                  class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <span class="sr-only">Previous</span>
-                  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                  <svg
+                    class="h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
                 </button>
-                <span aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">{{ currentPage }}</span>
-                <button @click="nextPage" :disabled="currentPage === totalPages" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span
+                  aria-current="page"
+                  class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+                  >{{ currentPage }}</span
+                >
+                <button
+                  @click="nextPage"
+                  :disabled="currentPage === totalPages"
+                  class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <span class="sr-only">Next</span>
-                  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                  <svg
+                    class="h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
                 </button>
               </nav>
             </div>
@@ -252,10 +343,7 @@ import CpdViewApplicationsModal from '../modals/CpdViewApplicationsModal.vue'
 import apiServices from '@/services/services'
 import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue'
 
-const participationCategoriesMaster = ref([]);
-const subCategoriesMaster = ref([]);
-const cpdActivitiesMaster = ref([]);
-
+// --- STATE (No changes here) ---
 const applications = ref([])
 const selectedApplication = ref(null)
 const isViewModalOpen = ref(false)
@@ -264,266 +352,291 @@ const searchQuery = ref('')
 const statusFilter = ref('')
 const currentPage = ref(1)
 const pageSize = ref(10)
-
 const notification = ref({
-  show: false, type: 'info', title: '', message: '', timeout: null,
+  show: false,
+  type: 'info',
+  title: '',
+  message: '',
+  timeout: null,
 })
 
-const totalApplicationsCount = computed(() => applications.value.filter(app => app.status !== 'Draft').length);
-const pendingCount = computed(() => applications.value.filter(app => app.status === 'Pending').length);
-const headerDescription = computed(() => `Total: ${totalApplicationsCount.value} | Pending: ${pendingCount.value}`);
+// --- COMPUTED PROPERTIES (No changes here) ---
+const totalApplicationsCount = computed(
+  () => applications.value.filter((app) => app.status !== 'Draft').length
+)
+const pendingCount = computed(
+  () => applications.value.filter((app) => app.status === 'Pending').length
+)
+const headerDescription = computed(
+  () => `Total: ${totalApplicationsCount.value} | Pending: ${pendingCount.value}`
+)
 const statusFilterOptions = ref([
-  { value: '', text: 'All Statuses' }, { value: 'Pending', text: 'Pending' },
-  { value: 'Approved', text: 'Approved' }, { value: 'Rejected', text: 'Rejected' },
-]);
+  { value: '', text: 'All Statuses' },
+  { value: 'Pending', text: 'Pending' },
+  { value: 'Approved', text: 'Approved' },
+  { value: 'Rejected', text: 'Rejected' },
+])
 
 const filteredApplications = computed(() => {
-  let filtered = applications.value.filter((app) => app.status !== 'Draft');
+  let filtered = applications.value.filter((app) => app.status !== 'Draft')
   if (statusFilter.value) {
-    filtered = filtered.filter((app) => app.status === statusFilter.value);
+    filtered = filtered.filter((app) => app.status === statusFilter.value)
   }
   if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase().trim();
-    filtered = filtered.filter(app =>
+    const query = searchQuery.value.toLowerCase().trim()
+    filtered = filtered.filter(
+      (app) =>
         app.applicantName?.toLowerCase().includes(query) ||
         app.cidNumber?.toString().includes(query) ||
         app.title?.toLowerCase().includes(query) ||
         (app.registrationNumber && app.registrationNumber.toString().toLowerCase().includes(query))
-    );
+    )
   }
-  return filtered;
-});
+  return filtered
+})
 
-const totalPages = computed(() => Math.ceil(filteredApplications.value.length / pageSize.value) || 1);
-const paginationStart = computed(() => (currentPage.value - 1) * pageSize.value);
-const paginationEnd = computed(() => Math.min(paginationStart.value + pageSize.value, filteredApplications.value.length));
-const paginatedApplications = computed(() => filteredApplications.value.slice(paginationStart.value, paginationEnd.value));
+const totalPages = computed(
+  () => Math.ceil(filteredApplications.value.length / pageSize.value) || 1
+)
+const paginationStart = computed(() => (currentPage.value - 1) * pageSize.value)
+const paginationEnd = computed(() =>
+  Math.min(paginationStart.value + pageSize.value, filteredApplications.value.length)
+)
+const paginatedApplications = computed(() =>
+  filteredApplications.value.slice(paginationStart.value, paginationEnd.value)
+)
 
-const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++; };
-const prevPage = () => { if (currentPage.value > 1) currentPage.value--; };
-const resetPagination = () => { currentPage.value = 1; };
+// --- METHODS (No changes here) ---
 
-watch([searchQuery, statusFilter], resetPagination);
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) currentPage.value++
+}
+const prevPage = () => {
+  if (currentPage.value > 1) currentPage.value--
+}
+const resetPagination = () => {
+  currentPage.value = 1
+}
+
+watch([searchQuery, statusFilter], resetPagination)
 
 const showNotification = (type, title, message, duration = 5000) => {
-  if (notification.value.timeout) clearTimeout(notification.value.timeout);
-  notification.value = { show: true, type, title, message, timeout: setTimeout(closeNotification, duration) };
-};
-const closeNotification = () => {
-  notification.value.show = false;
-  if (notification.value.timeout) { clearTimeout(notification.value.timeout); notification.value.timeout = null; }
-};
-const getStatusColor = (status) => ({
-  Pending: 'bg-yellow-100 text-yellow-800', Approved: 'bg-green-100 text-green-800',
-  Rejected: 'bg-red-100 text-red-800', Draft: 'bg-gray-100 text-gray-800',
-}[status] || 'bg-gray-100 text-gray-800');
-
-const openViewModal = (app) => { selectedApplication.value = app; isViewModalOpen.value = true; };
-const closeViewModal = () => { isViewModalOpen.value = false; selectedApplication.value = null; };
-
-const fetchAllMasterData = async () => {
-  try {
-    const [categoriesRes, subCategoriesRes, activitiesRes] = await Promise.allSettled([
-      apiServices.getMhpcMastersMHPCParticipationCategories(),
-      apiServices.getMhpcMastersMhpcParticipationSubCategories(),
-      apiServices.getMhpcMastersSingleCpdActivity(),
-    ]);
-
-    const processMasterDataResponse = (response, refToUpdate, typeName) => {
-        if (response.status === 'fulfilled') {
-            const data = response.value?.data?.results || response.value?.results;
-            if (Array.isArray(data)) {
-                refToUpdate.value = data;
-            } else {
-                console.error(`Failed to load ${typeName} or unexpected structure:`, response.value);
-                refToUpdate.value = [];
-            }
-        } else {
-            console.error(`Error fetching ${typeName}:`, response.reason);
-            refToUpdate.value = [];
-        }
-    };
-
-    processMasterDataResponse(categoriesRes, participationCategoriesMaster, "participation categories");
-    processMasterDataResponse(subCategoriesRes, subCategoriesMaster, "sub-categories");
-    processMasterDataResponse(activitiesRes, cpdActivitiesMaster, "CPD activities");
-
-  } catch (error) {
-    console.error("General error fetching master data for DO view:", error);
-    showNotification('error', 'Master Data Error', 'Could not load required reference data.');
+  if (notification.value.timeout) clearTimeout(notification.value.timeout)
+  notification.value = {
+    show: true,
+    type,
+    title,
+    message,
+    timeout: setTimeout(closeNotification, duration),
   }
-};
+}
+const closeNotification = () => {
+  notification.value.show = false
+  if (notification.value.timeout) {
+    clearTimeout(notification.value.timeout)
+    notification.value.timeout = null
+  }
+}
+const getStatusColor = (status) =>
+  ({
+    Pending: 'bg-yellow-100 text-yellow-800',
+    Approved: 'bg-green-100 text-green-800',
+    Rejected: 'bg-red-100 text-red-800',
+    Draft: 'bg-gray-100 text-gray-800',
+  }[status] || 'bg-gray-100 text-gray-800')
 
-const getNameById = (id, masterList, idField = 'id', nameField) => {
-  if (id === null || id === undefined || !masterList || masterList.length === 0) return 'N/A';
-  const foundItem = masterList.find(item => String(item[idField]) === String(id));
-  return foundItem ? foundItem[nameField] : `ID: ${id} (Unknown)`;
-};
+const openViewModal = (app) => {
+  selectedApplication.value = app
+  isViewModalOpen.value = true
+}
+const closeViewModal = () => {
+  isViewModalOpen.value = false
+  selectedApplication.value = null
+}
 
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+  return new Date(dateString).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
+// --- UPDATED: processApiResponse to be more comprehensive ---
 const processApiResponse = (results) => {
   if (!Array.isArray(results)) {
-    console.error("processApiResponse expected an array, received:", results);
-    applications.value = [];
-    return;
+    applications.value = []
+    return
   }
-  applications.value = results.map((item) => {
-    let displayRegNo = item.registration_no ? String(item.registration_no) : 'N/A';
-    // If your LIST API provides a specific display string for registration (e.g. "D/MHPC/..."), use it.
-    // Example: if (item.registration_display_string) displayRegNo = item.registration_display_string;
+  applications.value = results.map((item) => ({
+    // Personal & Basic Info
+    id: item.id,
+    applicantName: item.full_name,
+    fullName: item.full_name,
+    cidNumber: item.cid_no,
+    registrationNumber: item.registration_no || 'N/A',
+    gender: item.gender || 'Not specified',
 
-    return {
-      id: item.id,
-      title: item.title_of_cpd || 'N/A',
-      applicantName: item.full_name || 'Unknown',
-      status: getTaskStatus(item), // Uses item.is_draft and item.review_status
-      date: item.created_at ? new Date(item.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A',
-      registrationNumber: displayRegNo, // This is the ID from the API
-      cidNumber: item.cid_no || 'N/A',
-      fullName: item.full_name || 'Unknown', // For modal consistency
-      gender: item.gender || 'Not specified', // Directly from list item
-      cpdTitle: item.title_of_cpd || 'N/A', // For modal consistency
-      relevance: item.relevance_to_profession || item.relevance_to_topic || 'Not specified',
+    // Status & Dates
+    status: getTaskStatus(item),
+    date: formatDate(item.status_last_updated),
+    fromDate: formatDate(item.from_date),
+    toDate: formatDate(item.to_date),
 
-      participationCategory: getNameById(item.participation_category_display, participationCategoriesMaster.value, 'id', 'participation_category_name'),
-      participantSubCategory: getNameById(item.participant_sub_category, subCategoriesMaster.value, 'id', 'participation_sub_category_name'),
-      activityType: getNameById(item.type_of_cpd_activity, cpdActivitiesMaster.value, 'id', 'cpd_activity_name'), // Adjust 'cpd_activity_name' if needed
+    // CPD Core Details
+    title: item.title_of_cpd,
+    cpdTitle: item.title_of_cpd,
+    venue: item.venue || 'Not specified',
+    cpdProvider: item.cpd_providing_agency?.name || 'N/A',
+    durationInHours: item.duration_in_hours || 0,
+    numberOfParticipants: item.number_of_participants || 0,
+    relevance: item.relevance_to_topic,
+    expectedOutcome: item.expected_outcome || 'N/A',
+    activityType: item.type_of_cpd?.cpd_activity_name || 'N/A',
 
-      attachment: item.attachment ? { name: item.attachment.split('/').pop(), url: item.attachment } : null,
-      cpdCredits: item.cpd_credit !== undefined ? item.cpd_credit : (item.credit !== undefined ? item.credit : 0), // Check both fields
-      reviewStatus: item.review_status || 'Pending',
-      remarks: item.remark || item.review_remarks || '',
-      isDraft: item.is_draft || false, // Ensure `is_draft` is in your list API item structure
+    // Categories & Methodologies
+    participationCategory:
+      item.target_participant_categories?.map((cat) => cat.category_name).join(', ') || 'N/A',
+    participantSubCategory:
+      item.target_participant_subcategories?.map((sub) => sub.sub_category_name).join(', ') ||
+      'N/A',
+    methodologies:
+      item.methodologies
+        ?.map((m) => m.methodology_name.methodology_name)
+        .filter(Boolean)
+        .join(', ') || 'N/A',
+    learningMethods: item.learning_methods || [], // Keep as array
 
-      expected_outcome: item.expected_outcome || '',
-      venue: item.venue || '',
-      fromDate: item.from_date ? new Date(item.from_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric'}) : 'N/A',
-      toDate: item.to_date ? new Date(item.to_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric'}) : 'N/A',
-      createdAt: item.created_at,
-      updatedAt: item.updated_at,
-      participants: item.participants || [],
-      rawItem: item,
-    };
-  });
-};
+    // Attachments
+    attachment: item.attachment
+      ? { name: item.attachment.split('/').pop(), url: item.attachment }
+      : null,
+    courseDocument: item.course_document
+      ? { name: item.course_document.split('/').pop(), url: item.course_document }
+      : null,
+
+    // Review & Credit Info
+    cpdCredits: item.credit,
+    reviewStatus: item.application_status,
+    remarks: item.status_remarks,
+
+    // Raw data for reference if needed
+    resources: item.resources || [], // Keep as array
+    isDraft: item.is_draft,
+    rawItem: item,
+  }))
+}
 
 const getTaskStatus = (item) => {
-  if (item.is_draft) return 'Draft';
-  return item.review_status || 'Pending';
-};
-
-const saveApplication = async (updatedAppFromModal) => {
-  try {
-    loading.value = true;
-    const patchData = { // Construct payload based on what's editable in modal
-      credit: updatedAppFromModal.cpdCredits,
-      review_remarks: updatedAppFromModal.remarks,
-      // Add other fields from updatedAppFromModal that are editable
-      // title_of_cpd: updatedAppFromModal.title, (if title is editable)
-    };
-    await apiServices.patchMhpcCpdTask(updatedAppFromModal.id, patchData);
-    showNotification('success', 'Application Updated', 'Details updated successfully.');
-    await fetchApplications();
-  } catch (err) {
-    console.error('Failed to save application:', err);
-    showNotification('error', 'Update Failed', 'Could not update application details.');
-  } finally {
-    loading.value = false;
+  if (item.is_draft) return 'Draft'
+  const statusMap = {
+    SUBMITTED: 'Pending',
+    UNDER_REVIEW: 'Pending',
+    PENDING_CLARIFICATION: 'Pending',
+    APPROVED: 'Approved',
+    REGRETTED: 'Rejected',
+    WITHDRAWN: 'Withdrawn',
   }
-};
+  return statusMap[item.application_status] || 'Unknown'
+}
 
-const approveApplication = async (applicationData) => {
+// --- FIXED ACTION HANDLERS (Unchanged) ---
+const saveApplication = async (payload) => {
   try {
     loading.value = true
-    if (!applicationData || !applicationData.id) {
-      showNotification('error', 'Approval Failed', 'Invalid application data.'); loading.value = false; return;
-    }
-    const patchData = {
-      review_status: 'Approved',
-      review_remarks: applicationData.remarks || '',
-      // Spread participants if they are part of the approval payload from the modal
-      ...(applicationData.participants && applicationData.participants.length > 0 && {
-        participants: applicationData.participants.map(p => ({
-          id: p.id,
-          review_status: p.review_status || 'Approved',
-          review_remarks: p.review_remarks || applicationData.remarks || '',
-          cpd_credits_for_participant: p.cpd_credits_for_participant === undefined ? (applicationData.cpdCredits || 0) : p.cpd_credits_for_participant,
-        }))
-      })
-    };
-    await apiServices.patchMhpcCpdTask(applicationData.id, patchData);
-    showNotification('success', 'Application Approved', 'CPD application approved.');
-    closeViewModal();
-    await fetchApplications();
+    const formData = new FormData()
+    formData.append('credit', payload.credit)
+    await apiServices.patchMhpcCpdTask(payload.id, formData)
+    showNotification(
+      'success',
+      'Credits Updated',
+      'The CPD credits have been updated successfully.'
+    )
+    await fetchApplications()
   } catch (err) {
-    console.error('Failed to approve application:', err);
-    showNotification('error', 'Approval Failed', 'Error approving application.');
+    console.error('Failed to save application:', err)
+    showNotification('error', 'Update Failed', 'Could not update application credits.')
   } finally {
-    loading.value = false;
+    loading.value = false
+    closeViewModal()
   }
-};
+}
 
-const rejectApplication = async (rejectionData) => {
+const approveApplication = async (payload) => {
   try {
-    loading.value = true;
-    if (!rejectionData || !rejectionData.id) {
-      showNotification('error', 'Rejection Failed', 'Invalid application data.'); loading.value = false; return;
-    }
+    loading.value = true
     const patchData = {
-      review_status: 'Rejected',
-      review_remarks: rejectionData.remarks || 'Rejected by officer.',
-      ...(rejectionData.participants && rejectionData.participants.length > 0 && {
-        participants: rejectionData.participants.map(p => ({
-          id: p.id,
-          review_status: 'Rejected',
-          review_remarks: p.review_remarks || rejectionData.remarks || 'Rejected by officer.',
-          cpd_credits_for_participant: 0,
-        }))
-      })
-    };
-    await apiServices.patchMhpcCpdTask(rejectionData.id, patchData);
-    showNotification('success', 'Application Rejected', 'CPD application rejected.');
-    closeViewModal();
-    await fetchApplications();
+      application_status: 'APPROVED',
+      status_remarks: payload.status_remarks,
+      credit: payload.credit,
+      is_cpd_approved: true,
+    }
+    const formData = new FormData()
+    for (const key in patchData) {
+      formData.append(key, patchData[key])
+    }
+    await apiServices.patchMhpcCpdTask(payload.id, formData)
+    showNotification('success', 'Application Approved', 'The CPD application has been approved.')
+    await fetchApplications()
   } catch (err) {
-    console.error('Failed to reject application:', err);
-    showNotification('error', 'Rejection Failed', 'Error rejecting application.');
+    console.error('Failed to approve application:', err)
+    showNotification(
+      'error',
+      'Approval Failed',
+      'An error occurred while approving the application.'
+    )
   } finally {
-    loading.value = false;
+    loading.value = false
+    closeViewModal()
   }
-};
+}
+
+const rejectApplication = async (payload) => {
+  try {
+    loading.value = true
+    const patchData = {
+      application_status: 'REGRETTED',
+      status_remarks: payload.status_remarks,
+      is_cpd_approved: false,
+    }
+    const formData = new FormData()
+    for (const key in patchData) {
+      formData.append(key, patchData[key])
+    }
+    await apiServices.patchMhpcCpdTask(payload.id, formData)
+    showNotification(
+      'success',
+      'Application Regretted',
+      'The CPD application has been marked as regretted.'
+    )
+    await fetchApplications()
+  } catch (err) {
+    console.error('Failed to reject application:', err)
+    showNotification('error', 'Action Failed', 'An error occurred while rejecting the application.')
+  } finally {
+    loading.value = false
+    closeViewModal()
+  }
+}
 
 const fetchApplications = async () => {
   try {
-    loading.value = true;
-    const response = await apiServices.getMhpcCpdTask();
-    let results = [];
-    if (response.data && response.data.results && Array.isArray(response.data.results)) {
-      results = response.data.results;
-    } else if (response.results && Array.isArray(response.results)) {
-      results = response.results;
-    } else if (Array.isArray(response.data)) {
-        results = response.data;
-    } else if (Array.isArray(response)) {
-        results = response;
-    } else {
-        console.warn("Unexpected API response structure for CPD tasks:", response);
-    }
-    processApiResponse(results);
+    loading.value = true
+    const response = await apiServices.getMhpcCpdTask()
+    processApiResponse(response.data?.results || [])
   } catch (err) {
-    console.error('Failed to fetch applications:', err);
-    showNotification('error', 'Load Failed', 'Error loading CPD applications.');
-    applications.value = [];
+    console.error('Failed to fetch applications:', err)
+    showNotification('error', 'Load Failed', 'Error loading CPD applications.')
+    applications.value = []
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 onMounted(async () => {
-  loading.value = true;
-  await fetchAllMasterData();
-  await fetchApplications();
-  loading.value = false;
-});
+  await fetchApplications()
+})
 </script>
 
 <style scoped>

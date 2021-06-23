@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -91,7 +91,9 @@
               </div>
               <div>
                 <dt class="text-sm font-medium text-gray-600">Duration</dt>
-                <dd class="text-gray-800">{{ institute.course_duration ? `${institute.course_duration} Months` : 'N/A' }}</dd>
+                <dd class="text-gray-800">
+                  {{ institute.course_duration ? `${institute.course_duration} Months` : 'N/A' }}
+                </dd>
               </div>
               <div>
                 <dt class="text-sm font-medium text-gray-600">Commencement Date</dt>
@@ -104,8 +106,8 @@
                     institute.type_of_programme === 'D'
                       ? 'Diploma'
                       : institute.type_of_programme === 'B'
-                        ? 'Bachelor'
-                        : institute.type_of_programme || 'N/A'
+                      ? 'Bachelor'
+                      : institute.type_of_programme || 'N/A'
                   }}
                 </dd>
               </div>
@@ -258,123 +260,119 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
-import { useToast } from 'vue-toastification';
-import apiServices from '@/services/services';
-import { useAuthStore } from '@/stores/authStore';
-import { storeToRefs } from 'pinia';
-import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue';
-import { GlobeAltIcon, DocumentIcon } from '@heroicons/vue/24/outline';
+import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useToast } from 'vue-toastification'
+import apiServices from '@/services/services'
+import { useAuthStore } from '@/stores/authStore'
+import { storeToRefs } from 'pinia'
+import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
+import { GlobeAltIcon, DocumentIcon } from '@heroicons/vue/24/outline'
 
-const route = useRoute();
-const institute = ref(null);
-const teachingCenters = ref([]);
-const errorMessage = ref('');
-const authStore = useAuthStore();
-const { user } = storeToRefs(authStore);
-const toast = useToast();
+const route = useRoute()
+const institute = ref(null)
+const teachingCenters = ref([])
+const errorMessage = ref('')
+const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
+const toast = useToast()
 
 // Computed properties for formatted dates
 const formattedCommencementDate = computed(() => {
-  return institute.value?.commencement_date
-    ? formatDate(institute.value.commencement_date)
-    : 'N/A';
-});
+  return institute.value?.commencement_date ? formatDate(institute.value.commencement_date) : 'N/A'
+})
 
 const formattedValidSince = computed(() => {
-  return institute.value?.valid_since ? formatDate(institute.value.valid_since) : 'N/A';
-});
+  return institute.value?.valid_since ? formatDate(institute.value.valid_since) : 'N/A'
+})
 
 const formattedValidTill = computed(() => {
-  return institute.value?.valid_till ? formatDate(institute.value.valid_till) : 'N/A';
-});
+  return institute.value?.valid_till ? formatDate(institute.value.valid_till) : 'N/A'
+})
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-};
+  if (!dateString) return 'N/A'
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+}
 
 // Fetch institute data
 const fetchInstitute = async () => {
-  errorMessage.value = ''; // Clear previous errors
-  institute.value = null; // Reset institute data
-  teachingCenters.value = []; // Reset teaching centers
+  errorMessage.value = '' // Clear previous errors
+  institute.value = null // Reset institute data
+  teachingCenters.value = [] // Reset teaching centers
 
   try {
-    const instituteId = route.params.id || route.params.cid || user.value?.cid || '1';
+    const instituteId = route.params.id || route.params.cid || user.value?.cid || '1'
     if (!instituteId) {
-      errorMessage.value = 'Institute ID or CID is not available.';
-      toast.error(errorMessage.value);
-      return;
+      errorMessage.value = 'Institute ID or CID is not available.'
+      toast.error(errorMessage.value)
+      return
     }
 
-    const response = await apiServices.getMhpcInstitute(instituteId);
-    console.log('API Response:', JSON.stringify(response.data, null, 2));
+    const response = await apiServices.getMhpcInstitute(instituteId)
+    console.log('API Response:', JSON.stringify(response.data, null, 2))
 
-    let instituteData = null;
+    let instituteData = null
 
     // Case 1: Handle direct array response
     if (Array.isArray(response.data)) {
       if (response.data.length === 0) {
-        errorMessage.value = `No institute found for the identifier: ${instituteId}.`;
-        toast.info(errorMessage.value);
-        return;
+        errorMessage.value = `No institute found for the identifier: ${instituteId}.`
+        toast.info(errorMessage.value)
+        return
       }
-      instituteData = response.data[0]; // Take the first institute
+      instituteData = response.data[0] // Take the first institute
     }
     // Case 2: Handle object with 'results' property
     else if (response.data && 'results' in response.data) {
       if (!Array.isArray(response.data.results) || response.data.results.length === 0) {
-        errorMessage.value = `No institute found for the identifier: ${instituteId}.`;
-        toast.info(errorMessage.value);
-        return;
+        errorMessage.value = `No institute found for the identifier: ${instituteId}.`
+        toast.info(errorMessage.value)
+        return
       }
-      instituteData = response.data.results[0]; // Take the first institute
+      instituteData = response.data.results[0] // Take the first institute
     }
     // Case 3: Handle single object response
     else if (response.data && typeof response.data === 'object') {
       // Verify the object has expected properties to ensure it's valid institute data
       if (!response.data.id || !response.data.CID) {
-        throw new Error(`Invalid institute data: Missing required fields (id or CID)`);
+        throw new Error(`Invalid institute data: Missing required fields (id or CID)`)
       }
-      instituteData = response.data; // Use the object directly
+      instituteData = response.data // Use the object directly
     }
     // Case 4: Invalid response format
     else {
-      throw new Error(`Invalid API response format: ${JSON.stringify(response.data)}`);
+      throw new Error(`Invalid API response format: ${JSON.stringify(response.data)}`)
     }
 
     // Authorization check
     if (user.value?.cid && instituteData.CID !== user.value.cid) {
       if (instituteId === user.value.cid) {
-        errorMessage.value = `Data Mismatch: Fetched institute (CID: ${instituteData.CID}) does not match your requested CID (${user.value.cid}).`;
-        toast.error(errorMessage.value);
-        return;
+        errorMessage.value = `Data Mismatch: Fetched institute (CID: ${instituteData.CID}) does not match your requested CID (${user.value.cid}).`
+        toast.error(errorMessage.value)
+        return
       }
       // Allow viewing other profiles if instituteId wasn't user CID
     }
 
     // Assign data
-    institute.value = instituteData;
-    teachingCenters.value = instituteData.teaching_centers || [];
-
+    institute.value = instituteData
+    teachingCenters.value = instituteData.teaching_centers || []
   } catch (error) {
-    console.error('Error fetching institute:', error);
-    institute.value = null;
-    teachingCenters.value = [];
-    errorMessage.value = error.message || 'An unexpected error occurred. Please try again.';
-    toast.error(errorMessage.value);
+    console.error('Error fetching institute:', error)
+    institute.value = null
+    teachingCenters.value = []
+    errorMessage.value = error.message || 'An unexpected error occurred. Please try again.'
+    toast.error(errorMessage.value)
   }
-};
+}
 
 onMounted(() => {
-  fetchInstitute();
-});
+  fetchInstitute()
+})
 </script>
 
 <style scoped>
 /* No additional styles needed, Tailwind CSS handles everything */
 </style>
-```

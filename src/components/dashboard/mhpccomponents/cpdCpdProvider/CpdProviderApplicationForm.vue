@@ -1152,7 +1152,7 @@ const prepareFormData = (isDraftSubmission = false) => {
   fd.append('type_of_cpd', teachingMethod.type)
   fd.append('expected_outcome', teachingMethod.expectedOutcome)
   fd.append('duration_in_hours', totalCredits)
-  fd.append('credit', Math.round(totalCredits))
+  fd.append('credit', 0)
   if (courseDocument.value) {
     fd.append('course_document', courseDocument.value)
   }

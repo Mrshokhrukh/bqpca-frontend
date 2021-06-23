@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModalHandler" class="fixed inset-0 z-50 overflow-y-auto">
@@ -707,8 +707,8 @@
                     successType === 'approve'
                       ? 'bg-green-100 text-green-800 border-l-4 border-green-500'
                       : successType === 'reject'
-                        ? 'bg-red-100 text-red-800 border-l-4 border-red-500'
-                        : 'bg-blue-100 text-blue-800 border-l-4 border-blue-500',
+                      ? 'bg-red-100 text-red-800 border-l-4 border-red-500'
+                      : 'bg-blue-100 text-blue-800 border-l-4 border-blue-500',
                   ]"
                 >
                   <div
@@ -717,8 +717,8 @@
                       successType === 'approve'
                         ? 'bg-green-200 text-green-600'
                         : successType === 'reject'
-                          ? 'bg-red-200 text-red-600'
-                          : 'bg-blue-200 text-blue-600',
+                        ? 'bg-red-200 text-red-600'
+                        : 'bg-blue-200 text-blue-600',
                     ]"
                   >
                     <Check v-if="successType === 'approve'" class="w-5 h-5" />
@@ -733,8 +733,8 @@
                       successType === 'approve'
                         ? 'bg-green-200 text-green-600 hover:bg-green-300 focus:ring-green-400'
                         : successType === 'reject'
-                          ? 'bg-red-200 text-red-600 hover:bg-red-300 focus:ring-red-400'
-                          : 'bg-blue-200 text-blue-600 hover:bg-blue-300 focus:ring-blue-400',
+                        ? 'bg-red-200 text-red-600 hover:bg-red-300 focus:ring-red-400'
+                        : 'bg-blue-200 text-blue-600 hover:bg-blue-300 focus:ring-blue-400',
                     ]"
                     @click="closeSuccessNotification"
                   >
@@ -854,7 +854,7 @@ watch(
       filesToUpload.value = {}
       showSuccess.value = false // Reset notification state when modal opens
     }
-  },
+  }
 )
 
 const startEditing = () => {
@@ -1002,7 +1002,7 @@ const saveChanges = async () => {
         formData.append(
           apiFieldName,
           filesToUpload.value[fieldName],
-          filesToUpload.value[fieldName].name,
+          filesToUpload.value[fieldName].name
         )
         console.log(`Appending file for ${apiFieldName}:`, filesToUpload.value[fieldName].name)
       }
@@ -1140,7 +1140,7 @@ const confirmApproval = async () => {
     // Show custom success notification
     showSuccessNotification(
       `DPR application approved successfully. Notification sent to ${transformedApplication.value.nameOfInstitution}.`,
-      'approve',
+      'approve'
     )
   } catch (error) {
     console.error('Error approving DPR:', error)
@@ -1177,7 +1177,7 @@ const confirmRejection = async () => {
     // Show custom success notification
     showSuccessNotification(
       `DPR application has been regretted. Notification sent to ${transformedApplication.value.nameOfInstitution}.`,
-      'reject',
+      'reject'
     )
   } catch (error) {
     console.error('Error rejecting DPR:', error)
@@ -1253,4 +1253,4 @@ const getStatusCircleClasses = (status) => ({
   opacity: 1 !important;
 }
 </style>
-```
+

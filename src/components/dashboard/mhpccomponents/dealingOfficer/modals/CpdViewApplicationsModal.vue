@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <TransitionRoot appear :show="application !== null" as="template">
     <Dialog as="div" @close="$emit('close')" class="relative z-50">
@@ -236,9 +236,7 @@
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">
-                                Type of CPD Activity
-                              </p>
+                              <p class="text-sm font-medium text-gray-500">Type of CPD Activity</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Activity class="h-4 w-4 text-gray-400" />
                                 <span>{{ application.activityType || 'Not provided' }}</span>
@@ -505,22 +503,6 @@ const props = defineProps({
   application: {
     type: Object,
     required: true,
-    default: () => ({
-      registrationNumber: '',
-      cidNumber: '',
-      fullName: '',
-      gender: '',
-      cpdTitle: '',
-      relevance: '',
-      participationCategory: '',
-      participantSubCategory: '',
-      activityType: '',
-      attachment: null,
-      cpdCredits: 0,
-      status: '',
-      reviewStatus: '',
-      remarks: '',
-    }),
   },
 })
 
@@ -533,50 +515,33 @@ const showRejectionForm = ref(false)
 const approvalMessage = ref('')
 const rejectionMessage = ref('')
 const rejectionError = ref('')
-const approvalCredits = ref(props.application?.cpdCredits || 0)
-
-// Transform API response to match template expectations
-const transformApplication = (app) => {
-  return {
-    ...app,
-    registrationNumber: app.registration_no || '',
-    cidNumber: app.cid_no || '',
-    fullName: app.full_name || '',
-    gender: app.gender || '',
-    cpdTitle: app.title_of_cpd || '',
-    relevance: app.relevance_to_profession || '',
-    participationCategory: app.participation_category_display || '',
-    participantSubCategory: app.participant_sub_category_display || '',
-    activityType: app.type_of_cpd_activity_display || '',
-    attachment: app.attachment ? { url: app.attachment, name: 'Document' } : null,
-    cpdCredits: app.cpd_credit || 0,
-    status: app.review_status || 'Pending',
-    remarks: app.remark || '',
-    id: app.id,
-  }
-}
+const approvalCredits = ref(0)
 
 watch(
   () => props.application,
   (newApplication) => {
     if (newApplication) {
-      editedApplication.value = transformApplication(newApplication)
-      approvalCredits.value = newApplication.cpd_credit || 0
+      editedApplication.value = { ...newApplication }
+      approvalCredits.value = newApplication.cpdCredits || 0
+      isEditing.value = false
+      showApprovalForm.value = false
+      showRejectionForm.value = false
+      approvalMessage.value = ''
+      rejectionMessage.value = ''
+      rejectionError.value = ''
     }
   },
-  { immediate: true }
+  { immediate: true, deep: true }
 )
 
 const startEditing = () => {
   isEditing.value = true
-  showApprovalForm.value = false
-  showRejectionForm.value = false
 }
 
 const saveChanges = () => {
   emit('save', {
-    ...editedApplication.value,
     id: props.application.id,
+    credit: editedApplication.value.cpdCredits,
   })
   isEditing.value = false
 }
@@ -585,15 +550,12 @@ const approveApplication = () => {
   if (approvalCredits.value < 0) {
     approvalCredits.value = 0
   }
-
+  // --- FIXED: Added 'credit' to the payload ---
   emit('approve', {
     id: props.application.id,
-    cpdCredits: approvalCredits.value,
-    remarks: approvalMessage.value || 'Application approved',
+    status_remarks: approvalMessage.value || 'Application approved.',
+    credit: approvalCredits.value,
   })
-  showApprovalForm.value = false
-  approvalMessage.value = ''
-  emit('close')
 }
 
 const rejectApplication = () => {
@@ -601,15 +563,10 @@ const rejectApplication = () => {
     rejectionError.value = 'Please provide a reason for rejection'
     return
   }
-
   emit('reject', {
     id: props.application.id,
-    remarks: rejectionMessage.value,
+    status_remarks: rejectionMessage.value,
   })
-  showRejectionForm.value = false
-  rejectionMessage.value = ''
-  rejectionError.value = ''
-  emit('close')
 }
 </script>
 
@@ -642,16 +599,12 @@ const rejectApplication = () => {
 
 /* Enhanced card hover effects */
 .rounded-xl {
-  transition:
-    transform 0.2s ease-in-out,
-    box-shadow 0.2s ease-in-out;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .rounded-xl:hover {
   transform: translateY(-2px);
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* Status indicator animations */
@@ -670,4 +623,3 @@ const rejectApplication = () => {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style>
-```

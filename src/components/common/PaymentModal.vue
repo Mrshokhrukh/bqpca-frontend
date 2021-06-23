@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <teleport to="body">
     <Transition name="modal-fade">
@@ -88,7 +88,10 @@
                   >
                     1
                   </div>
-                  <span>{{ isMobile ? 'Slide to initiate' : 'Click to initiate' }} payment process</span>
+                  <span
+                    >{{ isMobile ? 'Slide to initiate' : 'Click to initiate' }} payment
+                    process</span
+                  >
                 </li>
                 <li class="flex items-start">
                   <div
@@ -137,7 +140,14 @@
                 fill="none"
                 viewBox="0 0 24 24"
               >
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
               </svg>
               {{ isProcessing ? 'Processing...' : 'Initiate Payment' }}
@@ -242,23 +252,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { v4 as uuidv4 } from 'uuid';
-import { useToast } from 'vue-toastification';
+import { ref, onMounted, onUnmounted } from 'vue'
+import { v4 as uuidv4 } from 'uuid'
+import { useToast } from 'vue-toastification'
 
-const toast = useToast();
+const toast = useToast()
 
-const isVisible = ref(false);
-const isMobile = ref(false);
-const isSliding = ref(false);
-const isProcessing = ref(false);
-const slidePosition = ref(0);
-const slideProgress = ref(0);
-const maxSlideWidth = ref(0);
-const startX = ref(0);
-const slider = ref(null);
-const sliderThumb = ref(null);
-const errorMessage = ref('');
+const isVisible = ref(false)
+const isMobile = ref(false)
+const isSliding = ref(false)
+const isProcessing = ref(false)
+const slidePosition = ref(0)
+const slideProgress = ref(0)
+const maxSlideWidth = ref(0)
+const startX = ref(0)
+const slider = ref(null)
+const sliderThumb = ref(null)
+const errorMessage = ref('')
 
 defineProps({
   amount: {
@@ -266,112 +276,112 @@ defineProps({
     required: true,
     default: 0,
   },
-});
+})
 
-const emit = defineEmits(['payment-completed', 'close']);
+const emit = defineEmits(['payment-completed', 'close'])
 
 const checkMobile = () => {
-  isMobile.value = window.innerWidth < 768;
-};
+  isMobile.value = window.innerWidth < 768
+}
 
 const startSlide = (event) => {
-  if (!isMobile.value) return;
-  isSliding.value = true;
-  startX.value = event.type === 'mousedown' ? event.clientX : event.touches[0].clientX;
-};
+  if (!isMobile.value) return
+  isSliding.value = true
+  startX.value = event.type === 'mousedown' ? event.clientX : event.touches[0].clientX
+}
 
 const updateSlide = (event) => {
-  if (!isSliding.value || !isMobile.value) return;
+  if (!isSliding.value || !isMobile.value) return
 
-  const currentX = event.type === 'mousemove' ? event.clientX : event.touches[0].clientX;
-  const diff = currentX - startX.value;
-  const newPosition = Math.max(0, Math.min(maxSlideWidth.value, slidePosition.value + diff));
+  const currentX = event.type === 'mousemove' ? event.clientX : event.touches[0].clientX
+  const diff = currentX - startX.value
+  const newPosition = Math.max(0, Math.min(maxSlideWidth.value, slidePosition.value + diff))
 
-  slidePosition.value = newPosition;
-  slideProgress.value = (newPosition / maxSlideWidth.value) * 100;
-  startX.value = currentX;
+  slidePosition.value = newPosition
+  slideProgress.value = (newPosition / maxSlideWidth.value) * 100
+  startX.value = currentX
 
   if (slideProgress.value >= 100) {
-    initiatePayment();
+    initiatePayment()
   }
-};
+}
 
 const endSlide = () => {
-  if (!isSliding.value || !isMobile.value) return;
+  if (!isSliding.value || !isMobile.value) return
 
-  isSliding.value = false;
+  isSliding.value = false
   if (slideProgress.value < 100) {
-    resetSlide();
+    resetSlide()
   }
-};
+}
 
 const resetSlide = () => {
-  slidePosition.value = 0;
-  slideProgress.value = 0;
-  isSliding.value = false;
-};
+  slidePosition.value = 0
+  slideProgress.value = 0
+  isSliding.value = false
+}
 
 const initiatePayment = async () => {
-  isProcessing.value = true;
-  errorMessage.value = '';
+  isProcessing.value = true
+  errorMessage.value = ''
   try {
-    const paymentHash = uuidv4();
-    const paymentDone = true; // Replace with actual payment gateway logic
+    const paymentHash = uuidv4()
+    const paymentDone = true // Replace with actual payment gateway logic
 
     emit('payment-completed', {
       paymentHash,
       paymentDone,
       status: 'initiated',
       message: 'Payment link will be sent to your email via BIRMS',
-    });
-    toast.success('Payment initiated successfully!');
+    })
+    toast.success('Payment initiated successfully!')
     // Do not close modal here; let parent handle it
   } catch (error) {
-    errorMessage.value = 'Failed to initiate payment. Please try again.';
-    toast.error(errorMessage.value);
-    console.error('Payment initiation error:', error);
+    errorMessage.value = 'Failed to initiate payment. Please try again.'
+    toast.error(errorMessage.value)
+    console.error('Payment initiation error:', error)
   } finally {
-    isProcessing.value = false;
+    isProcessing.value = false
   }
-};
+}
 
 const openModal = () => {
-  isVisible.value = true;
-  errorMessage.value = '';
-  document.body.style.overflow = 'hidden';
-};
+  isVisible.value = true
+  errorMessage.value = ''
+  document.body.style.overflow = 'hidden'
+}
 
 const closeModal = () => {
-  if (isProcessing.value) return; // Prevent closing during processing
-  isVisible.value = false;
-  resetSlide();
-  document.body.style.overflow = '';
-  emit('close');
-};
+  if (isProcessing.value) return // Prevent closing during processing
+  isVisible.value = false
+  resetSlide()
+  document.body.style.overflow = ''
+  emit('close')
+}
 
 const updateMaxSlideWidth = () => {
-  if (!isMobile.value || !slider.value || !sliderThumb.value) return;
-  const sliderWidth = slider.value.offsetWidth;
-  const thumbWidth = sliderThumb.value.offsetWidth;
-  maxSlideWidth.value = sliderWidth - thumbWidth - 8;
-};
+  if (!isMobile.value || !slider.value || !sliderThumb.value) return
+  const sliderWidth = slider.value.offsetWidth
+  const thumbWidth = sliderThumb.value.offsetWidth
+  maxSlideWidth.value = sliderWidth - thumbWidth - 8
+}
 
 onMounted(() => {
-  checkMobile();
-  updateMaxSlideWidth();
-  window.addEventListener('resize', checkMobile);
-  window.addEventListener('resize', updateMaxSlideWidth);
-});
+  checkMobile()
+  updateMaxSlideWidth()
+  window.addEventListener('resize', checkMobile)
+  window.addEventListener('resize', updateMaxSlideWidth)
+})
 
 onUnmounted(() => {
-  window.removeEventListener('resize', checkMobile);
-  window.removeEventListener('resize', updateMaxSlideWidth);
-  document.body.style.overflow = '';
-});
+  window.removeEventListener('resize', checkMobile)
+  window.removeEventListener('resize', updateMaxSlideWidth)
+  document.body.style.overflow = ''
+})
 
 defineExpose({
   openModal,
-});
+})
 </script>
 
 <style scoped>
@@ -393,4 +403,3 @@ defineExpose({
   transform: scale(0.95) translateY(-20px);
 }
 </style>
-```

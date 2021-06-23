@@ -323,7 +323,40 @@
             <dl class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-5 text-sm">
               <div v-for="(item, i_idx) in section.items" :key="i_idx" :class="item.span">
                 <dt class="font-semibold text-slate-500">{{ item.label }}</dt>
-                <dd class="mt-1 text-slate-900" v-html="item.value"></dd>
+                <dd class="mt-1 text-slate-900">
+                  <span v-if="!item.type || item.type === 'text'">
+                    {{ item.value }}
+                  </span>
+
+                  <span
+                    v-else-if="item.type === 'badge' && item.value"
+                    :class="item.class"
+                    class="px-2.5 py-1 inline-flex text-xs leading-5 font-bold rounded-full"
+                  >
+                    {{ item.value }}
+                  </span>
+
+                  <ul v-else-if="item.type === 'list' && item.value?.length" class="space-y-1">
+                    <li
+                      v-for="(listItem, l_idx) in item.value"
+                      :key="l_idx"
+                      class="list-disc list-inside"
+                    >
+                      {{ item.accessor(listItem) }}
+                    </li>
+                  </ul>
+
+                  <a
+                    v-else-if="item.type === 'link' && item.value"
+                    :href="item.value"
+                    target="_blank"
+                    class="text-blue-600 hover:underline"
+                  >
+                    View Document
+                  </a>
+
+                  <span v-else class="text-slate-400">N/A</span>
+                </dd>
               </div>
             </dl>
             <div
@@ -396,13 +429,15 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import apiServices from '@/services/services'
+import apiServices from '@/services/services' // Your existing API service
 import { useToast } from 'vue-toastification'
+import { useAuthStore } from '@/stores/authStore' // Import your auth store
 
 const router = useRouter()
 const toast = useToast()
+const authStore = useAuthStore() // Initialize the auth store
 
-// Reactive state
+// --- STATE ---
 const applications = ref([])
 const loading = ref(false)
 const error = ref(null)
@@ -411,193 +446,9 @@ const statusFilter = ref('')
 const showViewModal = ref(false)
 const selectedApplication = ref(null)
 
-// Helper function to check if an application is approved but needs participants
-const isApprovedWithoutParticipants = (application) => {
-  return (
-    application.application_status === 'APPROVED' &&
-    (!application.participants || application.participants.length === 0)
-  )
-}
-
-// Centralized function to determine the comprehensive status of an application
-const getComprehensiveStatus = (application) => {
-  if (!application) return 'N/A'
-
-  if (application.is_draft) {
-    return 'Draft'
-  }
-
-  const status = application.application_status
-    ? application.application_status.charAt(0).toUpperCase() +
-      application.application_status.slice(1).toLowerCase()
-    : null
-
-  if (status === 'Approved') {
-    if (isApprovedWithoutParticipants(application)) {
-      return 'Needs Participants'
-    } else {
-      return 'Completed'
-    }
-  }
-
-  if (status) {
-    return status
-  }
-
-  return 'Pending'
-}
-
-const modalSections = computed(() => {
-    if (!selectedApplication.value) return [];
-    const app = selectedApplication.value;
-    const na = '<span class="text-slate-400">N/A</span>'; // Not available string
-    return [
-        {
-            title: 'Key Information',
-            items: [
-                { label: 'Application ID', value: app.id || na, span: 'sm:col-span-1' },
-                { label: 'Status', value: `<span class="px-2.5 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${getStatusClass(app)}">${getComprehensiveStatus(app)}</span>`, span: 'sm:col-span-2' },
-                { label: 'CPD Title', value: app.title_of_cpd || na, span: 'sm:col-span-3' },
-                { label: 'Applicant Name', value: app.full_name || na, span: 'sm:col-span-1' },
-                { label: 'Applicant CID', value: app.cid_no || na, span: 'sm:col-span-1' },
-                { label: 'Registration No', value: app.registration_no || na, span: 'sm:col-span-1' },
-            ]
-        },
-        {
-            title: 'Dates & Location',
-            items: [
-                { label: 'Training Dates', value: formatDateRange(app.from_date, app.to_date), span: 'sm:col-span-1' },
-                { label: 'Duration (Hours)', value: app.duration_in_hours || na, span: 'sm:col-span-1' },
-                { label: 'Proposed Location', value: app.proposed_training_location || na, span: 'sm:col-span-1' },
-                { label: 'Venue Details', value: app.venue || na, span: 'sm:col-span-3' },
-            ]
-        },
-        {
-            title: 'CPD Details',
-            items: [
-                { label: 'CPD Type', value: app.type_of_cpd || na, span: 'sm:col-span-1' },
-                { label: 'CPD Credits', value: app.credit || '<span class="text-slate-400">Not Assigned</span>', span: 'sm:col-span-1' },
-                { label: 'Participants', value: app.number_of_participants || na, span: 'sm:col-span-1' },
-                { label: 'Reason for Conducting', value: app.reason_for_conducting || na, span: 'sm:col-span-3' },
-                { label: 'Expected Outcome', value: app.expected_outcome || na, span: 'sm:col-span-3' },
-                { label: 'Relevance to Topic', value: app.relevance_to_topic || na, span: 'sm:col-span-3' },
-                ...(app.if_others_specify ? [{ label: 'Other Specifications', value: app.if_others_specify, span: 'sm:col-span-3' }] : []),
-            ]
-        },
-        {
-            title: 'Teaching & Learning',
-            items: [
-                 ...(app.methodologies?.length > 0 ? [{ label: 'Methodologies', value: `<ul>${app.methodologies.map(m => `<li class="list-disc list-inside">${m.name}</li>`).join('')}</ul>`, span: 'sm:col-span-1' }] : []),
-                 ...(app.learning_methods?.length > 0 ? [{ label: 'Learning Methods', value: `<ul>${app.learning_methods.map(m => `<li class="list-disc list-inside">${m.name}</li>`).join('')}</ul>`, span: 'sm:col-span-1' }] : []),
-            ]
-        },
-        {
-            title: 'Resource Persons',
-            items: (app.resources && app.resources.length > 0 && app.resources[0].resource_person_name) ? [] : [{label: '', value: '<span class="text-slate-500">No resource persons listed for this application.</span>', span: 'sm:col-span-3'}],
-        },
-        {
-            title: 'Attachments',
-            items: [
-                { label: 'Course Document', value: app.course_document ? `<a href="${app.course_document}" target="_blank" class="text-blue-600 hover:underline">View Document</a>` : na, span: 'sm:col-span-1' },
-                { label: 'Attendance Sheet', value: app.attendance_sheet_attachment ? `<a href="${app.attendance_sheet_attachment}" target="_blank" class="text-blue-600 hover:underline">View Sheet</a>` : na, span: 'sm:col-span-1' },
-                { label: 'Other Attachments', value: app.attachment ? `<a href="${app.attachment}" target="_blank" class="text-blue-600 hover:underline">View Attachment</a>` : na, span: 'sm:col-span-1' },
-            ]
-        },
-         {
-            title: 'Administrative Details',
-            items: [
-                { label: 'CPD Providing Agency', value: app.cpd_providing_agency || na, span: 'sm:col-span-2' },
-                { label: 'Last Updated', value: formatDate(app.status_last_updated), span: 'sm:col-span-1' },
-                ...(app.status_remarks ? [{ label: 'Reviewer Remarks', value: `<div class="bg-yellow-50 text-yellow-800 p-3 rounded-md border border-yellow-200">${app.status_remarks}</div>`, span: 'sm:col-span-3' }] : []),
-            ]
-        }
-    ];
-});
-
-// Computed properties for filtering applications
-const filteredApplications = computed(() => {
-  const term = searchTerm.value.toLowerCase().trim()
-  const statusTerm = statusFilter.value
-
-  if (!applications.value) return []
-
-  return applications.value.filter((app) => {
-    const appComprehensiveStatus = getComprehensiveStatus(app)
-
-    // Search term matching (title or ID)
-    const titleMatch = app.title_of_cpd ? app.title_of_cpd.toLowerCase().includes(term) : false
-    const idMatch = app.id ? app.id.toString().toLowerCase().includes(term) : false
-    const searchCriteriaMet = term === '' || titleMatch || idMatch
-
-    if (!searchCriteriaMet) {
-      return false
-    }
-
-    // Status filter matching
-    let statusFilterMet = true
-    if (statusTerm) {
-      if (statusTerm === 'Approved') {
-        statusFilterMet = app.application_status === 'APPROVED'
-      } else {
-        statusFilterMet = appComprehensiveStatus === statusTerm
-      }
-    }
-
-    if (!statusFilterMet) {
-      return false
-    }
-
-    // Hide empty drafts in default view
-    if (appComprehensiveStatus === 'Draft' && !app.title_of_cpd) {
-      if (term === '' && statusTerm !== 'Draft') {
-        return false
-      }
-    }
-
-    return true
-  })
-})
-
-// Computed properties for approved applications notice
-const approvedApplicationsWithoutParticipants = computed(() => {
-  if (!applications.value) return []
-  return applications.value.filter((app) => isApprovedWithoutParticipants(app))
-})
-
-const hasApprovedApplicationsWithoutParticipants = computed(() => {
-  return approvedApplicationsWithoutParticipants.value.length > 0
-})
-
-// Fetch all CPD applications
-const fetchApplications = async () => {
-  try {
-    loading.value = true
-    error.value = null
-    const response = await apiServices.getMhpcCpdTask()
-    if (response.data && Array.isArray(response.data.results)) {
-      applications.value = response.data.results
-    } else {
-      applications.value = []
-      error.value =
-        'There seems to be no application under your user name. Please proceed and apply for a new application.'
-    }
-  } catch (err) {
-    console.error('Error fetching applications:', err)
-    applications.value = []
-    if (err.response && err.response.status === 404) {
-      error.value =
-        'There seems to be no application under your user name. Please proceed and apply for a new application.'
-    } else {
-      error.value = err.message || 'Failed to load applications'
-    }
-  } finally {
-    loading.value = false
-  }
-}
-
-// Helper functions
+// --- HELPER FUNCTIONS ---
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
+  if (!dateString) return null
   try {
     const date = new Date(dateString)
     return date.toLocaleDateString(undefined, {
@@ -612,27 +463,50 @@ const formatDate = (dateString) => {
 }
 
 const formatDateRange = (startDate, endDate) => {
-  if (!startDate || !endDate) return 'N/A'
-  return `${formatDate(startDate)} to ${formatDate(endDate)}`
+  const start = formatDate(startDate)
+  const end = formatDate(endDate)
+  if (!start || !end) return null
+  return `${start} to ${end}`
 }
 
-const getStatusClass = (applicationOrStatusString) => {
-  const status =
-    typeof applicationOrStatusString === 'string'
-      ? applicationOrStatusString
-      : getComprehensiveStatus(applicationOrStatusString)
+const isApprovedWithoutParticipants = (application) => {
+  return (
+    application?.application_status === 'APPROVED' &&
+    (!application.participants || application.participants.length === 0)
+  )
+}
 
+const getComprehensiveStatus = (application) => {
+  if (!application) return 'N/A'
+  if (application.is_draft) return 'Draft'
+
+  const statusMap = {
+    SUBMITTED: 'Pending',
+    UNDER_REVIEW: 'Pending',
+    PENDING_CLARIFICATION: 'Pending',
+    APPROVED: 'Approved',
+    REGRETTED: 'Rejected',
+    WITHDRAWN: 'Withdrawn',
+  }
+  const mappedStatus = statusMap[application.application_status] || 'Pending'
+
+  if (mappedStatus === 'Approved') {
+    return isApprovedWithoutParticipants(application) ? 'Needs Participants' : 'Completed'
+  }
+  return mappedStatus
+}
+
+const getStatusClass = (application) => {
+  const status = getComprehensiveStatus(application)
   switch (status) {
     case 'Completed':
       return 'bg-green-100 text-green-800'
     case 'Needs Participants':
       return 'bg-yellow-100 text-yellow-800'
-    case 'Approved':
-      return 'bg-green-100 text-green-800'
     case 'Rejected':
       return 'bg-red-100 text-red-800'
     case 'Pending':
-      return 'bg-yellow-100 text-yellow-800'
+      return 'bg-blue-100 text-blue-800'
     case 'Draft':
       return 'bg-gray-100 text-gray-800'
     default:
@@ -640,7 +514,253 @@ const getStatusClass = (applicationOrStatusString) => {
   }
 }
 
-// View application details
+// --- MAIN API CALL ---
+const fetchApplications = async () => {
+  const userCid = authStore.user?.cid
+  if (!userCid) {
+    error.value = 'Could not find user information. Please log in again.'
+    applications.value = []
+    loading.value = false
+    return
+  }
+
+  try {
+    loading.value = true
+    error.value = null
+    const response = await apiServices.getMhpcCpdTaskById(userCid)
+
+    if (response.data && Array.isArray(response.data.results)) {
+      applications.value = response.data.results
+      if (response.data.results.length === 0) {
+        error.value = 'No applications found for your account.'
+      }
+    } else {
+      applications.value = []
+    }
+  } catch (err) {
+    console.error('Error fetching applications:', err)
+    applications.value = []
+    if (err.response && err.response.status === 404) {
+      error.value = 'No applications found for your account.'
+    } else {
+      error.value = err.message || 'An unknown error occurred while loading applications.'
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+// --- COMPUTED PROPERTIES ---
+const modalSections = computed(() => {
+  if (!selectedApplication.value) return []
+  const app = selectedApplication.value
+
+  return [
+    {
+      title: 'Key Information',
+      items: [
+        { label: 'Application ID', value: app.id, type: 'text', span: 'sm:col-span-1' },
+        {
+          label: 'Status',
+          value: getComprehensiveStatus(app),
+          type: 'badge',
+          class: getStatusClass(app),
+          span: 'sm:col-span-2',
+        },
+        { label: 'CPD Title', value: app.title_of_cpd, type: 'text', span: 'sm:col-span-3' },
+        { label: 'Applicant Name', value: app.full_name, type: 'text', span: 'sm:col-span-1' },
+        { label: 'Applicant CID', value: app.cid_no, type: 'text', span: 'sm:col-span-1' },
+        {
+          label: 'Registration No',
+          value: app.registration_no,
+          type: 'text',
+          span: 'sm:col-span-1',
+        },
+      ],
+    },
+    {
+      title: 'Dates & Location',
+      items: [
+        {
+          label: 'Training Dates',
+          value: formatDateRange(app.from_date, app.to_date),
+          type: 'text',
+          span: 'sm:col-span-1',
+        },
+        {
+          label: 'Duration (Hours)',
+          value: app.duration_in_hours,
+          type: 'text',
+          span: 'sm:col-span-1',
+        },
+        {
+          label: 'Proposed Location',
+          value: app.proposed_training_location,
+          type: 'text',
+          span: 'sm:col-span-1',
+        },
+        { label: 'Venue Details', value: app.venue, type: 'text', span: 'sm:col-span-3' },
+      ],
+    },
+    {
+      title: 'CPD Details',
+      items: [
+        {
+          label: 'CPD Type',
+          value: app.type_of_cpd?.cpd_activity_name,
+          type: 'text',
+          span: 'sm:col-span-1',
+        },
+        { label: 'CPD Credits', value: app.credit, type: 'text', span: 'sm:col-span-1' },
+        {
+          label: 'Participants',
+          value: app.number_of_participants,
+          type: 'text',
+          span: 'sm:col-span-1',
+        },
+        {
+          label: 'Reason for Conducting',
+          value: app.reason_for_conducting?.name,
+          type: 'text',
+          span: 'sm:col-span-3',
+        },
+        {
+          label: 'Expected Outcome',
+          value: app.expected_outcome,
+          type: 'text',
+          span: 'sm:col-span-3',
+        },
+        {
+          label: 'Relevance to Topic',
+          value: app.relevance_to_topic,
+          type: 'text',
+          span: 'sm:col-span-3',
+        },
+      ],
+    },
+    {
+      title: 'Teaching & Learning',
+      items: [
+        {
+          label: 'Methodologies',
+          value: app.methodologies,
+          type: 'list',
+          accessor: (item) => item.methodology_name?.methodology_name,
+          span: 'sm:col-span-1',
+        },
+        {
+          label: 'Learning Methods',
+          value: app.learning_methods,
+          type: 'list',
+          accessor: (item) => `${item.activities} (${item.duration} hrs)`,
+          span: 'sm:col-span-1',
+        },
+      ],
+    },
+    {
+      title: 'Resource Persons',
+      items:
+        app.resources?.length > 0
+          ? []
+          : [
+              {
+                label: '',
+                value: 'No resource persons listed for this application.',
+                type: 'text',
+                span: 'sm:col-span-3',
+              },
+            ],
+    },
+    {
+      title: 'Attachments',
+      items: [
+        {
+          label: 'Course Document',
+          value: app.course_document,
+          type: 'link',
+          span: 'sm:col-span-1',
+        },
+        {
+          label: 'Attendance Sheet',
+          value: app.attendance_sheet_attachment,
+          type: 'link',
+          span: 'sm:col-span-1',
+        },
+        { label: 'Other Attachments', value: app.attachment, type: 'link', span: 'sm:col-span-1' },
+      ],
+    },
+    {
+      title: 'Administrative Details',
+      items: [
+        {
+          label: 'CPD Providing Agency',
+          value: app.cpd_providing_agency?.name,
+          type: 'text',
+          span: 'sm:col-span-2',
+        },
+        {
+          label: 'Last Updated',
+          value: formatDate(app.status_last_updated),
+          type: 'text',
+          span: 'sm:col-span-1',
+        },
+        {
+          label: 'Reviewer Remarks',
+          value: app.status_remarks,
+          type: 'text',
+          span: 'sm:col-span-3',
+        },
+      ],
+    },
+  ]
+})
+
+const filteredApplications = computed(() => {
+  const term = searchTerm.value.toLowerCase().trim()
+  const statusTerm = statusFilter.value
+
+  if (!applications.value) return []
+
+  return applications.value.filter((app) => {
+    const appComprehensiveStatus = getComprehensiveStatus(app)
+
+    const titleMatch = app.title_of_cpd ? app.title_of_cpd.toLowerCase().includes(term) : false
+    const idMatch = app.id ? app.id.toString().toLowerCase().includes(term) : false
+    const searchCriteriaMet = term === '' || titleMatch || idMatch
+
+    if (!searchCriteriaMet) return false
+
+    let statusFilterMet = true
+    if (statusTerm) {
+      if (statusTerm === 'Approved') {
+        statusFilterMet = app.application_status === 'APPROVED'
+      } else {
+        statusFilterMet = appComprehensiveStatus === statusTerm
+      }
+    }
+
+    if (!statusFilterMet) return false
+
+    if (appComprehensiveStatus === 'Draft' && !app.title_of_cpd) {
+      if (term === '' && statusTerm !== 'Draft') {
+        return false
+      }
+    }
+
+    return true
+  })
+})
+
+const approvedApplicationsWithoutParticipants = computed(() => {
+  if (!applications.value) return []
+  return applications.value.filter((app) => isApprovedWithoutParticipants(app))
+})
+
+const hasApprovedApplicationsWithoutParticipants = computed(() => {
+  return approvedApplicationsWithoutParticipants.value.length > 0
+})
+
+// --- EVENT HANDLERS ---
 const viewApplication = (application) => {
   selectedApplication.value = application
   showViewModal.value = true
@@ -651,7 +771,6 @@ const closeViewModal = () => {
   selectedApplication.value = null
 }
 
-// Edit application (navigate to edit page)
 const editApplication = (application) => {
   showViewModal.value = false
   toast.info('Navigating to edit application...')
@@ -660,7 +779,6 @@ const editApplication = (application) => {
   )
 }
 
-// Add participants to an approved application
 const addParticipants = (application) => {
   if (showViewModal.value) {
     showViewModal.value = false
@@ -673,13 +791,12 @@ const addParticipants = (application) => {
   router.push(`/admin/cme_cpd_provider/health_certification/cpd_approved_add_participants`)
 }
 
-// Create new application (navigate to CPD provider form)
 const createNewApplication = () => {
   toast.info('Navigating to create a new application...')
   router.push('/admin/cme_cpd_provider/health_certification/cpd_application_details')
 }
 
-// Fetch applications when component mounts
+// --- LIFECYCLE HOOK ---
 onMounted(() => {
   fetchApplications()
 })

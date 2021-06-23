@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <div class="container mx-auto px-4 py-8">
     <h1 class="text-2xl font-bold mb-6 text-gray-800">Course Details</h1>
@@ -564,7 +564,9 @@ const deleteCourse = async (course) => {
     await fetchCourses()
     toast.success(`Course "${course.course_name}" deleted successfully!`, { timeout: 5000 })
   } catch (err) {
-    const errorMsg = `Failed to delete course: ${err.response?.data?.detail || err.message || 'Unknown error'}`
+    const errorMsg = `Failed to delete course: ${
+      err.response?.data?.detail || err.message || 'Unknown error'
+    }`
     toast.error(errorMsg, { timeout: 5000 })
     console.error('Error deleting course:', err)
   }
@@ -700,7 +702,9 @@ const submitEditCourse = async () => {
       }
       toast.error(modalError.value, { timeout: 5000 })
     } else {
-      modalError.value = `Failed to update course: ${err.response?.data?.detail || err.message || 'Unknown error'}`
+      modalError.value = `Failed to update course: ${
+        err.response?.data?.detail || err.message || 'Unknown error'
+      }`
       toast.error(modalError.value, { timeout: 5000 })
     }
   } finally {
@@ -713,4 +717,4 @@ onMounted(() => {
   fetchCourses()
 })
 </script>
-```
+

@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <!-- Page Header -->
@@ -262,7 +262,7 @@ const filteredApplications = computed(() => {
 
 const pendingApplicationsCount = computed(() => {
   return filteredApplications.value.filter(
-    (app) => !app.do_dpr_review_decision || app.do_dpr_review_decision === 'Pending',
+    (app) => !app.do_dpr_review_decision || app.do_dpr_review_decision === 'Pending'
   ).length
 })
 
@@ -288,4 +288,4 @@ const getStatusClasses = (application) => {
   ]
 }
 </script>
-```
+
