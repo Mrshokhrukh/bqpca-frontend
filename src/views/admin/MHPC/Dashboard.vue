@@ -64,7 +64,7 @@ import AdditionalQualification from '@/components/dashboard/mhpccomponents/user/
 import MHPCUserReports from '@/components/dashboard/mhpccomponents/user/ReportsComponent.vue'
 import CounselorApplicationFrom from '@/components/dashboard/mhpccomponents/user/counselorApplication/CounselorApplicationFrom.vue'
 import CounselorApplicationTracker from '@/components/dashboard/mhpccomponents/user/counselorApplication/CounselorApplicationTracker.vue'
-import Complaints from '@/components/dashboard/mhpccomponents/user/certificateapplication/Complaints.vue'
+import Complaints from '@/components/dashboard/mhpccomponents/user/certificateApplication/Complaints.vue'
 
 // Dealing Officer Components
 import ApplicationLists from '@/components/dashboard/mhpccomponents/dealingOfficer/userApplications/ApplicationLists.vue'
