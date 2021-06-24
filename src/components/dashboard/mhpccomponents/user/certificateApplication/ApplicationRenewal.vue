@@ -126,6 +126,7 @@
       </div>
 
       <div v-else class="bg-white border rounded-xl shadow-sm overflow-hidden">
+        <!-- Personal Details Section (v-if="false" currently hides it, can be enabled if needed) -->
         <div v-if="false">
           <div
             class="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm:p-6 rounded-t-xl"
@@ -270,7 +271,7 @@
             <div class="col-span-1 md:col-span-1">
               <div
                 :class="[
-                  'rounded-lg p-4 sm:p-5 border',
+                  'rounded-lg p-4 sm##p-5 border',
                   hasExpired
                     ? 'bg-red-50 border-red-200'
                     : isExpiringWithin3Months
@@ -316,7 +317,7 @@
                   <div>
                     <div
                       :class="[
-                        'text-xs sm:text-sm',
+                        'text-xs sm##text-sm',
                         hasExpired
                           ? 'text-red-700'
                           : isExpiringWithin3Months
@@ -328,7 +329,7 @@
                     </div>
                     <div
                       :class="[
-                        'text-xs sm:text-sm font-medium',
+                        'text-xs sm##text-sm font-medium',
                         hasExpired
                           ? 'text-red-900'
                           : isExpiringWithin3Months
@@ -342,7 +343,7 @@
                   <div>
                     <div
                       :class="[
-                        'text-xs sm:text-sm',
+                        'text-xs sm##text-sm',
                         hasExpired
                           ? 'text-red-700'
                           : isExpiringWithin3Months
@@ -350,12 +351,12 @@
                           : 'text-blue-700',
                       ]"
                     >
-                      Expiry Date
+                      Expiry Date担保
                     </div>
                     <div class="flex items-center">
                       <div
                         :class="[
-                          'text-xs sm:text-sm font-medium',
+                          'text-xs sm##text-sm font-medium',
                           hasExpired
                             ? 'text-red-900'
                             : isExpiringWithin3Months
@@ -382,7 +383,7 @@
             </div>
             <div class="col-span-1 md:col-span-1">
               <div
-                class="rounded-lg p-4 sm:p-5 border"
+                class="rounded-lg p-4 sm##p-5 border"
                 :class="
                   formData.is_active
                     ? 'bg-green-50 border-green-200'
@@ -433,14 +434,16 @@
             </div>
           </div>
         </div>
-        <div class="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm:p-6">
+
+        <!-- CPD Score Details Section -->
+        <div class="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm##p-6">
           <div class="flex items-center space-x-2">
             <Award class="h-5 w-5 text-blue-600" />
-            <h3 class="text-base sm:text-lg font-semibold text-gray-900">
+            <h3 class="text-base sm##text-lg font-semibold text-gray-900">
               CPD Score Details (Approved Records)
             </h3>
           </div>
-          <p class="mt-1 text-xs sm:text-sm text-gray-500 ml-7">
+          <p class="mt-1 text-xs sm##text-sm text-gray-500 ml-7">
             Minimum 30 points recommended for renewal. Score is based on approved activities.
           </p>
           <div class="mt-4">
@@ -456,9 +459,9 @@
                 </div>
               </div>
             </div>
-            <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4 sm##gap-6">
               <div class="bg-white border rounded-lg shadow-sm overflow-hidden">
-                <div class="p-4 sm:p-5">
+                <div class="p-4 sm##p-5">
                   <div class="flex justify-between items-start">
                     <div>
                       <h4 class="text-sm font-medium text-gray-900">Total Approved CPD Points</h4>
@@ -564,12 +567,13 @@
           </div>
         </div>
 
-        <div class="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm:p-6">
+        <!-- Complaints Status Section -->
+        <div class="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm##p-6">
           <div class="flex items-center space-x-2">
             <ShieldAlert class="h-5 w-5 text-red-600" />
-            <h3 class="text-base sm:text-lg font-semibold text-gray-900">Complaints Status</h3>
+            <h3 class="text-base sm##text-lg font-semibold text-gray-900">Complaints Status</h3>
           </div>
-          <p class="mt-1 text-xs sm:text-sm text-gray-500 ml-7">
+          <p class="mt-1 text-xs sm##text-sm text-gray-500 ml-7">
             Review any complaints associated with your registration. Unresolved complaints will
             block renewal.
           </p>
@@ -591,7 +595,7 @@
             </div>
             <div v-else>
               <div
-                v-if="complaints.length === 0"
+                v-if="complaints.length === 0 && !isComplaintsLoading"
                 class="p-4 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700"
               >
                 <div class="flex items-center">
@@ -606,48 +610,58 @@
                     :key="complaint.id"
                     class="p-3 rounded-lg border"
                     :class="{
-                      'bg-red-50 border-red-200 text-red-800': complaint.status !== 'Resolved',
+                      'bg-red-50 border-red-200 text-red-800':
+                        complaint.is_blocking_applications ||
+                        ['Submitted', 'Registered', 'Under Review', 'Investigation', 'Action Pending'].includes(complaint.status),
                       'bg-green-50 border-green-200 text-green-700':
-                        complaint.status === 'Resolved',
+                        !complaint.is_blocking_applications &&
+                        ['Resolved', 'Closed', 'Dismissed'].includes(complaint.status),
                     }"
                   >
                     <div class="flex justify-between items-center">
                       <span class="font-medium text-sm">{{
-                        complaint.title || 'Complaint Details'
+                        complaint.subject || complaint.complaint_id || 'Complaint Details'
                       }}</span>
                       <span
                         class="text-xs px-2 py-0.5 rounded-full"
                         :class="{
-                          'bg-red-100 text-red-800': complaint.status !== 'Resolved',
-                          'bg-green-100 text-green-800': complaint.status === 'Resolved',
+                          'bg-red-100 text-red-800':
+                            complaint.is_blocking_applications ||
+                            ['Submitted', 'Registered', 'Under Review', 'Investigation', 'Action Pending'].includes(complaint.status),
+                          'bg-green-100 text-green-800':
+                            !complaint.is_blocking_applications &&
+                            ['Resolved', 'Closed', 'Dismissed'].includes(complaint.status),
                         }"
                       >
                         {{ complaint.status_display || complaint.status }}
+                        <span
+                          v-if="complaint.is_blocking_applications || ['Submitted', 'Registered', 'Under Review', 'Investigation', 'Action Pending'].includes(complaint.status)"
+                          class="font-semibold"
+                        > (Blocking)</span>
                       </span>
                     </div>
                     <p class="text-xs mt-1">
-                      {{ complaint.description || 'No description provided.' }}
+                      {{ complaint.grievance_details || 'No description provided.' }}
                     </p>
                     <p class="text-xs mt-1 text-gray-500">
-                      Date Filed: {{ formatDisplayDate(complaint.date_filed) }}
+                      Date Filed: {{ formatDisplayDate(complaint.created_at) }}
                     </p>
                   </li>
                 </ul>
                 <div
-                  v-if="hasUnresolvedComplaints"
+                  v-if="hasUnresolvedComplaints && complaints.length > 0"
                   class="p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md"
                 >
                   <p class="font-medium">
-                    Renewal Blocked: You have one or more unresolved complaints. Please contact
-                    support for assistance.
+                    {{ renewalEligibilityMessage }}
                   </p>
                 </div>
                 <div
-                  v-else
+                  v-else-if="!hasUnresolvedComplaints && complaints.length > 0"
                   class="p-3 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-md"
                 >
                   <p class="font-medium">
-                    All complaints (if any) are resolved. This requirement is met.
+                    All complaints are resolved, closed, or dismissed.
                   </p>
                 </div>
               </div>
@@ -655,17 +669,18 @@
           </div>
         </div>
 
+        <!-- Counseling Supervision Status Section -->
         <div
           v-if="authStore.user?.is_counselor"
-          class="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm:p-6"
+          class="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm##p-6"
         >
           <div class="flex items-center space-x-2">
             <Users class="h-5 w-5 text-purple-600" />
-            <h3 class="text-base sm:text-lg font-semibold text-gray-900">
+            <h3 class="text-base sm##text-lg font-semibold text-gray-900">
               Counseling Supervision Status
             </h3>
           </div>
-          <p class="mt-1 text-xs sm:text-sm text-gray-500 ml-7">
+          <p class="mt-1 text-xs sm##text-sm text-gray-500 ml-7">
             Counselors require an approved supervision record for renewal.
           </p>
           <div class="mt-4">
@@ -752,22 +767,23 @@
           </div>
         </div>
 
+        <!-- Renewal Confirmation Section -->
         <div v-if="!isSubmitting">
           <div
-            class="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm:p-6"
+            class="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 sm##p-6"
           >
             <div class="flex items-center space-x-2">
               <RefreshCw class="h-5 w-5 text-blue-600" />
-              <h3 class="text-base sm:text-lg font-semibold text-gray-900">
+              <h3 class="text-base sm##text-lg font-semibold text-gray-900">
                 {{ renewalType === 're-registration' ? 'Re-registration' : 'Renewal' }} Confirmation
               </h3>
             </div>
-            <p class="mt-1 text-xs sm:text-sm text-gray-500 ml-7">
+            <p class="mt-1 text-xs sm##text-sm text-gray-500 ml-7">
               Confirm your application details and submit for
               {{ renewalType === 're-registration' ? 're-registration' : 'renewal' }}. Payment will be handled at a
               later stage.
             </p>
-            <div class="mt-5 p-4 sm:p-5 rounded-lg bg-white border shadow-sm">
+            <div class="mt-5 p-4 sm##p-5 rounded-lg bg-white border shadow-sm">
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div
                   class="flex flex-col items-center p-4 rounded-lg bg-blue-50 border border-blue-100"
@@ -846,7 +862,7 @@
             </div>
           </div>
 
-          <div class="flex justify-end space-x-4 p-5 sm:p-6 bg-gray-50 border-t">
+          <div class="flex justify-end space-x-4 p-5 sm##p-6 bg-gray-50 border-t">
             <button
               @click="handleCancel"
               :disabled="isSubmitting"
@@ -867,7 +883,7 @@
           </div>
         </div>
 
-        <div v-else class="border-t border-gray-200 bg-gray-50 p-5 sm:p-6 text-center">
+        <div v-else class="border-t border-gray-200 bg-gray-50 p-5 sm##p-6 text-center">
           <div class="inline-block">
             <Loader class="h-10 w-10 text-blue-500 animate-spin" />
           </div>
@@ -943,17 +959,17 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import apiService from '@/services/services'
+import apiService from '@/services/services' // Ensure this path is correct
 import { useToast } from 'vue-toastification'
-import { useAuthStore } from '@/stores/authStore'
-import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore'
+import { useAuthStore } from '@/stores/authStore' // Ensure this path is correct
+import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore' // Ensure this path is correct
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
-import PageHeader from '@/components/common/MHPC/PageHeader.vue'
+import PageHeader from '@/components/common/MHPC/PageHeader.vue' // Ensure this path is correct
 
 import {
   User,
@@ -1043,27 +1059,40 @@ const isExpiringWithin3Months = computed(() => {
   return expiryDate.value.isBetween(today.value, threeMonthsFromNow.value, 'day', '[]')
 })
 
-// New computed property to determine renewal type for display
 const renewalType = computed(() => {
   return hasExpired.value ? 're-registration' : 'renewal';
-});
+})
 
-// Dynamic Page Header Title
 const pageHeaderTitle = computed(() => {
   return renewalType.value === 're-registration' ? 'Re-registration Application' : 'Renewal Application';
-});
+})
 
-// Dynamic Page Header Subtitle
 const pageHeaderSubtitle = computed(() => {
   const baseSubtitle = 'Please review your personal details, CPD scores, and other requirements to ensure your eligibility for ';
   return baseSubtitle + (renewalType.value === 're-registration' ? 're-registration.' : 'renewal.');
-});
-
+})
 
 const hasUnresolvedComplaints = computed(() => {
-  if (isComplaintsLoading.value) return true
-  if (complaintsLoadError.value) return true
-  return complaints.value.some((c) => c.status !== 'Resolved')
+  if (isComplaintsLoading.value) return true; // Block while loading
+  if (complaintsLoadError.value) return true; // Block if error
+  if (!complaints.value || complaints.value.length === 0) return false; // No complaints, allow renewal
+
+  const blockingStatuses = [
+    'Submitted',
+    'Registered',
+    'Under Review',
+    'Investigation',
+    'Action Pending',
+  ]
+
+  return complaints.value.some(complaint => {
+    // Prioritize explicit is_blocking_applications field if present
+    if (typeof complaint.is_blocking_applications === 'boolean') {
+      return complaint.is_blocking_applications === true;
+    }
+    // Fallback: block if status is in blockingStatuses
+    return blockingStatuses.includes(complaint.status);
+  })
 })
 
 const meetsSupervisionRequirements = computed(() => {
@@ -1075,53 +1104,62 @@ const meetsSupervisionRequirements = computed(() => {
 })
 
 const isEligibleForRenewal = computed(() => {
-  if (isLoading.value || loadError.value) return false
-  if (!formData.value.qualification_id_to_renew) return false
-  if (!expiryDate.value || !expiryDate.value.isValid()) return false
+  if (isLoading.value || loadError.value) return false;
+  if (!formData.value.qualification_id_to_renew) return false;
+  if (!expiryDate.value || !expiryDate.value.isValid()) return false;
 
-  if (hasUnresolvedComplaints.value) return false
-  if (!meetsSupervisionRequirements.value) return false
+  if (hasUnresolvedComplaints.value) return false;
+  if (authStore.user?.is_counselor && !meetsSupervisionRequirements.value) return false;
 
-  return isExpiringWithin3Months.value || hasExpired.value
+  return isExpiringWithin3Months.value || hasExpired.value;
 })
 
 const renewalEligibilityMessage = computed(() => {
-  if (isLoading.value) return 'Loading eligibility data...'
-  if (loadError.value) return `Error determining eligibility: ${loadError.value}`
+  if (isLoading.value) return 'Loading eligibility data...';
+  if (loadError.value) return `Error determining eligibility: ${loadError.value}`;
 
   if (!formData.value.qualification_id_to_renew)
-    return 'No valid qualification identified for renewal.'
+    return 'No valid qualification identified for renewal.';
   if (!expiryDate.value || !expiryDate.value.isValid())
-    return 'Cannot determine eligibility without a valid qualification expiry date.'
+    return 'Cannot determine eligibility without a valid qualification expiry date.';
 
   if (isComplaintsLoading.value && complaints.value.length === 0)
-    return 'Checking complaints status... Renewal blocked until check is complete.'
+    return 'Checking complaints status... Renewal blocked until check is complete.';
   if (complaintsLoadError.value)
-    return `Error loading complaints data: ${complaintsLoadError.value}. Renewal blocked.`
-  if (hasUnresolvedComplaints.value && complaints.value.length > 0)
-    return 'Renewal is blocked due to unresolved complaints. Please resolve them before proceeding.'
+    return `Error loading complaints data: ${complaintsLoadError.value}. Renewal blocked.`;
+
+  if (hasUnresolvedComplaints.value && complaints.value.length > 0) {
+    const explicitlyBlockingComplaint = complaints.value.find(
+      c => typeof c.is_blocking_applications === 'boolean' && c.is_blocking_applications === true
+    );
+    if (explicitlyBlockingComplaint) {
+      return 'Renewal is blocked: One or more complaints are marked as actively blocking applications. Please resolve these with the council.';
+    }
+    return 'Renewal is blocked: You have one or more complaints in Submitted, Registered, Under Review, Investigation, or Action Pending status. Please resolve these before proceeding.';
+  }
 
   if (authStore.user?.is_counselor) {
     if (isSupervisionLoading.value && supervisionApplications.value.length === 0)
-      return 'Checking supervision status... Renewal blocked until check is complete.'
+      return 'Checking supervision status... Renewal blocked until check is complete.';
     if (supervisionLoadError.value)
-      return `Error loading supervision data: ${supervisionLoadError.value}. Renewal blocked.`
+      return `Error loading supervision data: ${supervisionLoadError.value}. Renewal blocked.`;
     if (!meetsSupervisionRequirements.value) {
       if (
         supervisionApplications.value.length === 0 &&
         !isSupervisionLoading.value &&
         !supervisionLoadError.value
       ) {
-        return 'Renewal is blocked: No counseling supervision application found. Counselors require an approved supervision.'
+        return 'Renewal is blocked: No counseling supervision application found. Counselors require an approved supervision.';
       }
-      return 'Renewal is blocked: No approved counseling supervision application found. Counselors require an approved supervision.'
+      return 'Renewal is blocked: No approved counseling supervision application found. Counselors require an approved supervision.';
     }
   }
 
   if (!(isExpiringWithin3Months.value || hasExpired.value)) {
-    return 'Your qualification is currently not eligible for renewal based on its expiry date (must be expiring within 3 months or already expired).'
+    return 'Your qualification is currently not eligible for renewal based on its expiry date (must be expiring within 3 months or already expired).';
   }
-  return 'Your qualification is currently not eligible for renewal. Please review the requirements.'
+
+  return 'Your qualification is currently not eligible for renewal. Please review all requirements.';
 })
 
 const getNewExpiryDate = computed(() => {
@@ -1136,12 +1174,14 @@ const getTotalCpdPoints = computed(() => {
     .filter((record) => record.review_status === 'Approved')
     .reduce((total, record) => total + (Number(record.cpd_credit) || 0), 0)
 })
+
 const cpdStatus = computed(() => {
   const points = getTotalCpdPoints.value
   if (points >= 30) return 'met'
   if (points > 0) return 'below_minimum'
   return 'none'
 })
+
 const cpdMessage = computed(() => {
   const points = getTotalCpdPoints.value
   switch (cpdStatus.value) {
@@ -1155,6 +1195,7 @@ const cpdMessage = computed(() => {
       return 'Checking your CPD score status...'
   }
 })
+
 const cpdIcon = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -1166,6 +1207,7 @@ const cpdIcon = computed(() => {
       return Info
   }
 })
+
 const cpdCardClass = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -1177,6 +1219,7 @@ const cpdCardClass = computed(() => {
       return 'bg-gray-100'
   }
 })
+
 const cpdIconClass = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -1188,6 +1231,7 @@ const cpdIconClass = computed(() => {
       return 'text-gray-600'
   }
 })
+
 const cpdProgressClass = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -1199,6 +1243,7 @@ const cpdProgressClass = computed(() => {
       return 'bg-gray-500'
   }
 })
+
 const cpdTextClass = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -1210,6 +1255,7 @@ const cpdTextClass = computed(() => {
       return 'bg-gray-200 text-gray-800'
   }
 })
+
 const cpdMessageBgClass = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -1221,6 +1267,7 @@ const cpdMessageBgClass = computed(() => {
       return 'bg-gray-50 text-gray-800'
   }
 })
+
 const cpdMessageIconColor = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -1361,9 +1408,8 @@ const fetchCpdRecords = async (cid) => {
   cpdLoadError.value = ''
   cpdRecords.value = []
   try {
-    await new Promise((resolve) => setTimeout(resolve, 500))
     const response = await apiService.getMhpcCpdRecordsByCid(cid)
-    cpdRecords.value = response?.data || []
+    cpdRecords.value = response?.data?.results || response?.data || []
   } catch (error) {
     console.error('Error fetching CPD records:', error)
     cpdLoadError.value =
@@ -1374,33 +1420,22 @@ const fetchCpdRecords = async (cid) => {
   }
 }
 
-const fetchComplaints = async () => {
+const fetchComplaints = async (userCid) => {
   isComplaintsLoading.value = true
   complaintsLoadError.value = ''
   complaints.value = []
   try {
-    await new Promise((resolve) => setTimeout(resolve, 700))
-    const demoComplaints = [
-      {
-        id: 'comp001',
-        title: 'Complaint Regarding Professional Conduct',
-        description:
-          'A formal complaint was filed concerning the practitioners conduct during a session on 2023-03-15.',
-        date_filed: '2023-03-20',
-        status: 'Resolved',
-        status_display: 'Resolved',
-      },
-      {
-        id: 'comp002',
-        title: 'Billing Discrepancy Reported',
-        description:
-          'Patient reported a discrepancy in billing for services rendered in January 2023.',
-        date_filed: '2023-02-10',
-        status: 'Resolved',
-        status_display: 'Resolved',
-      },
-    ]
-    complaints.value = demoComplaints
+    const params = userCid ? { respondent_cid: userCid } : {}
+    const response = await apiService.getComplaints(params)
+
+    if (response && response.data && Array.isArray(response.data.results)) {
+      complaints.value = response.data.results
+    } else if (response && Array.isArray(response.data)) {
+      complaints.value = response.data
+    } else {
+      console.warn('Unexpected API response structure for complaints:', response)
+      complaints.value = []
+    }
   } catch (error) {
     console.error('Error fetching complaints:', error)
     complaintsLoadError.value =
@@ -1455,7 +1490,7 @@ const handleSubmit = () => {
     return
   }
   if (!isEligibleForRenewal.value) {
-    toast.error(`Submission not allowed: ${renewalEligibilityMessage.value}`) // Changed message here
+    toast.error(`Submission not allowed: ${renewalEligibilityMessage.value}`)
     return
   }
   showConfirmation.value = true
@@ -1467,7 +1502,7 @@ const confirmSubmit = async () => {
 
   const qualificationIdToRenew = formData.value.qualification_id_to_renew
   if (!qualificationIdToRenew) {
-    toast.error('Qualification ID for renewal is missing. Cannot submit application.') // Changed message
+    toast.error('Qualification ID for renewal is missing. Cannot submit application.')
     isSubmitting.value = false
     return
   }
@@ -1484,10 +1519,8 @@ const confirmSubmit = async () => {
       renewal_remarks: remarks.value || '',
     }
 
-    // Set registration_type based on renewalType computed property
-    formData.value.registration_type = renewalType.value;
-    renewalPayload.registration_type = formData.value.registration_type;
-
+    formData.value.registration_type = renewalType.value
+    renewalPayload.registration_type = formData.value.registration_type
 
     const renewalResponse = await apiService.createMhpcRenewal(renewalPayload)
 
@@ -1499,7 +1532,7 @@ const confirmSubmit = async () => {
       router.push('/admin/user/health_certification/my_applications')
     } else {
       console.warn(
-        `${renewalType.value} created, but API response structure might be unexpected.`, // Changed message
+        `${renewalType.value} created, but API response structure might be unexpected.`,
         renewalResponse
       )
       toast.success(
@@ -1509,13 +1542,13 @@ const confirmSubmit = async () => {
       router.push('/admin/user/health_certification/my_applications')
     }
   } catch (error) {
-    console.error(`Error submitting ${renewalType.value}:`, error) // Changed message
+    console.error(`Error submitting ${renewalType.value}:`, error)
     const errorMsg =
       error.response?.data?.detail ||
       error.response?.data?.message ||
       (typeof error.response?.data === 'object' ? JSON.stringify(error.response.data) : null) ||
       error.message ||
-      `Failed to submit ${renewalType.value}. Please try again.` // Changed message
+      `Failed to submit ${renewalType.value}. Please try again.`
     toast.error(`Submission Failed: ${errorMsg}`)
   } finally {
     isSubmitting.value = false
