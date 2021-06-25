@@ -609,11 +609,9 @@ export default {
 
   // MHPC Institutes
   getMhpcInstitutes() {
-    console.log('Fetching MHPC institutes');
     return apiClient.get('/mhpc/mhpc-institutes/');
   },
   getMhpcInstitute(id) {
-    console.log('Fetching MHPC institute with ID:', id);
     return apiClient.get(`/mhpc/mhpc-institutes/${id}/`);
   },
   createMhpcInstitute(data) {

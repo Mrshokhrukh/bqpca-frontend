@@ -1,10 +1,26 @@
 <template>
-  <div class="p-4 sm:p-6 md:p-8 lg:p-12 bg-gradient-to-br from-gray-50 to-gray-200 min-h-screen">
+  <div class="p-4 sm:p-6 md:p-8 lg:p-12 min-h-screen">
     <div class="mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+
       <div v-if="loading" class="flex flex-col items-center justify-center py-24 bg-white">
         <div class="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-blue-600"></div>
         <p class="mt-6 text-xl font-semibold text-gray-700">Loading Institute Data...</p>
       </div>
+
+      <div v-else-if="noInstituteFound" class="text-center py-16 sm:py-24 px-6 bg-white rounded-b-2xl">
+        <div class="mx-auto max-w-lg bg-gray-50 p-8 rounded-2xl border border-gray-200 shadow-inner">
+          <FileX2 class="mx-auto h-20 w-20 text-blue-400" aria-hidden="true" />
+          <h2 class="mt-6 text-3xl font-bold tracking-tight text-gray-800 sm:text-4xl">Get Started</h2>
+          <p class="mt-4 text-lg leading-7 text-gray-600">
+            It appears you have not registered an institute with your account yet. To view your dashboard, please register an institute first.
+          </p>
+          <button @click="redirectToRegistration" type="button" class="mt-8 inline-flex items-center rounded-lg bg-blue-600 px-6 py-3 text-base font-semibold text-white shadow-lg hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-300 ease-in-out hover:scale-105 transform">
+            <PlusCircle class="mr-2 h-5 w-5" aria-hidden="true" />
+            Register an Institute
+          </button>
+        </div>
+      </div>
+
       <div v-else-if="error" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-8 rounded-b-2xl shadow-md" role="alert">
         <div class="flex items-start">
           <div class="py-1">
@@ -17,6 +33,7 @@
           </div>
         </div>
       </div>
+
       <div v-else-if="institute" class="space-y-10 p-6 sm:p-8 md:p-10 lg:p-12">
         <header class="pb-8 border-b-2 border-gray-200">
           <h1 class="text-5xl font-extrabold text-gray-900 tracking-tight leading-tight">
@@ -264,17 +281,20 @@
         </div>
 
       </div>
-      <div v-else class="text-center py-24 text-gray-600 bg-white rounded-2xl shadow-xl">
+
+      <!-- <div v-else class="text-center py-24 text-gray-600 bg-white rounded-2xl shadow-xl">
         <Info :size="64" class="text-gray-400 mx-auto mb-6" />
         <p class="text-3xl font-semibold">No Institute Data Found</p>
         <p class="text-lg mt-3 max-w-xl mx-auto">This could be because no institute is associated with your account or there was an issue fetching the data. Please try again later or contact support.</p>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore' // Adjust the path as necessary
 import apiService from '@/services/services' // Ensure this path is correct
 import {
   FileText,
@@ -282,62 +302,87 @@ import {
   Hospital,
   Users,
   AlertCircle,
-  Info
+  FileX2,       // New: Import for fallback icon
+  PlusCircle    // New: Import for button icon
 } from 'lucide-vue-next'
+
+const router = useRouter()
 
 // Main institute data
 const institute = ref(null)
 const loading = ref(true)
 const error = ref(null)
+const noInstituteFound = ref(false) // New: State for when no institute is registered
+const user = useAuthStore().user
 
-// Teaching faculties data
+// Other reactive states (unchanged)
 const teachingFaculties = ref([])
 const loadingFaculties = ref(false)
 const errorFaculties = ref(null)
 
-// All Programs Offered data
 const allPrograms = ref([])
 const loadingAllPrograms = ref(false)
 const errorAllPrograms = ref(null)
 
-// New: CAPA data
 const capas = ref([])
 const loadingCapas = ref(false)
 const errorCapas = ref(null)
 
 
 const fetchInstituteData = async () => {
+  const userCid = user?.cid || user?.CID;
+  if (!userCid) {
+    error.value = "User CID not found. Please log in again.";
+    loading.value = false;
+    return;
+  }
+
   loading.value = true;
   error.value = null;
+  noInstituteFound.value = false; // Reset state on fetch
+
   try {
-    const response = await apiService.getMhpcInstitutes();
-    console.log('Full API Response:', response);
-    console.log('Response Data:', response.data);
+    const response = await apiService.getMhpcInstitute(userCid);
+    // Case 1: Successful response, but the results array is empty
     if (response.data && response.data.results && response.data.results.length > 0) {
       institute.value = response.data.results[0];
-      if (institute.value && !Array.isArray(institute.value.programs_offered_by_institute)) {
+      // Initialize arrays if they are null/undefined
+      if (!Array.isArray(institute.value.programs_offered_by_institute)) {
         institute.value.programs_offered_by_institute = [];
       }
-      if (institute.value && !Array.isArray(institute.value.teaching_centers)) {
+      if (!Array.isArray(institute.value.teaching_centers)) {
         institute.value.teaching_centers = [];
       }
-      if (institute.value && institute.value.id) {
+      // Fetch related data
+      if (institute.value.id) {
         await Promise.all([
           fetchTeachingFaculties(institute.value.id),
           fetchCapas(institute.value.id)
         ]);
       }
     } else {
-      console.warn('No institutes found in response:', response.data);
-      error.value = 'No institute found for your account.';
+      // Set the specific "not found" state
+      console.warn('No institute found for this user in API response.');
+      noInstituteFound.value = true;
     }
   } catch (err) {
-    console.error('Error fetching institute data:', err);
-    console.error('Error Response:', err.response?.data);
-    error.value = err.response?.data?.detail || err.message || 'Failed to load institute data.';
+    const errorDetail = err.response?.data?.detail || '';
+    // Case 2: API throws an error, but it's the specific "No Institute" message
+    if (errorDetail.includes('No Institute matches the given CID')) {
+      console.warn('API returned a "No Institute" detail message.');
+      noInstituteFound.value = true;
+    } else {
+      // Case 3: A genuine technical error occurred
+      console.error('Error fetching institute data:', err);
+      error.value = errorDetail || err.message || 'An unexpected error occurred while loading institute data.';
+    }
   } finally {
     loading.value = false;
   }
+};
+
+const redirectToRegistration = () => {
+  router.push('/admin/institutions/health_certification/track_eoi');
 };
 
 const fetchTeachingFaculties = async (instituteId) => {
@@ -369,9 +414,6 @@ const fetchCapas = async (instituteId) => {
   loadingCapas.value = true;
   errorCapas.value = null;
   try {
-    // Assuming getMhpcCapas can take a filter for institute ID,
-    // if not, you might need to fetch all and then filter on the client side.
-    // Adjust the API call based on your backend's filtering capabilities.
     const response = await apiService.getMhpcCapas({ institute: instituteId });
     if (response.data && response.data.results) {
       capas.value = response.data.results;

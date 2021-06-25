@@ -31,9 +31,10 @@
                   </h2>
                   <button v-if="section.collapsible" type="button" @click="toggleSectionVisibility(section.refKey)"
                     class="text-indigo-600 hover:text-indigo-800">
-                    <ChevronUpIcon class="w-5 h-5 transform transition-transform" :class="{
-                      'rotate-180': !sectionVisibility[section.refKey],
-                    }" />
+                    <ChevronUpIcon
+                    class="w-5 h-5 transform transition-transform"
+                    :class="{ 'rotate-180': !sectionVisibility[section.refKey]}"
+                    />
                   </button>
                 </div>
 

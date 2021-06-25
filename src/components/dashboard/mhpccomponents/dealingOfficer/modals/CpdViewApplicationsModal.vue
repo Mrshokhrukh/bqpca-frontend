@@ -34,7 +34,7 @@
                     'px-8 py-6 border-b relative overflow-hidden',
                     {
                       'bg-yellow-50 border-yellow-100':
-                        application.application_status === 'PENDING',
+                        application.application_status === 'SUBMITTED',
                       'bg-green-50 border-green-100': application.application_status === 'APPROVED',
                       'bg-red-50 border-red-100': application.application_status === 'REJECTED',
                     },
@@ -60,7 +60,7 @@
                           'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
                           {
                             'bg-yellow-100 text-yellow-800':
-                              application.application_status === 'PENDING',
+                              application.application_status === 'SUBMITTED',
                             'bg-green-100 text-green-800':
                               application.application_status === 'APPROVED',
                             'bg-red-100 text-red-800':
@@ -71,7 +71,7 @@
                         <Circle
                           class="h-4 w-4"
                           :class="{
-                            'text-yellow-500': application.application_status === 'PENDING',
+                            'text-yellow-500': application.application_status === 'SUBMITTED',
                             'text-green-500': application.application_status === 'APPROVED',
                             'text-red-500': application.application_status === 'REJECTED',
                           }"
@@ -316,6 +316,7 @@
 
                       <div
                         class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-6"
+                        ref="reviewActionCard"
                       >
                         <h4
                           class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
@@ -325,7 +326,7 @@
                         </h4>
                         <div class="flex flex-col gap-4">
                           <button
-                            v-if="application.application_status === 'PENDING'"
+                            v-if="application.application_status === 'SUBMITTED' && !showApprovalForm"
                             type="button"
                             class="w-full px-5 py-2.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg shadow-sm flex items-center justify-center gap-2"
                             @click="showApprovalForm = true"
@@ -333,8 +334,11 @@
                             <CheckCircle class="h-5 w-5" />
                             Approve Application
                           </button>
+
                           <button
-                            v-if="application.application_status === 'PENDING'"
+                            v-if="
+                              application.application_status === 'SUBMITTED' && !showRejectionForm
+                            "
                             type="button"
                             class="w-full px-5 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-sm flex items-center justify-center gap-2"
                             @click="showRejectionForm = true"
@@ -342,8 +346,18 @@
                             <X class="h-5 w-5" />
                             Reject Application
                           </button>
+
+                          <button
+                            v-if="application.application_status === 'APPROVED' && !showCreditEditForm"
+                            type="button"
+                            class="w-full px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm flex items-center justify-center gap-2"
+                            @click="showCreditEditForm = true"
+                          >
+                            <Pencil class="h-5 w-5" />
+                            Edit Awarded Credits
+                          </button>
                         </div>
-                        <!-- Approval Form -->
+
                         <div
                           v-if="showApprovalForm"
                           class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4"
@@ -382,7 +396,7 @@
                             </button>
                           </div>
                         </div>
-                        <!-- Rejection Form -->
+
                         <div
                           v-if="showRejectionForm"
                           class="mt-6 bg-red-50 border border-red-200 rounded-lg p-4"
@@ -415,6 +429,38 @@
                             </button>
                           </div>
                         </div>
+
+                        <div
+                          v-if="showCreditEditForm"
+                          class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4"
+                        >
+                          <label class="block text-sm font-medium text-gray-700 mb-2"
+                            >Update Awarded Credits</label
+                          >
+                          <input
+                            type="number"
+                            v-model.number="editableCredits"
+                            min="0"
+                            class="w-full rounded-md border-gray-300 p-2 mb-2"
+                          />
+                          <div class="flex gap-2 mt-2">
+                            <button
+                              type="button"
+                              class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                              @click="saveCreditChanges"
+                            >
+                              Save Changes
+                            </button>
+                            <button
+                              type="button"
+                              class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                              @click="showCreditEditForm = false"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+
                       </div>
                     </div>
                   </div>
@@ -440,9 +486,11 @@
 </template>
 
 <script setup>
-import { ref, watch, defineAsyncComponent } from 'vue'
+import { ref, watch, nextTick, defineAsyncComponent } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { CheckCircle, X, Circle, Link } from 'lucide-vue-next'
+// NEW: Imported Pencil icon
+import { CheckCircle, X, Circle, Link, FileText, Pencil } from 'lucide-vue-next'
+
 // Lazy load helper components for better performance
 const InfoCard = defineAsyncComponent(() => import('./InfoCard.vue'))
 const InfoItem = defineAsyncComponent(() => import('./InfoItem.vue'))
@@ -452,9 +500,14 @@ const props = defineProps({
     type: Object,
     default: () => null,
   },
+  initialAction: {
+    type: String, // Can be 'approve', 'reject', or null
+    default: null,
+  },
 })
 
-const emit = defineEmits(['close', 'approve', 'reject'])
+// MODIFIED: Added 'save' for better practice
+const emit = defineEmits(['close', 'approve', 'reject', 'save'])
 
 const showApprovalForm = ref(false)
 const showRejectionForm = ref(false)
@@ -462,21 +515,42 @@ const approvalMessage = ref('')
 const rejectionMessage = ref('')
 const rejectionError = ref('')
 const approvalCredits = ref(0)
+const reviewActionCard = ref(null) // Template ref for scrolling
 
+// NEW: State for the credit editing form
+const showCreditEditForm = ref(false)
+const editableCredits = ref(0)
+
+// MODIFIED: Watcher now resets and initializes state for the new form
 watch(
   () => props.application,
-  (newApplication) => {
+  async (newApplication) => {
     if (newApplication) {
-      approvalCredits.value = newApplication.credit || 0
-      // Reset form states whenever a new application is loaded
+      // 1. Reset all form states when a new application is loaded
       showApprovalForm.value = false
       showRejectionForm.value = false
+      showCreditEditForm.value = false // NEW: Reset edit form visibility
       approvalMessage.value = ''
       rejectionMessage.value = ''
       rejectionError.value = ''
+      approvalCredits.value = newApplication.credit || 0
+      editableCredits.value = newApplication.credit || 0 // NEW: Initialize editable credits
+
+      // 2. Check for an initial action from the parent component
+      if (props.initialAction === 'approve') {
+        showApprovalForm.value = true
+      } else if (props.initialAction === 'reject') {
+        showRejectionForm.value = true
+      }
+
+      // 3. If an action was specified, wait for the DOM to update, then scroll
+      if (props.initialAction) {
+        await nextTick() // Ensures the v-if has rendered the element
+        reviewActionCard.value?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
     }
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 )
 
 const approveApplication = () => {
@@ -497,6 +571,16 @@ const rejectApplication = () => {
   emit('reject', {
     id: props.application.id,
     status_remarks: rejectionMessage.value,
+  })
+  emit('close')
+}
+
+// NEW: Method to handle saving credit changes
+const saveCreditChanges = () => {
+  if (editableCredits.value < 0) return
+  emit('save', {
+    id: props.application.id,
+    credit: editableCredits.value,
   })
   emit('close')
 }
