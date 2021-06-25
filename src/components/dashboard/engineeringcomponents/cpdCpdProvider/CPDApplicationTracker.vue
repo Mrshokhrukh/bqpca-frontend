@@ -734,7 +734,7 @@ const addParticipants = (application) => {
 const createNewApplication = () => {
   console.log('Navigating to create new application form')
   // Ensure the target route exists
-  router.push('/admin/cpd_cme_provider/engineering_certification/cpd_application_details')
+  router.push('/admin/cme_cpd_provider/engineering_certification/cpd_application_details')
 }
 
 // --- Lifecycle Hook ---
