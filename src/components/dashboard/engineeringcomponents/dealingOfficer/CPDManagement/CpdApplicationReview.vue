@@ -1,99 +1,61 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
     <Transition name="notification">
-      <div
-        v-if="notification.show"
-        :class="[
-          'fixed right-4 top-4 p-4 rounded-md shadow-lg flex items-center z-50 max-w-md',
-          notification.type === 'success'
-            ? 'bg-green-50 border-l-4 border-green-500'
-            : notification.type === 'error'
+      <div v-if="notification.show" :class="[
+        'fixed right-4 top-4 p-4 rounded-md shadow-lg flex items-center z-50 max-w-md',
+        notification.type === 'success'
+          ? 'bg-green-50 border-l-4 border-green-500'
+          : notification.type === 'error'
             ? 'bg-red-50 border-l-4 border-red-500'
             : 'bg-blue-50 border-l-4 border-blue-500',
-        ]"
-      >
-        <div
-          :class="[
-            'flex-shrink-0 w-6 h-6',
-            notification.type === 'success'
-              ? 'text-green-500'
-              : notification.type === 'error'
+      ]">
+        <div :class="[
+          'flex-shrink-0 w-6 h-6',
+          notification.type === 'success'
+            ? 'text-green-500'
+            : notification.type === 'error'
               ? 'text-red-500'
               : 'text-blue-500',
-          ]"
-        >
-          <svg
-            v-if="notification.type === 'success'"
-            class="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M5 13l4 4L19 7"
-            />
+        ]">
+          <svg v-if="notification.type === 'success'" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
-          <svg
-            v-else-if="notification.type === 'error'"
-            class="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
+          <svg v-else-if="notification.type === 'error'" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
           <svg v-else class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
         <div class="ml-3">
-          <h3
-            :class="[
-              'text-sm font-medium',
-              notification.type === 'success'
-                ? 'text-green-800'
-                : notification.type === 'error'
+          <h3 :class="[
+            'text-sm font-medium',
+            notification.type === 'success'
+              ? 'text-green-800'
+              : notification.type === 'error'
                 ? 'text-red-800'
                 : 'text-blue-800',
-            ]"
-          >
+          ]">
             {{ notification.title }}
           </h3>
-          <p
-            :class="[
-              'text-sm mt-1',
-              notification.type === 'success'
-                ? 'text-green-700'
-                : notification.type === 'error'
+          <p :class="[
+            'text-sm mt-1',
+            notification.type === 'success'
+              ? 'text-green-700'
+              : notification.type === 'error'
                 ? 'text-red-700'
                 : 'text-blue-700',
-            ]"
-          >
+          ]">
             {{ notification.message }}
           </p>
         </div>
         <button @click="closeNotification" class="ml-auto pl-3 text-gray-500 hover:text-gray-600">
           <span class="sr-only">Close</span>
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
@@ -105,7 +67,8 @@
         <div class="flex mt-4 space-x-6">
           <div class="flex items-center">
             <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-            <span class="text-gray-600">Total (Non-Draft): {{ filteredApplications.filter(app => app.status !== 'Draft').length }}</span>
+            <span class="text-gray-600">Total (Non-Draft): {{filteredApplications.filter(app => app.status !==
+              'Draft').length }}</span>
           </div>
           <div class="flex items-center">
             <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
@@ -117,31 +80,19 @@
       <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 mb-6">
         <div class="relative flex-grow">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg
-              class="h-5 w-5 text-gray-400"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fill-rule="evenodd"
+            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+              fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd"
                 d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                clip-rule="evenodd"
-              />
+                clip-rule="evenodd" />
             </svg>
           </div>
-          <input
-            v-model="searchQuery"
-            type="text"
+          <input v-model="searchQuery" type="text"
             class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            placeholder="Search by name, CID or registration number..."
-          />
+            placeholder="Search by name, CID or registration number..." />
         </div>
-        <select
-          v-model="statusFilter"
-          class="w-full md:w-64 block pl-3 pr-10 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-        >
+        <select v-model="statusFilter"
+          class="w-full md:w-64 block pl-3 pr-10 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
           <option value="All">All (Exclude Drafts)</option>
           <option value="AllIncludeDrafts">All (Include Drafts)</option>
           <option value="Pending">Pending</option>
@@ -156,23 +107,12 @@
         <span class="ml-3 text-gray-600">Loading applications...</span>
       </div>
 
-      <div
-        v-else-if="paginatedApplications.length === 0"
-        class="bg-white shadow-sm rounded-lg py-16 text-center border border-gray-200"
-      >
-        <svg
-          class="mx-auto h-12 w-12 text-gray-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
+      <div v-else-if="paginatedApplications.length === 0"
+        class="bg-white shadow-sm rounded-lg py-16 text-center border border-gray-200">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
         <h3 class="mt-2 text-base font-medium text-gray-900">No applications found</h3>
         <p class="mt-1 text-sm text-gray-500">
@@ -189,50 +129,29 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   ID
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Applicant
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   CPD Title
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Date
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col"
+                  class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr
-                v-for="app in paginatedApplications"
-                :key="app.id"
-                class="hover:bg-gray-50 transition-colors"
-              >
+              <tr v-for="app in paginatedApplications" :key="app.id" class="hover:bg-gray-50 transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm font-medium text-gray-900">{{ app.id }}</div>
                 </td>
@@ -246,12 +165,10 @@
                   <div class="text-xs text-gray-500">{{ app.activityType }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span
-                    :class="[
-                      getStatusColor(app.status),
-                      'px-2 py-1 text-xs font-semibold rounded-full',
-                    ]"
-                  >
+                  <span :class="[
+                    getStatusColor(app.status),
+                    'px-2 py-1 text-xs font-semibold rounded-full',
+                  ]">
                     {{ app.status }}
                   </span>
                 </td>
@@ -259,10 +176,7 @@
                   <div class="text-sm text-gray-500">{{ app.date }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center">
-                  <button
-                    @click="openViewModal(app)"
-                    class="text-blue-600 hover:text-blue-900 font-medium text-sm"
-                  >
+                  <button @click="openViewModal(app)" class="text-blue-600 hover:text-blue-900 font-medium text-sm">
                     View
                   </button>
                 </td>
@@ -271,10 +185,8 @@
           </table>
         </div>
 
-        <div
-          v-if="filteredApplications.length > pageSize"
-          class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
-        >
+        <div v-if="filteredApplications.length > pageSize"
+          class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
           <div class="flex-1 flex justify-between items-center">
             <div>
               <p class="text-sm text-gray-700">
@@ -284,50 +196,28 @@
               </p>
             </div>
             <div class="flex">
-              <button
-                @click="prevPage"
-                :disabled="currentPage === 1"
-                :class="[
-                  currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50',
-                  'relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white',
-                ]"
-              >
-                <svg
-                  class="h-5 w-5 mr-2"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
+              <button @click="prevPage" :disabled="currentPage === 1" :class="[
+                currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50',
+                'relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white',
+              ]">
+                <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                  aria-hidden="true">
+                  <path fill-rule="evenodd"
                     d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                    clip-rule="evenodd"
-                  />
+                    clip-rule="evenodd" />
                 </svg>
                 Previous
               </button>
-              <button
-                @click="nextPage"
-                :disabled="currentPage === totalPages"
-                :class="[
-                  currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50',
-                  'ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white',
-                ]"
-              >
+              <button @click="nextPage" :disabled="currentPage === totalPages" :class="[
+                currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50',
+                'ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white',
+              ]">
                 Next
-                <svg
-                  class="h-5 w-5 ml-2"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
+                <svg class="h-5 w-5 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                  aria-hidden="true">
+                  <path fill-rule="evenodd"
                     d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clip-rule="evenodd"
-                  />
+                    clip-rule="evenodd" />
                 </svg>
               </button>
             </div>
@@ -336,15 +226,9 @@
       </div>
     </div>
 
-    <CpdViewApplicationsModal
-      v-if="isViewModalOpen"
-      :application="selectedApplicationForModal"
-      @save="saveApplication"
-      @approve="approveApplication"
-      @reject="rejectApplication"
-      @updateParticipant="updateParticipant"
-      @close="closeViewModal"
-    />
+    <CpdViewApplicationsModal v-if="isViewModalOpen" :application="selectedApplicationForModal" @save="saveApplication"
+      @approve="approveApplication" @reject="rejectApplication" @updateParticipant="updateParticipant"
+      @close="closeViewModal" />
   </div>
 </template>
 
@@ -380,23 +264,20 @@ const selectedApplicationForModal = computed(() => {
 
   // Transform the data to match what the modal expects
   return {
-    // Raw API data (using original field names from API)
+    // Raw API data (using actual model field names)
     id: selectedApplication.value.id,
     registration_no: selectedApplication.value.registrationNumber,
     cid_no: selectedApplication.value.cidNumber,
     full_name: selectedApplication.value.applicantName,
-    title: selectedApplication.value.title,
-    description: selectedApplication.value.description,
-    start_date: selectedApplication.value.startDate,
-    end_date: selectedApplication.value.endDate,
-    location: selectedApplication.value.location,
-    venue: selectedApplication.value.venue,
-    expected_cpd_credits: selectedApplication.value.expectedCpdCredits,
-    credit: selectedApplication.value.cpdCredits,
+    title_of_cpd: selectedApplication.value.title,  // ✅ Fixed: map to title_of_cpd
+    expected_outcome: selectedApplication.value.description,  // ✅ Fixed: map to expected_outcome
+    from_date: selectedApplication.value.startDate,  // ✅ Fixed: map to from_date
+    to_date: selectedApplication.value.endDate,  // ✅ Fixed: map to to_date
+    venue: selectedApplication.value.location,  // ✅ Fixed: map to venue
+    credit: selectedApplication.value.expectedCpdCredits,  // ✅ Fixed: map to credit
     duration_in_hours: selectedApplication.value.durationInHours,
     number_of_participants: selectedApplication.value.numberOfParticipants,
     relevance_to_topic: selectedApplication.value.relevanceToTopic,
-    expected_outcome: selectedApplication.value.expected_outcome,
 
     // Attachments
     course_document: selectedApplication.value.courseDocument?.url,
@@ -592,7 +473,7 @@ const updateParticipant = async (participantData) => {
   }
 }
 
-// Updated saveApplication to handle expected_cpd_credits
+// Updated saveApplication to handle credit field
 const saveApplication = async (updatedApplicationData) => {
   if (!updatedApplicationData || !updatedApplicationData.id) {
     showNotification('error', 'Save Failed', 'Invalid application data for saving.')
@@ -601,8 +482,7 @@ const saveApplication = async (updatedApplicationData) => {
   try {
     loading.value = true
     const patchData = {
-      expected_cpd_credits: updatedApplicationData.expected_cpd_credits || updatedApplicationData.cpdCredits,
-      credit: updatedApplicationData.credit || updatedApplicationData.cpdCredits,
+      credit: updatedApplicationData.credit || updatedApplicationData.cpdCredits,  // ✅ Fixed: use credit
       review_remarks: updatedApplicationData.remarks,
     }
     await apiServices.patchEpcCpdTask(updatedApplicationData.id, patchData)
@@ -633,7 +513,7 @@ const approveApplication = async (applicationDataFromModal) => {
       is_draft: false,
       review_status: 'Approved',
       review_remarks: applicationDataFromModal.remarks || 'Application approved',
-      credit: applicationDataFromModal.credit || applicationDataFromModal.cpdCredits,
+      credit: applicationDataFromModal.credit || applicationDataFromModal.cpdCredits,  // ✅ Fixed: use credit
     }
 
     await apiServices.patchEpcCpdTask(applicationDataFromModal.id, patchData)
@@ -688,6 +568,13 @@ const fetchApplications = async () => {
   try {
     loading.value = true
     const response = await apiServices.getEpcCpdTasks()
+
+    // 🔍 DEBUG: Log the first application to see actual field names (remove after testing)
+    if (response?.data?.results?.[0]) {
+      console.log('🔍 First application from API:', response.data.results[0])
+      console.log('🔍 Available fields:', Object.keys(response.data.results[0]))
+    }
+
     let rawResults = []
     if (response?.data?.results && Array.isArray(response.data.results)) {
       rawResults = response.data.results
@@ -733,17 +620,18 @@ const getActivityType = (item) => {
   return 'Not specified';
 }
 
-// Function to process API response data into the format needed by the template
+// ✅ FIXED: Function to process API response data into the format needed by the template
 const processApiResponse = (rawResults) => {
   if (!Array.isArray(rawResults)) {
     console.error('processApiResponse received non-array data:', rawResults)
     applications.value = []
     return
   }
+
   applications.value = rawResults.map((item) => ({
     // --- Core Task Info ---
     id: item.id,
-    title: item.title || 'N/A',
+    title: item.title_of_cpd || 'N/A',  // ✅ Fixed: use title_of_cpd
     status: getTaskStatus(item),
     date: formatDate(item.created_at),
     isDraft: item.is_draft,
@@ -755,12 +643,12 @@ const processApiResponse = (rawResults) => {
     registrationNumber: item.registration_no || 'N/A',
 
     // --- CPD Specific Details ---
-    description: item.description || '',
-    startDate: item.start_date,
-    endDate: item.end_date,
-    location: item.location || '',
+    description: item.expected_outcome || '',  // ✅ Fixed: use expected_outcome
+    startDate: item.from_date,  // ✅ Fixed: use from_date
+    endDate: item.to_date,  // ✅ Fixed: use to_date
+    location: item.venue || '',  // ✅ Fixed: use venue
     venue: item.venue || '',
-    expectedCpdCredits: item.expected_cpd_credits || 0,
+    expectedCpdCredits: item.credit || 0,  // ✅ Fixed: use credit
     cpdCredits: item.credit || 0,
     activityType: getActivityType(item),
     typeOfCpdId: item.type_of_cpd,
@@ -780,10 +668,22 @@ const processApiResponse = (rawResults) => {
     remarks: item.review_remarks || '',
 
     // --- Attachments ---
-    attachment: item.attachment ? { name: item.attachment.split('/').pop(), url: item.attachment } : null,
-    courseDocument: item.course_document ? { name: item.course_document.split('/').pop(), url: item.course_document } : null,
-    supportingDocument: item.document_supporting_expertise ? { name: item.document_supporting_expertise.split('/').pop(), url: item.document_supporting_expertise } : null,
-    attendanceSheetAttachment: item.attendance_sheet_attachment ? { name: item.attendance_sheet_attachment.split('/').pop(), url: item.attendance_sheet_attachment } : null,
+    attachment: item.attachment ? {
+      name: item.attachment.split('/').pop(),
+      url: item.attachment
+    } : null,
+    courseDocument: item.course_document ? {
+      name: item.course_document.split('/').pop(),
+      url: item.course_document
+    } : null,
+    supportingDocument: item.document_supporting_expertise ? {
+      name: item.document_supporting_expertise.split('/').pop(),
+      url: item.document_supporting_expertise
+    } : null,
+    attendanceSheetAttachment: item.attendance_sheet_attachment ? {
+      name: item.attendance_sheet_attendance.split('/').pop(),
+      url: item.attendance_sheet_attachment
+    } : null,
 
     // --- Timestamps ---
     createdAt: item.created_at,
@@ -797,17 +697,17 @@ const processApiResponse = (rawResults) => {
     // --- Participants ---
     participants: Array.isArray(item.participants)
       ? item.participants.map((p) => ({
-          id: p.id,
-          cpd_task_id: p.cpd_task_id,
-          participant_reg_no: p.participant_reg_no || 'N/A',
-          review_status: p.review_status || 'Pending',
-          review_remarks: p.review_remarks || '',
-          cpd_credits: p.cpd_credits !== null ? p.cpd_credits : (p.cpd_credits_for_participant !== null ? p.cpd_credits_for_participant : 0),
-          endorsement_decision: p.endorsement_decision || 'Pending',
-          endorsement_remarks: p.endorsement_remarks || '',
-        }))
+        id: p.id,
+        cpd_task_id: p.cpd_task_id,
+        participant_reg_no: p.participant_reg_no || 'N/A',
+        review_status: p.review_status || 'Pending',
+        review_remarks: p.review_remarks || '',
+        cpd_credits: p.cpd_credits !== null ? p.cpd_credits : 0,
+        endorsement_decision: p.endorsement_decision || 'Pending',
+        endorsement_remarks: p.endorsement_remarks || '',
+      }))
       : [],
-  }));
+  }))
 }
 
 // Fetch initial data when the component mounts
@@ -822,12 +722,16 @@ onMounted(() => {
 .notification-leave-active {
   transition: all 0.4s ease;
 }
+
 .notification-enter-from {
   opacity: 0;
-  transform: translateX(100%); /* Slide in from right */
+  transform: translateX(100%);
+  /* Slide in from right */
 }
+
 .notification-leave-to {
   opacity: 0;
-  transform: translateY(-20px); /* Slide up slightly on exit */
+  transform: translateY(-20px);
+  /* Slide up slightly on exit */
 }
 </style>
